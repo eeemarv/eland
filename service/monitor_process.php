@@ -5,6 +5,7 @@ namespace service;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
 use service\cache;
+use util\cnst;
 
 class monitor_process
 {
@@ -62,7 +63,7 @@ class monitor_process
 		$this->process_name = $process_name;
 	}
 
-	public function wait_most_recent(int $wait):bool
+	public function wait_most_recent():bool
 	{
 		if (!$this->is_cli)
 		{
@@ -104,16 +105,18 @@ class monitor_process
 		$monitor[$this->process_name] = $process_ary;
 
 		$this->predis->set('monitor_processes', json_encode($monitor));
-		$this->predis->expire('monitor_processes', (1800 + $wait));
+		$this->predis->expire('monitor_processes', 86400);
 
-		sleep($wait);
+		sleep(cnst::PROCESS_INTERVAL[$this->process_name]['wait']);
 
 		return true;
 	}
 
-	public function periodic_log(int $log_on_count):void
+	public function periodic_log():void
 	{
-		if ($this->loop_count % $log_on_count === 0)
+		if ($this->loop_count
+			% cnst::PROCESS_INTERVAL[$this->process_name]['log']
+			=== 0)
 		{
 			error_log('.. ' . $this->process_name . ' .. ' .
 				$this->boot_count .
@@ -141,7 +144,7 @@ class monitor_process
 		try
 		{
 			$this->predis->incr('eland_monitor');
-			$this->predis->expire('eland_monitor', 400);
+			$this->predis->expire('eland_monitor', 300);
 			$monitor_count = $this->predis->get('eland_monitor');
 
 			if ($monitor_count > 2)
@@ -156,6 +159,34 @@ class monitor_process
 				}
 
 				error_log('monitor_processes: ' . $monitor_processes);
+
+				foreach (cnst::PROCESS_INTERVAL as $process_name => $process_interval)
+				{
+					if (!isset($monitor_processes[$process_name]))
+					{
+						http_response_code(503);
+						error_log('no time found for process: ' . $process_name);
+						exit;
+					}
+
+					$process_ary = $monitor_processes[$process_name];
+					$active = max(array_keys($process_ary));
+					$last = $process_ary[$active];
+
+					$process_monitor = $process_interval['monitor'];
+					$now = now();
+
+					if (($last + $process_monitor) < $now)
+					{
+						http_response_code(503);
+						echo ('Process down: ' . $process_name .
+							', max interval: ' . $process_monitor .
+							', last time: ' . $last .
+							', now: ' . $now);
+						exit;
+					}
+
+				}
 
 				echo 'Ok.';
 				exit;

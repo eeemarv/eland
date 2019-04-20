@@ -14,11 +14,11 @@ $app['monitor_process']->boot();
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(7200))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
 
 	$app['cache']->cleanup();
-	$app['monitor_process']->periodic_log(1);
+	$app['monitor_process']->periodic_log();
 }

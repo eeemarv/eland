@@ -30,7 +30,7 @@ $schema_task = new task_container($app, 'schema_task');
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(5)) // 120
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -40,5 +40,5 @@ while (true)
 		$schema_task->run();
 	}
 
-	$app['monitor_process']->periodic_log(500);
+	$app['monitor_process']->periodic_log();
 }
