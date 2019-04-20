@@ -14,7 +14,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../include/default.php';
 
 $app['monitor_process']->boot();
-$app['monitor_process']->get_background_processes();
 
 error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
 error_log(' --- ');
