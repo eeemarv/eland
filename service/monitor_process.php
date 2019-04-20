@@ -161,6 +161,7 @@ class monitor_process
 				error_log('monitor_processes: ' . $monitor_processes);
 
 				$monitor_processes = json_decode($monitor_processes, true);
+				$now = time();
 
 				foreach (cnst::PROCESS_INTERVAL as $process_name => $process_interval)
 				{
@@ -176,7 +177,6 @@ class monitor_process
 					$last = $process_ary[$active];
 
 					$process_monitor = $process_interval['monitor'];
-					$now = now();
 
 					if (($last + $process_monitor) < $now)
 					{
