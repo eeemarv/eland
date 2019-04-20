@@ -48,6 +48,11 @@ class config
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 
+	public function exists(string $name, string $schema):bool
+	{
+		return 0 < $this->xdb->count('setting', $name, $schema);
+	}
+
 	public function set(string $name, string $schema, string $value):void
 	{
 		$this->xdb->set('setting', $name, ['value' => $value], $schema);
@@ -58,8 +63,6 @@ class config
 
 	public function get(string $key, string $schema):string
 	{
-		global $app;
-
 		if (isset($this->local_cache[$schema][$key]) && !$this->is_cli)
 		{
 			return $this->local_cache[$schema][$key];
@@ -81,17 +84,6 @@ class config
 		else if (isset($this->default[$key]))
 		{
 			$value = $this->default[$key];
-		}
-		else
-		{
-			$value = $this->db->fetchColumn('select value
-				from ' . $schema . '.config
-				where setting = ?', [$key]);
-
-			if (!$app['s_guest'] && !$app['s_master'])
-			{
-				$this->xdb->set('setting', $key, ['value' => $value], $schema);
-			}
 		}
 
 		if (isset($value))
