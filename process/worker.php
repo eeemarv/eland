@@ -14,6 +14,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../include/default.php';
 
 $app['monitor_process']->boot();
+$app['monitor_process']->get_background_processes();
 
 error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
 error_log(' --- ');
@@ -30,7 +31,7 @@ $schema_task = new task_container($app, 'schema_task');
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(120))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -40,5 +41,5 @@ while (true)
 		$schema_task->run();
 	}
 
-	$app['monitor_process']->periodic_log(500);
+	$app['monitor_process']->periodic_log();
 }

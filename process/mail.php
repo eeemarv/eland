@@ -14,7 +14,7 @@ $app['monitor_process']->boot();
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(5))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -26,5 +26,5 @@ while (true)
 		$app['queue.mail']->process($record['data']);
 	}
 
-	$app['monitor_process']->periodic_log(10000);
+	$app['monitor_process']->periodic_log();
 }

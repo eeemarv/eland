@@ -5,6 +5,7 @@ namespace service;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
 use service\cache;
+use util\cnst;
 
 class monitor_process
 {
@@ -62,7 +63,7 @@ class monitor_process
 		$this->process_name = $process_name;
 	}
 
-	public function wait_most_recent(int $wait):bool
+	public function wait_most_recent():bool
 	{
 		if (!$this->is_cli)
 		{
@@ -104,16 +105,18 @@ class monitor_process
 		$monitor[$this->process_name] = $process_ary;
 
 		$this->predis->set('monitor_processes', json_encode($monitor));
-		$this->predis->expire('monitor_processes', (1800 + $wait));
+		$this->predis->expire('monitor_processes', 86400);
 
-		sleep($wait);
+		sleep(cnst::PROCESS_INTERVAL[$this->process_name]['wait']);
 
 		return true;
 	}
 
-	public function periodic_log(int $log_on_count):void
+	public function periodic_log():void
 	{
-		if ($this->loop_count % $log_on_count === 0)
+		if ($this->loop_count
+			% cnst::PROCESS_INTERVAL[$this->process_name]['log']
+			=== 0)
 		{
 			error_log('.. ' . $this->process_name . ' .. ' .
 				$this->boot_count .
@@ -167,5 +170,26 @@ class monitor_process
 			throw $e;
 			exit;
 		}
+	}
+
+	public function get_background_processes():array
+	{
+		$file_ary = file(__DIR__ . '/../Procfile');
+		$processes = [];
+
+		foreach ($file_ary as $line)
+		{
+			$process = strtok($line, ':');
+
+			if (in_array($process, ['', 'web', 'dev']))
+			{
+				continue;
+			}
+
+			error_log($process);
+			$processes[] = $process;
+		}
+
+		return $processes;
 	}
 }
