@@ -39,7 +39,7 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
-
+{% autoescape false %}
 
 {% block text_title %}{% endblock %}
 
@@ -52,9 +52,10 @@
 {% block text_after_many %}{% endblock %}
 
 {{ 'label.total'|trans }}
-{{ total_amount|raw }} {{ config('currency', schema)|raw }}
+{{ total_amount }} {{ config('currency', schema) }}
 
-{{ 'label.description'|trans|raw }}
-{{ description|raw }}
+{{ 'label.description'|trans }}
+{{ description }}
 
+{% endautoescape %}
 {% endblock text_content %}

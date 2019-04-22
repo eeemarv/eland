@@ -28,15 +28,17 @@
 {% endblock html_content %}
 
 {% block text_content %}
+{% autoescape false %}
 
-{{ 'news_review_admin.title'|trans|underline|raw }}
+{{ 'news_review_admin.title'|trans|underline }}
 
 {{ 'news_review_admin.message'|trans({
     '%name%': news.headline
-})|raw }}
+}) }}
 
-{{ 'news_review_admin.action'|trans|raw }}
+{{ 'news_review_admin.action'|trans }}
 
-{{ mail_url('news', {'id': news.id}, schema)|raw }}
+{{ mail_url('news', {'id': news.id}, schema) }}
 
+{% endautoescape %}
 {% endblock text_content %}

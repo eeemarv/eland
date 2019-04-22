@@ -3,7 +3,7 @@
 {%- macro html(transactions, schema, email_token) -%}
 
 	<h3>
-		{{- mail_link_open('transactions', {}, schema, email_token) -}}
+		{{- mail_link_open('transactions', {}, schema, email_token)|raw -}}
 		{{- 'periodic_overview.transactions.title'|trans -}}
 		</a>
 	</h3>
@@ -38,6 +38,7 @@
 {%- endmacro html -%}
 
 {% macro text(transactions, schema, email_token) %}
+{% autoescape false %}
 
 {{ 'periodic_overview.transactions.title'|trans|underline }}
 
@@ -55,12 +56,11 @@
 		'%account%': tr.real_to,
 		'%system_name%': account(tr.id_to, schema)
 	}) : account(tr.id_to, schema),
-})|raw }}
+}) }}
 	{{ tr.description }}
-
 {% endfor %}
 {% else %}
 {{ 'periodic_overview.transactions.none'|trans }}
 {% endif %}
-
+{% endautoescape %}
 {% endmacro text %}

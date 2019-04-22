@@ -25,6 +25,7 @@
 {%- endmacro html -%}
 
 {% macro text(docs) %}
+{% autoescape false %}
 
 {{ 'periodic_overview.docs.title'|trans|underline }}
 
@@ -33,5 +34,5 @@
 {% else %}
 {{ 'periodic_overview.docs.none'|trans }}
 {% endfor %}
-
+{% endautoescape %}
 {% endmacro text %}

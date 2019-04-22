@@ -32,14 +32,14 @@
     </body>
 {%- endblock html_body -%}
 
-{%- block text_body -%}
-    {%- block text_pretext -%}{%- endblock -%}
-    {%- block text_content -%}{%- endblock -%}
-    {%- block text_account_info -%}{%- endblock -%}
-    {%- block text_support -%}{%- endblock -%}
-    {%- block text_unsubscribe -%}{%- endblock -%}
-    {%- block text_footer -%}
-        {%- if schema is defined %}
+{% block text_body %}
+{% block text_pretext %}{% endblock %}
+{% block text_content %}{% endblock %}
+{% block text_account_info %}{% endblock %}
+{% block text_support %}{% endblock %}
+{% block text_unsubscribe %}{% endblock %}
+{% block text_footer %}
+{% if schema is defined %}
 
 {{ 'b.footer'|trans({
     '%link_open%': '',
@@ -47,6 +47,6 @@
     '%system_name%': config('systemname', schema)
 })|raw }}
 {{ mail_url('home', {}, schema, email_token)|raw }}
-        {% endif -%}
-    {%- endblock text_footer -%}
-{%- endblock text_body -%}
+{% endif %}
+{% endblock text_footer %}
+{% endblock text_body %}

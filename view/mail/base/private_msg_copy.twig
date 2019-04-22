@@ -14,13 +14,15 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
 {% block text_explain %}{% endblock %}
 
 - - - - - -
 
-{{ msg_content|raw }}
+{{ msg_content }}
 
 - - - - - -
 
+{% endautoescape %}
 {% endblock text_content %}

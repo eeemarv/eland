@@ -28,14 +28,16 @@
 {% endblock html_content %}
 
 {% block text_content %}
+{% autoescape false %}
 
-{{ 'register_admin.title'|trans|underline|raw }}
+{{ 'register_admin.title'|trans|underline }}
 
-{{ 'register_admin.msg'|trans|raw }}:
+{{ 'register_admin.msg'|trans }}:
 
-{{ 'label.full_name'|trans|raw }}: {{ user.fullname|raw }}
-{{ 'label.postcode'|trans|raw }}: {{ user.postcode|raw }}
-{{ 'label.email'|trans|raw }}: {{ email|raw }}
-{{ 'label.link'|trans|raw }}: {{ mail_url('users', {'id': user.id}, schema, email_token)|raw }}
+{{ 'label.full_name'|trans }}: {{ user.fullname }}
+{{ 'label.postcode'|trans }}: {{ user.postcode }}
+{{ 'label.email'|trans }}: {{ email }}
+{{ 'label.link'|trans }}: {{ mail_url('users', {'id': user.id}, schema, email_token) }}
 
+{% endautoescape %}
 {% endblock text_content %}

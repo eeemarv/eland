@@ -2,9 +2,6 @@
 {{ 'label.your_account'|trans|underline|raw }}
 
 {{ 'label.login'|trans|raw }}: {{ mail_url('login', {'login': account_code(user_id, schema)}, schema, email_token)|raw }}
-
-{{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema) }}
-
-{{ 'label.username'|trans|raw }}: {{ username(user_id, schema) }}
-
-{{ 'label.balance'|trans|raw }}: {{ account_balance(user_id, schema) }} {{ config('currency', schema) }}
+{{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema)|raw }}
+{{ 'label.username'|trans|raw }}: {{ username(user_id, schema)|raw }}
+{{ 'label.balance'|trans|raw }}: {{ account_balance(user_id, schema) }} {{ config('currency', schema)|raw }}

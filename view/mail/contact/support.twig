@@ -21,16 +21,18 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
-{{ message|raw }}
+{{ message }}
 
 - - - - - -
 {{ 'contact_support.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
-})|raw }}
+}) }}
 
 {{ mail_url('home', {}, schema, email_token) }}
 {% include 'mail/include/sender_info.text.twig' %}
+{% endautoescape %}
 {% endblock text_content %}

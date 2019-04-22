@@ -27,6 +27,7 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 {{ 'account_activation_admin.message'|trans({
     '%link_open%': '',
     '%link_close%': '',
@@ -40,4 +41,5 @@
 {% else %}
 {{ 'account_activation_admin.no_email_sent'|trans }}
 {% endif %}
+{% endautoescape %}
 {% endblock text_content %}

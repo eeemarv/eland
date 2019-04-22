@@ -29,21 +29,23 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
 {{ 'password_reset_confirm.text_msg'|trans({
     '%system_name%': config('systemname', schema)
-})|raw }}
+}) }}
 
-{{ mail_url('pwreset', {'token': token}, schema, email_token)|raw }}
+{{ mail_url('pwreset', {'token': token}, schema, email_token) }}
 
-{{ 'expiration.1_day'|trans|raw }}
+{{ 'expiration.1_day'|trans }}
 
 {{ 'password_reset_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''
-})|raw }}
+}) }}
 
 {{ mail_url('home', {}, schema, email_token) }}
 
+{% endautoescape %}
 {% endblock text_content %}

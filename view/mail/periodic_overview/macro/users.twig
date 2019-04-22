@@ -1,0 +1,59 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html_list(users, schema, email_token) -%}
+<ul>
+	{%- for user_id in users -%}
+		<li>
+		{{- mail_link_open('users', {'id': user_id}, schema, email_token)|raw -}}
+			{{- account(user_id, schema) -}}
+		</a>
+		</li>
+	{%- endfor -%}
+</ul>
+{%- endmacro html_list -%}
+
+{% macro text_list(users, schema, email_token) %}
+{% autoescape false %}
+{% for user_id in users %}
+* {{ account(user_id, schema) }} {{ mail_url('users', {'id': user_id}, schema, email_token) }}
+{% endfor %}
+{% endautoescape %}
+{% endmacro text_list %}
+
+{%- macro html(users, type, option, schema, email_token) -%}
+{%- import _self as u -%}
+<h3>
+	{{- ('periodic_overview.'~type~'_users.title')|trans -}}
+</h3>
+{%- if users -%}
+	{{- u.html_list(users, schema, email_token) -}}
+{%- else -%}
+	{%- if option == 'recent' -%}
+		<p>
+			{{- ('periodic_overview.'~type~'_users.no_recent')|trans -}}
+		</p>
+	{%- else -%}
+		<p>
+			{{- ('periodic_overview.'~type~'_users.none')|trans -}}
+		</p>
+	{%- endif -%}
+{%- endif -%}
+{%- endmacro html -%}
+
+{% macro text(users, type, option, schema, email_token) %}
+{% import _self as u %}
+{% autoescape false %}
+
+{{ ('periodic_overview.'~type~'_users.title')|trans|underline }}
+
+{% if users %}
+{{ u.text_list(users, schema, email_token) }}
+{% else %}
+{% if option == 'recent' %}
+{{ ('periodic_overview.'~type~'_users.no_recent')|trans }}
+{% else %}
+{{ ('periodic_overview.'~type~'_users.none')|trans }}
+{% endif %}
+{% endif %}
+{% endautoescape %}
+{% endmacro text %}

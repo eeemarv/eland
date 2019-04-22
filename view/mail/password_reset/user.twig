@@ -20,11 +20,13 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
-{{ 'password_reset_user.title'|trans|underline|raw }}
+{{ 'password_reset_user.title'|trans|underline }}
 
-{{ 'password_reset_user.message'|trans|raw }}
+{{ 'password_reset_user.message'|trans }}
 
-{{ 'label.password'|trans|raw }}: {{ password|raw }}
+{{ 'label.password'|trans }}: {{ password }}
 
+{% endautoescape %}
 {% endblock text_content %}

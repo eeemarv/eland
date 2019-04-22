@@ -29,19 +29,21 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
-{{ 'register_confirm.text_msg'|trans|raw }}
+{{ 'register_confirm.text_msg'|trans }}
 
-{{ mail_url('register', {'token': token}, schema, email_token)|raw }}
+{{ mail_url('register', {'token': token}, schema, email_token) }}
 
-{{ 'expiration.1_week'|trans|raw }}
+{{ 'expiration.1_week'|trans }}
 
 {{ 'register_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''
-})|raw }}
+}) }}
 
-{{ mail_url('register', {}, schema, email_token)|raw }}
+{{ mail_url('register', {}, schema, email_token) }}
 
+{% endautoescape %}
 {% endblock text_content %}

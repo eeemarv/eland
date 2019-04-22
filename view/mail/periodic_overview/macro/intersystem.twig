@@ -48,6 +48,7 @@
 {%- endmacro html -%}
 
 {% macro text(intersystem, schema, email_token) %}
+{% autoescape false %}
 
 {% if intersystem %}
 
@@ -81,5 +82,5 @@
 
 {% endfor %}
 {% endif %}
-
+{% endautoescape %}
 {% endmacro text %}

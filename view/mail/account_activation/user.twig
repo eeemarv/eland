@@ -32,6 +32,7 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 {{ 'account_activation.welcome'|trans({
     '%link_open%': '',
     '%link_close%': '',
@@ -49,6 +50,7 @@
 {{ 'label.password'|trans }}: {{ password }}
 
 {{ 'account_activation.change_profile'|trans }}
+{% endautoescape %}
 {% endblock text_content %}
 
 {%- block html_account_info -%}{%- endblock -%}

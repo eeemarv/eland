@@ -13,12 +13,13 @@
 <ul>
 {%- for n in news -%}
 <li>
-{{- mail_link_open('news', {'id': n.id}, schema, email_token) -}}
 <h4>
+{{- mail_link_open('news', {'id': n.id}, schema, email_token)|raw -}}
 {{- n.headline -}}
+</a>
 </h4>
-</a><br /><br />
-{{- n.newsitem -}}<br /><br />
+<br />
+{{- n.newsitem -}}<br />
 {%- if n.location -%}
 	{{- 'label.location'|trans -}}:
 	&nbsp;<strong>
@@ -40,7 +41,6 @@
 })|raw -}}
 </li>
 <br />
-<br />
 {%- endfor -%}
 </ul>
 {%- else -%}
@@ -56,12 +56,12 @@
 {%- endmacro html -%}
 
 {% macro text(news, option, schema, email_token) %}
+{% autoescape false %}
 
 {{- 'periodic_overview.news.title'|trans({
 	'%link_open%': '',
 	'%link_close%': ''
 })|underline }}
-
 {% if news %}
 {% for n in news %}
 
@@ -80,7 +80,6 @@
 	'%link_close%': '',
 	'%account%': account(n.id_user, schema)
 }) }}
-
 {% endfor %}
 {% else %}
 
@@ -90,5 +89,5 @@
 {{ 'periodic_overview.news.none'|trans }}
 {% endif %}
 {% endif %}
-
+{% endautoescape %}
 {% endmacro text %}

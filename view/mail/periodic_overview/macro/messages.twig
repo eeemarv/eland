@@ -38,16 +38,18 @@
 	schema, email_token)|raw -}}
 {{- account(msg.id_user, schema) -}}
 </a>
+{#-
 {%- if msg.postcode -%}
 	{{- 'label.postcode'|trans -}}:&nbsp;
 		{{- msg.postcode -}}&nbsp;
 		|&nbsp;
 {%- endif -%}
+-#}
 {%- for mail in msg.mail -%}
+	{%- if not loop.last -%}|{%- endif -%}&nbsp;
 	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
 	{{- 'label.email'|trans -}}
 	</a>
-{%- if not loop.last -%}|{%- endif -%}&nbsp;
 {%- endfor -%}
 </li>
 <br />
@@ -74,24 +76,23 @@
 {%- endmacro html -%}
 
 {% macro text(messages, schema, email_token) %}
+{% autoescape false %}
 
-{{ 'periodic_overview.ads.title'|trans|underline|raw }}
+{{ 'periodic_overview.ads.title'|trans|underline }}
 
 {% if messages %}
 {{ 'periodic_overview.ads.explain'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
 	'%days%': config('saldofreqdays', schema)
-})|raw }}
-
+}) }}
 {% for msg in messages %}
 
 {% if msg.offer -%}
 	{{- 'label.offer'|trans -}}
 {%- else -%}
 	{{- 'label.want'|trans -}}
-{%- endif -%}:&nbsp;
-{{- msg.content }}
+{%- endif -%}: {{ msg.content }}
 {{ mail_url('messages', {'id': msg.id}, schema, email_token) }}
 {{ account(msg.id_user, schema) }}
 
@@ -101,14 +102,13 @@
 	'%link_open%': '',
 	'%link_close%': '',
 	'%days%': config('saldofreqdays', schema)
-})|raw }}
+}) }}
 {% endif %}
 
 {{- 'periodic_overview.ads.add'|trans({
 	'%link_open%': '',
 	'%link_close%': ''
-})|raw -}}
-
+}) }}
 {{ mail_url('messages', {'add': '1'}, schema, email_token) }}
-
+{% endautoescape %}
 {% endmacro text %}

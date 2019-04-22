@@ -32,26 +32,28 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
 {{ 'support.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema),
     '%account%': account(user.id, schema)
-})|raw }}
+}) }}
 {% if can_reply %}
-{{ 'support.explain_reply'|trans|raw }}
+{{ 'support.explain_reply'|trans }}
 {% else %}
 {{ 'support.explain_no_reply'|trans({
     '%link_open%': '',
     '%link_close%': ''
-})|raw }}
-{{ mail_url('users', {'id': user.id}, schema, email_token)|raw }}
+}) }}
+{{ mail_url('users', {'id': user.id}, schema, email_token) }}
 {% endif %}
 
 - - - - - -
 
-{{ message|raw }}
+{{ message }}
 
 - - - - - -
+{% autoescape false %}
 {% endblock text_content %}

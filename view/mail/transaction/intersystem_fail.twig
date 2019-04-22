@@ -61,27 +61,29 @@
 {%- endblock html_content -%}
 
 {% block text_content %}
+{% autoescape false %}
 
-{{ 'transaction_intersystem_fail.title'|trans|underline|raw }}
+{{ 'transaction_intersystem_fail.title'|trans|underline }}
 
 {{ 'transaction_intersystem_fail.message'|trans({
     '%remote_system_name%': remote_system_name,
     '%trans_id%': transaction.transid
-})|raw }}
+}) }}
 
-{{ 'label.from'|trans|raw }}
-{{ account(from_user_id, schema)|raw }}
+{{ 'label.from'|trans }}
+{{ account(from_user_id, schema) }}
 
-{{ 'label.to'|trans|raw }}
-{{ account(to_user_id, schema)|raw }}
+{{ 'label.to'|trans }}
+{{ account(to_user_id, schema) }}
 
-{{ 'label.destination'|trans|raw }}
-{{ transaction.real_to|raw }}
+{{ 'label.destination'|trans }}
+{{ transaction.real_to }}
 
-{{ 'label.amount'|trans|raw }}
-{{ transaction.amount|raw }} {{ config('currency', schema)|raw }}
+{{ 'label.amount'|trans }}
+{{ transaction.amount }} {{ config('currency', schema) }}
 
-{{ 'label.description'|trans|raw }}
-{{ transaction.description|raw }}
+{{ 'label.description'|trans }}
+{{ transaction.description }}
 
+{% endautoescape %}
 {% endblock text_content %}

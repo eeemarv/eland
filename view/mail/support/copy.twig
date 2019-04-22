@@ -21,13 +21,15 @@
 {%- endblock %}
 
 {% block text_content %}
+{% autoescape false %}
 
 {{ 'support_copy.explain'|trans({
     '%system_name%': config('systemname', schema)
-})|raw }}
+}) }}
 - - - - - -
 
-{{ message|raw }}
+{{ message }}
 
 - - - - - -
+{% endautoescape %}
 {% endblock -%}
