@@ -52,7 +52,6 @@ class email_validate
 
 		if (!count($data))
 		{
-			error_log('Token not found: ' . $token);
 			return;
 		}
 

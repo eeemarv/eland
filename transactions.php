@@ -1103,7 +1103,7 @@ if ($add)
 				echo ' data-typeahead="' . $typeahead . '"';
 			}
 
-			echo $sys['id'] === $group_id ? ' selected="selected"' : '';
+			echo $sys['id'] == $group_id ? ' selected="selected"' : '';
 			echo '>';
 			echo htmlspecialchars($sys['groupname'], ENT_QUOTES);
 
