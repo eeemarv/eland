@@ -202,15 +202,15 @@ class mail implements queue_interface
 				continue;
 			}
 
-			$token = $this->email_validate->get_token($email, $schema, $data['template']);
 			$val_data = $data;
 			$val_data['to'] = [$email => $name];
-			$val_data['vars']['email_token'] = $token;
+			$email_token = $this->email_validate->get_token($email, $schema, $data['template']);
+			$val_data['vars']['email_token'] = $email_token;
 
 			$this->queue->set('mail', $val_data, $priority);
 
 			$this->monolog->info('mail in queue with email token ' .
-				$token .
+				$email_token .
 				', template: ' . $val_data['template'] . ', from : ' .
 				json_encode($val_data['from']) . ' to : ' . json_encode($val_data['to']) . ' ' .
 				$reply_log .
