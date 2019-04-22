@@ -58,18 +58,6 @@ if ($token)
 		}
 	}
 
-	if ($email)
-	{
-		$ev_data = [
-			'token'			=> $token,
-			'user_id'		=> $user_id,
-			'script_name'	=> 'pwreset',
-			'email'			=> strtolower($email),
-		];
-
-		$app['xdb']->set('email_validated', $email, $ev_data, $app['tschema']);
-	}
-
 	$h1 = 'Nieuw paswoord ingeven.';
 	$fa = 'key';
 

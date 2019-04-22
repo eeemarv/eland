@@ -23,14 +23,6 @@ if ($token)
 
 		$data = json_decode($data, true);
 
-		$ev_data = [
-			'token'			=> $token,
-			'script_name'	=> 'contact',
-			'email'			=> $data['email'],
-		];
-
-		$app['xdb']->set('email_validated', $data['email'], $ev_data, $app['tschema']);
-
 		$vars = [
 			'message'		=> $data['message'],
 			'ip'			=> $data['ip'],

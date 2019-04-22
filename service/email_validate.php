@@ -9,7 +9,7 @@ use Monolog\Logger as monolog;
 
 class email_validate
 {
-	protected $ttl = 345600; // 4 days
+	protected $ttl = 864000; // 10 days
 	protected $db;
 	protected $xdb;
 	protected $cache;

@@ -107,19 +107,6 @@ if ($token)
 
 			$app['db']->insert($app['tschema'] . '.contact', $mail);
 
-			$ev_data = [
-				'token'			=> $token,
-				'user_id'		=> $user_id,
-				'script_name'	=> 'register',
-				'email'			=> $data['email'],
-			];
-
-			$app['xdb']->set(
-				'email_validated',
-				$data['email'],
-				$ev_data,
-				$app['tschema']);
-
 			if ($data['gsm'] || $data['tel'])
 			{
 				if ($data['gsm'])
