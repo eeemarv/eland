@@ -549,7 +549,6 @@ class saldo extends schema_task
 			}
 
 			$this->mail->queue([
-				'email_validate'	=> true,
 				'schema'			=> $this->schema,
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',

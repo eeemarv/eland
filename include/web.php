@@ -59,7 +59,7 @@ if (getenv('WEBSITE_MAINTENANCE'))
 
 if (isset($_GET['ev']))
 {
-	$app['email_validate']->validate($_GET['ev']);
+	$app['email_validate']->validate($_GET['et']);
 }
 
 /**

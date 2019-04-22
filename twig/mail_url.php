@@ -34,7 +34,7 @@ class mail_url
 
 		if ($email_token !== '')
 		{
-			$params['ev'] = $email_token;
+			$params['et'] = $email_token;
 		}
 
 		if (count($params))

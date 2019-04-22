@@ -193,54 +193,32 @@ class mail implements queue_interface
 		$reply_log = isset($data['reply_to']) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
 
 		$data['vars']['email_token'] = '';
-		$validate_ary = [];
 
-		if (isset($data['email_validate']) && $data['email_validate'])
+		foreach ($data['to'] as $email => $name)
 		{
-			foreach ($data['to'] as $email => $name)
+			if (!filter_var($email, FILTER_VALIDATE_EMAIL))
 			{
-				if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-				{
-					$this->monolog->error('mail queue (validate): non-valid email address: ' .
-						$email . ' data: ' . json_encode($data),
-						['schema' => $schema]);
-					$data['to'][$email];
-					continue;
-				}
-
-				if (!$this->email_validate->is_validated($email, $schema))
-				{
-					$token = $this->email_validate->get_token($email, $schema, $data['template']);
-					$val_data = $data;
-					$val_data['to'] = [$email => $name];
-					$val_data['email_token'] = $token;
-					unset($data['to'][$email]);
-
-					$this->queue->set('mail', $val_data, $priority);
-
-					$this->monolog->info('mail in queue with email token ' .
-						$token .
-						', template: ' . $data['template'] . ', from : ' .
-						json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-						$reply_log .
-						' priority: ' . $priority,
-						['schema' => $schema]);
-				}
+				$this->monolog->error('mail queue (validate): non-valid email address (not sent): ' .
+					$email . ' data: ' . json_encode($data),
+					['schema' => $schema]);
+				continue;
 			}
+
+			$token = $this->email_validate->get_token($email, $schema, $data['template']);
+			$val_data = $data;
+			$val_data['to'] = [$email => $name];
+			$val_data['email_token'] = $token;
+
+			$this->queue->set('mail', $val_data, $priority);
+
+			$this->monolog->info('mail in queue with email token ' .
+				$token .
+				', template: ' . $val_data['template'] . ', from : ' .
+				json_encode($val_data['from']) . ' to : ' . json_encode($val_data['to']) . ' ' .
+				$reply_log .
+				' priority: ' . $priority,
+				['schema' => $schema]);
 		}
-
-		if (!isset($data['to']) || !$data['to'])
-		{
-			return;
-		}
-
-		$this->queue->set('mail', $data, $priority);
-
-		$this->monolog->info('mail: Mail in queue, template: ' .
-			$data['template'] . ', from : ' .
-			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-			$reply_log . ' priority: ' . $priority,
-			['schema' => $schema]);
 	}
 
 	protected function has_data_error(array $data, string $log_prefix):bool
