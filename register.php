@@ -42,7 +42,7 @@ if ($token)
 				}
 				else
 				{
-					$name .= substr(hash('sha512', $app['tschema'] . time() . mt_rand(0, 100000), 0, 4));
+					$name .= substr(hash('sha512', $app['tschema'] . time() . mt_rand(0, 100000)), 0, 4);
 				}
 			}
 
