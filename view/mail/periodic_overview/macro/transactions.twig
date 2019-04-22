@@ -3,7 +3,7 @@
 {%- macro html(transactions, schema, email_token) -%}
 
 	<h3>
-		{{- mail_link_open('transactions', {'ev': email_token}, schema) -}}
+		{{- mail_link_open('transactions', {}, schema, email_token) -}}
 		{{- 'periodic_overview.transactions.title'|trans -}}
 		</a>
 	</h3>

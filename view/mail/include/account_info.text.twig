@@ -1,7 +1,7 @@
 {% trans_default_domain 'mail' %}
 {{ 'label.your_account'|trans|underline|raw }}
 
-{{ 'label.login'|trans|raw }}: {{ mail_url('login', {'login': account_code(user_id, schema)}, schema)|raw }}
+{{ 'label.login'|trans|raw }}: {{ mail_url('login', {'login': account_code(user_id, schema)}, schema, email_token)|raw }}
 
 {{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema) }}
 

@@ -5,7 +5,7 @@
 
 <p>
     {{ 'b.support.explain'|trans({
-        '%link_open%': mail_link_open('support', {}, schema),
+        '%link_open%': mail_link_open('support', {}, schema, email_token),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw }}.

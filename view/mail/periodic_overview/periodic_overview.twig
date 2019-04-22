@@ -64,12 +64,16 @@
 {% elseif b == 'transactions' %}
 {{ t.text(transactions, schema, email_token) }}
 {% endif %}
+{% endfor %}
 {% endblock text_content %}
 
 {%- block html_unsubscribe -%}
 <p>
 {{- 'periodic_overview.unsubscribe'|trans({
-    '%link_open%': mail_link_open('users', {'id', user.id, 'ev': email_token}, schema),
+    '%link_open%': mail_link_open(
+        'users',
+        {'id': user_id, 'ev': email_token},
+        schema),
     '%link_close%': '</a>'
 })|raw -}}
 </p>
@@ -82,5 +86,5 @@
     '%link_close%': ''
 })|raw }}
 
-{{ mail_url('users', {'id': user.id, 'ev': email_token}, schema) }}
+{{ mail_url('users', {'id': user_id, 'ev': email_token}, schema) }}
 {% endblock text_unsubscribe %}

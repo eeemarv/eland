@@ -20,7 +20,7 @@
 </p>
 
 <p>
-    <a href="{{- mail_url('news', {'id': news.id}, schema) -}}">
+    <a href="{{- mail_url('news', {'id': news.id}, schema, email_token) -}}">
         {{- 'news_review_admin.action'|trans -}}
     </a>
 </p>

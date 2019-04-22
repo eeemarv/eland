@@ -52,15 +52,12 @@ class saldo extends schema_task
 
 	function process():void
 	{
-
-		// vars
-
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config->get('saldofreqdays', $this->schema) * 86400);
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
 		$forum = $intersystem = $docs = [];
-		$mailaddr = $mailaddr_public = $saldo_mail = [];
+		$mailaddr = $saldo_mail = [];
 
 	// get blocks
 
@@ -125,7 +122,6 @@ class saldo extends schema_task
 			$user_id = $row['id'];
 			$mail = $row['value'];
 			$mailaddr[$user_id][] = $mail;
-			$mailaddr_public[$user_id][] = $row['flag_public'];
 
 			if (!$users[$user_id] || !$users[$user_id]['cron_saldo'])
 			{
@@ -558,7 +554,7 @@ class saldo extends schema_task
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',
 				'vars'				=> array_merge($vars, [
-					'user'			=> $users[$id],
+					'user_id'		=> $id,
 				]),
 			], random_int(0, 5000));
 

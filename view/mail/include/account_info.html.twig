@@ -5,7 +5,7 @@
 
 <ul>
 <li>
-    <a href="{{- mail_url('login', {'login': account_code(user_id, schema)}, schema) -}}">
+    <a href="{{- mail_url('login', {'login': account_code(user_id, schema)}, schema, email_token) -}}">
         {{- 'label.login'|trans -}}
     </a>
 </li>

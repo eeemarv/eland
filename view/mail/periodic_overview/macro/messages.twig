@@ -7,7 +7,7 @@
 {% if messages %}
 <p>
 {{- 'periodic_overview.ads.explain'|trans({
-	'%link_open%': mail_link_open('messages', {'ev': email_token}, schema),
+	'%link_open%': mail_link_open('messages', {}, schema, email_token),
 	'%link_close%': '</a>',
 	'%days%': config('saldofreqdays', schema)
 })|raw -}}
@@ -16,7 +16,7 @@
 {% for msg in messages %}
 <li>
 	<strong>
-		{{- mail_link_open('messages', {'id': msg.id, 'ev': email_token}, schema)|raw -}}
+		{{- mail_link_open('messages', {'id': msg.id}, schema, email_token)|raw -}}
 			{%- if msg.offer -%}
 				{{- 'label.offer'|trans -}}
 			{%- else -%}
@@ -33,7 +33,9 @@
 {%- endif -%}
 {{- msg.description -}}
 <br />
-{{- mail_link_open('users', {'id', msg.id_user, 'ev': email_token}, schema)|raw -}}
+{{- mail_link_open('users',
+	{'id': msg.id_user},
+	schema, email_token)|raw -}}
 {{- account(msg.id_user, schema) -}}
 </a>
 {%- if msg.postcode -%}
@@ -54,13 +56,17 @@
 
 {%- else -%}
 <p>
-{{- trans('periodic_overview.ads.none') -}}
+{{- 'periodic_overview.ads.none'|trans({
+	'%link_open%': mail_link_open('messages',
+		{}, schema, email_token),
+	'%link_close%': '</a>'
+})|raw -}}
 </p>
 {%- endif -%}
 
 <p>
 {{- 'periodic_overview.ads.add'|trans({
-	'%link_open%': mail_link_open('messages', {'add': '1', 'ev': email_token}, schema),
+	'%link_open%': mail_link_open('messages', {'add': '1'}, schema, email_token),
 	'%link_close%': '</a>'
 })|raw -}}
 </p>
@@ -86,7 +92,7 @@
 	{{- 'label.want'|trans -}}
 {%- endif -%}:&nbsp;
 {{- msg.content }}
-{{ mail_url('messages', {'id': msg.id, 'ev': email_token}, schema) }}
+{{ mail_url('messages', {'id': msg.id}, schema, email_token) }}
 {{ account(msg.id_user, schema) }}
 
 {% endfor %}
@@ -103,6 +109,6 @@
 	'%link_close%': ''
 })|raw -}}
 
-{{ mail_url('messages', {'add': '1', 'ev': email_token}, schema) }}
+{{ mail_url('messages', {'add': '1'}, schema, email_token) }}
 
 {% endmacro text %}

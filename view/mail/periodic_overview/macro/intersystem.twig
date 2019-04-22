@@ -9,7 +9,7 @@
 
 <p>
 	{{- 'periodic_overview.intersystem.explain'|trans({
-		'%link_open%': mail_link_open('login', {'ev': email_token}, schema),
+		'%link_open%': mail_link_open('login', {}, schema, email_token),
 		'%link_close%': '</a>'
 	})|raw -}}
 </p>
@@ -21,7 +21,7 @@
 		}) -}}
 	</h4>
 	<ul>
-	{%- for msg if i.messages -%}
+	{%- for msg in i.messages -%}
 		<li>
 		{{- ('periodic_overview.intersystem.' ~ msg.type)|trans({
 			'%msg%': msg.content
@@ -42,6 +42,9 @@
 		<br />
 	{%- endfor -%}
 	</ul>
+{%- endfor -%}
+{%- endif -%}
+
 {%- endmacro html -%}
 
 {% macro text(intersystem, schema, email_token) %}
@@ -56,7 +59,7 @@
 			'%name%': i.system_name ?? config('systemname', i.schema),
 }) }}
 
-{% for msg if i.messages %}
+{% for msg in i.messages %}
 
 {{ ('periodic_overview.intersystem.' ~ msg.type)|trans({
 	'%msg%': msg.content
@@ -75,5 +78,8 @@
 {% endif %}
 
 {% endfor %}
+
+{% endfor %}
+{% endif %}
 
 {% endmacro text %}

@@ -10,7 +10,7 @@
 
 <p>
     {{- 'contact_confirm.html_msg'|trans({
-        '%link_open%': mail_link_open('contact', {'token': token}, schema),
+        '%link_open%': mail_link_open('contact', {'token': token}, schema, email_token),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -22,7 +22,7 @@
 <p>
     {{- 'contact_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': mail_link_open('contact', {}, schema),
+        '%link_open%': mail_link_open('contact', {}, schema, email_token),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -32,7 +32,7 @@
 
 {{ 'contact_confirm.text_msg'|trans|raw }}
 
-{{ mail_url('contact', {'token': token}, schema)|raw }}
+{{ mail_url('contact', {'token': token}, schema, email_token)|raw }}
 
 {{ 'expiration.1_day'|trans|raw }}
 
@@ -42,6 +42,6 @@
     '%link_close%': ''
 })|raw }}
 
-{{ mail_url('contact', {}, schema)|raw }}
+{{ mail_url('contact', {}, schema, email_token)|raw }}
 
 {% endblock text_content %}

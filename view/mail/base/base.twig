@@ -22,7 +22,7 @@
         {%- if schema is defined %}
             <p>
                 {{- 'b.footer'|trans({
-                    '%link_open%': base_link_open(schema),
+                    '%link_open%': mail_link_open('home', {}, schema, email_token),
                     '%link_close%': '</a>',
                     '%system_name%': config('systemname', schema)
                 })|raw -}}
@@ -46,7 +46,7 @@
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
 })|raw }}
-{{ base_url(schema)|raw }}
+{{ mail_url('home', {}, schema, email_token)|raw }}
         {% endif -%}
     {%- endblock text_footer -%}
 {%- endblock text_body -%}

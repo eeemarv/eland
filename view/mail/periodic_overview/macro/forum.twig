@@ -3,16 +3,14 @@
 {%- macro html(forum, schema, email_token) -%}
 
 	<h3>
-		{{- mail_link_open('forum', {'ev': email_token}, schema) -}}
 		{{- 'periodic_overview.forum.title'|trans -}}
-		</a>
 	</h3>
 
 	{%- if forum -%}
 	<ul>
 	{%- for f in forum -%}
 	<li>
-	{{- mail_link_open('forum', {'id': f.id, 'ev': email_token}, schema) -}}
+	{{- mail_link_open('forum', {'id': f.id}, schema, email_token)|raw -}}
 	{{- f.subject -}}
 	</a>
 	{#	&nbsp;[{{ msg.new_reply_count }}]  #}
@@ -22,10 +20,7 @@
 	{%- else -%}
 	<p>
 	{{- 'periodic_overview.forum.none'|trans({
-		'%link_open%': mail_link(
-			'forum',
-			{'id': f.id, 'ev': email_token},
-			schema),
+		'%link_open%': mail_link_open('forum', {}, schema, email_token),
 		'%link_close%': '</a>'
 	})|raw -}}
 	</p>
@@ -38,7 +33,7 @@
 {{ 'periodic_overview.forum.title'|trans|underline }}
 
 {% for f in forum %}
-* {{ f.subject }} {{ mail_link('forum', {'id': f.id, 'ev': email_token}, schema) }}
+* {{ f.subject }} {{ mail_url('forum', {'id': f.id}, schema, email_token) }}
 {% else %}
 {{ 'periodic_overview.forum.none'|trans({
 	'%link_open%' : '',

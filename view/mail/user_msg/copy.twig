@@ -10,7 +10,7 @@
 {% block html_explain -%}
     {{- 'user_msg_copy.explain'|trans({
         '%to_account%': account(to_user.id, to_schema),
-        '%link_open%': mail_link_open('users', {'id': to_user.id}, to_schema),
+        '%link_open%': mail_link_open('users', {'id': to_user.id}, to_schema, email_token),
         '%link_close%': '</a>'
     })|raw -}}
 {%- endblock html_explain -%}

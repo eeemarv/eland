@@ -10,7 +10,7 @@
 
 <p>
     {{- 'register_confirm.html_msg'|trans({
-        '%link_open%': mail_link_open('register', {'token': token}, schema),
+        '%link_open%': mail_link_open('register', {'token': token}, schema, email_token),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -22,7 +22,7 @@
 <p>
     {{- 'register_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': mail_link_open('register', {}, schema),
+        '%link_open%': mail_link_open('register', {}, schema, email_token),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -32,7 +32,7 @@
 
 {{ 'register_confirm.text_msg'|trans|raw }}
 
-{{ mail_url('register', {'token': token}, schema)|raw }}
+{{ mail_url('register', {'token': token}, schema, email_token)|raw }}
 
 {{ 'expiration.1_week'|trans|raw }}
 
@@ -42,6 +42,6 @@
     '%link_close%': ''
 })|raw }}
 
-{{ mail_url('register', {}, schema)|raw }}
+{{ mail_url('register', {}, schema, email_token)|raw }}
 
 {% endblock text_content %}

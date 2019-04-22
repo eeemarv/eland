@@ -21,11 +21,21 @@ class mail_url
 	public function get(
 		string $route,
 		array $params,
-		string $schema
+		string $schema,
+		string $email_token
 	):string
 	{
 		$out = $this->protocol . $this->systems->get_host($schema);
-		$out .= '/' . $route . '.php';
+
+		if ($route !== 'home')
+		{
+			$out .= '/' . $route . '.php';
+		}
+
+		if ($email_token !== '')
+		{
+			$params['ev'] = $email_token;
+		}
 
 		if (count($params))
 		{
@@ -39,11 +49,12 @@ class mail_url
 	public function get_link_open(
 		string $route,
 		array $params,
-		string $schema
+		string $schema,
+		string $email_token
 	):string
 	{
 		$out = '<a href="';
-		$out .= $this->get($route, $params, $schema);
+		$out .= $this->get($route, $params, $schema, $email_token);
 		$out .= '">';
 
 		return $out;

@@ -58,8 +58,8 @@
 </p>
 
 <p>
-<a href="{{- mail_url('transactions',
-    {'id': transaction.id}, schema) -}}">
+{{- mail_link_open('transactions',
+    {'id': transaction.id}, schema, email_token)|raw -}}
 {{- 'label.link'|trans -}}
 </a>
 </p>
@@ -92,7 +92,7 @@
 {{ transaction.description|raw }}
 
 {{ 'label.link'|trans|raw }}: {{ mail_url('transactions',
-    {'id': transaction.id}, schema)|raw }}
+    {'id': transaction.id}, schema, email_token)|raw }}
 
 {% block text_trans_id %}{% endblock %}
 

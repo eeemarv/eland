@@ -10,7 +10,7 @@
 {%- block html_explain -%}
 {{- 'message_extend_want.explain'|trans({
     '%message_title%': message.content,
-    '%link_open%': mail_link_open('messages', {'id': message.id, 'ev': email_token}, schema),
+    '%link_open%': mail_link_open('messages', {'id': message.id}, schema, email_token),
     '%link_close%': '</a>',
     '%days%': config('msgexpcleanupdays', schema)
 })|raw -}}

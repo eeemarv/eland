@@ -48,4 +48,12 @@ abstract class schema_task extends task implements task_interface
 
 		return false;
 	}
+
+	/**
+	 * Only for manual testing (periodic overview)
+	 */
+	public function set_schema(string $schema):void
+	{
+		$this->schema = $schema;
+	}
 }

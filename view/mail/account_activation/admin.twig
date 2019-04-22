@@ -10,7 +10,7 @@
 {%- block html_content -%}
 <p>
 {{- 'account_activation_admin.message'|trans({
-    '%link_open%': mail_link_open('users', {'id': user_id}, schema),
+    '%link_open%': mail_link_open('users', {'id': user_id}, schema, email_token),
     '%link_close%': '</a>',
     '%account_name%': account(user_id, schema),
 })|raw -}}
@@ -33,7 +33,7 @@
     '%account_name%': account(user_id, schema),
 }) }}
 
-{{ mail_url('users', {'id': user_id}, schema) }}
+{{ mail_url('users', {'id': user_id}, schema, email_token) }}
 
 {% if user_email %}
 {{ 'account_activation_admin.email_sent'|trans }}

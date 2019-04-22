@@ -12,10 +12,10 @@
 {% block html_explain -%}
     {{- ('message_msg.explain_' ~ message.type)|trans({
         '%from_account%': account(from_user.id, from_schema),
-        '%link_from_account_open%': mail_link_open('users', {'id': from_user.id}, from_schema),
+        '%link_from_account_open%': mail_link_open('users', {'id': from_user.id}, from_schema, email_token),
         '%link_from_account_close%': '</a>',
         '%message_title%': message.content,
-        '%link_message_open%': mail_link_open('messages', {'id': message.id}, schema),
+        '%link_message_open%': mail_link_open('messages', {'id': message.id}, schema, email_token),
         '%link_message_close%': '</a>'
     })|raw -}}
 {%- endblock html_explain -%}
