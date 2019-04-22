@@ -192,8 +192,6 @@ class mail implements queue_interface
 
 		$reply_log = isset($data['reply_to']) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
 
-		$data['vars']['email_token'] = '';
-
 		foreach ($data['to'] as $email => $name)
 		{
 			if (!filter_var($email, FILTER_VALIDATE_EMAIL))
@@ -207,7 +205,7 @@ class mail implements queue_interface
 			$token = $this->email_validate->get_token($email, $schema, $data['template']);
 			$val_data = $data;
 			$val_data['to'] = [$email => $name];
-			$val_data['email_token'] = $token;
+			$val_data['vars']['email_token'] = $token;
 
 			$this->queue->set('mail', $val_data, $priority);
 
