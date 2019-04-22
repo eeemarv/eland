@@ -43,7 +43,7 @@ class date_format
 		string $schema
 	):string
 	{
-		return $this->date_format($ts, $precision, $schema);
+		return $this->date_format->get($ts, $precision, $schema);
 	}
 
 	public function get_sec(
@@ -51,7 +51,7 @@ class date_format
 		string $schema
 	):string
 	{
-		return $this->date_format($ts, 'sec', $schema);
+		return $this->date_format->get($ts, 'sec', $schema);
 	}
 
 	public function get_min(
@@ -59,7 +59,7 @@ class date_format
 		string $schema
 	):string
 	{
-		return $this->date_format($ts, 'min', $schema);
+		return $this->date_format->get($ts, 'min', $schema);
 	}
 
 	public function get_day(
@@ -67,7 +67,7 @@ class date_format
 		string $schema
 	):string
 	{
-		return $this->date_format($ts, 'day', $schema);
+		return $this->date_format->get($ts, 'day', $schema);
 	}
 
 	public function get_td(
@@ -75,6 +75,12 @@ class date_format
 		string $precision,
 		string $schema):string
 	{
-		return $this->date_format($ts, $precision, $schema);
+		$time = strtotime($ts . ' UTC');
+
+		$out = '<td data-value="' . $time . '">';
+		$out .= $this->date_format->get_from_unix($time, $precision, $schema);
+		$out .= '</td>';
+
+		return $out;
 	}
 }

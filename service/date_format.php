@@ -184,7 +184,7 @@ class date_format
 
 		foreach (self::FORMATS as $format => $prec)
 		{
-			$options[$format] = strftime($format);
+			$options[$format] = strftime($format, time());
 		}
 
 		return $options;
