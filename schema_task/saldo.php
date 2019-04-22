@@ -538,16 +538,6 @@ class saldo extends schema_task
 				continue;
 			}
 
-			if ($users[$id]['minlimit'] === -999999999)
-			{
-				$users[$id]['minlimit'] = '';
-			}
-
-			if ($users[$id]['maxlimit'] === 999999999)
-			{
-				$users[$id]['maxlimit'] = '';
-			}
-
 			$this->mail->queue([
 				'schema'			=> $this->schema,
 				'to'				=> $to,
