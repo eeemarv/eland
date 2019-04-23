@@ -11,7 +11,7 @@
         '%link_open%': mail_link_open('home', {}, schema, email_token),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema),
-        '%account%': account(user.id, schema)
+        '%account%': account(user_id, schema)
     })|raw -}}
 </p>
 <p>
@@ -19,7 +19,7 @@
     {{- 'support.explain_reply'|trans -}}
 {%- else -%}
     {{- 'support.explain_no_reply'|trans({
-        '%link_open%': mail_link_open('users', {'id': user.id}, schema, email_token),
+        '%link_open%': mail_link_open('users', {'id': user_id}, schema, email_token),
         '%link_close%': '</a>'
     })|raw -}}
 {%- endif -%}
@@ -38,7 +38,7 @@
     '%link_open%': '',
     '%link_close%': '',
     '%system_name%': config('systemname', schema),
-    '%account%': account(user.id, schema)
+    '%account%': account(user_id, schema)
 }) }}
 {% if can_reply %}
 {{ 'support.explain_reply'|trans }}
@@ -47,7 +47,7 @@
     '%link_open%': '',
     '%link_close%': ''
 }) }}
-{{ mail_url('users', {'id': user.id}, schema, email_token) }}
+{{ mail_url('users', {'id': user_id}, schema, email_token) }}
 {% endif %}
 
 - - - - - -
@@ -55,5 +55,5 @@
 {{ message }}
 
 - - - - - -
-{% autoescape false %}
+{% endautoescape %}
 {% endblock text_content %}

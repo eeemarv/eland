@@ -11,14 +11,14 @@ if (isset($_POST['zend']))
 		cancel();
 	}
 
-	$a = array(
+	$data = [
 		'enabled'						=> isset($_POST['enabled']),
 		'exclusive'						=> $_POST['exclusive'],
 		'trans_percentage'				=> $_POST['trans_percentage'],
 		'trans_exclusive'				=> $_POST['trans_exclusive'],
-	);
+	];
 
-	$app['xdb']->set('setting', 'autominlimit', $a, $app['tschema']);
+	$app['xdb']->set('setting', 'autominlimit', $data, $app['tschema']);
 
 	$app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
 	cancel();
@@ -29,11 +29,11 @@ else
 
 	if ($row)
 	{
-		$a = $row['data'];
+		$data = $row['data'];
 	}
 	else
 	{
-		$a = [
+		$data = [
 			'enabled'					=> false,
 			'exclusive'					=> '',
 			'trans_percentage'			=> 100,
@@ -78,7 +78,7 @@ echo '<form method="post">';
 echo '<div class="form-group">';
 echo '<label for="enabled" class="control-label">';
 echo '<input type="checkbox" id="enabled" name="enabled" value="1" ';
-echo $a['enabled'] ? ' checked="checked"' : '';
+echo $data['enabled'] ? ' checked="checked"' : '';
 echo '>';
 echo ' Zet de automatische minimum limiet aan</label>';
 echo '</div>';
@@ -99,7 +99,7 @@ echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" id="exclusive" name="exclusive" ';
 echo 'value="';
-echo $a['exclusive'];
+echo $data['exclusive'];
 echo '" ';
 echo 'class="form-control">';
 echo '</div>';
@@ -120,7 +120,7 @@ echo '<span class="input-group-addon">';
 echo '<span class="fa fa-percent"></span></span>';
 echo '<input type="number" id="trans_percentage" name="trans_percentage" ';
 echo 'value="';
-echo $a['trans_percentage'];
+echo $data['trans_percentage'];
 echo '" ';
 echo 'class="form-control">';
 echo '</div>';
@@ -134,7 +134,7 @@ echo '<span class="input-group-addon">';
 echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" id="trans_exclusive" name="trans_exclusive" ';
 echo 'value="';
-echo $a['trans_exclusive'];
+echo $data['trans_exclusive'];
 echo '" ';
 echo 'class="form-control">';
 echo '</div>';

@@ -46,10 +46,15 @@ class autominlimit
 			'autominlimit',
 			$this->schema);
 
-		$a = $row['data'];
+		if (!$row)
+		{
+			return self;
+		}
 
-		$exclusive = explode(',', $a['exclusive']);
-		$trans_exclusive = explode(',', $a['trans_exclusive']);
+		$data = $row['data'];
+
+		$exclusive = explode(',', $data['exclusive']);
+		$trans_exclusive = explode(',', $data['trans_exclusive']);
 
 		array_walk($exclusive, function(&$val){ return strtolower(trim($val)); });
 		array_walk($trans_exclusive, function(&$val){ return strtolower(trim($val)); });
@@ -57,8 +62,8 @@ class autominlimit
 		$this->exclusive = array_fill_keys($exclusive, true);
 		$this->trans_exclusive = array_fill_keys($trans_exclusive, true);
 
-		$this->enabled = $a['enabled'];
-		$this->trans_percentage = $a['trans_percentage'];
+		$this->enabled = $data['enabled'];
+		$this->trans_percentage = $data['trans_percentage'];
 
 		$this->group_minlimit = $this->config->get('minlimit', $this->schema);
 
@@ -149,7 +154,7 @@ class autominlimit
 		if ($this->group_minlimit !== '' && $new_minlimit <= $this->group_minlimit)
 		{
 			$this->xdb->set('autominlimit',
-				$to_id,
+				(string) $to_id,
 				['minlimit' => '', 'erased' => true],
 				$this->schema);
 			$this->db->update($this->schema . '.users',
@@ -164,7 +169,7 @@ class autominlimit
 			return;
 		}
 
-		$this->xdb->set('autominlimit', $to_id, [
+		$this->xdb->set('autominlimit', (string) $to_id, [
 			'minlimit' => $new_minlimit,
 		], $this->schema);
 
