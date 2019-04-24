@@ -220,7 +220,7 @@ if ($id && $extend)
 		cancel($id);
 	}
 
-	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $extend));
+	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * (int) $extend));
 
 	$m = [
 		'validity'		=> $validity,
