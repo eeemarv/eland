@@ -38,7 +38,7 @@ class user_exp_msgs extends schema_task
 		$this->mail_addr_user = $mail_addr_user;
 	}
 
-	function process():void
+	function process(bool $update = true):void
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
@@ -63,7 +63,7 @@ class user_exp_msgs extends schema_task
 
 			$vars = [
 				'message' 		=> $message,
-				'user'			=> $user,
+				'user_id'		=> $user['id'],
 			];
 
 			$mail_template = 'message_extend/';
@@ -80,9 +80,12 @@ class user_exp_msgs extends schema_task
 			error_log(json_encode($vars));
 		}
 
-		$this->db->executeUpdate('update ' . $this->schema . '.messages
-			set exp_user_warn = \'t\'
-			where validity < ?', [$now]);
+		if ($update)
+		{
+			$this->db->executeUpdate('update ' . $this->schema . '.messages
+				set exp_user_warn = \'t\'
+				where validity < ?', [$now]);
+		}
 	}
 
 	public function is_enabled():bool

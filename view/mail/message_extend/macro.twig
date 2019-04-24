@@ -1,6 +1,6 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html_extend_link(days, lang_key, message, email_token, schema, email_token) -%}
+{%- macro html_extend_link(days, lang_key, message, schema, email_token) -%}
 <li>
     {{- mail_link_open('messages', {'id': message.id, 'extend': days}, schema, email_token)|raw -}}
     {{- ('message_extend.' ~ lang_key)|trans -}}
