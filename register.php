@@ -141,7 +141,8 @@ if ($token)
 		}
 
 		$vars = [
-			'user'			=> $user,
+			'user_id'		=> $user_id,
+			'postcode'		=> $user['postcode'],
 			'email'			=> $data['email'],
 		];
 
@@ -163,13 +164,13 @@ if ($token)
 			$vars[$k] = $data[$v];
 		}
 
-		$vars['subject'] = $app['translator']->trans('mail.register_success.subject', [
+		$vars['subject'] = $app['translator']->trans('register_success.subject', [
 			'%system_name%'	=> $app['config']->get('systemname', $app['tschema']),
-		]);
+		], 'mail');
 
 		$app['queue.mail']->queue([
 			'schema'				=> $app['tschema'],
-			'to' 					=> [$data['email']],
+			'to' 					=> [$data['email'] => $user['fullname']],
 			'reply_to'				=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'pre_html_template'		=> $app['config']->get('registration_success_mail', $app['tschema']),
 			'template'				=> 'skeleton',
@@ -267,7 +268,7 @@ if ($submit)
 		$key = $app['tschema'] . '_register_' . $token;
 		$app['predis']->set($key, json_encode($reg));
 		$app['predis']->expire($key, 604800); // 1 week
-		$key = $app['tschema'] . '_register_email_' . $email;
+		$key = $app['tschema'] . '_register_email_' . $reg['email'];
 		$app['predis']->set($key, '1');
 		$app['predis']->expire($key, 604800);
 
@@ -277,7 +278,7 @@ if ($submit)
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> [$reg['email']],
+			'to' 		=> [$reg['email'] => $reg['first_name'] . ' ' . $reg['last_name']],
 			'vars'		=> $vars,
 			'template'	=> 'register/confirm',
 		], 10000);

@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
     {{- 'register_admin.subject'|trans({
-        '%full_name%': user.fullname
+        '%full_name%': user_fullname(user_id, schema)
     }) -}}
 {% endblock subject_line %}
 
@@ -15,13 +15,13 @@
     {{- 'register_admin.msg'|trans -}}:
 <br />
 <br />
-    {{- 'label.full_name'|trans -}}: {{ user.fullname -}}
+    {{- 'label.full_name'|trans -}}: {{ user_fullname(user_id, schema) -}}
 <br />
-    {{- 'label.postcode'|trans -}}: {{ user.postcode -}}
+    {{- 'label.postcode'|trans -}}: {{ postcode -}}
 <br />
     {{- 'label.email'|trans -}}: {{ email -}}
 <br />
-<a href="{{ mail_url('users', {'id': user.id}, schema, email_token}) -}}">
+<a href="{{ mail_url('users', {'id': user_id}, schema, email_token) -}}">
     {{- 'label.link'|trans -}}
 </a>
 </p>
@@ -34,10 +34,10 @@
 
 {{ 'register_admin.msg'|trans }}:
 
-{{ 'label.full_name'|trans }}: {{ user.fullname }}
-{{ 'label.postcode'|trans }}: {{ user.postcode }}
+{{ 'label.full_name'|trans }}: {{ user_fullname(user_id, schema) }}
+{{ 'label.postcode'|trans }}: {{ postcode }}
 {{ 'label.email'|trans }}: {{ email }}
-{{ 'label.link'|trans }}: {{ mail_url('users', {'id': user.id}, schema, email_token) }}
+{{ 'label.link'|trans }}: {{ mail_url('users', {'id': user_id}, schema, email_token) }}
 
 {% endautoescape %}
 {% endblock text_content %}

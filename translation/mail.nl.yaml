@@ -172,13 +172,14 @@ password_reset_confirm:
 
 register_admin:
   subject: >-
-    "Nieuwe Inschrijving: %full_name%"
+    Nieuwe Inschrijving: %full_name%
   title: Notificatie Nieuwe Inschrijving
   msg: >-
     De volgende persoon schreef zich
     in via de website
 register_confirm:
-  subject: Bevestig je registratie bij %system_name%
+  subject: >-
+    Bevestig je registratie bij %system_name%
   html_msg: >-
     %link_open%Klik hier om je registratie
     te bevestigen.%link_close%
