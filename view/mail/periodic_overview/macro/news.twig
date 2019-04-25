@@ -18,7 +18,6 @@
 {{- n.headline -}}
 </a>
 </h4>
-<br />
 {{- n.newsitem -}}<br />
 {%- if n.location -%}
 	{{- 'label.location'|trans -}}:
@@ -40,7 +39,7 @@
 	'%account%': account(n.id_user, schema)
 })|raw -}}
 </li>
-<br />
+
 {%- endfor -%}
 </ul>
 {%- else -%}

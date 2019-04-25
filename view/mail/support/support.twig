@@ -11,7 +11,9 @@
         '%link_open%': mail_link_open('home', {}, schema, email_token),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema),
-        '%account%': account(user_id, schema)
+        '%account%':  mail_link_open('users', {'id': user_id}, schema, email_token)
+            ~ account(user_id, schema)
+            ~ '</a>'
     })|raw -}}
 </p>
 <p>

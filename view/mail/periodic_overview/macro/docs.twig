@@ -10,7 +10,7 @@
 <ul>
 	{%- for d in docs -%}
 		<li>
-			<a href="{{- d.url -}}">
+			{{- s3_link_open(d.filename)|raw -}}
 				{{- d.name -}}
 			</a>
 		</li>
@@ -30,7 +30,7 @@
 {{ 'periodic_overview.docs.title'|trans|underline }}
 
 {% for d in docs %}
-* {{ d.name }} {{ d.url }}
+* {{ d.name }} {{ s3_url(d.filename) }}
 {% else %}
 {{ 'periodic_overview.docs.none'|trans }}
 {% endfor %}

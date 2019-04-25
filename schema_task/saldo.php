@@ -206,6 +206,8 @@ class saldo extends schema_task
 			}
 		}
 
+		error_log(json_encode($block_options));
+
 	// interSystem messages
 
 		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')

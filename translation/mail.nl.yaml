@@ -265,8 +265,6 @@ user_msg:
   explain: >-
     Gebruiker %link_open%%from_account%%link_close%
     zendt je het bericht hieronder via de webtoepassing.
-    Je kan rechtstreeks reageren aan %from_account% door
-    deze E-mail te beantwoorden (Reply).
 user_msg_copy:
   subject: >-
     Kopie van je bericht aan %to_account%
@@ -347,7 +345,7 @@ message_extend_offer:
     Je aanbod "%message_title%" is vervallen
   explain: >-
     Je aanbod "%link_open%%message_title%%link_close%"
-    is vervallen en zal over %days% van de
+    is vervallen en zal over %days% dagen van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.
     Als je niet ingelogd bent, zal je eerst gevraagd
@@ -398,13 +396,13 @@ periodic_overview:
       %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
       naar het betreffende InterSysteem.
     system_name: >-
-      "Systeem: %name%"
+      Systeem: %name%
     account: >-
-      "Ingegeven door: %account% [%system_name%]"
+      Ingegeven door: %account% [%system_name%]
     offer: >-
-      "Aanbod: %msg%"
+      Aanbod: %msg%
     want: >-
-      "Vraag: %msg"
+      Vraag: %msg%
   forum:
     title: >-
       Forum
@@ -446,8 +444,8 @@ periodic_overview:
       Deze lijst toont de transacties van
       de laatste %days% dagen.
     amount_from_to: >-
-      %amount% %currency% van %from% naar %naar%
+      %amount% %currency% van %from% naar %to%
     intersystem_account: >-
-      "%account% [%system_name%]"
+      %account% [%system_name%]
     none: >-
       Er zijn geen recente transacties.

@@ -18,11 +18,15 @@
 			'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_from,
 				'%system_name%': account(tr.id_from, schema)
-			}) : account(tr.id_from, schema),
+			}) : mail_link_open('users', {'id': tr.id_from}, schema, email_token)
+				~ account(tr.id_from, schema)
+				~ '</a>',
 			'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_to,
 				'%system_name%': account(tr.id_to, schema)
-			}) : account(tr.id_to, schema),
+			}) : mail_link_open('users', {'id': tr.id_to}, schema, email_token)
+				~ account(tr.id_to, schema)
+				~ '</a>',
 		})|raw -}}
 		<br>
 		{{- tr.description -}}
