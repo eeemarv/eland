@@ -1564,7 +1564,7 @@ if ($add || $edit)
 								'adr'		=> $value['value'],
 								'uid'		=> $id,
 								'schema'	=> $app['tschema'],
-							]);
+							], 0);
 						}
 
 						$insert = [
@@ -1707,7 +1707,7 @@ if ($add || $edit)
 									'adr'		=> $value['value'],
 									'uid'		=> $edit,
 									'schema'	=> $app['tschema'],
-								]);
+								], 0);
 							}
 
 							if (!isset($stored_contact))

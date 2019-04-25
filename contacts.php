@@ -337,7 +337,7 @@ if ($edit || $add)
 					'adr'		=> $contact['value'],
 					'uid'		=> $contact['id_user'],
 					'schema'	=> $app['tschema'],
-				]);
+				], 0);
 			}
 
 			if ($edit)

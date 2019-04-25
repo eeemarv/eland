@@ -109,7 +109,7 @@ class geocode implements queue_interface
 		return;
 	}
 
-	public function queue(array $data):void
+	public function queue(array $data, int $priority):void
 	{
 		if (!$this->check_data($data))
 		{
@@ -118,13 +118,13 @@ class geocode implements queue_interface
 
 		$data['adr'] = trim($data['adr']);
 
-		$this->queue->set('geocode', $data);
+		$this->queue->set('geocode', $data, $priority);
 	}
 
 	/**
 	 * address edits/adds/inits
 	 */
-	public function cond_queue(array $data):void
+	public function cond_queue(array $data, int $priority):void
 	{
 		if (!$this->check_data($data))
 		{
@@ -132,8 +132,6 @@ class geocode implements queue_interface
 		}
 
 		$data['adr'] = trim($data['adr']);
-
-		$log_ary = [];
 
 		$key = 'geo_' . $data['adr'];
 		$status_key = 'geo_status_' . $data['adr'];
@@ -156,7 +154,7 @@ class geocode implements queue_interface
 			['value' => 'queue'],
 			2592000);  // 30 days
 
-		$this->queue($data);
+		$this->queue($data, $priority);
 
 		$log = 'Queued for Geocoding: ';
 		$log .= link_user($data['uid'], $data['schema'], false, true);

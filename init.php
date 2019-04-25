@@ -307,7 +307,7 @@ else if ($step == 7)
 			'adr'		=> $row['value'],
 			'uid'		=> $row['id_user'],
 			'schema'	=> $app['tschema'],
-		]);
+		], 0);
 
 		$more_geocoding = true;
 	}
