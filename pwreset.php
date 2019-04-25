@@ -32,17 +32,15 @@ if ($token)
 				$app['user_cache']->clear($user_id, $app['tschema']);
 				$app['alert']->success('Paswoord opgeslagen.');
 
-				$vars = [
-					'password'		=> $password,
-					'user_id'		=> $user_id,
-				];
-
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
 					'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
 					'template'	=> 'password_reset/user',
-					'vars'		=> $vars,
-				]);
+					'vars'		=> [
+						'password'		=> $password,
+						'user_id'		=> $user_id,
+					],
+				], 10000);
 
 				header('Location: ' . $app['rootpath'] . 'login.php');
 				exit;
@@ -133,16 +131,14 @@ if (isset($_POST['zend']))
 				$app['predis']->set($key, json_encode(['user_id' => $user_id, 'email' => $email]));
 				$app['predis']->expire($key, 86400);
 
-				$vars = [
-					'token'			=> $token,
-					'user_id'		=> $user_id,
-				];
-
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
 					'to' 		=> [$email],
 					'template'	=> 'password_reset/confirm',
-					'vars'		=> $vars,
+					'vars'		=> [
+						'token'			=> $token,
+						'user_id'		=> $user_id,
+					],
 				], 10000);
 
 				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');

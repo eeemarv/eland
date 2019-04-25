@@ -483,16 +483,14 @@ if ($add)
 
 			if (!$id)
 			{
-				$vars = [
-					'remote_system_name'	=> $group['groupname'],
-					'transaction'			=> $transaction,
-				];
-
 				$app['queue.mail']->queue([
 					'schema'		=> $app['tschema'],
 					'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 					'template'		=> 'transaction/intersystem_fail',
-					'vars'			=> $vars,
+					'vars'			=> [
+						'remote_system_name'	=> $group['groupname'],
+						'transaction'			=> $transaction,
+					],
 				], 9000);
 
 				$app['alert']->error('De lokale commit van de interSysteem

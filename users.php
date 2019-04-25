@@ -846,7 +846,7 @@ if ($pw)
 							'schema'	=> $app['tschema'],
 							'to' 		=> $app['mail_addr_user']->get($pw, $app['tschema']),
 							'reply_to'	=> $app['mail_addr_system']->get_support($app['tschema']),
-							'template'	=> 'password_reset',
+							'template'	=> 'password_reset/user',
 							'vars'		=> $vars,
 						], 8000);
 
@@ -4844,7 +4844,6 @@ function send_activation_mail_admin(
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
 		'to' 		=> $app['mail_addr_system']->get_admin($app['tschema']),
-		'vars'		=> $vars,
 		'template'	=> 'account_activation/admin',
 		'vars'		=> [
 			'user_id'		=> $user_id,

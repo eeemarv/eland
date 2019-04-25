@@ -137,7 +137,7 @@ class mail implements queue_interface
 		$this->mailer->getTransport()->stop();
 	}
 
-	public function queue(array $data, int $priority = 10000):void
+	public function queue(array $data, int $priority):void
 	{
 		if ($this->has_data_error($data, 'mail_queue'))
 		{

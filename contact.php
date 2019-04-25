@@ -35,7 +35,7 @@ if ($token)
 			'template'	=> 'contact/copy',
 			'vars'		=> $vars,
 			'to'		=> [$data['email']],
-		]);
+		], 9000);
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
@@ -43,7 +43,7 @@ if ($token)
 			'vars'		=> $vars,
 			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
 			'reply_to'	=> [$data['email']],
-		]);
+		], 8000);
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
 
@@ -129,7 +129,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 			'to' 		=> [$email],
 			'template'	=> 'contact/confirm',
 			'vars'		=> $vars,
-		]);
+		], 10000);
 
 		$app['alert']->success('Open je E-mailbox en klik
 			de link aan die we je zonden om je

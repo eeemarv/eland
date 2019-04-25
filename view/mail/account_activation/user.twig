@@ -39,10 +39,10 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ base_url(schema) }}
+{{ mail_url('home', {}, schema, email_token) }}
 
 {{ 'account_activation.login'|trans({
-    '%base_url%': mail_url('home', {}, schema, '')
+    '%base_url%': mail_url('home', {}, schema, email_token)
 }) }}
 
 {{ 'label.login'|trans }}: {{ account_code(user_id, schema) }}
