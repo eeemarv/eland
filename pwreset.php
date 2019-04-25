@@ -107,7 +107,7 @@ if (isset($_POST['zend']))
 	}
 	else if($email)
 	{
-		$user = $app['db']->fetchAll('select u.id
+		$user = $app['db']->fetchAll('select u.id, u.name, u.letscode
 			from ' . $app['tschema'] . '.contact c, ' .
 				$app['tschema'] . '.type_contact tc, ' .
 				$app['tschema'] . '.users u
@@ -133,7 +133,7 @@ if (isset($_POST['zend']))
 
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
-					'to' 		=> [$email],
+					'to' 		=> [$email => $user['letscode'] . ' ' . $user['name']],
 					'template'	=> 'password_reset/confirm',
 					'vars'		=> [
 						'token'			=> $token,
