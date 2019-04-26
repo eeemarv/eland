@@ -1,0 +1,7 @@
+{%- trans_default_domain 'mail' -%}
+<hr />
+<ul>
+<li>{{ 'b.sender_info.email'|trans({'%email%': email}) }}</li>
+<li>{{ 'b.sender_info.ip'|trans({'%ip%': ip}) }}</li>
+<li>{{ 'b.sender_info.agent'|trans({'%agent%': agent}) }}</li>
+</ul>

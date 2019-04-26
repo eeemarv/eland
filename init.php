@@ -307,18 +307,37 @@ else if ($step == 7)
 			'adr'		=> $row['value'],
 			'uid'		=> $row['id_user'],
 			'schema'	=> $app['tschema'],
-		]);
+		], 0);
 
 		$more_geocoding = true;
 	}
 
 	if ($more_geocoding)
 	{
-		$start += 20;
+		$start += 50;
 		header('Location: ' . $app['rootpath'] . 'init.php?step=7&start=' . $start);
 		exit;
 	}
 
-	error_log('*** init finished ***');
+	header('Location: ' . $app['rootpath'] . 'init.php?step=8');
+	exit;
+}
+else if ($step == 8)
+{
+	error_log('** Copy config **');
+
+	$config_ary = $app['db']->fetchAll('select value, setting
+		from ' . $app['tschema'] . '.config');
+
+	foreach($config_ary as $rec)
+	{
+		if (!$app['config']->exists($rec['setting'], $app['tschema']))
+		{
+			$app['config']->set($rec['setting'], $app['tschema'], $rec['value']);
+			error_log('Config value copied: ' . $rec['setting'] . ' ' . $rec['value']);
+		}
+	}
+
+	error_log('***  init finished ***');
 	exit;
 }

@@ -1,0 +1,16 @@
+{% extends 'mail/base/private_msg.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{%- block html_reply -%}&nbsp;
+    {{- 'reply.user_intersystem'|trans({
+        '%from_account%': account(from_user.id, from_schema),
+        '%from_system_name%': config('systemname', from_schema)
+    })|raw -}}
+{%- endblock html_reply -%}
+
+{% block text_reply %}
+{{ 'reply.user_intersystem'|trans({
+    '%from_account%': account(from_user.id, from_schema),
+    '%from_system_name%': config('systemname', from_schema)
+})|raw }}
+{% endblock %}

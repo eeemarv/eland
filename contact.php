@@ -23,43 +23,33 @@ if ($token)
 
 		$data = json_decode($data, true);
 
-		$ev_data = [
-			'token'			=> $token,
-			'script_name'	=> 'contact',
-			'email'			=> $data['email'],
-		];
-
-		$app['xdb']->set('email_validated', $data['email'], $ev_data, $app['tschema']);
-
 		$vars = [
 			'message'		=> $data['message'],
-			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
 			'ip'			=> $data['ip'],
-			'browser'		=> $data['browser'],
+			'agent'			=> $data['agent'],
 			'email'			=> $data['email'],
-			'group'			=> $app['template_vars']->get($app['tschema']),
 		];
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'template'	=> 'contact_copy',
+			'template'	=> 'contact/copy',
 			'vars'		=> $vars,
-			'to'		=> [$data['email']],
-		]);
+			'to'		=> [$data['email'] => $data['email']],
+		], 9000);
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'template'	=> 'contact',
+			'template'	=> 'contact/support',
 			'vars'		=> $vars,
 			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
 			'reply_to'	=> [$data['email']],
-		]);
+		], 8000);
 
 		$app['alert']->success('Je bericht werd succesvol verzonden.');
 
 		$success_text = $app['config']->get('contact_form_success_text', $app['tschema']);
 
-		header('Location: ' . generate_url('contact'));
+		header('Location: ' . generate_url('contact', []));
 		exit;
 	}
 
@@ -71,7 +61,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 	$email = trim(strtolower($_POST['email']));
 	$message = trim($_POST['message']);
 
-	$browser = $_SERVER['HTTP_USER_AGENT'];
+	$agent = $_SERVER['HTTP_USER_AGENT'];
 
 	if (isset($_SERVER['HTTP_CLIENT_IP']))
 	{
@@ -116,7 +106,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$contact = [
 			'message' 	=> $message,
 			'email'		=> $email,
-			'browser'	=> $browser,
+			'agent'		=> $agent,
 			'ip'		=> $ip,
 		];
 
@@ -126,27 +116,26 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$app['predis']->expire($key, 86400);
 
 		$app['monolog']->info('Contact form filled in with address ' .
-			$email . '(not confirmed yet) content: ' .
-			$html, ['schema' => $app['tschema']]);
+			$email . ' ' .
+			json_encode($contact),
+			['schema' => $app['tschema']]);
 
 		$vars = [
-			'group' 		=> $app['template_vars']->get($app['tschema']),
-			'contact_url'	=> $app['base_url'] . '/contact.php',
-			'confirm_url'	=> $app['base_url'] . '/contact.php?token=' . $token,
+			'token'			=> $token,
 		];
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> [$email],
-			'template'	=> 'contact_confirm',
+			'to' 		=> [$email => $email],
+			'template'	=> 'contact/confirm',
 			'vars'		=> $vars,
-		]);
+		], 10000);
 
 		$app['alert']->success('Open je E-mailbox en klik
 			de link aan die we je zonden om je
 			bericht te bevestigen.');
 
-		header('Location: ' . generate_url('contact'));
+		header('Location: ' . generate_url('contact', []));
 		exit;
 	}
 	else
@@ -191,7 +180,9 @@ echo '<div class="panel-heading">';
 echo '<form method="post">';
 
 echo '<div class="form-group">';
-echo '<label for="mail">Je E-mail Adres</label>';
+echo '<label for="mail">';
+echo 'Je E-mail Adres';
+echo '</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
 echo '<i class="fa fa-envelope-o"></i>';

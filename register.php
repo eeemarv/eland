@@ -42,7 +42,7 @@ if ($token)
 				}
 				else
 				{
-					$name .= substr(hash('sha512', $app['tschema'] . time() . mt_rand(0, 100000), 0, 4));
+					$name .= substr(hash('sha512', $app['tschema'] . time() . mt_rand(0, 100000)), 0, 4);
 				}
 			}
 
@@ -107,19 +107,6 @@ if ($token)
 
 			$app['db']->insert($app['tschema'] . '.contact', $mail);
 
-			$ev_data = [
-				'token'			=> $token,
-				'user_id'		=> $user_id,
-				'script_name'	=> 'register',
-				'email'			=> $data['email'],
-			];
-
-			$app['xdb']->set(
-				'email_validated',
-				$data['email'],
-				$ev_data,
-				$app['tschema']);
-
 			if ($data['gsm'] || $data['tel'])
 			{
 				if ($data['gsm'])
@@ -154,17 +141,16 @@ if ($token)
 		}
 
 		$vars = [
-			'group'	=> $app['template_vars']->get($app['tschema']),
-			'user'	=> $user,
-			'email'	=> $data['email'],
-			'user_url'	=> $app['base_url'] . '/users.php?id=' . $user_id,
+			'user_id'		=> $user_id,
+			'postcode'		=> $user['postcode'],
+			'email'			=> $data['email'],
 		];
 
 		$app['queue.mail']->queue([
 			'schema'		=> $app['tschema'],
 			'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
 			'vars'			=> $vars,
-			'template'		=> 'admin_registration',
+			'template'		=> 'register/admin',
 		], 8000);
 
 		$map_template_vars = [
@@ -178,12 +164,17 @@ if ($token)
 			$vars[$k] = $data[$v];
 		}
 
+		$vars['subject'] = $app['translator']->trans('register_success.subject', [
+			'%system_name%'	=> $app['config']->get('systemname', $app['tschema']),
+		], 'mail');
+
 		$app['queue.mail']->queue([
 			'schema'				=> $app['tschema'],
-			'to' 					=> [$data['email']],
+			'to' 					=> [$data['email'] => $user['fullname']],
 			'reply_to'				=> $app['mail_addr_system']->get_admin($app['tschema']),
-			'template_from_config'	=> 'registration_success_mail',
-			'vars'		=> $vars,
+			'pre_html_template'		=> $app['config']->get('registration_success_mail', $app['tschema']),
+			'template'				=> 'skeleton',
+			'vars'					=> $vars,
 		], 8500);
 
 		$app['alert']->success('Inschrijving voltooid.');
@@ -226,12 +217,12 @@ if ($token)
 if ($submit)
 {
 	$reg = [
-		'email'			=> $_POST['email'],
-		'first_name'	=> $_POST['first_name'],
-		'last_name'		=> $_POST['last_name'],
-		'postcode'		=> $_POST['postcode'],
-		'tel'			=> $_POST['tel'],
-		'gsm'			=> $_POST['gsm'],
+		'email'			=> $_POST['email'] ?? '',
+		'first_name'	=> $_POST['first_name'] ?? '',
+		'last_name'		=> $_POST['last_name'] ?? '',
+		'postcode'		=> $_POST['postcode'] ?? '',
+		'tel'			=> $_POST['tel'] ?? '',
+		'gsm'			=> $_POST['gsm'] ?? '',
 	];
 
 	$app['monolog']->info('Registration request for ' .
@@ -277,23 +268,22 @@ if ($submit)
 		$key = $app['tschema'] . '_register_' . $token;
 		$app['predis']->set($key, json_encode($reg));
 		$app['predis']->expire($key, 604800); // 1 week
-		$key = $app['tschema'] . '_register_email_' . $email;
+		$key = $app['tschema'] . '_register_email_' . $reg['email'];
 		$app['predis']->set($key, '1');
 		$app['predis']->expire($key, 604800);
 
 		$vars = [
-			'group'			=> $app['template_vars']->get($app['tschema']),
-			'confirm_url'	=> $app['base_url'] . '/register.php?token=' . $token,
+			'token'		=> $token,
 		];
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> [$reg['email']],
+			'to' 		=> [$reg['email'] => $reg['first_name'] . ' ' . $reg['last_name']],
 			'vars'		=> $vars,
-			'template'	=> 'registration_confirm',
+			'template'	=> 'register/confirm',
 		], 10000);
 
-		$app['alert']->warning('Open je E-mailbox en klik op de
+		$app['alert']->success('Open je E-mailbox en klik op de
 			bevestigingslink in de E-mail die we naar je gestuurd
 			hebben om je inschrijving te voltooien.');
 		header('Location: ' . $app['rootpath'] . 'login.php');

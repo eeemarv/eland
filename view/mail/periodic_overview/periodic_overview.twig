@@ -1,0 +1,90 @@
+{%- extends 'mail/base/user_no_reply_auto.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'periodic_overview.subject'|trans|raw -}}
+{%- endblock subject_line -%}
+
+{% block html_content -%}
+{%- import 'mail/periodic_overview/macro/messages.twig' as m -%}
+{%- import 'mail/periodic_overview/macro/intersystem.twig' as i -%}
+{%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
+{%- import 'mail/periodic_overview/macro/news.twig' as n -%}
+{%- import 'mail/periodic_overview/macro/docs.twig' as d -%}
+{%- import 'mail/periodic_overview/macro/users.twig' as u -%}
+{%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
+{%- for b in blocks_sorted -%}
+{%- if b == 'messages' -%}
+    {{- m.html(messages, schema, email_token) -}}
+{%- elseif b == 'interlets' -%}
+    {{- i.html(intersystem, schema, email_token) -}}
+{%- elseif b == 'forum' -%}
+    {{- f.html(forum, schema, email_token) -}}
+{%- elseif b == 'news' -%}
+    {{- n.html(news, block_options.news, schema, email_token) -}}
+{%- elseif b == 'docs' -%}
+    {{- d.html(docs) -}}
+{%- elseif b == 'new_users' -%}
+    {{- u.html(new_users, 'new', block_options.new_users, schema, email_token) -}}
+{%- elseif b == 'leaving_users' -%}
+    {{- u.html(leaving_users, 'leaving', block_options.leaving_users, schema, email_token) -}}
+{%- elseif b == 'transactions' -%}
+    {{- t.html(transactions, schema, email_token) -}}
+{%- endif -%}
+
+{%- endfor -%}
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% import 'mail/periodic_overview/macro/messages.twig' as m %}
+{% import 'mail/periodic_overview/macro/intersystem.twig' as i %}
+{% import 'mail/periodic_overview/macro/forum.twig' as f %}
+{% import 'mail/periodic_overview/macro/news.twig' as n %}
+{% import 'mail/periodic_overview/macro/docs.twig' as d %}
+{% import 'mail/periodic_overview/macro/users.twig' as u %}
+{% import 'mail/periodic_overview/macro/transactions.twig' as t %}
+{% for b in blocks_sorted %}
+{% if b == 'messages' %}
+{{ m.text(messages, schema, email_token) }}
+{% elseif b == 'interlets' %}
+{{ i.text(intersystem, schema, email_token) }}
+{% elseif b == 'forum' %}
+{{ f.text(forum, schema, email_token) }}
+{% elseif b == 'news' %}
+{{ n.text(news, block_options.news, schema, email_token) }}
+{% elseif b == 'docs' %}
+{{ d.text(docs) }}
+{% elseif b == 'new_users' %}
+{{ u.text(new_users, 'new', block_options.new_users, schema, email_token) }}
+{% elseif b == 'leaving_users' %}
+{{ u.text(leaving_users, 'leaving', block_options.leaving_users, schema, email_token) }}
+{% elseif b == 'transactions' %}
+{{ t.text(transactions, schema, email_token) }}
+{% endif %}
+{% endfor %}
+{% endblock text_content %}
+
+{%- block html_unsubscribe -%}
+<p>
+{{- 'periodic_overview.unsubscribe'|trans({
+    '%link_open%': mail_link_open(
+        'users',
+        {'id': user_id},
+        schema, email_token),
+    '%link_close%': '</a>'
+})|raw -}}
+</p>
+{%- endblock html_unsubscribe -%}
+
+{% block text_unsubscribe %}
+{% autoescape false %}
+
+{{ 'periodic_overview.unsubscribe'|trans({
+    '%link_open%': '',
+    '%link_close%': ''
+}) }}
+
+{{ mail_url('users', {'id': user_id}, schema, email_token) }}
+{% endautoescape %}
+{% endblock text_unsubscribe %}

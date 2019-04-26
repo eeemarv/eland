@@ -1,0 +1,114 @@
+{%- trans_default_domain 'mail' -%}
+
+{% macro html(messages, schema, email_token) -%}
+<h3>
+{{- 'periodic_overview.ads.title'|trans -}}
+</h3>
+{% if messages %}
+<p>
+{{- 'periodic_overview.ads.explain'|trans({
+	'%link_open%': mail_link_open('messages', {}, schema, email_token),
+	'%link_close%': '</a>',
+	'%days%': config('saldofreqdays', schema)
+})|raw -}}
+</p>
+<ul>
+{% for msg in messages %}
+<li>
+	<strong>
+		{{- mail_link_open('messages', {'id': msg.id}, schema, email_token)|raw -}}
+			{%- if msg.offer -%}
+				{{- 'label.offer'|trans -}}
+			{%- else -%}
+				{{- 'label.want'|trans -}}
+			{%- endif -%}:&nbsp;
+			{{ msg.content -}}
+		</a>
+	</strong>
+<br />
+{%- if msg.images|length -%}
+	<br/>
+	<img src="{{- s3_url(msg.images.0) -}}" height="200" alt="afbeelding">
+	<br />
+{%- endif -%}
+{{- msg.description -}}
+<br />
+{{- mail_link_open('users',
+	{'id': msg.id_user},
+	schema, email_token)|raw -}}
+{{- account(msg.id_user, schema) -}}
+</a>
+{#-
+{%- if msg.postcode -%}
+	{{- 'label.postcode'|trans -}}:&nbsp;
+		{{- msg.postcode -}}&nbsp;
+		|&nbsp;
+{%- endif -%}
+-#}
+{%- for mail in msg.mail -%}
+	{%- if not loop.last -%}|{%- endif -%}&nbsp;
+	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
+	{{- 'label.email'|trans -}}
+	</a>
+{%- endfor -%}
+</li>
+<br />
+{%- endfor -%}
+</ul>
+
+{%- else -%}
+<p>
+{{- 'periodic_overview.ads.none'|trans({
+	'%link_open%': mail_link_open('messages',
+		{}, schema, email_token),
+	'%link_close%': '</a>'
+})|raw -}}
+</p>
+{%- endif -%}
+
+<p>
+{{- 'periodic_overview.ads.add'|trans({
+	'%link_open%': mail_link_open('messages', {'add': '1'}, schema, email_token),
+	'%link_close%': '</a>'
+})|raw -}}
+</p>
+
+{%- endmacro html -%}
+
+{% macro text(messages, schema, email_token) %}
+{% autoescape false %}
+
+{{ 'periodic_overview.ads.title'|trans|underline }}
+
+{% if messages %}
+{{ 'periodic_overview.ads.explain'|trans({
+	'%link_open%': '',
+	'%link_close%': '',
+	'%days%': config('saldofreqdays', schema)
+}) }}
+{% for msg in messages %}
+
+{% if msg.offer -%}
+	{{- 'label.offer'|trans -}}
+{%- else -%}
+	{{- 'label.want'|trans -}}
+{%- endif -%}: {{ msg.content }}
+{{ mail_url('messages', {'id': msg.id}, schema, email_token) }}
+{{ account(msg.id_user, schema) }}
+
+{% endfor %}
+{% else %}
+{{ 'periodic_overview.ads.none'|trans({
+	'%link_open%': '',
+	'%link_close%': '',
+	'%days%': config('saldofreqdays', schema)
+}) }}
+{% endif %}
+
+{{- 'periodic_overview.ads.add'|trans({
+	'%link_open%': '',
+	'%link_close%': ''
+}) }}
+{{ mail_url('messages', {'add': '1'}, schema, email_token) }}
+{% endautoescape %}
+{% endmacro text %}

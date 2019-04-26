@@ -1,0 +1,45 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html(forum, schema, email_token) -%}
+
+	<h3>
+		{{- 'periodic_overview.forum.title'|trans -}}
+	</h3>
+
+	{%- if forum -%}
+	<ul>
+	{%- for f in forum -%}
+	<li>
+	{{- mail_link_open('forum', {'t': f.id}, schema, email_token)|raw -}}
+	{{- f.subject -}}
+	</a>
+	{#	&nbsp;[{{ msg.new_reply_count }}]  #}
+	</li>
+	{%- endfor -%}
+	</ul>
+	{%- else -%}
+	<p>
+	{{- 'periodic_overview.forum.none'|trans({
+		'%link_open%': mail_link_open('forum', {}, schema, email_token),
+		'%link_close%': '</a>'
+	})|raw -}}
+	</p>
+	{%- endif -%}
+
+{%- endmacro html -%}
+
+{% macro text(forum, schema, email_token) %}
+{% autoescape false %}
+
+{{ 'periodic_overview.forum.title'|trans|underline }}
+
+{% for f in forum %}
+* {{ f.subject }} {{ mail_url('forum', {'t': f.id}, schema, email_token) }}
+{% else %}
+{{ 'periodic_overview.forum.none'|trans({
+	'%link_open%' : '',
+	'%link_close%' : ''
+}) }}
+{% endfor %}
+{% endautoescape %}
+{% endmacro text %}

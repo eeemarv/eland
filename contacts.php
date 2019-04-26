@@ -337,7 +337,7 @@ if ($edit || $add)
 					'adr'		=> $contact['value'],
 					'uid'		=> $contact['id_user'],
 					'schema'	=> $app['tschema'],
-				]);
+				], 0);
 			}
 
 			if ($edit)
@@ -602,7 +602,13 @@ if ($uid)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('contacts', ['add' => 1, 'uid' => $uid], 'Toevoegen', 'btn btn-success', 'Contact toevoegen', 'plus', true);
+		$top_buttons .= aphp('contacts',
+			['add' => 1, 'uid' => $uid],
+			'Toevoegen',
+			'btn btn-success',
+			'Contact toevoegen',
+			'plus',
+			true);
 	}
 
 	if (!$app['p_inline'])
@@ -684,16 +690,22 @@ if ($uid)
 		else if ($s_owner || $app['s_admin'])
 		{
 			echo '<td>';
-			echo  aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['value']);
-			if ($c['abbrev'] == 'adr'
-				&& !$app['s_elas_guest']
-				&& !$app['s_master'])
+			echo  aphp('contacts',
+				['edit' => $c['id'], 'uid' => $uid],
+				$c['value']);
+
+			if ($c['abbrev'] == 'adr')
 			{
-				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
-					->set_to_geo(trim($c['value']))
-					->calc()
-					->format_parenthesis();
+				$app['distance']->set_to_geo($c['value']);
+
+				if (!$app['s_elas_guest'] && !$app['s_master'])
+				{
+					echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+						->calc()
+						->format_parenthesis();
+				}
 			}
+
 			echo '</td>';
 			echo '<td>';
 			echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) : '';
@@ -726,26 +738,40 @@ if ($uid)
 		else
 		{
 			echo '<td>';
+
 			echo htmlspecialchars($c['value'], ENT_QUOTES);
-			if ($c['abbrev'] == 'adr'
-				&& !$app['s_elas_guest']
-				&& !$app['s_master'])
+
+			if ($c['abbrev'] == 'adr')
 			{
-				echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
-					->set_to_geo(trim($c['value']))
-					->calc()
-					->format_parenthesis();
+				$app['distance']->set_to_geo($c['value']);
+
+				if (!$app['s_elas_guest'] && !$app['s_master'])
+				{
+					echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+						->calc()
+						->format_parenthesis();
+				}
 			}
+
 			echo '</td>';
 			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
 		}
 
 		if ($app['s_admin'] || $s_owner)
 		{
-			echo '<td>' . $app['access_control']->get_label($c['flag_public']) . '</td>';
+			echo '<td>';
+			echo $app['access_control']->get_label($c['flag_public']);
+			echo '</td>';
 
 			echo '<td>';
-			echo aphp('contacts', ['del' => $c['id'], 'uid' => $uid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+
+			echo aphp('contacts',
+				['del' => $c['id'], 'uid' => $uid],
+				'Verwijderen',
+				'btn btn-danger btn-xs',
+				false,
+				'times');
+
 			echo '</td>';
 		}
 		echo '</tr>';
@@ -755,7 +781,7 @@ if ($uid)
 
 	echo '</table>';
 
-	if ($app['distance']->get_to_geo() && $app['p_inline'])
+	if ($app['distance']->has_to_data() && $app['p_inline'])
 	{
 		echo '<div class="panel-footer">';
 		echo '<div class="user_map" id="map" data-markers="';
@@ -1319,7 +1345,7 @@ function cancel(int $uid = 0):void
 	}
 	else
 	{
-		header('Location: ' . generate_url('contacts'));
+		header('Location: ' . generate_url('contacts', []));
 	}
 	exit;
 }

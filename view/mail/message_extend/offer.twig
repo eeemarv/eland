@@ -1,0 +1,26 @@
+{%- extends 'mail/message_extend/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'message_extend_offer.subject'|trans({
+        '%message_title%': message.content
+    })|raw -}}
+{%- endblock subject_line -%}
+
+{%- block html_explain -%}
+{{- 'message_extend_offer.explain'|trans({
+    '%message_title%': message.content,
+    '%link_open%': mail_link_open('messages', {'id': message.id}, schema, email_token),
+    '%link_close%': '</a>',
+    '%days%': config('msgexpcleanupdays', schema)
+})|raw -}}
+{%- endblock html_explain -%}
+
+{% block text_explain %}
+{{ 'message_extend_offer.explain'|trans({
+    '%message_title%': message.content,
+    '%link_open%': '',
+    '%link_close%': '',
+    '%days%': config('msgexpcleanupdays', schema)
+})|raw }}
+{% endblock text_explain %}

@@ -8,7 +8,7 @@ use Monolog\Logger;
 use service\xdb;
 
 use service\schedule;
-use service\groups;
+use service\systems;
 
 class cleanup_news extends schema_task
 {
@@ -21,10 +21,10 @@ class cleanup_news extends schema_task
 		xdb $xdb,
 		Logger $monolog,
 		schedule $schedule,
-		groups $groups
+		systems $systems
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->monolog = $monolog;

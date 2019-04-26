@@ -1,0 +1,50 @@
+{%- extends 'mail/base/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject_line -%}
+    {{- 'register_confirm.subject'|trans({
+        '%system_name%': config('systemname', schema)}) -}}
+{%- endblock subject_line %}
+
+{%- block html_content -%}
+{%- trans_default_domain 'mail' -%}
+
+<p>
+    {{- 'register_confirm.html_msg'|trans({
+        '%link_open%': mail_link_open('register', {'token': token}, schema, email_token),
+        '%link_close%': '</a>'
+    })|raw -}}
+</p>
+
+<p>
+    {{- 'expiration.1_week'|trans -}}
+</p>
+
+<p>
+    {{- 'register_confirm.explain'|trans({
+        '%system_name%': config('systemname', schema),
+        '%link_open%': mail_link_open('register', {}, schema, email_token),
+        '%link_close%': '</a>'
+    })|raw -}}
+</p>
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'register_confirm.text_msg'|trans }}
+
+{{ mail_url('register', {'token': token}, schema, email_token) }}
+
+{{ 'expiration.1_week'|trans }}
+
+{{ 'register_confirm.explain'|trans({
+    '%system_name%': config('systemname', schema),
+    '%link_open%': '',
+    '%link_close%': ''
+}) }}
+
+{{ mail_url('register', {}, schema, email_token) }}
+
+{% endautoescape %}
+{% endblock text_content %}

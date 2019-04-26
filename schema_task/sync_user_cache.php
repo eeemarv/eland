@@ -6,7 +6,7 @@ use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use service\user_cache;
 use service\schedule;
-use service\groups;
+use service\systems;
 
 class sync_user_cache extends schema_task
 {
@@ -17,10 +17,10 @@ class sync_user_cache extends schema_task
 		db $db,
 		user_cache $user_cache,
 		schedule $schedule,
-		groups $groups
+		systems $systems
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->user_cache = $user_cache;
 	}

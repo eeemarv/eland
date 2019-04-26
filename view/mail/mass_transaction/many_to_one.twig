@@ -1,0 +1,48 @@
+{%- extends 'mail/mass_transaction/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject_line -%}
+    {{- 'mass_transaction_many_to_one.subject'|trans -}}
+{%- endblock subject_line %}
+
+{%- block html_title -%}
+    {{- 'mass_transaction_many_to_one.title'|trans -}}
+{%- endblock html_title -%}
+
+{%- block html_before_many -%}
+    <p>
+        {{- 'label.from'|trans -}}
+    </p>
+{%- endblock html_before_many -%}
+
+{%- block html_account_many -%}
+    {{- mail_link_open('users', {'id': t.id_from}, schema, email_token)|raw -}}
+    {{- account(t.id_from, schema) -}}
+    </a>
+{%- endblock -%}
+
+{%- block html_after_many -%}
+<p>
+    {{- 'label.to'|trans -}}
+</p>
+<p>
+    {{- mail_link_open('users', {'id': to_user_id}, schema, email_token)|raw -}}
+    {{- account(to_user_id, schema) -}}
+    </a>
+</p>
+{%- endblock html_after_many %}
+
+{% block text_title %}
+{{ 'mass_transaction_many_to_one.title'|trans|underline|raw }}
+{% endblock text_title %}
+
+{% block text_before_many %}
+{{ 'label.from'|trans|raw }}
+{% endblock text_before_many %}
+
+{% block text_account_many %}{{ account(t.id_from, schema)|raw }}{% endblock %}
+
+{% block text_after_many %}
+{{ 'label.to'|trans|raw }}
+{{ account(to_user_id, schema)|raw }}
+{% endblock text_after_many %}

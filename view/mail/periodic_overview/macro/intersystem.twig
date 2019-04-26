@@ -1,0 +1,86 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html(intersystem, schema, email_token) -%}
+
+{%- if intersystem -%}
+<h3>
+{{- 'periodic_overview.intersystem.title'|trans -}}
+</h3>
+
+<p>
+	{{- 'periodic_overview.intersystem.explain'|trans({
+		'%link_open%': mail_link_open('login', {}, schema, email_token),
+		'%link_close%': '</a>'
+	})|raw -}}
+</p>
+
+{%- for i in intersystem -%}
+	<h4>
+		{{- 'periodic_overview.intersystem.system_name'|trans({
+			'%name%': i.system_name ?? config('systemname', i.schema),
+		}) -}}
+	</h4>
+	<ul>
+	{%- for msg in i.messages -%}
+		<li>
+		{{- ('periodic_overview.intersystem.' ~ msg.type)|trans({
+			'%msg%': msg.content
+		}) -}}
+		<br />
+		{%- if i.eland_server -%}
+		{{- 'periodic_overview.intersystem.account'|trans({
+			'%account%': account(msg.user_id, i.schema),
+			'%system_name%': config('systemname', i.schema)
+		}) -}}
+		{%- else -%}
+		{{- 'periodic_overview.intersystem.account'|trans({
+			'%account%': msg.account,
+			'%system_name%': i.system_name
+		}) -}}
+		{%- endif -%}
+		</li>
+		<br />
+	{%- endfor -%}
+	</ul>
+{%- endfor -%}
+{%- endif -%}
+
+{%- endmacro html -%}
+
+{% macro text(intersystem, schema, email_token) %}
+{% autoescape false %}
+
+{% if intersystem %}
+
+{{ 'periodic_overview.intersystem.title'|trans|underline }}
+
+{% for i in intersystem %}
+
+** {{ 'periodic_overview.intersystem.system_name'|trans({
+			'%name%': i.system_name ?? config('systemname', i.schema),
+}) }}
+
+{% for msg in i.messages %}
+
+{{ ('periodic_overview.intersystem.' ~ msg.type)|trans({
+	'%msg%': msg.content
+}) }}
+
+{% if i.eland_server %}
+	{{ 'periodic_overview.intersystem.account'|trans({
+	'%account%': account(msg.user_id, i.schema),
+	'%system_name%': config('systemname', i.schema)
+}) }}
+{% else %}
+	{{ 'periodic_overview.intersystem.account'|trans({
+	'%account%': msg.account,
+	'%system_name%': i.system_name
+}) }}
+{% endif %}
+
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+{% endautoescape %}
+{% endmacro text %}

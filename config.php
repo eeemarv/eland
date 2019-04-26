@@ -776,7 +776,7 @@ if ($app['is_http_post'])
 
 	if (isset($execute_post_actions['clear_eland_interlets_cache']))
 	{
-		$app['interlets_groups']->clear_eland_cache();
+		$app['intersystems']->clear_eland_cache();
 	}
 
 	if (count($posted_configs) > 1)

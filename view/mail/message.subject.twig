@@ -1,4 +1,0 @@
-{% extends 'mail/base.subject.twig' %}
-
-{% block line %}Reactie op je {% if message.type == 'offer' %}aanbod{% else %}vraag{% endif %} '{{ message.content|raw }}'{% endblock line %}
-

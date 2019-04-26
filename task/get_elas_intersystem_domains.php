@@ -4,32 +4,33 @@ namespace task;
 
 use Doctrine\DBAL\Connection as db;
 use service\cache;
-use service\groups;
+use service\systems;
+use util\cnst;
 
 class get_elas_intersystem_domains
 {
 	protected $cache;
 	protected $db;
-	protected $groups;
+	protected $systems;
 
 	public function __construct(
 		db $db,
 		cache $cache,
-		groups $groups
+		systems $systems
 	)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
-		$this->groups = $groups;
+		$this->systems = $systems;
 	}
 
 	function process():void
 	{
-		$elas_interlets_domains = $this->cache->get('elas_interlets_domains');
+		$elas_intersystem_domains = $this->cache->get(cnst::ELAS_CACHE_KEY['domains']);
 
 		$domains = [];
 
-		foreach ($this->groups->get_schemas() as $sch)
+		foreach ($this->systems->get_schemas() as $sch)
 		{
 			$groups = $this->db->fetchAll('select url, remoteapikey, id
 				from ' . $sch . '.letsgroups
@@ -41,7 +42,7 @@ class get_elas_intersystem_domains
 			{
 				$domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-				if ($this->groups->get_schema($domain))
+				if ($this->systems->get_schema($domain))
 				{
 					continue;
 				}
@@ -58,12 +59,12 @@ class get_elas_intersystem_domains
 			}
 		}
 
-		if ($elas_interlets_domains == $domains)
+		if ($elas_intersystem_domains == $domains)
 		{
 			return;
 		}
 
-		$this->cache->set('elas_interlets_domains', $domains);
+		$this->cache->set(cnst::ELAS_CACHE_KEY['domains'], $domains);
 
 		return;
 	}

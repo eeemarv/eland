@@ -32,15 +32,10 @@ sudo service nginx reload
 
 ## DNS
 
-A CNAME record with wildcard should point to the Dokku app url.
+An A record with wildcard should point to the Dokku app url.
+Subdomains (systems) match the schemas in the Postgres database.
 
-## Subdomains (systems) match schemas
-
-The subdomain part of the url matches the database schema name.
-
-`flupke.my-domain.com` matches to database schema `flupke`.
-
-Set the overall domain with:
+Set the overall domain:
 
 ```shell
 
@@ -83,23 +78,28 @@ and put the key in the environment variable `GOOGLE_GEO_API_KEY`
 
 The geocoding service can be blocked by setting `GEO_BLOCK` to 1.
 
-## Request hosting form
+## Hoster Contact Form
 
+The hoster can set up general contact forms to let
+people contact him/her:
 The Domain of a request-hosting form can be set with:
 
-* `HOSTING_FORM_domain=1`
+* `APP_HOSTER_CONTACT_domain=name@link`
 
-## Permanent Redirects
+Where:
 
-* `APP_REDIRECT_FROM__DOMAIN__NET=to.domain.net`
-
-Redirects from.domain.net to to.domain.net
-A double underscore in the key represents a dot in the domain.
+* domain is the server name of the contact form. All uppercase and dots become double underline.
+* name: The name of the contact form or the context.
+* link: The link to bring the user back.
 
 ## Other environment vars
 
 * `TIMEZONE`: defaults to 'Europe/Brussels'
 * `MASTER_PASSWORD`: sha512 encoded password for 'master' -> gives admin access to all Systems.
+
+## Permanent redirects
+
+Use the [dokku-redirect](https://github.com/dokku/dokku-redirect) plugin for redirects.
 
 ## Postgres
 

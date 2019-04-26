@@ -1,0 +1,38 @@
+{%- extends 'mail/base/user_no_reply_auto.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+
+{% block html_content -%}
+{%- import 'mail/message_extend/macro.twig' as m -%}
+<p>
+    {%- block html_explain -%}{%- endblock -%}
+</p>
+
+<ul>
+{{- m.html_extend_link(7, '1_week', message, schema, email_token) -}}
+{{- m.html_extend_link(14, '2_weeks', message, schema, email_token) -}}
+{{- m.html_extend_link(28, '4_weeks', message, schema, email_token) -}}
+{{- m.html_extend_link(60, '2_months', message, schema, email_token) -}}
+{{- m.html_extend_link(180, '6_months', message, schema, email_token) -}}
+{{- m.html_extend_link(365, '1_year', message, schema, email_token) -}}
+{{- m.html_extend_link(1825, '5_years', message, schema, email_token) -}}
+</ul>
+
+{%- endblock html_content %}
+
+{% block text_content %}
+{% autoescape false %}
+
+{% block text_explain %}{% endblock %}
+{% import 'mail/message_extend/macro.twig' as m %}
+
+{{ m.text_extend_link(7, '1_week', message, schema, email_token) }}
+{{ m.text_extend_link(14, '2_weeks', message, schema, email_token) }}
+{{ m.text_extend_link(28, '4_weeks', message, schema, email_token) }}
+{{ m.text_extend_link(60, '2_months', message, schema, email_token) }}
+{{ m.text_extend_link(180, '6_months', message, schema, email_token) }}
+{{ m.text_extend_link(365, '1_year', message, schema, email_token) }}
+{{ m.text_extend_link(1825, '5_years', message, schema, email_token) }}
+
+{% endautoescape %}
+{% endblock text_content %}

@@ -43,11 +43,8 @@ class mail implements queue_interface
 		$transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
 			->setUsername(getenv('SMTP_USERNAME'))
 			->setPassword(getenv('SMTP_PASSWORD'));
-
 		$this->mailer = new \Swift_Mailer($transport);
-
 		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
-
 		$this->mailer->getTransport()->stop();
 
 		$this->converter = new HtmlConverter();
@@ -56,122 +53,51 @@ class mail implements queue_interface
 		$converter_config->setOption('remove_nodes', 'img');
 	}
 
-	/**
-	 *
-	 */
 	public function process(array $data):void
 	{
-		if (!isset($data['schema']))
+		if ($this->has_data_error($data, 'mail_process'))
 		{
-			$app->monolog->error('mail queue proces: no schema. ' .
-				json_encode($data));
 			return;
 		}
 
-		$sch = $data['schema'];
+		$schema = $data['schema'];
 
-		if (!$this->config->get('mailenabled', $sch))
+		if ($this->has_from_address_error($data, 'mail_process'))
 		{
-			$m = 'E-mail functions are not enabled. ' . "\n";
-			echo $m;
-			$this->monolog->error('mail queue proces: mail functions not enabled. ' .
-				json_encode($data),
-				['schema' => $sch]);
-			return ;
+			return;
 		}
 
-		if (isset($data['template']) && isset($data['vars']))
+		$data['vars']['schema'] = $schema;
+
+		if (isset($data['pre_html_template']))
 		{
-			$template_subject = $this->twig->loadTemplate('mail/' . $data['template'] . '.subject.twig');
-			$template_html = $this->twig->loadTemplate('mail/' . $data['template'] . '.html.twig');
-			$template_text = $this->twig->loadTemplate('mail/' . $data['template'] . '.text.twig');
-
-			$data['subject']  = $template_subject->render($data['vars']);
-			$data['text'] = $template_text->render($data['vars']);
-			$data['html'] = $template_html->render($data['vars']);
-		}
-		else if (isset($data['template_from_config']) && isset($data['vars']))
-		{
-			$template = $this->config->get($data['template_from_config'], $sch);
-
-			if (!$template)
-			{
-				$this->monolog->error('mail queue process: no template set in config. ' .
-					json_encode($data),
-					['schema' => $sch]);
-				return;
-			}
-
 			try
 			{
-				$template_subject = $this->twig->loadTemplate('mail/' . $data['template_from_config'] . '.subject.twig');
-				$template_html = $this->twig->createTemplate($template);
-
-				$data['subject']  = $template_subject->render($data['vars']);
-				$data['text'] = $this->converter->convert($data['html']);
-				$data['html'] = $template_html->render($data['vars']);
+				$pre_html_template = $this->twig->createTemplate($data['pre_html_template']);
+				$data['vars']['html'] = $pre_html_template->render($data['vars']);
+				$data['vars']['text'] = $this->converter->convert($data['vars']['html']);
 			}
-			catch (Exception $e)
+			catch (\Exception $e)
 			{
-				$this->monolog->error('mail queue process, config template err: ' .
+				$this->monolog->error('Mail Queue Process, Pre HTML template err: ' .
 					$e->getMessage() . ' ::: ' .
 					json_encode($data),
-					['schema' => $sch]);
+					['schema' => $schema]);
 				return;
 			}
 		}
-		else
-		{
-			if (!isset($data['subject']))
-			{
-				$this->monolog->error('mail queue process: mail without subject' .
-					json_encode($data),
-					['schema' => $sch]);
-				return;
-			}
 
-			if (!isset($data['text']))
-			{
-				if (isset($data['html']))
-				{
-					$data['text'] = $this->converter->convert($data['html']);
-				}
-				else
-				{
-					$this->monolog->error('mail queue process: mail without body content. ' .
-						json_encode($data),
-						['schema' => $sch]);
-					return;
-				}
-			}
-		}
-
-		if (!isset($data['to']) || !is_array($data['to']) || !count($data['to']))
-		{
-			$this->monolog->error('mail queue process: mail without "to" ' .
-				json_encode($data),
-				['schema' => $sch]);
-			return;
-		}
-
-		if (!$data['from'])
-		{
-			$this->monolog->error('mail queue process: mail without "from" ' .
-				json_encode($data),
-				['schema' => $sch]);
-			return;
-		}
+		$template = $this->twig->load('mail/' . $data['template'] . '.twig');
+		$subject = $template->renderBlock('subject', $data['vars']);
+		$text = $template->renderBlock('text_body', $data['vars']);
+		$html = $template->renderBlock('html_body', $data['vars']);
 
 		$message = (new \Swift_Message())
-			->setSubject($data['subject'])
-			->setBody($data['text'])
+			->setSubject($subject)
+			->setBody($text)
 			->setTo($data['to'])
-			->setFrom($data['from']);
-
-		if (isset($data['html']))
-		{
-			$message->addPart($data['html'], 'text/html');
-		}
+			->setFrom($data['from'])
+			->addPart($html, 'text/html');
 
 		if (isset($data['reply_to']))
 		{
@@ -187,155 +113,174 @@ class mail implements queue_interface
 		{
 			if ($this->mailer->send($message, $failed_recipients))
 			{
-				$this->monolog->info('mail queue process: sent ' .
-					json_encode($data['to']) . ' subject: ' . $data['subject'],
-					['schema' => $sch]);
+				$this->monolog->info('mail queue process, sent to ' .
+					json_encode($data['to']) . ' subject: ' . $subject,
+					['schema' => $schema]);
 			}
 			else
 			{
 				$this->monolog->error('mail queue process: failed sending message ' .
-					json_encode($data),
-					['schema' => $sch]);
-				$this->monolog->error('mail queue process, failed recipients: ' .
+					json_encode($data) .
+					' failed recipients: ' .
 					json_encode($failed_recipients),
-					['schema' => $sch]);
+					['schema' => $schema]);
 			}
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$err = $e->getMessage();
-			error_log('mail queue process: ' . $err);
 			$this->monolog->error('mail queue process: ' . $err . ' | ' .
 				json_encode($data),
-				['schema' => $sch]);
+				['schema' => $schema]);
 		}
 
 		$this->mailer->getTransport()->stop();
 	}
 
-	public function queue(array $data, int $priority = 10000):void
+	public function queue(array $data, int $priority):void
+	{
+		if ($this->has_data_error($data, 'mail_queue'))
+		{
+			return;
+		}
+
+		$schema = $data['schema'];
+
+		if (isset($data['reply_to']))
+		{
+			if (is_array($data['reply_to']))
+			{
+				if (!count($data['reply_to']))
+				{
+					unset($data['reply_to']);
+				}
+			}
+			else
+			{
+				unset($data['reply_to']);
+			}
+		}
+
+		if (isset($data['reply_to']))
+		{
+			$data['from'] = $this->mail_addr_system->get_from($schema);
+		}
+ 		else
+		{
+			$data['from'] = $this->mail_addr_system->get_noreply($schema);
+		}
+
+		if ($this->has_from_address_error($data, 'mail_queue'))
+		{
+			return;
+		}
+
+		if (isset($data['cc']))
+		{
+			if (is_array($data['cc']))
+			{
+				if (!count($data['cc']))
+				{
+					unset($data['cc']);
+				}
+			}
+			else
+			{
+				unset($data['cc']);
+			}
+		}
+
+		$reply_log = isset($data['reply_to']) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
+
+		foreach ($data['to'] as $email => $name)
+		{
+			if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+			{
+				$this->monolog->error('mail queue (validate): non-valid email address (not sent): ' .
+					$email . ' data: ' . json_encode($data),
+					['schema' => $schema]);
+				continue;
+			}
+
+			$val_data = $data;
+			$val_data['to'] = [$email => $name];
+			$email_token = $this->email_validate->get_token($email, $schema, $data['template']);
+			$val_data['vars']['email_token'] = $email_token;
+
+			$this->queue->set('mail', $val_data, $priority);
+
+			$this->monolog->info('mail in queue with email token ' .
+				$email_token .
+				', template: ' . $val_data['template'] . ', from : ' .
+				json_encode($val_data['from']) . ' to : ' . json_encode($val_data['to']) . ' ' .
+				$reply_log .
+				' priority: ' . $priority,
+				['schema' => $schema]);
+		}
+	}
+
+	protected function has_data_error(array $data, string $log_prefix):bool
 	{
 		if (!isset($data['schema']))
 		{
-			$this->monolog->error('mail queue: no schema set. ' . json_encode($data));
-			return;
+			$this->monolog->error($log_prefix .
+				': no schema set. ' .
+				json_encode($data));
+			return true;
 		}
 
-		$data['vars']['validate_param'] = '';
+		$schema = $data['schema'];
 
-		if (!$this->config->get('mailenabled', $data['schema']))
+		if (!isset($data['template']))
 		{
-			$this->monolog->info('mail queue: Mail functions are not enabled. ' .
+			$this->monolog->error($log_prefix .
+				': no template set ' .
 				json_encode($data),
-				['schema' => $data['schema']]);
-			return;
+				['schema' => $schema]);
+			return true;
 		}
 
-		if (!isset($data['template']) && !isset($data['template_from_config']))
+		if (!isset($data['vars']) || !is_array($data['vars']))
 		{
-			if (!isset($data['subject']) || $data['subject'] == '')
-			{
-				$this->monolog->error('mail queue: Subject is missing. ' .
-					json_encode($data),
-					['schema' => $data['schema']]);
-				return;
-			}
+			$this->monolog->error($log_prefix .
+				': no vars set ' .
+				json_encode($data),
+				['schema' => $schema]);
+			return true;
+		}
 
-			if ((!isset($data['text']) || $data['text'] == '')
-				&& (!isset($data['html']) || $data['html'] == ''))
-			{
-				$this->monolog->error('mail queue: body (text or html) is missing. ' .
-					json_encode($data),
-					['schema' => $data['schema']]);
-				return;
-			}
-
-			$data['subject'] = '[' . $this->config->get('systemtag', $data['schema']) . '] ' . $data['subject'];
+		if (!$this->config->get('mailenabled', $schema))
+		{
+			$this->monolog->info($log_prefix .
+				': mail functions are not enabled in config. ' .
+				json_encode($data),
+				['schema' => $schema]);
+			return true;
 		}
 
 		if (!isset($data['to']) || !is_array($data['to']) || !count($data['to']))
 		{
-			$this->monolog->error('mail queue: "To" addr is missing. ' .
-				json_encode($data), ['schema' => $data['schema']]);
-			return;
+			$this->monolog->error($log_prefix .
+				': "To" addr is missing. ' .
+				json_encode($data),
+				['schema' => $schema]);
+			return true;
 		}
 
-		$validate_ary = [];
-
-		if (isset($data['validate_email']) && isset($data['template']))
-		{
-			foreach ($data['to'] as $email => $name)
-			{
-				if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-				{
-					continue;
-				}
-
-				if (!$this->email_validate->is_validated($email, $data['schema']))
-				{
-					$token = $this->email_validate->get_token($email, $data['schema'], $data['template']);
-
-					$validate_ary[$email] = $token;
-				}
-			}
-		}
-
-		if (isset($data['reply_to']) && is_array($data['reply_to']) && count($data['reply_to']))
-		{
-			$data['from'] = $this->mail_addr_system->get_from($data['schema']);
-		}
- 		else
-		{
-			$data['from'] = $this->mail_addr_system->get_noreply($data['schema']);
-		}
-
-		if (!count($data['from']))
-		{
-			$this->monolog->error('mail queue: no from field. ' .
-				json_encode($data), ['schema' => $data['schema']]);
-			return;
-		}
-
-		if (!(isset($data['cc']) && is_array($data['cc'] && count($data['cc']))))
-		{
-			unset($data['cc']);
-		}
-
-		$reply = (isset($data['reply_to'])) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
-
-		foreach ($validate_ary as $email_to => $validate_token)
-		{
-			$val_data = $data;
-
-			$val_data['to'] = [$email_to => $data['to'][$email]];
-			$val_data['vars']['validate_param'] = '&ev=' . $validate_token;
-
-			unset($data['to'][$email_to]);
-
-			$this->queue->set('mail', $val_data, $priority);
-
-			$this->monolog->info('mail: Mail in queue with validate token ' . $validate_token .
-				', subject: ' .
-				($data['subject'] ?? '(template)') . ', from : ' .
-				json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-				$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
-		}
-
-		if (!isset($data['to']) || !$data['to'])
-		{
-			return;
-		}
-
-		$this->queue->set('mail', $data, $priority);
-
-		$this->monolog->info('mail: Mail in queue, subject: ' .
-			($data['subject'] ?? '(template)') . ', from : ' .
-			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-			$reply . ' priority: ' . $priority, ['schema' => $data['schema']]);
+		return false;
 	}
 
-	public function get_interval():int
+	protected function has_from_address_error(array $data, string $log_prefix):bool
 	{
-		return 5;
+		if (!isset($data['from']) || !is_array($data['from']) || !count($data['from']))
+		{
+			$this->monolog->error($log_prefix .
+				': "From" addr is missing. ' .
+				json_encode($data),
+				['schema' => $data['schema']]);
+			return true;
+		}
+
+		return false;
 	}
 }

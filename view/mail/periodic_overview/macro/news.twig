@@ -1,0 +1,92 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html(news, option, schema, email_token) -%}
+
+<h3>
+{{- 'periodic_overview.news.title'|trans({
+	'%link_open%': mail_link_open('news', {}, schema, email_token),
+	'%link_close%': '</a>'
+})|raw -}}
+</h3>
+
+{%- if news -%}
+<ul>
+{%- for n in news -%}
+<li>
+<h4>
+{{- mail_link_open('news', {'id': n.id}, schema, email_token)|raw -}}
+{{- n.headline -}}
+</a>
+</h4>
+{{- n.newsitem -}}<br />
+{%- if n.location -%}
+	{{- 'label.location'|trans -}}:
+	&nbsp;<strong>
+	{{- n.location -}}
+	</strong>
+	<br />
+{%- endif -%}
+{%- if n.itemdate -%}
+	{{- 'label.date'|trans -}}:
+	&nbsp;<strong>
+	{{ n.itemdate|date_format('day', schema) }}
+	</strong>
+	<br />
+{%- endif -%}
+{{- 'periodic_overview.news.creator'|trans({
+	'%link_open%': mail_link_open('users', {'id': n.id_user}, schema, email_token),
+	'%link_close%': '</a>',
+	'%account%': account(n.id_user, schema)
+})|raw -}}
+</li>
+
+{%- endfor -%}
+</ul>
+{%- else -%}
+	<p>
+	{%- if option == 'recent' -%}
+		{{- 'periodic_overview.news.no_recent'|trans -}}
+	{%- else -%}
+		{{- 'periodic_overview.news.none'|trans -}}
+	{%- endif -%}
+	</p>
+{%- endif -%}
+
+{%- endmacro html -%}
+
+{% macro text(news, option, schema, email_token) %}
+{% autoescape false %}
+
+{{- 'periodic_overview.news.title'|trans({
+	'%link_open%': '',
+	'%link_close%': ''
+})|underline }}
+{% if news %}
+{% for n in news %}
+
+{{ n.headline|underline('.') }}
+
+{{ n.newsitem }}
+
+{% if n.location %}
+{{ 'label.location'|trans }}: {{ n.location }}
+{% endif %}
+{% if n.itemdate %}
+{{ 'label.date'|trans }}: {{ n.itemdate|date_format('day', schema) }}
+{% endif %}
+{{ 'periodic_overview.news.creator'|trans({
+	'%link_open%': '',
+	'%link_close%': '',
+	'%account%': account(n.id_user, schema)
+}) }}
+{% endfor %}
+{% else %}
+
+{% if option == 'recent' %}
+{{ 'periodic_overview.news.no_recent'|trans }}
+{% else %}
+{{ 'periodic_overview.news.none'|trans }}
+{% endif %}
+{% endif %}
+{% endautoescape %}
+{% endmacro text %}

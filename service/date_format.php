@@ -64,7 +64,6 @@ class date_format
 		if (!$format || !isset(self::FORMATS[$format]))
 		{
 			throw \Exception('No valid date format in date_format: ' . $format);
-//			return self::FORMATS['%e %b %Y, %H:%M:%S'];
 		}
 
 		if (!isset(self::FORMATS[$format][$precision]))
@@ -185,7 +184,7 @@ class date_format
 
 		foreach (self::FORMATS as $format => $prec)
 		{
-			$options[$format] = strftime($format);
+			$options[$format] = strftime($format, time());
 		}
 
 		return $options;
@@ -224,17 +223,6 @@ class date_format
 		}
 
 		return $this->get_from_unix(strtotime($ts . ' UTC'), $precision, $schema);
-	}
-
-	public function twig_get(
-		$environment,
-		$context,
-		string $ts,
-		string $precision,
-		string $schema
-	):string
-	{
-		return $this->get($ts, $precision, $schema);
 	}
 
 	public function get_td(

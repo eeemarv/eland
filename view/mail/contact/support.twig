@@ -1,0 +1,38 @@
+{% extends 'mail/base/support.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'contact_support.subject'|trans -}}
+{%- endblock -%}
+
+{% block html_content -%}
+<p>
+    {{- message -}}
+</p>
+<hr />
+<p>
+    {{- 'contact_support.explain'|trans({
+        '%link_open%': mail_link_open('home', {}, schema, email_token),
+        '%link_close%': '</a>',
+        '%system_name%': config('systemname', schema)
+    })|raw -}}
+</p>
+{%- include 'mail/include/sender_info.html.twig' -%}
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ message }}
+
+- - - - - -
+{{ 'contact_support.explain'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config('systemname', schema)
+}) }}
+
+{{ mail_url('home', {}, schema, email_token) }}
+{% include 'mail/include/sender_info.text.twig' %}
+{% endautoescape %}
+{% endblock text_content %}

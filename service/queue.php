@@ -31,7 +31,7 @@ class queue
 		$this->monolog = $monolog;
 	}
 
-	public function set(string $topic, array $data, int $priority = 0):void
+	public function set(string $topic, array $data, int $priority):void
 	{
 		if (!strlen($topic))
 		{
@@ -40,8 +40,8 @@ class queue
 		}
 
 		$insert = [
-			'topic'			=> $topic,
-			'data'			=> json_encode($data),
+			'topic'				=> $topic,
+			'data'				=> json_encode($data),
 			'priority'		=> $priority,
 		];
 

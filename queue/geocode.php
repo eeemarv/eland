@@ -45,13 +45,16 @@ class geocode implements queue_interface
 
 		if (!$adr || !$uid || !$sch)
 		{
-			error_log('geocode 1');
+			$this->monolog->debug('geocoding process data missing: ' .
+				json_encode($data),
+				['schema' => $sch]);
 			return;
 		}
 
 		if ($this->cache->exists('geo_sleep'))
 		{
-			$this->monolog->debug('geocoding task is at sleep.', ['schema' => $sch]);
+			$this->monolog->debug('geocoding task is at sleep.',
+				['schema' => $sch]);
 			return;
 		}
 
@@ -62,11 +65,13 @@ class geocode implements queue_interface
 			$user['name'] . ' (' . $uid . ')';
 
 		$geo_status_key = 'geo_status_' . $adr;
-
 		$key = 'geo_' . $adr;
 
 		if (!$this->cache->exists($geo_status_key))
 		{
+			$this->monolog->debug('geocoding proces geo_status_key missing: ' .
+				$geo_status_key . ' for data ' . json_encode($data),
+				['schema' => $sch]);
 			return;
 		}
 
@@ -79,6 +84,7 @@ class geocode implements queue_interface
 			return;
 		}
 
+		// lat, lng
 		$coords = $this->geocode_service->getCoordinates($adr);
 
 		if (count($coords))
@@ -103,7 +109,7 @@ class geocode implements queue_interface
 		return;
 	}
 
-	public function queue(array $data):void
+	public function queue(array $data, int $priority):void
 	{
 		if (!$this->check_data($data))
 		{
@@ -112,25 +118,23 @@ class geocode implements queue_interface
 
 		$data['adr'] = trim($data['adr']);
 
-		$this->queue->set('geocode', $data);
+		$this->queue->set('geocode', $data, $priority);
 	}
 
 	/**
 	 * address edits/adds/inits
 	 */
-	public function cond_queue(array $data):void
+	public function cond_queue(array $data, int $priority):void
 	{
 		if (!$this->check_data($data))
 		{
 			return;
 		}
 
-		$log_ary = [];
+		$data['adr'] = trim($data['adr']);
 
 		$key = 'geo_' . $data['adr'];
 		$status_key = 'geo_status_' . $data['adr'];
-
-		$log = json_encode($data);
 
 		if ($this->cache->exists($key))
 		{
@@ -150,7 +154,7 @@ class geocode implements queue_interface
 			['value' => 'queue'],
 			2592000);  // 30 days
 
-		$this->queue($data);
+		$this->queue($data, $priority);
 
 		$log = 'Queued for Geocoding: ';
 		$log .= link_user($data['uid'], $data['schema'], false, true);
@@ -183,10 +187,5 @@ class geocode implements queue_interface
 		}
 
 		return true;
-	}
-
-	public function get_interval():int
-	{
-		return 120;
 	}
 }

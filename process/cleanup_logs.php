@@ -14,7 +14,7 @@ $app['monitor_process']->boot();
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(14400))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -26,5 +26,5 @@ while (true)
 	$app['db']->executeQuery('delete from xdb.logs
 		where ts < ?', [$treshold]);
 
-	$app['monitor_process']->periodic_log(1);
+	$app['monitor_process']->periodic_log();
 }

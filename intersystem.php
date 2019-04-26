@@ -139,7 +139,7 @@ if ($add || $edit)
 				{
 					$app['alert']->success('InterSysteem aangepast.');
 
-					$app['interlets_groups']->clear_cache($app['tschema']);
+					$app['intersystems']->clear_cache($app['tschema']);
 
 					cancel($edit);
 				}
@@ -171,7 +171,7 @@ if ($add || $edit)
 
 					$id = $app['db']->lastInsertId($app['tschema'] . '.letsgroups_id_seq');
 
-					$app['interlets_groups']->clear_cache($app['tschema']);
+					$app['intersystems']->clear_cache($app['tschema']);
 
 					cancel($id);
 				}
@@ -201,9 +201,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		if ($app['groups']->get_host($add_schema))
+		if ($app['systems']->get_host($add_schema))
 		{
-			$group['url'] = $app['protocol'] . $app['groups']->get_host($add_schema);
+			$group['url'] = $app['protocol'] . $app['systems']->get_host($add_schema);
 			$group['groupname'] = $app['config']->get('systemname', $add_schema);
 			$group['localletscode'] = $app['config']->get('systemtag', $add_schema);
 		}
@@ -381,7 +381,7 @@ if ($del)
 		{
 			$app['alert']->success('InterSysteem verwijderd.');
 
-			$app['interlets_groups']->clear_cache($app['tschema']);
+			$app['intersystems']->clear_cache($app['tschema']);
 
 			cancel();
 		}
@@ -443,7 +443,7 @@ if ($id)
 	$top_buttons_right .= aphp('intersystem', [], '', 'btn btn-default', 'Lijst Intersystemen', 'share-alt');
 	$top_buttons_right .= '</span>';
 
-	$app['assets']->add('elas_soap_status.js');
+	$app['assets']->add(['elas_soap_status.js']);
 
 	$h1 = 'InterSysteem: ';
 	$h1 .= $group['groupname'];
@@ -457,7 +457,7 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if ($group_schema = $app['groups']->get_schema($group['host']))
+	if ($group_schema = $app['systems']->get_schema($group['host']))
 	{
 		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span>';
 
@@ -575,9 +575,9 @@ foreach ($groups as $key => $g)
 
 	$letscodes[] = $g['localletscode'];
 
-	if ($app['groups']->get_schema($h))
+	if ($app['systems']->get_schema($h))
 	{
-		$s = $app['groups']->get_schema($h);
+		$s = $app['systems']->get_schema($h);
 
 		$groups[$key]['eland'] = true;
 		$groups[$key]['schema'] = $s;
@@ -801,7 +801,7 @@ function get_schemas_groups():string
 
 	$url_ary = [];
 
-	foreach ($app['groups']->get_hosts() as $h)
+	foreach ($app['systems']->get_hosts() as $h)
 	{
 		$url_ary[] = $app['protocol'] . $h;
 	}
@@ -834,7 +834,7 @@ function get_schemas_groups():string
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($app['groups']->get_schemas() as $h => $s)
+	foreach ($app['systems']->get_schemas() as $h => $s)
 	{
 		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
 			from ' . $s . '.letsgroups
@@ -883,7 +883,7 @@ function get_schemas_groups():string
 
 	$unavailable_explain = false;
 
-	foreach($app['groups']->get_schemas() as $h => $s)
+	foreach($app['systems']->get_schemas() as $h => $s)
 	{
 		$out .= '<tr';
 

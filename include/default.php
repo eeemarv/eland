@@ -55,8 +55,67 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 $app->extend('twig', function($twig, $app) {
 
-	$twig->addExtension(new service\twig_extension($app));
 	$twig->addGlobal('s3_url', $app['s3_url']);
+	$twig->addExtension(new \twig\extension());
+	$twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader([
+		twig\config::class => function() use ($app){
+			return new twig\config($app['config']);
+		},
+		twig\date_format::class => function() use ($app){
+			return new twig\date_format($app['date_format']);
+		},
+		twig\account::class => function() use ($app){
+			return new twig\account($app['user_cache']);
+		},
+		twig\base_url::class => function() use ($app){
+			return new twig\base_url(
+				$app['systems'],
+				$app['protocol']
+			);
+		},
+		twig\mail_url::class => function() use ($app){
+			return new twig\mail_url(
+				$app['systems'],
+				$app['protocol']
+			);
+		},
+		twig\s3_url::class => function() use ($app){
+			return new twig\s3_url(
+				$app['s3_url']
+			);
+		},
+/*
+		twig\distance::class => function() use ($app){
+			return new twig\distance(
+				$app['db'],
+				$app['cache']
+			);
+		},
+
+		twig\mail_date::class => function() use ($app){
+			return new twig\mail_date($app['date_format_cache']);
+		},
+		twig\web_date::class => function() use ($app){
+			return new twig\web_date(
+				$app['date_format_cache'],
+				$app['request_stack']
+			);
+		},
+		twig\web_user::class => function () use ($app){
+			return new twig\web_user(
+				$app['user_simple_cache'],
+				$app['request_stack'],
+				$app['url_generator']
+			);
+		},
+		twig\view::class => function () use ($app){
+			return new twig\view($app['view']);
+		},
+		twig\datepicker::class => function() use ($app){
+			return new twig\datepicker($app['web_date'], $app['translator']);
+		},
+*/
+	]));
 
 	return $twig;
 });
@@ -91,8 +150,9 @@ $app->extend('translator', function($translator, $app) {
 
 	$trans_dir = __DIR__ . '/../translation/';
 
-//	$translator->addResource('yaml', $trans_dir . 'en.yaml', 'en');
-	$translator->addResource('yaml', $trans_dir . 'nl.yaml', 'nl');
+//	$translator->addResource('yaml', $trans_dir . 'messages.en.yaml', 'en');
+	$translator->addResource('yaml', $trans_dir . 'messages.nl.yaml', 'nl');
+	$translator->addResource('yaml', $trans_dir . 'mail.nl.yaml', 'nl', 'mail');
 
 	return $translator;
 });
@@ -159,20 +219,34 @@ $app['log_db'] = function($app){
 	);
 };
 
+$app['transaction'] = function($app){
+	return new service\transaction(
+		$app['db'],
+		$app['monolog'],
+		$app['user_cache'],
+		$app['autominlimit'],
+		$app['config']
+	);
+};
+
+$app['mail_transaction'] = function($app){
+	return new service\mail_transaction(
+		$app['user_cache'],
+		$app['config'],
+		$app['mail_addr_system'],
+		$app['mail_addr_user'],
+		$app['queue.mail']
+	);
+};
+
 /**
  * Get all schemas, systems and domains on this server
  */
 
-$app['groups'] = function ($app){
-	return new service\groups(
+$app['systems'] = function ($app){
+	return new service\systems(
 		$app['db'],
 		$app['overall_domain']
-	);
-};
-
-$app['template_vars'] = function ($app){
-	return new service\template_vars(
-		$app['config']
 	);
 };
 
@@ -218,11 +292,11 @@ $app['mail_addr_user'] = function ($app){
 	);
 };
 
-$app['interlets_groups'] = function ($app){
-	return new service\interlets_groups(
+$app['intersystems'] = function ($app){
+	return new service\intersystems(
 		$app['db'],
 		$app['predis'],
-		$app['groups'],
+		$app['systems'],
 		$app['config'],
 		$app['protocol']
 	);
@@ -285,7 +359,7 @@ $app['task.cleanup_images'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['s3'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -293,7 +367,7 @@ $app['task.get_elas_intersystem_domains'] = function ($app){
 	return new task\get_elas_intersystem_domains(
 		$app['db'],
 		$app['cache'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -313,7 +387,7 @@ $app['schema_task.cleanup_messages'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups'],
+		$app['systems'],
 		$app['config']
 	);
 };
@@ -324,7 +398,7 @@ $app['schema_task.cleanup_news'] = function ($app){
 		$app['xdb'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -335,7 +409,7 @@ $app['schema_task.geocode'] = function ($app){
 		$app['monolog'],
 		$app['queue.geocode'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -344,7 +418,7 @@ $app['schema_task.saldo_update'] = function ($app){
 		$app['db'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -353,7 +427,7 @@ $app['schema_task.sync_user_cache'] = function ($app){
 		$app['db'],
 		$app['user_cache'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -361,11 +435,9 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs(
 		$app['db'],
 		$app['queue.mail'],
-		$app['protocol'],
 		$app['schedule'],
-		$app['groups'],
+		$app['systems'],
 		$app['config'],
-		$app['template_vars'],
 		$app['user_cache'],
 		$app['mail_addr_user']
 	);
@@ -375,17 +447,12 @@ $app['schema_task.saldo'] = function ($app){
 	return new schema_task\saldo(
 		$app['db'],
 		$app['xdb'],
-		$app['predis'],
 		$app['cache'],
 		$app['monolog'],
 		$app['queue.mail'],
-		$app['s3_url'],
-		$app['protocol'],
-		$app['date_format'],
-		$app['distance'],
 		$app['schedule'],
-		$app['groups'],
-		$app['interlets_groups'],
+		$app['systems'],
+		$app['intersystems'],
 		$app['config'],
 		$app['mail_addr_user']
 	);
@@ -400,7 +467,7 @@ $app['schema_task.interlets_fetch'] = function ($app){
 		$app['typeahead'],
 		$app['monolog'],
 		$app['schedule'],
-		$app['groups']
+		$app['systems']
 	);
 };
 
@@ -456,7 +523,10 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 ]);
 
 $app['assets'] = function($app){
-	return new service\assets($app['rootpath']);
+	return new service\assets(
+		$app['cache'],
+		$app['rootpath']
+	);
 };
 
 $app['alert'] = function ($app){
@@ -500,7 +570,8 @@ $app['access_control'] = function($app){
 	return new service\access_control(
 		$app['tschema'],
 		$app['config'],
-		$app['s_access_level']);
+		$app['s_access_level']
+	);
 };
 
 /**

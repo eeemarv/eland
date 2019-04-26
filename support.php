@@ -4,8 +4,12 @@ $page_access = 'user';
 
 require_once __DIR__ . '/include/web.php';
 
+$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+$can_reply = count($user_email_ary) ? true : false;
+
 if (isset($_POST['zend']))
 {
+	$cc = isset($_POST['cc']);
 	$message = $_POST['message'] ?? '';
 	$message = trim($message);
 
@@ -31,46 +35,29 @@ if (isset($_POST['zend']))
 
 	if(!count($errors))
 	{
-		$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
-			from ' . $app['tschema'] . '.contact c, ' .
-				$app['tschema'] . '.type_contact tc
-			where c.id_user = ?
-				and c.id_type_contact = tc.id', [$app['s_id']]);
-
-		$email = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
-
 		$vars = [
-			'group'	=> $app['template_vars']->get($app['tschema']),
-			'user'	=> [
-				'text'			=> link_user($app['s_id'], $app['tschema'], false),
-				'url'			=> $app['base_url'] . '/users.php?id=' . $app['s_id'],
-				'email'			=> $email,
-			],
-			'contacts'		=> $contacts,
-			'message'		=> $message,
-			'config_url'	=> $app['base_url'] . '/config.php?active_tab=mailaddresses',
+			'user_id'	=> $app['s_id'],
+			'can_reply'	=> $can_reply,
+			'message'	=> $message,
 		];
 
-		$email_ary = [
-			'schema'	=> $app['tschema'],
-			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
-			'template'	=> 'support',
-			'vars'		=> $vars,
-		];
-
-		if ($email)
+		if ($cc && $can_reply)
 		{
 			$app['queue.mail']->queue([
 				'schema'	=> $app['tschema'],
-				'template'	=> 'support_copy',
+				'template'	=> 'support/copy',
 				'vars'		=> $vars,
-				'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+				'to'		=> $user_email_ary,
 			], 8500);
-
-			$email_ary['reply_to'] = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
 		}
 
-		$app['queue.mail']->queue($email_ary, 8000);
+		$app['queue.mail']->queue([
+			'schema'	=> $app['tschema'],
+			'template'	=> 'support/support',
+			'vars'		=> $vars,
+			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
+			'reply_to'	=> $user_email_ary,
+		], 8000);
 
 		$app['alert']->success('De Support E-mail is verzonden.');
 		redirect_default_page();
@@ -90,13 +77,18 @@ else
 	}
 	else
 	{
-		$email = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
-
-		if (!count($email))
+		if (!$can_reply)
 		{
 			$app['alert']->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
 		}
 	}
+
+	$cc = true;
+}
+
+if (!$can_reply)
+{
+	$cc = false;
 }
 
 if (!$app['config']->get('mailenabled', $app['tschema']))
@@ -123,6 +115,32 @@ echo '<label for="message">Je Bericht</label>';
 echo '<textarea name="message" class="form-control" id="message" rows="4">';
 echo $message;
 echo '</textarea>';
+echo '</div>';
+
+echo '<div class="form-group';
+echo $can_reply ? '' : ' checkbox disabled has-warning';
+echo '">';
+echo '<label for="cc" class="control-label">';
+echo '<input type="checkbox" name="cc" ';
+echo $can_reply ? '' : 'disabled ';
+echo 'id="cc" value="1"';
+echo $cc ? ' checked="checked"' : '';
+echo '> ';
+
+if ($can_reply)
+{
+	echo 'Stuur een kopie naar mijzelf.';
+}
+else
+{
+	echo 'Een kopie van je bericht naar ';
+	echo 'jezelf sturen is ';
+	echo 'niet mogelijk want er is ';
+	echo 'geen E-mail adres ingesteld voor ';
+	echo 'je account.';
+}
+
+echo '</label>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';

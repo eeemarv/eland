@@ -1,0 +1,10 @@
+{% extends 'mail/base/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block html_unsubscribe -%}
+{%- include 'mail/unsubscribe/support.html.twig' -%}
+{%- endblock html_unsubscribe %}
+
+{% block text_unsubscribe %}
+{% include 'mail/unsubscribe/support.text.twig' %}
+{% endblock text_unsubscribe %}

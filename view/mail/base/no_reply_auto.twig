@@ -1,0 +1,10 @@
+{% extends 'mail/base/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block html_pretext -%}
+    {%- include 'mail/include/no_reply_auto.html.twig' -%}
+{%- endblock -%}
+
+{% block text_pretext %}
+{% include 'mail/include/no_reply_auto.text.twig' %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{%- extends 'mail/base/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject_line -%}
+    {{- 'password_reset_confirm.subject'|trans -}}
+{%- endblock subject_line %}
+
+{%- block html_content -%}
+
+<p>
+    {{- 'password_reset_confirm.html_msg'|trans({
+        '%link_open%': mail_link_open('pwreset', {'token': token}, schema, email_token),
+        '%link_close%': '</a>',
+        '%system_name%': config('systemname', schema)
+    })|raw -}}
+</p>
+
+<p>
+    {{- 'expiration.1_day'|trans -}}
+</p>
+
+<p>
+    {{- 'password_reset_confirm.explain'|trans({
+        '%system_name%': config('systemname', schema),
+        '%link_open%': mail_link_open('home', {}, schema, email_token),
+        '%link_close%': '</a>'
+    })|raw -}}
+</p>
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'password_reset_confirm.text_msg'|trans({
+    '%system_name%': config('systemname', schema)
+}) }}
+
+{{ mail_url('pwreset', {'token': token}, schema, email_token) }}
+
+{{ 'expiration.1_day'|trans }}
+
+{{ 'password_reset_confirm.explain'|trans({
+    '%system_name%': config('systemname', schema),
+    '%link_open%': '',
+    '%link_close%': ''
+}) }}
+
+{% endautoescape %}
+{% endblock text_content %}

@@ -2,7 +2,6 @@
 $rootpath='../';
 $page_access = 'anonymous';
 require_once __DIR__ . '/../include/web.php';
-require_once __DIR__ . '/../include/transactions.php';
 
 if (!$app['config']->get('template_lets', $app['tschema']))
 {
@@ -39,51 +38,58 @@ $server->register('userbyletscode',
     'Get the user'
 );
 
-$server->register('userbyname',
-    ['apikey' => 'xsd:string', 'name' => 'xsd:string', 'hash' => 'xsd:string'],
-    ['return' => 'xsd:string'],
-    'urn:interletswsdl',
-    'urn:interletswsdl#userbyletscode',
-    'rpc',
-    'encoded',
-    'Get the user'
+$server->register('userbyname', [
+	'apikey'	=> 'xsd:string',
+	'name' 		=> 'xsd:string',
+	'hash' 		=> 'xsd:string',
+	],
+	['return' => 'xsd:string'],
+	'urn:interletswsdl',
+	'urn:interletswsdl#userbyletscode',
+	'rpc',
+	'encoded',
+	'Get the user'
 );
 
 $server->register('getstatus',
-   ['apikey' => 'xsd:string'],
-   ['return' => 'xsd:string'],
-   'urn:interletswsdl',
-   'urn:interletswsdl#getstatus',
-   'rpc',
-   'encoded',
-   'Get the eLAS status'
+	['apikey' => 'xsd:string'],
+	['return' => 'xsd:string'],
+	'urn:interletswsdl',
+	'urn:interletswsdl#getstatus',
+	'rpc',
+	'encoded',
+	'Get the eLAS status'
 );
 
 $server->register('apiversion',
-   ['apikey' => 'xsd:string'],
-   ['return' => 'xsd:string'],
-   'urn:interletswsdl',
-   'urn:interletswsdl#apiversion',
-   'rpc',
-   'encoded',
-   'Get the eLAS SOAP API version'
+	['apikey' => 'xsd:string'],
+	['return' => 'xsd:string'],
+	'urn:interletswsdl',
+	'urn:interletswsdl#apiversion',
+	'rpc',
+	'encoded',
+	'Get the eLAS SOAP API version'
 );
 
-$server->register('dopayment',
-   ['apikey' => 'xsd:string', 'from' => 'xsd:string',
-		'real_from' => 'xsd:string', 'to' => 'xsd:string',
-		'description' => 'xsd:string', 'amount' => 'xsd:float',
-		'transid' => 'xsd:string', 'signature' => 'xsd:string'],
-   ['return' => 'xsd:string'],
-   'urn:interletswsdl',
-   'urn:interletswsdl#dopayment',
-   'rpc',
-   'encoded',
-   'Commit an interlets transaction'
+$server->register('dopayment',[
+	'apikey' 	=> 'xsd:string',
+	'from' 		=> 'xsd:string',
+	'real_from'	=> 'xsd:string',
+	'to' 		=> 'xsd:string',
+	'description' => 'xsd:string',
+	'amount' 	=> 'xsd:float',
+	'transid' 	=> 'xsd:string',
+	'signature' => 'xsd:string',
+	],
+	['return' => 'xsd:string'],
+	'urn:interletswsdl',
+	'urn:interletswsdl#dopayment',
+	'rpc',
+	'encoded',
+	'Commit an interlets transaction'
 );
 
-$post_data = file_get_contents('php://input');
-$server->service($post_data);
+$server->service(file_get_contents('php://input'));
 
 function gettoken($apikey)
 {
@@ -191,6 +197,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		'id_to' 		=> $touser['id'],
 		'amount' 		=> $amount,
 		'letscode_to' 	=> $touser['letscode'],
+		'creator'		=> 0,
 	];
 
 	if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
@@ -221,7 +228,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		return 'FAILED';
 	}
 
-	$sigtest = sign_transaction($transaction, $fromuser['presharedkey']);
+	$sigtest = $app['transaction']->sign($transaction, $fromuser['presharedkey'], $app['tschema']);
 
 	if ($sigtest != $signature)
 	{
@@ -251,13 +258,15 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	unset($transaction['letscode_to']);
 
-	if($id = insert_transaction($transaction))
+	if($id = $app['transaction']->insert($transaction, $app['tschema']))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
 			' processed (success)',
 			['schema' => $app['tschema']]);
 		$transaction['id'] = $id;
-		mail_transaction($transaction);
+
+		// from eLAS interSystem
+		$app['mail_transaction']->queue($transaction, $app['tschema']);
 
 		return 'SUCCESS';
 	}

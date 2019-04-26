@@ -29,12 +29,26 @@ $(document).ready(function(){
 
 	var $info_admin_limit = $amount_container.find('#info_admin_limit');
 
+	var $account_info = $form.find('ul#account_info');
+	var $account_info_typeahead = $account_info.find('li#info_typeahead');
+	var $account_info_no_typeahead = $account_info.find('li#info_no_typeahead');
+
 	var select_change = function(){
 
 		var $option = $select.find('option:selected');
 
 		var currency = $option.data('currency');
 		var ratio = $option.data('currencyratio');
+
+		if ($option.data('typeahead')){
+			$account_info_typeahead.removeClass('hidden');
+			$account_info_typeahead.show();
+			$account_info_no_typeahead.hide();
+		} else {
+			$account_info_typeahead.hide();
+			$account_info_no_typeahead.removeClass('hidden');
+			$account_info_no_typeahead.show();
+		}
 
 		if ($option.attr('id') === 'group_self'){
 			$info_admin_limit.show();

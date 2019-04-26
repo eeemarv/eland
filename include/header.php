@@ -2,7 +2,7 @@
 
 if ($css = $app['config']->get('css', $app['tschema']))
 {
-	$app['assets']->add($css);
+	$app['assets']->add_external_css([$css]);
 }
 
 echo '<!DOCTYPE html>';
@@ -123,7 +123,7 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 
 		echo '<a href="';
 		echo $app['protocol'];
-		echo $app['groups']->get_host($login_schema);
+		echo $app['systems']->get_host($login_schema);
 		echo '/';
 		echo $app['script_name'];
 		echo '.php?r=';
@@ -450,7 +450,7 @@ if (($top_buttons_right ?? false) || ($csv_en ?? false))
 
 	if ($csv_en ?? false)
 	{
-		$app['assets']->add('csv.js');
+		$app['assets']->add(['csv.js']);
 
 		echo '<a href="#" class="csv btn btn-info btn-md" ';
 		echo 'title="Download CSV">';

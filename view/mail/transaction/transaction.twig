@@ -1,0 +1,101 @@
+{%- extends 'mail/base/user_no_reply_auto.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'transaction.subject'|trans({
+        '%from_account%': account(from_user_id, schema),
+        '%to_account%': account(to_user_id, schema)
+    })|raw -}}
+{%- endblock subject_line -%}
+
+{% block html_content -%}
+
+<h3>
+    {%- block html_title -%}
+    {{- 'transaction.title'|trans -}}
+    {%- endblock -%}
+</h3>
+
+{%- block html_content_explain -%}{%- endblock -%}
+
+<p>
+    {{- 'label.from'|trans -}}
+    <br />
+    <strong>
+        {%- block html_from -%}
+        {{- account(from_user_id, schema) -}}
+        {%- endblock -%}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.to'|trans -}}
+    <br />
+    <strong>
+        {%- block html_to -%}
+        {{- account(to_user_id, schema) -}}
+        {%- endblock -%}
+    </strong>
+</p>
+
+<p>
+    {{- 'label.amount'|trans -}}
+    <br />
+    <strong>
+        {{- transaction.amount -}}&nbsp;
+        {{- config('currency', schema) -}}
+    </strong>
+</p>
+
+{%- block html_amount_explain -%}{%- endblock -%}
+
+<p>
+    {{- 'label.description'|trans -}}
+    <br />
+    <strong>
+        {{- transaction.description -}}
+    </strong>
+</p>
+
+<p>
+{{- mail_link_open('transactions',
+    {'id': transaction.id}, schema, email_token)|raw -}}
+{{- 'label.link'|trans -}}
+</a>
+</p>
+
+{%- block html_trans_id -%}{%- endblock -%}
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{% block text_title %}{{ 'transaction.title'|trans|underline }}{% endblock %}
+{% block text_content_explain %}{% endblock %}
+
+{{ 'label.from'|trans }}
+{% block text_from %}
+{{ account(from_user_id, schema) }}
+{% endblock %}
+
+{{ 'label.to'|trans }}
+{% block text_to %}
+{{ account(to_user_id, schema) }}
+{% endblock %}
+
+{{ 'label.amount'|trans }}
+{{ transaction.amount }} {{ config('currency', schema) }}
+
+{% block text_amount_explain %}{% endblock %}
+
+{{ 'label.description'|trans }}
+{{ transaction.description }}
+
+{{ 'label.link'|trans }}: {{ mail_url('transactions',
+    {'id': transaction.id}, schema, email_token) }}
+
+{% block text_trans_id %}{% endblock %}
+
+{% endautoescape %}
+{% endblock text_content %}

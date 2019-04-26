@@ -1,0 +1,32 @@
+{% extends 'mail/base/user.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'password_reset_user.subject'|trans|raw -}}
+{%- endblock %}
+
+{%- block html_content -%}
+<h3>
+    {{- 'password_reset_user.title'|trans -}}
+</h3>
+
+<p>
+    {{- 'password_reset_user.message'|trans -}}
+</p>
+
+<p>
+    {{- 'label.password'|trans -}}: <strong>{{- password -}}</strong>
+</p>
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'password_reset_user.title'|trans|underline }}
+
+{{ 'password_reset_user.message'|trans }}
+
+{{ 'label.password'|trans }}: {{ password }}
+
+{% endautoescape %}
+{% endblock text_content %}

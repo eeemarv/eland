@@ -3,64 +3,67 @@
 $page_access = 'admin';
 require_once __DIR__ . '/include/web.php';
 
-$q = $_GET['q'] ?? '';
-$code = $_GET['code'] ?? '';
-$type = $_GET['type'] ?? '';
-$fdate = $_GET['fdate'] ?? '';
-$tdate = $_GET['tdate'] ?? '';
-$orderby = $_GET['orderby'] ?? 'ts';
-$asc = $_GET['asc'] ?? 0;
-$limit = $_GET['limit'] ?? 25;
-$start = $_GET['start'] ?? 0;
+$filter = $_GET['f'] ?? [];
+$sort = $_GET['sort'] ?? [];
+$pag = $_GET['p'] ?? [];
 
 $app['log_db']->update();
 
 $params = [
-	'orderby'	=> $orderby,
-	'asc'		=> $asc,
-	'limit'		=> $limit,
-	'start'		=> $start,
+	'sort'	=> [
+		'orderby'	=> $sort['orderby'] ?? 'ts',
+		'asc'		=> $sort['asc'] ?? 0,
+	],
+	'p'	=> [
+		'start'		=> $pag['start'] ?? 0,
+		'limit'		=> $pag['limit'] ?? 25,
+	],
 ];
 
 $params_sql = $where_sql = [];
 
 $params_sql[] = $app['tschema'];
 
-if ($code)
+if (isset($filter['code'])
+	&& $filter['code'])
 {
-	[$l] = explode(' ', $code);
+	[$l_code] = explode(' ', $filter['code']);
 
 	$where_sql[] = 'letscode = ?';
-	$params_sql[] = strtolower($l);
-	$params['code'] = $l;
+	$params_sql[] = strtolower($l_code);
+	$params['f']['code'] = $filter['code'];
 }
 
-if ($type)
+if (isset($filter['type'])
+	&& $filter['type'])
 {
 	$where_sql[] = 'type ilike ?';
-	$params_sql[] = strtolower($type);
-	$params['type'] = $type;
+	$params_sql[] = strtolower($filter['type']);
+	$params['f']['type'] = $filter['type'];
 }
 
-if ($q)
+if (isset($filter['q'])
+	&& $filter['q'])
 {
 	$where_sql[] = 'event ilike ?';
-	$params_sql[] = '%' . $q . '%';
-	$params['q'] = $q;
+	$params_sql[] = '%' . $filter['q'] . '%';
+	$params['f']['q'] = $filter['q'];
 }
 
-if ($fdate)
+if (isset($filter['fdate'])
+	&& $filter['fdate'])
 {
 	$where_sql[] = 'ts >= ?';
-	$params_sql[] = $fdate;
-	$params['fdate'] = $fdate;
+	$params_sql[] = $filter['fdate'];
+	$params['f']['fdate'] = $filter['fdate'];
 }
 
-if ($tdate)
+if (isset($filter['tdate'])
+	&& $filter['tdate'])
 {
 	$where_sql[] = 'ts <= ?';
-	$params_sql[] = $tdate;
-	$params['tdate'] = $tdate;
+	$params_sql[] = $filter['tdate'];
+	$params['f']['tdate'] = $filter['tdate'];
 }
 
 if (count($where_sql))
@@ -75,14 +78,15 @@ else
 $query = 'select *
 	from xdb.logs
 		where schema = ?' . $where_sql . '
-	order by ' . $orderby . ' ';
+	order by ' . $params['sort']['orderby'] . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(*)
 	from xdb.logs
 	where schema = ?' . $where_sql, $params_sql);
 
-$query .= $asc ? 'asc ' : 'desc ';
-$query .= ' limit ' . $limit . ' offset ' . $start;
+$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' limit ' . $params['p']['limit'];
+$query .= ' offset ' . $params['p']['start'];
 
 $rows = $app['db']->fetchAll($query, $params_sql);
 
@@ -113,8 +117,8 @@ $tableheader_ary = [
 	]),
 ];
 
-$tableheader_ary[$orderby]['asc'] = $asc ? 0 : 1;
-$tableheader_ary[$orderby]['indicator'] = $asc ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['asc'] = $params['sort']['asc'] ? 0 : 1;
+$tableheader_ary[$params['sort']['orderby']]['indicator'] = $params['sort']['asc'] ? '-asc' : '-desc';
 
 $top_right .= '<a href="#" class="csv">';
 $top_right .= '<i class="fa fa-file"></i>';
@@ -122,10 +126,14 @@ $top_right .= '&nbsp;csv</a>';
 
 $app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 
-$filtered = $q || $type || $code || $fdate || $tdate;
+$filtered = (isset($filter['q']) && $filter['q'] !== '')
+	|| (isset($filter['type']) && $filter['type'] !== '')
+	|| (isset($filter['code']) && $filter['code'] !== '')
+	|| (isset($filter['fdate']) && $filter['fdate'] !== '')
+	|| (isset($filter['tdate']) && $filter['tdate'] !== '');
 
 $h1 = 'Logs';
-$h1 .= ($filtered) ? ' <small>gefilterd</small>' : '';
+$h1 .= $filtered ? ' <small>gefilterd</small>' : '';
 
 $fa = 'history';
 
@@ -145,9 +153,9 @@ echo '<i class="fa fa-search"></i></span>';
 
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="q_addon" ';
-echo 'name="q" id="q" placeholder="Zoek Event" ';
+echo 'name="f[q]" id="q" placeholder="Zoek Event" ';
 echo 'value="';
-echo $q;
+echo $filter['q'] ?? '';
 echo '">';
 echo '</div>';
 echo '</div>';
@@ -163,9 +171,9 @@ echo 'data-typeahead="';
 echo $app['typeahead']->get([['log_types',
 	['schema' => $app['tschema']]]]);
 echo '" ';
-echo 'name="type" id="type" placeholder="Type" ';
+echo 'name="f[type]" id="type" placeholder="Type" ';
 echo 'value="';
-echo $type;
+echo $filter['type'] ?? '';
 echo '">';
 echo '</div>';
 echo '</div>';
@@ -181,6 +189,7 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 		],
 	];
 }
+
 echo '<div class="col-sm-3">';
 echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon" id="code_addon">';
@@ -194,27 +203,43 @@ echo '" ';
 echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $app['tschema']);
 echo '" ';
-echo 'name="code" id="code" placeholder="Account Code" ';
+echo 'name="f[code]" id="code" placeholder="Account Code" ';
 echo 'value="';
-echo $code;
+echo $filter['code'] ?? '';
 echo '">';
 echo '</div>';
 echo '</div>';
 
 echo '<div class="col-sm-2">';
-echo '<input type="submit" value="Toon" class="btn btn-default btn-block" name="zend">';
+echo '<input type="submit" value="Toon" ';
+echo 'class="btn btn-default btn-block" name="zend">';
 echo '</div>';
 
 echo '</div>';
 
-$params_form = ['r' => 'admin', 'u' => $app['s_id']];
+$params_form = $params;
+unset($params_form['f']);
+unset($params_form['uid']);
+unset($params_form['p']['start']);
 
-foreach ($params_form as $name => $value)
+$params_form['r'] = 'admin';
+$params_form['u'] = $app['s_id'];
+
+$params_form = http_build_query($params_form, 'prefix', '&');
+$params_form = urldecode($params_form);
+$params_form = explode('&', $params_form);
+
+foreach ($params_form as $param)
 {
-	if (isset($value))
+	[$name, $value] = explode('=', $param);
+
+	if (!isset($value) || $value === '')
 	{
-		echo '<input name="' . $name . '" value="' . $value . '" type="hidden">';
+		continue;
 	}
+
+	echo '<input name="' . $name . '" ';
+	echo 'value="' . $value . '" type="hidden">';
 }
 
 echo '</form>';
@@ -234,21 +259,27 @@ echo '<tr>';
 
 $th_params = $params;
 
-$th_params['start'] = 0;
-
 foreach ($tableheader_ary as $key_orderby => $data)
 {
 	echo '<th';
-	echo (isset($data['data_hide'])) ? ' data-hide="' . $data['data_hide'] . '"' : '';
+
+	if (isset($data['data_hide']))
+	{
+		echo ' data-hide="' . $data['data_hide'] . '"';
+	}
+
 	echo '>';
+
 	if (isset($data['no_sort']))
 	{
 		echo $data['lbl'];
 	}
 	else
 	{
-		$th_params['orderby'] = $key_orderby;
-		$th_params['asc'] = $data['asc'];
+		$th_params['sort'] = [
+			'orderby'	=> $key_orderby,
+			'asc' 		=> $data['asc'],
+		];
 
 		echo '<a href="';
 		echo generate_url('logs', $th_params);

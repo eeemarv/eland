@@ -7,18 +7,18 @@ require_once __DIR__ . '/include/web.php';
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
-$add = isset($_GET['add']) ? true : false;
+$add = isset($_GET['add']);
 $uid = $_GET['uid'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
-$img = isset($_GET['img']) ? true : false;
-$insert_img = isset($_GET['insert_img']) ? true : false;
+$submit = isset($_POST['zend']);
+$img = isset($_GET['img']);
+$insert_img = isset($_GET['insert_img']);
 $img_del = $_GET['img_del'] ?? false;
 $images = $_FILES['images'] ?? false;
-$mail = isset($_POST['mail']) ? true : false;
+$mail = isset($_POST['mail']);
 $selected_msgs = (isset($_POST['sel']) && $_POST['sel'] != '') ? explode(',', $_POST['sel']) : [];
-$extend_submit = isset($_POST['extend_submit']) ? true : false;
+$extend_submit = isset($_POST['extend_submit']);
 $extend = $_POST['extend'] ?? false;
-$access_submit = isset($_POST['access_submit']) ? true : false;
+$access_submit = isset($_POST['access_submit']);
 
 $filter = $_GET['f'] ?? [];
 $sort = $_GET['sort'] ?? [];
@@ -220,7 +220,7 @@ if ($id && $extend)
 		cancel($id);
 	}
 
-	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $extend));
+	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * (int) $extend));
 
 	$m = [
 		'validity'		=> $validity,
@@ -486,7 +486,7 @@ if ($img_del == 'all' && $id)
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
-	$app['assets']->add('msg_img_del.js');
+	$app['assets']->add(['msg_img_del.js']);
 
 	include __DIR__ . '/include/header.php';
 
@@ -552,13 +552,14 @@ if ($img_del == 'all' && $id)
 if ($mail && $app['is_http_post'] && $id)
 {
 	$content = $_POST['content'];
-	$cc = $_POST['cc'];
+	$cc = isset($_POST['cc']);
 
-	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
+	$to_user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
-	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
+	if (!$app['s_admin'] && !in_array($to_user['status'], [1, 2]))
 	{
-		$app['alert']->error('Je hebt geen rechten om een bericht naar een niet-actieve gebruiker te sturen');
+		$app['alert']->error('Je hebt geen rechten om een
+			bericht naar een niet-actieve gebruiker te sturen');
 		cancel();
 	}
 
@@ -582,46 +583,62 @@ if ($mail && $app['is_http_post'] && $id)
 		cancel($id);
 	}
 
-	$contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+
+	if (!count($reply_ary))
+	{
+		$app['alert']->error('Fout: Je kan geen berichten naar een andere gebruiker
+			verzenden als er geen E-mail adres is ingesteld voor je eigen account.');
+		cancel($id);
+	}
+
+	$from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
 		from ' . $app['s_schema'] . '.contact c, ' .
 			$app['s_schema'] . '.type_contact tc
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
-			[\util\cnst::ACCESS_ARY[$user['accountrole']], $app['s_id']]);
+			[\util\cnst::ACCESS_ARY[$to_user['accountrole']], $app['s_id']]);
 
 	$message['type'] = $message['msg_type'] ? 'offer' : 'want';
+	$message['offer'] = $message['type'] === 'offer';
+	$message['want'] = $message['type'] === 'want';
+
+	$from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
 	$vars = [
-		'group'			=> $app['template_vars']->get($app['tschema']),
-		'to_user'		=> link_user($user, $app['tschema'], false),
-		'to_username'	=> $user['name'],
-		'from_user'		=> link_user($app['session_user'], $app['s_schema'], false),
-		'from_username'	=> $app['session_user']['name'],
-		'to_group'		=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['tschema']),
-		'from_group'	=> $app['s_group_self'] ? '' : $app['config']->get('systemname', $app['s_schema']),
-		'contacts'		=> $contacts,
-		'msg_text'		=> $content,
-		'message'		=> $message,
-		'login_url'		=> $app['base_url'] . '/login.php',
-		'support_url'	=> $app['base_url'] . '/support.php?src=p',
+		'from_contacts'		=> $from_contacts,
+		'from_user'			=> $from_user,
+		'from_schema'		=> $app['s_schema'],
+		'is_same_system'	=> $app['s_group_self'],
+		'to_user'			=> $to_user,
+		'to_schema'			=> $app['tschema'],
+		'msg_content'		=> $content,
+		'message'			=> $message,
 	];
+
+	$mail_template = $app['s_group_self']
+		? 'message_msg/msg'
+		: 'message_msg/msg_intersystem';
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
-		'to'		=> $app['mail_addr_user']->get($user['id'], $app['tschema']),
-		'reply_to'	=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
-		'template'	=> 'message',
+		'to'		=> $app['mail_addr_user']->get($to_user['id'], $app['tschema']),
+		'reply_to'	=> $reply_ary,
+		'template'	=> $mail_template,
 		'vars'		=> $vars,
 	], 8500);
 
-
 	if ($cc)
 	{
+		$mail_template = $app['s_group_self']
+			? 'message_msg/copy'
+			: 'message_msg/copy_intersystem';
+
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
-			'template'	=> 'message_copy',
+			'template'	=> $mail_template,
 			'vars'		=> $vars,
 		], 8000);
 	}
@@ -1192,10 +1209,17 @@ if (($edit || $add))
 
 	if ($app['s_admin'])
 	{
-		$app['assets']->add(['typeahead', 'typeahead.js']);
+		$app['assets']->add([
+			'typeahead',
+			'typeahead.js',
+		]);
 	}
 
-	$app['assets']->add(['fileupload', 'msg_edit.js', 'access_input_cache.js']);
+	$app['assets']->add([
+		'fileupload',
+		'msg_edit.js',
+		'access_input_cache.js',
+	]);
 
 	$h1 = $add ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen';
 	$fa = 'newspaper-o';
@@ -1484,11 +1508,18 @@ if ($id)
 			and c.id_user = ?
 			and c.flag_public = 1', [$user['id']]);
 
-	$app['assets']->add(['leaflet', 'jssor', 'msg.js']);
+	$app['assets']->add([
+		'leaflet',
+		'jssor',
+		'msg.js',
+	]);
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$app['assets']->add(['fileupload', 'msg_img.js']);
+		$app['assets']->add([
+			'fileupload',
+			'msg_img.js',
+		]);
 	}
 
 	if ($app['s_admin'] || $s_owner)
@@ -1802,7 +1833,6 @@ $s_owner = !$app['s_guest']
 
 $v_list = $app['p_view'] === 'list' || $app['p_inline'];
 $v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
-$v_map = $app['p_view'] === 'map' && !$app['p_inline'];
 
 $params = [
 	'sort'	=> [
@@ -1892,95 +1922,46 @@ if (isset($filter['cid'])
 	$params['f']['cid'] = $filter['cid'];
 }
 
-if (!isset($filter['s']))
-{
-	$filter['valid'] = [
-		'yes'	=> 'on',
-		'no'	=> 'on',
-	];
-}
+$filter_valid = isset($filter['valid'])
+	&& (isset($filter['valid']['yes']) xor isset($filter['valid']['no']));
 
-if (isset($filter['valid'])
-	&& count($filter['valid']) === 2)
-{
-	$params['f']['valid'] = [
-		'yes'	=> 'on',
-		'no'	=> 'on',
-	];
-}
-else if (!isset($filter['valid']))
-{
-	$where_sql[] = '1 = 2';
-}
-else
+if ($filter_valid)
 {
 	if (isset($filter['valid']['yes']))
 	{
 		$where_sql[] = 'm.validity >= now()';
 		$params['f']['valid']['yes'] = 'on';
 	}
-	else if (isset($filter['valid']['no']))
+	else
 	{
 		$where_sql[] = 'm.validity < now()';
 		$params['f']['valid']['no'] = 'on';
 	}
 }
 
-if (!isset($filter['s']))
-{
-	$filter['type'] = [
-		'want'	=> 'on',
-		'offer'	=> 'on',
-	];
-}
+$filter_type = isset($filter['type'])
+	&& (isset($filter['type']['want']) xor isset($filter['type']['offer']));
 
-if (isset($filter['type']) && count($filter['type']) === 2)
-{
-	$params['f']['type'] = [
-		'want'	=> 'on',
-		'offer'	=> 'on',
-	];
-}
-else if (!isset($filter['type']))
-{
-	$where_sql[] = '1 = 2';
-}
-else
+if ($filter_type)
 {
 	if (isset($filter['type']['want']))
 	{
 		$where_sql[] = 'm.msg_type = 0';
 		$params['f']['type']['want'] = 'on';
 	}
-	else if (isset($filter['type']['offer']))
+	else
 	{
 		$where_sql[] = 'm.msg_type = 1';
 		$params['f']['type']['offer'] = 'on';
 	}
 }
 
-if (!isset($filter['s']))
-{
-	$filter['ustatus'] = [
-		'new'		=> 'on',
-		'leaving'	=> 'on',
-		'active'	=> 'on',
-	];
-}
+$filter_ustatus = isset($filter['ustatus']) &&
+	!(isset($filter['ustatus']['new'])
+		&& isset($filter['ustatus']['leaving'])
+		&& isset($filter['ustatus']['active']));
 
-if (isset($filter['ustatus']) && count($filter['ustatus']) === 3)
-{
-	$params['f']['ustatus'] = [
-		'new'		=> 'on',
-		'leaving'	=> 'on',
-		'active'	=> 'on',
-	];
-}
-else if (!isset($filter['ustatus']))
-{
-	$where_sql[] = '1 = 2';
-}
-else
+if ($filter_ustatus)
 {
 	if (isset($filter['ustatus']['new']))
 	{
@@ -2006,15 +1987,6 @@ else
 	{
 		$where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
 	}
-}
-
-if (isset($filter['s']))
-{
-	$params['f']['s'] = '1';
-}
-else
-{
-	unset($params['f']);
 }
 
 if ($app['s_guest'])
@@ -2212,9 +2184,9 @@ if ($app['s_admin'] || $app['s_user'])
 $csv_en = $app['s_admin'] && $v_list;
 
 $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
-	|| count($filter['type']) !== 2
-	|| count($filter['valid']) !== 2
-	|| count($filter['ustatus']) !== 3;
+	|| $filter_type
+	|| $filter_valid
+	|| $filter_ustatus;
 
 $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
@@ -2277,8 +2249,12 @@ if (!$app['p_inline'])
 
 	$top_buttons_right .= '</span>';
 
-	$app['assets']->add(['msgs.js',
-		'table_sel.js', 'typeahead', 'typeahead.js']);
+	$app['assets']->add([
+		'msgs.js',
+		'table_sel.js',
+		'typeahead',
+		'typeahead.js',
+	]);
 
 	include __DIR__ . '/include/header.php';
 
@@ -2494,8 +2470,6 @@ if ($v_list)
 	echo '<tr>';
 
 	$th_params = $params;
-
-	$th_params['start'] = 0;
 
 	foreach ($tableheader_ary as $key_orderby => $data)
 	{
@@ -2764,7 +2738,7 @@ else if ($v_list)
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';
-			echo '<form method="post" class="form-horizontal">';
+			echo '<form method="post">';
 			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
 			echo '<input type="submit" value="Aanpassen" ';
 			echo 'name="access_submit" class="btn btn-primary">';
@@ -2790,6 +2764,8 @@ else if ($v_extended)
 
 function cancel($id = null)
 {
+	$params = [];
+
 	if ($id)
 	{
 		$params = ['id' => $id];

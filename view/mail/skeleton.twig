@@ -1,0 +1,13 @@
+{% extends 'mail/base/base.twig' %}
+
+{% block subject_line -%}
+    {{- subject|raw -}}
+{%- endblock -%}
+
+{%  block html_content -%}
+    {{- html|raw -}}
+{%- endblock -%}
+
+{%- block text_content %}
+{{ text|raw }}
+{% endblock -%}

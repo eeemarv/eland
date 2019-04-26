@@ -1,0 +1,452 @@
+label:
+  account_code: Account Code
+  amount: Bedrag
+  balance: Saldo
+  date: Datum
+  description: Omschrijving
+  destination: Bestemming
+  email: E-mail
+  from: Van
+  full_name: Volledige Naam
+  hours: Uren
+  link: Link
+  location: Plaats
+  login: Login
+  minutes: Minuten
+  offer: Aanbod
+  password: Paswoord
+  postcode: Postcode
+  price: (Richt-)prijs
+  seconds: Seconden
+  system: Systeem
+  to: Naar
+  total: Totaal
+  transaction_id: Transactie ID
+  username: Gebruikersnaam
+  want: Vraag
+  your_account: Je Account
+  your_message: Je Bericht
+
+b:
+  no_reply: >-
+    Niet beantwoorden a.u.b.
+  no_reply_auto: >-
+    Dit is een automatische mail. Niet beantwoorden a.u.b.
+  sender_info:
+    email: "E-mail: %email%"
+    ip: "IP: %ip%"
+    agent: "Agent: %agent%"
+  support:
+    title: Support
+    explain: >-
+      Gebruik het %link_open%Help/Supportformulier
+      %link_close% als je een vraag of probleem hebt
+    reply_admin: >-
+      Een reply op dit bericht brengt je bij de
+      administratie van %system_name%
+  support_subscribed: >-
+
+  email_validated: >-
+    Het E-mail adres werd gevalideerd.
+  footer: >-
+    %link_open%%system_name%%link_close%
+
+expiration:
+  1_day: >-
+    Deze link blijft 24 uur geldig.
+  1_week: >-
+    Deze link blijft 1 week geldig.
+
+subscribed:
+  admin: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Admin E-mail
+    adres in de %link_open%instellingen%link_close%.
+  news_admin: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Nieuws Admin E-mail
+    adres in de %link_open%instellingen%link_close%.
+  support: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Support E-mail
+    adres in de %link_open%instellingen%link_close%.
+
+private_msg:
+  from_contacts: >-
+    Contactgegevens van %from_account%
+
+reply:
+  user: >-
+    Je kan rechtstreeks reageren aan
+    %link_open%%from_account%%link_close%
+    door deze E-mail te beantwoorden (Reply).
+  user_intersystem: >-
+    Je kan rechtstreeks reageren aan
+    %from_account% [%from_system_name%]
+    door deze E-mail te beantwoorden (Reply).
+
+account_activation:
+  subject: >-
+    Activatie van je Account bij %system_name%
+  welcome: >-
+    Welkom bij %link_open%%system_name%%link_close%.
+  login: >-
+    Surf naar %base_url% en meld je aan met
+    onderstaande gegevens.
+  change_profile: >-
+    Je gebruikersgegevens, je vraag en aanbod kan je
+    zelf online bewerken.
+account_activation_admin:
+  subject: >-
+    Activatie Account %account_name%
+  message: >-
+    Account %link_open%%account_name%%link_close%
+    werd geactiveerd.
+  email_sent:
+    Een E-mail met nieuw paswoord werd verzonden
+    naar de gebruiker.
+  no_email_sent:
+    Er werd GEEN E-mail met paswoord verzonden naar
+    de gebruiker omdat geen E-mail adres werd ingesteld
+    voor dit account.
+
+contact_confirm:
+  subject: >-
+    Bevestig je bericht aan %system_name%
+  html_msg: >-
+    %link_open%Klik hier om je bericht
+    in het contactformulier te bevestigen.%link_close%
+  text_msg: >-
+    Klik op de link hieronder om je bericht in het
+    contactformulier te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf een bericht hebt verstuurd
+    via %link_open%het contactformulier
+    van %system_name%%link_close%.
+contact_copy:
+  subject: >-
+    Kopie van je bericht aan %system_name%
+  explain: >-
+    Het bericht hieronder heb je verzonden aan %system_name%
+    via het contactformulier
+contact_support:
+  subject: Bericht van het contactformulier
+  explain: >-
+    Dit bericht werd ingegeven in het
+    contactformulier van %link_open%%system_name%%link_close%.
+    Gebruik "Reply" om het eventueel te beantwoorden.
+
+news_review_admin:
+  subject: >-
+    Beoordeel Nieuwsbericht "%name%"
+  title: >-
+    Moderatie Nieuwsbericht
+  message: >-
+    Een nieuwsbericht met titel "%name%"
+    werd ingegeven in het Systeem.
+  action: >-
+    Ga naar het bericht om het (al dan niet)
+    goed te keuren voor publicatie.
+
+password_reset_user:
+  subject: >-
+    Nieuw Paswoord voor je Account
+  title: >-
+    Notificatie Nieuw Paswoord
+  message: >-
+    Er werd een nieuw paswoord
+    voor je account ingesteld.
+password_reset_confirm:
+  subject: Paswoord Reset Link
+  html_msg: >-
+    %link_open%Klik hier om je paswoord opnieuw in te stellen
+    voor je account bij %system_name%%link_close%.
+  text_msg: >-
+    Klik op de link hieronder om je paswoord opnieuw
+    in te stellen voor je account bij %system_name%.
+  explain: >-
+    Gelieve deze E-mail te negeren wanneer je niet
+    zelf hebt een paswoord reset hebt aangevraagd
+    bij %link_open%%system_name%%link_close%.
+
+register_admin:
+  subject: >-
+    Nieuwe Inschrijving: %full_name%
+  title: Notificatie Nieuwe Inschrijving
+  msg: >-
+    De volgende persoon schreef zich
+    in via de website
+register_confirm:
+  subject: >-
+    Bevestig je registratie bij %system_name%
+  html_msg: >-
+    %link_open%Klik hier om je registratie
+    te bevestigen.%link_close%
+  text_msg: >-
+    Klik op de link hieronder om je registratie
+    te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf %link_open%het registratieformulier
+    van %system_name%%link_close% hebt ingevuld.
+register_success:
+  subject: Je inschrijving bij %system_name%
+
+support_copy:
+  subject: >-
+    Kopie van je bericht aan %system_name%
+  explain: >-
+    Het bericht hieronder heb je verzonden
+    aan %system_name% via het help/supportformulier
+support:
+  subject: >-
+    Bericht van het Supportformulier
+  explain: >-
+    Het bericht hieronder werd ingegeven in het
+    supportformulier van %link_open%%system_name%%link_close% door
+    gebruiker %account%.
+  explain_reply: >-
+    Je kan dit bericht eventueel direct beantwoorden (Reply).
+  explain_no_reply: >-
+    Omdat de gebruiker geen E-mail adres heeft ingesteld
+    voor haar/zijn account kan je dit bericht niet direct
+    beantwoorden. Kijk in het %link_open%account%link_close%
+    voor eventuele andere contactgegevens.
+
+transaction:
+  subject: >-
+    Transactie van %from_account% naar %to_account%
+  title: >-
+    Notificatie Transactie
+transaction_intersystem_fail:
+  subject: >-
+    InterSysteem transactie gefaald
+  title: >-
+    Waarschuwing
+  message: >-
+    De lokale commit van transactie
+    %trans_id% is niet gelukt.
+    Dit betekent dat er een onbalans is
+    met het externe systeem %remote_system_name%
+transaction_intersystem:
+  subject: >-
+    Intersysteem Transactie van %from_account% naar %to_account%
+  title: >-
+    Notificatie Intersysteem Transactie
+transaction_to_intersystem_mail_type:
+  subject: >-
+    Actie gevraagd! Intersysteem transactie van %system_name% naar %remote_system_name%
+  explain: >-
+    Een interSysteem transactie werd ingegeven in Systeem %system_name%.
+    Deze transactie dient verwerkt te worden in je eigen Systeem.
+  amount_explain: >-
+    %system_name% is een op tijd gebaseerd muntsysteem.
+    %amount% %currency% stemt overeen met %dec_hours% decimale uren.
+    Om je eigen Systeem in balans te brengen met deze interSysteem
+    transactie dien je het equivalent van %dec_hours% decimale uren
+    in je eigen munteenheid over te maken aan account %to_account%
+    vanuit een interSysteem rekening in je Systeem.
+  amount_dec_explain: >-
+    %dec_hours% decimale uren stemt overeen met
+transaction_to_intersystem_mail_type_admin:
+  subject: >-
+    Kopie van bericht, interSysteem transactie van %system_name% naar %remote_system_name%
+  explain: >-
+    Dit is een kopie van het interSysteem bericht dat verstuurd werd naar
+    de administratie van %remote_system_name%. De administratie van dit andere
+    Systeem dient deze transactie te verwerken.
+  amount_time_explain: >-
+    %amount% %currency% stemt overeen met %dec_hours% decimale uren, wat
+    overeenstemt met
+
+user_msg:
+  subject: >-
+    Bericht van %from_account%
+  explain: >-
+    Gebruiker %link_open%%from_account%%link_close%
+    zendt je het bericht hieronder via de webtoepassing.
+user_msg_copy:
+  subject: >-
+    Kopie van je bericht aan %to_account%
+  explain: >-
+    Dit is een kopie van het bericht dat je aan
+    %link_open%%to_account%%link_close%
+    verzonden hebt via de webtoepassing.
+user_msg_intersystem:
+  subject: >-
+    Bericht van %from_account% [%from_system_name%]
+  explain:
+    Gebruiker %from_account% van %from_system_name%
+    zendt je via de webtoepassing het bericht hieronder.
+user_msg_copy_intersystem:
+  subject: >-
+    Kopie van je bericht aan %to_account% [%to_system_name%]
+  explain: >-
+    Dit is een kopie van het bericht dat je aan
+    %to_account% van %to_system_name% verzonden hebt
+    via de webtoepassing.
+
+message_msg:
+  subject_offer: >-
+    Reactie op je Aanbod "%message_title%"
+  subject_want: >-
+    Reactie op je Vraag "%message_title%"
+  explain_offer: >-
+    Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
+    stuurt je via de webtoepassing een reactie op je aanbod
+    "%link_message_open%%message_title%%link_message_close%".
+  explain_want: >-
+    Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
+    zendt je via de webtoepassing een reactie op je vraag
+    "%link_message_open%%message_title%%link_message_close%".
+message_msg_copy:
+  subject_offer: >-
+    Kopie van je Reactie op het Aanbod "%message_title%"
+  subject_want:
+    Kopie van je Reactie op de Vraag "%message_title%"
+  explain_offer: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %link_to_account_open%%to_account%%link_to_account_close%
+    op het aanbod "%link_message_open%%message_title%%link_message_close%".
+  explain_want: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %link_to_account_open%%to_account%%link_to_account_close%
+    op de vraag "%link_message_open%%message_title%%link_message_close%".
+message_msg_intersystem:
+  explain_offer: >-
+    Gebruiker %from_account% van %from_system_name%
+    stuurt je via de webtoepassing een reactie op je aanbod
+    "%link_message_open%%message_title%%link_message_close%".
+  explain_want: >-
+    Gebruiker %from_account% van %from_system_name%
+    zendt je via de webtoepassing een reactie op je vraag
+    "%link_message_open%%message_title%%link_message_close%".
+message_msg_copy_intersystem:
+  explain_offer: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %to_account% van %to_system_name%
+    op het aanbod "%message_title%".
+  explain_want: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan %to_account% van %to_system_name%
+    op de vraag "%message_title%".
+
+message_extend:
+  1_week: 1 week
+  2_weeks: 2 weken
+  4_weeks: 4 weken
+  2_months: 2 maanden
+  6_months: 6 maanden
+  1_year: 1 jaar
+  5_years: 5 jaren
+
+message_extend_offer:
+  subject: >-
+    Je aanbod "%message_title%" is vervallen
+  explain: >-
+    Je aanbod "%link_open%%message_title%%link_close%"
+    is vervallen en zal over %days% dagen van de
+    website verwijderd worden. Je kan het verlengen
+    door één van de links hieronder te gebruiken.
+    Als je niet ingelogd bent, zal je eerst gevraagd
+    worden in te loggen.
+message_extend_want:
+  subject: >-
+    Je vraag "%message_title%" is vervallen
+  explain: >-
+    Je vraag "%link_open%%message_title%%link_close%"
+    is vervallen en zal over %days% van de
+    website verwijderd worden. Je kan het verlengen
+    door één van de links hieronder te gebruiken.
+    Als je niet ingelogd bent, zal je eerst gevraagd
+    worden in te loggen.
+
+mass_transaction_many_to_one:
+  subject: >-
+    Nieuwe Veel naar Eén Massa Transactie
+  title: >-
+    Notificatie Massa Transactie "Veel naar Eén"
+mass_transaction_one_to_many:
+  subject: >-
+    Nieuwe Eén naar Veel Massa Transactie
+  title: >-
+    Notificatie Massa Transactie "Eén naar Veel"
+
+periodic_overview:
+  subject: >-
+    Periodiek Overzicht
+  unsubscribe: >-
+    Je ontvangt deze E-mail omdat de optie
+    'Periodieke Overzichts E-mail' aangevinkt
+    staat in %link_open%je instellingen%link_close%
+  ads:
+    title: >-
+      Recent Vraag en Aanbod
+    explain: >-
+      Deze lijst bevat vraag en aanbod dat de afgelopen %days%
+      dagen %link_open%online%link_close% is geplaatst.
+    none: >-
+      Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
+    add: >-
+      %link_open%Geef zelf je eigen Vraag of Aanbod in%link_close%.
+  intersystem:
+    title: >-
+      Recent InterSysteem Vraag en Aanbod
+    explain: >-
+      %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
+      naar het betreffende InterSysteem.
+    system_name: >-
+      Systeem: %name%
+    account: >-
+      Ingegeven door: %account% [%system_name%]
+    offer: >-
+      Aanbod: %msg%
+    want: >-
+      Vraag: %msg%
+  forum:
+    title: >-
+      Forum
+    none: >-
+      Er zijn geen nieuwe berichten in
+      het %link_open%forum%link_close%.
+  docs:
+    title: >-
+      Nieuwe Documenten
+    none: >-
+      Er zijn geen nieuwe documenten.
+  news:
+    title: >-
+      %link_open%Nieuws%link_close%
+    none: >-
+      Er zijn momenteel geen nieuwsberichten.
+    creator: >-
+      Ingegeven door %link_open%%account%%link_close%
+    no_recent: >-
+      Er zijn geen nieuwe nieuwsberichten.
+  new_users:
+    title: >-
+      Nieuwe Leden
+    none: >-
+      Momenteel zijn er geen nieuwe leden.
+    no_recent: >-
+      Er zijn geen nieuwe leden bijgekomen.
+  leaving_users:
+    title: >-
+      Uitstappers
+    none: >-
+      Momenteel zijn er geen uitstappende leden.
+    no_recent: >-
+      Er zijn geen extra uitstappende leden.
+  transactions:
+    title: >-
+      Recente Transacties
+    explain: >-
+      Deze lijst toont de transacties van
+      de laatste %days% dagen.
+    amount_from_to: >-
+      %amount% %currency% van %from% naar %to%
+    intersystem_account: >-
+      %account% [%system_name%]
+    none: >-
+      Er zijn geen recente transacties.

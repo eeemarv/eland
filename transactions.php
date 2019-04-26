@@ -2,12 +2,11 @@
 
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
-require_once __DIR__ . '/include/transactions.php';
 
 $id = $_GET['id'] ?? false;
-$add = isset($_GET['add']) ? true : false;
+$add = isset($_GET['add']);
 $edit = $_GET['edit'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
+$submit = isset($_POST['zend']);
 
 $mid = $_GET['mid'] ?? false;
 $tuid = $_GET['tuid'] ?? false;
@@ -55,6 +54,7 @@ if ($add)
 
 		$transaction['amount'] = $amount = ltrim($_POST['amount'], '0 ');;
 		$transaction['date'] = gmdate('Y-m-d H:i:s');
+		$transaction['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 
 		$group_id = trim($_POST['group_id']);
 
@@ -104,7 +104,7 @@ if ($add)
 				where letscode = ?', [$letscode_from]);
 		}
 
-		$letscode_touser = ($group_id == 'self') ? $letscode_to : $group['localletscode'];
+		$letscode_touser = $group_id == 'self' ? $letscode_to : $group['localletscode'];
 
 		$touser = $app['db']->fetchAssoc('select *
 			from ' . $app['tschema'] . '.users
@@ -284,10 +284,10 @@ if ($add)
 		}
 		else if ($group_id == 'self')
 		{
-			if ($id = insert_transaction($transaction))
+			if ($id = $app['transaction']->insert($transaction, $app['tschema']))
 			{
 				$transaction['id'] = $id;
-				mail_transaction($transaction);
+				$app['mail_transaction']->queue($transaction, $app['tschema']);
 				$app['alert']->success('Transactie opgeslagen');
 			}
 			else
@@ -299,14 +299,18 @@ if ($add)
 		}
 		else if ($group['apimethod'] == 'mail')
 		{
-			if ($id = insert_transaction($transaction))
+			$transaction['real_to'] = $letscode_to;
+
+			if ($id = $app['transaction']->insert($transaction, $app['tschema']))
 			{
 				$transaction['id'] = $id;
 				$transaction['letscode_to'] = $letscode_to;
 
-				mail_mailtype_interlets_transaction($transaction);
+				$app['mail_transaction']->queue_mail_type($transaction, $app['tschema']);
 
-				$app['alert']->success('InterSysteem transactie opgeslagen (verwerking per E-mail).');
+				$app['alert']->success('InterSysteem transactie opgeslagen. Een E-mail werd
+					verstuurd naar de administratie van het andere Systeem om de transactie aldaar
+					manueel te verwerken.');
 			}
 			else
 			{
@@ -327,7 +331,7 @@ if ($add)
 
 			cancel();
 		}
-		else if (!$app['groups']->get_schema($group_domain))
+		else if (!$app['systems']->get_schema($group_domain))
 		{
 			// The interSysteem group uses eLAS or is on another server
 
@@ -396,7 +400,7 @@ if ($add)
 
 			$trans['letscode_to'] = $letscode_to;
 
-			$soapurl = ($group['elassoapurl']) ?: $group['url'] . '/soap';
+			$soapurl = $group['elassoapurl'] ?: $group['url'] . '/soap';
 			$soapurl .= '/wsdlelas.php?wsdl';
 
 			$client = new nusoap_client($soapurl, true);
@@ -417,7 +421,7 @@ if ($add)
 				'description' 	=> $trans['description'],
 				'amount' 		=> $trans['amount'],
 				'transid' 		=> $trans['transid'],
-				'signature' 	=> sign_transaction($trans, trim($group['presharedkey'])),
+				'signature' 	=> $app['transaction']->sign($trans, trim($group['presharedkey']), $app['tschema']),
 			]);
 
 			$error = $client->getError();
@@ -475,28 +479,30 @@ if ($add)
 				http_build_query($transaction) .
 				' --', ['schema' => $app['tschema']]);
 
-			$id = insert_transaction($transaction);
+			$id = $app['transaction']->insert($transaction, $app['tschema']);
 
 			if (!$id)
 			{
-				$subject = 'interSysteem FAILURE!';
-				$text = 'WARNING: LOCAL COMMIT OF TRANSACTION ' . $transaction['transid'] . ' FAILED!!!  This means the transaction is not balanced now!';
-				$text .= ' group:' . $group['groupname'];
-
 				$app['queue.mail']->queue([
 					'schema'		=> $app['tschema'],
 					'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
-					'subject' 		=> $subject,
-					'text' 			=> $text,
+					'template'		=> 'transaction/intersystem_fail',
+					'vars'			=> [
+						'remote_system_name'	=> $group['groupname'],
+						'transaction'			=> $transaction,
+					],
 				], 9000);
 
-				$app['alert']->error('De lokale commit van de interSysteem transactie is niet geslaagd. ' . $contact_admin);
+				$app['alert']->error('De lokale commit van de interSysteem
+					transactie is niet geslaagd. ' .
+					$contact_admin);
 				cancel();
 			}
 
 			$transaction['id'] = $id;
 
-			mail_transaction($transaction);
+			// to eLAS intersystem
+			$app['mail_transaction']->queue($transaction, $app['tschema']);
 
 			$app['alert']->success('De interSysteem transactie werd verwerkt.');
 			cancel();
@@ -505,7 +511,7 @@ if ($add)
 		{
 			// the interSystem group is on the same server (eLAND)
 
-			$remote_schema = $app['groups']->get_schema($group_domain);
+			$remote_schema = $app['systems']->get_schema($group_domain);
 
 			$to_remote_user = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -737,8 +743,9 @@ if ($add)
 				$app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
 				$app['user_cache']->clear($to_remote_user['id'], $remote_schema);
 
-				mail_transaction($trans_org);
-				mail_transaction($transaction, $remote_schema);
+				// to eLAND interSystem
+				$app['mail_transaction']->queue($trans_org, $app['tschema']);
+				$app['mail_transaction']->queue($transaction, $remote_schema);
 
 				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
 					$amount . ' from user: ' .  link_user($fromuser['id'], $app['tschema'], false) .
@@ -765,7 +772,7 @@ if ($add)
 	{
 		//GET form
 
-		$transid = generate_transid();
+		$transid = $app['transaction']->generate_transid($app['s_id'], $app['server_name']);
 
 		$app['predis']->set($redis_transid_key, $transid);
 		$app['predis']->expire($redis_transid_key, 3600);
@@ -783,9 +790,9 @@ if ($add)
 
 		if ($tus)
 		{
-			if ($app['groups']->get_host($tus))
+			if ($app['systems']->get_host($tus))
 			{
-				$host_from_tus = $app['groups']->get_host($tus);
+				$host_from_tus = $app['systems']->get_host($tus);
 
 				$group_id = $app['db']->fetchColumn('select id
 					from ' . $app['tschema'] . '.letsgroups
@@ -882,14 +889,14 @@ if ($add)
 	$app['assets']->add([
 		'typeahead',
 		'typeahead.js',
-		'transaction_add.js'
+		'transaction_add.js',
 	]);
 
 	$balance = $app['session_user']['saldo'];
 
-	$groups = [];
+	$systems = [];
 
-	$groups[] = [
+	$systems[] = [
 		'groupname' => $app['config']->get('systemname', $app['tschema']),
 		'id'		=> 'self',
 	];
@@ -905,18 +912,19 @@ if ($add)
 			$map_eland_schema_url[$eland_url] = $remote_eland_schema;
 		}
 
-		$eland_groups = $app['db']->executeQuery('select id,
+		$eland_systems = $app['db']->executeQuery('select id,
 				groupname, url
 			from ' . $app['tschema'] . '.letsgroups
-			where apimethod <> \'internal\'
+			where apimethod = \'elassoap\'
 				and url in (?)',
 				[$eland_urls],
 				[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
 
-		foreach ($eland_groups as $g)
+		foreach ($eland_systems as $sys)
 		{
-			$g['remote_schema'] = $map_eland_schema_url[$g['url']];
-			$groups[] = $g;
+			$sys['eland'] = true;
+			$sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
+			$systems[] = $sys;
 		}
 	}
 
@@ -929,20 +937,39 @@ if ($add)
 			$ids[] = $key;
 		}
 
-		$elas_groups = $app['db']->executeQuery('select id, groupname
+		$elas_systems = $app['db']->executeQuery('select id, groupname
 			from ' . $app['tschema'] . '.letsgroups
-			where apimethod <> \'internal\'
+			where apimethod = \'elassoap\'
 				and id in (?)',
 				[$ids],
 				[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
-		foreach ($elas_groups as $g)
+		foreach ($elas_systems as $sys)
 		{
-			$groups[] = $g;
+			$sys['elas'] = true;
+			$systems[] = $sys;
 		}
 	}
 
-	$groups_en = count($groups) > 1 && $app['config']->get('currencyratio', $app['tschema']) > 0 ? true : false;
+	if ($app['config']->get('template_lets', $app['tschema'])
+		&& $app['config']->get('interlets_en', $app['tschema']))
+	{
+		$mail_systems = $app['db']->executeQuery('select l.id, l.groupname
+			from ' . $app['tschema'] . '.letsgroups l, ' .
+				$app['tschema'] . '.users u
+			where l.apimethod = \'mail\'
+				and u.letscode = l.localletscode
+				and u.status in (1, 2, 7)');
+
+		foreach ($mail_systems as $sys)
+		{
+			$sys['mail'] = true;
+			$systems[] = $sys;
+		}
+	}
+
+	$systems_en = count($systems) > 1
+		&& $app['config']->get('currencyratio', $app['tschema']) > 0;
 
 	$h1 = 'Nieuwe transactie';
 	$fa = 'exchange';
@@ -967,7 +994,7 @@ if ($add)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="letscode_from" name="letscode_from" ';
 	echo 'data-typeahead-source="';
-	echo $groups_en ? 'group_self' : 'letscode_to';
+	echo $systems_en ? 'group_self' : 'letscode_to';
 	echo '" ';
 	echo 'value="';
 	echo $transaction['letscode_from'];
@@ -977,7 +1004,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	if ($groups_en)
+	if ($systems_en)
 	{
 		echo '<div class="form-group">';
 		echo '<label for="group_id" class="control-label">';
@@ -990,13 +1017,13 @@ if ($add)
 		echo '<select type="text" class="form-control" ';
 		echo 'id="group_id" name="group_id">';
 
-		foreach ($groups as $l)
+		foreach ($systems as $sys)
 		{
 			echo '<option value="';
-			echo $l['id'];
+			echo $sys['id'];
 			echo '" ';
 
-			if ($l['id'] == 'self')
+			if ($sys['id'] == 'self')
 			{
 				echo 'id="group_self" ';
 
@@ -1025,9 +1052,9 @@ if ($add)
 
 				$config_schema = $app['tschema'];
 			}
-			else if (isset($l['remote_schema']))
+			else if (isset($sys['eland']))
 			{
-				$remote_schema = $l['remote_schema'];
+				$remote_schema = $sys['remote_schema'];
 
 				$typeahead = $app['typeahead']->get([[
 					'eland_intersystem_accounts', [
@@ -1037,14 +1064,19 @@ if ($add)
 
 				$config_schema = $remote_schema;
 			}
-			else
+			else if (isset($sys['elas']))
 			{
 				$typeahead = $app['typeahead']->get([[
 					'elas_intersystem_accounts', [
 					'schema'	=> $app['tschema'],
-					'group_id'	=> $l['id'],
+					'group_id'	=> $sys['id'],
 				]]]);
 
+				unset($config_schema);
+			}
+			else if (isset($sys['mail']))
+			{
+				$typeahead = '';
 				unset($config_schema);
 			}
 
@@ -1064,11 +1096,28 @@ if ($add)
 				echo $app['config']->get('balance_equilibrium', $config_schema) . '"';
 			}
 
-			echo ' data-typeahead="' . $typeahead . '"';
-			echo $l['id'] === $group_id ? ' selected="selected"' : '';
+			if ($typeahead)
+			{
+				echo ' data-typeahead="' . $typeahead . '"';
+			}
+
+			echo $sys['id'] == $group_id ? ' selected="selected"' : '';
 			echo '>';
-			echo htmlspecialchars($l['groupname'], ENT_QUOTES);
-			echo $l['id'] === 'self' ? ' (eigen Systeem)' : ' (interSysteem)';
+			echo htmlspecialchars($sys['groupname'], ENT_QUOTES);
+
+			if ($sys['id'] === 'self')
+			{
+				echo ': eigen Systeem';
+			}
+			else if (isset($sys['eland']) || isset($sys['elas']))
+			{
+				echo ': interSysteem';
+			}
+			else if (isset($sys['mail']))
+			{
+				echo ': manueel interSysteem';
+			}
+
 			echo '</option>';
 		}
 
@@ -1116,7 +1165,7 @@ if ($add)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="letscode_to" name="letscode_to" ';
 
-	if ($groups_en)
+	if ($systems_en)
 	{
 		echo 'data-typeahead-source="group_id" ';
 	}
@@ -1135,18 +1184,24 @@ if ($add)
 	echo '" required>';
 	echo '</div>';
 
-	echo '<ul class="account-info">';
+	echo '<ul class="account-info" id="account_info">';
 
-	echo '<li>Dit veld geeft autosuggesties door ';
+	echo '<li id="info_typeahead">Dit veld geeft autosuggesties door ';
 	echo 'Naam of Account Code te typen. ';
 
-	if (count($groups) > 1)
+	if (count($systems) > 1)
 	{
 		echo 'Indien je een interSysteem transactie doet, ';
 		echo 'kies dan eerst het juiste interSysteem om de ';
 		echo 'juiste suggesties te krijgen.';
 	}
 
+	echo '</li>';
+	echo '<li class="hidden" id="info_no_typeahead">';
+	echo 'Dit veld geeft GEEN autosuggesties aangezien het geselecteerde ';
+	echo 'interSysteem manueel is. Er is geen automatische data-uitwisseling ';
+	echo 'met dit Systeem. Transacties worden manueel verwerkt ';
+	echo 'door de administratie in het andere Systeem.';
 	echo '</li>';
 	echo '</ul>';
 
@@ -1260,7 +1315,7 @@ if ($add)
  * interSystem accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = $app['interlets_groups']->get_eland_accounts_schemas($app['tschema']);
+$interlets_accounts_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 
 $s_inter_schema_check = array_merge($app['intersystem_ary']['eland'],
 	[$app['s_schema'] => true]);
@@ -1992,7 +2047,7 @@ if (isset($filter['fdate']) && $filter['fdate'])
 {
 	$fdate_sql = $app['date_format']->reverse($filter['fdate'], $app['tschema']);
 
-	if ($fdate_sql === false)
+	if ($fdate_sql === '')
 	{
 		$app['alert']->warning('De begindatum is fout geformateerd.');
 	}
@@ -2008,7 +2063,7 @@ if (isset($filter['tdate']) && $filter['tdate'])
 {
 	$tdate_sql = $app['date_format']->reverse($filter['tdate'], $app['tschema']);
 
-	if ($tdate_sql === false)
+	if ($tdate_sql === '')
 	{
 		$app['alert']->warning('De einddatum is fout geformateerd.');
 	}
@@ -2524,7 +2579,16 @@ if (isset($filter['uid']))
 
 		echo '<td>';
 		echo '<span class="text-';
-		echo $t['id_from'] === $filter['uid'] ? 'danger">-' : 'success">+';
+
+		if ($t['id_from'] == $filter['uid'])
+		{
+			echo 'danger">-';
+		}
+		else
+		{
+			echo 'success">+';
+		}
+
 		echo $t['amount'];
 		echo '</span></td>';
 
@@ -2534,7 +2598,7 @@ if (isset($filter['uid']))
 
 		echo '<td>';
 
-		if ($t['id_from'] === $filter['uid'])
+		if ($t['id_from'] == $filter['uid'])
 		{
 			if ($t['real_to'])
 			{

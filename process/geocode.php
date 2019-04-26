@@ -16,7 +16,7 @@ $loop_count = 1;
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(120))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -28,5 +28,5 @@ while (true)
 		$app['queue.geocode']->process($record['data']);
 	}
 
-	$app['monitor_process']->periodic_log(5000);
+	$app['monitor_process']->periodic_log();
 }

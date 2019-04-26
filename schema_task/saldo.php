@@ -4,17 +4,14 @@ namespace schema_task;
 
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use Predis\Client as Redis;
 use service\xdb;
 use service\cache;
 use Monolog\Logger;
 use queue\mail;
-use service\date_format;
-use service\distance;
 
 use service\schedule;
-use service\groups;
-use service\interlets_groups;
+use service\systems;
+use service\intersystems;
 use service\config;
 use service\mail_addr_user;
 
@@ -22,86 +19,51 @@ class saldo extends schema_task
 {
 	protected $db;
 	protected $xdb;
-	protected $redis;
 	protected $cache;
 	protected $monolog;
 	protected $mail;
-	protected $s3_url;
-	protected $protocol;
-	protected $date_format;
-	protected $distance;
-	protected $interlets_groups;
+	protected $intersystems;
 	protected $config;
 	protected $mail_addr_user;
 
 	public function __construct(
 		db $db,
 		xdb $xdb,
-		Redis $redis,
 		cache $cache,
 		Logger $monolog,
 		mail $mail,
-		string $s3_url,
-		string $protocol,
-		date_format $date_format,
-		distance $distance,
 		schedule $schedule,
-		groups $groups,
-		interlets_groups $interlets_groups,
+		systems $systems,
+		intersystems $intersystems,
 		config $config,
 		mail_addr_user $mail_addr_user
 	)
 	{
-		parent::__construct($schedule, $groups);
+		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->xdb = $xdb;
-		$this->redis = $redis;
 		$this->cache = $cache;
 		$this->monolog = $monolog;
 		$this->mail = $mail;
-		$this->s3_url = $s3_url;
-		$this->protocol = $protocol;
-		$this->date_format = $date_format;
-		$this->interlets_groups = $interlets_groups;
+		$this->intersystems = $intersystems;
 		$this->config = $config;
 		$this->mail_addr_user = $mail_addr_user;
 	}
 
 	function process():void
 	{
-
-		// vars
-
-		$host = $this->groups->get_host($this->schema);
-
-		if (!$host)
-		{
-			return;
-		}
-
-		$base_url = $this->protocol . $host;
-
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config->get('saldofreqdays', $this->schema) * 86400);
-
-		$msg_url = $base_url . '/messages.php?id=';
-		$msgs_url = $base_url . '/messages.php?src=p';
-		$news_url = $base_url . '/news.php?id=';
-		$user_url = $base_url . '/users.php?id=';
-		$login_url = $base_url . '/login.php?login=';
-		$new_message_url = $base_url . '/messages.php?add=1';
-		$new_transaction_url = $base_url . '/transactions.php?add=1';
-		$account_edit_url = $base_url . '/users.php?edit=';
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
-		$forum = $interlets = $docs = [];
-		$mailaddr = $mailaddr_public = $saldo_mail = [];
+		$forum = $intersystem = $docs = [];
+		$mailaddr = $saldo_mail = [];
 
 	// get blocks
 
 		$forum_en = $this->config->get('forum_en', $this->schema) ? true : false;
-		$interlets_en = $this->config->get('interlets_en', $this->schema) ? true : false;
-		$interlets_en = $interlets_en && $this->config->get('template_lets', $this->schema) ? true : false;
+		$intersystem_en = $this->config->get('interlets_en', $this->schema) ? true : false;
+		$intersystem_en = $intersystem_en && $this->config->get('template_lets', $this->schema) ? true : false;
 
 		$blocks_sorted = $block_options = [];
 
@@ -118,7 +80,7 @@ class saldo extends schema_task
 				continue;
 			}
 
-			if ($block === 'interlets' && !$interlets_en)
+			if ($block === 'interlets' && !$intersystem_en)
 			{
 				continue;
 			}
@@ -127,10 +89,10 @@ class saldo extends schema_task
 			$blocks_sorted[] = $block;
 		}
 
-	// fetch active users
+	// fetch all active users
 
 		$rs = $this->db->prepare('select u.id,
-				u.name, u.saldo, u.status, u.minlimit, u.maxlimit,
+				u.name, u.saldo, u.status,
 				u.letscode, u.postcode, u.cron_saldo
 			from ' . $this->schema . '.users u
 			where u.status in (1, 2)');
@@ -160,7 +122,6 @@ class saldo extends schema_task
 			$user_id = $row['id'];
 			$mail = $row['value'];
 			$mailaddr[$user_id][] = $mail;
-			$mailaddr_public[$user_id][] = $row['flag_public'];
 
 			if (!$users[$user_id] || !$users[$user_id]['cron_saldo'])
 			{
@@ -210,16 +171,6 @@ class saldo extends schema_task
 				$addr[$row['id']] = $row['value'];
 				$addr_public[$row['id']] = $row['flag_public'];
 				$users[$row['id']]['adr'] = $row['value'];
-
-				$geo = $this->cache->get('geo_' . $row['value']);
-
-				if (count($geo))
-				{
-					if (isset($geo['lat']) && isset($geo['lng']))
-					{
-						$users_geo[$row['id']] = $geo;
-					}
-				}
 			}
 
 		// fetch messages
@@ -227,8 +178,7 @@ class saldo extends schema_task
 			$rs = $this->db->prepare('select m.id, m.content,
 					m."Description" as description,
 					m.msg_type, m.id_user,
-					m.amount, m.units,
-					u.name, u.letscode, u.postcode
+					m.amount, m.units
 				from ' . $this->schema . '.messages m, ' .
 					$this->schema . '.users u
 				where m.id_user = u.id
@@ -248,44 +198,37 @@ class saldo extends schema_task
 				$row['offer'] = $row['type'] == 'offer' ? true : false;
 				$row['want'] = $row['type'] == 'want' ? true : false;
 				$row['images'] = $image_ary[$row['id']];
-				$row['url'] = $base_url . '/messages.php?id=' . $row['id'];
 				$row['mail'] = $mailaddr[$uid] ?? '';
-				$row['user'] = $row['letscode'] . ' ' . $row['name'];
-				$row['user_url'] = $base_url . '/users.php?id=' . $uid;
 				$row['addr'] = str_replace(' ', '+', $adr);
 				$row['adr'] = $adr;
-
-				if (isset($users_geo[$uid]))
-				{
-					$row['geo'] = $users_geo[$uid];
-				}
 
 				$messages[] = $row;
 			}
 		}
 
+		error_log(json_encode($block_options));
+
 	// interSystem messages
 
 		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
 		{
-			$eland_ary = $this->interlets_groups->get_eland($this->schema);
+			$eland_ary = $this->intersystems->get_eland($this->schema);
 
 			foreach ($eland_ary as $sch => $d)
 			{
-				$interlets_msgs = [];
+				$intersystem_msgs = [];
 
 				$rs = $this->db->prepare('select m.id, m.content,
 						m."Description" as description,
-						m.msg_type, m.id_user,
-						m.amount, m.units,
-						u.name, u.letscode, u.postcode
+						m.msg_type, m.id_user as user_id,
+						m.amount, m.units
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
 					where m.id_user = u.id
 						and m.local = \'f\'
-						and u.status IN (1, 2)
+						and u.status in (1, 2)
 						and m.cdate >= ?
-					order BY m.cdate DESC');
+					order by m.cdate DESC');
 
 				$rs->bindValue(1, $treshold_time);
 				$rs->execute();
@@ -295,25 +238,26 @@ class saldo extends schema_task
 					$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 					$row['offer'] = $row['type'] == 'offer' ? true : false;
 					$row['want'] = $row['type'] == 'want' ? true : false;
-					$row['user'] = $row['letscode'] . ' ' . $row['name'];
 
-					$interlets_msgs[] = $row;
+					$intersystem_msgs[] = $row;
 				}
 
-				if (count($interlets_msgs))
+				if (count($intersystem_msgs))
 				{
-					$interlets[] = [
-						'group'		=> $this->config->get('systemname', $sch),
-						'messages'	=> $interlets_msgs,
+					$intersystem[] = [
+						'eland_server'	=> true,
+						'elas'			=> false,
+						'schema'		=> $sch,
+						'messages'		=> $intersystem_msgs,
 					];
 				}
 			}
 
-			$elas_ary = $this->interlets_groups->get_elas($this->schema);
+			$elas_ary = $this->intersystems->get_elas($this->schema);
 
 			foreach ($elas_ary as $group_id => $ary)
 			{
-				$interlets_msgs = [];
+				$intersystem_msgs = [];
 
 				$domain = strtolower(parse_url($ary['url'], PHP_URL_HOST)); // TODO: switch to $ary['domain']
 
@@ -330,14 +274,16 @@ class saldo extends schema_task
 					$m['offer'] = $m['type'] == 'offer' ? true : false;
 					$m['want'] = $m['type'] == 'want' ? true : false;
 
-					$interlets_msgs[] = $m;
+					$intersystem_msgs[] = $m;
 				}
 
-				if (count($interlets_msgs))
+				if (count($intersystem_msgs))
 				{
-					$interlets[] = [
-						'group'		=> $ary['groupname'],
-						'messages'	=> $interlets_msgs,
+					$intersystem[] = [
+						'elas'			=> true,
+						'eland_server'	=> false,
+						'system_name'	=> $ary['groupname'],
+						'messages'		=> $intersystem_msgs,
 					];
 				}
 			}
@@ -357,15 +303,12 @@ class saldo extends schema_task
 				$news_access_ary[$row['eland_id']] = $row['data']['access'];
 			}
 
-			$query = 'select n.*, u.name, u.letscode
-				from ' . $this->schema . '.news n, ' .
-					$this->schema . '.users u
+			$query = 'select n.*
+				from ' . $this->schema . '.news n
 				where n.approved = \'t\'
-					and n.published = \'t\'
-					and n.id_user = u.id ';
+					and n.published = \'t\' ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
-
 			$query .= 'order by n.itemdate ';
 			$query .= $this->config->get('news_order_asc', $this->schema) === '1' ? 'asc' : 'desc';
 
@@ -387,7 +330,7 @@ class saldo extends schema_task
 				else
 				{
 					$this->xdb->set('news_access',
-						$news_id,
+						$row['id'],
 						['access' => 'interlets'],
 						$this->schema);
 
@@ -399,12 +342,6 @@ class saldo extends schema_task
 					continue;
 				}
 
-				$row['url'] = $base_url . '/news.php?id=' . $row['id'];
-				$row['user'] = $row['letscode'] . ' ' . $row['name'];
-				$row['user_url'] = $base_url . '/users.php?id=' . $row['id_user'];
-				$row['itemdate_formatted'] =
-					$this->date_format->get($row['itemdate'], 'day', $this->schema);
-
 				$news[] = $row;
 			}
 		}
@@ -414,8 +351,7 @@ class saldo extends schema_task
 		if (isset($block_options['new_users']))
 		{
 
-			$rs = $this->db->prepare('select u.id, u.name,
-					u.letscode, u.postcode
+			$rs = $this->db->prepare('select u.id
 				from ' . $this->schema . '.users u
 				where u.status = 1
 					and u.adate > ?');
@@ -428,10 +364,7 @@ class saldo extends schema_task
 
 			while ($row = $rs->fetch())
 			{
-				$row['url'] = $base_url . '/users.php?id=' . $row['id'];
-				$row['text'] = $row['letscode'] . ' ' . $row['name'];
-
-				$new_users[] = $row;
+				$new_users[] = $row['id'];
 			}
 		}
 
@@ -439,11 +372,14 @@ class saldo extends schema_task
 
 		if (isset($block_options['leaving_users']))
 		{
-			$query = 'select u.id, u.name, u.letscode, u.postcode
+			$query = 'select u.id
 				from ' . $this->schema . '.users u
 				where u.status = 2';
 
-			$query .= ($block_options['leaving_users'] == 'recent') ? ' and mdate > ?' : '';
+			if ($block_options['leaving_users'] === 'recent')
+			{
+				$query .= ' and mdate > ?';
+			}
 
 			$rs = $this->db->prepare($query);
 
@@ -456,10 +392,7 @@ class saldo extends schema_task
 
 			while ($row = $rs->fetch())
 			{
-				$row['url'] = $base_url . '/users.php?id=' . $row['id'];
-				$row['text'] = $row['letscode'] . ' ' . $row['name'];
-
-				$leaving_users[] = $row;
+				$leaving_users[] = $row['id'];
 			}
 		}
 
@@ -467,35 +400,16 @@ class saldo extends schema_task
 
 		if (isset($block_options['transactions']))
 		{
-			$rs = $this->db->prepare('select t.id_from, t.id_to,
-					t.real_from, t.real_to,
-					t.amount, t.cdate, t.description,
-					uf.name as from_name, uf.letscode as from_letscode,
-					ut.name as to_name, ut.letscode as to_letscode
-				from ' . $this->schema . '.transactions t, ' .
-					$this->schema . '.users uf, ' .
-					$this->schema . '.users ut
-				where t.id_from = uf.id
-					and t.id_to = ut.id
-					and t.cdate > ?');
+			$rs = $this->db->prepare('select t.*
+				from ' . $this->schema . '.transactions t
+				where t.cdate > ?');
 
 			$rs->bindValue(1, $treshold_time);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
 			{
-				$transactions[] = [
-					'amount'	=> $row['amount'],
-					'description'	=> $row['description'],
-					'to_user'		=> $row['to_letscode'] . ' ' . $row['to_name'],
-					'to_user_url'	=> $base_url . '/users.php?id=' . $row['id_to'],
-					'from_user'		=> $row['from_letscode'] . ' ' . $row['from_name'],
-					'from_user_url'	=> $base_url . '/users.php?id=' . $row['id_from'],
-					'real_to'		=> $row['real_to'],
-					'real_from'		=> $row['real_from'],
-					'to_name'		=> $row['to_name'],
-					'from_name'		=> $row['from_name'],
-				];
+				$transactions[] = $row;
 			}
 		}
 
@@ -505,7 +419,6 @@ class saldo extends schema_task
 
 		if (isset($block_options['forum']))
 		{
-
 			// new topics
 
 			$rows = $this->xdb->get_many([
@@ -524,7 +437,7 @@ class saldo extends schema_task
 					$forum[] = [
 						'subject'	=> $data['subject'],
 						'content'	=> $data['content'],
-						'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
+						'id'		=> $row['eland_id'],
 						'ts'		=> $row['ts'],
 					];
 
@@ -563,7 +476,7 @@ class saldo extends schema_task
 						$forum[] = [
 							'subject'	=> $data['subject'],
 							'content'	=> $data['content'],
-							'url'		=> $base_url . '/forum.php?t=' . $row['eland_id'],
+							'id'		=> $row['eland_id'],
 							'ts'		=> $row['ts'],
 						];
 					}
@@ -588,11 +501,9 @@ class saldo extends schema_task
 
 					$docs[] = [
 						'name'			=> $data['name'] ?? $data['org_filename'],
-						'url'			=> $this->s3_url . $data['filename'],
+						'filename'		=> $data['filename'],
 						'ts'			=> $row['ts'],
 					];
-
-					$forum_topics[$row['eland_id']] = true;
 				}
 			}
 		}
@@ -600,33 +511,16 @@ class saldo extends schema_task
 	//
 
 		$vars = [
-			'group'		=> [
-				'name'				=> $this->config->get('systemname', $this->schema),
-				'tag'				=> $this->config->get('systemtag', $this->schema),
-				'currency'			=> $this->config->get('currency', $this->schema),
-				'support'			=> explode(',', $this->config->get('support', $this->schema)),
-				'saldofreqdays'		=> $this->config->get('saldofreqdays', $this->schema),
-			],
-
-			's3_url'				=> $this->s3_url,
 			'new_users'				=> $new_users,
 			'leaving_users'			=> $leaving_users,
 			'news'					=> $news,
-			'news_url'				=> $base_url . '/news.php?src=p',
 			'transactions'			=> $transactions,
-			'transactions_url'		=> $base_url . '/transactions.php?src=p',
-			'new_transaction_url'	=> $base_url . '/transactions.php?add=1',
 			'forum'					=> $forum,
-			'forum_url'				=> $base_url . '/forum.php?src=p',
 			'docs'					=> $docs,
-			'docs_url'				=> $base_url . '/docs.php?src=p',
 			'messages'				=> $messages,
-			'messages_url'			=> $base_url . '/messages.php?src=p',
-			'new_message_url'		=> $base_url . '/messages.php?add=1',
-			'interlets'				=> $interlets,
+			'intersystem'			=> $intersystem,
 			'block_options'			=> $block_options,
 			'blocks_sorted'			=> $blocks_sorted,
-			'support_url'			=> $base_url . '/support.php?src=p',
 		];
 
 	// queue mail
@@ -646,31 +540,12 @@ class saldo extends schema_task
 				continue;
 			}
 
-			if (isset($users_geo[$id]))
-			{
-				$users[$id]['geo'] = $users_geo[$id];
-			}
-
-			//
-			if ($users[$id]['minlimit'] === -999999999)
-			{
-				$users[$id]['minlimit'] = '';
-			}
-
-			if ($users[$id]['maxlimit'] === 999999999)
-			{
-				$users[$id]['maxlimit'] = '';
-			}
-
 			$this->mail->queue([
-				'validate_email'	=> true,
-				'schema'	=> $this->schema,
-				'to'		=> $to,
-				'template'	=> 'periodic_overview',
-				'vars'		=> array_merge($vars, [
-					'user'			=> $users[$id],
-					'url_login'		=> $base_url . '/login.php?login=' . $users[$id]['letscode'],
-					'account_edit_url'	=> $base_url . '/users.php?edit=' . $id,
+				'schema'			=> $this->schema,
+				'to'				=> $to,
+				'template'			=> 'periodic_overview/periodic_overview',
+				'vars'				=> array_merge($vars, [
+					'user_id'		=> $id,
 				]),
 			], random_int(0, 5000));
 
@@ -679,12 +554,6 @@ class saldo extends schema_task
 			$log_to[] = $log_str;
 		}
 
-		$this->monolog->debug('x-saldomail, schema: ' .
-			$this->schema . ' host:' . $host .
-			' pid: ' . getmypid() . ' uid: ' .
-			getmyuid() . ' inode: ' . getmyinode(),
-			['schema' => $this->schema]);
-
 		if (count($log_to))
 		{
 			$this->monolog->info('Saldomail queued: ' .
@@ -692,7 +561,7 @@ class saldo extends schema_task
 		}
 		else
 		{
-			$this->monolog->info('mail: no saldomail queued',
+			$this->monolog->info('Saldomail NOT queued (no users)',
 				['schema' => $this->schema]);
 		}
 

@@ -1,0 +1,38 @@
+{%- trans_default_domain 'mail' -%}
+
+{% macro html(docs) %}
+
+<h3>
+	{{- 'periodic_overview.docs.title'|trans -}}
+</h3>
+
+{%- if docs -%}
+<ul>
+	{%- for d in docs -%}
+		<li>
+			{{- s3_link_open(d.filename)|raw -}}
+				{{- d.name -}}
+			</a>
+		</li>
+	{%- endfor -%}
+</ul>
+{%- else -%}
+<p>
+	{{- 'periodic_overview.docs.none'|trans -}}
+</p>
+{%- endif -%}
+
+{%- endmacro html -%}
+
+{% macro text(docs) %}
+{% autoescape false %}
+
+{{ 'periodic_overview.docs.title'|trans|underline }}
+
+{% for d in docs %}
+* {{ d.name }} {{ s3_url(d.filename) }}
+{% else %}
+{{ 'periodic_overview.docs.none'|trans }}
+{% endfor %}
+{% endautoescape %}
+{% endmacro text %}

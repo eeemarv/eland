@@ -1,0 +1,29 @@
+{%- trans_default_domain 'mail' -%}
+<h4>
+    {{- 'label.your_account'|trans -}}
+</h4>
+
+<ul>
+<li>
+    <a href="{{- mail_url('login', {'login': account_code(user_id, schema)}, schema, email_token) -}}">
+        {{- 'label.login'|trans -}}
+    </a>
+</li>
+<li>
+    {{- 'label.account_code'|trans -}}:&nbsp;
+    <strong>
+        {{- account_code(user_id, schema) -}}
+    </strong>
+</li>
+<li>{{- 'label.username'|trans -}}:&nbsp;
+    <strong>
+        {{- username(user_id, schema) -}}
+    </strong>
+</li>
+<li>{{- 'label.balance'|trans -}}:&nbsp;
+    <strong>
+        {{- account_balance(user_id, schema) -}}
+    </strong>&nbsp;
+    {{- config('currency', schema) -}}
+</li>
+</ul>

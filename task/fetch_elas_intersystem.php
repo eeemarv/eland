@@ -6,6 +6,7 @@ use service\cache;
 use Predis\Client as redis;
 use service\typeahead;
 use Monolog\Logger;
+use util\cnst;
 
 class fetch_elas_intersystem
 {
@@ -35,16 +36,19 @@ class fetch_elas_intersystem
 		$this->monolog = $monolog;
 	}
 
-	function process()
+	function process():void
 	{
 		$this->now = time();
 		$this->now_gmdate = gmdate('Y-m-d H:i:s', $this->now);
 
-		$this->elas_domains = $this->cache->get('elas_interlets_domains');
+		$this->elas_domains = $this->cache->get(cnst::ELAS_CACHE_KEY['domains']);
+		$this->last_fetch = $this->cache->get(cnst::ELAS_CACHE_KEY['last_fetch']);
+		$this->apikeys_fails = $this->cache->get(cnst::ELAS_CACHE_KEY['apikey_fails']);
 
-		$this->last_fetch = $this->cache->get('elas_interlets_last_fetch');
-
-		$this->apikeys_fails = $this->cache->get('elas_interlets_apikeys_fails');
+		error_log('-- Last fetch --');
+		error_log(json_encode($this->last_fetch));
+		error_log('-- apikey fails --');
+		error_log(json_encode($this->apikey_fails));
 
 		$apikeys_ignore = $apikeys_fails_cleanup = [];
 
@@ -61,6 +65,12 @@ class fetch_elas_intersystem
 			}
 
 			$apikeys_fails_cleanup[] = $apikey;
+		}
+
+		if (count($apikeys_ignore))
+		{
+			error_log('Apikeys ignored (failed previously):');
+			error_log(json_encode($apikeys_ignore));
 		}
 
 		foreach ($apikeys_fails_cleanup as $apikey)
@@ -96,16 +106,21 @@ class fetch_elas_intersystem
 			{
 				if (!isset($sch_ary['remoteapikey']))
 				{
+					error_log('Remote apikey is not set for domain ' . $domain .
+						' in schema ' . $sch);
 					continue;
 				}
 
-				if (!isset($apikeys_ignore[$apikey]))
+				if (!isset($apikeys_ignore[$sch_ary['remoteapikey']]))
 				{
 					$apikeys[$domain] = $sch_ary['remoteapikey'];
 					continue;
 				}
 			}
 		}
+
+		error_log('-- apikeys --');
+		error_log(json_encode($apikeys));
 
 		$v_users = array_intersect_key($this->last_fetch['users'] ?? [], $apikeys);
 		$v_msgs = array_intersect_key($this->last_fetch['msgs'] ?? [], $apikeys);
@@ -126,6 +141,9 @@ class fetch_elas_intersystem
 			error_log('e 2');
 			return;
 		}
+
+		error_log('next domain users : ' . $next_domain_users);
+		error_log('next domain msgs : ' . $next_domain_msgs);
 
 		$last_fetch_users = $this->last_fetch['users'][$next_domain_users];
 		$last_fetch_msgs = $this->last_fetch['msgs'][$next_domain_msgs];
@@ -217,10 +235,10 @@ class fetch_elas_intersystem
 	*
 	*/
 
-	protected function update_cache()
+	protected function update_cache():void
 	{
-		$this->cache->set('elas_interlets_last_fetch', $this->last_fetch);
-		$this->cache->set('elas_interlets_apikeys_fails', $this->apikeys_fails);
+		$this->cache->set(cnst::ELAS_CACHE_KEY['last_fetch'], $this->last_fetch);
+		$this->cache->set(cnst::ELAS_CACHE_KEY['apikey_fails'], $this->apikeys_fails);
 		error_log('update cache');
 	}
 
@@ -228,7 +246,7 @@ class fetch_elas_intersystem
 	 *
 	 */
 
-	protected function fetch_msgs()
+	protected function fetch_msgs():void
 	{
 		$msgs = [];
 
@@ -389,7 +407,7 @@ class fetch_elas_intersystem
 	*
 	*/
 
-	protected function fetch_users()
+	protected function fetch_users():void
 	{
 		$crawler = $this->client->request('GET',
 			$this->url . '/rendermembers.php');

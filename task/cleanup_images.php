@@ -7,7 +7,7 @@ use service\cache;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
 use service\s3;
-use service\groups;
+use service\systems;
 
 class cleanup_images
 {
@@ -16,21 +16,21 @@ class cleanup_images
 	protected $db;
 	protected $monolog;
 	protected $s3;
-	protected $groups;
+	protected $systems;
 
 	public function __construct(
 		cache $cache,
 		db $db,
 		Logger $monolog,
 		s3 $s3,
-		groups $groups
+		systems $systems
 	)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->monolog = $monolog;
 		$this->s3 = $s3;
-		$this->groups = $groups;
+		$this->systems = $systems;
 	}
 
 	public function process():void
@@ -77,7 +77,7 @@ class cleanup_images
 			return;
 		}
 
-		if (!$this->groups->get_host($sch))
+		if (!$this->systems->get_host($sch))
 		{
 			error_log('-> unknown schema. ' . $sch . ' (no delete)');
 			return;

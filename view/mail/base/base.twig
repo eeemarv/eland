@@ -1,0 +1,52 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+    {%- if schema is defined -%}[{{- config('systemtag', schema) }}] {% endif -%}
+    {%- block subject_line -%}{%- endblock -%}
+{%- endblock subject -%}
+
+{%- block html_body -%}
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+    {%- block html_pretext -%}{%- endblock -%}
+    {%- block html_content -%}{%- endblock -%}
+    {%- block html_account_info -%}{%- endblock -%}
+    {%- block html_support -%}{%- endblock -%}
+    {%- block html_unsubscribe -%}{%- endblock -%}
+    {%- block html_footer -%}
+        {%- if schema is defined %}
+            <p>
+                {{- 'b.footer'|trans({
+                    '%link_open%': mail_link_open('home', {}, schema, email_token),
+                    '%link_close%': '</a>',
+                    '%system_name%': config('systemname', schema)
+                })|raw -}}
+            </p>
+        {%- endif -%}
+    {%- endblock html_footer -%}
+    </body>
+{%- endblock html_body -%}
+
+{% block text_body %}
+{% block text_pretext %}{% endblock %}
+{% block text_content %}{% endblock %}
+{% block text_account_info %}{% endblock %}
+{% block text_support %}{% endblock %}
+{% block text_unsubscribe %}{% endblock %}
+{% block text_footer %}
+{% if schema is defined %}
+
+{{ 'b.footer'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config('systemname', schema)
+})|raw }}
+{{ mail_url('home', {}, schema, email_token)|raw }}
+{% endif %}
+{% endblock text_footer %}
+{% endblock text_body %}

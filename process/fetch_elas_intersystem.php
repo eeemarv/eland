@@ -14,7 +14,7 @@ $app['monitor_process']->boot();
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(450))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -24,5 +24,5 @@ while (true)
 	sleep(450);
 
 	$app['task.fetch_elas_intersystem']->process();
-	$app['monitor_process']->periodic_log(100);
+	$app['monitor_process']->periodic_log();
 }

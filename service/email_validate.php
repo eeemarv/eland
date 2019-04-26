@@ -9,7 +9,8 @@ use Monolog\Logger as monolog;
 
 class email_validate
 {
-	protected $ttl = 345600; // 4 days
+	const CACHE_PREFIX = 'email_validate_token_';
+	protected $ttl = 864000; // 10 days
 	protected $db;
 	protected $xdb;
 	protected $cache;
@@ -32,7 +33,7 @@ class email_validate
 	{
 		$token = $this->token->gen();
 
-		$cache_key = 'email_validate_token_' . $token;
+		$cache_key = self::CACHE_PREFIX . $token;
 
 		$this->cache->set($cache_key, [
 			'email' 	=> strtolower($email),
@@ -45,7 +46,7 @@ class email_validate
 
 	public function validate(string $token):void
 	{
-		$cache_key = 'email_validate_token_' . $token;
+		$cache_key = self::CACHE_PREFIX . $token;
 
 		$data = $this->cache->get($cache_key, true);
 

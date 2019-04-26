@@ -11,9 +11,15 @@ header('Cache-Control: private, no-cache');
 header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') . ', http://img.letsa.net');
 
 $app['assets']->add([
-	'jquery', 'bootstrap', 'fontawesome',
-	'footable', 'autocomplete', 'base.css',
-	'print.css', 'base.js']);
+	'jquery',
+	'bootstrap',
+	'fontawesome',
+	'footable',
+	'base.css',
+	'base.js',
+]);
+
+$app['assets']->add_print_css(['print.css']);
 
 $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 $app['server_name'] = $_SERVER['SERVER_NAME'];
@@ -23,30 +29,19 @@ $app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
- * check if we are on the request hosting url.
+ * check if we are on the contact url.
  */
 $app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
 
 if ($app['script_name'] == 'index'
-	&& getenv('HOSTING_FORM_' . $app['env_server_name']))
+	&& getenv('APP_HOSTER_CONTACT_' . $app['env_server_name']))
 {
 	$app['page_access'] = 'anonymous';
-	$hosting_form = true;
+	$app['app_hoster_contact'] = getenv('APP_HOSTER_CONTACT_' . $app['env_server_name']);
 	return;
 }
 
-/*
- * permanent redirects
- */
-
-if ($app_redirect = getenv('APP_REDIRECT_' . $app['env_server_name']))
-{
-	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: ' . $app['protocol'] . $app_redirect . $app['request_uri']);
-	exit;
-}
-
-$app['tschema'] = $app['groups']->get_schema($app['server_name']);
+$app['tschema'] = $app['systems']->get_schema($app['server_name']);
 
 if (!$app['tschema'])
 {
@@ -62,9 +57,9 @@ if (getenv('WEBSITE_MAINTENANCE'))
 	exit;
 }
 
-if (isset($_GET['ev']))
+if (isset($_GET['et']))
 {
-	$app['email_validate']->validate($_GET['ev']);
+	$app['email_validate']->validate($_GET['et']);
 }
 
 /**
@@ -181,7 +176,7 @@ else if (ctype_digit((string) $app['s_id']))
 
 	if (!$app['s_group_self'] && $app['s_accountrole'] != 'guest')
 	{
-		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=';
+		$location = $app['protocol'] . $app['systems']->get_host($app['s_schema']) . '/messages.php?r=';
 		$location .= $app['session_user']['accountrole'] . '&u=' . $app['s_id'];
 		header('Location: ' . $location);
 		exit;
@@ -213,7 +208,7 @@ else if ($app['s_id'] == 'master')
 {
 	if (!$app['s_group_self'] && $app['s_accountrole'] != 'guest')
 	{
-		$location = $app['protocol'] . $app['groups']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
+		$location = $app['protocol'] . $app['systems']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
 		header('Location: ' . $location);
 		exit;
 	}
@@ -303,8 +298,8 @@ if ($app['config']->get('template_lets', $app['tschema'])
 	&& $app['config']->get('interlets_en', $app['tschema']))
 {
 	$app['intersystem_ary'] = [
-		'elas'	=> $app['interlets_groups']->get_elas($app['s_schema']),
-		'eland'	=> $app['interlets_groups']->get_eland($app['s_schema']),
+		'elas'	=> $app['intersystems']->get_elas($app['s_schema']),
+		'eland'	=> $app['intersystems']->get_eland($app['s_schema']),
 	];
 }
 else
@@ -552,7 +547,7 @@ function generate_url(string $entity, array $params = [], $sch = false):string
 
 	$params = $params ? '?' . $params : '';
 
-	$path = $sch ? $app['protocol'] . $app['groups']->get_host($sch) . '/' : $app['rootpath'];
+	$path = $sch ? $app['protocol'] . $app['systems']->get_host($sch) . '/' : $app['rootpath'];
 
 	return $path . $entity . '.php' . $params;
 }

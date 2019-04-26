@@ -3,12 +3,13 @@
 $page_access = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-if (isset($hosting_form))
+if (isset($app['app_hoster_contact']))
 {
+	[$title, $link] = explode('@', $app['app_hoster_contact']);
+
 	if (isset($_POST['zend']))
 	{
 		$mail = $_POST['mail'];
-		$system_name = $_POST['system_name'];
 		$message = $_POST['message'];
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 		$token = $_POST['token'];
@@ -21,11 +22,6 @@ if (isset($hosting_form))
 		if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 		{
 			$errors[] = 'Geen geldig E-mail adres ingevuld.';
-		}
-
-		if (!$system_name)
-		{
-			$errors[] = 'De Naam van het Systeem is niet ingevuld.';
 		}
 
 		if (!$message)
@@ -43,26 +39,23 @@ if (isset($hosting_form))
 
 		if (!count($errors))
 		{
-			$subject = 'Aanvraag hosting: ' . $system_name;
 			$text = $message . "\r\n\r\n\r\n" . 'browser: ' . $browser . "\n" . 'token: ' . $token;
 
 			$enc = getenv('SMTP_ENC') ?: 'tls';
-			$transport = Swift_SmtpTransport::newInstance(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc)
+			$transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
 				->setUsername(getenv('SMTP_USERNAME'))
 				->setPassword(getenv('SMTP_PASSWORD'));
+			$mailer = new \Swift_Mailer($transport);
+			$mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 
-			$mailer = Swift_Mailer::newInstance($transport);
-
-			$mailer->registerPlugin(new Swift_Plugins_AntiFloodPlugin(100, 30));
-
-			$msg = Swift_Message::newInstance()
-				->setSubject($subject)
+			$message = (new \Swift_Message())
+				->setSubject($title . ': Contact Formulier')
 				->setBody($text)
 				->setTo($to)
 				->setFrom($from)
 				->setReplyTo($mail);
 
-			$mailer->send($msg);
+			$mailer->send($message);
 
 			header('Location: ' . $app['rootpath'] . '?form_ok=1');
 		}
@@ -71,10 +64,12 @@ if (isset($hosting_form))
 	echo '<!DOCTYPE html>';
 	echo '<html>';
 	echo '<head>';
-	echo '<title>eLAND hosting aanvraag</title>';
+	echo '<title>Contact Formulier</title>';
 	echo $app['assets']->get_css();
-	echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-	echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+	echo '<meta http-equiv="Content-Type" ';
+	echo 'content="text/html; charset=utf-8">';
+	echo '<meta name="viewport" ';
+	echo 'content="width=device-width, initial-scale=1">';
 	echo '</head>';
 	echo '<body>';
 
@@ -83,7 +78,8 @@ if (isset($hosting_form))
 
 	echo '<div class="navbar-header">';
 
-	echo '<a href="http://letsa.net" class="navbar-brand">eLAND</a>';
+	echo '<a href="' . $link . '" ';
+	echo 'class="navbar-brand">' . $title . '</a>';
 
 	echo '</div>';
 	echo '</div>';
@@ -93,14 +89,16 @@ if (isset($hosting_form))
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	if ($_GET['form_ok'])
+	if (isset($_GET['form_ok']))
 	{
 		echo '<br><div class="panel panel-success">';
 		echo '<div class="panel-heading">';
-		echo '<h1>Uw aanvraag is verstuurd.</h1>';
+		echo '<h1>Uw bericht is verstuurd.</h1>';
 		echo '<p>Er wordt spoedig contact met u opgenomen.</p>';
 		echo '</div></div>';
-		echo '<a href="http://letsa.net" class="btn btn-default">Naar de eLAND-documentatie</a>';
+		echo '<a href="' . $link . '" ';
+		echo 'class="btn btn-default">';
+		echo 'Terug naar de thuispagina</a>';
 		echo '<br><br><br>';
 	}
 	else
@@ -111,10 +109,12 @@ if (isset($hosting_form))
 			echo '<div class="panel panel-danger">';
 			echo '<div class="panel-heading">';
 			echo '<h3>Er deed zich een fout voor.</h3>';
+
 			foreach ($errors as $error)
 			{
 				echo '<p>' . $error . '</p>';
 			}
+
 			echo '</div></div>';
 			echo '<br>';
 
@@ -125,54 +125,48 @@ if (isset($hosting_form))
 		$app['predis']->set($key, '1');
 		$app['predis']->expire($key, 7200);
 
-		echo '<h1>Aanvraag hosting eLAND</h1>';
-
-		echo '<div class="panel panel-default">';
+		echo '<h1>Contact Formulier</h1>';
+		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
 
-		echo '<form method="post" class="form-horizontal">';
+		echo '<form method="post">';
 
 		echo '<div class="form-group">';
-		echo '<label for="subject" class="col-sm-2 control-label">Naam Systeem</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="text" class="form-control" name="system_name" ';
+		echo '<label for="mail" class="control-label">';
+		echo 'E-mail*</label>';
+		echo '<input type="email" class="form-control" ';
+		echo 'id="mail" name="mail" ';
 		echo 'value="';
-		echo $system_name;
+		echo $mail ?? '';
 		echo '" required>';
-		echo '</div>';
+		echo '<p>Privacy: uw E-mail adres wordt voor ';
+		echo 'geen ander doel gebruikt dan u terug te kunnen ';
+		echo 'contacteren.</p>';
 		echo '</div>';
 
 		echo '<div class="form-group">';
-		echo '<label for="mail" class="col-sm-2 control-label">E-mail*</label>';
-		echo '<div class="col-sm-10">';
-		echo '<input type="email" class="form-control" id="mail" name="mail" ';
-		echo 'value="';
-		echo $mail;
-		echo '" required>';
-		echo '</div>';
-		echo '</div>';
-
-		echo '<div class="form-group">';
-		echo '<label for="message" class="col-sm-2 control-label">Bericht</label>';
-		echo '<div class="col-sm-10">';
-		echo '<textarea name="message" class="form-control" id="message" rows="6" required>';
-		echo $message;
+		echo '<label for="message" ';
+		echo 'class="control-label">';
+		echo 'Bericht</label>';
+		echo '<textarea name="message" ';
+		echo 'class="form-control" ';
+		echo 'id="message" rows="6" required>';
+		echo $message ?? '';
 		echo '</textarea>';
 		echo '</div>';
-		echo '</div>';
 
-		echo '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
-		echo '<input type="hidden" name="token" value="' . $token . '">';
+		echo '<input type="submit" name="zend" ';
+		echo 'value="Verzenden" class="btn btn-info">';
+		echo '<input type="hidden" name="token" ';
+		echo 'value="';
+		echo $token;
+		echo '">';
 		echo '</form>';
 
 		echo '</div>';
 		echo '</div>';
 
 		echo '<br>';
-		echo '<p>*Privacy: uw E-mail adres wordt voor ';
-		echo 'geen enkel ander doel gebruikt dan u terug te kunnen ';
-		echo 'contacteren.</p>';
-
 	}
 	echo '</div>';
 	echo '</div>';
@@ -181,8 +175,10 @@ if (isset($hosting_form))
 	echo '<br><br><br><br><br><br>';
 	echo '<footer class="footer">';
 
-	echo '<p><a href="https://eland.letsa.net">eLAND';
-	echo '</a>&nbsp; web app voor gemeenschapsmunten</p>';
+	echo '<p><a href="' . $link;
+	echo '">';
+	echo $title;
+	echo '</a></p>';
 
 	echo '</footer>';
 	echo '</div>';
@@ -190,10 +186,6 @@ if (isset($hosting_form))
 	echo '</html>';
 	exit;
 }
-
-/**
- *
- **/
 
 include __DIR__ . '/include/header.php';
 include __DIR__ . '/include/footer.php';

@@ -30,23 +30,17 @@ if ($token)
 					['password' => hash('sha512', $password)],
 					['id' => $user_id]);
 				$app['user_cache']->clear($user_id, $app['tschema']);
-				$user = $app['user_cache']->get($user_id, $app['tschema']);
 				$app['alert']->success('Paswoord opgeslagen.');
-
-				$vars = [
-					'group'			=> $app['template_vars']->get($app['tschema']),
-					'password'		=> $password,
-					'user'			=> $user,
-					'url_login'		=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
-					'support_url'	=> $app['base_url'] . '/support.php?src=p',
-				];
 
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
 					'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
-					'template'	=> 'password_reset',
-					'vars'		=> $vars,
-				]);
+					'template'	=> 'password_reset/user',
+					'vars'		=> [
+						'password'		=> $password,
+						'user_id'		=> $user_id,
+					],
+				], 10000);
 
 				header('Location: ' . $app['rootpath'] . 'login.php');
 				exit;
@@ -62,22 +56,12 @@ if ($token)
 		}
 	}
 
-	if ($email)
-	{
-		$ev_data = [
-			'token'			=> $token,
-			'user_id'		=> $user_id,
-			'script_name'	=> 'pwreset',
-			'email'			=> strtolower($email),
-		];
-
-		$app['xdb']->set('email_validated', $email, $ev_data, $app['tschema']);
-	}
-
 	$h1 = 'Nieuw paswoord ingeven.';
 	$fa = 'key';
 
-	$app['assets']->add('generate_password.js');
+	$app['assets']->add([
+		'generate_password.js',
+	]);
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -123,7 +107,7 @@ if (isset($_POST['zend']))
 	}
 	else if($email)
 	{
-		$user = $app['db']->fetchAll('select u.*
+		$user = $app['db']->fetchAll('select u.id, u.name, u.letscode
 			from ' . $app['tschema'] . '.contact c, ' .
 				$app['tschema'] . '.type_contact tc, ' .
 				$app['tschema'] . '.users u
@@ -139,27 +123,25 @@ if (isset($_POST['zend']))
 
 			if ($user['id'])
 			{
-				$token = substr(hash('sha512', $user['id'] . $app['tschema'] . time() . $email), 0, 12);
+				$user_id = $user['id'];
+
+				$token = substr(hash('sha512', $user_id . $app['tschema'] . time() . $email), 0, 12);
 				$key = $app['tschema'] . '_token_' . $token;
 
-				$app['predis']->set($key, json_encode(['user_id' => $user['id'], 'email' => $email]));
-				$app['predis']->expire($key, 3600);
-
-				$vars = [
-					'group'		=> $app['template_vars']->get($app['tschema']),
-					'token_url'	=> $app['base_url'] . '/pwreset.php?token=' . $token,
-					'user'		=> $user,
-					'url_login'	=> $app['base_url'] . '/login.php?login=' . $user['letscode'],
-				];
+				$app['predis']->set($key, json_encode(['user_id' => $user_id, 'email' => $email]));
+				$app['predis']->expire($key, 86400);
 
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
-					'to' 		=> [$email],
-					'template'	=> 'password_reset_confirm',
-					'vars'		=> $vars,
-				], 1000);
+					'to' 		=> [$email => $user['letscode'] . ' ' . $user['name']],
+					'template'	=> 'password_reset/confirm',
+					'vars'		=> [
+						'token'			=> $token,
+						'user_id'		=> $user_id,
+					],
+				], 10000);
 
-				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Opgelet, deze link blijft slechts één uur geldig.');
+				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
 				header('Location: login.php');
 				exit;

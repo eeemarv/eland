@@ -16,14 +16,21 @@ require_once __DIR__ . '/../include/default.php';
 $app['monitor_process']->boot();
 
 error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
-error_log('schemas: ' . json_encode($app['groups']->get_schemas()));
-error_log('hosts: ' . json_encode($app['groups']->get_hosts()));
+error_log(' --- ');
+error_log('schemas: ' . json_encode($app['systems']->get_schemas()));
+error_log(' --- ');
+
+$app['assets']->write_file_hash_ary();
+
+error_log('+-----------------+');
+error_log('| Worker Tasks    |');
+error_log('+-----------------+');
 
 $schema_task = new task_container($app, 'schema_task');
 
 while (true)
 {
-	if (!$app['monitor_process']->wait_most_recent(120))
+	if (!$app['monitor_process']->wait_most_recent())
 	{
 		continue;
 	}
@@ -33,5 +40,5 @@ while (true)
 		$schema_task->run();
 	}
 
-	$app['monitor_process']->periodic_log(500);
+	$app['monitor_process']->periodic_log();
 }

@@ -1,0 +1,43 @@
+{% extends 'mail/base/admin.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'register_admin.subject'|trans({
+        '%full_name%': user_fullname(user_id, schema)
+    }) -}}
+{% endblock subject_line %}
+
+{% block html_content %}
+<h3>
+    {{- 'register_admin.title'|trans -}}
+</h3>
+<p>
+    {{- 'register_admin.msg'|trans -}}:
+<br />
+<br />
+    {{- 'label.full_name'|trans -}}: {{ user_fullname(user_id, schema) -}}
+<br />
+    {{- 'label.postcode'|trans -}}: {{ postcode -}}
+<br />
+    {{- 'label.email'|trans -}}: {{ email -}}
+<br />
+<a href="{{ mail_url('users', {'id': user_id}, schema, email_token) -}}">
+    {{- 'label.link'|trans -}}
+</a>
+</p>
+{% endblock html_content %}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'register_admin.title'|trans|underline }}
+
+{{ 'register_admin.msg'|trans }}:
+
+{{ 'label.full_name'|trans }}: {{ user_fullname(user_id, schema) }}
+{{ 'label.postcode'|trans }}: {{ postcode }}
+{{ 'label.email'|trans }}: {{ email }}
+{{ 'label.link'|trans }}: {{ mail_url('users', {'id': user_id}, schema, email_token) }}
+
+{% endautoescape %}
+{% endblock text_content %}
