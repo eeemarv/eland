@@ -34,7 +34,7 @@ if ($token)
 			'schema'	=> $app['tschema'],
 			'template'	=> 'contact/copy',
 			'vars'		=> $vars,
-			'to'		=> [$data['email']],
+			'to'		=> [$data['email'] => $data['email']],
 		], 9000);
 
 		$app['queue.mail']->queue([
@@ -126,7 +126,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> [$email],
+			'to' 		=> [$email => $email],
 			'template'	=> 'contact/confirm',
 			'vars'		=> $vars,
 		], 10000);
