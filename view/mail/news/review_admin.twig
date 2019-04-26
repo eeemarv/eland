@@ -4,7 +4,7 @@
 {% block subject_line -%}
     {{- 'news_review_admin.subject'|trans({
         '%name%': news.headline
-    }) -}}
+    })|raw -}}
 {%- endblock subject_line %}
 
 {% block html_content %}
@@ -38,7 +38,7 @@
 
 {{ 'news_review_admin.action'|trans }}
 
-{{ mail_url('news', {'id': news.id}, schema) }}
+{{ mail_url('news', {'id': news.id}, schema, email_token) }}
 
 {% endautoescape %}
 {% endblock text_content %}
