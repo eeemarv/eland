@@ -48,7 +48,7 @@ class autominlimit
 
 		if (!$row)
 		{
-			return self;
+			return $this;
 		}
 
 		$data = $row['data'];
