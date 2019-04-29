@@ -4,7 +4,15 @@ $page_access = 'user';
 
 require_once __DIR__ . '/include/web.php';
 
-$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+if ($app['s_master'])
+{
+	$user_email_ary = [];
+}
+else
+{
+	$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+}
+
 $can_reply = count($user_email_ary) ? true : false;
 
 if (isset($_POST['zend']))
@@ -112,7 +120,10 @@ echo '<form method="post">';
 
 echo '<div class="form-group">';
 echo '<label for="message">Je Bericht</label>';
-echo '<textarea name="message" class="form-control" id="message" rows="4">';
+echo '<textarea name="message" ';
+echo 'class="form-control" id="message" rows="4"';
+echo $app['s_master'] ? ' disabled' : '';
+echo '>';
 echo $message;
 echo '</textarea>';
 echo '</div>';
