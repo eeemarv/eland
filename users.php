@@ -168,7 +168,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		where c.flag_public >= ?
 			and c.id_user = ?
 			and c.id_type_contact = tc.id',
-			[\util\cnst::ACCESS_ARY[$to_user['accountrole']], $app['s_id']]);
+			[cnst::ACCESS_ARY[$to_user['accountrole']], $app['s_id']]);
 
 	$from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
@@ -4375,6 +4375,10 @@ if ($v_list)
 						echo '<span class="btn btn-default btn-xs">';
 						echo 'verborgen</span>';
 					}
+				}
+				else if ($key === 'accountrole')
+				{
+					echo cnst::ROLE_ARY[$u['accountrole']];
 				}
 				else
 				{
