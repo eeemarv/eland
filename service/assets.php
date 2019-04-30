@@ -9,7 +9,6 @@ class assets
 {
 	protected $cache;
 	protected $file_hash_ary;
-	protected $rootpath;
 	protected $version = '28';
 
 	const CACHE_HASH_KEY = 'assets_files_hashes';
@@ -125,12 +124,10 @@ class assets
 	protected $include_js = [];
 
 	public function __construct(
-		cache $cache,
-		string $rootpath
+		cache $cache
 	)
 	{
 		$this->cache = $cache;
-		$this->rootpath = $rootpath;
 
 		$this->file_hash_ary = $this->cache->get(self::CACHE_HASH_KEY);
 	}
@@ -219,12 +216,12 @@ class assets
 			switch ($ext)
 			{
 				case 'js':
-					$include = $this->rootpath . 'js/' . $asset_name . '?';
+					$include = '/js/' . $asset_name . '?';
 					$include .= $this->file_hash_ary[$asset_name];
 					$this->include_js[] = $include;
 					break;
 				case 'css':
-					$include = $this->rootpath . 'gfx/' . $asset_name . '?';
+					$include = '/gfx/' . $asset_name . '?';
 					$include .= $this->file_hash_ary[$asset_name];
 					$this->include_css[] = $include;
 					break;
@@ -238,7 +235,7 @@ class assets
 	{
 		foreach ($asset_ary as $asset_name)
 		{
-			$include = $this->rootpath . 'gfx/' . $asset_name . '?';
+			$include = '/gfx/' . $asset_name . '?';
 			$include .= $this->file_hash_ary[$asset_name];
 			$this->include_css_print[] = $include;
 		}

@@ -1,13 +1,5 @@
 <?php
 
-use Symfony\Component\Templating\PhpEngine;
-use Symfony\Component\Templating\TemplateNameParser;
-use Symfony\Component\Templating\Loader\FilesystemLoader;
-use Symfony\Component\Templating\Helper\SlotsHelper;
-use tpl_helper\config_helper;
-use tpl_helper\date_format_helper;
-use tpl_helper\assets_helper;
-
 $app = new util\app();
 
 if(!isset($rootpath))
@@ -119,23 +111,6 @@ $app->extend('twig', function($twig, $app) {
 
 	return $twig;
 });
-
-$app['tpl'] = function($app){
-
-    $loader = new FilesystemLoader([
-        __DIR__ . '/../tpl/%name%'
-	]);
-
-	$tpl = new PhpEngine(new TemplateNameParser(), $loader);
-
-	$tpl->set(new SlotsHelper());
-	$tpl->set(new config_helper($app['config']));
-	$tpl->set(new date_format_helper($app['date_format']));
-	$tpl->set(new assets_helper($app['assets']));
-	$tpl->addGlobal('s3_url', $app['s3_url']);
-
-    return $tpl;
-};
 
 $app->register(new Silex\Provider\LocaleServiceProvider());
 
@@ -524,8 +499,7 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 
 $app['assets'] = function($app){
 	return new service\assets(
-		$app['cache'],
-		$app['rootpath']
+		$app['cache']
 	);
 };
 

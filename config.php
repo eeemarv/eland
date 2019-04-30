@@ -1,6 +1,6 @@
 <?php
 
-$page_access = 'admin';
+$app['page_access'] = 'admin';
 require_once __DIR__ . '/include/web.php';
 
 $setting = $_GET['edit'] ?? false;

@@ -1,7 +1,7 @@
 <?php
 
 $rootpath = '../';
-$page_access = 'guest';
+$app['page_access'] = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
 $days = $_GET['days'] ?? 365;

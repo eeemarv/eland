@@ -1,6 +1,6 @@
 <?php
 
-$page_access = 'anonymous';
+$app['page_access'] = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
 

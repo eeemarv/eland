@@ -5,7 +5,7 @@ use util\cnst;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
-$app['page_access'] = $page_access;
+// $app['page_access'] = $page_access;
 
 header('Cache-Control: private, no-cache');
 header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') . ', http://img.letsa.net');
@@ -41,7 +41,15 @@ if ($app['script_name'] == 'index'
 	return;
 }
 
-$app['tschema'] = $app['systems']->get_schema($app['server_name']);
+if (isset($app['p_system']))
+{
+	$app['tschema'] = $app['systems']->get_schema_from_system($app['p_system']);
+}
+
+if (!$app['tschema'])
+{
+	$app['tschema'] = $app['systems']->get_schema($app['server_name']);
+}
 
 if (!$app['tschema'])
 {
@@ -406,7 +414,11 @@ else if ($app['script_name'] === 'news'
  * remember adapted role in own group (for links to own group)
  */
 
-if (!$app['s_anonymous'])
+if ($app['s_anonymous'])
+{
+	$app['s_user_params_own_system'] = [];
+}
+else
 {
 	if ($app['s_master']
 		|| $app['session_user']['accountrole'] == 'admin'
@@ -537,19 +549,19 @@ function aphp(
 /**
  * generate url
  */
-function generate_url(string $entity, array $params = [], $sch = false):string
+function generate_url(string $entity, array $params = [], string $schema):string
 {
 	global $app;
 
-	$params = array_merge($params, get_session_query_param($sch));
+	$params = array_merge($params, get_session_query_param($schema));
 
 	$params = http_build_query($params);
 
 	$params = $params ? '?' . $params : '';
 
-	$path = $sch ? $app['protocol'] . $app['systems']->get_host($sch) . '/' : $app['rootpath'];
+	$path = $schema ? $app['protocol'] . $app['systems']->get_host($schema) . '/' : $app['rootpath'];
 
-	return $path . $entity . '.php' . $params;
+	return $path . $entity . $params;
 }
 
 /**
@@ -620,7 +632,7 @@ function get_default_page():string
 
 	$page = $app['config']->get('default_landing_page', $app['tschema']);
 
-	$default_page = generate_url($page, []);
+	$default_page = generate_url($page, [], $app['tschema']);
 
 	return $default_page;
 }

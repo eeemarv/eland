@@ -10,8 +10,8 @@ $filter = $_GET['f'] ?? [];
 $pag = $_GET['p'] ?? [];
 $sort = $_GET['sort'] ?? [];
 
-$page_access = $del || $add || $edit ? 'user' : 'guest';
-$page_access = $uid ? $page_access : 'admin';
+$app['page_access'] = $del || $add || $edit ? 'user' : 'guest';
+$app['page_access'] = $uid ? $app['page_access'] : 'admin';
 
 require_once __DIR__ . '/include/web.php';
 

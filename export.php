@@ -2,7 +2,7 @@
 
 set_time_limit(60);
 
-$page_access = 'admin';
+$app['page_access'] = 'admin';
 require_once __DIR__ . '/include/web.php';
 
 $db_elas = isset($_GET['db_elas']);

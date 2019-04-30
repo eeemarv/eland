@@ -1,6 +1,6 @@
 <?php
 $rootpath = '../';
-$page_access = 'admin';
+$app['page_access'] = 'admin';
 require_once __DIR__ . '/../include/web.php';
 
 $days = $_GET['days'] ?? false;

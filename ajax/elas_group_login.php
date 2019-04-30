@@ -1,6 +1,6 @@
 <?php
 $rootpath = '../';
-$page_access = 'guest';
+$app['page_access'] = 'guest';
 require_once __DIR__ . '/../include/web.php';
 
 $group_id = $_GET['group_id'] ?? false;

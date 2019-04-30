@@ -1,6 +1,6 @@
 <?php
 
-$page_access = 'guest';
+$app['page_access'] = 'guest';
 require_once __DIR__ . '/include/web.php';
 
 $id = $_GET['id'] ?? false;

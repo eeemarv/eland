@@ -1,6 +1,6 @@
 <?php
 
-$page_access = 'user';
+$app['page_access'] = 'user';
 
 require_once __DIR__ . '/include/web.php';
 

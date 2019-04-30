@@ -13,7 +13,7 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if ($approve)
 {
-	$page_access = 'admin';
+	$app['page_access'] = 'admin';
 
 	require_once __DIR__ . '/include/web.php';
 
@@ -34,7 +34,7 @@ if ($approve)
 
 if ($add || $edit)
 {
-	$page_access = 'user';
+	$app['page_access'] = 'user';
 	require_once __DIR__ . '/include/web.php';
 
 	$news = [];
@@ -294,7 +294,7 @@ if ($add || $edit)
 
 if ($del)
 {
-	$page_access = 'admin';
+	$app['page_access'] = 'admin';
 	require_once __DIR__ . '/include/web.php';
 
 	if ($submit)
@@ -420,7 +420,7 @@ if ($del)
  * Fetch all newsitems
  */
 
-$page_access = 'guest';
+$app['page_access'] = 'guest';
 require_once __DIR__ . '/include/web.php';
 
 $show_visibility = ($app['s_user']

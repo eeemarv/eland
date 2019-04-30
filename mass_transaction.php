@@ -1,6 +1,6 @@
 <?php
 
-$page_access = 'admin';
+$app['page_access'] = 'admin';
 require_once __DIR__ . '/include/web.php';
 
 $q = $_POST['q'] ?? ($_GET['q'] ?? '');
@@ -993,14 +993,14 @@ function mail_mass_transaction($mail_ary)
 		$total_amount += $many_ary[$user_id]['amount'];
 	}
 
-	$vars = array_merge($common_vars, [
+	$vars = [
 		'users'		=> $users,
 		'user'		=> [
 			'url'	=> $app['base_url'] . '/users.php?id=' . $one_user_id,
 			'text'	=> link_user($one_user_id, $app['tschema'], false),
 		],
 		'total'		=> $total_amount,
-	]);
+	];
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
@@ -1009,7 +1009,6 @@ function mail_mass_transaction($mail_ary)
 			$app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			$app['mail_addr_user']->get($one_user_id, $app['tschema'])
 		),
-		'subject' 	=> $subject,
 		'template'	=> 'admin_mass_transaction',
 		'vars'		=> $vars,
 	], 8000);
