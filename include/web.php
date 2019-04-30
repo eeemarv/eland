@@ -41,9 +41,9 @@ if ($app['script_name'] == 'index'
 	return;
 }
 
-if (isset($app['p_system']))
+if (isset($app['pp_system']))
 {
-	$app['tschema'] = $app['systems']->get_schema_from_system($app['p_system']);
+	$app['tschema'] = $app['systems']->get_schema_from_system($app['pp_system']);
 }
 
 if (!$app['tschema'])
@@ -57,6 +57,22 @@ if (!$app['tschema'])
 	echo $app['twig']->render('404.html.twig');
 	exit;
 }
+
+if (isset($app['pp_role']) && in_array($app['pp_role'], ['g', 'u', 'a']))
+{
+	$app['pp_ary'] = [
+		'system'	=> $app['pp_system'],
+		'role'		=> $app['pp_role'],
+	];
+}
+else
+{
+	$app['pp_ary'] = [
+		'system'	=> $app['pp_system'],
+	];
+}
+
+$app['matched_route'] = $app['request']->attributes->get('_route');
 
 if (getenv('WEBSITE_MAINTENANCE'))
 {
@@ -514,31 +530,38 @@ function btn_filter():string
  */
 
 function aphp(
-	string $entity,
-	array $params = [],
-	string $label = '*link*',
+	string $route,
+	array $params,
+	string $label,
+	array $attr,
+	string $fa = '',
+	bool $collapse = false
+):string
+/*
 	$class = false,
 	$title = false,
 	$fa = false,
 	$collapse = false,
 	$attr = false,
 	$sch = false):string
+*/
 {
-	$out = '<a href="';
-	$out .= generate_url($entity, $params, $sch);
-	$out .= '"';
-	$out .= $class ? ' class="' . $class . '"' : '';
-	$out .= $title ? ' title="' . $title . '"' : '';
+	global $app;
 
-	if (is_array($attr))
+	$out = '<a href="';
+	$out .= $app->path($route, $params);
+//	$out .= generate_url($route, $params, $sch);
+	$out .= '"';
+//	$out .= $class ? ' class="' . $class . '"' : '';
+//	$out .= $title ? ' title="' . $title . '"' : '';
+
+	foreach ($attr as $name => $val)
 	{
-		foreach ($attr as $name => $val)
-		{
-			$out .= ' ' . $name . '="' . $val . '"';
-		}
+		$out .= ' ' . $name . '="' . $val . '"';
 	}
+
 	$out .= '>';
-	$out .= $fa ? '<i class="fa fa-' . $fa .'"></i>' : '';
+	$out .= $fa === '' ? '' : '<i class="fa fa-' . $fa .'"></i>';
 	$out .= $collapse ? '<span class="hidden-xs hidden-sm"> ' : ' ';
 	$out .= htmlspecialchars($label, ENT_QUOTES);
 	$out .= $collapse ? '</span>' : '';

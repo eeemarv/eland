@@ -287,11 +287,17 @@ if (!$app['s_anonymous'])
 		echo '<span class="caret"></span></a>';
 		echo '<ul class="dropdown-menu" role="menu">';
 
-		foreach ($menu as $link => $item)
+		foreach ($menu as $route => $item)
 		{
-			$active = $app['script_name'] === $link ? ' class="active"' : '';
+			$active = $app['matched_route'] === $route ? ' class="active"' : '';
 			echo '<li' . $active . '>';
-			echo aphp($link, [], $item[1], false, false, $item[0]);
+			echo aphp($link, [
+					'system' 	=> $app['pp_system'],
+					'role' 		=> $app['pp_role'],
+				],
+				$item[1],
+				[],
+				$item[0]);
 			echo '</li>';
 		}
 		echo '<li class="divider"></li>';
@@ -372,50 +378,97 @@ echo '<div id="sidebar" class="sidebar-offcanvas">';
 if ($app['s_anonymous'])
 {
 	$menu = [
-		'login'			=> ['sign-in', 'Login', []],
+		'login'			=> [
+			'sign-in',
+			'Login',
+			$app['pp_ary'],
+		],
 	];
 
 	if ($app['config']->get('contact_form_en', $app['tschema']))
 	{
-		$menu['contact'] = ['comment-o', 'Contact', []];
+		$menu['contact'] = [
+			'comment-o',
+			'Contact',
+			$app['pp_ary'],
+		];
 	}
 
 	if ($app['config']->get('registration_en', $app['tschema']))
 	{
-		$menu['register'] = ['check-square-o', 'Inschrijven', []];
+		$menu['register'] = [
+			'check-square-o',
+			'Inschrijven',
+			$app['pp_ary'],
+		];
 	}
 }
 else
 {
 	$menu = [
-		'messages'		=> ['newspaper-o', 'Vraag & Aanbod', []],
-		'users'			=> ['users', $app['s_admin'] ? 'Gebruikers' : 'Leden', ['status' => 'active']],
-		'transactions'	=> ['exchange', 'Transacties', []],
-		'news'			=> ['calendar-o', 'Nieuws', []],
+		'messages'		=> [
+			'newspaper-o',
+			'Vraag & Aanbod',
+			$app['pp_ary'],
+		],
+		'users'			=> [
+			'users',
+			$app['s_admin'] ? 'Gebruikers' : 'Leden',
+			array_merge($app['pp_ary'], [
+				'status' => 'active'
+			]),
+		],
+		'transactions'	=> [
+			'exchange',
+			'Transacties',
+			$app['pp_ary'],
+		],
+		'news'			=> [
+			'calendar-o',
+			'Nieuws',
+			$app['pp_ary'],
+		],
 	];
 
-	$menu['docs'] = ['files-o', 'Documenten', []];
+	$menu['docs'] = [
+		'files-o',
+		'Documenten',
+		$app['pp_ary'],
+	];
 
 	if ($app['config']->get('forum_en', $app['tschema']))
 	{
-		$menu['forum'] = ['comments-o', 'Forum', []];
+		$menu['forum'] = [
+			'comments-o',
+			'Forum',
+			$app['pp_ary'],
+		];
 	}
 
 	if ($app['s_user'] || $app['s_admin'])
 	{
-		$menu['support'] = ['ambulance', 'Probleem melden', []];
+		$menu['support'] = [
+			'ambulance',
+			'Probleem melden',
+			$app['pp_ary']
+		];
 	}
 }
 
 echo '<br>';
 echo '<ul class="nav nav-pills nav-stacked">';
 
-foreach ($menu as $link => $item)
+foreach ($menu as $route => $item)
 {
-	$active = $app['script_name'] == $link ? ' class="active"' : '';
+	$active = $app['matched_route'] == $route ? ' class="active"' : '';
 	echo '<li' . $active . '>';
-	echo aphp($link, $item[2],
-		$item[1], false, false, $item[0]);
+	echo aphp(
+		$route,
+		$item[2],
+		$item[1],
+		[],
+		$item[0]
+	);
 	echo '</li>';
 }
 echo '</ul>';
