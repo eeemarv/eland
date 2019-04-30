@@ -11,6 +11,13 @@ class cnst
         'interlets'	=> 'InterSysteem',
     ];
 
+    const ROLE_SHORT = [
+        'admin'     => 'a',
+        'user'      => 'u',
+        'guest'     => 'g',
+        'interlets' => 'g',
+    ];
+
     const STATUS_ARY = [
         0	=> 'Gedesactiveerd',
         1	=> 'Actief',

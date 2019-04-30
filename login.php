@@ -1,5 +1,7 @@
 <?php
 
+use util\cnst;
+
 $app['page_access'] = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
@@ -90,8 +92,22 @@ if ($submit)
 		$app['session']->set('logins', $app['s_logins']);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
-		$glue = strpos($location, '?') === false ? '?' : '&';
-		header('Location: ' . $location . $glue . 'a=1&r=admin&u=master');
+
+		$query = [];
+		$route = $location;
+
+		if (strpos($location, '?') !== false)
+		{
+			[$route, $query_str] = explode('?', $location);
+			parse_str($query_str, $query);
+		}
+
+		$params = array_merge($query, [
+			'system'	=> $app['pp_system'],
+			'role'		=> 'a',
+		]);
+
+		header('Location: ' . $app->path($location, $params));
 		exit;
 	}
 
@@ -261,9 +277,22 @@ if ($submit)
 
 		$app['alert']->success('Je bent ingelogd.');
 
-		$glue = strpos($location, '?') === false ? '?' : '&';
+		$query = [];
+		$route = $location;
 
-		header('Location: ' . $location . $glue . 'a=1&r=' . $user['accountrole'] . '&' . 'u=' .  $user['id']);
+		if (strpos($location, '?') !== false)
+		{
+			[$route, $query_str] = explode('?', $location);
+			parse_str($query_str, $query);
+		}
+
+		$params = array_merge($query, [
+			'system'	=> $app['pp_system'],
+			'role'		=> cnst::ROLE_SHORT[$user['accountrole']],
+		]);
+
+		header('Location: ' . $app->path($location, $params));
+
 		exit;
 	}
 
