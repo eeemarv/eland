@@ -10,12 +10,12 @@
 		"swiftmailer/swiftmailer": "~6",
 		"monolog/monolog": "^1",
 		"bramus/monolog-colored-line-formatter": "2.0.*",
-		"econea/nusoap": "v0.9.5.3",
+		"econea/nusoap": "^v0.9.5.3",
 		"fabpot/goutte": "^3",
 		"ext-imagick": "*",
 		"ext-exif": "*",
         "imagine/imagine": "^0.6",
-        "doctrine/dbal": "~2.5",
+        "doctrine/dbal": "^2.5",
 
         "twig/twig": "^2",
         "ezyang/htmlpurifier": "^4.8",
@@ -54,7 +54,6 @@
 			"task\\": "task/",
 			"schema_task\\": "schema_task/",
 			"util\\": "util/",
-			"tpl_helper\\": "tpl_helper/",
 			"twig\\": "twig/"
         }
     },

@@ -296,7 +296,7 @@ if (!$app['s_anonymous'])
 		}
 		echo '<li class="divider"></li>';
 
-		if ($page_access == 'admin')
+		if ($app['page_access'] == 'admin')
 		{
 			$user_url = $app['config']->get('default_landing_page', $app['tschema']);
 			$user_url .= '.php';
@@ -422,7 +422,7 @@ echo '</ul>';
 
 echo '</div>';
 
-$class_admin = $page_access === 'admin' ? ' admin' : '';
+$class_admin = $app['page_access'] === 'admin' ? ' admin' : '';
 
 echo '<div id="wrap">';
 echo '<div id="main" ';

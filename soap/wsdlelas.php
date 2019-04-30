@@ -1,6 +1,6 @@
 <?php
 $rootpath='../';
-$page_access = 'anonymous';
+$app['page_access'] = 'anonymous';
 require_once __DIR__ . '/../include/web.php';
 
 if (!$app['config']->get('template_lets', $app['tschema']))

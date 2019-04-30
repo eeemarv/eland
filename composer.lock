@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7f1a699843f9544a585ddb940f696ff5",
+    "content-hash": "de78568efcc31827523eaecd22de0ef3",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.92.4",
+            "version": "3.92.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "aefba18e3e2bfe776521e085c93b1739f49514c5"
+                "reference": "f334ed28b4a1be4ef9cb96becc015e67a6a31ad7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/aefba18e3e2bfe776521e085c93b1739f49514c5",
-                "reference": "aefba18e3e2bfe776521e085c93b1739f49514c5",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f334ed28b4a1be4ef9cb96becc015e67a6a31ad7",
+                "reference": "f334ed28b4a1be4ef9cb96becc015e67a6a31ad7",
                 "shasum": ""
             },
             "require": {
@@ -41,7 +41,8 @@
                 "ext-sockets": "*",
                 "nette/neon": "^2.3",
                 "phpunit/phpunit": "^4.8.35|^5.4.3",
-                "psr/cache": "^1.0"
+                "psr/cache": "^1.0",
+                "psr/simple-cache": "^1.0"
             },
             "suggest": {
                 "aws/aws-php-sns-message-validator": "To validate incoming SNS notifications",
@@ -86,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-04-26T18:07:09+00:00"
+            "time": "2019-04-29T18:08:48+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -509,22 +510,31 @@
         },
         {
             "name": "econea/nusoap",
-            "version": "v0.9.5.3",
+            "version": "v0.9.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/econea/nusoap.git",
-                "reference": "682c8e7d0cca019e692fd9b9427607f5ce467571"
+                "reference": "84ac83bc884c477e6614fe8cbe2bf8858b5f75ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/econea/nusoap/zipball/682c8e7d0cca019e692fd9b9427607f5ce467571",
-                "reference": "682c8e7d0cca019e692fd9b9427607f5ce467571",
+                "url": "https://api.github.com/repos/econea/nusoap/zipball/84ac83bc884c477e6614fe8cbe2bf8858b5f75ff",
+                "reference": "84ac83bc884c477e6614fe8cbe2bf8858b5f75ff",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4"
             },
+            "require-dev": {
+                "jakub-onderka/php-parallel-lint": "~1.0.0"
+            },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-0.9.x": "0.9.7.x-dev",
+                    "dev-develop": "1.0.x-dev"
+                }
+            },
             "autoload": {
                 "classmap": [
                     "src/"
@@ -532,22 +542,21 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPLv2"
+                "LGPL-2.0-only"
             ],
             "authors": [
                 {
-                    "name": "Milan Felix Sulc"
-                },
-                {
-                    "name": "Martin Macejkou Mates"
+                    "name": "Milan Felix Šulc",
+                    "homepage": "https://f3l1x.io"
                 }
             ],
-            "description": "NuSOAP fixed for PHP 5.5 - 7.0",
+            "description": "NuSOAP fixed for PHP 5.4 - 7.1",
+            "homepage": "https://github.com/econea/nusoap",
             "keywords": [
                 "nusoap",
                 "soap"
             ],
-            "time": "2017-05-16T08:03:25+00:00"
+            "time": "2018-04-19T05:28:20+00:00"
         },
         {
             "name": "egulias/email-validator",
