@@ -1293,7 +1293,8 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('transactions', [], 'Annuleren', 'btn btn-default');
+	echo btn_cancel('transactions', $app['pp_ary']);
+
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Overschrijven" class="btn btn-success">';
@@ -1537,7 +1538,8 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('transactions', ['id' => $edit], 'Annuleren', 'btn btn-default');
+	echo btn_cancel('transactions', array_merge($app['pp_ary'], ['id' => $edit]));
+
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Aanpassen" class="btn btn-primary">';

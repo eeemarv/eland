@@ -58,8 +58,9 @@ if ($del)
 	echo $apikey['comment'] ?: '<i class="fa fa-times"></i>';
 	echo '</dd>';
 	echo '</dl>';
-	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
-	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+	echo btn_cancel('apikeys', $app['pp_ary']) . '&nbsp;';
+	echo '<input type="submit" value="Verwijderen" ';
+	echo 'name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 	echo '</form>';
 
@@ -142,7 +143,8 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo aphp('apikeys', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo btn_cancel('apikeys', $app['pp_ary']);
+	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Opslaan" class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();

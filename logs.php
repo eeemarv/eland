@@ -282,7 +282,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 		];
 
 		echo '<a href="';
-		echo generate_url('logs', $th_params);
+		echo $app->path('logs', array_merge($app['pp_ary'], $th_params));
 		echo '">';
 		echo $data['lbl'];
 		echo '&nbsp;';

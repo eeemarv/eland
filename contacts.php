@@ -132,11 +132,11 @@ if ($del)
 	if ($uid)
 	{
 		echo '<input type="hidden" name="uid" value="' . $uid . '">';
-		echo aphp('users', ['id' => $uid], 'Annuleren', 'btn btn-default');
+		echo btn_cancel('users', array_merge($app['pp_ary'], ['id' => $uid]));
 	}
 	else
 	{
-		echo aphp('contacts', [], 'Annuleren', 'btn btn-default');
+		echo btn_cancel('contacts', $app['pp_ary']);
 	}
 
 	echo '&nbsp;';
@@ -550,11 +550,11 @@ if ($edit || $add)
 	if ($uid)
 	{
 		echo '<input type="hidden" name="uid" value="' . $uid . '">';
-		echo aphp('users', ['id' => $uid], 'Annuleren', 'btn btn-default');
+		echo btn_cancel('users', array_merge($app['pp_ary'], ['id' => $uid]));
 	}
 	else
 	{
-		echo aphp('contacts', [], 'Annuleren', 'btn btn-default');
+		echo btn_cancel('contacts', $app['pp_ary']);
 	}
 
 	echo '&nbsp;';

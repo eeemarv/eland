@@ -214,8 +214,8 @@ if ($del)
 	echo '<p>' . $forum_post['content'] . '</p>';
 
 	echo '<form method="post">';
+	echo btn_cancel('forum', array_merge($app['pp_ary'], ['f' => $t]));
 
-	echo aphp('forum', ['t' => $t], 'Annuleren', 'btn btn-default');
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';
@@ -309,12 +309,14 @@ if ($add || $edit)
 		echo $app['access_control']->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
 	}
 
-	$str = ($topic) ? 'Reactie' : 'Onderwerp';
-	$btn = ($edit) ? 'primary' : 'success';
-	$action = ($edit) ? 'aanpassen' : 'toevoegen';
-	$cancel_dest = ($topic) ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
+	$str = $topic ? 'Reactie' : 'Onderwerp';
+	$btn = $edit ? 'primary' : 'success';
+	$action = $edit ? 'aanpassen' : 'toevoegen';
+	$cancel_dest = $topic ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
+	$cancel_dest = array_merge($app['pp_ary'], $cancel_dest);
 
-	echo aphp('forum', $cancel_dest, 'Annuleren', 'btn btn-default');
+	echo btn_cancel('forum', $cancel_dest);
+
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="';
 	echo $str . ' ' . $action . '" ';

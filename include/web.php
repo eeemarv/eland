@@ -569,6 +569,17 @@ function aphp(
 	return $out;
 }
 
+function btn_cancel(string $route, array $params):string
+{
+	return aphp(
+		$route,
+		$params,
+		'Annuleren',
+		['class'	=> 'btn btn-default'],
+		'times'
+	);
+}
+
 /**
  * generate url
  */

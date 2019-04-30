@@ -114,7 +114,7 @@ if ($add)
 	echo '</select>';
 	echo '</div>';
 
-	echo aphp('categories', [], 'Annuleren', 'btn btn-default');
+	echo btn_cancel('categories', $app['pp_ary']);
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" ';
 	echo 'class="btn btn-success">';
@@ -253,7 +253,8 @@ if ($edit)
 	echo '</select>';
 	echo '</div>';
 
-	echo aphp('categories', [], 'Annuleren', 'btn btn-default');
+	echo btn_cancel('categories', $app['pp_ary']);
+
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" ';
 	echo 'name="zend" class="btn btn-primary">';
@@ -303,7 +304,8 @@ if ($del)
 	echo " moet verwijderd worden?</strong></font></p>";
 	echo '<form method="post">';
 
-	echo aphp('categories', [], 'Annuleren', 'btn btn-default');
+	echo btn_cancel('categories', $app['pp_ary']);
+
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';

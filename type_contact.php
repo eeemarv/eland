@@ -74,7 +74,9 @@ if ($add)
 	echo '" required>';
 	echo '</div>';
 
-	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo btn_cancel('contact_types', $app['pp_ary']);
+
+	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Opslaan" class="btn btn-success">';
 	echo $app['form_token']->get_hidden_input();
@@ -173,7 +175,9 @@ if ($edit)
 	echo '" required>';
 	echo '</div>';
 
-	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo btn_cancel('contact_types', $app['pp_ary']);
+
+	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Opslaan" class="btn btn-primary">';
 	echo $app['form_token']->get_hidden_input();
@@ -237,7 +241,10 @@ if ($del)
 	echo '<div class="panel-heading">';
 	echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 	echo '<form method="post">';
-	echo aphp('type_contact', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+
+	echo btn_cancel('contact_types', $app['pp_ary']);
+
+	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();

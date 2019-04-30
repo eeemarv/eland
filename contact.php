@@ -49,7 +49,7 @@ if ($token)
 
 		$success_text = $app['config']->get('contact_form_success_text', $app['tschema']);
 
-		header('Location: ' . generate_url('contact', []));
+		header('Location: ' . $app->path('contact', $app['pp_ary']));
 		exit;
 	}
 
@@ -135,7 +135,7 @@ if($app['is_http_post'] && isset($_POST['zend']))
 			de link aan die we je zonden om je
 			bericht te bevestigen.');
 
-		header('Location: ' . generate_url('contact', []));
+		header('Location: ' . $app->path('contact', $app['pp_ary']));
 		exit;
 	}
 	else

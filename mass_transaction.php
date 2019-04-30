@@ -880,7 +880,9 @@ echo 'Account Code ingevuld zijn.';
 echo '</label>';
 echo '</div>';
 
-echo aphp('transactions', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+echo btn_cancel('transactions', $app['pp_ary'], ['id' => $id]);
+
+echo '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" ';
 echo 'name="zend" class="btn btn-success">';
 echo $app['form_token']->get_hidden_input();

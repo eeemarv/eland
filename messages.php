@@ -533,7 +533,8 @@ if ($img_del == 'all' && $id)
 	echo $str_this_ow;
 	echo '?</h3>';
 
-	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo btn_cancel('messages', array_merge($app['pp_ary'], ['id' => $id]));
+	echo '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
 	echo '</form>';
@@ -738,7 +739,9 @@ if ($del)
 
 	echo '<form method="post">';
 
-	echo aphp('messages', ['id' => $del], 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo btn_cancel('messages', array_merge($app['pp_ary'], ['id' => $id]));
+
+	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 	echo '</form></p>';
@@ -1415,7 +1418,8 @@ if (($edit || $add))
 
 	$btn = ($edit) ? 'primary' : 'success';
 
-	echo aphp('messages', ['id' => $id], 'Annuleren', 'btn btn-default'). '&nbsp;';
+	echo btn_cancel('messages', array_merge($app['pp_ary'], ['id' => $id]));
+	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
 

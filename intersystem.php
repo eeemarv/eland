@@ -348,7 +348,9 @@ if ($add || $edit)
 
 	$btn = $edit ? 'primary' : 'success';
 	$canc = $edit ? ['id' => $edit] : [];
-	echo aphp('intersystem', $canc, 'Annuleren', 'btn btn-default') . '&nbsp;';
+	$canc = array_merge($app['pp_ary'], $canc);
+	echo btn_cancel('intersystem', $canc);
+
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
 
@@ -402,7 +404,9 @@ if ($del)
 	echo '<div><p>';
 	echo '<form method="post">';
 
-	echo aphp('intersystem', [], 'Annuleren', 'btn btn-default') . '&nbsp;';
+	echo btn_cancel('intersystem', $app['pp_ary']);
+
+	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 	echo $app['form_token']->get_hidden_input();
 

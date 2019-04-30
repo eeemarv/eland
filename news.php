@@ -273,7 +273,11 @@ if ($add || $edit)
 	echo $app['access_control']->get_radio_buttons('news', $news_access, $omit_access);
 
 	$btn = $add ? 'success' : 'primary';
-	echo aphp('news', ($edit) ? ['id' => $edit] : [], 'Annuleren', 'btn btn-default');
+
+	$canc = $edit ? ['id' => $edit] : [];
+	$canc = array_merge($app['pp_ary'], $canc);
+	echo btn_cancel('news', $canc);
+
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Opslaan" class="btn btn-' . $btn . '">';
@@ -401,7 +405,7 @@ if ($del)
 	echo 'moet verwijderd worden?</strong></p>';
 
 	echo '<form method="post">';
-	echo aphp('news', ['id' => $del], 'Annuleren', 'btn btn-default');
+	echo btn_cancel('news', array_merge($app['pp_ary'], ['id' => $del]));
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';

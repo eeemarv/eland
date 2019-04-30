@@ -10,13 +10,12 @@ $monitor = $_GET['monitor'] ?? false;
 $location = $_GET['location'] ?? false;
 
 if (!$location
-	|| strpos($location, 'login.php') !== false
-	|| strpos($location, 'logout.php') !== false
+	|| strpos($location, 'login') !== false
+	|| strpos($location, 'logout') !== false
 	|| $location == ''
 	|| $location == '/')
 {
 	$location = $app['config']->get('default_landing_page', $app['tschema']);
-	$location .= '.php';
 }
 
 $submit = isset($_POST['zend']);
@@ -37,8 +36,6 @@ if ($token)
 		]);
 		$app['session']->set('logins', $app['s_logins']);
 
-		$param = 'welcome=1&r=guest&u=elas';
-
 		$referrer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 
 		if ($referrer !== 'unknown')
@@ -55,7 +52,13 @@ if ($token)
 			['schema' => $app['tschema']]);
 
 		$glue = strpos($location, '?') === false ? '?' : '&';
-		header('Location: ' . $location . $glue . $param);
+
+		header('Location: ' . $app->path($location, [
+			'welcome'	=> '1',
+			'sc'		=> 'elas',
+			'role'		=> 'g',
+			'system'	=> $app['pp_system'],
+		]));
 		exit;
 	}
 	else
@@ -313,7 +316,12 @@ if(empty($token))
 	echo 'value="" required>';
     echo '</div>';
 	echo '<p>';
-	echo aphp('pwreset', [], 'Klik hier als je je paswoord vergeten bent.');
+	echo aphp(
+		'password_reset',
+		$app['pp_ary'],
+		'Klik hier als je je paswoord vergeten bent.',
+		[]
+	);
 	echo '</p>';
 	echo '</div>';
 

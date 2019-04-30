@@ -42,12 +42,12 @@ if ($token)
 					],
 				], 10000);
 
-				header('Location: ' . $app['rootpath'] . 'login.php');
+				header('Location: ' . $app->path('login', $app['pp_ary']));
 				exit;
 			}
 
 			$app['alert']->error('Het reset-token is niet meer geldig.');
-			header('Location: pwreset.php');
+			header('Location: ' . $app->path('password_reset', $app['pp_ary']));
 			exit;
 		}
 		else
@@ -143,7 +143,7 @@ if (isset($_POST['zend']))
 
 				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
-				header('Location: login.php');
+				header('Location: ' . $app->path('login', $app['pp_ary']));
 				exit;
 			}
 			else
