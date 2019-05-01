@@ -2451,14 +2451,6 @@ if (!$app['p_inline'])
 	unset($params_form['uid']);
 	unset($params_form['p']['start']);
 
-	$params_form['r'] = $app['s_accountrole'];
-	$params_form['u'] = $app['s_id'];
-
-	if (!$app['s_system_self'])
-	{
-		$params_form['s'] = $app['s_schema'];
-	}
-
 	$params_form = http_build_query($params_form, 'prefix', '&');
 	$params_form = urldecode($params_form);
 	$params_form = explode('&', $params_form);

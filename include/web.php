@@ -67,11 +67,11 @@ if (!$app['tschema'])
 	exit;
 }
 
-if (isset($app['pp_role']) && in_array($app['pp_role'], ['g', 'u', 'a']))
+if (isset($app['pp_role_short']) && in_array($app['pp_role_short'], ['g', 'u', 'a']))
 {
 	$app['pp_ary'] = [
-		'system'	=> $app['pp_system'],
-		'role'		=> $app['pp_role'],
+		'system'		=> $app['pp_system'],
+		'role_short'	=> $app['pp_role_short'],
 	];
 }
 else

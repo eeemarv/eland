@@ -292,8 +292,8 @@ if (!$app['s_anonymous'])
 			$active = $app['matched_route'] === $route ? ' class="active"' : '';
 			echo '<li' . $active . '>';
 			echo aphp($link, [
-					'system' 	=> $app['pp_system'],
-					'role' 		=> $app['pp_role'],
+					'system'		=> $app['pp_system'],
+					'role_short' 	=> $app['pp_role_short'],
 				],
 				$item[1],
 				[],

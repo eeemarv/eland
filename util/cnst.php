@@ -15,7 +15,12 @@ class cnst
         'admin'     => 'a',
         'user'      => 'u',
         'guest'     => 'g',
-        'interlets' => 'g',
+    ];
+
+    const ROLE_LONG = [
+        'a' => 'admin',
+        'u' => 'user',
+        'g' => 'guest',
     ];
 
     const STATUS_ARY = [

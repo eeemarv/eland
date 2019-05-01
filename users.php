@@ -3268,7 +3268,8 @@ if ($v_list)
 		],
 	];
 
-	$session_users_columns_key = 'users_columns_' . $app['s_accountrole'];
+	$session_users_columns_key = 'users_columns_';
+	$session_users_columns_key .= cnst::ROLE_LONG[$app['pp_role_short']];
 	$session_users_columns_key .= $app['s_elas_guest'] ? '_elas' : '';
 
 	if (isset($_GET['sh']))
