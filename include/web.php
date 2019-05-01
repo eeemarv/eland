@@ -67,18 +67,20 @@ if (!$app['tschema'])
 	exit;
 }
 
-if (isset($app['pp_role_short']) && in_array($app['pp_role_short'], ['g', 'u', 'a']))
+if (isset($app['pp_role_short']) && isset(cnst::ROLE_LONG[$app['pp_role_short']]))
 {
 	$app['pp_ary'] = [
 		'system'		=> $app['pp_system'],
 		'role_short'	=> $app['pp_role_short'],
 	];
+	$app['pp_role'] = cnst::ROLE_LONG[$app['pp_role_short']];
 }
 else
 {
 	$app['pp_ary'] = [
 		'system'	=> $app['pp_system'],
 	];
+	$app['pp_role'] = 'anonymous';
 }
 
 $app['matched_route'] = $app['request']->attributes->get('_route');

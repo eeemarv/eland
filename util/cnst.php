@@ -23,6 +23,27 @@ class cnst
         'g' => 'guest',
     ];
 
+    const ACCESS = [
+        'admin' => [
+            'admin'     => true,
+            'user'      => true,
+            'guest'     => true,
+            'anonymous' => true,
+        ],
+        'user'  => [
+            'user'      => true,
+            'guest'     => true,
+            'anonymous' => true,
+        ],
+        'guest' => [
+            'guest'     => true,
+            'anonymous' => true,
+        ],
+        'anonymous' => [
+            'anonymous' => true,
+        ],
+    ];
+
     const STATUS_ARY = [
         0	=> 'Gedesactiveerd',
         1	=> 'Actief',
