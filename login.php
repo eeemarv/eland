@@ -32,11 +32,11 @@ if ($token)
 {
 	if($apikey = $app['predis']->get($app['tschema'] . '_token_' . $token))
 	{
-		$app['s_logins'] = $app['session']->get('logins') ?? [];
 		$app['s_logins'] = array_merge($app['s_logins'], [
 			$app['tschema'] 	=> 'elas',
 		]);
 		$app['session']->set('logins', $app['s_logins']);
+		$app['session']->set('schema', $app['tschema']);
 
 		$referrer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 
@@ -57,7 +57,6 @@ if ($token)
 
 		header('Location: ' . $app->path($location, [
 			'welcome'	=> '1',
-			'sc'		=> 'elas',
 			'role'		=> 'g',
 			'system'	=> $app['pp_system'],
 		]));
@@ -85,11 +84,11 @@ if ($submit)
 		&& $master_password
 		&& hash('sha512', $password) === $master_password)
 	{
-		$app['s_logins'] = $app['session']->get('logins') ?? [];
 		$app['s_logins'] = array_merge($app['s_logins'], [
 			$app['tschema'] 	=> 'master',
 		]);
 		$app['session']->set('logins', $app['s_logins']);
+		$app['session']->set('schema', $app['tschema']);
 
 		$app['alert']->success('OK - Gebruiker ingelogd als master.');
 
@@ -250,11 +249,11 @@ if ($submit)
 
 	if (!count($errors))
 	{
-		$app['s_logins'] = $app['session']->get('logins') ?? [];
 		$app['s_logins'] = array_merge($app['s_logins'], [
 			$app['tschema'] 	=> $user['id'],
 		]);
 		$app['session']->set('logins', $app['s_logins']);
+		$app['session']->set('schema', $app['tschema']);
 
 		$app['s_id'] = $user['id'];
 		$app['s_schema'] = $app['tschema'];

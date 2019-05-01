@@ -34,7 +34,7 @@ if ($del)
 	$user_id = $uid ? $uid : $user_id;
 
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $user_id == $app['s_id']
 		&& $user_id;
 
@@ -180,7 +180,7 @@ if ($edit || $add)
 	$user_id = $uid ? $uid : $user_id;
 
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $user_id == $app['s_id']
 		&& $user_id;
 
@@ -588,7 +588,7 @@ if ($edit || $add)
 if ($uid)
 {
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $uid == $app['s_id']
 		&& $uid;
 
@@ -817,7 +817,7 @@ if (!$app['s_admin'])
 }
 
 $s_owner = !$app['s_guest']
-	&& $app['s_group_self']
+	&& $app['s_system_self']
 	&& $app['s_id'] == $uid
 	&& $app['s_id'] && $uid;
 

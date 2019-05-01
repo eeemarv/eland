@@ -190,7 +190,7 @@ if ($id || $edit || $del)
 	}
 
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $app['s_id'] == $message['id_user']
 		&& $message['id_user'];
 
@@ -435,7 +435,7 @@ if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
 	}
 
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $msg['id_user'] == $app['s_id']
 		&& $msg['id_user'];
 
@@ -611,14 +611,14 @@ if ($mail && $app['is_http_post'] && $id)
 		'from_contacts'		=> $from_contacts,
 		'from_user'			=> $from_user,
 		'from_schema'		=> $app['s_schema'],
-		'is_same_system'	=> $app['s_group_self'],
+		'is_same_system'	=> $app['s_system_self'],
 		'to_user'			=> $to_user,
 		'to_schema'			=> $app['tschema'],
 		'msg_content'		=> $content,
 		'message'			=> $message,
 	];
 
-	$mail_template = $app['s_group_self']
+	$mail_template = $app['s_system_self']
 		? 'message_msg/msg'
 		: 'message_msg/msg_intersystem';
 
@@ -632,7 +632,7 @@ if ($mail && $app['is_http_post'] && $id)
 
 	if ($cc)
 	{
-		$mail_template = $app['s_group_self']
+		$mail_template = $app['s_system_self']
 			? 'message_msg/copy'
 			: 'message_msg/copy_intersystem';
 
@@ -1549,11 +1549,11 @@ if ($id)
 			|| (!$s_owner
 				&& $user['status'] != 7
 				&& !($app['s_guest']
-				&& $app['s_group_self']))))
+				&& $app['s_system_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
 
-			if (!$app['s_group_self'])
+			if (!$app['s_system_self'])
 			{
 				$tus['tus'] = $app['tschema'];
 			}
@@ -1830,7 +1830,7 @@ if (!($app['p_view'] || $app['p_inline']))
 }
 
 $s_owner = !$app['s_guest']
-	&& $app['s_group_self']
+	&& $app['s_system_self']
 	&& isset($filter['uid'])
 	&& $app['s_id'] == $filter['uid']
 	&& $app['s_id'];
@@ -2401,7 +2401,7 @@ if (!$app['p_inline'])
 	$params_form['r'] = $app['s_accountrole'];
 	$params_form['u'] = $app['s_id'];
 
-	if (!$app['s_group_self'])
+	if (!$app['s_system_self'])
 	{
 		$params_form['s'] = $app['s_schema'];
 	}
@@ -2582,7 +2582,7 @@ else if ($v_extended)
 	{
 		$type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
 
-		$sf_owner = $app['s_group_self']
+		$sf_owner = $app['s_system_self']
 			&& $msg['id_user'] === $app['s_id'];
 
 		$exp = strtotime($msg['validity']) < $time;

@@ -210,7 +210,7 @@ if (!$app['s_anonymous'])
 	}
 	else if ($app['s_schema'] && $app['s_id'])
 	{
-		echo $app['s_group_self'] ? '' : $app['s_schema'] . '.';
+		echo $app['s_system_self'] ? '' : $app['s_schema'] . '.';
 		echo link_user($app['s_id'], $app['s_schema'], false);
 	}
 
@@ -345,7 +345,7 @@ if (!$app['s_anonymous'])
 		echo '</ul>';
 		echo '</li>';
 	}
-	else if ($app['s_group_self']
+	else if ($app['s_system_self']
 		&& ((isset($app['session_user'])
 			&& count($app['session_user'])
 			&& $app['session_user']['accountrole'] === 'admin')

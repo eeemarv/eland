@@ -178,11 +178,11 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		'from_schema'		=> $app['s_schema'],
 		'to_user'			=> $to_user,
 		'to_schema'			=> $app['tschema'],
-		'is_same_system'	=> $app['s_group_self'],
+		'is_same_system'	=> $app['s_system_self'],
 		'msg_content'		=> $user_mail_content,
 	];
 
-	$mail_template = $app['s_group_self']
+	$mail_template = $app['s_system_self']
 		? 'user_msg/msg'
 		: 'user_msg/msg_intersystem';
 
@@ -196,7 +196,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 
 	if ($user_mail_cc)
 	{
-		$mail_template = $app['s_group_self']
+		$mail_template = $app['s_system_self']
 			? 'user_msg/copy'
 			: 'user_msg/copy_intersystem';
 
@@ -219,7 +219,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 if ($app['is_http_post'] && $img && $id )
 {
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $app['s_id'] == $id
 		&& $id;
 
@@ -337,7 +337,7 @@ if ($app['is_http_post'] && $img && $id )
 if ($img_del && $id)
 {
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $app['s_id'] == $id
 		&& $id;
 
@@ -783,7 +783,7 @@ if ($app['s_admin']
 if ($pw)
 {
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $pw == $app['s_id']
 		&& $pw;
 
@@ -1188,7 +1188,7 @@ if ($add || $edit)
 	}
 
 	$s_owner =  !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $edit
 		&& $app['s_id']
 		&& $edit == $app['s_id'];
@@ -2565,7 +2565,7 @@ $st_class_ary = [
 if ($id)
 {
 	$s_owner = !$app['s_guest']
-		&& $app['s_group_self']
+		&& $app['s_system_self']
 		&& $app['s_id'] == $id
 		&& $id;
 
@@ -2697,11 +2697,11 @@ if ($id)
 
 	if ($app['s_admin']
 		|| (!$s_owner && $user['status'] !== 7
-			&& !($app['s_guest'] && $app['s_group_self'])))
+			&& !($app['s_guest'] && $app['s_system_self'])))
 	{
 		$tus = ['add' => 1, 'tuid' => $id];
 
-		if (!$app['s_group_self'])
+		if (!$app['s_system_self'])
 		{
 			$tus['tus'] = $app['tschema'];
 		}
