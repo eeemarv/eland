@@ -1293,7 +1293,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo btn_cancel('transactions', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('transactions', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -1538,7 +1538,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo btn_cancel('transactions', array_merge($app['pp_ary'], ['id' => $edit]));
+	echo $app['render_link']->btn_cancel('transactions', $app['pp_ary'], ['id' => $edit]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';

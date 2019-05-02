@@ -880,7 +880,7 @@ echo 'Account Code ingevuld zijn.';
 echo '</label>';
 echo '</div>';
 
-echo btn_cancel('transactions', $app['pp_ary'], ['id' => $id]);
+echo $app['render_link']->btn_cancel('transactions', $app['pp_ary'], ['id' => $id]);
 
 echo '&nbsp;';
 echo '<input type="submit" value="Massa transactie uitvoeren" ';

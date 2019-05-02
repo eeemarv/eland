@@ -543,7 +543,7 @@ if ($img_del == 'all' && $id)
 	echo $str_this_ow;
 	echo '?</h3>';
 
-	echo btn_cancel('messages', array_merge($app['pp_ary'], ['id' => $id]));
+	echo $app['render_link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
@@ -756,7 +756,7 @@ if ($del)
 
 	echo '<form method="post">';
 
-	echo btn_cancel('messages', array_merge($app['pp_ary'], ['id' => $id]));
+	echo $app['render_link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
@@ -1435,7 +1435,7 @@ if (($edit || $add))
 
 	$btn = ($edit) ? 'primary' : 'success';
 
-	echo btn_cancel('messages', array_merge($app['pp_ary'], ['id' => $id]));
+	echo $app['render_link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();

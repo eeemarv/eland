@@ -400,7 +400,7 @@ if ($img_del && $id)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo btn_cancel('users', array_merge($app['pp_ary'], ['id' => $id]));
+	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $id]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
@@ -919,7 +919,7 @@ if ($pw)
 	echo '</label>';
 	echo '</div>';
 
-	echo btn_cancel('users', array_merge($app['pp_ary'], ['id' => $pw]));
+	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $pw]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" ';
@@ -1158,7 +1158,7 @@ if ($del)
 	echo '</label>';
 	echo '</div>';
 
-	echo btn_cancel('users', array_merge($app['pp_ary'], ['id' => $del]));
+	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $del]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
@@ -2469,12 +2469,10 @@ if ($add || $edit)
 	echo '</label>';
 	echo '</div>';
 
-	$canc = $edit ? ['id' => $edit] : ['status' => 'active'];
 	$btn = $edit ? 'primary' : 'success';
 
-	$canc = array_merge($app['pp_ary'], $canc);
-
-	echo btn_cancel('users', $canc);
+	$canc = $edit ? ['id' => $edit] : ['status' => 'active'];
+	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], $canc);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';

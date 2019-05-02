@@ -52,7 +52,7 @@ if (getenv('WEBSITE_MAINTENANCE'))
 if (!isset($app['page_access'])
 	|| !isset(cnst::ACCESS[$app['page_access']]))
 {
-	return internal_server_error($app);
+	internal_server_error($app);
 }
 
 if (isset($_GET['et']))
@@ -621,55 +621,6 @@ function aphp(
 	$out .= $collapse ? '</span>' : '';
 	$out .= '</a>';
 	return $out;
-}
-
-function btn_cancel(string $route, array $params):string
-{
-	return aphp(
-		$route,
-		$params,
-		'Annuleren',
-		['class'	=> 'btn btn-default'],
-		'times'
-	);
-}
-
-function btn_top_del(
-	string $route,
-	array $params,
-	int $id,
-	string $title = 'Verwijderen'):string
-{
-	return aphp($route, array_merge($params, ['del'	=> $id,]),
-		'Verwijderen', [
-			'class'	=> 'btn btn-danger',
-			'title'	=> $title,
-		], 'times', true);
-}
-
-function btn_top_add(
-	string $route,
-	array $params,
-	string $title = 'Toevoegen'):string
-{
-	return aphp($route, array_merge($params, ['add'	=> '1',]),
-		'Toevoegen', [
-			'class'	=> 'btn btn-success',
-			'title'	=> $title,
-		], 'plus', true);
-}
-
-function btn_top_edit(
-	string $route,
-	array $params,
-	int $id,
-	string $title = 'Aanpassen'):string
-{
-	return aphp($route, array_merge($params, ['edit'	=> $id,]),
-		'Aanpassen', [
-			'class'	=> 'btn btn-primary',
-			'title'	=> $title,
-		], 'times', true);
 }
 
 /**

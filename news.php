@@ -275,8 +275,7 @@ if ($add || $edit)
 	$btn = $add ? 'success' : 'primary';
 
 	$canc = $edit ? ['id' => $edit] : [];
-	$canc = array_merge($app['pp_ary'], $canc);
-	echo btn_cancel('news', $canc);
+	echo $app['render_link']->btn_cancel('news', $app['pp_ary'], $canc);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -405,7 +404,7 @@ if ($del)
 	echo 'moet verwijderd worden?</strong></p>';
 
 	echo '<form method="post">';
-	echo btn_cancel('news', array_merge($app['pp_ary'], ['id' => $del]));
+	echo $app['render_link']->btn_cancel('news', $app['pp_ary'], ['id' => $del]);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';

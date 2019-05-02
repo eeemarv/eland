@@ -74,7 +74,7 @@ if ($add)
 	echo '" required>';
 	echo '</div>';
 
-	echo btn_cancel('contact_types', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('contact_types', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -175,7 +175,7 @@ if ($edit)
 	echo '" required>';
 	echo '</div>';
 
-	echo btn_cancel('contact_types', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('contact_types', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -242,7 +242,7 @@ if ($del)
 	echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 	echo '<form method="post">';
 
-	echo btn_cancel('contact_types', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('contact_types', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';

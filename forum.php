@@ -214,7 +214,7 @@ if ($del)
 	echo '<p>' . $forum_post['content'] . '</p>';
 
 	echo '<form method="post">';
-	echo btn_cancel('forum', array_merge($app['pp_ary'], ['f' => $t]));
+	echo $app['render_link']->btn_cancel('forum', $app['pp_ary'], ['f' => $t]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
@@ -312,10 +312,9 @@ if ($add || $edit)
 	$str = $topic ? 'Reactie' : 'Onderwerp';
 	$btn = $edit ? 'primary' : 'success';
 	$action = $edit ? 'aanpassen' : 'toevoegen';
-	$cancel_dest = $topic ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
-	$cancel_dest = array_merge($app['pp_ary'], $cancel_dest);
 
-	echo btn_cancel('forum', $cancel_dest);
+	$cancel_dest = $topic ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
+	echo $app['render_link']->btn_cancel('forum', $app['pp_ary'], $cancel_dest);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="';

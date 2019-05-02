@@ -114,7 +114,7 @@ if ($add)
 	echo '</select>';
 	echo '</div>';
 
-	echo btn_cancel('categories', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('categories', $app['pp_ary'], []);
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" ';
 	echo 'class="btn btn-success">';
@@ -253,7 +253,7 @@ if ($edit)
 	echo '</select>';
 	echo '</div>';
 
-	echo btn_cancel('categories', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('categories', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" ';
@@ -304,7 +304,7 @@ if ($del)
 	echo " moet verwijderd worden?</strong></font></p>";
 	echo '<form method="post">';
 
-	echo btn_cancel('categories', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('categories', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';

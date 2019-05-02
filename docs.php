@@ -116,7 +116,7 @@ if ($map_edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo btn_cancel('docs', array_merge($app['pp_ary'], ['map' => $map_edit]));
+	echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], ['map' => $map_edit]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
@@ -303,7 +303,7 @@ if ($edit)
 	echo 'of selecteer een bestaande.</p>';
 	echo '</div>';
 
-	echo btn_cancel('docs', $app['pp_ary']);
+	echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], []);
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 
@@ -399,7 +399,7 @@ if ($del)
 		echo '</a>';
 		echo '</p>';
 
-		echo btn_cancel('docs', $app['pp_ary']);
+		echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], []);
 
 		echo '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" ';
@@ -596,8 +596,7 @@ if ($add)
 	echo '</div>';
 
 	$map_context = $map ? ['map' => $map] : [];
-	$map_context = array_merge($app['pp_ary'], $map_context);
-	echo btn_cancel('docs', $map_context);
+	echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], $map_context);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
