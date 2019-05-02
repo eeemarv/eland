@@ -1308,7 +1308,8 @@ if ($add || $edit)
 
 						$warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
 						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
-						$warning .= 'E-mail adres. Zie ' . aphp('status', [], 'Status');
+						$warning .= 'E-mail adres. Zie ';
+						$warning .= aphp('status', [], 'Status');
 
 						$warning_2 = '';
 
@@ -3027,10 +3028,11 @@ if ($id)
 	echo '</div></div></div></div>';
 
 	echo '<div id="contacts" ';
-	echo 'data-url="' . $app['rootpath'];
-	echo 'contacts.php?inline=1&uid=' . $id;
-	echo '&';
-	echo http_build_query(get_session_query_param());
+	echo 'data-url="';
+	echo $app->path('contacts', array_merge(['pp_ary'], [
+		'inline'	=> '1',
+		'uid'		=> $message['id_user'],
+	]));
 	echo '"></div>';
 
 	// response form
@@ -3132,21 +3134,23 @@ if ($id)
 	{
 		echo '<div id="messages" ';
 		echo 'data-url="';
-		echo $app['rootpath'];
-		echo 'messages.php?inline=1&f[uid]=';
-		echo $id;
-		echo '&';
-		echo http_build_query(get_session_query_param());
+		echo $app->path('messages', array_merge($app['pp_ary'], [
+			'inline'	=> '1',
+			'f'			=> [
+				'uid'	=> $id,
+			],
+		]));
 		echo '" class="print-hide"></div>';
 	}
 
 	echo '<div id="transactions" ';
 	echo 'data-url="';
-	echo $app['rootpath'];
-	echo 'transactions.php?inline=1&f[uid]=';
-	echo $id;
-	echo '&';
-	echo http_build_query(get_session_query_param());
+	echo $app->path('transactions', array_merge($app['pp_ary'], [
+		'inline'	=> '1',
+		'f'			=> [
+			'uid'	=> $id,
+		],
+	]));
 	echo '" class="print-hide"></div>';
 
 	include __DIR__ . '/include/footer.php';
@@ -3796,9 +3800,10 @@ if ($v_map)
 	echo 'data-lng="';
 	echo $ref_geo['lng'] ?? '';
 	echo '" ';
-	echo 'data-token="' . $app['mapbox_token'] . '" ';
+	echo 'data-token="';
+	echo $app['mapbox_token'];
+	echo '" ';
 	echo 'data-session-param="';
-	echo http_build_query(get_session_query_param());
 	echo '"></div>';
 	echo '</div>';
 	echo '</div>';
@@ -3917,12 +3922,10 @@ if ($v_map)
 if ($v_list || $v_tiles)
 {
 	echo '<form method="get" action="';
-	echo generate_url('users', $params);
+	echo $app->path('users', $params);
 	echo '">';
 
-	$params_plus = array_merge($params, get_session_query_param());
-
-	foreach ($params_plus as $k => $v)
+	foreach ($params as $k => $v)
 	{
 		echo '<input type="hidden" name="' . $k . '" value="' . $v . '">';
 	}

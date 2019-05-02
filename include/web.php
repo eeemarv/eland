@@ -1,6 +1,7 @@
 <?php
 
 use util\cnst;
+use util\app;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
@@ -39,16 +40,36 @@ if ($app['script_name'] == 'index'
 	return;
 }
 
+if (getenv('WEBSITE_MAINTENANCE'))
+{
+	echo $app['twig']->render('website_maintenance.html.twig',
+		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
+	exit;
+}
+
 /** page access **/
 
 if (!isset($app['page_access'])
-	|| !in_array($app['page_access'], ['anonymous', 'guest', 'user', 'admin']))
+	|| !isset(cnst::ACCESS[$app['page_access']]))
 {
-	http_response_code(500);
-
-	echo $app['twig']->render('500.html.twig');
-	exit;
+	return internal_server_error($app);
 }
+
+if (isset($_GET['et']))
+{
+	$app['email_validate']->validate($_GET['et']);
+}
+
+/**
+ *
+ **/
+
+$top_right = '';
+$top_buttons = '';
+
+/**
+ *
+ */
 
 if (isset($app['pp_system']))
 {
@@ -62,9 +83,7 @@ if (!$app['tschema'])
 
 if (!$app['tschema'])
 {
-	http_response_code(404);
-	echo $app['twig']->render('404.html.twig');
-	exit;
+	page_not_found($app);
 }
 
 if (isset($app['pp_role_short']) && isset(cnst::ROLE_LONG[$app['pp_role_short']]))
@@ -85,61 +104,114 @@ else
 
 $app['matched_route'] = $app['request']->attributes->get('_route');
 
-if (getenv('WEBSITE_MAINTENANCE'))
-{
-	echo $app['twig']->render('website_maintenance.html.twig',
-		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
-	exit;
-}
-
-if (isset($_GET['et']))
-{
-	$app['email_validate']->validate($_GET['et']);
-}
-
 /**
- * vars
- **/
-
-$top_right = '';
-$top_buttons = '';
-
-/** user session **/
+ * authentication
+ */
 
 $app['session_user'] = [];
 
-$s_schema = $app['session']->get('schema');
+$app['s_schema'] = function () use ($app){
 
-if (!isset($s_schema))
-{
-	$app['session']->set('schema', $s_schema);
-}
+	$s_schema = $app['session']->get('schema');
 
-$app['s_schema'] = $s_schema;
+	if (!isset($s_schema))
+	{
+		$s_schema = $app['tschema'];
+		$app['session']->set('schema', $s_schema);
+	}
+
+	return $s_schema;
+};
+
 $app['s_system_self'] = $app['s_schema'] === $app['tschema'];
 
 $app['s_logins'] = $app['session']->get('logins') ?? [];
 
-if (count($app['s_logins']))
+$app['s_master'] = false;
+$app['s_admin'] = false;
+$app['s_user'] = false;
+$app['s_guest'] = false;
+$app['s_elas_guest'] = false;
+$app['s_id'] = 0;
+$app['s_accountrole'] = 'anonymous';
+
+if (count($app['s_logins']) && isset($app['s_logins'][$app['s_schema']]))
 {
-	if (isset($app['s_logins'][$app['s_schema']]))
+	switch ($app['s_logins']['s_schema'])
 	{
+		case 'master':
+			$app['s_accountrole'] = 'admin';
+			$app['s_master'] = true;
+			break;
+		case 'elas':
+			$app['s_accountrole'] = 'guest';
+			$app['s_guest'] = true;
+			$app['s_elas_guest'] = true;
+			break;
+		default:
+			$app['s_id'] = $app['s_logins'][$app['s_schema']];
+			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+			$app['s_accountrole'] = $app['session_user']['accountrole'];
+
+			switch ($app['s_accountrole'])
+			{
+				case 'user':
+					$app['s_admin'] = true;
+					break;
+				case 'user':
+					$app['s_user'] = true;
+					break;
+				case 'guest':
+					$app['s_guest'] = true;
+					break;
+				default:
+					$s_logins = $app['s_logins'];
+					unset($s_logins[$app['s_schema']]);
+					$app['session']->set('logins', $s_logins);
+					error_log('Unvalid accountrole ' .
+						$app['s_accountrole'] .
+						' for schema ' . $app['s_schema']);
+					internal_server_error($app);
+					break;
+			}
+
+			break;
 	}
+}
+
+/**
+ * load interSystems
+ **/
+
+if ($app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']))
+{
+	$app['intersystem_ary'] = [
+		'elas'	=> $app['intersystems']->get_elas($app['s_schema']),
+		'eland'	=> $app['intersystems']->get_eland($app['s_schema']),
+	];
 }
 else
 {
-	$app['s_accountrole'] = 'anonymous';
+	$app['intersystem_ary'] = [
+		'elas'	=> [],
+		'eland'	=> [],
+	];
 }
 
+if ($app['s_system_self'] && $app['s_guest'])
+{
+	$app['intersystem_ary'] = [
+		'elas'	=> [],
+		'eland'	=> [],
+	];
+}
 
-$app['s_accountrole'] = isset(cnst::ACCESS_ARY[$app['p_role']])
-	? $app['p_role']
-	: 'anonymous';
+$app['count_intersystems'] = count($app['intersystem_ary']['eland']) + count($app['intersystem_ary']['elas']);
 
-/** access user **/
-
-
-$app['s_master'] = $app['s_elas_guest'] = false;
+/**
+ * authorization
+ */
 
 if (!count($app['s_logins']))
 {
@@ -322,44 +394,9 @@ switch ($app['s_accountrole'])
  * some vars
  **/
 
-$app['s_access_level'] = cnst::ACCESS_ARY[$app['s_accountrole']];
-
-$app['s_admin'] = $app['s_accountrole'] === 'admin';
-$app['s_user'] = $app['s_accountrole'] === 'user';
-$app['s_guest'] = $app['s_accountrole'] === 'guest';
-$app['s_anonymous'] = !($app['s_admin'] || $app['s_user'] || $app['s_guest']);
+$app['s_access_level'] = cnst::ACCESS_ARY[$app['p_role']];
 
 $errors = [];
-
-/**
- * Load interSystems
- **/
-
-if ($app['config']->get('template_lets', $app['tschema'])
-	&& $app['config']->get('interlets_en', $app['tschema']))
-{
-	$app['intersystem_ary'] = [
-		'elas'	=> $app['intersystems']->get_elas($app['s_schema']),
-		'eland'	=> $app['intersystems']->get_eland($app['s_schema']),
-	];
-}
-else
-{
-	$app['intersystem_ary'] = [
-		'elas'	=> [],
-		'eland'	=> [],
-	];
-}
-
-if ($app['s_system_self'] && $app['s_guest'])
-{
-	$app['intersystem_ary'] = [
-		'elas'	=> [],
-		'eland'	=> [],
-	];
-}
-
-$app['count_intersystems'] = count($app['intersystem_ary']['eland']) + count($app['intersystem_ary']['elas']);
 
 if ($app['page_access'] != 'anonymous'
 	&& !$app['s_system_self']
@@ -597,6 +634,44 @@ function btn_cancel(string $route, array $params):string
 	);
 }
 
+function btn_top_del(
+	string $route,
+	array $params,
+	int $id,
+	string $title = 'Verwijderen'):string
+{
+	return aphp($route, array_merge($params, ['del'	=> $id,]),
+		'Verwijderen', [
+			'class'	=> 'btn btn-danger',
+			'title'	=> $title,
+		], 'times', true);
+}
+
+function btn_top_add(
+	string $route,
+	array $params,
+	string $title = 'Toevoegen'):string
+{
+	return aphp($route, array_merge($params, ['add'	=> '1',]),
+		'Toevoegen', [
+			'class'	=> 'btn btn-success',
+			'title'	=> $title,
+		], 'plus', true);
+}
+
+function btn_top_edit(
+	string $route,
+	array $params,
+	int $id,
+	string $title = 'Aanpassen'):string
+{
+	return aphp($route, array_merge($params, ['edit'	=> $id,]),
+		'Aanpassen', [
+			'class'	=> 'btn btn-primary',
+			'title'	=> $title,
+		], 'times', true);
+}
+
 /**
  * generate url
  */
@@ -672,6 +747,20 @@ function array_intersect_key_recursive(array $ary_1, array $ary_2)
 	}
 
     return $ary_1;
+}
+
+function internal_server_error(app $app)
+{
+	http_response_code(500);
+	echo $app['twig']->render('500.html.twig', []);
+	exit;
+}
+
+function page_not_found(app $app)
+{
+	http_response_code(404);
+	echo $app['twig']->render('404.html.twig');
+	exit;
 }
 
 /** (dev) */

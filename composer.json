@@ -54,7 +54,8 @@
 			"task\\": "task/",
 			"schema_task\\": "schema_task/",
 			"util\\": "util/",
-			"twig\\": "twig/"
+			"twig\\": "twig/",
+			"render\\": "render/"
         }
     },
 	"scripts": {

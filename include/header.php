@@ -27,7 +27,7 @@ echo '<meta name="theme-color" content="#ffffff">';
 
 echo '</head>';
 echo '<body data-session-params="';
-echo htmlspecialchars(json_encode(get_session_query_param()));
+//
 echo '" class="';
 echo $app['s_admin'] ? 'admin' : ($app['s_guest'] ? 'guest' : 'member');
 echo '">';

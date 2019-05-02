@@ -527,6 +527,12 @@ $app['autominlimit'] = function ($app){
 		$app['user_cache']);
 };
 
+$app['render_link'] = function ($app){
+	return new render\link(
+		$app['url_generator']
+	);
+};
+
 // init
 
 $app['elas_db_upgrade'] = function ($app){

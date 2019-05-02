@@ -482,7 +482,17 @@ if ($img_del == 'all' && $id)
 		cancel($id);
 	}
 
-	$str_this_ow = $ow_type . ' "' . aphp('messages', ['id' => $id], $message['content']) . '"';
+	$str_this_ow = $ow_type;
+	$str_this_ow .= ' "';
+	$str_this_ow .= aphp(
+		'messages',
+		array_merge($app['pp_ary'], [
+			'id' => $id,
+		]),
+		$message['content'],
+		[]
+	);
+	$str_this_ow .= '"';
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
 
@@ -686,7 +696,14 @@ if ($del)
 	}
 
 	$h1 = ucfirst($ow_type_this) . ' ';
-	$h1 .= aphp('messages', ['id' => $del], $message['content']);
+	$h1 .= aphp(
+		'messages',
+		array_merge($app['pp_ary'], [
+			'id' => $del,
+		]),
+		$message['content'],
+		[]
+	);
 	$h1 .= ' verwijderen?';
 	$fa = 'newspaper-o';
 
@@ -1528,20 +1545,18 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('messages',
-			['edit' => $id],
-			'Aanpassen',
-			'btn btn-primary',
-			$ow_type_uc . ' aanpassen',
-			'pencil',
-			true);
-		$top_buttons .= aphp('messages',
-			['del' => $id],
-			'Verwijderen',
-			'btn btn-danger',
-			$ow_type_uc . ' verwijderen',
-			'times',
-			true);
+		$top_buttons .= btn_top_edit(
+			'messages',
+			$app['pp_ary'],
+			$id,
+			$ow_type_uc . ' aanpassen'
+		);
+		$top_buttons .= btn_top_del(
+			'messages',
+			$app['pp_ary'],
+			$id,
+			$ow_type_uc . ' verwijderen'
+		);
 	}
 
 	if ($message['msg_type'] == 1
@@ -1565,12 +1580,21 @@ if ($id)
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	$prev_url = $prev ? generate_url('messages', ['id' => $prev]) : '';
-	$next_url = $next ? generate_url('messages', ['id' => $next]) : '';
+	$prev_url = $prev ? $app->path('messages', array_merge($app['pp_ary'], ['id' => $prev])) : '';
+	$next_url = $next ? $app->path('messages', array_merge($app['pp_ary'], ['id' => $next])) : '';
 
 	$top_buttons_right .= btn_item_nav($prev_url, false, false);
 	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('messages', [], '', 'btn btn-default', 'Alle vraag en aanbod', 'newspaper-o');
+	$top_buttons_right .= aphp(
+		'messages',
+		$app['pp_ary'],
+		'',
+		[
+			'class' => 'btn btn-default',
+			'title' => 'Alle vraag en aanbod',
+		],
+		'newspaper-o'
+	);
 	$top_buttons_right .= '</span>';
 
 	$h1 = $ow_type_uc;
@@ -1631,13 +1655,18 @@ if ($id)
 
 		echo aphp(
 			'messages',
-			['img_del' => 'all', 'id' => $id],
+			array_merge($app['pp_ary'], [
+				'img_del'	=> 'all',
+				'id'		=> $id,
+			]),
 			'Afbeeldingen verwijderen',
-			'btn btn-danger',
-			false,
+			[
+				'class'	=> 'btn btn-danger',
+				'id'	=> 'btn_remove',
+				'style'	=> 'display:none;',
+			],
 			'times',
-			false,
-			['id' => 'btn_remove', 'style' => 'display:none;']
+			false
 		);
 
 		echo '<p class="text-warning">';
@@ -1721,11 +1750,11 @@ if ($id)
 	{
 		echo '<dt>Verlengen</dt>';
 		echo '<dd>';
-		echo aphp('messages', ['id' => $id, 'extend' => 30], '1 maand', 'btn btn-default btn-xs');
+		echo btn_extend($app['pp_ary'], $id, 30, '1 maand');
 		echo '&nbsp;';
-		echo aphp('messages', ['id' => $id, 'extend' => 180], '6 maanden', 'btn btn-default btn-xs');
+		echo btn_extend($app['pp_ary'], $id, 180, '6 maanden');
 		echo '&nbsp;';
-		echo aphp('messages', ['id' => $id, 'extend' => 365], '1 jaar', 'btn btn-default btn-xs');
+		echo btn_extend($app['pp_ary'], $id, 365, '1 jaar');
 		echo '</dd>';
 	}
 
@@ -1746,11 +1775,11 @@ if ($id)
 	echo '</div>';
 
 	echo '<div id="contacts" ';
-	echo 'data-url="' . $app['rootpath'];
-	echo 'contacts.php?inline=1&uid=';
-	echo $message['id_user'];
-	echo '&';
-	echo http_build_query(get_session_query_param());
+	echo 'data-url="';
+	echo $app->path('contacts', array_merge(['pp_ary'], [
+			'inline'	=> '1',
+			'uid'		=> $message['id_user'],
+		]));
 	echo '"></div>';
 
 // response form
@@ -2818,4 +2847,19 @@ function get_radio(
 	}
 
 	return $out;
+}
+
+function btn_extend(array $pp_ary, int $id, int $days, string $label):string
+{
+	return aphp(
+		'messages',
+		array_merge($pp_ary, [
+			'id' 		=> $id,
+			'extend' 	=> $days,
+		]),
+		$label,
+		[
+			'class' => 'btn btn-default btn-xs',
+		]
+	);
 }

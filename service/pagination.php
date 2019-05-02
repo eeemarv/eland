@@ -114,7 +114,7 @@ class pagination
 			$action_params = $this->params;
 			unset($action_params['p']['limit']);
 			$action_params['p']['start'] = 0;
-			$action_params = array_merge($action_params,  get_session_query_param());
+//			$action_params = array_merge($action_params,  get_session_query_param());
 
 			$action_params = http_build_query($action_params, 'prefix', '&');
 			$action_params = urldecode($action_params);
