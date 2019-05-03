@@ -1595,14 +1595,8 @@ if ($id)
 			|| !($transaction['real_from']
 				|| $transaction['real_to'])))
 	{
-		$top_buttons .= aphp(
-			'transactions',
-			['edit' => $id],
-			'Aanpassen',
-			'btn btn-primary',
-			'Omschrijving aanpassen',
-			'pencil',
-			true);
+		$app['btn_top']->edit('transactions', $app['pp_ary'],
+			['edit' => $id], 'Omschrijving aanpassen');
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -2197,39 +2191,21 @@ if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 		{
 			if ($s_owner)
 			{
-				$top_buttons .= aphp(
-					'transactions',
-					['add' => 1],
-					'Toevoegen',
-					'btn btn-success',
-					'Transactie toevoegen',
-					'plus',
-					true
-				);
+				$app['btn_top']->add('transactions', $app['pp_ary'],
+					['add' => 1], 'Transactie toevoegen');
 			}
 			else
 			{
-				$top_buttons .= aphp(
-					'transactions',
+				$app['btn_top']->add_trans('transactions', $app['pp_ary'],
 					['add' => 1, 'tuid' => $user['id']],
-					'Transactie naar ' . $user_str,
-					'btn btn-warning',
-					'Transactie naar ' . $user_str, 'exchange',
-					true);
+					'Transactie naar ' . $user_str);
 			}
 		}
 	}
 	else
 	{
-		$top_buttons .= aphp(
-			'transactions',
-			['add' => 1],
-			'Toevoegen',
-			'btn btn-success',
-			'Transactie toevoegen',
-			'plus',
-			true
-		);
+		$app['btn_top']->add('transactions', $app['pp_ary'],
+			['add' => 1], 'Transactie toevoegen');
 	}
 }
 
@@ -2481,7 +2457,7 @@ else
 	echo '<h3><i class="fa fa-exchange"></i> ';
 	echo $h1;
 	echo '<span class="inline-buttons">';
-	echo $top_buttons;
+	echo $app['btn_top']->get();
 	echo '</span>';
 	echo '</h3>';
 }

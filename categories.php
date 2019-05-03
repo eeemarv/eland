@@ -335,7 +335,7 @@ foreach ($cats as $cat)
 	$child_count_ary[$cat['id_parent']]++;
 }
 
-$top_buttons .= $app['render_link']->btn_top_add('categories',
+$app['btn_top']->add('categories',
 	$app['pp_ary'], ['add' => '1'], 'Categorie toevoegen');
 
 $h1 = 'Categorieën';

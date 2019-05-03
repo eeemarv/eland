@@ -495,7 +495,6 @@ echo '</i></button>';
 echo '</div>';
 
 echo $app['btn_top']->get();
-// echo $top_buttons ?? '';
 
 if ($app['btn_nav']->has_content()
 	|| ($top_buttons_right ?? false)

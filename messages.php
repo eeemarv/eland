@@ -1545,14 +1545,11 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= $app['render_link']->btn_top_edit(
-			'messages', $app['pp_ary'], ['edit' => $id],
-			$ow_type_uc . ' aanpassen'
-		);
-		$top_buttons .= $app['render_link']->btn_top_del(
-			'messages', $app['pp_ary'], ['del' => $id],
-			$ow_type_uc . ' verwijderen'
-		);
+		$app['btn_top']->edit('messages', $app['pp_ary'],
+			['edit' => $id],	$ow_type_uc . ' aanpassen');
+
+		$app['btn_top']->del('messages', $app['pp_ary'],
+			['del' => $id], $ow_type_uc . ' verwijderen');
 	}
 
 	if ($message['msg_type'] == 1
@@ -1569,9 +1566,8 @@ if ($id)
 				$tus['tus'] = $app['tschema'];
 			}
 
-			$top_buttons .= aphp('transactions', $tus, 'Transactie',
-				'btn btn-warning', 'Transactie voor dit aanbod',
-				'exchange', true, false, $app['s_schema']);
+			$app['btn_top']->add_trans('transactions', $app['s_ary'],
+				$tus, 'Transactie voor dit aanbod');
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -2179,15 +2175,8 @@ if ($app['s_admin'] || $app['s_user'])
 	if (!$app['p_inline']
 		&& ($s_owner || !isset($filter['uid'])))
 	{
-		$top_buttons .= aphp(
-			'messages',
-			['add' => 1],
-			'Toevoegen',
-			'btn btn-success',
-			'Vraag of aanbod toevoegen',
-			'plus',
-			true
-		);
+		$app['btn_top']->add('messages', $app['pp_ary'],
+			['add' => '1'], 'Vraag of aanbod toevoegen');
 	}
 
 	if (isset($filter['uid']))
@@ -2197,15 +2186,8 @@ if ($app['s_admin'] || $app['s_user'])
 			$str = 'Vraag of aanbod voor ';
 			$str .= link_user($filter['uid'], $app['tschema'], false);
 
-			$top_buttons .= aphp(
-				'messages',
-				['add' => 1, 'uid' => $filter['uid']],
-				$str,
-				'btn btn-success',
-				$str,
-				'plus',
-				true
-			);
+			$app['btn_top']->add('messages', $app['pp_ary'],
+				['add' => 1, 'uid' => $filter['uid']], $str);
 		}
 	}
 }
@@ -2454,7 +2436,7 @@ if ($app['p_inline'])
 	echo '<h3><i class="fa fa-newspaper-o"></i> ';
 	echo $h1;
 	echo '<span class="inline-buttons">';
-	echo $top_buttons;
+	echo $app['btn_top']->get();
 	echo '</span>';
 	echo '</h3>';
 }

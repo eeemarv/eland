@@ -2,7 +2,7 @@
 
 namespace render;
 
-use render\link;
+use render\link as render_link;
 
 class btn_nav
 {
@@ -10,7 +10,7 @@ class btn_nav
 	protected $out = '';
 
 	public function __construct(
-		link $render_link
+		render_link $render_link
 	)
 	{
 		$this->render_link = $render_link;

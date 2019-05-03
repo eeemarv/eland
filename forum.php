@@ -413,10 +413,10 @@ if ($topic)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= $app['render_link']->btn_top_edit(
-			'forum', $app['pp_ary'], ['edit' => $topic], 'Onderwerp aanpassen');
-		$top_buttons .= $app['render_link']->btn_top_del(
-			'forum', $app['pp_ary'], ['del' => $topic], 'Onderwerp verwijderen');
+		$app['btn_top']->edit('forum', $app['pp_ary'],
+			['edit' => $topic], 'Onderwerp aanpassen');
+		$app['btn_top']->del('forum', $app['pp_ary'],
+			['del' => $topic], 'Onderwerp verwijderen');
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -548,13 +548,8 @@ if (count($rows))
 
 if ($app['s_admin'] || $app['s_user'])
 {
-	$top_buttons .= aphp('forum',
-		['add' => 1],
-		'Onderwerp Toevoegen',
-		'btn btn-success',
-		'Onderwerp toevoegen',
-		'plus',
-		true);
+	$app['btn_top']->add('forum', $app['pp_ary'],
+		['add' => 1], 'Onderwerp toevoegen');
 }
 
 $csv_en = $app['s_admin'];

@@ -2664,34 +2664,17 @@ if ($id)
 	{
 		$title = $app['s_admin'] ? 'Gebruiker' : 'Mijn gegevens';
 
-		$top_buttons .= aphp(
-			'users',
-			['edit' => $id],
-			'Aanpassen',
-			'btn btn-primary',
-			$title . ' aanpassen',
-			'pencil',
-			true);
+		$app['btn_top']->edit('users', $app['pp_ary'],
+			['edit' => $id], $title . ' aanpassen');
 
-		$top_buttons .= aphp(
-			'users',
-			['pw' => $id],
-			'Paswoord aanpassen',
-			'btn btn-info',
-			'Paswoord aanpassen',
-			'key',
-			true);
+		$app['btn_top']->edit_pw('users', $app['pp_ary'],
+			['pw' => $id], 'Paswoord aanpassen');
 	}
 
 	if ($app['s_admin'] && !$count_transactions && !$s_owner)
 	{
-		$top_buttons .= aphp('users',
-			['del' => $id],
-			'Verwijderen',
-			'btn btn-danger',
-			'Gebruiker verwijderen',
-			'times',
-			true);
+		$app['btn_top']->del('users', $app['pp_ary'],
+			['del' => $id], 'Gebruiker verwijderen');
 	}
 
 	if ($app['s_admin']
@@ -2705,9 +2688,8 @@ if ($id)
 			$tus['tus'] = $app['tschema'];
 		}
 
-		$top_buttons .= aphp('transactions', $tus, 'Transactie',
-			'btn btn-warning', 'Transactie naar ' . link_user($user, $app['tschema'], false),
-			'exchange', true, false, $app['s_schema']);
+		$app['btn_top']->add_trans('transactions', $app['s_ary'],
+			$tus, 'Transactie naar ' . link_user($user, $app['tschema'], false));
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
@@ -3633,21 +3615,12 @@ if ($app['s_admin'])
 {
 	$csv_en = $v_list;
 
-	$top_buttons .= aphp(
-		'users',
-		['add' => 1],
-		'Toevoegen',
-		'btn btn-success',
-		'Gebruiker toevoegen',
-		'plus',
-		true
-	);
+	$app['btn_top']->add('users', $app['pp_ary'],
+		['add' => 1], 'Gebruiker toevoegen');
 
 	if ($v_list)
 	{
-		$top_buttons .= '<a href="#actions" class="btn btn-info" ';
-		$top_buttons .= 'title="Bulk acties"><i class="fa fa-envelope-o"></i>';
-		$top_buttons .= '<span class="hidden-xs hidden-sm"> Bulk acties</span></a>';
+		$app['btn_top']->local('#actions', 'Bulk acties', 'envelope-o');
 	}
 
 	$h1 = 'Gebruikers';

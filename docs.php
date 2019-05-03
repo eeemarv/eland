@@ -735,12 +735,12 @@ if ($app['s_admin'])
 		$add_buttom_params['map'] = $map;
 	}
 
-	$top_buttons .= $app['render_link']->btn_top_add('docs', $app['pp_ary'],
+	$app['btn_top']->add('docs', $app['pp_ary'],
 		$add_buttom_params, 'Document opladen');
 
 	if ($map)
 	{
-		$top_buttons .= $app['render_link']->btn_top_edit('docs', $app['pp_ary'],
+		$app['btn_top']->edit('docs', $app['pp_ary'],
 			['map_edit' => $map], 'Map aanpassen');
 	}
 }

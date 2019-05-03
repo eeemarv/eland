@@ -65,7 +65,6 @@ if (isset($_GET['et']))
  **/
 
 $top_right = '';
-$top_buttons = '';
 
 /**
  *
@@ -481,35 +480,22 @@ else if ($app['script_name'] === 'news'
 }
 
 /**
- * remember adapted role in own group (for links to own group)
+ * remember adapted role in own system (for links to own system)
  */
 
-if ($app['s_anonymous'])
-{
-	$app['s_user_params_own_system'] = [];
-}
-else
-{
-	if ($app['s_master']
-		|| $app['session_user']['accountrole'] == 'admin'
-		|| $app['session_user']['accountrole'] == 'user')
-	{
-		if (isset($app['s_logins'][$app['tschema']])
-			&& $app['s_system_self'])
-		{
-			$app['session']->set('role.' . $app['tschema'],
-				$app['s_accountrole']);
-		}
+$app['s_ary'] = [];
 
-		$app['s_user_params_own_system'] = [
-			'r' => $app['session']->get('role.' . $app['s_schema']),
-			'u'	=> $app['s_id'],
-		];
-	}
-	else
-	{
-		$app['s_user_params_own_system'] = [];
-	}
+if ($app['s_user'] || $app['s_admin'] || $app['s_master'])
+{
+	$app['session']->set('role_short.' . $app['tschema'], $app['pp_role_short']);
+	$app['s_ary'] = $app['pp_ary'];
+}
+else if ($app['s_guest'] && !$app['s_elas_guest'])
+{
+	$app['s_ary'] = [
+		'system'		=> $app['systems']->get_system_from_schema($app['s_schema']),
+		'role_short'	=> $app['session']->get('role_short.' . $app['s_schema']),
+	];
 }
 
 /* */

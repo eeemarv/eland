@@ -526,30 +526,18 @@ if ($id)
 		$prev = $nid;
 	}
 
-	$top_buttons = '';
-
 	if($app['s_admin'])
 	{
-		$top_buttons .= aphp('news',
-			['edit' => $id],
-			'Aanpassen',
-			'btn btn-primary',
-			'Nieuwsbericht aanpassen',
-			'pencil',
-			true
-		);
-		$top_buttons .= aphp('news',
-			['del' => $id],
-			'Verwijderen',
-			'btn btn-danger',
-			'Nieuwsbericht verwijderen',
-			'times',
-			true
-		);
+		$app['btn_top']->edit('news', $app['pp_ary'],
+			['edit' => $id], 'Nieuwsbericht aanpassen');
+
+		$app['btn_top']->del('news', $app['pp_ary'],
+			['del' => $id], 'Nieuwsbericht verwijderen');
 
 		if (!$news_item['approved'])
 		{
-			$top_buttons .= aphp('news', ['approve' => $id], 'Goedkeuren', 'btn btn-warning', 'Nieuwsbericht goedkeuren en publiceren', 'check', true);
+			$app['btn_top']->approve('news', $app['pp_ary'],
+				['approve' => $id], 'Nieuwsbericht goedkeuren en publiceren');
 		}
 	}
 
@@ -660,13 +648,8 @@ $params = [];
 
 if(($app['s_user'] || $app['s_admin']) && !$app['p_inline'])
 {
-	$top_buttons .= aphp('news',
-		['add' => 1],
-		'Toevoegen',
-		'btn btn-success',
-		'Nieuws toevoegen',
-		'plus',
-		true);
+	$app['btn_top']->add('news', $app['pp_ary'],
+		['add' => 1], 'Nieuws toevoegen');
 }
 
 if ($app['p_inline'])

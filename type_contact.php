@@ -272,13 +272,8 @@ while($row = $rs->fetch())
 	$contact_count[$row['id_type_contact']] = $row['count'];
 }
 
-$top_buttons .= aphp('type_contact',
-	['add' => 1],
-	'Toevoegen',
-	'btn btn-success',
-	'Contact type toevoegen',
-	'plus',
-	true);
+$app['btn_top']->add('type_contact', $app['pp_ary'],
+	['add' => 1], 'Contact type toevoegen');
 
 $h1 = 'Contact types';
 $fa = 'circle-o-notch';

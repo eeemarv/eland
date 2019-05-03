@@ -102,8 +102,6 @@ if ($add)
 
 	$key = sha1($app['config']->get('systemname', $app['tschema']) . microtime());
 
-	$top_buttons .= aphp('apikeys', [], 'Lijst', 'btn btn-default', 'Lijst apikeys', 'key', true);
-
 	$h1 = 'Apikey toevoegen';
 	$fa = 'key';
 
@@ -162,7 +160,7 @@ if ($add)
 $apikeys = $app['db']->fetchAll('select *
 	from ' . $app['tschema'] . '.apikeys');
 
-$top_buttons .= aphp('apikeys', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Apikey toevoegen', 'plus', true);
+$app['btn_top']->add('apikeys', $app['pp_ary'], ['add' => '1'], 'Apikey toevoegen');
 
 $h1 = 'Apikeys';
 $fa = 'key';

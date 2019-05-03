@@ -441,8 +441,11 @@ if ($id)
 			where letscode = ?', [$group['localletscode']]);
 	}
 
-	$top_buttons .= aphp('intersystem', ['edit' => $id], 'Aanpassen', 'btn btn-primary', 'Intersysteem aanpassen', 'pencil', true);
-	$top_buttons .= aphp('intersystem', ['del' => $id], 'Verwijderen', 'btn btn-danger', 'Intersysteem verwijderen', 'times', true);
+	$app['btn_top']->edit('intersystem', $app['pp_ary'],
+		['edit' => $id], 'Intersysteem aanpassen');
+	$app['btn_top']->del('intersystem', $app['pp_ary'],
+		['del' => $id], 'Intersysteem verwijderen');
+
 	$top_buttons_right = '<span class="btn-group" role="group">';
 	$top_buttons_right .= aphp('intersystem', [], '', 'btn btn-default', 'Lijst Intersystemen', 'share-alt');
 	$top_buttons_right .= '</span>';
@@ -619,7 +622,8 @@ foreach ($interlets_users as $u)
 	];
 }
 
-$top_buttons .= aphp('intersystem', ['add' => 1], 'Toevoegen', 'btn btn-success', 'InterSysteem toevoegen', 'plus', true);
+$app['btn_top']->add('intersystem', $app['pp_ary'],
+	['add' => 1], 'InterSysteem toevoegen');
 
 $h1 = 'eLAS/eLAND InterSysteem';
 $fa = 'share-alt';

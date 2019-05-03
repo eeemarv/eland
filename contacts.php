@@ -604,13 +604,8 @@ if ($uid)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('contacts',
-			['add' => 1, 'uid' => $uid],
-			'Toevoegen',
-			'btn btn-success',
-			'Contact toevoegen',
-			'plus',
-			true);
+		$app['btn_top']->add('contacts', $app['pp_ary'],
+			['add' => 1, 'uid' => $uid], 'Contact toevoegen');
 	}
 
 	if (!$app['p_inline'])
@@ -631,7 +626,7 @@ if ($uid)
 		echo ' Contactinfo van ';
 		echo link_user($user, $app['tschema']);
 		echo ' ';
-		echo $top_buttons;
+		echo $app['btn_top']->get();
 		echo '</h3>';
 	}
 
@@ -1031,15 +1026,8 @@ while($row = $rs->fetch())
 
 $csv_en = true;
 
-$top_buttons .= aphp(
-	'contacts',
-	['add' => 1],
-	'Toevoegen',
-	'btn btn-success',
-	'Contact toevoegen',
-	'plus',
-	true
-);
+$app['btn_top']->add('contacts', $app['pp_ary'],
+	['add' => 1], 'Contact toevoegen');
 
 $filtered = !isset($filter['uid']) && (
 	(isset($filter['q']) && $filter['q'] !== '')
