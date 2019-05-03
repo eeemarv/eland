@@ -747,7 +747,7 @@ if ($app['s_admin'])
 
 $csv_en = $app['s_admin'];
 
-$h1 = aphp('docs', [], 'Documenten');
+$h1 = $app['render_link']->link('docs', $app['pp_ary'], [], 'Documenten', []);
 $h1 .= $map ? ': map "' . $map_name . '"' : '';
 
 include __DIR__ . '/include/header.php';
@@ -797,22 +797,24 @@ if (!$map && count($maps))
 
 		if (isset($d['count']) && $d['count'])
 		{
-			echo '<tr class="info">';
-			echo '<td>';
-			echo aphp('docs', ['map' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
-			echo '</td>';
+			$out = [];
+
+			$out[] = $app['render_link']->link('docs', $app['pp_ary'],
+				['map' => $did], $d['map_name'] . ' (' . $d['count'] . ')', []);
 
 			if ($app['s_admin'])
 			{
-				echo '<td>';
-				echo aphp('docs', ['map_edit' => $did], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-				echo '</td>';
+				$out[] = $app['render_link']->link('docs', $app['pp_ary'],
+					['map_edit' => $did], 'Aanpassen',
+					['class' => 'btn btn-primary btn-xs'], 'pencil');
 			}
-			echo '</tr>';
 
-			continue;
+			echo '<tr class="info"><td>';
+			echo implode('</td><td>', $out);
+			echo '</td></tr>';
 		}
 	}
+
 	echo '</tbody>';
 	echo '</table>';
 
@@ -857,34 +859,37 @@ if (count($docs))
 	{
 		$did = $d['id'];
 
-		echo '<tr>';
+		$out = [];
 
-		echo '<td>';
-		echo '<a href="';
-		echo $app['s3_url'] . $d['filename'];
-		echo '" target="_self">';
-		echo (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
-		echo '</a>';
-		echo '</td>';
-		echo '<td>';
-		echo $app['date_format']->get($d['ts'], 'min', $app['tschema']);
-		echo '</td>';
+		$out_c = '<a href="';
+		$out_c .= $app['s3_url'] . $d['filename'];
+		$out_c .= '" target="_self">';
+		$out_c .= (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
+		$out_c .= '</a>';
+		$out[] = $out_c;
+
+		$out[] = $app['date_format']->get($d['ts'], 'min', $app['tschema']);
 
 		if ($show_visibility)
 		{
-			echo '<td>' . $app['access_control']->get_label($d['access']) . '</td>';
+			$out[] = $app['access_control']->get_label($d['access']);
 		}
 
 		if ($app['s_admin'])
 		{
-			echo '<td>';
-			echo aphp('docs', ['edit' => $did], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo '&nbsp;';
-			echo aphp('docs', ['del' => $did], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
-			echo '</td>';
+			$out_c = $app['render_link']->link('docs', $app['pp_ary'],
+				['edit' => $did], 'Aanpassen',
+				['class' => 'btn btn-primary btn-xs'], 'pencil');
+			$out_c .= '&nbsp;';
+			$out_c .= $app['render_link']->link('docs', $app['pp_ary'],
+				['del' => $did], 'Verwijderen',
+				['class' => 'btn btn-danger btn-xs'], 'times');
+			$out[] = $out_c;
 		}
 
-		echo '</tr>';
+		echo '<tr><td>';
+		echo implode('</td><td>', $out);
+		echo '</td></tr>';
 	}
 
 	echo '</tbody>';

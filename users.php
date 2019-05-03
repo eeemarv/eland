@@ -1309,7 +1309,7 @@ if ($add || $edit)
 						$warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
 						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
 						$warning .= 'E-mail adres. Zie ';
-						$warning .= aphp('status', [], 'Status');
+						$warning .= $app['render_link']->link('status', $app['pp_ary'], [], 'Status', []);
 
 						$warning_2 = '';
 
@@ -2262,9 +2262,8 @@ if ($add || $edit)
 		echo 'afwijkende minimum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
-		echo aphp('config',
-			['active_tab' => 'balance'],
-			'Minimum Systeemslimiet');
+		echo $app['render_link']->link('config', $app['pp_ary'],
+			['active_tab' => 'balance'], 'Minimum Systeemslimiet', []);
 		echo ' ';
 		echo 'van toepassing. ';
 
@@ -2285,11 +2284,10 @@ if ($add || $edit)
 
 		echo 'Dit veld wordt bij aanmaak van een ';
 		echo 'gebruiker vooraf ingevuld met de "';
-		echo aphp(
-			'config',
+		echo $app['render_link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'],
-			'Preset Individuele Minimum Account Limiet'
-		);
+			'Preset Individuele Minimum Account Limiet',
+			[]);
 		echo '" ';
 		echo 'die gedefiniëerd is in de instellingen.';
 
@@ -2322,11 +2320,10 @@ if ($add || $edit)
 		echo 'afwijkende maximum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
-		echo aphp(
-			'config',
+		echo $app['render_link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'],
-			'Maximum Systeemslimiet'
-		);
+			'Maximum Systeemslimiet',
+			[]);
 		echo ' ';
 		echo 'van toepassing. ';
 
@@ -2347,11 +2344,10 @@ if ($add || $edit)
 
 		echo 'Dit veld wordt bij aanmaak van een gebruiker ';
 		echo 'vooraf ingevuld wanneer "';
-		echo aphp(
-			'config',
+		echo $app['render_link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'],
-			'Preset Individuele Maximum Account Limiet'
-		);
+			'Preset Individuele Maximum Account Limiet',
+			[]);
 		echo '" ';
 		echo 'is ingevuld in de instellingen.';
 
@@ -2754,11 +2750,13 @@ if ($id)
 		}
 		else if ($intersystem_id)
 		{
-			$h1 .= ' ' . aphp('intersystem',
+			$h1 .= ' ';
+			$h1 .= $app['render_link']->link('intersystem', $app['pp_ary'],
 				['id' => $intersystem_id],
 				'Gekoppeld interSysteem',
-				'btn btn-default',
-				'Gekoppelde interSysteem');
+				['class' => 'btn btn-default'],
+				'share-alt'
+			);
 		}
 	}
 
@@ -2825,15 +2823,11 @@ if ($id)
 		echo 'data-image-crop="true" ';
 		echo 'data-image-max-height="400"></span>&nbsp;';
 
-		echo aphp(
-			'users',
+		echo $app['render_link']->link('users', $app['pp_ary'],
 			['img_del' => 1, 'id' => $id],
 			'Foto verwijderen',
-			'btn btn-danger',
-			false,
-			'times',
-			false,
-			$attr);
+			array_merge($attr, ['class' => 'btn btn-danger']),
+			'times');
 
 		echo '<p class="text-warning">';
 		echo 'Je foto moet in het jpg/jpeg formaat zijn. ';
@@ -3850,16 +3844,18 @@ if ($v_map)
 				echo 'Hieronder de adressen die nog niet ';
 				echo 'vertaald zijn in coördinaten: ';
 				echo '<ul>';
+
 				foreach($not_geocoded_ary as $not_geocoded)
 				{
 					echo '<li>';
-					echo aphp('contacts',
+					echo $app['render_link']->link('contacts', $app['pp_ary'],
 						['edit' => $not_geocoded['id'], 'uid' => $not_geocoded['uid']],
-						$not_geocoded['adr']);
+						$not_geocoded['adr'], []);
 					echo ' gebruiker: ';
 					echo link_user($not_geocoded['uid'], $app['tschema']);
 					echo '</li>';
 				}
+
 				echo '</ul>';
 				echo '</p>';
 			}
@@ -4159,11 +4155,17 @@ if ($v_list || $v_tiles)
 	foreach ($st as $k => $tab)
 	{
 		$nav_params['status'] = $k;
+
 		echo '<li';
 		echo $status === $k ? ' class="active"' : '';
 		echo '>';
-		$class = (isset($tab['cl'])) ? 'bg-' . $tab['cl'] : false;
-		echo aphp('users', $nav_params, $tab['lbl'], $class) . '</li>';
+
+		$class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
+
+		echo $app['render_link']->link('users', $app['pp_ary'],
+			$nav_params, $tab['lbl'], $class_ary);
+
+		echo '</li>';
 	}
 
 	echo '</ul>';
@@ -4449,12 +4451,14 @@ if ($v_list)
 
 				if (isset($msgs_count[$id][$key]))
 				{
-					echo aphp('messages', [
-						'f'	=> [
-							'uid' 	=> $id,
-							'type' 	=> $message_type_filter[$key],
+					echo $app['render_link']->link('messages', $app['pp_ary'],
+						[
+							'f'	=> [
+								'uid' 	=> $id,
+								'type' 	=> $message_type_filter[$key],
+							],
 						],
-					], $msgs_count[$id][$key]);
+						$msgs_count[$id][$key], []);
 				}
 
 				echo '</td>';
@@ -4479,14 +4483,16 @@ if ($v_list)
 						}
 						else
 						{
-							echo aphp('transactions', [
-								'f' => [
-									'fcode'	=> $key === 'in' ? '' : $u['letscode'],
-									'tcode'	=> $key === 'out' ? '' : $u['letscode'],
-									'andor'	=> $key === 'total' ? 'or' : 'and',
-									'fdate' => $from_date,
+							echo $app['render_link']->link('transactions', $app['pp_ary'],
+								[
+									'f' => [
+										'fcode'	=> $key === 'in' ? '' : $u['letscode'],
+										'tcode'	=> $key === 'out' ? '' : $u['letscode'],
+										'andor'	=> $key === 'total' ? 'or' : 'and',
+										'fdate' => $from_date,
+									],
 								],
-							], $activity[$id][$a_key][$key]);
+								$activity[$id][$a_key][$key], []);
 						}
 					}
 

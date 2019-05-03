@@ -515,18 +515,33 @@ if ($id)
 
 	if ($user)
 	{
-		echo aphp('users', ['id' => $user['id']], $group['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interSysteem account');
+		echo $app['render_link']->link('users', $app['pp_ary'],
+			['id' => $user['id']], $group['localletscode'],
+			[
+				'class' => 'btn btn-default btn-xs',
+				'title'	=> 'Ga naar het interSysteem account',
+			]);
 
 		if (!in_array($user['status'], [1, 2, 7]))
 		{
-			echo ' ' . aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-danger btn-xs',
-				'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+			echo ' ';
+			echo $app['render_link']->link('users', $app['pp_ary'],
+				['edit' => $user['id']], 'Status!',
+				[
+					'class'	=> 'btn btn-danger btn-xs',
+					'title'	=> 'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+				],
 				'exclamation-triangle');
 		}
 		if ($user['accountrole'] != 'interlets')
 		{
-			echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
-				'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+			echo ' ';
+			echo $app['render_link']->link('users', $app['pp_ary'],
+				['edit' => $user['id']], 'Rol!',
+				[
+					'class'	=> 'btn btn-danger btn-xs',
+					'title'	=> 'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+				],
 				'fa-exclamation-triangle');
 		}
 	}
@@ -667,17 +682,33 @@ if (count($groups))
 
 			if ($user)
 			{
-				echo aphp('users', ['id' => $user['id']], $g['localletscode'], 'btn btn-default btn-xs', 'Ga naar het interSysteem account');
+				echo $app['render_link']->link('users', $app['pp_ary'],
+					['id' => $user['id']], $g['localletscode'],
+					[
+						'class'	=> 'btn btn-default btn-xs',
+						'title'	=> 'Ga naar het interSysteem account',
+					]);
+
 				if (!in_array($user['status'], [1, 2, 7]))
 				{
-					echo ' ' . aphp('users', ['edit' => $user['id']], 'Status!', 'btn btn-danger btn-xs',
-						'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+					echo ' ';
+					echo $app['render_link']->link('users', $app['pp_ary'],
+						['edit' => $user['id']], 'Status!',
+						[
+							'class'	=> 'btn btn-danger btn-xs',
+							'title'	=> 'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
+						],
 						'exclamation-triangle');
 				}
 				if ($user['accountrole'] != 'interlets')
 				{
-					echo ' ' . aphp('users', ['edit' => $user['id']], 'Rol!', 'btn btn-danger btn-xs',
-						'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+					echo ' ';
+					echo $app['render_link']->link('users', $app['pp_ary'],
+						['edit' => $user['id']], 'Rol!',
+						[
+							'class'	=> 'btn btn-danger btn-xs',
+							'title'	=> 'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+						],
 						'fa-exclamation-triangle');
 				}
 			}
@@ -696,7 +727,8 @@ if (count($groups))
 
 		echo '<td>';
 
-		echo aphp('intersystem', ['id' => $g['id']], $g['groupname']);
+		echo $app['render_link']->link('intersystem', $app['pp_ary'],
+			['id' => $g['id']], $g['groupname'], []);
 
 		if (isset($g['eland']))
 		{
@@ -949,13 +981,17 @@ function get_schemas_groups():string
 			{
 				$loc_group = $loc_group_ary[$h];
 
-				$out .= aphp('intersystem', ['id' => $loc_group['id']], 'OK', 'btn btn-success btn-xs');
+				$out .= $app['render_link']->link('intersystem', $app['pp_ary'],
+					['id' => $loc_group['id']], 'OK',
+					['class'	=> 'btn btn-success btn-xs']);
 			}
 			else
 			{
 				if ($app['config']->get('template_lets', $s) && $app['config']->get('interlets_en', $s))
 				{
-					$out .= aphp('intersystem', ['add' => 1, 'add_schema' => $s], 'Creëer', 'btn btn-default btn-xs');
+					$out .= $app['render_link']->link('intersystem', $app['pp_ary'],
+						['add' => 1, 'add_schema' => $s], 'Creëer',
+						['class' => 'btn btn-default btn-xs']);
 				}
 				else
 				{
@@ -974,23 +1010,38 @@ function get_schemas_groups():string
 				{
 					if ($loc_acc['accountrole'] != 'interlets')
 					{
-						$out .= aphp('users', ['edit' => $loc_acc['id']], 'rol', 'btn btn-warning btn-xs',
-							'De rol van het account moet van het type interSysteem zijn.');
+						$out .= $app['render_link']->link('users', $app['pp_ary'],
+							['edit' => $loc_acc['id']], 'rol',
+							[
+								'class'	=> 'btn btn-warning btn-xs',
+								'title'	=> 'De rol van het account moet van het type interSysteem zijn.',
+							]);
 					}
 					else if (!in_array($loc_acc['status'], [1, 2, 7]))
 					{
-						$out .= aphp('users', ['edit' => $loc_acc['id']], 'status', 'btn btn-warning btn-xs',
-							'De status van het account moet actief, uitstapper of extern zijn.');
+						$out .= $app['render_link']->link('users', $app['pp_ary'],
+							['edit' => $loc_acc['id']], 'status',
+							[
+								'class'	=> 'btn btn-warning btn-xs',
+								'title'	=> 'De status van het account moet actief, uitstapper of extern zijn.',
+							]);
 					}
 					else
 					{
-						$out .= aphp('users', ['id' => $loc_acc['id']], 'OK', 'btn btn-success btn-xs');
+						$out .= $app['render_link']->link('users', $app['pp_ary'],
+							['id' => $loc_acc['id']], 'OK',
+							['class' => 'btn btn-success btn-xs']);
 					}
 				}
 				else
 				{
-					$out .= aphp('users', ['add' => 1, 'intersystem_code' => $loc_group['localletscode']], 'Creëer', 'btn btn-default btn-xs text-danger',
-						'Creëer een interSysteem-account met gelijke Accunt Code en status extern.');
+					$out .= $app['render_link']->link('users', $app['pp_ary'],
+						['add' => 1, 'intersystem_code' => $loc_group['localletscode']],
+						'Creëer',
+						[
+							'class'	=> 'btn btn-default btn-xs text-danger',
+							'title'	=> 'Creëer een interSysteem-account met gelijke Accunt Code en status extern.',
+						]);
 				}
 			}
 			else

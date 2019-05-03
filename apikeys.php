@@ -187,19 +187,16 @@ echo '<tbody>';
 
 foreach($apikeys as $a)
 {
-	echo '<tr>';
-	echo '<td>';
-	echo $a['id'];
-	echo '</td>';
-	echo '<td>';
-	echo $a['comment'];
-	echo '</td>';
-	echo '<td>' . $a['apikey'] . '</td>';
-	echo $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
-	echo '<td>';
-	echo aphp('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
-	echo '</td>';
-	echo '</tr>';
+	$out = [];
+	$out[] = $a['id'];
+	$out[] = $a['comment'];
+	$out[] = $a['apikey'];
+	$out[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
+	$out[] = $app['render_link']->link('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+
+	echo '<tr><td>';
+	echo implode('</td><td>', $out);
+	echo '</td></tr>';
 }
 
 echo '</tbody>';

@@ -655,12 +655,10 @@ if(($app['s_user'] || $app['s_admin']) && !$app['p_inline'])
 if ($app['p_inline'])
 {
 	echo '<h3>';
-	echo aphp('news',
-		[],
-		'Nieuws',
-		false,
-		false,
-		'calendar-o');
+
+	echo $app['render_link']->link('news', $app['pp_ary'],
+		[], 'Nieuws', [], 'calendar-o');
+
 	echo '</h3>';
 }
 else
@@ -745,7 +743,8 @@ if ($v_list)
 		echo '>';
 
 		echo '<td>';
-		echo aphp('news', ['id' => $n['id']], $n['headline']);
+		echo $app['render_link']->link('news', $app['pp_ary'],
+			['id' => $n['id']], $n['headline'], []);
 		echo '</td>';
 
 		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
@@ -781,7 +780,8 @@ else if ($v_extended)
 		echo '<div class="media">';
 		echo '<div class="media-body">';
 		echo '<h2 class="media-heading">';
-		echo aphp('news', ['id' => $n['id']], $n['headline']);
+		echo $app['render_link']->link('news', $app['pp_ary'],
+			['id' => $n['id']], $n['headline'], []);
 		echo '</h2>';
 
 		if (!$n['approved'])
@@ -873,12 +873,22 @@ else if ($v_extended)
 		if ($app['s_admin'])
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
+
 			if (!$n['approved'])
 			{
-				echo aphp('news', ['approve' => $n['id']], 'Goedkeuren en publiceren', 'btn btn-warning btn-xs', false, 'check');
+				echo $app['render_link']->link('news', $app['pp_ary'],
+					['approve' => $n['id']], 'Goedkeuren en publiceren',
+					['class' => 'btn btn-warning btn-xs'], 'check');
 			}
-			echo aphp('news', ['edit' => $n['id']], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('news', ['del' => $n['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+
+			echo $app['render_link']->link('news', $app['pp_ary'],
+				['edit' => $n['id']], 'Aanpassen',
+				['class' => 'btn btn-primary btn-xs'], 'pencil');
+
+			echo $app['render_link']->link('news', $app['pp_ary'],
+				['del' => $n['id']], 'Verwijderen',
+				['class' => 'btn btn-danger btn-xs'], 'times');
+
 			echo '</span>';
 		}
 		echo '</p>';

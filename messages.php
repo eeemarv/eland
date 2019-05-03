@@ -2209,9 +2209,9 @@ if (isset($filter['uid']))
 	}
 	else
 	{
-		$h1 = aphp('messages',
+		$h1 = $app['render_link']->link('messages', $app['pp_ary'],
 			['f' => ['uid' => $filter['uid']]],
-			'Vraag en aanbod');
+			'Vraag en aanbod', []);
 		$h1 .= ' van ';
 		$h1 .= link_user($filter['uid'], $app['tschema']);
 	}
@@ -2532,7 +2532,8 @@ if ($v_list)
 		echo '</td>';
 
 		echo '<td>';
-		echo aphp('messages', ['id' => $msg['id']], $msg['content']);
+		echo $app['render_link']->link('messages', $app['pp_ary'],
+			['id' => $msg['id']], $msg['content'], []);
 		echo '</td>';
 
 		if (!isset($filter['uid']))
@@ -2549,7 +2550,9 @@ if ($v_list)
 		if (!($filter['cid'] ?? false))
 		{
 			echo '<td>';
-			echo aphp('messages', $cat_params[$msg['id_category']], $categories[$msg['id_category']]);
+			echo $app['render_link']->link('messages', $app['pp_ary'],
+				$cat_params[$msg['id_category']],
+				$categories[$msg['id_category']], []);
 			echo '</td>';
 		}
 
@@ -2608,11 +2611,8 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo aphp(
-			'messages',
-			['id' => $msg['id']],
-			$type_str . ': ' . $msg['content']
-		);
+		echo $app['render_link']->link('messages', $app['pp_ary'],
+			['id' => $msg['id']], $type_str . ': ' . $msg['content'], []);
 
 		if ($exp)
 		{
@@ -2636,21 +2636,17 @@ else if ($v_extended)
 		if ($app['s_admin'] || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
-			echo aphp(
-				'messages',
-				['edit' => $msg['id']],
-				'Aanpassen', 'btn btn-primary btn-xs',
-				false,
-				'pencil'
-			);
-			echo aphp(
-				'messages',
-				['del' => $msg['id']],
-				'Verwijderen',
-				'btn btn-danger btn-xs',
-				false,
-				'times'
-			);
+
+			echo $app['render_link']->link('messages', $app['pp_ary'],
+				['edit' => $msg['id']], 'Aanpassen',
+				['class'	=> 'btn btn-primary btn-xs'],
+				'pencil');
+
+			echo $app['render_link']->link('messages', $app['pp_ary'],
+				['del' => $msg['id']], 'Verwijderen',
+				['class' => 'btn btn-danger btn-xs'],
+				'times');
+
 			echo '</span>';
 		}
 		echo '</p>';

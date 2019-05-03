@@ -63,49 +63,14 @@ class link
 		return $out;
 	}
 
-	public function btn_cancel(string $route, array $context_params, array $params):string
+	public function btn_cancel(
+		string $route,
+		array $context_params,
+		array $params
+	):string
 	{
 		return $this->link($route, $context_params, $params,
 			'Annuleren', ['class'	=> 'btn btn-default'],
 			'undo');
-	}
-
-	public function btn_top_del(
-		string $route,
-		array $context_params,
-		array $params,
-		string $title = 'Verwijderen'):string
-	{
-		return $this->link($route, $context_params, $params,
-			'Verwijderen', [
-				'class' => 'btn btn-danger',
-				'title'	=> $title,
-			], 'times', true);
-	}
-
-	public function btn_top_add(
-		string $route,
-		array $context_params,
-		array $params,
-		string $title = 'Toevoegen'):string
-	{
-		return $this->link($route, $context_params, $params,
-			'Toevoegen', [
-				'class'	=> 'btn btn-success',
-				'title'	=> $title,
-			], 'plus', true);
-	}
-
-	public function btn_top_edit(
-		string $route,
-		array $context_params,
-		array $params,
-		string $title = 'Aanpassen'):string
-	{
-		return $this->link($route, $context_params, $params,
-			'Aanpassen', [
-				'class'	=> 'btn btn-primary',
-				'title'	=> $title,
-			], 'pencil', true);
 	}
 }

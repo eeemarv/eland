@@ -472,8 +472,12 @@ if ($topic)
 		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
-			echo aphp('forum', ['edit' => $pid], 'Aanpassen', 'btn btn-primary btn-xs', false, 'pencil');
-			echo aphp('forum', ['del' => $pid], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+			echo $app['render_link']->link('forum', $app['pp_ary'],
+				['edit' => $pid], 'Aanpassen',
+				['class' => 'btn btn-primary btn-xs'], 'pencil');
+			echo $app['render_link']->link('forum', $app['pp_ary'],
+				['del' => $pid], 'Verwijderen',
+				['class' => 'btn btn-danger btn-xs'], 'times');
 			echo '</span>';
 		}
 
@@ -641,7 +645,8 @@ foreach($forum_posts as $p)
 	echo '<tr>';
 
 	echo '<td>';
-	echo aphp('forum', ['t' => $pid], $p['subject']);
+	echo $app['render_link']->link('forum', $app['pp_ary'],
+		['t' => $pid], $p['subject'], []);
 	echo '</td>';
 
 	echo '<td>';

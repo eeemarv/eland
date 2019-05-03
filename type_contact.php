@@ -312,7 +312,8 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo aphp('type_contact', ['edit' => $t['id']], $t['abbrev']);
+		echo $app['render_link']->link('type_contact', $app['pp_ary'],
+			['edit' => $t['id']], $t['abbrev'], []);
 	}
 
 	echo '</td>';
@@ -325,7 +326,8 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo aphp('type_contact', ['edit' => $t['id']], $t['name']);
+		echo $app['render_link']->link('type_contact', $app['pp_ary'],
+			['edit' => $t['id']], $t['name'], []);
 	}
 
 	echo '</td>';
@@ -338,14 +340,10 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo aphp(
-			'type_contact',
-			['del' => $t['id']],
-			'Verwijderen',
-			'btn btn-danger btn-xs',
-			false,
-			'times'
-		);
+		echo $app['render_link']->link('type_contact', $app['pp_ary'],
+			['del' => $t['id']], 'Verwijderen',
+			['class' => 'btn btn-danger btn-xs'],
+			'times');
 	}
 
 	echo '</td>';
@@ -354,11 +352,8 @@ foreach($types as $t)
 
 	if ($count)
 	{
-		echo aphp(
-			'contacts',
-			['f' => ['abbrev' => $t['abbrev']]],
-			$count
-		);
+		echo $app['render_link']->link('contacts', $app['pp_ary'],
+			['f' => ['abbrev' => $t['abbrev']]], $count, []);
 	}
 	else
 	{

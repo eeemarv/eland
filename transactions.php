@@ -2226,11 +2226,8 @@ if (isset($filter['uid']))
 	}
 	else
 	{
-		$h1 = aphp(
-			'transactions',
-			['f' => ['uid' => $filter['uid']]],
-			'Transacties'
-		);
+		$h1 = $app['render_link']->link('transactions', $app['pp_ary'],
+			['f' => ['uid' => $filter['uid']]], 'Transacties', []);
 		$h1 .= ' van ';
 		$h1 .= link_user($filter['uid'], $app['tschema']);
 	}
@@ -2544,7 +2541,10 @@ if (isset($filter['uid']))
 
 		echo '>';
 		echo '<td>';
-		echo aphp('transactions', ['id' => $t['id']], $t['description']);
+
+		echo $app['render_link']->link('transactions', $app['pp_ary'],
+			['id' => $t['id']], $t['description'], []);
+
 		echo '</td>';
 
 		echo '<td>';
@@ -2636,7 +2636,8 @@ else
 
 		echo '>';
 		echo '<td>';
-		echo aphp('transactions', ['id' => $t['id']], $t['description']);
+		echo $app['render_link']->link('transactions', $app['pp_ary'],
+			['id' => $t['id']], $t['description'], []);
 		echo '</td>';
 
 		echo '<td>';

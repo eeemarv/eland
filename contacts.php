@@ -672,24 +672,20 @@ if ($uid)
 
 	foreach ($contacts as $c)
 	{
-		echo '<tr>';
-		echo '<td>';
-		echo $c['abbrev'];
-		echo '</td>';
+		$out = [];
+
+		$out[] = $c['abbrev'];
 
 		if (($c['flag_public'] < $app['s_access_level']) && !$s_owner)
 		{
-			echo '<td><span class="btn btn-default btn-xs">';
-			echo 'verborgen</span></td>';
-			echo '<td><span class="btn btn-default btn-xs">';
-			echo 'verborgen</span></td>';
+			$out_c = '<span class="btn btn-default btn-xs">verborgen</span>';
+			$out[] = $out_c;
+			$out[] = $out_c;
 		}
 		else if ($s_owner || $app['s_admin'])
 		{
-			echo '<td>';
-			echo  aphp('contacts',
-				['edit' => $c['id'], 'uid' => $uid],
-				$c['value']);
+			$out_c = $app['render_link']->link('contacts', $app['pp_ary'],
+				['edit' => $c['id'], 'uid' => $uid], $c['value'], []);
 
 			if ($c['abbrev'] == 'adr')
 			{
@@ -697,46 +693,41 @@ if ($uid)
 
 				if (!$app['s_elas_guest'] && !$app['s_master'])
 				{
-					echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+					$out_c .= $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 						->calc()
 						->format_parenthesis();
 				}
 			}
 
-			echo '</td>';
-			echo '<td>';
-			echo isset($c['comments']) ? aphp('contacts', ['edit' => $c['id'], 'uid' => $uid], $c['comments']) : '';
-			echo '</td>';
+			$out[] = $out_c;
+
+			if (isset($c['comments']))
+			{
+				$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+					['edit' => $c['id'], 'uid' => $uid], $c['comments'], []);
+			}
+			else
+			{
+				$out[] = '&nbsp;';
+			}
 		}
 		else if ($c['abbrev'] === 'mail')
 		{
-			echo '<td>';
-			echo '<a href="mailto:';
-			echo $c['value'] . '">';
-			echo $c['value'];
-			echo '</a>';
-			echo '</td>';
-			echo '<td>';
-			echo htmlspecialchars($c['comments'], ENT_QUOTES);
-			echo '</td>';
+			$out[] = '<a href="mailto:' . $c['value'] . '">' .
+				$c['value'] . '</a>';
+
+			$out[] = htmlspecialchars($c['comments'], ENT_QUOTES);
 		}
 		else if ($c['abbrev'] === 'web')
 		{
-			echo '<td>';
-			echo '<a href="';
-			echo $c['value'] . '">';
-			echo $c['value'];
-			echo '</a>';
-			echo '</td>';
-			echo '<td>';
-			echo htmlspecialchars($c['comments'], ENT_QUOTES);
-			echo '</td>';
+			$out[] = '<a href="' . $c['value'] . '">' .
+				$c['value'] .  '</a>';
+
+			$out[] = htmlspecialchars($c['comments'], ENT_QUOTES);
 		}
 		else
 		{
-			echo '<td>';
-
-			echo htmlspecialchars($c['value'], ENT_QUOTES);
+			$out_c = htmlspecialchars($c['value'], ENT_QUOTES);
 
 			if ($c['abbrev'] == 'adr')
 			{
@@ -744,34 +735,29 @@ if ($uid)
 
 				if (!$app['s_elas_guest'] && !$app['s_master'])
 				{
-					echo $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+					$out_c .= $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
 						->calc()
 						->format_parenthesis();
 				}
 			}
 
-			echo '</td>';
-			echo '<td>' . htmlspecialchars($c['comments'], ENT_QUOTES) . '</td>';
+			$out[] = $out_c;
+
+			$out[] = htmlspecialchars($c['comments'], ENT_QUOTES);
 		}
 
 		if ($app['s_admin'] || $s_owner)
 		{
-			echo '<td>';
-			echo $app['access_control']->get_label($c['flag_public']);
-			echo '</td>';
+			$out[] = $app['access_control']->get_label($c['flag_public']);
 
-			echo '<td>';
-
-			echo aphp('contacts',
-				['del' => $c['id'], 'uid' => $uid],
-				'Verwijderen',
-				'btn btn-danger btn-xs',
-				false,
-				'times');
-
-			echo '</td>';
+			$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+				['del' => $c['id'], 'uid' => $uid], 'Verwijderen',
+				['class' => 'btn btn-danger btn-xs'], 'times');
 		}
-		echo '</tr>';
+
+		echo '<tr><td>';
+		echo implode('</td><td>', $out);
+		echo '</td></tr>';
 	}
 
 	echo '</tbody>';
@@ -1272,49 +1258,42 @@ echo '<tbody>';
 
 foreach ($contacts as $c)
 {
-	echo '<tr>';
-	echo '<td>';
-	echo $c['abbrev'];
-	echo '</td>';
+-	$out = [];
 
-	echo '<td>';
+	$out[] = $c['abbrev'];
 
 	if (isset($c['value']))
 	{
-		echo aphp('contacts', ['edit' => $c['id']], $c['value']);
+		$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+			['edit' => $c['id']], $c['value'], []);
+	}
+	else
+	{
+		$out[] = '&nbsp;';
 	}
 
-	echo '</td>';
-	echo '<td>';
-
-	echo link_user($c['id_user'], $app['tschema']);
-
-	echo '</td>';
-	echo '<td>';
+	$out[] = link_user($c['id_user'], $app['tschema']);
 
 	if (isset($c['comments']))
 	{
-		echo aphp('contacts',
-			['edit' => $c['id']],
-			$c['comments']);
+		$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+			['edit' => $c['id']], $c['comments'], []);
+	}
+	else
+	{
+		$out[] = '&nbsp;';
 	}
 
-	echo '</td>';
-	echo '<td>';
-	echo $app['access_control']->get_label($c['flag_public']);
-	echo '</td>';
+	$out[] = $app['access_control']->get_label($c['flag_public']);
 
-	echo '<td>';
-	echo aphp('contacts',
-		['del' => $c['id']],
-		'Verwijderen',
-		'btn btn-danger btn-xs',
-		false,
-		'times'
-	);
-	echo '</td>';
+	$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+		['del' => $c['id']], 'Verwijderen',
+		['class' => 'btn btn-danger btn-xs'],
+		'times');
 
-	echo '</tr>';
+	echo '<tr><td>';
+	echo implode('</td><td>', $out);
+	echo '</td></tr>';
 }
 
 echo '</tbody>';
