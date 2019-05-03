@@ -306,7 +306,9 @@ if ($edit || $add)
 				$warning .= 'een uniek E-mail adres hebben zullen zij ';
 				$warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
 				$warning .= 'of kunnen inloggen met ';
-				$warning .= 'E-mail adres. Zie ' . aphp('status', [], 'Status');
+				$warning .= 'E-mail adres. Zie ';
+				$warning .= $app['render_link']->link('status',
+					$app['pp_ary'], [], 'Status');
 
 				if ($mail_count == 1)
 				{

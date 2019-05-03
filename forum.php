@@ -201,7 +201,9 @@ if ($del)
 	else
 	{
 		$t = $forum_post['id'];
-		$h1 = 'Forum onderwerp ' . aphp('forum', ['t' => $t], $forum_post['subject']);
+		$h1 = 'Forum onderwerp ';
+		$h1 .= $app['render_link']->link('forum',
+			$app['pp_ary'], ['t' => $t], $forum_post['subject']);
 	}
 
 	$h1 .= ' verwijderen?';
@@ -411,21 +413,25 @@ if ($topic)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= aphp('forum', ['edit' => $topic], 'Onderwerp aanpassen', 'btn btn-primary', 'Onderwerp aanpassen', 'pencil', true);
-		$top_buttons .= aphp('forum', ['del' => $topic], 'Onderwerp verwijderen', 'btn btn-danger', 'Onderwerp verwijderen', 'times', true);
+		$top_buttons .= $app['render_link']->btn_top_edit(
+			'forum', $app['pp_ary'], ['edit' => $topic], 'Onderwerp aanpassen');
+		$top_buttons .= $app['render_link']->btn_top_del(
+			'forum', $app['pp_ary'], ['del' => $topic], 'Onderwerp verwijderen');
 	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
 
-	$prev_url = $prev ? generate_url('forum', ['t' => $prev]) : '';
-	$next_url = $next ? generate_url('forum', ['t' => $next]) : '';
+	$prev_ary = $prev ? ['t' => $prev] : [];
+	$next_ary = $next ? ['t' => $next] : [];
 
-	$top_buttons_right .= btn_item_nav($prev_url, false, false);
-	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('forum', [], '',
-		'btn btn-default',
-		'Forum onderwerpen',
-		'comments');
+	$top_buttons_right .= $app['btn_nav']->prev_up(
+		'forum', $app['pp_ary'], $prev_ary);
+	$top_buttons_right .= $app['btn_nav']->next_down(
+		'forum', $app['pp_ary'], $next_ary);
+	$top_buttons_right .= $app['btn_nav']->btn(
+		'forum', $app['pp_ary'], [],
+		'Forum onderwerpen', 'comments');
+
 	$top_buttons_right .= '</span>';
 
 	$app['assets']->add(['summernote', 'rich_edit.js']);

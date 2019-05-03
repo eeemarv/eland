@@ -548,6 +548,9 @@ if (isset($_GET['welcome']) && $app['s_guest'])
 	$app['alert']->info($msg);
 }
 
+$app['render_stat']->before('nav', '')
+	->after('nav', '');
+
 /**************** FUNCTIONS ***************/
 
 function btn_item_nav(string $url, bool $next, bool $down):string

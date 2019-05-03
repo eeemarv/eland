@@ -533,6 +533,22 @@ $app['render_link'] = function ($app){
 	);
 };
 
+$app['btn_nav'] = function ($app){
+	return new render\btn_nav(
+		$app['render_link']
+	);
+};
+
+$app['btn_top'] = function ($app){
+	return new render\btn_nav(
+		$app['render_link']
+	);
+};
+
+$app['render_stat'] = function ($app){
+	return new render\stat();
+};
+
 // init
 
 $app['elas_db_upgrade'] = function ($app){

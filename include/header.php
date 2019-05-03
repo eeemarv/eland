@@ -428,12 +428,11 @@ else
 			'Nieuws',
 			$app['pp_ary'],
 		],
-	];
-
-	$menu['docs'] = [
-		'files-o',
-		'Documenten',
-		$app['pp_ary'],
+		'docs' 			=> [
+			'files-o',
+			'Documenten',
+			$app['pp_ary'],
+		],
 	];
 
 	if ($app['config']->get('forum_en', $app['tschema']))
@@ -495,9 +494,12 @@ echo ' title="Menu"><i class="fa fa-chevron-left">';
 echo '</i></button>';
 echo '</div>';
 
-echo $top_buttons ?? '';
+echo $app['btn_top']->get();
+// echo $top_buttons ?? '';
 
-if (($top_buttons_right ?? false) || ($csv_en ?? false))
+if ($app['btn_nav']->has_content()
+	|| ($top_buttons_right ?? false)
+	|| ($csv_en ?? false))
 {
 	echo '<div class="pull-right">';
 
@@ -512,6 +514,8 @@ if (($top_buttons_right ?? false) || ($csv_en ?? false))
 	}
 
 	echo $top_buttons_right ?? '';
+
+	echo $app['btn_nav']->get();
 	echo '</div>';
 }
 

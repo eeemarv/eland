@@ -335,7 +335,8 @@ foreach ($cats as $cat)
 	$child_count_ary[$cat['id_parent']]++;
 }
 
-$top_buttons .= aphp('categories', ['add' => 1], 'Toevoegen', 'btn btn-success', 'Categorie toevoegen', 'plus', true);
+$top_buttons .= $app['render_link']->btn_top_add('categories',
+	$app['pp_ary'], ['add' => '1'], 'Categorie toevoegen');
 
 $h1 = 'Categorieën';
 $fa = 'clone';
@@ -381,7 +382,8 @@ foreach($cats as $cat)
 	{
 		echo '<tr class="info">';
 		echo '<td><strong>';
-		echo aphp('categories', ['edit' => $cat['id']], $cat['name']);
+		echo $app['render_link']->link('categories',
+			$app['pp_ary'], ['edit' => $cat['id']], $cat['name']);
 		echo '</strong></td>';
 	}
 	else
@@ -389,7 +391,8 @@ foreach($cats as $cat)
 		echo '<tr>';
 		echo '<td>';
 		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-		echo aphp('categories', ['edit' => $cat['id']], $cat['name']);
+		echo $app['render_link']->link('categories',
+			$app['pp_ary'], ['edit' => $cat['id']], $cat['name']);
 		echo '</td>';
 	}
 
@@ -406,7 +409,8 @@ foreach($cats as $cat)
 			],
 		]);
 
-		echo aphp('messages', $param_ary, $count_wanted);
+		echo $app['render_link']->link('messages', $app['pp_ary'], $param_ary,
+			$count_wanted);
 	}
 
 	echo '</td>';
@@ -423,7 +427,8 @@ foreach($cats as $cat)
 			],
 		]);
 
-		echo aphp('messages', $param_ary, $count_offers);
+		echo $app['render_link']->link('messages', $app['pp_ary'], $param_ary,
+			$count_offers);
 	}
 
 	echo '</td>';
@@ -432,12 +437,9 @@ foreach($cats as $cat)
 
 	if (!$count)
 	{
-		echo aphp('categories',
-			['del' => $cat['id']],
-			'Verwijderen',
-			'btn btn-danger btn-xs',
-			false,
-			'times');
+		echo $app['render_link']->link('categories', $app['pp_ary'],
+			['del' => $cat['id']], 'Verwijderen',
+			['class' => 'btn btn-danger btn-xs'], 'times');
 	}
 
 	echo '</td>';

@@ -90,7 +90,8 @@ if ($map_edit)
 
 	$app['assets']->add(['typeahead', 'typeahead.js']);
 
-	$h1 = 'Map aanpassen: ' . aphp('docs', ['map' => $map_edit], $map_name);
+	$h1 = 'Map aanpassen: ';
+	$h1 .= $app['render_link']->link('docs', $app['pp_ary'], ['map' => $map_edit], $map_name);
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -734,11 +735,13 @@ if ($app['s_admin'])
 		$add_buttom_params['map'] = $map;
 	}
 
-	$top_buttons .= aphp('docs', $add_buttom_params, 'Document opladen', 'btn btn-success', 'Document opladen', 'plus', true);
+	$top_buttons .= $app['render_link']->btn_top_add('docs', $app['pp_ary'],
+		$add_buttom_params, 'Document opladen');
 
 	if ($map)
 	{
-		$top_buttons .= aphp('docs', ['map_edit' => $map], 'Map aanpassen', 'btn btn-primary', 'Map aanpassen', 'pencil', true);
+		$top_buttons .= $app['render_link']->btn_top_edit('docs', $app['pp_ary'],
+			['map_edit' => $map], 'Map aanpassen');
 	}
 }
 

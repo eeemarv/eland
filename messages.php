@@ -1545,16 +1545,12 @@ if ($id)
 
 	if ($app['s_admin'] || $s_owner)
 	{
-		$top_buttons .= btn_top_edit(
-			'messages',
-			$app['pp_ary'],
-			$id,
+		$top_buttons .= $app['render_link']->btn_top_edit(
+			'messages', $app['pp_ary'], ['edit' => $id],
 			$ow_type_uc . ' aanpassen'
 		);
-		$top_buttons .= btn_top_del(
-			'messages',
-			$app['pp_ary'],
-			$id,
+		$top_buttons .= $app['render_link']->btn_top_del(
+			'messages', $app['pp_ary'], ['del' => $id],
 			$ow_type_uc . ' verwijderen'
 		);
 	}

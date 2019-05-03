@@ -15,12 +15,27 @@ class link
 		$this->url_generator = $url_generator;
 	}
 
-    public function path(string $route, array $parameters = []):string
+    public function path(
+		string $route,
+		array $params
+	):string
     {
-        return $this['url_generator']->generate($route, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
-    }
+        return $this->url_generator->generate(
+			$route, $params, UrlGeneratorInterface::ABSOLUTE_PATH);
+	}
 
-	function link(
+	public function context_path(
+		string $route,
+		array $context_params,
+		array $params
+	):string
+	{
+        return $this['url_generator']->generate(
+			$route, array_merge($params, $context_params),
+			UrlGeneratorInterface::ABSOLUTE_PATH);
+	}
+
+	public function link(
 		string $route,
 		array $context_params,
 		array $params,
@@ -31,7 +46,7 @@ class link
 	):string
 	{
 		$out = '<a href="';
-		$out .= $this->path($route, array_merge($params, $context_params));
+		$out .= $this->context_path($route, $context_params, $params);
 		$out .= '"';
 
 		foreach ($attr as $name => $val)
@@ -48,14 +63,14 @@ class link
 		return $out;
 	}
 
-	function btn_cancel(string $route, array $context_params, array $params):string
+	public function btn_cancel(string $route, array $context_params, array $params):string
 	{
 		return $this->link($route, $context_params, $params,
 			'Annuleren', ['class'	=> 'btn btn-default'],
 			'undo');
 	}
 
-	function btn_top_del(
+	public function btn_top_del(
 		string $route,
 		array $context_params,
 		array $params,
@@ -68,7 +83,7 @@ class link
 			], 'times', true);
 	}
 
-	function btn_top_add(
+	public function btn_top_add(
 		string $route,
 		array $context_params,
 		array $params,
@@ -81,7 +96,7 @@ class link
 			], 'plus', true);
 	}
 
-	function btn_top_edit(
+	public function btn_top_edit(
 		string $route,
 		array $context_params,
 		array $params,
@@ -93,5 +108,4 @@ class link
 				'title'	=> $title,
 			], 'pencil', true);
 	}
-
 }
