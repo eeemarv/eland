@@ -9,7 +9,6 @@ use Monolog\Logger;
 use Twig_Environment as Twig;
 use service\config;
 use service\mail_addr_system;
-use service\token;
 use service\email_validate;
 
 class mail implements queue_interface

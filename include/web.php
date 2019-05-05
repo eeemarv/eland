@@ -52,7 +52,7 @@ if (getenv('WEBSITE_MAINTENANCE'))
 if (!isset($app['page_access'])
 	|| !isset(cnst::ACCESS[$app['page_access']]))
 {
-	internal_server_error($app);
+	internal_server_error($app['twig']);
 }
 
 if (isset($_GET['et']))
@@ -82,7 +82,7 @@ if (!$app['tschema'])
 
 if (!$app['tschema'])
 {
-	page_not_found($app);
+	page_not_found($app['twig']);
 }
 
 if (isset($app['pp_role_short']) && isset(cnst::ROLE_LONG[$app['pp_role_short']]))
@@ -170,7 +170,7 @@ if (count($app['s_logins']) && isset($app['s_logins'][$app['s_schema']]))
 					error_log('Unvalid accountrole ' .
 						$app['s_accountrole'] .
 						' for schema ' . $app['s_schema']);
-					internal_server_error($app);
+					internal_server_error($app['twig']);
 					break;
 			}
 
@@ -689,17 +689,17 @@ function array_intersect_key_recursive(array $ary_1, array $ary_2)
     return $ary_1;
 }
 
-function internal_server_error(app $app)
+function internal_server_error(Twig_Environment $twig)
 {
 	http_response_code(500);
-	echo $app['twig']->render('500.html.twig', []);
+	echo $twig->render('500.html.twig', []);
 	exit;
 }
 
-function page_not_found(app $app)
+function page_not_found(Twig_Environment $twig)
 {
 	http_response_code(404);
-	echo $app['twig']->render('404.html.twig');
+	echo $twig->render('404.html.twig');
 	exit;
 }
 
