@@ -46,7 +46,7 @@ class transaction
 		$amount = $amount * 100;
 		$amount = round($amount);
 		$to_sign = $shared_secret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $amount;
-		$signature = sha1($tosign);
+		$signature = sha1($to_sign);
 		$this->monolog->debug('Signing ' . $to_sign . ' : ' . $signature,
 			['schema' => $schema]);
 
