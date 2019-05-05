@@ -56,12 +56,27 @@ class link
 
 		$out .= '>';
 		$out .= $fa === '' ? '' : '<i class="fa fa-' . $fa .'"></i>';
-		$out .= $collapse ? '<span class="hidden-xs hidden-sm"> ' : ' ';
-		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= $collapse ? '<span class="hidden-xs hidden-sm">' : '';
+		$out .= $label === '' ? '' : htmlspecialchars($label, ENT_QUOTES);
 		$out .= $collapse ? '</span>' : '';
 		$out .= '</a>';
 		return $out;
 	}
+
+	public function btn(
+		string $label,
+		array $attr,
+		string $fa,
+		bool $collapse
+	):string
+	{
+		$out = '<button';
+
+		$out .= '</button>';
+
+		return $out;
+	}
+
 
 	public function btn_cancel(
 		string $route,

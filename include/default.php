@@ -535,12 +535,13 @@ $app['render_link'] = function ($app){
 
 $app['btn_nav'] = function ($app){
 	return new render\btn_nav(
-		$app['render_link']
+		$app['render_link'],
+		$app['assets']
 	);
 };
 
 $app['btn_top'] = function ($app){
-	return new render\btn_nav(
+	return new render\btn_top(
 		$app['render_link']
 	);
 };
