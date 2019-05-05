@@ -1010,7 +1010,7 @@ while($row = $rs->fetch())
 	$abbrev_ary[$row['abbrev']] = $row['abbrev'];
 }
 
-$csv_en = true;
+$app['btn_nav']->csv();
 
 $app['btn_top']->add('contacts', $app['pp_ary'],
 	['add' => 1], 'Contact toevoegen');

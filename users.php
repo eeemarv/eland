@@ -2688,41 +2688,12 @@ if ($id)
 			$tus, 'Transactie naar ' . link_user($user, $app['tschema'], false));
 	}
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
+	$link_ary = $link ? ['link' => $link] : [];
+	$prev_ary = $prev ? array_merge($link_ary, ['id' => $prev]) : [];
+	$next_ary = $next ? array_merge($link_ary, ['id' => $next]) : [];
 
-	$prev_url = $next_url = '';
-
-	if ($prev)
-	{
-		$param_prev = ['id' => $prev];
-
-		if ($link)
-		{
-			$param_prev['link'] = $link;
-		}
-
-		$prev_url .= generate_url('users', $param_prev);
-	}
-
-	if ($next)
-	{
-		$param_next = ['id' => $next];
-
-		if ($link)
-		{
-			$param_next['link'] = $link;
-		}
-
-		$next_url = generate_url('users', $param_next);
-	}
-
-	$top_buttons_right .= btn_item_nav($prev_url, false, false);
-	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp(
-		'users',
-		['status' => $link ? $link : 'active'],
-		'', 'btn btn-default', 'Lijst', 'users');
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->nav('users', $app['pp_ary'],
+		$prev_ary, $next_ary, ['link' => $link], 'users', false);
 
 	$status = $user['status'];
 	$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;

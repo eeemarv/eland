@@ -114,6 +114,18 @@ class btn_nav
 			'Lijst', $fa_list);
 	}
 
+	public function list(
+		string $route,
+		array $params_context,
+		array $params_list,
+		string $fa_list
+	):void
+	{
+		$this->out['nav'][] = $this->btn_link_fa(
+			$route, $params_context, $params_list,
+			'Lijst', $fa_list);
+	}
+
 	public function csv():void
 	{
 		$this->assets->add(['csv.js']);

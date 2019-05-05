@@ -1599,22 +1599,8 @@ if ($id)
 			['edit' => $id], 'Omschrijving aanpassen');
 	}
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
-
-	$prev_url = $prev ? generate_url('transactions', ['id' => $prev]) : '';
-	$next_url = $next ? generate_url('transactions', ['id' => $next]) : '';
-
-	$top_buttons_right .= btn_item_nav($next_url, true, false);
-	$top_buttons_right .= btn_item_nav($prev_url, false, true);
-	$top_buttons_right .= aphp(
-		'transactions',
-		[],
-		'',
-		'btn btn-default',
-		'Transactielijst',
-		'exchange'
-	);
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->nav('transactions', $app['pp_ary'],
+		$prev_ary, $next_ary, [], 'exchange', true);
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';
@@ -2209,7 +2195,10 @@ if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 	}
 }
 
-$csv_en = $app['s_admin'];
+if ($app['s_admin'])
+{
+	$app['btn_nav']->csv();
+}
 
 $filtered = !isset($filter['uid']) && (
 	(isset($filter['q']) && $filter['q'] !== '')

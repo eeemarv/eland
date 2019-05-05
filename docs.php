@@ -745,7 +745,10 @@ if ($app['s_admin'])
 	}
 }
 
-$csv_en = $app['s_admin'];
+if ($app['s_admin'])
+{
+	$app['btn_nav']->csv();
+}
 
 $h1 = $app['render_link']->link('docs', $app['pp_ary'], [], 'Documenten', []);
 $h1 .= $map ? ': map "' . $map_name . '"' : '';

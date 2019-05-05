@@ -541,15 +541,11 @@ if ($id)
 		}
 	}
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
+	$prev_ary = $prev ? ['id' => $prev] : [];
+	$next_ary = $next ? ['id' => $next] : [];
 
-	$prev_url = $prev ? generate_url('news', ['id' => $prev]) : '';
-	$next_url = $next ? generate_url('news', ['id' => $next]) : '';
-
-	$top_buttons_right .= btn_item_nav($prev_url, false, false);
-	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp('news', [], '', 'btn btn-default', 'Lijst', 'calendar-o');
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->nav('news', $app['pp_ary'],
+		$prev_ary, $next_ary, [], 'calendar-o', false);
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES);
 	$fa = 'calendar-o';
@@ -667,7 +663,10 @@ else
 
 	$v_params = $params;
 
-	$csv_en = $app['s_admin'] && $v_list;
+	if ($app['s_admin'] && $v_list)
+	{
+		$app['btn_nav']->csv();
+	}
 
 	$top_buttons_right = '<span class="btn-group" role="group">';
 

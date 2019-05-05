@@ -547,7 +547,10 @@ if ($app['s_admin'] || $app['s_user'])
 		['add' => 1], 'Onderwerp toevoegen');
 }
 
-$csv_en = $app['s_admin'];
+if ($app['s_admin'])
+{
+	$app['btn_nav']->csv();
+}
 
 $show_visibility = (!$app['s_guest']
 	&& $app['config']->get('template_lets', $app['tschema'])

@@ -1570,24 +1570,11 @@ if ($id)
 				$tus, 'Transactie voor dit aanbod');
 	}
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
+	$prev_ary = $prev ? ['id' => $prev] : [];
+	$next_ary = $next ? ['id' => $next] : [];
 
-	$prev_url = $prev ? $app->path('messages', array_merge($app['pp_ary'], ['id' => $prev])) : '';
-	$next_url = $next ? $app->path('messages', array_merge($app['pp_ary'], ['id' => $next])) : '';
-
-	$top_buttons_right .= btn_item_nav($prev_url, false, false);
-	$top_buttons_right .= btn_item_nav($next_url, true, true);
-	$top_buttons_right .= aphp(
-		'messages',
-		$app['pp_ary'],
-		'',
-		[
-			'class' => 'btn btn-default',
-			'title' => 'Alle vraag en aanbod',
-		],
-		'newspaper-o'
-	);
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->nav('messages', $app['pp_ary'],
+		$prev_ary, $next_ary, [], 'newspaper-o', false);
 
 	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);
@@ -2192,7 +2179,10 @@ if ($app['s_admin'] || $app['s_user'])
 	}
 }
 
-$csv_en = $app['s_admin'] && $v_list;
+if ($app['s_admin'] && $v_list)
+{
+	$app['btn_nav']->csv();
+}
 
 $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
 	|| $filter_type
