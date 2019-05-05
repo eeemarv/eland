@@ -290,14 +290,12 @@ if (!$app['s_anonymous'])
 		foreach ($menu as $route => $item)
 		{
 			$active = $app['matched_route'] === $route ? ' class="active"' : '';
+
 			echo '<li' . $active . '>';
-			echo aphp($link, [
+			echo $app['render_link']->link($route, [
 					'system'		=> $app['pp_system'],
 					'role_short' 	=> $app['pp_role_short'],
-				],
-				$item[1],
-				[],
-				$item[0]);
+				], [], $item[1], [], $item[0]);
 			echo '</li>';
 		}
 		echo '<li class="divider"></li>';
@@ -381,7 +379,7 @@ if ($app['s_anonymous'])
 		'login'			=> [
 			'sign-in',
 			'Login',
-			$app['pp_ary'],
+			[],
 		],
 	];
 
@@ -390,7 +388,7 @@ if ($app['s_anonymous'])
 		$menu['contact'] = [
 			'comment-o',
 			'Contact',
-			$app['pp_ary'],
+			[],
 		];
 	}
 
@@ -399,7 +397,7 @@ if ($app['s_anonymous'])
 		$menu['register'] = [
 			'check-square-o',
 			'Inschrijven',
-			$app['pp_ary'],
+			[],
 		];
 	}
 }
@@ -409,29 +407,27 @@ else
 		'messages'		=> [
 			'newspaper-o',
 			'Vraag & Aanbod',
-			$app['pp_ary'],
+			[],
 		],
 		'users'			=> [
 			'users',
 			$app['s_admin'] ? 'Gebruikers' : 'Leden',
-			array_merge($app['pp_ary'], [
-				'status' => 'active'
-			]),
+			['status' => 'active'],
 		],
 		'transactions'	=> [
 			'exchange',
 			'Transacties',
-			$app['pp_ary'],
+			[],
 		],
 		'news'			=> [
 			'calendar-o',
 			'Nieuws',
-			$app['pp_ary'],
+			[],
 		],
 		'docs' 			=> [
 			'files-o',
 			'Documenten',
-			$app['pp_ary'],
+			[],
 		],
 	];
 
@@ -440,7 +436,7 @@ else
 		$menu['forum'] = [
 			'comments-o',
 			'Forum',
-			$app['pp_ary'],
+			[],
 		];
 	}
 
@@ -449,7 +445,7 @@ else
 		$menu['support'] = [
 			'ambulance',
 			'Probleem melden',
-			$app['pp_ary']
+			[],
 		];
 	}
 }
@@ -461,13 +457,8 @@ foreach ($menu as $route => $item)
 {
 	$active = $app['matched_route'] == $route ? ' class="active"' : '';
 	echo '<li' . $active . '>';
-	echo aphp(
-		$route,
-		$item[2],
-		$item[1],
-		[],
-		$item[0]
-	);
+	echo $app['render_link']->link($route, $app['pp_ary'],
+		$item[2], $item[1], [], $item[0]);
 	echo '</li>';
 }
 echo '</ul>';
@@ -496,24 +487,9 @@ echo '</div>';
 
 echo $app['btn_top']->get();
 
-if ($app['btn_nav']->has_content()
-	|| ($top_buttons_right ?? false)
-	|| ($csv_en ?? false))
+if ($app['btn_nav']->has_content())
 {
 	echo '<div class="pull-right">';
-
-	if ($csv_en ?? false)
-	{
-		$app['assets']->add(['csv.js']);
-
-		echo '<a href="#" class="csv btn btn-info btn-md" ';
-		echo 'title="Download CSV">';
-		echo '<i class="fa fa-file"></i>';
-		echo '</a>&nbsp;';
-	}
-
-	echo $top_buttons_right ?? '';
-
 	echo $app['btn_nav']->get();
 	echo '</div>';
 }

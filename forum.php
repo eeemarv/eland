@@ -419,20 +419,11 @@ if ($topic)
 			['del' => $topic], 'Onderwerp verwijderen');
 	}
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
-
 	$prev_ary = $prev ? ['t' => $prev] : [];
 	$next_ary = $next ? ['t' => $next] : [];
 
-	$top_buttons_right .= $app['btn_nav']->prev_up(
-		'forum', $app['pp_ary'], $prev_ary);
-	$top_buttons_right .= $app['btn_nav']->next_down(
-		'forum', $app['pp_ary'], $next_ary);
-	$top_buttons_right .= $app['btn_nav']->btn(
-		'forum', $app['pp_ary'], [],
-		'Forum onderwerpen', 'comments');
-
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->nav('forum', $app['pp_ary'],
+		$prev_ary, $next_ary, [], 'comments');
 
 	$app['assets']->add(['summernote', 'rich_edit.js']);
 

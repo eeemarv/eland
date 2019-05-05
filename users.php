@@ -3607,7 +3607,10 @@ else
 
 if ($app['s_admin'])
 {
-	$csv_en = $v_list;
+	if ($v_list)
+	{
+		$app['btn_nav']->csv();
+	}
 
 	$app['btn_top']->add('users', $app['pp_ary'],
 		['add' => 1], 'Gebruiker toevoegen');
@@ -3624,13 +3627,9 @@ else
 	$h1 = 'Leden';
 }
 
-$top_buttons_right = '';
-
 if ($v_list)
 {
-	$top_buttons_right .= '<button class="btn btn-default" title="Weergave kolommen" ';
-	$top_buttons_right .= 'data-toggle="collapse" data-target="#columns_show"';
-	$top_buttons_right .= '><i class="fa fa-columns"></i></button>&nbsp;';
+	$app['btn_nav']->columns_show();
 }
 
 $top_buttons_right .= '<span class="btn-group" role="group">';
