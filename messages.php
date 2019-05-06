@@ -1574,7 +1574,10 @@ if ($id)
 	$next_ary = $next ? ['id' => $next] : [];
 
 	$app['btn_nav']->nav('messages', $app['pp_ary'],
-		$prev_ary, $next_ary, [], 'newspaper-o', false);
+		$prev_ary, $next_ary, false);
+
+	$app['btn_nav']->nav_list('messages', $app['pp_ary'],
+		[], 'Lijst', 'newspaper-o');
 
 	$h1 = $ow_type_uc;
 	$h1 .= ': ' . htmlspecialchars($message['content'], ENT_QUOTES);

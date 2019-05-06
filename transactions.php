@@ -1600,7 +1600,10 @@ if ($id)
 	}
 
 	$app['btn_nav']->nav('transactions', $app['pp_ary'],
-		$prev_ary, $next_ary, [], 'exchange', true);
+		$prev_ary, $next_ary, true);
+
+	$app['btn_nav']->nav_list('transactions', $app['pp_ary'],
+		[], 'Lijst', 'exchange');
 
 	$h1 = 'Transactie';
 	$fa = 'exchange';

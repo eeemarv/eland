@@ -443,10 +443,12 @@ if ($id)
 
 	$app['btn_top']->edit('intersystem', $app['pp_ary'],
 		['edit' => $id], 'Intersysteem aanpassen');
+
 	$app['btn_top']->del('intersystem', $app['pp_ary'],
 		['del' => $id], 'Intersysteem verwijderen');
 
-	$app['btn_nav']->list('intersystem', $app['pp_ary'], [], 'share-alt');
+	$app['btn_nav']->nav_list('intersystem', $app['pp_ary'],
+		[], 'Lijst', 'share-alt');
 
 	$app['assets']->add(['elas_soap_status.js']);
 

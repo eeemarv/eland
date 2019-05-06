@@ -545,7 +545,10 @@ if ($id)
 	$next_ary = $next ? ['id' => $next] : [];
 
 	$app['btn_nav']->nav('news', $app['pp_ary'],
-		$prev_ary, $next_ary, [], 'calendar-o', false);
+		$prev_ary, $next_ary, false);
+
+	$app['btn_nav']->nav_list('news', $app['pp_ary'],
+		[], 'Lijst', 'calendar-o');
 
 	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES);
 	$fa = 'calendar-o';

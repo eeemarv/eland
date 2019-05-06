@@ -122,8 +122,6 @@ class btn_nav
 		array $params_context,
 		array $params_prev,
 		array $params_next,
-		array $params_list,
-		string $fa_list,
 		bool $order_reversed
 	):void
 	{
@@ -139,22 +137,19 @@ class btn_nav
 		$this->out['nav'][] = $this->btn_fa_disable(
 			$route, $params_context, $params_down,
 			$title_down, 'chevron-down');
-
-		$this->out['nav'][] = $this->btn_fa(
-			$route, $params_context, $params_list,
-			'Lijst', $fa_list);
 	}
 
-	public function list(
+	public function nav_list(
 		string $route,
 		array $params_context,
 		array $params_list,
-		string $fa_list
+		string $title,
+		string $fa
 	):void
 	{
 		$this->out['nav'][] = $this->btn_fa(
 			$route, $params_context, $params_list,
-			'Lijst', $fa_list);
+			$title, $fa);
 	}
 
 	public function csv():void

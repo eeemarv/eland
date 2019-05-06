@@ -423,7 +423,10 @@ if ($topic)
 	$next_ary = $next ? ['t' => $next] : [];
 
 	$app['btn_nav']->nav('forum', $app['pp_ary'],
-		$prev_ary, $next_ary, [], 'comments');
+		$prev_ary, $next_ary, false);
+
+	$app['btn_nav']->nav_list('forum', $app['pp_ary'],
+		[], 'Forum onderwerpen', 'comments');
 
 	$app['assets']->add(['summernote', 'rich_edit.js']);
 

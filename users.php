@@ -2693,7 +2693,10 @@ if ($id)
 	$next_ary = $next ? array_merge($link_ary, ['id' => $next]) : [];
 
 	$app['btn_nav']->nav('users', $app['pp_ary'],
-		$prev_ary, $next_ary, ['link' => $link], 'users', false);
+		$prev_ary, $next_ary, false);
+
+	$app['btn_nav']->nav_list('users', $app['pp_ary'],
+		['link' => $link], 'Overzicht', 'users');
 
 	$status = $user['status'];
 	$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
