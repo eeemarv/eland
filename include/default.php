@@ -533,7 +533,7 @@ $app['autominlimit'] = function ($app){
  * render
  */
 
-$app['render_link'] = function ($app){
+$app['link'] = function ($app){
 	return new render\link(
 		$app['url_generator']
 	);
@@ -541,7 +541,7 @@ $app['render_link'] = function ($app){
 
 $app['btn_nav'] = function ($app){
 	return new render\btn_nav(
-		$app['render_link'],
+		$app['link'],
 		$app['tag'],
 		$app['assets']
 	);
@@ -557,13 +557,13 @@ $app['select'] = function (){
 
 $app['tbl'] = function ($app){
 	return new render\tbl(
-		$app['render_link'],
+		$app['link'],
 	);
 };
 
 $app['btn_top'] = function ($app){
 	return new render\btn_top(
-		$app['render_link']
+		$app['link']
 	);
 };
 

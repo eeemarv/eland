@@ -54,11 +54,11 @@ echo 'Met dit formulier kan een Automatische Minimum Limiet ingesteld worden. ';
 echo 'De individuele Minimum Limiet van Accounts zal zo automatisch lager ';
 echo 'worden door ontvangen transacties ';
 echo 'tot de ';
-echo $app['render_link']->link('config',
+echo $app['link']->link('config',
 	$app['pp_ary'], ['active_tab' => 'balance'], 'Minimum Systeemslimiet');
 echo ' bereikt wordt. ';
 echo 'De individuele Account Minimum Limiet wordt gewist wanneer de ';
-echo $app['render_link']->link('config',
+echo $app['link']->link('config',
 	$app['pp_ary'], ['active_tab' => 'balance'], 'Minimum Systeemslimiet');
 echo ' bereikt of onderschreden wordt.</p>';
 echo '<p>Wanneer geen Minimum Systeemslimiet is ingesteld, ';
@@ -71,7 +71,7 @@ echo 'blijven altijd ongewijzigd.</p>';
 echo '<p>Wanneer de Automatische Minimum Limiet systematisch ';
 echo 'voor instappende leden gebruikt wordt, is het ';
 echo 'nuttig de ';
-echo $app['render_link']->link('config',
+echo $app['link']->link('config',
 	$app['pp_ary'], ['active_tab' => 'balance'],
 	'Preset Individuele Account Minimum Limiet');
 echo ' ';

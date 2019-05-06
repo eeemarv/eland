@@ -132,11 +132,11 @@ if ($del)
 	if ($uid)
 	{
 		echo '<input type="hidden" name="uid" value="' . $uid . '">';
-		echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $uid]);
+		echo $app['link']->btn_cancel('users', $app['pp_ary'], ['id' => $uid]);
 	}
 	else
 	{
-		echo $app['render_link']->btn_cancel('contacts', $app['pp_ary'], []);
+		echo $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
 	}
 
 	echo '&nbsp;';
@@ -307,7 +307,7 @@ if ($edit || $add)
 				$warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
 				$warning .= 'of kunnen inloggen met ';
 				$warning .= 'E-mail adres. Zie ';
-				$warning .= $app['render_link']->link('status',
+				$warning .= $app['link']->link('status',
 					$app['pp_ary'], [], 'Status');
 
 				if ($mail_count == 1)
@@ -552,11 +552,11 @@ if ($edit || $add)
 	if ($uid)
 	{
 		echo '<input type="hidden" name="uid" value="' . $uid . '">';
-		echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $uid]);
+		echo $app['link']->btn_cancel('users', $app['pp_ary'], ['id' => $uid]);
 	}
 	else
 	{
-		echo $app['render_link']->btn_cancel('contacts', $app['pp_ary'], []);
+		echo $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
 	}
 
 	echo '&nbsp;';
@@ -684,7 +684,7 @@ if ($uid)
 		}
 		else if ($s_owner || $app['s_admin'])
 		{
-			$out_c = $app['render_link']->link('contacts', $app['pp_ary'],
+			$out_c = $app['link']->link('contacts', $app['pp_ary'],
 				['edit' => $c['id'], 'uid' => $uid], $c['value'], []);
 
 			if ($c['abbrev'] == 'adr')
@@ -703,7 +703,7 @@ if ($uid)
 
 			if (isset($c['comments']))
 			{
-				$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+				$out[] = $app['link']->link('contacts', $app['pp_ary'],
 					['edit' => $c['id'], 'uid' => $uid], $c['comments'], []);
 			}
 			else
@@ -750,7 +750,7 @@ if ($uid)
 		{
 			$out[] = $app['access_control']->get_label($c['flag_public']);
 
-			$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+			$out[] = $app['link']->link('contacts', $app['pp_ary'],
 				['del' => $c['id'], 'uid' => $uid], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 		}
@@ -1264,7 +1264,7 @@ foreach ($contacts as $c)
 
 	if (isset($c['value']))
 	{
-		$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+		$out[] = $app['link']->link('contacts', $app['pp_ary'],
 			['edit' => $c['id']], $c['value'], []);
 	}
 	else
@@ -1276,7 +1276,7 @@ foreach ($contacts as $c)
 
 	if (isset($c['comments']))
 	{
-		$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+		$out[] = $app['link']->link('contacts', $app['pp_ary'],
 			['edit' => $c['id']], $c['comments'], []);
 	}
 	else
@@ -1286,7 +1286,7 @@ foreach ($contacts as $c)
 
 	$out[] = $app['access_control']->get_label($c['flag_public']);
 
-	$out[] = $app['render_link']->link('contacts', $app['pp_ary'],
+	$out[] = $app['link']->link('contacts', $app['pp_ary'],
 		['del' => $c['id']], 'Verwijderen',
 		['class' => 'btn btn-danger btn-xs'],
 		'times');

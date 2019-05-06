@@ -275,7 +275,7 @@ if ($add || $edit)
 	$btn = $add ? 'success' : 'primary';
 
 	$canc = $edit ? ['id' => $edit] : [];
-	echo $app['render_link']->btn_cancel('news', $app['pp_ary'], $canc);
+	echo $app['link']->btn_cancel('news', $app['pp_ary'], $canc);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -404,7 +404,7 @@ if ($del)
 	echo 'moet verwijderd worden?</strong></p>';
 
 	echo '<form method="post">';
-	echo $app['render_link']->btn_cancel('news', $app['pp_ary'], ['id' => $del]);
+	echo $app['link']->btn_cancel('news', $app['pp_ary'], ['id' => $del]);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';
@@ -655,7 +655,7 @@ if ($app['p_inline'])
 {
 	echo '<h3>';
 
-	echo $app['render_link']->link('news', $app['pp_ary'],
+	echo $app['link']->link('news', $app['pp_ary'],
 		[], 'Nieuws', [], 'calendar-o');
 
 	echo '</h3>';
@@ -725,7 +725,7 @@ if ($v_list)
 		echo '>';
 
 		echo '<td>';
-		echo $app['render_link']->link('news', $app['pp_ary'],
+		echo $app['link']->link('news', $app['pp_ary'],
 			['id' => $n['id']], $n['headline'], []);
 		echo '</td>';
 
@@ -762,7 +762,7 @@ else if ($v_extended)
 		echo '<div class="media">';
 		echo '<div class="media-body">';
 		echo '<h2 class="media-heading">';
-		echo $app['render_link']->link('news', $app['pp_ary'],
+		echo $app['link']->link('news', $app['pp_ary'],
 			['id' => $n['id']], $n['headline'], []);
 		echo '</h2>';
 
@@ -858,16 +858,16 @@ else if ($v_extended)
 
 			if (!$n['approved'])
 			{
-				echo $app['render_link']->link('news', $app['pp_ary'],
+				echo $app['link']->link('news', $app['pp_ary'],
 					['approve' => $n['id']], 'Goedkeuren en publiceren',
 					['class' => 'btn btn-warning btn-xs'], 'check');
 			}
 
-			echo $app['render_link']->link('news', $app['pp_ary'],
+			echo $app['link']->link('news', $app['pp_ary'],
 				['edit' => $n['id']], 'Aanpassen',
 				['class' => 'btn btn-primary btn-xs'], 'pencil');
 
-			echo $app['render_link']->link('news', $app['pp_ary'],
+			echo $app['link']->link('news', $app['pp_ary'],
 				['del' => $n['id']], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 

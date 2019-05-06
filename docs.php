@@ -91,7 +91,7 @@ if ($map_edit)
 	$app['assets']->add(['typeahead', 'typeahead.js']);
 
 	$h1 = 'Map aanpassen: ';
-	$h1 .= $app['render_link']->link('docs', $app['pp_ary'], ['map' => $map_edit], $map_name);
+	$h1 .= $app['link']->link('docs', $app['pp_ary'], ['map' => $map_edit], $map_name);
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -117,7 +117,7 @@ if ($map_edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], ['map' => $map_edit]);
+	echo $app['link']->btn_cancel('docs', $app['pp_ary'], ['map' => $map_edit]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
@@ -304,7 +304,7 @@ if ($edit)
 	echo 'of selecteer een bestaande.</p>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('docs', $app['pp_ary'], []);
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
 
@@ -400,7 +400,7 @@ if ($del)
 		echo '</a>';
 		echo '</p>';
 
-		echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], []);
+		echo $app['link']->btn_cancel('docs', $app['pp_ary'], []);
 
 		echo '&nbsp;';
 		echo '<input type="submit" value="Verwijderen" ';
@@ -597,7 +597,7 @@ if ($add)
 	echo '</div>';
 
 	$map_context = $map ? ['map' => $map] : [];
-	echo $app['render_link']->btn_cancel('docs', $app['pp_ary'], $map_context);
+	echo $app['link']->btn_cancel('docs', $app['pp_ary'], $map_context);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -750,7 +750,7 @@ if ($app['s_admin'])
 	$app['btn_nav']->csv();
 }
 
-$h1 = $app['render_link']->link('docs', $app['pp_ary'], [], 'Documenten', []);
+$h1 = $app['link']->link('docs', $app['pp_ary'], [], 'Documenten', []);
 $h1 .= $map ? ': map "' . $map_name . '"' : '';
 
 include __DIR__ . '/include/header.php';
@@ -802,12 +802,12 @@ if (!$map && count($maps))
 		{
 			$out = [];
 
-			$out[] = $app['render_link']->link('docs', $app['pp_ary'],
+			$out[] = $app['link']->link('docs', $app['pp_ary'],
 				['map' => $did], $d['map_name'] . ' (' . $d['count'] . ')', []);
 
 			if ($app['s_admin'])
 			{
-				$out[] = $app['render_link']->link('docs', $app['pp_ary'],
+				$out[] = $app['link']->link('docs', $app['pp_ary'],
 					['map_edit' => $did], 'Aanpassen',
 					['class' => 'btn btn-primary btn-xs'], 'pencil');
 			}
@@ -880,11 +880,11 @@ if (count($docs))
 
 		if ($app['s_admin'])
 		{
-			$out_c = $app['render_link']->link('docs', $app['pp_ary'],
+			$out_c = $app['link']->link('docs', $app['pp_ary'],
 				['edit' => $did], 'Aanpassen',
 				['class' => 'btn btn-primary btn-xs'], 'pencil');
 			$out_c .= '&nbsp;';
-			$out_c .= $app['render_link']->link('docs', $app['pp_ary'],
+			$out_c .= $app['link']->link('docs', $app['pp_ary'],
 				['del' => $did], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 			$out[] = $out_c;

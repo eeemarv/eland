@@ -58,7 +58,7 @@ if ($del)
 	echo $apikey['comment'] ?: '<i class="fa fa-times"></i>';
 	echo '</dd>';
 	echo '</dl>';
-	echo $app['render_link']->btn_cancel('apikeys', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('apikeys', $app['pp_ary'], []);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
 	echo 'name="zend" class="btn btn-danger">';
@@ -142,7 +142,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('apikeys', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('apikeys', $app['pp_ary'], []);
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
 	echo 'value="Opslaan" class="btn btn-success">';
@@ -192,7 +192,7 @@ foreach($apikeys as $a)
 	$out[] = $a['comment'];
 	$out[] = $a['apikey'];
 	$out[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
-	$out[] = $app['render_link']->link('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	$out[] = $app['link']->link('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
 
 	echo '<tr><td>';
 	echo implode('</td><td>', $out);

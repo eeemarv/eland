@@ -349,7 +349,7 @@ if ($add || $edit)
 	$btn = $edit ? 'primary' : 'success';
 
 	$canc = $edit ? ['id' => $edit] : [];
-	echo $app['render_link']->btn_cancel('intersystem', $app['pp_ary'], $canc);
+	echo $app['link']->btn_cancel('intersystem', $app['pp_ary'], $canc);
 
 	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
@@ -404,7 +404,7 @@ if ($del)
 	echo '<div><p>';
 	echo '<form method="post">';
 
-	echo $app['render_link']->btn_cancel('intersystem', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('intersystem', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
@@ -515,7 +515,7 @@ if ($id)
 
 	if ($user)
 	{
-		echo $app['render_link']->link('users', $app['pp_ary'],
+		echo $app['link']->link('users', $app['pp_ary'],
 			['id' => $user['id']], $group['localletscode'],
 			[
 				'class' => 'btn btn-default btn-xs',
@@ -525,7 +525,7 @@ if ($id)
 		if (!in_array($user['status'], [1, 2, 7]))
 		{
 			echo ' ';
-			echo $app['render_link']->link('users', $app['pp_ary'],
+			echo $app['link']->link('users', $app['pp_ary'],
 				['edit' => $user['id']], 'Status!',
 				[
 					'class'	=> 'btn btn-danger btn-xs',
@@ -536,7 +536,7 @@ if ($id)
 		if ($user['accountrole'] != 'interlets')
 		{
 			echo ' ';
-			echo $app['render_link']->link('users', $app['pp_ary'],
+			echo $app['link']->link('users', $app['pp_ary'],
 				['edit' => $user['id']], 'Rol!',
 				[
 					'class'	=> 'btn btn-danger btn-xs',
@@ -682,7 +682,7 @@ if (count($groups))
 
 			if ($user)
 			{
-				echo $app['render_link']->link('users', $app['pp_ary'],
+				echo $app['link']->link('users', $app['pp_ary'],
 					['id' => $user['id']], $g['localletscode'],
 					[
 						'class'	=> 'btn btn-default btn-xs',
@@ -692,7 +692,7 @@ if (count($groups))
 				if (!in_array($user['status'], [1, 2, 7]))
 				{
 					echo ' ';
-					echo $app['render_link']->link('users', $app['pp_ary'],
+					echo $app['link']->link('users', $app['pp_ary'],
 						['edit' => $user['id']], 'Status!',
 						[
 							'class'	=> 'btn btn-danger btn-xs',
@@ -703,7 +703,7 @@ if (count($groups))
 				if ($user['accountrole'] != 'interlets')
 				{
 					echo ' ';
-					echo $app['render_link']->link('users', $app['pp_ary'],
+					echo $app['link']->link('users', $app['pp_ary'],
 						['edit' => $user['id']], 'Rol!',
 						[
 							'class'	=> 'btn btn-danger btn-xs',
@@ -727,7 +727,7 @@ if (count($groups))
 
 		echo '<td>';
 
-		echo $app['render_link']->link('intersystem', $app['pp_ary'],
+		echo $app['link']->link('intersystem', $app['pp_ary'],
 			['id' => $g['id']], $g['groupname'], []);
 
 		if (isset($g['eland']))
@@ -981,7 +981,7 @@ function get_schemas_groups():string
 			{
 				$loc_group = $loc_group_ary[$h];
 
-				$out .= $app['render_link']->link('intersystem', $app['pp_ary'],
+				$out .= $app['link']->link('intersystem', $app['pp_ary'],
 					['id' => $loc_group['id']], 'OK',
 					['class'	=> 'btn btn-success btn-xs']);
 			}
@@ -989,7 +989,7 @@ function get_schemas_groups():string
 			{
 				if ($app['config']->get('template_lets', $s) && $app['config']->get('interlets_en', $s))
 				{
-					$out .= $app['render_link']->link('intersystem', $app['pp_ary'],
+					$out .= $app['link']->link('intersystem', $app['pp_ary'],
 						['add' => 1, 'add_schema' => $s], 'Creëer',
 						['class' => 'btn btn-default btn-xs']);
 				}
@@ -1010,7 +1010,7 @@ function get_schemas_groups():string
 				{
 					if ($loc_acc['accountrole'] != 'interlets')
 					{
-						$out .= $app['render_link']->link('users', $app['pp_ary'],
+						$out .= $app['link']->link('users', $app['pp_ary'],
 							['edit' => $loc_acc['id']], 'rol',
 							[
 								'class'	=> 'btn btn-warning btn-xs',
@@ -1019,7 +1019,7 @@ function get_schemas_groups():string
 					}
 					else if (!in_array($loc_acc['status'], [1, 2, 7]))
 					{
-						$out .= $app['render_link']->link('users', $app['pp_ary'],
+						$out .= $app['link']->link('users', $app['pp_ary'],
 							['edit' => $loc_acc['id']], 'status',
 							[
 								'class'	=> 'btn btn-warning btn-xs',
@@ -1028,14 +1028,14 @@ function get_schemas_groups():string
 					}
 					else
 					{
-						$out .= $app['render_link']->link('users', $app['pp_ary'],
+						$out .= $app['link']->link('users', $app['pp_ary'],
 							['id' => $loc_acc['id']], 'OK',
 							['class' => 'btn btn-success btn-xs']);
 					}
 				}
 				else
 				{
-					$out .= $app['render_link']->link('users', $app['pp_ary'],
+					$out .= $app['link']->link('users', $app['pp_ary'],
 						['add' => 1, 'intersystem_code' => $loc_group['localletscode']],
 						'Creëer',
 						[

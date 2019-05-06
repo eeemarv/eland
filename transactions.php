@@ -1293,7 +1293,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('transactions', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('transactions', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -1538,7 +1538,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('transactions', $app['pp_ary'], ['id' => $edit]);
+	echo $app['link']->btn_cancel('transactions', $app['pp_ary'], ['id' => $edit]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -2218,7 +2218,7 @@ if (isset($filter['uid']))
 	}
 	else
 	{
-		$h1 = $app['render_link']->link('transactions', $app['pp_ary'],
+		$h1 = $app['link']->link('transactions', $app['pp_ary'],
 			['f' => ['uid' => $filter['uid']]], 'Transacties', []);
 		$h1 .= ' van ';
 		$h1 .= link_user($filter['uid'], $app['tschema']);
@@ -2534,7 +2534,7 @@ if (isset($filter['uid']))
 		echo '>';
 		echo '<td>';
 
-		echo $app['render_link']->link('transactions', $app['pp_ary'],
+		echo $app['link']->link('transactions', $app['pp_ary'],
 			['id' => $t['id']], $t['description'], []);
 
 		echo '</td>';
@@ -2628,7 +2628,7 @@ else
 
 		echo '>';
 		echo '<td>';
-		echo $app['render_link']->link('transactions', $app['pp_ary'],
+		echo $app['link']->link('transactions', $app['pp_ary'],
 			['id' => $t['id']], $t['description'], []);
 		echo '</td>';
 

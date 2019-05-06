@@ -74,7 +74,7 @@ if ($add)
 	echo '" required>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('contact_types', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('contact_types', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -175,7 +175,7 @@ if ($edit)
 	echo '" required>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('contact_types', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('contact_types', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -242,7 +242,7 @@ if ($del)
 	echo '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
 	echo '<form method="post">';
 
-	echo $app['render_link']->btn_cancel('contact_types', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('contact_types', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
@@ -312,7 +312,7 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo $app['render_link']->link('type_contact', $app['pp_ary'],
+		echo $app['link']->link('type_contact', $app['pp_ary'],
 			['edit' => $t['id']], $t['abbrev'], []);
 	}
 
@@ -326,7 +326,7 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo $app['render_link']->link('type_contact', $app['pp_ary'],
+		echo $app['link']->link('type_contact', $app['pp_ary'],
 			['edit' => $t['id']], $t['name'], []);
 	}
 
@@ -340,7 +340,7 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo $app['render_link']->link('type_contact', $app['pp_ary'],
+		echo $app['link']->link('type_contact', $app['pp_ary'],
 			['del' => $t['id']], 'Verwijderen',
 			['class' => 'btn btn-danger btn-xs'],
 			'times');
@@ -352,7 +352,7 @@ foreach($types as $t)
 
 	if ($count)
 	{
-		echo $app['render_link']->link('contacts', $app['pp_ary'],
+		echo $app['link']->link('contacts', $app['pp_ary'],
 			['f' => ['abbrev' => $t['abbrev']]], $count, []);
 	}
 	else

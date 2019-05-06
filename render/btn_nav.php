@@ -21,12 +21,12 @@ class btn_nav
 	protected $out = [];
 
 	public function __construct(
-		render_link $render_link,
+		render_link $link,
 		render_tag $tag,
 		assets $assets
 	)
 	{
-		$this->render_link = $render_link;
+		$this->link = $link;
 		$this->tag = $tag;
 		$this->assets = $assets;
 	}
@@ -93,7 +93,7 @@ class btn_nav
 	)
 	{
 
-		return $this->render_link->link_fa($route, $params_context,
+		return $this->link->link_fa($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default' . ($active ? ' active' : ''),
 				'title'	=> $title,
@@ -109,7 +109,7 @@ class btn_nav
 		string $fa
 	):string
 	{
-		return $this->render_link->link_fa($route, $params_context,
+		return $this->link->link_fa($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default',
 				'title'	=> $title,

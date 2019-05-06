@@ -543,7 +543,7 @@ if ($img_del == 'all' && $id)
 	echo $str_this_ow;
 	echo '?</h3>';
 
-	echo $app['render_link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
+	echo $app['link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
@@ -756,7 +756,7 @@ if ($del)
 
 	echo '<form method="post">';
 
-	echo $app['render_link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
+	echo $app['link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
@@ -1435,7 +1435,7 @@ if (($edit || $add))
 
 	$btn = ($edit) ? 'primary' : 'success';
 
-	echo $app['render_link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
+	echo $app['link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn . '">';
 	echo $app['form_token']->get_hidden_input();
@@ -2202,7 +2202,7 @@ if (isset($filter['uid']))
 	}
 	else
 	{
-		$h1 = $app['render_link']->link('messages', $app['pp_ary'],
+		$h1 = $app['link']->link('messages', $app['pp_ary'],
 			['f' => ['uid' => $filter['uid']]],
 			'Vraag en aanbod', []);
 		$h1 .= ' van ';
@@ -2505,7 +2505,7 @@ if ($v_list)
 		echo '</td>';
 
 		echo '<td>';
-		echo $app['render_link']->link('messages', $app['pp_ary'],
+		echo $app['link']->link('messages', $app['pp_ary'],
 			['id' => $msg['id']], $msg['content'], []);
 		echo '</td>';
 
@@ -2523,7 +2523,7 @@ if ($v_list)
 		if (!($filter['cid'] ?? false))
 		{
 			echo '<td>';
-			echo $app['render_link']->link('messages', $app['pp_ary'],
+			echo $app['link']->link('messages', $app['pp_ary'],
 				$cat_params[$msg['id_category']],
 				$categories[$msg['id_category']], []);
 			echo '</td>';
@@ -2584,7 +2584,7 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo $app['render_link']->link('messages', $app['pp_ary'],
+		echo $app['link']->link('messages', $app['pp_ary'],
 			['id' => $msg['id']], $type_str . ': ' . $msg['content'], []);
 
 		if ($exp)
@@ -2610,12 +2610,12 @@ else if ($v_extended)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 
-			echo $app['render_link']->link('messages', $app['pp_ary'],
+			echo $app['link']->link('messages', $app['pp_ary'],
 				['edit' => $msg['id']], 'Aanpassen',
 				['class'	=> 'btn btn-primary btn-xs'],
 				'pencil');
 
-			echo $app['render_link']->link('messages', $app['pp_ary'],
+			echo $app['link']->link('messages', $app['pp_ary'],
 				['del' => $msg['id']], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'],
 				'times');

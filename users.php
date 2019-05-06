@@ -400,7 +400,7 @@ if ($img_del && $id)
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $id]);
+	echo $app['link']->btn_cancel('users', $app['pp_ary'], ['id' => $id]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
@@ -919,7 +919,7 @@ if ($pw)
 	echo '</label>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $pw]);
+	echo $app['link']->btn_cancel('users', $app['pp_ary'], ['id' => $pw]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" name="zend" ';
@@ -1158,7 +1158,7 @@ if ($del)
 	echo '</label>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], ['id' => $del]);
+	echo $app['link']->btn_cancel('users', $app['pp_ary'], ['id' => $del]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
@@ -1309,7 +1309,7 @@ if ($add || $edit)
 						$warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
 						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
 						$warning .= 'E-mail adres. Zie ';
-						$warning .= $app['render_link']->link('status', $app['pp_ary'], [], 'Status', []);
+						$warning .= $app['link']->link('status', $app['pp_ary'], [], 'Status', []);
 
 						$warning_2 = '';
 
@@ -2262,7 +2262,7 @@ if ($add || $edit)
 		echo 'afwijkende minimum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
-		echo $app['render_link']->link('config', $app['pp_ary'],
+		echo $app['link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'], 'Minimum Systeemslimiet', []);
 		echo ' ';
 		echo 'van toepassing. ';
@@ -2284,7 +2284,7 @@ if ($add || $edit)
 
 		echo 'Dit veld wordt bij aanmaak van een ';
 		echo 'gebruiker vooraf ingevuld met de "';
-		echo $app['render_link']->link('config', $app['pp_ary'],
+		echo $app['link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'],
 			'Preset Individuele Minimum Account Limiet',
 			[]);
@@ -2320,7 +2320,7 @@ if ($add || $edit)
 		echo 'afwijkende maximum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
-		echo $app['render_link']->link('config', $app['pp_ary'],
+		echo $app['link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'],
 			'Maximum Systeemslimiet',
 			[]);
@@ -2344,7 +2344,7 @@ if ($add || $edit)
 
 		echo 'Dit veld wordt bij aanmaak van een gebruiker ';
 		echo 'vooraf ingevuld wanneer "';
-		echo $app['render_link']->link('config', $app['pp_ary'],
+		echo $app['link']->link('config', $app['pp_ary'],
 			['active_tab' => 'balance'],
 			'Preset Individuele Maximum Account Limiet',
 			[]);
@@ -2468,7 +2468,7 @@ if ($add || $edit)
 	$btn = $edit ? 'primary' : 'success';
 
 	$canc = $edit ? ['id' => $edit] : ['status' => 'active'];
-	echo $app['render_link']->btn_cancel('users', $app['pp_ary'], $canc);
+	echo $app['link']->btn_cancel('users', $app['pp_ary'], $canc);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -2725,7 +2725,7 @@ if ($id)
 		else if ($intersystem_id)
 		{
 			$h1 .= ' ';
-			$h1 .= $app['render_link']->link('intersystem', $app['pp_ary'],
+			$h1 .= $app['link']->link('intersystem', $app['pp_ary'],
 				['id' => $intersystem_id],
 				'Gekoppeld interSysteem',
 				['class' => 'btn btn-default'],
@@ -2797,7 +2797,7 @@ if ($id)
 		echo 'data-image-crop="true" ';
 		echo 'data-image-max-height="400"></span>&nbsp;';
 
-		echo $app['render_link']->link('users', $app['pp_ary'],
+		echo $app['link']->link('users', $app['pp_ary'],
 			['img_del' => 1, 'id' => $id],
 			'Foto verwijderen',
 			array_merge($attr, ['class' => 'btn btn-danger']),
@@ -3815,7 +3815,7 @@ if ($v_map)
 				foreach($not_geocoded_ary as $not_geocoded)
 				{
 					echo '<li>';
-					echo $app['render_link']->link('contacts', $app['pp_ary'],
+					echo $app['link']->link('contacts', $app['pp_ary'],
 						['edit' => $not_geocoded['id'], 'uid' => $not_geocoded['uid']],
 						$not_geocoded['adr'], []);
 					echo ' gebruiker: ';
@@ -4129,7 +4129,7 @@ if ($v_list || $v_tiles)
 
 		$class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
 
-		echo $app['render_link']->link('users', $app['pp_ary'],
+		echo $app['link']->link('users', $app['pp_ary'],
 			$nav_params, $tab['lbl'], $class_ary);
 
 		echo '</li>';
@@ -4418,7 +4418,7 @@ if ($v_list)
 
 				if (isset($msgs_count[$id][$key]))
 				{
-					echo $app['render_link']->link('messages', $app['pp_ary'],
+					echo $app['link']->link('messages', $app['pp_ary'],
 						[
 							'f'	=> [
 								'uid' 	=> $id,
@@ -4450,7 +4450,7 @@ if ($v_list)
 						}
 						else
 						{
-							echo $app['render_link']->link('transactions', $app['pp_ary'],
+							echo $app['link']->link('transactions', $app['pp_ary'],
 								[
 									'f' => [
 										'fcode'	=> $key === 'in' ? '' : $u['letscode'],

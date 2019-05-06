@@ -114,7 +114,7 @@ if ($add)
 	echo '</select>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('categories', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('categories', $app['pp_ary'], []);
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="Toevoegen" ';
 	echo 'class="btn btn-success">';
@@ -253,7 +253,7 @@ if ($edit)
 	echo '</select>';
 	echo '</div>';
 
-	echo $app['render_link']->btn_cancel('categories', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('categories', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Opslaan" ';
@@ -304,7 +304,7 @@ if ($del)
 	echo " moet verwijderd worden?</strong></font></p>";
 	echo '<form method="post">';
 
-	echo $app['render_link']->btn_cancel('categories', $app['pp_ary'], []);
+	echo $app['link']->btn_cancel('categories', $app['pp_ary'], []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
@@ -382,7 +382,7 @@ foreach($cats as $cat)
 	{
 		echo '<tr class="info">';
 		echo '<td><strong>';
-		echo $app['render_link']->link('categories',
+		echo $app['link']->link('categories',
 			$app['pp_ary'], ['edit' => $cat['id']], $cat['name']);
 		echo '</strong></td>';
 	}
@@ -391,7 +391,7 @@ foreach($cats as $cat)
 		echo '<tr>';
 		echo '<td>';
 		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-		echo $app['render_link']->link('categories',
+		echo $app['link']->link('categories',
 			$app['pp_ary'], ['edit' => $cat['id']], $cat['name']);
 		echo '</td>';
 	}
@@ -409,7 +409,7 @@ foreach($cats as $cat)
 			],
 		]);
 
-		echo $app['render_link']->link('messages', $app['pp_ary'], $param_ary,
+		echo $app['link']->link('messages', $app['pp_ary'], $param_ary,
 			$count_wanted);
 	}
 
@@ -427,7 +427,7 @@ foreach($cats as $cat)
 			],
 		]);
 
-		echo $app['render_link']->link('messages', $app['pp_ary'], $param_ary,
+		echo $app['link']->link('messages', $app['pp_ary'], $param_ary,
 			$count_offers);
 	}
 
@@ -437,7 +437,7 @@ foreach($cats as $cat)
 
 	if (!$count)
 	{
-		echo $app['render_link']->link('categories', $app['pp_ary'],
+		echo $app['link']->link('categories', $app['pp_ary'],
 			['del' => $cat['id']], 'Verwijderen',
 			['class' => 'btn btn-danger btn-xs'], 'times');
 	}

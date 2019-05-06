@@ -202,7 +202,7 @@ if ($del)
 	{
 		$t = $forum_post['id'];
 		$h1 = 'Forum onderwerp ';
-		$h1 .= $app['render_link']->link('forum',
+		$h1 .= $app['link']->link('forum',
 			$app['pp_ary'], ['t' => $t], $forum_post['subject']);
 	}
 
@@ -216,7 +216,7 @@ if ($del)
 	echo '<p>' . $forum_post['content'] . '</p>';
 
 	echo '<form method="post">';
-	echo $app['render_link']->btn_cancel('forum', $app['pp_ary'], ['f' => $t]);
+	echo $app['link']->btn_cancel('forum', $app['pp_ary'], ['f' => $t]);
 
 	echo '&nbsp;';
 	echo '<input type="submit" value="Verwijderen" ';
@@ -316,7 +316,7 @@ if ($add || $edit)
 	$action = $edit ? 'aanpassen' : 'toevoegen';
 
 	$cancel_dest = $topic ? (($edit) ? ['t' => $topic] : []) : ['t' => $t];
-	echo $app['render_link']->btn_cancel('forum', $app['pp_ary'], $cancel_dest);
+	echo $app['link']->btn_cancel('forum', $app['pp_ary'], $cancel_dest);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" value="';
@@ -466,10 +466,10 @@ if ($topic)
 		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
-			echo $app['render_link']->link('forum', $app['pp_ary'],
+			echo $app['link']->link('forum', $app['pp_ary'],
 				['edit' => $pid], 'Aanpassen',
 				['class' => 'btn btn-primary btn-xs'], 'pencil');
-			echo $app['render_link']->link('forum', $app['pp_ary'],
+			echo $app['link']->link('forum', $app['pp_ary'],
 				['del' => $pid], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 			echo '</span>';
@@ -642,7 +642,7 @@ foreach($forum_posts as $p)
 	echo '<tr>';
 
 	echo '<td>';
-	echo $app['render_link']->link('forum', $app['pp_ary'],
+	echo $app['link']->link('forum', $app['pp_ary'],
 		['t' => $pid], $p['subject'], []);
 	echo '</td>';
 
