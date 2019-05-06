@@ -2222,33 +2222,13 @@ $fa = 'newspaper-o';
 
 if (!$app['p_inline'])
 {
-	$v_params = $params;
+	$app['btn_nav']->view('messages', $app['pp_ary'],
+		array_merge($params, ['view' => 'list']),
+		'Lijst', 'align-justify', $v_list);
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
-
-	$active = $v_list ? ' active' : '';
-	$v_params['view'] = 'list';
-	$top_buttons_right .= aphp(
-		'messages',
-		$v_params,
-		'',
-		'btn btn-default' . $active,
-		'lijst',
-		'align-justify'
-	);
-
-	$active = $v_extended ? ' active' : '';
-	$v_params['view'] = 'extended';
-	$top_buttons_right .= aphp(
-		'messages',
-		$v_params,
-		'',
-		'btn btn-default' . $active,
-		'Lijst met omschrijvingen',
-		'th-list'
-	);
-
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->view('messages', $app['pp_ary'],
+		array_merge($params, ['view' => 'extended']),
+		'Lijst met omschrijvingen', 'th-list', $v_extended);
 
 	$app['assets']->add([
 		'msgs.js',

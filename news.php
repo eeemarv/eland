@@ -661,38 +661,18 @@ else
 {
 	$h1 = 'Nieuws';
 
-	$v_params = $params;
-
 	if ($app['s_admin'] && $v_list)
 	{
 		$app['btn_nav']->csv();
 	}
 
-	$top_buttons_right = '<span class="btn-group" role="group">';
+	$app['btn_nav']->view('news', $app['pp_ary'],
+		array_merge($params, ['view' => 'list']),
+		'Lijst', 'align-justify', $v_list);
 
-	$active = $v_list ? ' active' : '';
-	$v_params['view'] = 'list';
-	$top_buttons_right .= aphp(
-		'news',
-		$v_params,
-		'',
-		'btn btn-default' . $active,
-		'lijst',
-		'align-justify'
-	);
-
-	$active = $v_extended ? ' active' : '';
-	$v_params['view'] = 'extended';
-	$top_buttons_right .= aphp(
-		'news',
-		$v_params,
-		'',
-		'btn btn-default' . $active,
-		'Lijst met omschrijvingen',
-		'th-list'
-	);
-
-	$top_buttons_right .= '</span>';
+	$app['btn_nav']->view('news', $app['pp_ary'],
+		array_merge($params, ['view' => 'extended']),
+		'Lijst met omschrijvingen', 'th-list', $v_extended);
 
 	$fa = 'calendar-o';
 

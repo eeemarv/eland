@@ -3603,23 +3603,17 @@ if ($v_list)
 	$app['btn_nav']->columns_show();
 }
 
-$top_buttons_right .= '<span class="btn-group" role="group">';
+$app['btn_nav']->view('users', $app['pp_ary'],
+	array_merge($params, ['view' => 'list']),
+	'Lijst', 'align-justify', $v_list);
 
-$active = $v_list ? ' active' : '';
-$v_params = $params;
-$v_params['view'] = 'list';
-$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'Lijst', 'align-justify');
+$app['btn_nav']->view('users', $app['pp_ary'],
+	array_merge($params, ['view' => 'tiles']),
+	'Tegels met foto\'s', 'th', $v_tiles);
 
-$active = $v_tiles ? ' active' : '';
-$v_params['view'] = 'tiles';
-$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'Tegels met foto\'s', 'th');
-
-$active = $v_map ? ' active' : '';
-$v_params['view'] = 'map';
-unset($v_params['status']);
-$top_buttons_right .= aphp('users', $v_params, '', 'btn btn-default' . $active, 'Kaart', 'map-marker');
-
-$top_buttons_right .= '</span>';
+$app['btn_nav']->view('users', $app['pp_ary'],
+	array_merge($params, ['view' => 'map']),
+	'Kaart', 'map-marker', $v_map);
 
 $fa = 'users';
 

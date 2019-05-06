@@ -60,7 +60,7 @@ class btn_nav
 		return count($this->out) > 0;
 	}
 
-	public function btn_link_fa(
+	public function btn_fa_disable(
 		string $route,
 		array $params_context,
 		array $params,
@@ -79,6 +79,36 @@ class btn_nav
 			);
 		}
 
+		return $this->btn_fa($route, $params_context,
+			$params, $title, $fa);
+	}
+
+	public function btn_fa_active(
+		string $route,
+		array $params_context,
+		array $params,
+		string $title,
+		string $fa,
+		bool $active
+	)
+	{
+
+		return $this->render_link->link_fa($route, $params_context,
+			$params, [
+				'class'	=> 'btn btn-default' . ($active ? ' active' : ''),
+				'title'	=> $title,
+			],
+			$fa);
+	}
+
+	public function btn_fa(
+		string $route,
+		array $params_context,
+		array $params,
+		string $title,
+		string $fa
+	):string
+	{
 		return $this->render_link->link_fa($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default',
@@ -102,15 +132,15 @@ class btn_nav
 		$title_up = $order_reversed ? 'Volgende' : 'Vorige';
 		$title_down = $order_reversed ? 'Vorige' : 'Volgende';
 
-		$this->out['nav'][] = $this->btn_link_fa(
+		$this->out['nav'][] = $this->btn_fa_disable(
 			$route, $params_context, $params_up,
 			$title_up, 'chevron-up');
 
-		$this->out['nav'][] = $this->btn_link_fa(
+		$this->out['nav'][] = $this->btn_fa_disable(
 			$route, $params_context, $params_down,
 			$title_down, 'chevron-down');
 
-		$this->out['nav'][] = $this->btn_link_fa(
+		$this->out['nav'][] = $this->btn_fa(
 			$route, $params_context, $params_list,
 			'Lijst', $fa_list);
 	}
@@ -122,7 +152,7 @@ class btn_nav
 		string $fa_list
 	):void
 	{
-		$this->out['nav'][] = $this->btn_link_fa(
+		$this->out['nav'][] = $this->btn_fa(
 			$route, $params_context, $params_list,
 			'Lijst', $fa_list);
 	}
@@ -131,65 +161,37 @@ class btn_nav
 	{
 		$this->assets->add(['csv.js']);
 
-		$out = '<a href="#" class="csv btn btn-info btn-md" ';
-		$out .= 'title="Download CSV">';
-		$out .= '<i class="fa fa-file"></i>';
-		$out .= '</a>&nbsp;';
-		$this->out['csv'] = $out;
+		$this->out['csv'] = $this->tag->get('a', [
+				'class'	=> 'csv btn btn-info',
+				'title'	=> 'Download CSV',
+			],
+			$this->tag->fa('file'),
+		);
 	}
 
 	public function columns_show():void
 	{
-		$out = '<button class="btn btn-default" title="Weergave kolommen" ';
-		$out .= 'data-toggle="collapse" data-target="#columns_show"';
-		$out .= '><i class="fa fa-columns"></i></button>';
-		$this->out['columns_show'] = $out;
+		$this->out['columns_show'] = $this->tag->get('button', [
+				'class'			=> 'btn btn-default',
+				'title'			=> 'Weergave kolommen',
+				'data-toggle'	=> 'collapse',
+				'data-target'	=> '#columns_show',
+			],
+			$this->tag->fa('columns')
+		);
 	}
 
 	public function view(
 		string $route,
 		array $params_context,
 		array $params,
-		string $view_name,
 		string $title,
-		string $fa
+		string $fa,
+		bool $active
 	):void
 	{
-		$this->out['view'][] = $this->btn_simple_fa(
-			$this->link_params_only($route, $params_context, $params),
-			$title, $fa);
-	}
-
-	public function btn(
-		string $route,
-		array $params_context,
-		array $params,
-		string $title,
-		string $fa
-	):string
-	{
-		return $this->btn_simple_fa(
-			$this->link_params_only($route, $params_context, $params),
-			$title, $fa);
-	}
-
-	private function btn__fa(
-		string $link,
-		string $title,
-		string $fa
-	):string
-	{
-		$ret = ' class="btn btn-default" title="';
-		$ret .= $title;
-		$ret .= '"><i class="fa fa-chevron-';
-		$ret .= $fa;
-		$ret .= '"></i>';
-
-		if ($link === '')
-		{
-			return '<button disabled="disabled"' . $ret . '</button>';
-		}
-
-		return '<a href="' . $link . '"' . $ret . '</a>';
+		$this->out['view'][] = $this->btn_fa_active(
+			$route, $params_context, $params,
+			$title, $fa, $active);
 	}
 }
