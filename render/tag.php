@@ -23,4 +23,9 @@ class tag
 		$out .= '</' . $tag . '>';
 		return $out;
 	}
+
+	public function fa(string $fa):string
+	{
+		return '<i class="fa fa-' . $fa . '"></i>';
+	}
 }

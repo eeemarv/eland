@@ -2,6 +2,8 @@
 
 namespace service;
 
+use render\select;
+
 class pagination
 {
 	protected $start;
@@ -27,7 +29,7 @@ class pagination
 		1000 	=> 1000,
 	];
 
-	public function __construct()
+	public function __construct(select $select)
 	{
 	}
 
@@ -108,7 +110,7 @@ class pagination
 
 			$this->out .= 'Per pagina: ';
 			$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
-			$this->out .= get_select_options($this->limit_options, $this->limit);
+			$this->out .= $this->select->get_options($this->limit_options, $this->limit);
 			$this->out .= '</select>';
 
 			$action_params = $this->params;

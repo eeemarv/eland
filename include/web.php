@@ -660,20 +660,6 @@ function redirect_login()
 	exit;
 }
 
-function get_select_options(array $option_ary, $selected):string
-{
-	$str = '';
-
-	foreach ($option_ary as $key => $value)
-	{
-		$str .= '<option value="' . $key . '"';
-		$str .= $key == $selected ? ' selected="selected"' : '';
-		$str .= '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
-	}
-
-	return $str;
-}
-
 function array_intersect_key_recursive(array $ary_1, array $ary_2)
 {
 	$ary_1 = array_intersect_key($ary_1, $ary_2);

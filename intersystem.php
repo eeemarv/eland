@@ -243,7 +243,7 @@ if ($add || $edit)
 	echo 'API</span>';
 	echo '<select class="form-control" id="apimethod" name="apimethod" >';
 
-	echo get_select_options([
+	echo $app['select']->get_options([
 		'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
 		'internal'	=> 'Intern (eigen Systeem - niet gebruiken)',
 		'mail'		=> 'E-mail',

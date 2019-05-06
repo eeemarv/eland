@@ -26,18 +26,18 @@ class link
 
 	public function context_path(
 		string $route,
-		array $context_params,
+		array $params_context,
 		array $params
 	):string
 	{
         return $this['url_generator']->generate(
-			$route, array_merge($params, $context_params),
+			$route, array_merge($params, $params_context),
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 	}
 
 	public function link(
 		string $route,
-		array $context_params,
+		array $params_context,
 		array $params,
 		string $label,
 		array $attr,
@@ -46,7 +46,7 @@ class link
 	):string
 	{
 		$out = '<a href="';
-		$out .= $this->context_path($route, $context_params, $params);
+		$out .= $this->context_path($route, $params_context, $params);
 		$out .= '"';
 
 		foreach ($attr as $name => $val)
@@ -63,28 +63,36 @@ class link
 		return $out;
 	}
 
-	public function btn(
-		string $label,
+	public function link_fa(
+		string $route,
+		array $params_context,
+		array $params,
 		array $attr,
-		string $fa,
-		bool $collapse
+		string $fa
 	):string
 	{
-		$out = '<button';
+		$out = '<a href="';
+		$out .= $this->context_path($route, $params_context, $params);
+		$out .= '"';
 
-		$out .= '</button>';
+		foreach ($attr as $name => $val)
+		{
+			$out .= ' ' . $name . '="' . $val . '"';
+		}
 
+		$out .= '>';
+		$out .= '<i class="fa fa-' . $fa .'"></i>';
+		$out .= '</a>';
 		return $out;
 	}
 
-
 	public function btn_cancel(
 		string $route,
-		array $context_params,
+		array $params_context,
 		array $params
 	):string
 	{
-		return $this->link($route, $context_params, $params,
+		return $this->link($route, $params_context, $params,
 			'Annuleren', ['class'	=> 'btn btn-default'],
 			'undo');
 	}

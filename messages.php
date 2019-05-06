@@ -1309,7 +1309,7 @@ if (($edit || $add))
 	echo '<i class="fa fa-clone"></i>';
 	echo '</span>';
 	echo '<select name="id_category" id="id_category" class="form-control" required>';
-	echo get_select_options($cat_list, $msg['id_category']);
+	echo $app['select']->get_options($cat_list, $msg['id_category']);
 	echo "</select>";
 	echo '</div>';
 	echo '</div>';
@@ -2284,7 +2284,7 @@ if (!$app['p_inline'])
 	echo '</span>';
 	echo '<select class="form-control" id="cid" name="f[cid]">';
 
-	echo get_select_options($cats, $filter['cid'] ?? 0);
+	echo $app['select']->get_options($cats, $filter['cid'] ?? 0);
 
 	echo '</select>';
 	echo '</div>';
@@ -2708,7 +2708,7 @@ else if ($v_list)
 		echo 'Verlengen met</label>';
 		echo '<div class="col-sm-10">';
 		echo '<select name="extend" id="extend" class="form-control">';
-		echo get_select_options($extend_options, '30');
+		echo $app['select']->get_options($extend_options, '30');
 		echo "</select>";
 		echo '</div>';
 		echo '</div>';

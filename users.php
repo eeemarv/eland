@@ -2138,7 +2138,7 @@ if ($add || $edit)
 		echo '<span class="fa fa-hand-paper-o"></span></span>';
 		echo '<select id="accountrole" name="accountrole" ';
 		echo 'class="form-control">';
-		echo get_select_options(cnst::ROLE_ARY, $user['accountrole']);
+		echo $app['select']->get_options(cnst::ROLE_ARY, $user['accountrole']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -2168,7 +2168,7 @@ if ($add || $edit)
 		echo '<span class="input-group-addon">';
 		echo '<span class="fa fa-star-o"></span></span>';
 		echo '<select id="status" name="status" class="form-control">';
-		echo get_select_options(cnst::STATUS_ARY, $user['status']);
+		echo $app['select']->get_options(cnst::STATUS_ARY, $user['status']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -4623,7 +4623,7 @@ if ($v_list)
 				echo sprintf($acc_sel,
 					$k,
 					$t['lbl'],
-					get_select_options($options, 0),
+					$app['select']->get_options($options, 0),
 					$t['fa']);
 			}
 			else if (isset($t['type']) && $t['type'] == 'checkbox')

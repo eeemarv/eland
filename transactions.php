@@ -2322,7 +2322,7 @@ if (!$app['p_inline'])
 
 	echo '<div class="col-sm-2">';
 	echo '<select class="form-control margin-bottom" name="f[andor]">';
-	echo get_select_options($andor_options, $filter['andor'] ?? 'and');
+	echo $app['select']->get_options($andor_options, $filter['andor'] ?? 'and');
 	echo '</select>';
 	echo '</div>';
 

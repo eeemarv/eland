@@ -3,6 +3,7 @@
 namespace render;
 
 use render\link as render_link;
+use render\tag as render_tag;
 use service\assets;
 
 class btn_nav
@@ -15,15 +16,18 @@ class btn_nav
 	];
 
 	protected $render_link;
+	protected $tag;
 	protected $assets;
 	protected $out = [];
 
 	public function __construct(
 		render_link $render_link,
+		render_tag $tag,
 		assets $assets
 	)
 	{
 		$this->render_link = $render_link;
+		$this->tag = $tag;
 		$this->assets = $assets;
 	}
 
@@ -64,26 +68,23 @@ class btn_nav
 		string $fa
 	):string
 	{
-//		$this->render_link->link($route, $params_context, $context, '')
-
-
-
-		$ret = ' class="btn btn-default" title="';
-		$ret .= $title;
-		$ret .= '"><i class="fa fa-chevron-';
-		$ret .= $fa;
-		$ret .= '"></i>';
-
 		if (count($params) < 1)
 		{
-			return '<button disabled="disabled"' . $ret . '</button>';
+			return $this->tag->get('button', [
+					'class' 	=> 'btn btn-default',
+					'title'		=> $title,
+					'disabled'	=> 'disabled',
+				],
+				$this->tag->fa($fa),
+			);
 		}
 
-		$out = '<a href="';
-		$out .= $this->render_link->context_path($route, $params_context, $params);
-		$out .= '"' . $ret . '</a>';
-
-		return $out;
+		return $this->render_link->link_fa($route, $params_context,
+			$params, [
+				'class'	=> 'btn btn-default',
+				'title'	=> $title,
+			],
+			$fa);
 	}
 
 	public function nav(
@@ -103,11 +104,11 @@ class btn_nav
 
 		$this->out['nav'][] = $this->btn_link_fa(
 			$route, $params_context, $params_up,
-			$title_up, 'up');
+			$title_up, 'chevron-up');
 
 		$this->out['nav'][] = $this->btn_link_fa(
 			$route, $params_context, $params_down,
-			$title_down, 'down');
+			$title_down, 'chevron-down');
 
 		$this->out['nav'][] = $this->btn_link_fa(
 			$route, $params_context, $params_list,

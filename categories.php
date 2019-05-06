@@ -110,7 +110,7 @@ if ($add)
 	echo '<label for="id_parent" class="control-label">';
 	echo 'Hoofdcategorie of deelcategorie van</label>';
 	echo '<select name="id_parent" id="id_parent" class="form-control">';
-	echo get_select_options($parent_cats, $id_parent ?? 0);
+	echo $app['select']->get_options($parent_cats, $id_parent ?? 0);
 	echo '</select>';
 	echo '</div>';
 
@@ -249,7 +249,7 @@ if ($edit)
 	echo '<label for="id_parent" class="control-label">';
 	echo 'Hoofdcategorie of deelcategorie van</label>';
 	echo '<select class="form-control" id="id_parent" name="id_parent">';
-	echo get_select_options($parent_cats, $id_parent);
+	echo $app['select']->get_options($parent_cats, $id_parent);
 	echo '</select>';
 	echo '</div>';
 

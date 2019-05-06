@@ -510,11 +510,13 @@ $app['alert'] = function ($app){
 		$app['tschema']);
 };
 
-$app['pagination'] = function (){
-	return new service\pagination();
+$app['pagination'] = function ($app){
+	return new service\pagination(
+		$app['select']
+	);
 };
 
-$app['password_strength'] = function ($app){
+$app['password_strength'] = function (){
 	return new service\password_strength();
 };
 
@@ -527,6 +529,10 @@ $app['autominlimit'] = function ($app){
 		$app['user_cache']);
 };
 
+/**
+ * render
+ */
+
 $app['render_link'] = function ($app){
 	return new render\link(
 		$app['url_generator']
@@ -536,7 +542,22 @@ $app['render_link'] = function ($app){
 $app['btn_nav'] = function ($app){
 	return new render\btn_nav(
 		$app['render_link'],
+		$app['tag'],
 		$app['assets']
+	);
+};
+
+$app['tag'] = function (){
+	return new render\tag();
+};
+
+$app['select'] = function (){
+	return new render\select();
+};
+
+$app['tbl'] = function ($app){
+	return new render\tbl(
+		$app['render_link'],
 	);
 };
 
@@ -546,7 +567,7 @@ $app['btn_top'] = function ($app){
 	);
 };
 
-$app['render_stat'] = function ($app){
+$app['render_stat'] = function (){
 	return new render\stat();
 };
 
