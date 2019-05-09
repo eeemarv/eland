@@ -100,6 +100,7 @@ $tab_panes = [
 				'explain'	=> 'Minimum Limiet die geldt voor alle Accounts,
 					behalve voor die Accounts waarbij een Minimum Account
 					Limiet ingesteld is. Kan leeg gelaten worden.',
+				'default'	=> '',
 			],
 			'maxlimit'	=> [
 				'addon'	=> $currency,
@@ -108,6 +109,7 @@ $tab_panes = [
 				'explain'	=> 'Maximum Limiet die geldt voor alle Accounts,
 					behalve voor die Accounts waarbij een Maximum Account
 					Limiet ingesteld is. Kan leeg gelaten worden.',
+				'default'	=> '',
 			],
 			'preset_minlimit'	=> [
 				'addon'	=> $currency,
@@ -120,6 +122,7 @@ $tab_panes = [
 					de Minimum Systeemslimiet. Deze instelling is ook nuttig
 					wanneer de Automatische Minimum Limiet gebruikt wordt.
 					Dit veld kan leeg gelaten worden.',
+				'default'	=> '',
 			],
 			'preset_maxlimit'	=> [
 				'addon'	=> $currency,
@@ -130,6 +133,7 @@ $tab_panes = [
 					Dit heeft enkel zin wanneer instappende leden een afwijkende
 					Maximum Account Limiet hebben van de Maximum Systeemslimiet.
 					Dit veld kan leeg gelaten worden.',
+				'default'	=> '',
 
 			],
 			'balance_equilibrium'	=> [
@@ -138,7 +142,8 @@ $tab_panes = [
 				'type'		=> 'number',
 				'required'	=> true,
 				'explain' 	=> 'Het saldo van leden met status uitstapper
-					kan enkel bewegen in de richting van deze instelling.'
+					kan enkel bewegen in de richting van deze instelling.',
+				'default'	=> '0',
 			],
 
 		],
@@ -155,6 +160,7 @@ $tab_panes = [
 					deze waarde standaard ingevuld in het formulier.',
 				'type'	=> 'number',
 				'attr'	=> ['min' => 1, 'max' => 1460],
+				'default'	=> '365',
 			],
 
 			'li_1'	=> [
@@ -162,10 +168,12 @@ $tab_panes = [
 				'inputs' => [
 					'msgcleanupenabled'	=> [
 						'type'	=> 'checkbox',
+						'default'	=> '0',
 					],
 					'msgexpcleanupdays'	=> [
 						'type'	=> 'number',
 						'attr'	=> ['min' => 1, 'max' => 365],
+						'default'	=> '30',
 					],
 				],
 			],
@@ -177,6 +185,7 @@ $tab_panes = [
 				'inputs'	=> [
 					'msgexpwarnenabled'	=> [
 						'type'	=> 'checkbox',
+						'default'	=> '1',
 					],
 				],
 			],
@@ -190,6 +199,7 @@ $tab_panes = [
 				'lbl'		=> 'Systeemsnaam',
 				'required'	=> true,
 				'addon_fa'	=> 'share-alt',
+				'default'	=> '',
 			],
 			'systemtag' => [
 				'lbl'		=> 'Tag',
@@ -198,6 +208,7 @@ $tab_panes = [
 				'required'	=> true,
 				'addon_fa'	=> 'tag',
 				'attr'		=> ['maxlength' => 30],
+				'default'	=> '',
 			],
 		],
 	],
@@ -209,6 +220,7 @@ $tab_panes = [
 				'lbl'		=> 'Naam van Munt (meervoud)',
 				'required'	=> true,
 				'addon_fa'	=> 'money',
+				'default'	=> '',
 			],
 
 			'currencyratio'	=> [
@@ -220,6 +232,7 @@ $tab_panes = [
 				'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdsbanken.
 					Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat de Systemen
 					een gemeenschappelijke tijdbasis hebben.',
+				'default'	=> '1',
 			],
 		],
 	],
@@ -240,6 +253,7 @@ $tab_panes = [
 				'addon_fa'		=> 'envelope-o',
 				'max_inputs'	=> 5,
 				'add_btn_text' 	=> 'Extra E-mail Adres',
+				'default'	=> '',
 			],
 			'newsadmin'	=> [
 				'lbl'	=> 'Nieuws beheerder',
@@ -251,6 +265,7 @@ $tab_panes = [
 				'addon_fa'		=> 'envelope-o',
 				'max_inputs'	=> 5,
 				'add_btn_text'	=> 'Extra E-mail Adres',
+				'default'	=> '',
 			],
 			'support'	=> [
 				'lbl'	=> 'Support / Helpdesk',
@@ -261,6 +276,7 @@ $tab_panes = [
 				'addon_fa'		=> 'envelope-o',
 				'max_inputs'	=> 5,
 				'add_btn_text'	=> 'Extra E-mail Adres',
+				'default'	=> '',
 			],
 		]
 	],
@@ -277,6 +293,7 @@ $tab_panes = [
 						'type'		=> 'number',
 						'attr'		=> ['class' => 'sm-size', 'min' => 1, 'max' => 120],
 						'required'	=> true,
+						'default'	=> '14',
 					],
 				],
 				'explain' => 'Noot: Leden kunnen steeds ontvangst van de Periodieke
@@ -293,6 +310,7 @@ $tab_panes = [
 				'lbl_active' 		=> 'Inhoud',
 				'lbl_inactive'		=> 'Niet gebruikte blokken',
 				'ary'				=> $periodic_mail_block_ary,
+				'default'		=> '+messages.recent',
 			],
 		],
 	],
@@ -306,6 +324,7 @@ $tab_panes = [
 				'inputs' => [
 					'contact_form_en' => [
 						'type' => 'checkbox',
+						'default'	=> '0',
 					],
 				],
 				'explain' => $contact_link_explain,
@@ -314,11 +333,13 @@ $tab_panes = [
 				'lbl'	=> 'Tekst boven het contact formulier',
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
+				'default'	=> '0',
 			],
 			'contact_form_bottom_text' => [
 				'lbl'		=> 'Tekst onder het contact formulier',
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
+				'default'	=> '0',
 			],
 		],
 	],
@@ -332,6 +353,7 @@ $tab_panes = [
 				'inputs' => [
 					'registration_en' => [
 						'type' => 'checkbox',
+						'default'	=> '0',
 					],
 				],
 				'explain' => $register_link_explain,
@@ -342,6 +364,7 @@ $tab_panes = [
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
 				'explain' => 'Geschikt bijvoorbeeld om nadere uitleg bij de inschrijving te geven.',
+				'default'	=> '',
 			],
 
 			'registration_bottom_text' => [
@@ -349,6 +372,7 @@ $tab_panes = [
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 				'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
+				'default'	=> '',
 			],
 
 			'registration_success_text'	=> [
@@ -356,6 +380,7 @@ $tab_panes = [
 				'type'	=> 'textarea',
 				'rich_edit'	=> true,
 				'explain'	=> $register_success_explain,
+				'default'	=> '',
 			],
 
 			'registration_success_mail'	=> [
@@ -363,6 +388,7 @@ $tab_panes = [
 				'type'		=> 'textarea',
 				'rich_edit'	=> true,
 				'attr'		=> ['data-template-vars' => implode(',', array_keys($map_template_vars))],
+				'default'	=> '0',
 			],
 		],
 	],
@@ -375,6 +401,7 @@ $tab_panes = [
 				'inputs' => [
 					'news_order_asc'	=> [
 						'type'	=> 'checkbox',
+						'default'	=> '1',
 					],
 				]
 			]
@@ -389,6 +416,7 @@ $tab_panes = [
 				'inputs' => [
 					'forum_en'	=> [
 						'type'	=> 'checkbox',
+						'default'	=> '0',
 					],
 				]
 			]
@@ -404,6 +432,7 @@ $tab_panes = [
 				'type'		=> 'number',
 				'attr'		=> ['min' => 0, 'max' => 365],
 				'required'	=> true,
+				'default'	=> '7',
 			],
 
 			'li_2' => [
@@ -411,6 +440,7 @@ $tab_panes = [
 				'inputs' => [
 					'users_can_edit_username' => [
 						'type'	=> 'checkbox',
+						'default'	=> '0',
 					],
 				],
 			],
@@ -420,6 +450,7 @@ $tab_panes = [
 				'inputs' => [
 					'users_can_edit_fullname' => [
 						'type'	=> 'checkbox',
+						'default'	=> '0',
 					],
 				],
 			],
@@ -435,6 +466,7 @@ $tab_panes = [
 				'inputs'	=> [
 					'mailenabled'	=> [
 						'type'	=> 'checkbox',
+						'default'	=> '1',
 					],
 				],
 			],
@@ -444,6 +476,7 @@ $tab_panes = [
 				'inputs' => [
 					'maintenance'	=> [
 						'type'	=> 'checkbox',
+						'default'	=> '0',
 					],
 				],
 			],
@@ -454,6 +487,7 @@ $tab_panes = [
 					'template_lets'	=> [
 						'type'	=> 'checkbox',
 						'post_action'	=> 'clear_eland_interlets_cache',
+						'default'	=> '1',
 					],
 				],
 			],
@@ -466,6 +500,7 @@ $tab_panes = [
 					'interlets_en'	=> [
 						'type'	=> 'checkbox',
 						'post_action'	=> 'clear_eland_interlets_cache',
+						'default'	=> '0',
 					],
 				],
 			],
@@ -476,6 +511,7 @@ $tab_panes = [
 				'options'	=> $landing_page_options,
 				'required'	=> true,
 				'addon_fa'	=> 'plane',
+				'default'	=> 'messages',
 			],
 
 			'homepage_url'	=> [
@@ -483,6 +519,7 @@ $tab_panes = [
 				'type'		=> 'url',
 				'addon_fa'	=> 'link',
 				'explain'	=> 'Titel en logo in de navigatiebalk linken naar deze url.',
+				'default'	=> '',
 			],
 
 			'date_format'	=> [
@@ -490,6 +527,7 @@ $tab_panes = [
 				'type'		=> 'select',
 				'options'	=> $app['date_format']->get_options(),
 				'addon_fa'	=> 'calendar',
+				'default'	=> '%e %b %Y, %H:%M:%S',
 			],
 
 			'css'	=> [
@@ -498,6 +536,7 @@ $tab_panes = [
 				'explain'	=> 'Url van extra stijlblad (css-bestand). Laat dit veld leeg wanneer het niet gebruikt wordt.',
 				'attr'		=> ['maxlength'	=> 100],
 				'addon_fa'	=> 'link',
+				'default'	=> '',
 			],
 		],
 	],
