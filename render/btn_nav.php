@@ -75,7 +75,7 @@ class btn_nav
 					'title'		=> $title,
 					'disabled'	=> 'disabled',
 				],
-				$this->tag->fa($fa),
+				$this->tag->fa($fa)
 			);
 		}
 
@@ -160,7 +160,7 @@ class btn_nav
 				'class'	=> 'csv btn btn-info',
 				'title'	=> 'Download CSV',
 			],
-			$this->tag->fa('file'),
+			$this->tag->fa('file')
 		);
 	}
 
