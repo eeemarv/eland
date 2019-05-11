@@ -53,6 +53,18 @@ class config
 		return 0 < $this->xdb->count('setting', $name, $schema);
 	}
 
+	public function get_uncached(string $key, string $schema):string
+	{
+		$row = $this->xdb->get('setting', $key, $schema);
+
+		if ($row)
+		{
+			return $row['data']['value'];
+		}
+
+		return '';
+	}
+
 	public function set(string $name, string $schema, string $value):void
 	{
 		$this->xdb->set('setting', $name, ['value' => $value], $schema);
