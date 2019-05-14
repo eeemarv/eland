@@ -1,17 +1,20 @@
 <?php
 
-class cnst_contact
+namespace util;
+
+class cnst_config
 {
+    const TAG = [
+        'input'    => [
+            'open'  => '%input(',
+            'close' => ')%',
+        ],
+    ];
+
     const MAP_TEMPLATE_VARS = [
         'voornaam' 			=> 'first_name',
         'achternaam'		=> 'last_name',
         'postcode'			=> 'postcode',
-    ];
-
-    const PERIODIC_MAIL_ITEM_SHOW_OPTIONS = [
-        'all'		=> 'Alle',
-        'recent'	=> 'Recente',
-        'none'		=> 'Geen',
     ];
 
     const LANDING_PAGE_OPTIONS = [
@@ -52,6 +55,7 @@ class cnst_contact
     ];
 
     const INPUTS = [
+
         'minlimit'	=> [
             'addon'	=> '%config_currency%',
             'lbl'	=> 'Minimum Systeemslimiet',
@@ -61,6 +65,7 @@ class cnst_contact
                 Limiet ingesteld is. Kan leeg gelaten worden.',
             'default'	=> '',
         ],
+
         'maxlimit'	=> [
             'addon'	=> '%config_currency%',
             'lbl'	=> 'Maximum Systeemslimiet',
@@ -70,6 +75,7 @@ class cnst_contact
                 Limiet ingesteld is. Kan leeg gelaten worden.',
             'default'	=> '',
         ],
+
         'preset_minlimit'	=> [
             'addon'	=> '%config_currency%',
             'lbl'	=> 'Preset Minimum Account Limiet',
@@ -83,6 +89,7 @@ class cnst_contact
                 Dit veld kan leeg gelaten worden.',
             'default'	=> '',
         ],
+
         'preset_maxlimit'	=> [
             'addon'	=> '%config_currency%',
             'lbl'	=> 'Preset Maximum Account Limiet',
@@ -95,6 +102,7 @@ class cnst_contact
             'default'	=> '',
 
         ],
+
         'balance_equilibrium'	=> [
             'addon'		=> '%config_currency%',
             'lbl'		=> 'Het uitstapsaldo voor actieve leden. ',
@@ -104,6 +112,7 @@ class cnst_contact
                 kan enkel bewegen in de richting van deze instelling.',
             'default'	=> '0',
         ],
+
         'msgs_days_default'	=> [
             'addon'	=> 'dagen',
             'lbl'	=> 'Standaard geldigheidsduur',
@@ -113,25 +122,30 @@ class cnst_contact
             'attr'	=> ['min' => 1, 'max' => 1460],
             'default'	=> '365',
         ],
+
         'msgcleanupenabled'	=> [
             'type'	=> 'checkbox',
             'default'	=> '0',
         ],
+
         'msgexpcleanupdays'	=> [
             'type'	=> 'number',
             'attr'	=> ['min' => 1, 'max' => 365],
             'default'	=> '30',
         ],
+
         'msgexpwarnenabled'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
         ],
+
         'systemname' => [
             'lbl'		=> 'Systeemsnaam',
             'required'	=> true,
             'addon_fa'	=> 'share-alt',
             'default'	=> '',
         ],
+
         'systemtag' => [
             'lbl'		=> 'Tag',
             'explain'	=> 'Prefix tussen haken [tag] in onderwerp
@@ -141,12 +155,14 @@ class cnst_contact
             'attr'		=> ['maxlength' => 30],
             'default'	=> '',
         ],
+
         'currency'	=> [
             'lbl'		=> 'Naam van Munt (meervoud)',
             'required'	=> true,
             'addon_fa'	=> 'money',
             'default'	=> '',
         ],
+
         'currencyratio'	=> [
             'cond'		=> 'config_template_lets',
             'lbl'		=> 'Aantal per uur',
@@ -158,6 +174,7 @@ class cnst_contact
                 een gemeenschappelijke tijdbasis hebben.',
             'default'	=> '1',
         ],
+
         'admin'	=> [
             'lbl'	=> 'Algemeen admin/beheerder',
             'explain_top'	=> 'Krjgt algemene E-mail notificaties
@@ -169,6 +186,7 @@ class cnst_contact
             'add_btn_text' 	=> 'Extra E-mail Adres',
             'default'	=> '',
         ],
+
         'newsadmin'	=> [
             'lbl'	=> 'Nieuws beheerder',
             'explain_top'	=> 'Krjgt E-mail wanneer een nieuwsbericht,
@@ -181,6 +199,7 @@ class cnst_contact
             'add_btn_text'	=> 'Extra E-mail Adres',
             'default'	=> '',
         ],
+
         'support'	=> [
             'lbl'	=> 'Support / Helpdesk',
             'explain_top'	=> 'Krjgt E-mail berichten
@@ -192,12 +211,14 @@ class cnst_contact
             'add_btn_text'	=> 'Extra E-mail Adres',
             'default'	=> '',
         ],
+
         'saldofreqdays'	=> [
             'type'		=> 'number',
             'attr'		=> ['class' => 'sm-size', 'min' => 1, 'max' => 120],
             'required'	=> true,
             'default'	=> '14',
         ],
+
         'periodic_mail_block_ary' => [
             'lbl'				=> 'E-mail opmaak (versleep blokken)',
             'type'				=> 'sortable',
@@ -207,29 +228,34 @@ class cnst_contact
                 de laatste periodieke overzichtsmail".',
             'lbl_active' 		=> 'Inhoud',
             'lbl_inactive'		=> 'Niet gebruikte blokken',
-            'ary'				=> 'periodic_mail_block_ary',
+            'ary'				=> 'periodic_mail',
             'default'		=> '+messages.recent',
         ],
+
         'contact_form_en' => [
             'type' => 'checkbox',
             'default'	=> '0',
         ],
+
         'contact_form_top_text' => [
             'lbl'	=> 'Tekst boven het contact formulier',
             'type'	=> 'textarea',
             'rich_edit'	=> true,
             'default'	=> '0',
         ],
+
         'contact_form_bottom_text' => [
             'lbl'		=> 'Tekst onder het contact formulier',
             'type'		=> 'textarea',
             'rich_edit'	=> true,
             'default'	=> '0',
         ],
+
         'registration_en' => [
             'type' => 'checkbox',
             'default'	=> '0',
         ],
+
         'registration_top_text' => [
             'lbl'	=> 'Tekst boven het inschrijvingsformulier',
             'type'	=> 'textarea',
@@ -238,6 +264,7 @@ class cnst_contact
                 bij de inschrijving te geven.',
             'default'	=> '',
         ],
+
         'registration_bottom_text' => [
             'lbl'		=> 'Tekst onder het inschrijvingsformulier',
             'type'		=> 'textarea',
@@ -245,6 +272,7 @@ class cnst_contact
             'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
             'default'	=> '',
         ],
+
         'registration_success_text'	=> [
             'lbl'	=> 'Tekst na succesvol indienen formulier.',
             'type'	=> 'textarea',
@@ -255,6 +283,7 @@ class cnst_contact
                 om de gebruiker terug te voeren.',
             'default'	=> '',
         ],
+
         'registration_success_mail'	=> [
             'lbl'		=> 'Verstuur E-mail naar gebruiker bij succesvol indienen formulier',
             'type'		=> 'textarea',
@@ -264,14 +293,17 @@ class cnst_contact
             ],
             'default'	=> '0',
         ],
+
         'news_order_asc'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
         ],
+
         'forum_en'	=> [
             'type'	=> 'checkbox',
             'default'	=> '0',
         ],
+
         'newuserdays' => [
             'addon'		=> 'dagen',
             'lbl'		=> 'Periode dat een nieuw lid als instapper getoond wordt.',
@@ -280,14 +312,17 @@ class cnst_contact
             'required'	=> true,
             'default'	=> '7',
         ],
+
         'users_can_edit_username' => [
             'type'	=> 'checkbox',
             'default'	=> '0',
         ],
+
         'users_can_edit_fullname' => [
             'type'	=> 'checkbox',
             'default'	=> '0',
         ],
+
         'mailenabled'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
@@ -300,20 +335,20 @@ class cnst_contact
 
         'template_lets'	=> [
             'type'	=> 'checkbox',
-            'post_action'	=> 'clear_eland_interlets_cache',
+            'post_action'	=> 'clear_eland_intersystem_cache',
             'default'	=> '1',
         ],
 
         'interlets_en'	=> [
             'type'	=> 'checkbox',
-            'post_action'	=> 'clear_eland_interlets_cache',
+            'post_action'	=> 'clear_eland_intersystem_cache',
             'default'	=> '0',
         ],
 
         'default_landing_page'	=> [
             'lbl'		=> 'Standaard landingspagina',
             'type'		=> 'select',
-            'options'	=> '%var(landing_page_options)',
+            'options'	=> 'landing_page',
             'required'	=> true,
             'addon_fa'	=> 'plane',
             'default'	=> 'messages',
@@ -330,7 +365,7 @@ class cnst_contact
         'date_format'	=> [
             'lbl'		=> 'Datum- en tijdweergave',
             'type'		=> 'select',
-            'options'	=> '%date_format_options%',
+            'options'	=> 'date_format',
             'addon_fa'	=> 'calendar',
             'default'	=> '%e %b %Y, %H:%M:%S',
         ],
@@ -338,7 +373,8 @@ class cnst_contact
         'css'	=> [
             'lbl'		=> 'Stijl (css)',
             'type' 		=> 'url',
-            'explain'	=> 'Url van extra stijlblad (css-bestand). Laat dit veld leeg wanneer het niet gebruikt wordt.',
+            'explain'	=> 'Url van extra stijlblad (css-bestand).
+                Laat dit veld leeg wanneer het niet gebruikt wordt.',
             'attr'		=> ['maxlength'	=> 100],
             'addon_fa'	=> 'link',
             'default'	=> '',
@@ -346,6 +382,7 @@ class cnst_contact
     ];
 
     const TAB_PANES = [
+
         'balance'		=> [
             'lbl'		=> 'Saldo',
             'inputs'	=> [
@@ -393,6 +430,9 @@ class cnst_contact
         ],
 
         'mailaddresses'	=> [
+            'assets'        => [
+                'config_max_inputs.js',
+            ],
             'lbl'		=> 'E-Mail Adressen',
             'explain'	=> 'Er moet minstens één E-mail adres voor elk
                 type ingesteld zijn.
@@ -406,6 +446,10 @@ class cnst_contact
         ],
 
         'saldomail'		=> [
+            'assets'    => [
+                'sortable',
+                'config_periodic_mail.js',
+            ],
             'lbl'	=> 'Overzichts E-mail',
             'lbl_pane'	=> 'Periodieke Overzichts E-mail',
             'inputs' => [
@@ -422,6 +466,10 @@ class cnst_contact
         ],
 
         'contact'	=> [
+            'assets'    => [
+                'summernote',
+                'rich_edit.js',
+            ],
             'lbl'	=> 'Contact',
             'lbl_pane'	=> 'Contact Formulier',
             'inputs'	=> [
@@ -436,6 +484,10 @@ class cnst_contact
         ],
 
         'registration'	=> [
+            'assets'    => [
+                'summernote',
+                'rich_edit.js',
+            ],
             'lbl'	=> 'Inschrijven',
             'lbl_pane'	=> 'Inschrijvingsformulier',
             'inputs'	=> [
