@@ -279,7 +279,8 @@ if ($app['is_http_post'])
 
 		// prevent string too long error for eLAS database
 
-		if (cnst_config::INPUTS[$input_name]['max_inputs'] > 1)
+		if (isset(cnst_config::INPUTS[$input_name]['max_inputs'])
+			&& cnst_config::INPUTS[$input_name]['max_inputs'] > 1)
 		{
 			[$posted_value] = explode(',', $posted_value);
 			$posted_value = trim($posted_value);
