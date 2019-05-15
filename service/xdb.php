@@ -83,7 +83,13 @@ class xdb
 		$this->user_id = $user_id;
 	}
 
-	public function set(string $agg_type, string $eland_id, array $data, string $agg_schema, string $event_time = ''):void
+	public function set(
+		string $agg_type,
+		string $eland_id,
+		array $data,
+		string $agg_schema,
+		string $event_time = ''
+	):void
 	{
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
@@ -109,8 +115,6 @@ class xdb
 		{
 			return;
 		}
-
-		$event = $agg_type . '_' . $ev;
 
 		$insert = [
 			'user_id'		=> $this->user_id,
@@ -161,7 +165,11 @@ class xdb
 		}
 	}
 
-	public function del(string $agg_type, string $eland_id, string $agg_schema):void
+	public function del(
+		string $agg_type,
+		string $eland_id,
+		string $agg_schema
+	):void
 	{
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
@@ -208,7 +216,11 @@ class xdb
 		}
 	}
 
-	public function get(string $agg_type, string $eland_id, string $agg_schema):array
+	public function get(
+		string $agg_type,
+		string $eland_id,
+		string $agg_schema
+	):array
 	{
 		$agg_id = $agg_schema . '_' . $agg_type . '_' . $eland_id;
 
@@ -229,7 +241,10 @@ class xdb
 		return $row;
 	}
 
-	public function get_many(array $filters, string $query_extra = ''):array
+	public function get_many(
+		array $filters,
+		string $query_extra = ''
+	):array
 	{
 		$sql_where = [];
 		$sql_params = [];
@@ -304,7 +319,11 @@ class xdb
 		return $ary;
 	}
 
-	public function count(string $agg_type = '', string $eland_id = '', string $agg_schema = ''):int
+	public function count(
+		string $agg_type = '',
+		string $eland_id = '',
+		string $agg_schema = ''
+	):int
 	{
 		$sql_where = $sql_params = [];
 

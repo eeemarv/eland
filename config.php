@@ -12,6 +12,15 @@ $active_tab = 'balance';
 $active_tab = $_GET['active_tab'] ?? $active_tab;
 $active_tab = $_POST['active_tab'] ?? $active_tab;
 
+if (!isset(cnst_config::TAB_PANES[$active_tab]))
+{
+	http_response_code(404);
+	echo $app['twig']->render('404.html.twig');
+	exit;
+}
+
+$pane = cnst_config::TAB_PANES[$active_tab];
+
 $cond_ary = [
 	'config_template_lets'	=> true,
 ];
@@ -48,7 +57,7 @@ $attr_replace_ary = [
 
 $config = [];
 
-foreach (cnst_config::TAB_PANES[$active_tab]['inputs'] as $input_name => $input_config)
+foreach ($pane['inputs'] as $input_name => $input_config)
 {
 	if (is_array($input_config) && isset($input_config['inline']))
 	{
@@ -77,79 +86,61 @@ if ($app['is_http_post'])
 		$errors[] = $error_token;
 	}
 
-	$posted_configs = $validators = $post_actions = [];
+	$posted_configs = [];
 
-	foreach (cnst_config::TAB_PANES[$active_tab]['inputs'] as $name => $input)
+	foreach ($config as $input_name => $loaded_value)
 	{
-		if (isset($input['cond']) &&
-			!isset($cond_ary[$input['cond']]))
+		$posted_value = trim($_POST[$input_name] ?? '');
+		$input_data = cnst_config::INPUTS[$input_name];
+
+		if (isset($input_data['cond']) &&
+			!isset($cond_ary[$input_data['cond']]))
 		{
 			continue;
 		}
 
-		if (isset($input['inputs']))
-		{
-			foreach ($input['inputs'] as $sub_name => $sub_input)
-			{
-				$posted_configs[$sub_name] = trim($_POST[$sub_name]);
+		$validator = [
+			'type'			=> $input_data['type'] ?? 'text',
+			'attr'			=> $input_data['attr'] ?? [],
+			'required'		=> isset($input_data['required']) ? true : false,
+			'max_inputs' 	=> $input_data['max_inputs'] ?? 1,
+		];
 
-				$validators[$sub_name]['type'] = $sub_input['type'] ?? 'text';
-				$validators[$sub_name]['attr'] = $sub_input['attr'] ?? [];
-				$validators[$sub_name]['required'] = isset($sub_input['required']) ? true : false;
-				$validators[$sub_name]['max_inputs'] = $sub_input['max_inputs'] ?? 1;
+		$err_n = ' (' . $input_name . ')';
 
-				$post_actions[$sub_name] = $sub_input['post_action'] ?? [];
-			}
-
-			continue;
-		}
-
-		$posted_configs[$name] = trim($_POST[$name]);
-
-		$validators[$name]['type'] = $input['type'] ?? 'text';
-		$validators[$name]['attr'] = $input['attr'] ?? [];
-		$validators[$name]['required'] = isset($input['required']) ? true : false;
-		$validators[$name]['max_inputs'] = $input['max_inputs'] ?? 1;
-
-		$post_actions[$name] = $input['post_action'] ?? [];
-	}
-
-	foreach ($posted_configs as $name => $value)
-	{
-		$validator = $validators[$name];
-
-		$err_n = ' (' . $name . ')';
-
-		if ($validator['required'] && $value === '')
+		if ($validator['required']
+			&& $posted_value === '')
 		{
 			$errors[] = 'Het veld is verplicht in te vullen.' . $err_n;
 			continue;
 		}
 
-		if ($validator['type'] == 'text' || $validator['type'] == 'textarea')
+		if ($validator['type'] === 'text'
+			|| $validator['type'] === 'textarea')
 		{
 			$config_htmlpurifier = HTMLPurifier_Config::createDefault();
 			$config_htmlpurifier->set('Cache.DefinitionImpl', null);
 			$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
-			$value = $htmlpurifier->purify($value);
+			$posted_value = $htmlpurifier->purify($posted_value);
 		}
 
-		$value = (strip_tags($value) !== '') ? $value : '';
+		$posted_value = strip_tags($posted_value) !== '' ? $posted_value : '';
 
 		if ($validator['type'] === 'checkbox')
 		{
-			$value = $value ? '1' : '0';
+			$posted_value = $posted_value ? '1' : '0';
 		}
 
-		if ($value === $config[$name])
+		if ($posted_value === $config[$input_name])
 		{
-			unset($posted_configs[$name]);
 			continue;
 		}
 
-		if ($name == 'date_format')
+		$posted_configs[$input_name] = $posted_value;
+
+		if ($input_name === 'date_format')
 		{
-			$error = $app['date_format']->get_error($value);
+			$error = $app['date_format']->get_error($posted_value);
 
 			if ($error)
 			{
@@ -159,12 +150,11 @@ if ($app['is_http_post'])
 			continue;
 		}
 
-		if ($validator['type'] === 'text')
+		if ($validator['type'] === 'text'
+			|| $validator['type'] === 'textarea')
 		{
-			$posted_configs[$name] = $value;
-
 			if (isset($validator['attr']['maxlength'])
-				&& strlen($value) > $validator['attr']['maxlength'])
+				&& strlen($posted_value) > $validator['attr']['maxlength'])
 			{
 				$errors[] = 'Fout: de waarde mag maximaal ' .
 					$validator['attr']['maxlength'] .
@@ -172,7 +162,7 @@ if ($app['is_http_post'])
 			}
 
 			if (isset($validator['attr']['minlength'])
-				&& strlen($value) < $validator['attr']['minlength'])
+				&& strlen($posted_value) < $validator['attr']['minlength'])
 			{
 				$errors[] = 'Fout: de waarde moet minimaal ' .
 					$validator['attr']['minlength'] .
@@ -184,18 +174,18 @@ if ($app['is_http_post'])
 
 		if ($validator['type'] === 'number')
 		{
-			if ($value === '' && !$validator['required'])
+			if ($posted_value === '' && !$validator['required'])
 			{
 				continue;
 			}
 
-			if (!filter_var($value, FILTER_VALIDATE_INT))
+			if (!filter_var($posted_value, FILTER_VALIDATE_INT))
 			{
 				$errors[] = 'Fout: de waarde moet een getal zijn.' . $err_n;
 			}
 
 			if (isset($validator['attr']['max'])
-				&& $value > $validator['attr']['max'])
+				&& $posted_value > $validator['attr']['max'])
 			{
 				$errors[] = 'Fout: de waarde mag maximaal ' .
 					$validator['attr']['max'] .
@@ -203,7 +193,7 @@ if ($app['is_http_post'])
 			}
 
 			if (isset($validator['attr']['min'])
-				&& $value < $validator['attr']['min'])
+				&& $posted_value < $validator['attr']['min'])
 			{
 				$errors[] = 'Fout: de waarde moet minimaal ' .
 					$validator['attr']['min'] .
@@ -215,8 +205,6 @@ if ($app['is_http_post'])
 
 		if ($validator['type'] === 'checkbox')
 		{
-			$posted_configs[$name] = $value;
-
 			continue;
 		}
 
@@ -224,7 +212,7 @@ if ($app['is_http_post'])
 		{
 			if (isset($validator['max_inputs']))
 			{
-				$mail_ary = explode(',', $value);
+				$mail_ary = explode(',', $posted_value);
 
 				if (count($mail_ary) > $validator['max_inputs'])
 				{
@@ -247,9 +235,9 @@ if ($app['is_http_post'])
 				continue;
 			}
 
-			if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+			if (!filter_var($posted_value, FILTER_VALIDATE_EMAIL))
 			{
-				$errors[] =  $value . ' is geen geldig E-mail adres.' . $err_n;
+				$errors[] =  $posted_value . ' is geen geldig E-mail adres.' . $err_n;
 			}
 
 			continue;
@@ -257,41 +245,15 @@ if ($app['is_http_post'])
 
 		if ($validator['type'] === 'url')
 		{
-			if ($value != '')
+			if ($posted_value != '')
 			{
-				if (!filter_var($value, FILTER_VALIDATE_URL))
+				if (!filter_var($posted_value, FILTER_VALIDATE_URL))
 				{
-					$errors[] =  $value . ' is geen geldig url adres.' . $err_n;
+					$errors[] =  $posted_value . ' is geen geldig url adres.' . $err_n;
 				}
 			}
 
 			continue;
-		}
-
-		if ($validator['type'] === 'textarea')
-		{
-			$posted_configs[$name] = $value;
-
-			if (isset($validator['attr']['maxlength'])
-				&& strlen($value) > $validator['attr']['maxlength'])
-			{
-				$errors[] = 'Fout: de waarde mag maximaal ' .
-					$validator['attr']['maxlength'] .
-					' tekens lang zijn.' . $err_n;
-			}
-
-			if (isset($validator['attr']['minlength'])
-				&& strlen($value) < $validator['attr']['minlength'])
-			{
-				$errors[] = 'Fout: de waarde moet minimaal ' .
-					$validator['attr']['minlength'] .
-					' tekens lang zijn.' . $err_n;
-			}
-		}
-
-		if ($validator['type'] === 'sortable')
-		{
-
 		}
 	}
 
@@ -309,29 +271,29 @@ if ($app['is_http_post'])
 
 	$execute_post_actions = [];
 
-	foreach ($posted_configs as $name => $value)
+	foreach ($posted_configs as $input_name => $posted_value)
 	{
-		$app['config']->set($name, $app['tschema'], $value);
+		$app['config']->set($input_name, $app['tschema'], $posted_value);
 
 		// prevent string too long error for eLAS database
 
-		if ($validators[$name]['max_inputs'] > 1)
+		if (cnst_config::INPUTS[$input_name]['max_inputs'] > 1)
 		{
-			[$value] = explode(',', $value);
-			$value = trim($value);
+			[$posted_value] = explode(',', $posted_value);
+			$posted_value = trim($posted_value);
 		}
 
-		$value = substr($value, 0, 60);
+		$posted_value = substr($posted_value, 0, 60);
 
 		$app['db']->update($app['tschema'] . '.config',
-			['value' => $value, '"default"' => 'f'],
-			['setting' => $name]);
+			['value' => $posted_value, '"default"' => 'f'],
+			['setting' => $input_name]);
 
-		$p_acts = is_array($post_actions[$name]) ? $post_actions[$name] : [$post_actions[$name]];
+		$post_actions = cnst_config::INPUTS[$input_name]['post_actions'] ?? [];
 
-		foreach($p_acts as $p_act)
+		foreach($post_actions as $post_action)
 		{
-			$execute_post_actions[$p_act] = true;
+			$execute_post_actions[$post_action] = true;
 		}
 	}
 
@@ -365,14 +327,14 @@ include __DIR__ . '/include/header.php';
 echo '<div>';
 echo '<ul class="nav nav-pills" role="tablist">';
 
-foreach (cnst_config::TAB_PANES as $tab_id => $pane)
+foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
 {
 	echo '<li role="presentation"';
 	echo $tab_id === $active_tab ? ' class="active"' : '';
 	echo '>';
 	echo aphp('config',
 		['active_tab' => $tab_id],
-		$pane['lbl'], false, false, false,
+		$tab_pane_data['lbl'], false, false, false,
 		['role'	=> 'tab']);
 	echo '</li>';
 }
@@ -380,8 +342,6 @@ foreach (cnst_config::TAB_PANES as $tab_id => $pane)
 echo '</ul>';
 
 echo '<div class="tab-content">';
-
-$pane = cnst_config::TAB_PANES[$active_tab];
 
 echo '<div role="tabpanel" ';
 echo 'class="tab-pane active" ';
@@ -531,9 +491,9 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 		$v_options = $active = $inactive = [];
 		$value_ary = explode(',', ltrim($config[$input_name], '+ '));
 
-		foreach ($value_ary as $v)
+		foreach ($value_ary as $val)
 		{
-			[$block, $option] = explode('.', $v);
+			[$block, $option] = explode('.', $val);
 			$v_options[$block] = $option;
 			$active[] = $block;
 		}

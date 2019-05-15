@@ -337,13 +337,13 @@ class cnst_config
 
         'template_lets'	=> [
             'type'	=> 'checkbox',
-            'post_action'	=> 'clear_eland_intersystem_cache',
+            'post_actions'	=> ['clear_eland_intersystem_cache'],
             'default'	=> '1',
         ],
 
         'interlets_en'	=> [
             'type'	=> 'checkbox',
-            'post_action'	=> 'clear_eland_intersystem_cache',
+            'post_actions'	=> ['clear_eland_intersystem_cache'],
             'default'	=> '0',
         ],
 
