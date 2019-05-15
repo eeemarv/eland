@@ -57,7 +57,7 @@ echo 'tot de ';
 echo aphp('config', [], 'Minimum Systeemslimiet');
 echo ' bereikt wordt. ';
 echo 'De individuele Account Minimum Limiet wordt gewist wanneer de ';
-echo aphp('config', ['active_tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
+echo aphp('config', ['tab' => 'balance'], 'Minimum Systeemslimiet') . ' ';
 echo 'bereikt of onderschreden wordt.</p>';
 echo '<p>Wanneer geen Minimum Systeemslimiet is ingesteld, ';
 echo 'dan blijft de individuele Account Minimum Limiet bij elke ';
@@ -69,7 +69,7 @@ echo 'blijven altijd ongewijzigd.</p>';
 echo '<p>Wanneer de Automatische Minimum Limiet systematisch ';
 echo 'voor instappende leden gebruikt wordt, is het ';
 echo 'nuttig de ';
-echo aphp('config', ['active_tab' => 'balance'], 'Preset Individuele Account Minimum Limiet');
+echo aphp('config', ['tab' => 'balance'], 'Preset Individuele Account Minimum Limiet');
 echo ' ';
 echo 'in te vullen in de instellingen.</p>';
 

@@ -8,9 +8,9 @@ use util\cnst_config;
 $setting = $_GET['edit'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;
 
-$active_tab = 'balance';
-$active_tab = $_GET['active_tab'] ?? $active_tab;
-$active_tab = $_POST['active_tab'] ?? $active_tab;
+$active_tab = 'systemname';
+$active_tab = $_GET['tab'] ?? $active_tab;
+$active_tab = $_POST['tab'] ?? $active_tab;
 
 if (!isset(cnst_config::TAB_PANES[$active_tab]))
 {
@@ -336,7 +336,7 @@ foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
 	echo $tab_id === $active_tab ? ' class="active"' : '';
 	echo '>';
 	echo aphp('config',
-		['active_tab' => $tab_id],
+		['tab' => $tab_id],
 		$tab_pane_data['lbl'], false, false, false,
 		['role'	=> 'tab']);
 	echo '</li>';
@@ -720,7 +720,7 @@ echo '</ul>';
 
 echo '<div class="panel-heading">';
 
-echo '<input type="hidden" name="active_tab" value="' . $active_tab . '">';
+echo '<input type="hidden" name="tab" value="' . $active_tab . '">';
 
 echo '<input type="submit" class="btn btn-primary" ';
 echo 'value="Aanpassen" name="' . $active_tab . '_submit">';
@@ -741,9 +741,9 @@ echo '</div>';
 
 include __DIR__ . '/include/footer.php';
 
-function cancel(string $active_tab):void
+function cancel(string $tab):void
 {
-	header('Location: ' . generate_url('config', ['active_tab' => $active_tab]));
+	header('Location: ' . generate_url('config', ['tab' => $tab]));
 	exit;
 }
 

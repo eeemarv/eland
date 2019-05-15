@@ -2258,7 +2258,7 @@ if ($add || $edit)
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
 		echo aphp('config',
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Minimum Systeemslimiet');
 		echo ' ';
 		echo 'van toepassing. ';
@@ -2282,7 +2282,7 @@ if ($add || $edit)
 		echo 'gebruiker vooraf ingevuld met de "';
 		echo aphp(
 			'config',
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Preset Individuele Minimum Account Limiet'
 		);
 		echo '" ';
@@ -2319,7 +2319,7 @@ if ($add || $edit)
 		echo 'dan is de algemeen geldende ';
 		echo aphp(
 			'config',
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Maximum Systeemslimiet'
 		);
 		echo ' ';
@@ -2344,7 +2344,7 @@ if ($add || $edit)
 		echo 'vooraf ingevuld wanneer "';
 		echo aphp(
 			'config',
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Preset Individuele Maximum Account Limiet'
 		);
 		echo '" ';
