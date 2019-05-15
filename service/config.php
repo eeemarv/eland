@@ -3,6 +3,7 @@
 namespace service;
 
 use service\xdb;
+use util\cnst_config;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
 
@@ -12,29 +13,6 @@ class config
 	protected $xdb;
 	protected $predis;
 	protected $is_cli;
-
-	protected $default = [
-		'preset_minlimit'					=> '',
-		'preset_maxlimit'					=> '',
-		'users_can_edit_username'			=> '0',
-		'users_can_edit_fullname'			=> '0',
-		'registration_en'					=> '0',
-		'registration_top_text'				=> '',
-		'registration_bottom_text'			=> '',
-		'registration_success_text'			=> '',
-		'registration_success_url'			=> '',
-		'forum_en'							=> '0',
-		'news_order_asc'					=> '0',
-		'css'								=> '0',
-		'msgs_days_default'					=> '365',
-		'balance_equilibrium'				=> '0',
-		'date_format'						=> '%e %b %Y, %H:%M:%S',
-		'periodic_mail_block_ary'			=> '+messages.recent',
-		'default_landing_page'				=> 'messages',
-		'homepage_url'						=> '',
-		'template_lets'						=> '1',
-		'interlets_en'						=> '1',
-	];
 
 	public function __construct(
 		db $db,
@@ -93,9 +71,9 @@ class config
 		{
 			$value = $row['data']['value'];
 		}
-		else if (isset($this->default[$key]))
+		else if (isset(cnst_config::INPUTS[$key]['default']))
 		{
-			$value = $this->default[$key];
+			$value = cnst_config::INPUTS[$key]['default'];
 		}
 
 		if (isset($value))
@@ -103,6 +81,10 @@ class config
 			$this->predis->set($redis_key, $value);
 			$this->predis->expire($redis_key, 2592000);
 			$this->local_cache[$schema][$key] = $value;
+		}
+		else
+		{
+			$value = '';
 		}
 
 		return $value;
