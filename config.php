@@ -328,7 +328,7 @@ $fa = 'gears';
 include __DIR__ . '/include/header.php';
 
 echo '<div>';
-echo '<ul class="nav nav-pills" role="tablist">';
+echo '<ul class="nav nav-pills">';
 
 foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
 {
@@ -337,20 +337,11 @@ foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
 	echo '>';
 	echo aphp('config',
 		['tab' => $tab_id],
-		$tab_pane_data['lbl'], false, false, false,
-		['role'	=> 'tab']);
+		$tab_pane_data['lbl']);
 	echo '</li>';
 }
 
 echo '</ul>';
-
-echo '<div class="tab-content">';
-
-echo '<div role="tabpanel" ';
-echo 'class="tab-pane active" ';
-echo 'id="';
-echo $active_tab;
-echo '">';
 
 echo '<form method="post">';
 
@@ -733,10 +724,6 @@ echo '</div>';
 
 echo '</form>';
 
-echo '</div>';
-
-
-echo '</div>';
 echo '</div>';
 
 include __DIR__ . '/include/footer.php';
