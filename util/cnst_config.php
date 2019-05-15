@@ -385,36 +385,6 @@ class cnst_config
 
     const TAB_PANES = [
 
-        'balance'		=> [
-            'lbl'		=> 'Saldo',
-            'inputs'	=> [
-                'minlimit'	=> true,
-                'maxlimit'	=> true,
-                'preset_minlimit'	=> true,
-                'preset_maxlimit'	=> true,
-                'balance_equilibrium'	=> true,
-            ],
-        ],
-
-        'messages'		=> [
-            'lbl'		=> 'Vraag en aanbod',
-            'inputs'	=> [
-
-                'msgs_days_default'	=> true,
-
-                'li_1'	=> [
-                    'inline' => '%input(msgcleanupenabled)% Ruim vervallen
-                        vraag en aanbod op na %input(msgexpcleanupdays)% dagen.',
-                ],
-
-                'li_2'	=> [
-                    'inline' => '%input(msgexpwarnenabled)% Mail een notificatie
-                        naar de eigenaar van een vraag of aanbod bericht op
-                        het moment dat het vervalt.',
-                ],
-            ],
-        ],
-
         'systemname'	=> [
             'lbl'	=> 'Systeemsnaam',
             'inputs' => [
@@ -445,6 +415,17 @@ class cnst_config
                 'newsadmin'	=> true,
                 'support'	=> true,
             ]
+        ],
+
+        'balance'		=> [
+            'lbl'		=> 'Saldo',
+            'inputs'	=> [
+                'minlimit'	=> true,
+                'maxlimit'	=> true,
+                'preset_minlimit'	=> true,
+                'preset_maxlimit'	=> true,
+                'balance_equilibrium'	=> true,
+            ],
         ],
 
         'saldomail'		=> [
@@ -510,21 +491,21 @@ class cnst_config
             ],
         ],
 
-        'news'	=> [
-            'lbl'	=> 'Nieuws',
+        'messages'		=> [
+            'lbl'		=> 'Vraag en aanbod',
             'inputs'	=> [
-                'li_1'	=> [
-                    'inline' => '%input(news_order_asc)% Sorteer nieuwsberichten
-                        chronologisch op agendadatum.',
-                ],
-            ],
-        ],
 
-        'forum'	=> [
-            'lbl'	=> 'Forum',
-            'inputs'	=> [
+                'msgs_days_default'	=> true,
+
                 'li_1'	=> [
-                    'inline' => '%input(forum_en)% Forum aan.',
+                    'inline' => '%input(msgcleanupenabled)% Ruim vervallen
+                        vraag en aanbod op na %input(msgexpcleanupdays)% dagen.',
+                ],
+
+                'li_2'	=> [
+                    'inline' => '%input(msgexpwarnenabled)% Mail een notificatie
+                        naar de eigenaar van een vraag of aanbod bericht op
+                        het moment dat het vervalt.',
                 ],
             ],
         ],
@@ -542,6 +523,25 @@ class cnst_config
                 'li_3' => [
                     'inline' => '%input(users_can_edit_fullname)% Leden
                         kunnen zelf hun Volledige Naam aanpassen.',
+                ],
+            ],
+        ],
+
+        'news'	=> [
+            'lbl'	=> 'Nieuws',
+            'inputs'	=> [
+                'li_1'	=> [
+                    'inline' => '%input(news_order_asc)% Sorteer nieuwsberichten
+                        chronologisch op agendadatum.',
+                ],
+            ],
+        ],
+
+        'forum'	=> [
+            'lbl'	=> 'Forum',
+            'inputs'	=> [
+                'li_1'	=> [
+                    'inline' => '%input(forum_en)% Forum aan.',
                 ],
             ],
         ],
