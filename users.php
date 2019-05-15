@@ -2263,7 +2263,7 @@ if ($add || $edit)
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
 		echo $app['link']->link('config', $app['pp_ary'],
-			['active_tab' => 'balance'], 'Minimum Systeemslimiet', []);
+			['tab' => 'balance'], 'Minimum Systeemslimiet', []);
 		echo ' ';
 		echo 'van toepassing. ';
 
@@ -2285,7 +2285,7 @@ if ($add || $edit)
 		echo 'Dit veld wordt bij aanmaak van een ';
 		echo 'gebruiker vooraf ingevuld met de "';
 		echo $app['link']->link('config', $app['pp_ary'],
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Preset Individuele Minimum Account Limiet',
 			[]);
 		echo '" ';
@@ -2321,7 +2321,7 @@ if ($add || $edit)
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
 		echo $app['link']->link('config', $app['pp_ary'],
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Maximum Systeemslimiet',
 			[]);
 		echo ' ';
@@ -2345,7 +2345,7 @@ if ($add || $edit)
 		echo 'Dit veld wordt bij aanmaak van een gebruiker ';
 		echo 'vooraf ingevuld wanneer "';
 		echo $app['link']->link('config', $app['pp_ary'],
-			['active_tab' => 'balance'],
+			['tab' => 'balance'],
 			'Preset Individuele Maximum Account Limiet',
 			[]);
 		echo '" ';
