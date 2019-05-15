@@ -420,6 +420,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 	else
 	{
 		$input = cnst_config::INPUTS[$pane_input_name];
+		$input_name = $pane_input_name;
 	}
 
 	if (isset($input['cond']) && !$input['cond'])
@@ -432,7 +433,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 	if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
 	{
 		echo '<input type="hidden" value="';
-		echo $config[$name];
+		echo $config[$input_name];
 		echo '" ';
 		echo 'data-max-inputs="';
 		echo $input['max_inputs'];
@@ -456,40 +457,38 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 
 		$inline_input_names = get_tag_ary('input', $input['inline']);
 
-		foreach ($inline_input_names as $inline_name)
+		foreach ($inline_input_names as $inline_input_name)
 		{
-			error_log($inline_name);
-
-			$inline_input = cnst_config::INPUTS[$inline_name];
+			$inline_input_data = cnst_config::INPUTS[$inline_input_name];
 
 			$str = '<input type="';
-			$str .= $inline_input['type'] ?? 'text';
+			$str .= $inline_input_data['type'] ?? 'text';
 			$str .= '" name="';
-			$str .= $inline_name;
+			$str .= $inline_input_name;
 			$str .= '"';
 
 			if (!$id_for_label)
 			{
-				$id_for_label = 'inline_id_' . $inline_name;
+				$id_for_label = 'inline_id_' . $inline_input_name;
 				$str .= ' id="' . $id_for_label . '"';
 			}
 
-			if ($inline_input['type'] == 'checkbox')
+			if ($inline_input_data['type'] == 'checkbox')
 			{
 				$str .= ' value="1"';
-				$str .= $config[$inline_name] ? ' checked="checked"' : '';
+				$str .= $config[$inline_input_name] ? ' checked="checked"' : '';
 			}
 			else
 			{
 				$str .= ' class="sm-size"';
 				$str .= ' value="';
-				$str .= $config[$inline_name];
+				$str .= $config[$inline_input_name];
 				$str .= '"';
 			}
 
-			if (isset($inline_input['attr']))
+			if (isset($inline_input_data['attr']))
 			{
-				foreach ($inline_input['attr'] as $attr_name => $attr_value)
+				foreach ($inline_input_data['attr'] as $attr_name => $attr_value)
 				{
 					$str .= ' ';
 					$str .= $attr_name;
@@ -499,7 +498,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 				}
 			}
 
-			$str .= isset($inline_input['required']) ? ' required' : '';
+			$str .= isset($inline_input_data['required']) ? ' required' : '';
 
 			$str .= '>';
 
@@ -518,8 +517,6 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 			echo $id_for_label;
 			echo '">';
 		}
-
-		error_log(json_encode($replace_inline_ary));
 
 		echo strtr($input['inline'], $replace_inline_ary);
 
@@ -684,7 +681,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 				foreach ($input['attr'] as $attr_name => $attr_value)
 				{
 					echo ' ' . $attr_name . '="';
-					echo strtr($attr_ary, $attr_replace_ary);
+					echo strtr($attr_value, $attr_replace_ary);
 					echo '"';
 				}
 			}
@@ -700,7 +697,9 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 			echo '" class="form-control" ';
 			echo 'name="' . $input_name . $name_suffix . '" ';
 			echo 'id="' . $input_name . $name_suffix . '" ';
-			echo 'value="' . $config[$input_name] . '"';
+			echo 'value="';
+			echo $config[$input_name];
+			echo'"';
 
 			echo isset($input['attr']['maxlength']) ? '' : ' maxlength="60"';
 			echo isset($input['attr']['minlength']) ? '' : ' minlength="1"';
