@@ -25,6 +25,8 @@ $cond_ary = [
 	'config_template_lets'	=> true,
 ];
 
+$block_ary = cnst_config::BLOCK_ARY;
+
 if (!$app['config']->get('forum_en', $app['tschema']))
 {
 	unset($block_ary['periodic_mail']['forum']);
@@ -498,9 +500,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 			$active[] = $block;
 		}
 
-		$block_ary = cnst_config::BLOCK_ARY[$input['block_ary']];
-
-		foreach ($block_ary as $block => $options)
+		foreach ($block_ary[$input['block_ary']] as $block => $options)
 		{
 			if (!isset($v_options[$block]))
 			{
@@ -535,7 +535,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 		echo '<ul id="list_active" class="list-group">';
 
 		echo get_sortable_items_str(
-			$block_ary,
+			$block_ary[$input['block_ary']],
 			$v_options,
 			$active,
 			'bg-success');
@@ -561,7 +561,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 		echo '<ul id="list_inactive" class="list-group">';
 
 		echo get_sortable_items_str(
-			$block_ary,
+			$block_ary[$input['block_ary']],
 			$v_options,
 			$inactive,
 			'bg-danger');
