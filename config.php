@@ -12,10 +12,6 @@ $active_tab = 'balance';
 $active_tab = $_GET['active_tab'] ?? $active_tab;
 $active_tab = $_POST['active_tab'] ?? $active_tab;
 
-$block_ary = [
-	'periodic_mail'	=> cnst_config::PERIODIC_MAIL_BLOCK_ARY,
-];
-
 $cond_ary = [
 	'config_template_lets'	=> true,
 ];
@@ -423,7 +419,8 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 		$input_name = $pane_input_name;
 	}
 
-	if (isset($input['cond']) && !$input['cond'])
+	if (isset($input['cond']) &&
+	!isset($cond_ary[$input['cond']]))
 	{
 		continue;
 	}
@@ -527,7 +524,9 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 
 		echo '</p>';
 	}
-	else if (isset($input['type']) && $input['type'] === 'sortable')
+	else if (isset($input['type'])
+		&& $input['type'] === 'sortable'
+		&& isset($input['block_ary']))
 	{
 		$v_options = $active = $inactive = [];
 		$value_ary = explode(',', ltrim($config[$input_name], '+ '));
@@ -539,7 +538,9 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 			$active[] = $block;
 		}
 
-		foreach ($input['ary'] as $block => $options)
+		$block_ary = cnst_config::BLOCK_ARY[$input['block_ary']];
+
+		foreach ($block_ary as $block => $options)
 		{
 			if (!isset($v_options[$block]))
 			{
@@ -574,7 +575,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 		echo '<ul id="list_active" class="list-group">';
 
 		echo get_sortable_items_str(
-			$input['ary'],
+			$block_ary,
 			$v_options,
 			$active,
 			'bg-success');
@@ -600,7 +601,7 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 		echo '<ul id="list_inactive" class="list-group">';
 
 		echo get_sortable_items_str(
-			$input['ary'],
+			$block_ary,
 			$v_options,
 			$inactive,
 			'bg-danger');
@@ -612,8 +613,14 @@ foreach ($pane['inputs'] as $pane_input_name => $pane_input_value)
 
 		echo '</div>'; // row
 
-		echo '<input type="hidden" name="' . $input_name . '" ';
-		echo 'value="' . $config[$input_name] . '" id="' . $input_name . '">';
+		echo '<input type="hidden" name="';
+		echo $input_name;
+		echo '" ';
+		echo 'value="';
+		echo $config[$input_name];
+		echo '" id="';
+		echo $input_name;
+		echo '">';
 	}
 	else
 	{

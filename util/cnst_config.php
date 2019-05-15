@@ -24,33 +24,35 @@ class cnst_config
         'news'			=> 'Nieuws',
     ];
 
-    const PERIODIC_MAIL_BLOCK_ARY = [
-        'messages'		=> [
-            'recent'	=> 'Recent vraag en aanbod',
-        ],
-        'interlets'		=> [
-            'recent'	=> 'Recent interSysteem vraag en aanbod',
-        ],
-        'forum'			=> [
-            'recent'	=> 'Recente forumberichten',
-        ],
-        'news'			=> [
-            'all'		=> 'Alle nieuwsberichten',
-            'recent'	=> 'Recente nieuwsberichten',
-        ],
-        'docs'			=> [
-            'recent'	=> 'Recente documenten',
-        ],
-        'new_users'		=> [
-            'all'		=> 'Alle nieuwe leden',
-            'recent'	=> 'Recente nieuwe leden',
-        ],
-        'leaving_users'	=> [
-            'all'		=> 'Alle uitstappende leden',
-            'recent'	=> 'Recent uitstappende leden',
-        ],
-        'transactions' => [
-            'recent'	=> 'Recente transacties',
+    const BLOCK_ARY = [
+        'periodic_mail' => [
+            'messages'		=> [
+                'recent'	=> 'Recent vraag en aanbod',
+            ],
+            'interlets'		=> [
+                'recent'	=> 'Recent interSysteem vraag en aanbod',
+            ],
+            'forum'			=> [
+                'recent'	=> 'Recente forumberichten',
+            ],
+            'news'			=> [
+                'all'		=> 'Alle nieuwsberichten',
+                'recent'	=> 'Recente nieuwsberichten',
+            ],
+            'docs'			=> [
+                'recent'	=> 'Recente documenten',
+            ],
+            'new_users'		=> [
+                'all'		=> 'Alle nieuwe leden',
+                'recent'	=> 'Recente nieuwe leden',
+            ],
+            'leaving_users'	=> [
+                'all'		=> 'Alle uitstappende leden',
+                'recent'	=> 'Recent uitstappende leden',
+            ],
+            'transactions' => [
+                'recent'	=> 'Recente transacties',
+            ],
         ],
     ];
 
@@ -228,8 +230,8 @@ class cnst_config
                 de laatste periodieke overzichtsmail".',
             'lbl_active' 		=> 'Inhoud',
             'lbl_inactive'		=> 'Niet gebruikte blokken',
-            'ary'				=> 'periodic_mail',
-            'default'		=> '+messages.recent',
+            'block_ary'			=> 'periodic_mail',
+            'default'		    => '+messages.recent',
         ],
 
         'contact_form_en' => [
