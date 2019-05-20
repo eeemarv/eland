@@ -970,8 +970,8 @@ if ($add)
 	$systems_en = count($systems) > 1
 		&& $app['config']->get('currencyratio', $app['tschema']) > 0;
 
-	$h1 = 'Nieuwe transactie';
-	$fa = 'exchange';
+	$app['h1']->add('Nieuwe transactie');
+	$app['h1']->fa('exchange');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1420,8 +1420,8 @@ if ($edit)
 		$app['alert']->error($errors);
 	}
 
-	$h1 = 'Omschrijving transactie aanpassen';
-	$fa = 'exchange';
+	$app['h1']->add('Omschrijving transactie aanpassen');
+	$app['h1']->fa('exchange');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1604,8 +1604,8 @@ if ($id)
 	$app['btn_nav']->nav_list('transactions', $app['pp_ary'],
 		[], 'Lijst', 'exchange');
 
-	$h1 = 'Transactie';
-	$fa = 'exchange';
+	$app['h1']->add('Transactie');
+	$app['h1']->fa('exchange');
 
 	include __DIR__ . '/include/header.php';
 
@@ -2213,28 +2213,28 @@ if (isset($filter['uid']))
 {
 	if ($s_owner && !$app['p_inline'])
 	{
-		$h1 = 'Mijn transacties';
+		$app['h1']->add('Mijn transacties');
 	}
 	else
 	{
-		$h1 = $app['link']->link_no_attr('transactions', $app['pp_ary'],
-			['f' => ['uid' => $filter['uid']]], 'Transacties');
+		$app['h1']->add($app['link']->link_no_attr('transactions', $app['pp_ary'],
+			['f' => ['uid' => $filter['uid']]], 'Transacties'));
 
-		$h1 .= ' van ';
-		$h1 .= link_user($filter['uid'], $app['tschema']);
+		$app['h1']->add(' van ');
+		$app['h1']->add(link_user($filter['uid'], $app['tschema']));
 	}
 }
 else
 {
-	$h1 = 'Transacties';
-	$h1 .= $filtered ? ' <small>Gefilterd</small>' : '';
+	$app['h1']->add('Transacties');
+	$app['h1']->add_filtered($filtered);
 }
 
-$fa = 'exchange';
+$app['h1']->fa('exchange');
 
 if (!$app['p_inline'])
 {
-	$h1 .= btn_filter();
+	$app['h1']->btn_filter();
 
 	$app['assets']->add([
 		'datepicker',

@@ -108,8 +108,8 @@ else if (!$app['config']->get('support', $app['tschema']))
 	$app['alert']->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
 }
 
-$h1 = 'Help / Probleem melden';
-$fa = 'ambulance';
+$app['h1']->add('Help / Probleem melden');
+$app['h1']->fa('ambulance');
 
 require_once __DIR__ . '/include/header.php';
 

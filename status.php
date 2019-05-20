@@ -147,8 +147,8 @@ if (count($no_msgs_users))
 	$status_msgs = true;
 }
 
-$h1 = 'Status';
-$fa = 'exclamation-triangle';
+$app['h1']->add('Status');
+$app['h1']->fa('exclamation-triangle');
 
 include __DIR__ . '/include/header.php';
 

@@ -292,8 +292,8 @@ if ($submit)
 	}
 }
 
-$h1 = 'Inschrijven';
-$fa = 'check-square-o';
+$app['h1']->add('Inschrijven');
+$app['h1']->fa('check-square-o');
 
 require_once __DIR__ . '/include/header.php';
 

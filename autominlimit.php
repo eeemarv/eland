@@ -42,8 +42,8 @@ else
 	}
 }
 
-$h1 = 'Automatische minimum limiet';
-$fa = 'arrows-v';
+$app['h1']->add('Automatische minimum limiet');
+$app['h1']->fa('arrows-v');
 
 include __DIR__ . '/include/header.php';
 

@@ -3,7 +3,7 @@
 $app['page_access'] = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$fa = 'comments-o';
+$app['h1']->fa('comments-o');
 
 $topic = $_GET['t'] ?? false;
 $del = $_GET['del'] ?? false;
@@ -201,15 +201,15 @@ if ($del)
 {
 	if (isset($forum_post['parent_id']))
 	{
-		$h1 = 'Reactie';
+		$app['h1']->add('Reactie');
 		$t = $forum_post['parent_id'];
 	}
 	else
 	{
 		$t = $forum_post['id'];
-		$h1 = 'Forum onderwerp ';
-		$h1 .= $app['link']->link_no_attr('forum',
-			$app['pp_ary'], ['t' => $t], $forum_post['subject']);
+		$app['h1']->add('Forum onderwerp ');
+		$app['h1']->add($app['link']->link_no_attr('forum',
+			$app['pp_ary'], ['t' => $t], $forum_post['subject']));
 	}
 
 	$h1 .= ' verwijderen?';
@@ -263,11 +263,11 @@ if ($add || $edit)
 
 	if ($edit)
 	{
-		$h1 = $topic ? 'Reactie aanpassen' : 'Forum onderwerp aanpassen';
+		$app['h1']->add($topic ? 'Reactie aanpassen' : 'Forum onderwerp aanpassen');
 	}
 	else
 	{
-		$h1 = $topic ? 'Nieuwe reactie' : 'Nieuw forum onderwerp';
+		$app['h1']->add($topic ? 'Nieuwe reactie' : 'Nieuw forum onderwerp');
 	}
 
 	include __DIR__ . '/include/header.php';
@@ -436,7 +436,7 @@ if ($topic)
 
 	$app['assets']->add(['summernote', 'rich_edit.js']);
 
-	$h1 = $topic_post['subject'];
+	$app['h1']->add($topic_post['subject']);
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -566,7 +566,7 @@ $show_visibility = (!$app['s_guest']
 	&& $app['config']->get('interlets_en', $app['tschema']))
 	|| $app['s_admin'];
 
-$h1 = 'Forum';
+$app['h1']->add('Forum');
 
 require_once __DIR__ . '/include/header.php';
 

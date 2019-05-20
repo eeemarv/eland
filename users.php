@@ -383,14 +383,14 @@ if ($img_del && $id)
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
-	$h1 = 'Profielfoto ';
+	$app['h1']->add('Profielfoto ');
 
 	if ($app['s_admin'])
 	{
-		$h1 .= 'van ' . link_user($id, $app['tschema']) . ' ';
+		$app['h1']->add('van ' . link_user($id, $app['tschema']) . ' ');
 	}
 
-	$h1 .= 'verwijderen?';
+	$app['h1']->add('verwijderen?');
 
 	include __DIR__ . '/include/header.php';
 
@@ -894,9 +894,14 @@ if ($pw)
 		'generate_password.js',
 	]);
 
-	$h1 = 'Paswoord aanpassen';
-	$h1 .= $s_owner ? '' : ' voor ' . link_user($user, $app['tschema']);
-	$fa = 'key';
+	$app['h1']->add('Paswoord aanpassen');
+
+	if (!$s_owner)
+	{
+		$app['h1']->add('voor ' . link_user($user, $app['tschema']));
+	}
+
+	$app['h1']->fa('key');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1152,10 +1157,10 @@ if ($del)
 		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
-	$h1 = 'Gebruiker ';
-	$h1 .= link_user($del, $app['tschema']);
-	$h1 .= ' verwijderen?';
-	$fa = 'user';
+	$app['h1']->add('Gebruiker ');
+	$app['h1']->add(link_user($del, $app['tschema']));
+	$app['h1']->add(' verwijderen?');
+	$app['h1']->fa('user');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1954,10 +1959,17 @@ if ($add || $edit)
 		'typeahead.js',
 	]);
 
-	$h1 = 'Gebruiker ';
-	$h1 .= $edit ? 'aanpassen: ' . link_user($user, $app['tschema']) : 'toevoegen';
-	$h1 = ($s_owner && !$app['s_admin'] && $edit) ? 'Je profiel aanpassen' : $h1;
-	$fa = 'user';
+	if ($s_owner && !$app['s_admin'] && $edit)
+	{
+		$app['h1']->add('Je profiel aanpassen');
+	}
+	else
+	{
+		$app['h1']->add('Gebruiker ');
+		$app['h1']->add($edit ? 'aanpassen: ' . link_user($user, $app['tschema']) : 'toevoegen');
+	}
+
+	$app['h1']->fa('user');
 
 	include __DIR__ . '/include/header.php';
 
@@ -2725,8 +2737,12 @@ if ($id)
 	$h_status_ary = cnst::STATUS_ARY;
 	$h_status_ary[3] = 'Instapper';
 
-	$h1 = $s_owner && !$app['s_admin'] ? 'Mijn gegevens: ' : '';
-	$h1 .= link_user($user, $app['tschema']);
+	if ($s_owner && !$app['s_admin'])
+	{
+		$app['h1']->add('Mijn gegevens: ');
+	}
+
+	$app['h1']->add(link_user($user, $app['tschema']));
 
 	if ($status != 1)
 	{
@@ -2755,7 +2771,7 @@ if ($id)
 		}
 	}
 
-	$fa = 'user';
+	$app['h1']->fa('user');
 
 	include __DIR__ . '/include/header.php';
 
@@ -3615,11 +3631,11 @@ if ($app['s_admin'])
 		$app['btn_top']->local('#actions', 'Bulk acties', 'envelope-o');
 	}
 
-	$h1 = 'Gebruikers';
+	$app['h1']->add('Gebruikers');
 }
 else
 {
-	$h1 = 'Leden';
+	$app['h1']->add('Leden');
 }
 
 if ($v_list)
@@ -3639,7 +3655,7 @@ $app['btn_nav']->view('users', $app['pp_ary'],
 	array_merge($params, ['view' => 'map']),
 	'Kaart', 'map-marker', $v_map);
 
-$fa = 'users';
+$app['h1']->fa('users');
 
 if ($v_list)
 {

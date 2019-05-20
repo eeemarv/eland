@@ -211,9 +211,9 @@ if ($add || $edit)
 		}
 	}
 
-	$h1 = 'InterSysteem ';
-	$h1 .= $edit ? 'aanpassen' : 'toevoegen';
-	$fa = 'share-alt';
+	$app['h1']->add('InterSysteem ');
+	$app['h1']->add($edit ? 'aanpassen' : 'toevoegen');
+	$app['h1']->fa('share-alt');
 
 	include __DIR__ . '/include/header.php';
 
@@ -393,8 +393,8 @@ if ($del)
 		$app['alert']->error('InterSysteem niet verwijderd.');
 	}
 
-	$h1 = 'InterSysteem verwijderen: ' . $group['groupname'];
-	$fa = 'share-alt';
+	$app['h1']->add('InterSysteem verwijderen: ' . $group['groupname']);
+	$app['h1']->fa('share-alt');
 
 	include __DIR__ . '/include/header.php';
 
@@ -454,9 +454,9 @@ if ($id)
 
 	$app['assets']->add(['elas_soap_status.js']);
 
-	$h1 = 'InterSysteem: ';
-	$h1 .= $group['groupname'];
-	$fa = 'share-alt';
+	$app['h1']->add('InterSysteem: ');
+	$app['h1']->add($group['groupname']);
+	$app['h1']->fa('share-alt');
 
 	include __DIR__ . '/include/header.php';
 
@@ -643,8 +643,8 @@ foreach ($interlets_users as $u)
 $app['btn_top']->add('intersystem', $app['pp_ary'],
 	['add' => 1], 'InterSysteem toevoegen');
 
-$h1 = 'eLAS/eLAND InterSysteem';
-$fa = 'share-alt';
+$app['h1']->add('eLAS/eLAND InterSysteem');
+$app['h1']->fa('share-alt');
 
 include __DIR__ . '/include/header.php';
 

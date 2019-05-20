@@ -82,8 +82,8 @@ if ($add)
 
 	$id_parent = $cat['id_parent'] ?? 0;
 
-	$h1 = 'Categorie toevoegen';
-	$fa = 'clone';
+	$app['h1']->add('Categorie toevoegen');
+	$app['h1']->fa('clone');
 
 	include __DIR__ . '/include/header.php';
 
@@ -221,9 +221,9 @@ if ($edit)
 
 	$id_parent = $cat['id_parent'] ?? 0;
 
-
-	$h1 = 'Categorie aanpassen : ' . $cat['name'];
-	$fa = 'clone';
+	$app['h1']->add('Categorie aanpassen : ');
+	$app['h1']->add($cat['name']);
+	$app['h1']->fa('clone');
 
 	include __DIR__ . '/include/header.php';
 
@@ -293,8 +293,9 @@ if ($del)
 		from ' . $app['tschema'] . '.categories
 		where id = ?', [$del]);
 
-	$h1 = 'Categorie verwijderen : ' . $fullname;
-	$fa = 'clone';
+	$app['h1']->add('Categorie verwijderen : ');
+	$app['h1']->add($fullname);
+	$app['h1']->fa('clone');
 
 	include __DIR__ . '/include/header.php';
 
@@ -339,8 +340,8 @@ foreach ($cats as $cat)
 $app['btn_top']->add('categories',
 	$app['pp_ary'], ['add' => '1'], 'Categorie toevoegen');
 
-$h1 = 'Categorieën';
-$fa = 'clone';
+$app['h1']->add('Categorieën');
+$app['h1']->fa('clone');
 
 include __DIR__ . '/include/header.php';
 

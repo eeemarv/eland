@@ -505,6 +505,8 @@ if (isset($top_right))
 	echo '</div>';
 }
 
+echo $app['h1']->get();
+
 if (isset($h1))
 {
 	echo '<h1>';

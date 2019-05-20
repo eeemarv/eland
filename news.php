@@ -183,9 +183,9 @@ if ($add || $edit)
 		'datepicker',
 	]);
 
-	$h1 = 'Nieuwsbericht ';
-	$h1 .= $add ? 'toevoegen' : 'aanpassen';
-	$fa = 'calendar-o';
+	$app['h1']->add('Nieuwsbericht ');
+	$app['h1']->add($add ? 'toevoegen' : 'aanpassen');
+	$app['h1']->add('calendar-o');
 
 	include __DIR__ . '/include/header.php';
 
@@ -329,8 +329,8 @@ if ($del)
 	$news_access = $app['xdb']->get('news_access', $del,
 		$app['tschema'])['data']['access'];
 
-	$h1 = 'Nieuwsbericht ' . $news['headline'] . ' verwijderen?';
-	$fa = 'calendar-o';
+	$app['h1']->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
+	$app['h1']->add('calendar-o');
 
 	include __DIR__ . '/include/header.php';
 
@@ -553,8 +553,8 @@ if ($id)
 	$app['btn_nav']->nav_list('news', $app['pp_ary'],
 		[], 'Lijst', 'calendar-o');
 
-	$h1 = 'Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES);
-	$fa = 'calendar-o';
+	$app['h1']->add('Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES));
+	$app['h1']->add('calendar-o');
 
 	include __DIR__ . '/include/header.php';
 
@@ -665,7 +665,7 @@ if ($app['p_inline'])
 }
 else
 {
-	$h1 = 'Nieuws';
+	$app['h1']->add('Nieuws');
 
 	if ($app['s_admin'] && $v_list)
 	{
@@ -680,7 +680,7 @@ else
 		array_merge($params, ['view' => 'extended']),
 		'Lijst met omschrijvingen', 'th-list', $v_extended);
 
-	$fa = 'calendar-o';
+	$app['h1']->add('calendar-o');
 
 	include __DIR__ . '/include/header.php';
 }
