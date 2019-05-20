@@ -130,27 +130,31 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 		$app['alert']->error('Je hebt geen rechten
 			om een E-mail bericht naar een niet-actieve
 			gebruiker te sturen');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	if ($app['s_master'])
 	{
 		$app['alert']->error('Het master account kan
 			geen E-mail berichten versturen.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	if (!$app['s_schema'])
 	{
 		$app['alert']->error('Je hebt onvoldoende
 			rechten om een E-mail bericht te versturen.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	if (!$user_mail_content)
 	{
 		$app['alert']->error('Fout: leeg bericht. E-mail niet verzonden.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
@@ -159,7 +163,8 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 	{
 		$app['alert']->error('Fout: Je kan geen berichten naar andere gebruikers
 			verzenden als er geen E-mail adres is ingesteld voor je eigen account.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
@@ -209,7 +214,8 @@ if ($user_mail_submit && $id && $app['is_http_post'])
 	}
 
 	$app['alert']->success('E-mail bericht verzonden.');
-	cancel($id);
+
+	$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 }
 
 /*
@@ -344,7 +350,8 @@ if ($img_del && $id)
 	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om de foto te verwijderen.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
@@ -352,7 +359,8 @@ if ($img_del && $id)
 	if (!$user)
 	{
 		$app['alert']->error('De gebruiker bestaat niet.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
 	$file = $user['PictureFile'];
@@ -360,7 +368,8 @@ if ($img_del && $id)
 	if ($file == '' || !$file)
 	{
 		$app['alert']->error('De gebruiker heeft geen foto.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	if ($app['is_http_post'])
@@ -370,7 +379,8 @@ if ($img_del && $id)
 			['id' => $id]);
 		$app['user_cache']->clear($id, $app['tschema']);
 		$app['alert']->success('Profielfoto verwijderd.');
-		cancel($id);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$h1 = 'Profielfoto ';
@@ -532,7 +542,7 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 		$app['alert']->success('De zichtbaarheid van de
 			volledige naam werd aangepast.');
 
-		cancel();
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 	else if (['accountrole' => 1, 'status' => 1, 'comments' => 1,
 		'admincomment' => 1, 'minlimit' => 1, 'maxlimit' => 1][$bulk_field])
@@ -573,7 +583,8 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 		$app['intersystems']->clear_cache($app['s_schema']);
 
 		$app['alert']->success('Het veld werd aangepast.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 	else if (['adr_access' => 1, 'mail_access' => 1, 'tel_access' => 1, 'gsm_access' => 1][$bulk_field])
 	{
@@ -596,7 +607,8 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 			' for users ' . $users_log,
 			['schema' => $app['tschema']]);
 		$app['alert']->success('Het veld werd aangepast.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 	else if ($bulk_field == 'cron_saldo')
 	{
@@ -623,7 +635,8 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 		$app['intersystems']->clear_cache($app['s_schema']);
 
 		$app['alert']->success('Het veld werd aangepast.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 }
 
@@ -772,7 +785,7 @@ if ($app['s_admin']
 		$app['monolog']->debug('#bulk mail',
 			['schema' => $app['tschema']]);
 
-		cancel();
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 }
 
@@ -791,7 +804,8 @@ if ($pw)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om het
 			paswoord aan te passen voor deze gebruiker.');
-		cancel($pw);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $pw]);
 	}
 
 	if($submit)
@@ -859,7 +873,8 @@ if ($pw)
 						$app['alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
 					}
 				}
-				cancel($pw);
+
+				$app['link']->redirect('users', $app['pp_ary'], ['id' => $pw]);
 			}
 			else
 			{
@@ -945,13 +960,15 @@ if ($del)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten
 			om een gebruiker te verwijderen.');
-		cancel($del);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $del]);
 	}
 
 	if ($app['s_id'] == $del)
 	{
 		$app['alert']->error('Je kan jezelf niet verwijderen.');
-		cancel($del);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $del]);
 	}
 
 	if ($app['db']->fetchColumn('select id
@@ -960,7 +977,8 @@ if ($del)
 	{
 		$app['alert']->error('Een gebruiker met transacties
 			kan niet worden verwijderd.');
-		cancel($del);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $del]);
 	}
 
 	$user = $app['user_cache']->get($del, $app['tschema']);
@@ -968,7 +986,8 @@ if ($del)
 	if (!$user)
 	{
 		$app['alert']->error('De gebruiker bestaat niet.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
 	if ($submit)
@@ -976,7 +995,7 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel($del);
+			$app['link']->redirect('users', $app['pp_ary'], ['id' => $del]);
 		}
 
 		$verify = isset($_POST['verify']) ? true : false;
@@ -985,7 +1004,8 @@ if ($del)
 		{
 			$app['alert']->error('Het controle nazichts-vakje
 				is niet aangevinkt.');
-			cancel($del);
+
+			$app['link']->redirect('users', $app['pp_ary'], ['id' => $del]);
 		}
 
 		$usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $del . ']';
@@ -1129,7 +1149,7 @@ if ($del)
 
 		$app['intersystems']->clear_cache($app['s_schema']);
 
-		cancel();
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
 	$h1 = 'Gebruiker ';
@@ -1184,7 +1204,8 @@ if ($add || $edit)
 	{
 		$app['alert']->error('Je hebt geen rechten om
 			een gebruiker toe te voegen.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
 	$s_owner =  !$app['s_guest']
@@ -1197,7 +1218,8 @@ if ($add || $edit)
 	{
 		$app['alert']->error('Je hebt geen rechten om
 			deze gebruiker aan te passen.');
-		cancel($edit);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $edit]);
 	}
 
 	if ($app['s_admin'])
@@ -1629,7 +1651,7 @@ if ($add || $edit)
 
 					$app['intersystems']->clear_cache($app['s_schema']);
 
-					cancel($id);
+					$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 				}
 				else
 				{
@@ -1788,7 +1810,8 @@ if ($add || $edit)
 
 						$app['intersystems']->clear_cache($app['s_schema']);
 					}
-					cancel($edit);
+
+					$app['link']->redirect('users', $app['pp_ary'], ['id' => $edit]);
 				}
 				else
 				{
@@ -2464,8 +2487,8 @@ if ($add || $edit)
 
 	$btn = $edit ? 'primary' : 'success';
 
-	$canc = $edit ? ['id' => $edit] : ['status' => 'active'];
-	echo $app['link']->btn_cancel('users', $app['pp_ary'], $canc);
+	echo $app['link']->btn_cancel('users', $app['pp_ary'],
+		$edit ? ['id' => $edit] : ['status' => 'active']);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -2568,7 +2591,8 @@ if ($id)
 	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen toegang tot deze gebruiker.');
-		cancel();
+
+		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
 	if ($app['s_admin'])
@@ -3108,7 +3132,7 @@ if ($id)
 
 if (!$app['p_view'])
 {
-	cancel();
+	$app['link']->redirect('users', $app['pp_ary'], []);
 }
 
 $v_list = $app['p_view'] === 'list';
@@ -3120,7 +3144,7 @@ $params = [];
 
 if (!isset($st[$status]))
 {
-	cancel();
+	$app['link']->redirect('users', $app['pp_ary'], []);
 }
 
 if (isset($st[$status]['sql_bind']))
@@ -4768,23 +4792,6 @@ function get_contacts_str(array $contacts, string $abbrev):string
 	}
 
 	return $ret;
-}
-
-function cancel(int $id = 0):void
-{
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-	else
-	{
-		$params['status'] = 'active';
-	}
-
-	header('Location: ' . generate_url('users', $params));
-	exit;
 }
 
 function get_dd(string $str):string

@@ -14,7 +14,8 @@ if ($add)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+
+			$app['link']->redirect('type_contact', $app['pp_ary'], []);
 		}
 
 		$tc = [];
@@ -35,7 +36,7 @@ if ($add)
 				$app['alert']->error('Fout bij het opslaan');
 			}
 
-			cancel();
+			$app['link']->redirect('contact_types', $app['pp_ary'], []);
 		}
 
 		$app['alert']->error('Corrigeer één of meerdere velden.');
@@ -98,8 +99,7 @@ if ($edit)
 	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
 		$app['alert']->warning('Beschermd contact type.');
-
-		cancel();
+		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
 	if(isset($_POST['zend']))
@@ -107,7 +107,7 @@ if ($edit)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('contact_types', $app['pp_ary'], []);
 		}
 
 		$tc = [
@@ -126,8 +126,7 @@ if ($edit)
 				['id' => $edit]))
 			{
 				$app['alert']->success('Contact type aangepast.');
-
-				cancel();
+				$app['link']->redirect('contact_types', $app['pp_ary'], []);
 			}
 			else
 			{
@@ -199,7 +198,7 @@ if ($del)
 	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
 	{
 		$app['alert']->warning('Beschermd contact type.');
-		cancel();
+		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
 	if ($app['db']->fetchColumn('select id
@@ -209,7 +208,7 @@ if ($del)
 		$app['alert']->warning('Er is ten minste één contact
 			van dit contact type, dus kan het contact type
 			niet verwijderd worden.');
-		cancel();
+		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
 	if(isset($_POST['zend']))
@@ -217,7 +216,7 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('contact_types', $app['pp_ary'], []);
 		}
 
 		if ($app['db']->delete($app['tschema'] . '.type_contact', ['id' => $del]))
@@ -229,7 +228,7 @@ if ($del)
 			$app['alert']->error('Fout bij het verwijderen.');
 		}
 
-		cancel();
+		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
 	$h1 = 'Contact type verwijderen: ' . $ct['name'];
@@ -374,9 +373,3 @@ echo 'contact types waarvan contacten ';
 echo 'bestaan en beschermde contact types (*).</p>';
 
 include __DIR__ . '/include/footer.php';
-
-function cancel()
-{
-	header('Location: ' . generate_url('type_contact', []));
-	exit;
-}

@@ -262,13 +262,17 @@ if ($app['is_http_post'])
 	if (!count($posted_configs))
 	{
 		$app['alert']->warning('Geen gewijzigde waarden.');
-		cancel($active_tab);
+
+		$app['link']->redirect('config', $app['pp_ary'],
+			['tab' => $active_tab]);
 	}
 
 	if (count($errors))
 	{
 		$app['alert']->error($errors);
-		cancel($active_tab);
+
+		$app['link']->redirect('config', $app['pp_ary'],
+			['tab' => $active_tab]);
 	}
 
 	$execute_post_actions = [];
@@ -314,7 +318,8 @@ if ($app['is_http_post'])
 		$app['alert']->success('De instelling is aangepast.');
 	}
 
-	cancel($active_tab);
+	$app['link']->redirect('config', $app['pp_ary'],
+		['tab' => $active_tab]);
 }
 
 if (isset(cnst_config::TAB_PANES[$active_tab]['assets']))
@@ -728,12 +733,6 @@ echo '</form>';
 echo '</div>';
 
 include __DIR__ . '/include/footer.php';
-
-function cancel(string $tab):void
-{
-	header('Location: ' . generate_url('config', ['tab' => $tab]));
-	exit;
-}
 
 function get_sortable_items_str(
 	array $input_ary,

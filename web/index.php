@@ -149,6 +149,7 @@ function render_legacy(
     $app['request'] = $request;
     $app['pp_system'] = $system;
     $app['pp_role_short'] = $role_short;
+
     ob_start();
     require_once __DIR__ . '/../' . $name . '.php';
     return new Response(ob_get_clean());

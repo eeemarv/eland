@@ -382,7 +382,7 @@ if ($submit)
 			$app['alert']->success('Notificatie mails verzonden.');
 		}
 
-		cancel();
+		$app['link']->redirect('mass_transaction', $app['pp_ary'], []);
 	}
 }
 else
@@ -1016,10 +1016,4 @@ function mail_mass_transaction($mail_ary)
 	], 8000);
 
 	return true;
-}
-
-function cancel():void
-{
-	header('Location: ' . generate_url('mass_transaction', []));
-	exit;
 }

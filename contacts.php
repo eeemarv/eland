@@ -22,13 +22,13 @@ if ($del)
 		where c.id = ?', [$del])))
 	{
 		$app['alert']->error('Het contact bestaat niet.');
-		cancel();
+		$app['link']->redirect('contacts', $app['pp_ary'], []);
 	}
 
 	if ($uid && $uid != $user_id)
 	{
 		$app['alert']->error('uid in url is niet de eigenaar van contact.');
-		cancel();
+		$app['link']->redirect('contacts', $app['pp_ary'], []);
 	}
 
 	$user_id = $uid ? $uid : $user_id;
@@ -41,7 +41,7 @@ if ($del)
 	if (!($app['s_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je hebt geen rechten om het contact te verwijderen.');
-		cancel($uid);
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 	}
 
 	$contact = $app['db']->fetchAssoc('select c.*, tc.abbrev
@@ -63,7 +63,6 @@ if ($del)
 		{
 			$err = $s_owner ? 'je enige E-mail adres' : 'het enige E-mail adres van een actieve gebruiker';
 			$app['alert']->warning('Waarschuwing: dit is ' . $err);
-			//cancel($uid);
 		}
 	}
 
@@ -72,7 +71,7 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel($uid);
+			$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 		}
 
 		if ($app['db']->delete($app['tschema'] . '.contact', ['id' => $del]))
@@ -83,7 +82,8 @@ if ($del)
 		{
 			$app['alert']->error('Fout bij verwijderen van het contact.');
 		}
-		cancel($uid);
+
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 	}
 
 	$contact = $app['db']->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
@@ -162,14 +162,14 @@ if ($edit || $add)
 		{
 			$app['alert']->error('Dit contact heeft geen eigenaar
 				of bestaat niet.');
-			cancel();
+			$app['link']->redirect('contacts', $app['pp_ary'], []);
 		}
 
 		if ($uid && $uid != $user_id)
 		{
 			$app['alert']->error('uid in url is niet
 				de eigenaar van contact.');
-			cancel();
+			$app['link']->redirect('contacts', $app['pp_ary'], []);
 		}
 	}
 	else
@@ -186,9 +186,12 @@ if ($edit || $add)
 
 	if (!($app['s_admin'] || $s_owner))
 	{
-		$err = $edit ? 'dit contact aan te passen.' : 'een contact toe te voegen voor deze gebruiker.';
+		$err = $edit
+			? 'dit contact aan te passen.'
+			: 'een contact toe te voegen voor deze gebruiker.';
+
 		$app['alert']->error('Je hebt geen rechten om ' . $err);
-		cancel($uid);
+		$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 	}
 
 	if($submit)
@@ -348,7 +351,7 @@ if ($edit || $add)
 					$contact, ['id' => $edit]))
 				{
 					$app['alert']->success('Contact aangepast.');
-					cancel($uid);
+					$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 				}
 				else
 				{
@@ -360,7 +363,7 @@ if ($edit || $add)
 				if ($app['db']->insert($app['tschema'] . '.contact', $contact))
 				{
 					$app['alert']->success('Contact opgeslagen.');
-					cancel($uid);
+					$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 				}
 				else
 				{
@@ -1305,16 +1308,3 @@ echo '</div></div>';
 echo $app['pagination']->get();
 
 include __DIR__ . '/include/footer.php';
-
-function cancel(int $uid = 0):void
-{
-	if ($uid)
-	{
-		header('Location: ' . generate_url('users', ['id' => $uid]));
-	}
-	else
-	{
-		header('Location: ' . generate_url('contacts', []));
-	}
-	exit;
-}

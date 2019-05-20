@@ -24,15 +24,16 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('apikeys', $app['pp_ary'], []);
 		}
 
 		if ($app['db']->delete($app['tschema'] . '.apikeys',
 			['id' => $del]))
 		{
 			$app['alert']->success('Apikey verwijderd.');
-			cancel();
+			$app['link']->redirect('apikeys', $app['pp_ary'], []);
 		}
+
 		$app['alert']->error('Apikey niet verwijderd.');
 	}
 	$apikey = $app['db']->fetchAssoc('select *
@@ -83,7 +84,7 @@ if ($add)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('apikeys', $app['pp_ary'], []);
 		}
 
 		$apikey = [
@@ -95,8 +96,9 @@ if ($add)
 		if($app['db']->insert($app['tschema'] . '.apikeys', $apikey))
 		{
 			$app['alert']->success('Apikey opgeslagen.');
-			cancel();
+			$app['link']->redirect('apikeys', $app['pp_ary'], []);
 		}
+
 		$app['alert']->error('Apikey niet opgeslagen.');
 	}
 
@@ -206,12 +208,6 @@ echo '</table>';
 echo '</div></div>';
 
 include __DIR__ . '/include/footer.php';
-
-function cancel():void
-{
-	header('Location: ' . generate_url('apikeys', []));
-	exit;
-}
 
 function get_apikey_explain():string
 {

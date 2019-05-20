@@ -30,7 +30,7 @@ if ($add)
 	if ($app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
-		cancel();
+		$app['link']->redirect('transactions', $app['pp_ary'], []);
 	}
 
 	$transaction = [];
@@ -295,7 +295,7 @@ if ($add)
 				$app['alert']->error('Gefaalde transactie');
 			}
 
-			cancel();
+			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
 		else if ($group['apimethod'] == 'mail')
 		{
@@ -317,19 +317,17 @@ if ($add)
 				$app['alert']->error('Gefaalde interSysteem transactie');
 			}
 
-			cancel();
+			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
 			$app['alert']->error('InterSysteem ' . $group['groupname'] . ' heeft geen geldige Api Methode.' . $contact_admin);
-
-			cancel();
+			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
 		else if (!$group_domain)
 		{
 			$app['alert']->error('Geen URL ingesteld voor interSysteem ' . $group['groupname'] . '. ' . $contact_admin);
-
-			cancel();
+			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
 		else if (!$app['systems']->get_schema($group_domain))
 		{
@@ -389,7 +387,7 @@ if ($add)
 			if (count($errors))
 			{
 				$app['alert']->error($errors);
-				cancel();
+				$app['link']->redirect('transactions', $app['pp_ary'], []);
 			}
 
 			$trans = $transaction;
@@ -410,7 +408,7 @@ if ($add)
 			if ($error)
 			{
 				$app['alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-				cancel();
+				$app['link']->redirect('transactions', $app['pp_ary'], []);
 			}
 
 			$result = $client->call('dopayment', [
@@ -429,7 +427,7 @@ if ($add)
 			if ($error)
 			{
 				$app['alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-				cancel();
+				$app['link']->redirect('transactions', $app['pp_ary'], []);
 			}
 
 			if ($result == 'OFFLINE')
@@ -470,7 +468,7 @@ if ($add)
 			if (count($errors))
 			{
 				$app['alert']->error($errors);
-				cancel();
+				$app['link']->redirect('transactions', $app['pp_ary'], []);
 			}
 
 			$transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
@@ -496,7 +494,8 @@ if ($add)
 				$app['alert']->error('De lokale commit van de interSysteem
 					transactie is niet geslaagd. ' .
 					$contact_admin);
-				cancel();
+
+				$app['link']->redirect('transactions', $app['pp_ary'], []);
 			}
 
 			$transaction['id'] = $id;
@@ -505,7 +504,7 @@ if ($add)
 			$app['mail_transaction']->queue($transaction, $app['tschema']);
 
 			$app['alert']->success('De interSysteem transactie werd verwerkt.');
-			cancel();
+			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
 		else
 		{
@@ -761,7 +760,7 @@ if ($add)
 					->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
 				$app['alert']->success('InterSysteem transactie uitgevoerd.');
-				cancel();
+				$app['link']->redirect('transactions', $app['pp_ary'], []);
 			}
 		}
 
@@ -1366,7 +1365,7 @@ if ($edit)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om
 			een omschrijving van een transactie aan te passen.');
-		cancel($edit);
+		$app['link']->redirect('transactions', $app['pp_ary'], ['id' => $edit]);
 	}
 
 	if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
@@ -1374,7 +1373,7 @@ if ($edit)
 		$app['alert']->error('De omschrijving van een transactie
 			naar een interSysteem dat draait op eLAS kan
 			niet aangepast worden.');
-		cancel($edit);
+		$app['link']->redirect('transactions', $app['pp_ary'], ['id' => $edit]);
 	}
 
 	if ($submit)
@@ -1415,7 +1414,7 @@ if ($edit)
 
 			$app['alert']->success('Omschrijving transactie aangepast.');
 
-			cancel($id);
+			$app['link']->redirect('transactions', $app['pp_ary'], ['id' => $edit]);
 		}
 
 		$app['alert']->error($errors);
@@ -2721,19 +2720,6 @@ else
 	echo '</ul>';
 
 	include __DIR__ . '/include/footer.php';
-}
-
-function cancel(int $id = 0):void
-{
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-
-	header('Location: ' . generate_url('transactions', $params));
-	exit;
 }
 
 function get_valuation(string $schema):string

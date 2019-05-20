@@ -35,6 +35,17 @@ class link
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 	}
 
+	public function redirect(
+		string $route,
+		array $params_context,
+		array $params
+	):void
+	{
+		$redirect = $this->context_path($route, $params_context, $params);
+		header('Location: ' . $redirect);
+		exit;
+	}
+
 	public function link(
 		string $route,
 		array $params_context,

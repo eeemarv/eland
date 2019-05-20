@@ -25,7 +25,8 @@ if ($approve)
 	{
 		$app['alert']->error('Goedkeuren en publiceren nieuwsbericht mislukt.');
 	}
-	cancel($approve);
+
+	$app['link']->redirect('news', $app['pp_ary'], ['id' => $approve]);
 }
 
 /**
@@ -132,9 +133,11 @@ if ($add && $submit && !count($errors))
 			], 7000);
 
 			$app['alert']->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
-			cancel();
+			$app['link']->redirect('news', $app['pp_ary'], []);
+
 		}
-		cancel($id);
+
+		$app['link']->redirect('news', $app['pp_ary'], ['id' => $id]);
 	}
 	else
 	{
@@ -151,7 +154,7 @@ if ($edit && $submit && !count($errors))
 		], $app['tschema']);
 
 		$app['alert']->success('Nieuwsbericht aangepast.');
-		cancel($edit);
+		$app['link']->redirect('news', $app['pp_ary'], ['id' => $edit]);
 	}
 	else
 	{
@@ -305,7 +308,7 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('news', $app['pp_ary'], []);
 		}
 
 		if($app['db']->delete($app['tschema'] . '.news', ['id' => $del]))
@@ -313,7 +316,7 @@ if ($del)
 			$app['xdb']->del('news_access', $del, $app['tschema']);
 
 			$app['alert']->success('Nieuwsbericht verwijderd.');
-			cancel();
+			$app['link']->redirect('news', $app['pp_ary'], []);
 		}
 
 		$app['alert']->error('Nieuwsbericht niet verwijderd.');
@@ -490,7 +493,7 @@ if ($id)
 	if (!isset($news[$id]))
 	{
 		$app['alert']->error('Dit nieuwsbericht bestaat niet.');
-		cancel();
+		$app['link']->redirect('news', $app['pp_ary'], []);
 	}
 
 	$news_item = $news[$id];
@@ -498,13 +501,13 @@ if ($id)
 	if (!$app['s_admin'] && !$news_item['approved'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
-		cancel();
+		$app['link']->redirect('news', $app['pp_ary'], []);
 	}
 
 	if (isset($no_access_ary[$id]))
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
-		cancel();
+		$app['link']->redirect('news', $app['pp_ary'], []);
 	}
 
 	$next = $prev = $current_news = false;
@@ -637,7 +640,7 @@ if ($id)
 
 if (!($app['p_view'] || $app['p_inline']))
 {
-	cancel();
+	$app['link']->redirect('news', $app['pp_ary'], []);
 }
 
 $v_list = $app['p_view'] === 'list' || $app['p_inline'];
@@ -886,17 +889,4 @@ else if ($v_extended)
 if (!$app['p_inline'])
 {
 	include __DIR__ . '/include/footer.php';
-}
-
-function cancel(int $id = 0):void
-{
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-
-	header('Location: ' . generate_url('news', $params));
-	exit;
 }

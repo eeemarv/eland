@@ -18,7 +18,7 @@ $confirm_del = isset($_POST['confirm_del']) ? true : false;
 if (($confirm_del || $submit || $add || $edit || $del || $app['is_http_post'] || $map_edit) & !$app['s_admin'])
 {
 	$app['alert']->error('Je hebt onvoldoende rechten voor deze actie.');
-	cancel();
+	$app['link']->redirect('docs', $app['pp_ary'], []);
 }
 
 /**
@@ -37,7 +37,7 @@ if ($map_edit)
 	if (!$map_name)
 	{
 		$app['alert']->error('Map niet gevonden.');
-		cancel();
+		$app['link']->redirect('docs', $app['pp_ary'], []);
 	}
 
 	if ($submit)
@@ -46,7 +46,8 @@ if ($map_edit)
 		{
 			$app['alert']->error($error_token);
 
-			cancel($map_edit);
+			$app['link']->redirect('docs', $app['pp_ary'],
+				['map' => $map_edit]);
 		}
 
 		$posted_map_name = trim($_POST['map_name']);
@@ -82,7 +83,8 @@ if ($map_edit)
 				'schema' => $app['tschema'],
 			]);
 
-			cancel($map_edit);
+			$app['link']->redirect('docs', $app['pp_ary'],
+				['map' => $map_edit]);
 		}
 
 		$app['alert']->error($errors);
@@ -220,7 +222,8 @@ if ($edit)
 
 			$app['alert']->success('Document aangepast');
 
-			cancel($update['map_id']);
+			$app['link']->redirect('docs', $app['pp_ary'],
+				['map' => $update['map_id']]);
 		}
 
 		$app['alert']->error($errors);
@@ -328,7 +331,7 @@ if ($confirm_del && $del)
 	if ($error_token = $app['form_token']->get_error())
 	{
 		$app['alert']->error($error_token);
-		cancel();
+		$app['link']->redirect('docs', $app['pp_ary'], []);
 	}
 
 	$row = $app['xdb']->get('doc', $del, $app['tschema']);
@@ -370,7 +373,8 @@ if ($confirm_del && $del)
 
 		$app['alert']->success('Het document werd verwijderd.');
 
-		cancel($doc['map_id'] ?? false);
+		$app['link']->redirect('docs', $app['pp_ary'],
+			$doc['map_id'] ? ['map' => $doc['map_id']] : []);
 	}
 
 	$app['alert']->error('Document niet gevonden.');
@@ -524,7 +528,8 @@ if ($submit)
 
 			$app['alert']->success('Het bestand is opgeladen.');
 
-			cancel($doc['map_id'] ?? false);
+			$app['link']->redirect('docs', $app['pp_ary'],
+				$doc['map_id'] ? ['map' => $doc['map_id']] : []);
 		}
 	}
 }
@@ -632,7 +637,7 @@ if ($map)
 	if (!$map_name)
 	{
 		$app['alert']->error('Onbestaande map id.');
-		cancel();
+		$app['link']->redirect('docs', $app['pp_ary'], []);
 	}
 
 	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
@@ -913,16 +918,3 @@ else if (!count($maps))
 }
 
 include __DIR__ . '/include/footer.php';
-
-function cancel(string $map = ''):void
-{
-	$params = [];
-
-	if ($map)
-	{
-		$params['map'] = $map;
-	}
-
-	header('Location: ' . generate_url('docs', $params));
-	exit;
-}

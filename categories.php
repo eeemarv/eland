@@ -56,7 +56,7 @@ if ($add)
 			if ($app['db']->insert($app['tschema'] . '.categories', $cat))
 			{
 				$app['alert']->success('Categorie toegevoegd.');
-				cancel();
+				$app['link']->redirect('categories', $app['pp_ary'], []);
 			}
 
 			$app['alert']->error('Categorie niet toegevoegd.');
@@ -197,7 +197,8 @@ if ($edit)
 				$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
 					set fullname = ? || \' - \' || name
 					where id_parent = ?', [$cat['name'], $edit]);
-				cancel();
+
+				$app['link']->redirect('categories', $app['pp_ary'], []);
 			}
 
 			$app['alert']->error('Categorie niet aangepast.');
@@ -276,13 +277,13 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('categories', $app['pp_ary'], []);
 		}
 
 		if ($app['db']->delete($app['tschema'] . '.categories', ['id' => $del]))
 		{
 			$app['alert']->success('Categorie verwijderd.');
-			cancel();
+			$app['link']->redirect('categories', $app['pp_ary'], []);
 		}
 
 		$app['alert']->error('Categorie niet verwijderd.');
@@ -456,9 +457,3 @@ echo '<li>Enkel subcategorieën kunnen berichten bevatten.</li></ul>';
 echo '</p>';
 
 include __DIR__ . '/include/footer.php';
-
-function cancel():void
-{
-	header('Location: ' . generate_url('categories', []));
-	exit;
-}

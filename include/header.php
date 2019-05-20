@@ -181,7 +181,8 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 				echo '<a href="#" data-elas-group-id="';
 				echo $grp_id;
 				echo '">';
-				echo $grp['groupname'] . '</a>';
+				echo $grp['groupname'];
+				echo '</a>';
 				echo '</li>';
 			}
 		}

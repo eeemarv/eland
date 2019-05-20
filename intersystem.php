@@ -22,7 +22,7 @@ if ($id || $edit || $del)
 	if (!$group)
 	{
 		$app['alert']->error('Systeem niet gevonden.');
-		cancel();
+		$app['link']->redirect('intersystem', $app['pp_ary'], []);
 	}
 }
 
@@ -141,7 +141,8 @@ if ($add || $edit)
 
 					$app['intersystems']->clear_cache($app['tschema']);
 
-					cancel($edit);
+					$app['link']->redirect('intersystem', $app['pp_ary'],
+						['id'	=> $edit]);
 				}
 
 				$app['alert']->error('InterSysteem niet aangepast.');
@@ -173,7 +174,8 @@ if ($add || $edit)
 
 					$app['intersystems']->clear_cache($app['tschema']);
 
-					cancel($id);
+					$app['link']->redirect('intersystem', $app['pp_ary'],
+						['id' => $id]);
 				}
 
 				$app['alert']->error('InterSysteem niet opgeslagen.');
@@ -376,7 +378,7 @@ if ($del)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('intersystem', $app['pp_ary'], []);
 		}
 
 		if($app['db']->delete($app['tschema'] . '.letsgroups', ['id' => $del]))
@@ -385,7 +387,7 @@ if ($del)
 
 			$app['intersystems']->clear_cache($app['tschema']);
 
-			cancel();
+			$app['link']->redirect('intersystem', $app['pp_ary'], []);
 		}
 
 		$app['alert']->error('InterSysteem niet verwijderd.');
@@ -1110,17 +1112,4 @@ function get_schemas_groups():string
 	$out .= '</div></div>';
 
 	return $out;
-}
-
-function cancel(int $id = 0):void
-{
-	$params = [];
-
-	if ($id)
-	{
-		$params['id'] = $id;
-	}
-
-	header('Location: ' . generate_url('intersystem', $params));
-	exit;
 }

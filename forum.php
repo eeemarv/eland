@@ -17,17 +17,19 @@ if (!($app['s_user'] || $app['s_admin']))
 	if ($del)
 	{
 		$app['alert']->error('Je hebt geen rechten om te verwijderen.');
-		cancel();
+		$app['link']->redirect('forum', $app['pp_ary'], []);
 	}
+
 	if ($add)
 	{
 		$app['alert']->error('Je hebt geen rechten om te toe te voegen.');
-		cancel();
+		$app['link']->redirect('forum', $app['pp_ary'], []);
 	}
+
 	if ($edit)
 	{
 		$app['alert']->error('Je hebt geen rechten om aan te passen.');
-		cancel();
+		$app['link']->redirect('forum', $app['pp_ary'], []);
 	}
 }
 
@@ -53,7 +55,7 @@ if ($del || $edit)
 	if (!isset($forum_post))
 	{
 		$app['alert']->error('Post niet gevonden.');
-		cancel();
+		$app['link']->redirect('forum', $app['pp_ary'], []);
 	}
 
 	$s_owner = $forum_post['uid']
@@ -74,7 +76,8 @@ if ($del || $edit)
 			$app['alert']->error('Je hebt onvoldoende rechten om ' . $str . ' aan te passen.');
 		}
 
-		cancel(($forum_post['parent_id']) ?: $t);
+		$app['link']->redirect('forum', $app['pp_ary'],
+			['t' => $forum_post['parent_id'] ?: $t]);
 	}
 
 	$topic = $forum_post['parent_id'] ?? false;
@@ -87,7 +90,7 @@ if ($submit)
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$app['alert']->error($error_token);
-			cancel();
+			$app['link']->redirect('forum', $app['pp_ary'], []);
 		}
 
 		$app['xdb']->del('forum', $del, $app['tschema']);
@@ -104,12 +107,13 @@ if ($submit)
 			}
 
 			$app['alert']->success('Het forum onderwerp is verwijderd.');
-			cancel();
+			$app['link']->redirect('forum', $app['pp_ary'], []);
 		}
 
 		$app['alert']->success('De reactie is verwijderd.');
 
-		cancel($forum_post['parent_id']);
+		$app['link']->redirect('forum', $app['pp_ary'],
+			['t' => $forum_post['parent_id']]);
 	}
 
 	$content = $_POST['content'];
@@ -177,7 +181,8 @@ if ($submit)
 
 		$app['alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 
-		cancel($topic);
+		$app['link']->redirect('forum', $app['pp_ary'],
+			['t' => $topic]);
 	}
 	else
 	{
@@ -187,7 +192,8 @@ if ($submit)
 
 		$app['alert']->success(($topic ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 
-		cancel($topic);
+		$app['link']->redirect('forum', $app['pp_ary'],
+			['t' => $topic]);
 	}
 }
 
@@ -251,17 +257,17 @@ if ($add || $edit)
 		if (!$app['access_control']->is_visible($topic_post['access']))
 		{
 			$app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
-			cancel();
+			$app['link']->redirect('forum', $app['pp_ary'], []);
 		}
 	}
 
 	if ($edit)
 	{
-		$h1 = ($topic) ? 'Reactie aanpassen' : 'Forum onderwerp aanpassen';
+		$h1 = $topic ? 'Reactie aanpassen' : 'Forum onderwerp aanpassen';
 	}
 	else
 	{
-		$h1 = ($topic) ? 'Nieuwe reactie' : 'Nieuw forum onderwerp';
+		$h1 = $topic ? 'Nieuwe reactie' : 'Nieuw forum onderwerp';
 	}
 
 	include __DIR__ . '/include/header.php';
@@ -369,7 +375,7 @@ if ($topic)
 	if (!$app['access_control']->is_visible($topic_post['access']) && !$s_owner)
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
-		cancel();
+		$app['link']->redirect('forum', $app['pp_ary'], []);
 	}
 
 	$forum_posts[] = $topic_post;
@@ -672,16 +678,3 @@ echo '</div>';
 echo '</div>';
 
 include __DIR__ . '/include/footer.php';
-
-function cancel($topic = null)
-{
-	$params = [];
-
-	if ($topic)
-	{
-		$params['t'] = $topic;
-	}
-
-	header('Location: ' . generate_url('forum', $params));
-	exit;
-}

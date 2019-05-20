@@ -8,7 +8,7 @@ if (isset($_POST['zend']))
 	if ($error_token = $app['form_token']->get_error())
 	{
 		$app['alert']->error($error_token);
-		cancel();
+		$app['link']->redirect('autominlimit', $app['pp_ary'], []);
 	}
 
 	$data = [
@@ -21,7 +21,7 @@ if (isset($_POST['zend']))
 	$app['xdb']->set('setting', 'autominlimit', $data, $app['tschema']);
 
 	$app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
-	cancel();
+	$app['link']->redirect('autominlimit', $app['pp_ary'], []);
 }
 else
 {
@@ -155,9 +155,3 @@ echo '</div>';
 echo '</div>';
 
 include __DIR__ . '/include/footer.php';
-
-function cancel()
-{
-	header('Location: ' . generate_url('autominlimit', []));
-	exit;
-}

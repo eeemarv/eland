@@ -34,7 +34,7 @@ if ($app['is_http_post']
 		|| $extend_submit || $access_submit || $extend || $access))
 {
 	$app['alert']->error('Geen toegang als gast tot deze actie');
-	cancel($id);
+	$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 }
 
 if (!$app['is_http_post'])
@@ -52,8 +52,9 @@ if ($app['is_http_post']
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
-		$app['alert']->error('Selecteer ten minste één vraag of aanbod voor deze actie.');
-		cancel();
+		$app['alert']->error('Selecteer ten minste één vraag
+			of aanbod voor deze actie.');
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	if (!count($selected_msgs))
@@ -80,8 +81,10 @@ if ($app['is_http_post']
 			&& $app['s_user']
 			&& ($row['id_user'] !== $app['s_id']))
 		{
-			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' . $row['content'] . ' ( ' . $row['id'] . ')';
-			cancel();
+			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' .
+				$row['content'] . ' ( ' . $row['id'] . ')';
+			$app['alert']->error($errors);
+			$app['link']->redirect('messages', $app['pp_ary'], []);
 		}
 
 		$validity_ary[$row['id']] = $row['validity'];
@@ -104,7 +107,7 @@ if ($app['is_http_post']
 				['id' => $id]))
 			{
 				$app['alert']->error('Fout: ' . $row['content'] . ' is niet verlengd.');
-				cancel();
+				$app['link']->redirect('messages', $app['pp_ary'], []);
 			}
 		}
 		if (count($validity_ary) > 1)
@@ -116,7 +119,7 @@ if ($app['is_http_post']
 			$app['alert']->success('Het bericht is verlengd.');
 		}
 
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	if ($access_submit && !count($errors))
@@ -155,14 +158,14 @@ if ($app['is_http_post']
 					$app['alert']->success('Het bericht is aangepast.');
 				}
 
-				cancel();
+				$app['link']->redirect('messages', $app['pp_ary'], []);
 			}
 			catch(Exception $e)
 			{
 				$app['db']->rollback();
 				throw $e;
 				$app['alert']->error('Fout bij het opslaan.');
-				cancel();
+				$app['link']->redirect('messages', $app['pp_ary'], []);
 			}
 		}
 
@@ -188,7 +191,7 @@ if ($id || $edit || $del)
 	if (!$message)
 	{
 		$app['alert']->error('Bericht niet gevonden.');
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	$s_owner = !$app['s_guest']
@@ -199,7 +202,7 @@ if ($id || $edit || $del)
 	if ($message['local'] && $app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit bericht.');
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	$ow_type = $message['msg_type'] ? 'aanbod' : 'vraag';
@@ -219,7 +222,8 @@ if ($id && $extend)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' .
 			$ow_type_this . ' te verlengen.');
-		cancel($id);
+
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * (int) $extend));
@@ -233,11 +237,11 @@ if ($id && $extend)
 	if (!$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]))
 	{
 		$app['alert']->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
-		cancel($id);
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$app['alert']->success($ow_type_uc_the . ' is verlengd.');
-	cancel($id);
+	$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 }
 
 /**
@@ -419,7 +423,7 @@ if ($img_del == 'all' && $id && $app['is_http_post'])
 	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this .
 		' zijn verwijderd.');
 
-	cancel($id);
+	$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 }
 
 /*
@@ -462,7 +466,7 @@ if ($img_del == 'all' && $id)
 	if (!($app['s_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
-		cancel($id);
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$images = [];
@@ -481,7 +485,7 @@ if ($img_del == 'all' && $id)
 	if (!count($images))
 	{
 		$app['alert']->error($ow_type_uc_the . ' heeft geen afbeeldingen.');
-		cancel($id);
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$str_this_ow = $ow_type;
@@ -566,27 +570,27 @@ if ($mail && $app['is_http_post'] && $id)
 	{
 		$app['alert']->error('Je hebt geen rechten om een
 			bericht naar een niet-actieve gebruiker te sturen');
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	if ($app['s_master'])
 	{
 		$app['alert']->error('Het master account
 			kan geen berichten versturen.');
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	if (!$app['s_schema'])
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten
 			om een E-mail bericht te versturen.');
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	if (!$content)
 	{
 		$app['alert']->error('Fout: leeg bericht. E-mail niet verzonden.');
-		cancel($id);
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
@@ -595,7 +599,8 @@ if ($mail && $app['is_http_post'] && $id)
 	{
 		$app['alert']->error('Fout: Je kan geen berichten naar een andere gebruiker
 			verzenden als er geen E-mail adres is ingesteld voor je eigen account.');
-		cancel($id);
+
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
 	$from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
@@ -651,7 +656,7 @@ if ($mail && $app['is_http_post'] && $id)
 
 	$app['alert']->success('Mail verzonden.');
 
-	cancel($id);
+	$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 }
 
 /*
@@ -662,7 +667,7 @@ if ($del)
 	if (!($s_owner || $app['s_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
-		cancel($del);
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $del]);
 	}
 
 	if($submit)
@@ -684,7 +689,7 @@ if ($del)
 				where id = ?', [$message['id_category']]);
 
 			$app['alert']->success(ucfirst($ow_type_this) . ' is verwijderd.');
-			cancel();
+			$app['link']->redirect('messages', $app['pp_ary'], []);
 		}
 
 		$app['alert']->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
@@ -770,14 +775,14 @@ if (($edit || $add))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om
 			een vraag of aanbod toe te voegen.');
-		cancel();
+		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
 	if (!($app['s_admin'] || $s_owner) && $edit)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' .
 			$ow_type_this . ' aan te passen.');
-		cancel($edit);
+		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $edit]);
 	}
 
 	if ($submit)
@@ -992,8 +997,7 @@ if (($edit || $add))
 				}
 
 				$app['alert']->success('Nieuw vraag of aanbod toegevoegd.');
-
-				cancel($id);
+				$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 			}
 			else
 			{
@@ -1105,7 +1109,7 @@ if (($edit || $add))
 
 				$app['db']->commit();
 				$app['alert']->success('Vraag/aanbod aangepast');
-				cancel($edit);
+				$app['link']->redirect('messages', $app['pp_ary'], ['id' => $edit]);
 			}
 			catch(Exception $e)
 			{
@@ -1117,7 +1121,7 @@ if (($edit || $add))
 		else
 		{
 			$app['alert']->error('Fout: onbepaalde actie.');
-			cancel();
+			$app['link']->redirect('messages', $app['pp_ary'], []);
 		}
 
 		$msg['description'] = $msg['"Description"'];
@@ -1826,7 +1830,7 @@ if ($id)
 
 if (!($app['p_view'] || $app['p_inline']))
 {
-	cancel();
+	$app['link']->redirect('messages', $app['pp_ary'], []);
 }
 
 $s_owner = !$app['s_guest']
@@ -2726,19 +2730,6 @@ else if ($v_list)
 else if ($v_extended)
 {
 	include __DIR__ . '/include/footer.php';
-}
-
-function cancel($id = null)
-{
-	$params = [];
-
-	if ($id)
-	{
-		$params = ['id' => $id];
-	}
-
-	header('Location: ' . generate_url('messages', $params));
-	exit;
 }
 
 function get_checkbox_filter(
