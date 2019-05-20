@@ -506,15 +506,3 @@ if (isset($top_right))
 }
 
 echo $app['h1']->get();
-
-if (isset($h1))
-{
-	echo '<h1>';
-
-	if (isset($fa))
-	{
-		echo '<i class="fa fa-' . $fa . '"></i> ';
-	}
-
-	echo $h1 . '</h1>';
-}
