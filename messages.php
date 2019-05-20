@@ -4,6 +4,8 @@ $app['page_access'] = 'guest';
 $allow_guest_post = true;
 require_once __DIR__ . '/include/web.php';
 
+use render\link;
+
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
@@ -484,14 +486,8 @@ if ($img_del == 'all' && $id)
 
 	$str_this_ow = $ow_type;
 	$str_this_ow .= ' "';
-	$str_this_ow .= aphp(
-		'messages',
-		array_merge($app['pp_ary'], [
-			'id' => $id,
-		]),
-		$message['content'],
-		[]
-	);
+	$str_this_ow .= $app['link']->link_no_attr('messages', $app['pp_ary'],
+		['id' => $id], $message['content']);
 	$str_this_ow .= '"';
 	$h1 = 'Afbeeldingen verwijderen voor ' . $str_this_ow;
 	$fa = 'newspaper-o';
@@ -510,8 +506,6 @@ if ($img_del == 'all' && $id)
 
 	foreach ($images as $img_id => $file)
 	{
-		$a_img = $app['s3_url'] . $file;
-
 		echo '<div class="col-xs-6 col-md-3">';
 		echo '<div class="thumbnail">';
 		echo '<img src="';
@@ -697,14 +691,10 @@ if ($del)
 	}
 
 	$h1 = ucfirst($ow_type_this) . ' ';
-	$h1 .= aphp(
-		'messages',
-		array_merge($app['pp_ary'], [
-			'id' => $del,
-		]),
-		$message['content'],
-		[]
-	);
+
+	$h1 .= $app['link']->link_no_attr('messages', $app['pp_ary'],
+		['id' => $del], $message['content']);
+
 	$h1 .= ' verwijderen?';
 	$fa = 'newspaper-o';
 
@@ -1636,20 +1626,18 @@ if ($id)
 		echo 'data-max-file-size="999000" ';
 		echo 'multiple></span>&nbsp;';
 
-		echo aphp(
-			'messages',
-			array_merge($app['pp_ary'], [
+		echo $app['link']->link_fa('messages', $app['pp_ary'],
+			[
 				'img_del'	=> 'all',
 				'id'		=> $id,
-			]),
+			],
 			'Afbeeldingen verwijderen',
 			[
 				'class'	=> 'btn btn-danger',
 				'id'	=> 'btn_remove',
 				'style'	=> 'display:none;',
 			],
-			'times',
-			false
+			'times'
 		);
 
 		echo '<p class="text-warning">';
@@ -1733,11 +1721,11 @@ if ($id)
 	{
 		echo '<dt>Verlengen</dt>';
 		echo '<dd>';
-		echo btn_extend($app['pp_ary'], $id, 30, '1 maand');
+		echo btn_extend($app['link'], $app['pp_ary'], $id, 30, '1 maand');
 		echo '&nbsp;';
-		echo btn_extend($app['pp_ary'], $id, 180, '6 maanden');
+		echo btn_extend($app['link'], $app['pp_ary'], $id, 180, '6 maanden');
 		echo '&nbsp;';
-		echo btn_extend($app['pp_ary'], $id, 365, '1 jaar');
+		echo btn_extend($app['link'], $app['pp_ary'], $id, 365, '1 jaar');
 		echo '</dd>';
 	}
 
@@ -2802,14 +2790,13 @@ function get_radio(
 	return $out;
 }
 
-function btn_extend(array $pp_ary, int $id, int $days, string $label):string
+function btn_extend(link $link, array $pp_ary, int $id, int $days, string $label):string
 {
-	return aphp(
-		'messages',
-		array_merge($pp_ary, [
+	return $link->link('messages', $pp_ary,
+		[
 			'id' 		=> $id,
 			'extend' 	=> $days,
-		]),
+		],
 		$label,
 		[
 			'class' => 'btn btn-default btn-xs',

@@ -553,50 +553,6 @@ function btn_filter():string
 	return $ret;
 }
 
-/*
- * create link within eland with query parameters depending on user and role
- */
-
-function aphp(
-	string $route,
-	array $params,
-	string $label,
-	array $attr,
-	string $fa = '',
-	bool $collapse = false
-):string
-/*
-	$class = false,
-	$title = false,
-	$fa = false,
-	$collapse = false,
-	$attr = false,
-	$sch = false):string
-*/
-{
-	global $app;
-
-	$out = '<a href="';
-	$out .= $app->path($route, $params);
-//	$out .= generate_url($route, $params, $sch);
-	$out .= '"';
-//	$out .= $class ? ' class="' . $class . '"' : '';
-//	$out .= $title ? ' title="' . $title . '"' : '';
-
-	foreach ($attr as $name => $val)
-	{
-		$out .= ' ' . $name . '="' . $val . '"';
-	}
-
-	$out .= '>';
-	$out .= $fa === '' ? '' : '<i class="fa fa-' . $fa .'"></i>';
-	$out .= $collapse ? '<span class="hidden-xs hidden-sm"> ' : ' ';
-	$out .= htmlspecialchars($label, ENT_QUOTES);
-	$out .= $collapse ? '</span>' : '';
-	$out .= '</a>';
-	return $out;
-}
-
 /**
  * generate url
  */

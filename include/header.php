@@ -165,11 +165,10 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 					? $app['script_name']
 					: 'messages';
 
-				echo '<a href="';
-				echo generate_url($page,  ['welcome' => 1], $sch);
-				echo '">';
-				echo $app['config']->get('systemname', $sch);
-				echo '</a>';
+				echo $app['link']->link_no_attr($page, $app['pp_ary'],
+					['welcome' => 1],
+					$app['config']->get('systemname', $sch));
+
 				echo '</li>';
 			}
 		}
@@ -216,43 +215,40 @@ if (!$app['s_anonymous'])
 
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
+
 	if ($app['s_schema'] && !$app['s_master'] && !$app['s_guest'])
 	{
-		echo '<li><a href="';
-		echo generate_url('users', ['id' => $app['s_id']], $app['s_schema']);
-		echo '">';
-		echo '<i class="fa fa-user"></i> Mijn gegevens';
-		echo '</a></li>';
+		echo '<li>';
 
-		echo '<li><a href="';
+		echo $app['link']->link_fa('users', $app['pp_ary'],
+			['id' => $app['s_id']], 'Mijn gegevens', [], 'user');
 
-		echo generate_url(
-			'messages',
+		echo '</li>';
+
+		echo '<li>';
+
+		echo $app['link']->link_fa('messages', $app['pp_ary'],
 			['f' => ['uid' => $app['s_id']]],
-			$app['s_schema']
-		);
+			'Mijn vraag en aanbod', [], 'newspaper-o');
 
-		echo '">';
-		echo '<i class="fa fa-newspaper-o"></i> Mijn vraag en aanbod';
-		echo '</a></li>';
+		echo '</li>';
+		echo '<li>';
 
-		echo '<li><a href="';
-		echo generate_url(
-			'transactions',
+		echo $app['link']->link_fa('transactions', $app['pp_ary'],
 			['f' => ['uid' => $app['s_id']]],
-			$app['s_schema']
-		);
-		echo '">';
-		echo '<i class="fa fa-exchange"></i> Mijn transacties';
-		echo '</a></li>';
+			'Mijn transacties', [], 'exchange');
+
+		echo '</li>';
 
 		echo '<li class="divider"></li>';
 	}
 
-	echo '<li><a href="';
-	echo generate_url('logout', [], $app['s_schema']) . '">';
-	echo '<i class="fa fa-sign-out"></i> Uitloggen';
-	echo '</a></li>';
+	echo '<li>';
+
+	echo $app['link']->link_fa('logout', $app['pp_ary'],
+		[], 'Uitloggen', [], 'sign-out');
+
+	echo '</li>';
 
 	echo '</ul>';
 	echo '</li>';
@@ -457,8 +453,9 @@ echo '<ul class="nav nav-pills nav-stacked">';
 
 foreach ($menu as $route => $item)
 {
-	$active = $app['matched_route'] == $route ? ' class="active"' : '';
-	echo '<li' . $active . '>';
+	echo '<li';
+	echo $app['matched_route'] == $route ? ' class="active"' : '';
+	echo '>';
 
 	echo $app['link']->link_fa($route, $app['pp_ary'],
 		$item[2], $item[1], [], $item[0]);
@@ -469,12 +466,11 @@ echo '</ul>';
 
 echo '</div>';
 
-$class_admin = $app['page_access'] === 'admin' ? ' admin' : '';
-
 echo '<div id="wrap">';
 echo '<div id="main" ';
 echo 'class="container-fluid clear-top';
-echo $class_admin . '">';
+echo $app['page_access'] === 'admin' ? ' admin' : '';
+echo '">';
 
 echo $app['alert']->get();
 

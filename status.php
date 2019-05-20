@@ -300,14 +300,25 @@ if ($status_msgs)
 		}
 
 		echo '<ul>';
+
 		foreach ($unvalid_mail as $ary)
 		{
 			echo '<li>';
 			echo $ary['value'] .  ' ';
-			echo aphp('contacts', ['edit' => $ary['id']], 'Aanpassen', 'btn btn-default btn-xs') . ' ';
-			echo aphp('contacts', ['del' => $ary['id']], 'Verwijderen', 'btn btn-danger btn-xs') . ' ';
+
+			echo $app['link']->link('contacts', $app['pp_ary'],
+				['edit' => $ary['id']], 'Aanpassen',
+				['class' => 'btn btn-default btn-xs']);
+
+			echo ' ';
+
+			echo $app['link']->link('contacts', $app['pp_ary'],
+				['del' => $ary['id']], 'Verwijderen',
+				['class' => 'btn btn-danger btn-xs']);
 			echo ' : ';
+
 			echo link_user($ary['id_user'], $app['tschema']);
+
 			echo '</li>';
 		}
 
@@ -324,7 +335,8 @@ if ($status_msgs)
 		}
 		else
 		{
-			echo count($no_mail) . ' actieve gebruikers hebben geen E-mail adres.';
+			echo count($no_mail);
+			echo ' actieve gebruikers hebben geen E-mail adres.';
 		}
 
 		echo '<ul>';
