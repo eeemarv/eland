@@ -525,7 +525,8 @@ if ($id)
 		if (!in_array($user['status'], [1, 2, 7]))
 		{
 			echo ' ';
-			echo $app['link']->link('users', $app['pp_ary'],
+
+			echo $app['link']->link_fa('users', $app['pp_ary'],
 				['edit' => $user['id']], 'Status!',
 				[
 					'class'	=> 'btn btn-danger btn-xs',
@@ -536,7 +537,7 @@ if ($id)
 		if ($user['accountrole'] != 'interlets')
 		{
 			echo ' ';
-			echo $app['link']->link('users', $app['pp_ary'],
+			echo $app['link']->link_fa('users', $app['pp_ary'],
 				['edit' => $user['id']], 'Rol!',
 				[
 					'class'	=> 'btn btn-danger btn-xs',
@@ -692,7 +693,7 @@ if (count($groups))
 				if (!in_array($user['status'], [1, 2, 7]))
 				{
 					echo ' ';
-					echo $app['link']->link('users', $app['pp_ary'],
+					echo $app['link']->link_fa('users', $app['pp_ary'],
 						['edit' => $user['id']], 'Status!',
 						[
 							'class'	=> 'btn btn-danger btn-xs',
@@ -703,7 +704,7 @@ if (count($groups))
 				if ($user['accountrole'] != 'interlets')
 				{
 					echo ' ';
-					echo $app['link']->link('users', $app['pp_ary'],
+					echo $app['link']->link_fa('users', $app['pp_ary'],
 						['edit' => $user['id']], 'Rol!',
 						[
 							'class'	=> 'btn btn-danger btn-xs',
@@ -727,8 +728,8 @@ if (count($groups))
 
 		echo '<td>';
 
-		echo $app['link']->link('intersystem', $app['pp_ary'],
-			['id' => $g['id']], $g['groupname'], []);
+		echo $app['link']->link_no_attr('intersystem', $app['pp_ary'],
+			['id' => $g['id']], $g['groupname']);
 
 		if (isset($g['eland']))
 		{
@@ -1048,8 +1049,10 @@ function get_schemas_groups():string
 			{
 				$out .= '<i class="fa fa-times text-danger"></i>';
 			}
+
 			$out .= '</td>';
 			$out .= '<td>';
+
 			if (isset($rem_group_ary[$h]))
 			{
 				$out .= '<span class="btn btn-success btn-xs">OK</span>';
@@ -1058,6 +1061,7 @@ function get_schemas_groups():string
 			{
 				$out .= '<i class="fa fa-times text-danger"></i>';
 			}
+
 			$out .= '</td>';
 			$out .= '<td>';
 

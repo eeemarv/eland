@@ -205,12 +205,8 @@ if ($token)
 	echo '</div>';
 	echo '<div class="panel-body">';
 
-	echo aphp(
-		'register',
-		$app['p_ary'],
-		'Opnieuw proberen',
-		['class' => 'btn btn-default']
-	);
+	echo $app['link']->link('register', $app['pp_ary'],
+		[], 'Opnieuw proberen', ['class' => 'btn btn-default']);
 
 	echo '</div>';
 	echo '</div>';

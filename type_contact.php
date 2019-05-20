@@ -312,8 +312,8 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo $app['link']->link('type_contact', $app['pp_ary'],
-			['edit' => $t['id']], $t['abbrev'], []);
+		echo $app['link']->link_no_attr('type_contact', $app['pp_ary'],
+			['edit' => $t['id']], $t['abbrev']);
 	}
 
 	echo '</td>';
@@ -326,8 +326,8 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo $app['link']->link('type_contact', $app['pp_ary'],
-			['edit' => $t['id']], $t['name'], []);
+		echo $app['link']->link_no_attr('type_contact', $app['pp_ary'],
+			['edit' => $t['id']], $t['name']);
 	}
 
 	echo '</td>';
@@ -340,7 +340,7 @@ foreach($types as $t)
 	}
 	else
 	{
-		echo $app['link']->link('type_contact', $app['pp_ary'],
+		echo $app['link']->link_fa('type_contact', $app['pp_ary'],
 			['del' => $t['id']], 'Verwijderen',
 			['class' => 'btn btn-danger btn-xs'],
 			'times');
@@ -352,8 +352,8 @@ foreach($types as $t)
 
 	if ($count)
 	{
-		echo $app['link']->link('contacts', $app['pp_ary'],
-			['f' => ['abbrev' => $t['abbrev']]], $count, []);
+		echo $app['link']->link_no_attr('contacts', $app['pp_ary'],
+			['f' => ['abbrev' => $t['abbrev']]], $count);
 	}
 	else
 	{

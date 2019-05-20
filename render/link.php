@@ -40,9 +40,7 @@ class link
 		array $params_context,
 		array $params,
 		string $label,
-		array $attr,
-		string $fa = '',
-		bool $collapse = false
+		array $attr
 	):string
 	{
 		$out = '<a href="';
@@ -55,15 +53,83 @@ class link
 		}
 
 		$out .= '>';
-		$out .= $fa === '' ? '' : '<i class="fa fa-' . $fa .'"></i>';
-		$out .= $collapse ? '<span class="hidden-xs hidden-sm">' : '';
-		$out .= $label === '' ? '' : htmlspecialchars($label, ENT_QUOTES);
-		$out .= $collapse ? '</span>' : '';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
 		$out .= '</a>';
+
+		return $out;
+	}
+
+	public function link_no_attr(
+		string $route,
+		array $params_context,
+		array $params,
+		string $label
+	):string
+	{
+		$out = '<a href="';
+		$out .= $this->context_path($route, $params_context, $params);
+		$out .= '">';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= '</a>';
+
 		return $out;
 	}
 
 	public function link_fa(
+		string $route,
+		array $params_context,
+		array $params,
+		string $label,
+		array $attr,
+		string $fa
+	):string
+	{
+		$out = '<a href="';
+		$out .= $this->context_path($route, $params_context, $params);
+		$out .= '"';
+
+		foreach ($attr as $name => $val)
+		{
+			$out .= ' ' . $name . '="' . $val . '"';
+		}
+
+		$out .= '>';
+		$out .= '<i class="fa fa-' . $fa .'"></i>&nbsp;';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= '</a>';
+
+		return $out;
+	}
+
+	public function link_fa_collapse(
+		string $route,
+		array $params_context,
+		array $params,
+		string $label,
+		array $attr,
+		string $fa
+	):string
+	{
+		$out = '<a href="';
+		$out .= $this->context_path($route, $params_context, $params);
+		$out .= '"';
+
+		foreach ($attr as $name => $val)
+		{
+			$out .= ' ' . $name . '="' . $val . '"';
+		}
+
+		$out .= '>';
+		$out .= '<i class="fa fa-' . $fa .'"></i>';
+		$out .= '<span class="hidden-xs hidden-sm">&nbsp;';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= '</span>';
+		$out .= '</a>';
+
+		return $out;
+	}
+
+	public function link_fa_only(
 		string $route,
 		array $params_context,
 		array $params,

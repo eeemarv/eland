@@ -192,7 +192,9 @@ foreach($apikeys as $a)
 	$out[] = $a['comment'];
 	$out[] = $a['apikey'];
 	$out[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
-	$out[] = $app['link']->link('apikeys', ['del' => $a['id']], 'Verwijderen', 'btn btn-danger btn-xs', false, 'times');
+	$out[] = $app['link']->link_fa('apikeys', $app['pp_ary'],
+		['del' => $a['id']], 'Verwijderen',
+		['class' => 'btn btn-danger btn-xs'], 'times');
 
 	echo '<tr><td>';
 	echo implode('</td><td>', $out);

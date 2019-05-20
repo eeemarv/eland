@@ -382,8 +382,8 @@ foreach($cats as $cat)
 	{
 		echo '<tr class="info">';
 		echo '<td><strong>';
-		echo $app['link']->link('categories',
-			$app['pp_ary'], ['edit' => $cat['id']], $cat['name']);
+		echo $app['link']->link_no_attr('categories', $app['pp_ary'],
+			['edit' => $cat['id']], $cat['name']);
 		echo '</strong></td>';
 	}
 	else
@@ -391,8 +391,8 @@ foreach($cats as $cat)
 		echo '<tr>';
 		echo '<td>';
 		echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-		echo $app['link']->link('categories',
-			$app['pp_ary'], ['edit' => $cat['id']], $cat['name']);
+		echo $app['link']->link_no_attr('categories', $app['pp_ary'],
+			['edit' => $cat['id']], $cat['name']);
 		echo '</td>';
 	}
 
@@ -409,7 +409,7 @@ foreach($cats as $cat)
 			],
 		]);
 
-		echo $app['link']->link('messages', $app['pp_ary'], $param_ary,
+		echo $app['link']->link_no_attr('messages', $app['pp_ary'], $param_ary,
 			$count_wanted);
 	}
 
@@ -427,7 +427,7 @@ foreach($cats as $cat)
 			],
 		]);
 
-		echo $app['link']->link('messages', $app['pp_ary'], $param_ary,
+		echo $app['link']->link_no_attr('messages', $app['pp_ary'], $param_ary,
 			$count_offers);
 	}
 
@@ -437,7 +437,7 @@ foreach($cats as $cat)
 
 	if (!$count)
 	{
-		echo $app['link']->link('categories', $app['pp_ary'],
+		echo $app['link']->link_fa('categories', $app['pp_ary'],
 			['del' => $cat['id']], 'Verwijderen',
 			['class' => 'btn btn-danger btn-xs'], 'times');
 	}

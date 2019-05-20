@@ -274,8 +274,8 @@ if ($add || $edit)
 
 	$btn = $add ? 'success' : 'primary';
 
-	$canc = $edit ? ['id' => $edit] : [];
-	echo $app['link']->btn_cancel('news', $app['pp_ary'], $canc);
+	echo $app['link']->btn_cancel('news', $app['pp_ary'],
+		$edit ? ['id' => $edit] : []);
 
 	echo '&nbsp;';
 	echo '<input type="submit" name="zend" ';
@@ -655,7 +655,7 @@ if ($app['p_inline'])
 {
 	echo '<h3>';
 
-	echo $app['link']->link('news', $app['pp_ary'],
+	echo $app['link']->link_fa('news', $app['pp_ary'],
 		[], 'Nieuws', [], 'calendar-o');
 
 	echo '</h3>';
@@ -725,8 +725,10 @@ if ($v_list)
 		echo '>';
 
 		echo '<td>';
-		echo $app['link']->link('news', $app['pp_ary'],
-			['id' => $n['id']], $n['headline'], []);
+
+		echo $app['link']->link_no_attr('news', $app['pp_ary'],
+			['id' => $n['id']], $n['headline']);
+
 		echo '</td>';
 
 		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
@@ -762,8 +764,10 @@ else if ($v_extended)
 		echo '<div class="media">';
 		echo '<div class="media-body">';
 		echo '<h2 class="media-heading">';
-		echo $app['link']->link('news', $app['pp_ary'],
-			['id' => $n['id']], $n['headline'], []);
+
+		echo $app['link']->link_no_attr('news', $app['pp_ary'],
+			['id' => $n['id']], $n['headline']);
+
 		echo '</h2>';
 
 		if (!$n['approved'])
@@ -858,16 +862,16 @@ else if ($v_extended)
 
 			if (!$n['approved'])
 			{
-				echo $app['link']->link('news', $app['pp_ary'],
+				echo $app['link']->link_fa('news', $app['pp_ary'],
 					['approve' => $n['id']], 'Goedkeuren en publiceren',
 					['class' => 'btn btn-warning btn-xs'], 'check');
 			}
 
-			echo $app['link']->link('news', $app['pp_ary'],
+			echo $app['link']->link_fa('news', $app['pp_ary'],
 				['edit' => $n['id']], 'Aanpassen',
 				['class' => 'btn btn-primary btn-xs'], 'pencil');
 
-			echo $app['link']->link('news', $app['pp_ary'],
+			echo $app['link']->link_fa('news', $app['pp_ary'],
 				['del' => $n['id']], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 

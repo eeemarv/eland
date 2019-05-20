@@ -202,7 +202,7 @@ if ($del)
 	{
 		$t = $forum_post['id'];
 		$h1 = 'Forum onderwerp ';
-		$h1 .= $app['link']->link('forum',
+		$h1 .= $app['link']->link_no_attr('forum',
 			$app['pp_ary'], ['t' => $t], $forum_post['subject']);
 	}
 
@@ -466,10 +466,10 @@ if ($topic)
 		if ($app['s_admin'] || $s_owner)
 		{
 			echo '<span class="inline-buttons pull-right">';
-			echo $app['link']->link('forum', $app['pp_ary'],
+			echo $app['link']->link_fa('forum', $app['pp_ary'],
 				['edit' => $pid], 'Aanpassen',
 				['class' => 'btn btn-primary btn-xs'], 'pencil');
-			echo $app['link']->link('forum', $app['pp_ary'],
+			echo $app['link']->link_fa('forum', $app['pp_ary'],
 				['del' => $pid], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 			echo '</span>';
@@ -642,8 +642,8 @@ foreach($forum_posts as $p)
 	echo '<tr>';
 
 	echo '<td>';
-	echo $app['link']->link('forum', $app['pp_ary'],
-		['t' => $pid], $p['subject'], []);
+	echo $app['link']->link_no_attr('forum', $app['pp_ary'],
+		['t' => $pid], $p['subject']);
 	echo '</td>';
 
 	echo '<td>';

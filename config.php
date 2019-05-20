@@ -335,7 +335,7 @@ foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
 	echo '<li role="presentation"';
 	echo $tab_id === $active_tab ? ' class="active"' : '';
 	echo '>';
-	echo $app['link']->link('config',
+	echo $app['link']->link_no_attr('config',
 		$app['pp_ary'],
 		['tab' => $tab_id],
 		$tab_pane_data['lbl']);

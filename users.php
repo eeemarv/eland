@@ -1309,7 +1309,7 @@ if ($add || $edit)
 						$warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
 						$warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
 						$warning .= 'E-mail adres. Zie ';
-						$warning .= $app['link']->link('status', $app['pp_ary'], [], 'Status', []);
+						$warning .= $app['link']->link_no_attr('status', $app['pp_ary'], [], 'Status');
 
 						$warning_2 = '';
 
@@ -2262,8 +2262,8 @@ if ($add || $edit)
 		echo 'afwijkende minimum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
-		echo $app['link']->link('config', $app['pp_ary'],
-			['tab' => 'balance'], 'Minimum Systeemslimiet', []);
+		echo $app['link']->link_no_attr('config', $app['pp_ary'],
+			['tab' => 'balance'], 'Minimum Systeemslimiet');
 		echo ' ';
 		echo 'van toepassing. ';
 
@@ -2284,10 +2284,9 @@ if ($add || $edit)
 
 		echo 'Dit veld wordt bij aanmaak van een ';
 		echo 'gebruiker vooraf ingevuld met de "';
-		echo $app['link']->link('config', $app['pp_ary'],
+		echo $app['link']->link_no_attr('config', $app['pp_ary'],
 			['tab' => 'balance'],
-			'Preset Individuele Minimum Account Limiet',
-			[]);
+			'Preset Individuele Minimum Account Limiet');
 		echo '" ';
 		echo 'die gedefiniëerd is in de instellingen.';
 
@@ -2320,10 +2319,9 @@ if ($add || $edit)
 		echo 'afwijkende maximum limiet wil instellen ';
 		echo 'voor dit account. Als dit veld leeg is, ';
 		echo 'dan is de algemeen geldende ';
-		echo $app['link']->link('config', $app['pp_ary'],
+		echo $app['link']->link_no_attr('config', $app['pp_ary'],
 			['tab' => 'balance'],
-			'Maximum Systeemslimiet',
-			[]);
+			'Maximum Systeemslimiet');
 		echo ' ';
 		echo 'van toepassing. ';
 
@@ -2344,10 +2342,9 @@ if ($add || $edit)
 
 		echo 'Dit veld wordt bij aanmaak van een gebruiker ';
 		echo 'vooraf ingevuld wanneer "';
-		echo $app['link']->link('config', $app['pp_ary'],
+		echo $app['link']->link_no_attr('config', $app['pp_ary'],
 			['tab' => 'balance'],
-			'Preset Individuele Maximum Account Limiet',
-			[]);
+			'Preset Individuele Maximum Account Limiet');
 		echo '" ';
 		echo 'is ingevuld in de instellingen.';
 
@@ -2725,7 +2722,7 @@ if ($id)
 		else if ($intersystem_id)
 		{
 			$h1 .= ' ';
-			$h1 .= $app['link']->link('intersystem', $app['pp_ary'],
+			$h1 .= $app['link']->link_fa('intersystem', $app['pp_ary'],
 				['id' => $intersystem_id],
 				'Gekoppeld interSysteem',
 				['class' => 'btn btn-default'],
@@ -2797,7 +2794,7 @@ if ($id)
 		echo 'data-image-crop="true" ';
 		echo 'data-image-max-height="400"></span>&nbsp;';
 
-		echo $app['link']->link('users', $app['pp_ary'],
+		echo $app['link']->link_fa('users', $app['pp_ary'],
 			['img_del' => 1, 'id' => $id],
 			'Foto verwijderen',
 			array_merge($attr, ['class' => 'btn btn-danger']),
@@ -3815,9 +3812,11 @@ if ($v_map)
 				foreach($not_geocoded_ary as $not_geocoded)
 				{
 					echo '<li>';
-					echo $app['link']->link('contacts', $app['pp_ary'],
+
+					echo $app['link']->link_no_attr('contacts', $app['pp_ary'],
 						['edit' => $not_geocoded['id'], 'uid' => $not_geocoded['uid']],
-						$not_geocoded['adr'], []);
+						$not_geocoded['adr']);
+
 					echo ' gebruiker: ';
 					echo link_user($not_geocoded['uid'], $app['tschema']);
 					echo '</li>';
@@ -4418,14 +4417,14 @@ if ($v_list)
 
 				if (isset($msgs_count[$id][$key]))
 				{
-					echo $app['link']->link('messages', $app['pp_ary'],
+					echo $app['link']->link_no_attr('messages', $app['pp_ary'],
 						[
 							'f'	=> [
 								'uid' 	=> $id,
 								'type' 	=> $message_type_filter[$key],
 							],
 						],
-						$msgs_count[$id][$key], []);
+						$msgs_count[$id][$key]);
 				}
 
 				echo '</td>';
@@ -4450,7 +4449,7 @@ if ($v_list)
 						}
 						else
 						{
-							echo $app['link']->link('transactions', $app['pp_ary'],
+							echo $app['link']->link_no_attr('transactions', $app['pp_ary'],
 								[
 									'f' => [
 										'fcode'	=> $key === 'in' ? '' : $u['letscode'],
@@ -4459,7 +4458,7 @@ if ($v_list)
 										'fdate' => $from_date,
 									],
 								],
-								$activity[$id][$a_key][$key], []);
+								$activity[$id][$a_key][$key]);
 						}
 					}
 

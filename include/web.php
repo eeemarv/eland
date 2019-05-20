@@ -206,7 +206,8 @@ if ($app['s_system_self'] && $app['s_guest'])
 	];
 }
 
-$app['count_intersystems'] = count($app['intersystem_ary']['eland']) + count($app['intersystem_ary']['elas']);
+$app['count_intersystems'] = count($app['intersystem_ary']['eland'])
+	+ count($app['intersystem_ary']['elas']);
 
 /**
  * authorization
@@ -538,22 +539,6 @@ $app['render_stat']->before('nav', '')
 	->after('nav', '');
 
 /**************** FUNCTIONS ***************/
-
-function btn_item_nav(string $url, bool $next, bool $down):string
-{
-	$ret = ' class="btn btn-default" title="';
-	$ret .= $next ? 'Volgende' : 'Vorige';
-	$ret .= '"><i class="fa fa-chevron-';
-	$ret .= $down ? 'down' : 'up';
-	$ret .= '"></i>';
-
-	if ($url)
-	{
-		return '<a href="' . $url . '"' . $ret . '</a>';
-	}
-
-	return '<button disabled="disabled"' . $ret . '</button>';
-}
 
 function btn_filter():string
 {

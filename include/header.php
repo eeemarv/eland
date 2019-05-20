@@ -292,10 +292,12 @@ if (!$app['s_anonymous'])
 			$active = $app['matched_route'] === $route ? ' class="active"' : '';
 
 			echo '<li' . $active . '>';
-			echo $app['link']->link($route, [
+
+			echo $app['link']->link_fa($route, [
 					'system'		=> $app['pp_system'],
 					'role_short' 	=> $app['pp_role_short'],
 				], [], $item[1], [], $item[0]);
+
 			echo '</li>';
 		}
 		echo '<li class="divider"></li>';
@@ -457,8 +459,10 @@ foreach ($menu as $route => $item)
 {
 	$active = $app['matched_route'] == $route ? ' class="active"' : '';
 	echo '<li' . $active . '>';
-	echo $app['link']->link($route, $app['pp_ary'],
+
+	echo $app['link']->link_fa($route, $app['pp_ary'],
 		$item[2], $item[1], [], $item[0]);
+
 	echo '</li>';
 }
 echo '</ul>';

@@ -307,7 +307,7 @@ if ($edit || $add)
 				$warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
 				$warning .= 'of kunnen inloggen met ';
 				$warning .= 'E-mail adres. Zie ';
-				$warning .= $app['link']->link('status',
+				$warning .= $app['link']->link_no_attr('status',
 					$app['pp_ary'], [], 'Status');
 
 				if ($mail_count == 1)
@@ -684,8 +684,8 @@ if ($uid)
 		}
 		else if ($s_owner || $app['s_admin'])
 		{
-			$out_c = $app['link']->link('contacts', $app['pp_ary'],
-				['edit' => $c['id'], 'uid' => $uid], $c['value'], []);
+			$out_c = $app['link']->link_no_attr('contacts', $app['pp_ary'],
+				['edit' => $c['id'], 'uid' => $uid], $c['value']);
 
 			if ($c['abbrev'] == 'adr')
 			{
@@ -703,8 +703,8 @@ if ($uid)
 
 			if (isset($c['comments']))
 			{
-				$out[] = $app['link']->link('contacts', $app['pp_ary'],
-					['edit' => $c['id'], 'uid' => $uid], $c['comments'], []);
+				$out[] = $app['link']->link_no_attr('contacts', $app['pp_ary'],
+					['edit' => $c['id'], 'uid' => $uid], $c['comments']);
 			}
 			else
 			{
@@ -750,7 +750,7 @@ if ($uid)
 		{
 			$out[] = $app['access_control']->get_label($c['flag_public']);
 
-			$out[] = $app['link']->link('contacts', $app['pp_ary'],
+			$out[] = $app['link']->link_fa('contacts', $app['pp_ary'],
 				['del' => $c['id'], 'uid' => $uid], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'], 'times');
 		}
@@ -1264,8 +1264,8 @@ foreach ($contacts as $c)
 
 	if (isset($c['value']))
 	{
-		$out[] = $app['link']->link('contacts', $app['pp_ary'],
-			['edit' => $c['id']], $c['value'], []);
+		$out[] = $app['link']->link_no_attr('contacts', $app['pp_ary'],
+			['edit' => $c['id']], $c['value']);
 	}
 	else
 	{
@@ -1276,8 +1276,8 @@ foreach ($contacts as $c)
 
 	if (isset($c['comments']))
 	{
-		$out[] = $app['link']->link('contacts', $app['pp_ary'],
-			['edit' => $c['id']], $c['comments'], []);
+		$out[] = $app['link']->link_no_attr('contacts', $app['pp_ary'],
+			['edit' => $c['id']], $c['comments']);
 	}
 	else
 	{
@@ -1286,7 +1286,7 @@ foreach ($contacts as $c)
 
 	$out[] = $app['access_control']->get_label($c['flag_public']);
 
-	$out[] = $app['link']->link('contacts', $app['pp_ary'],
+	$out[] = $app['link']->link_fa('contacts', $app['pp_ary'],
 		['del' => $c['id']], 'Verwijderen',
 		['class' => 'btn btn-danger btn-xs'],
 		'times');

@@ -344,12 +344,9 @@ if(empty($token))
 	echo 'value="" required>';
     echo '</div>';
 	echo '<p>';
-	echo aphp(
-		'password_reset',
-		$app['pp_ary'],
-		'Klik hier als je je paswoord vergeten bent.',
-		[]
-	);
+	echo $app['link']->link_no_attr('password_reset',
+		$app['pp_ary'], [],
+		'Klik hier als je je paswoord vergeten bent.');
 	echo '</p>';
 	echo '</div>';
 

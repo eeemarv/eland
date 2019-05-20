@@ -544,6 +544,7 @@ if ($img_del == 'all' && $id)
 	echo '?</h3>';
 
 	echo $app['link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
+
 	echo '&nbsp;';
 	echo '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
@@ -2202,9 +2203,10 @@ if (isset($filter['uid']))
 	}
 	else
 	{
-		$h1 = $app['link']->link('messages', $app['pp_ary'],
+		$h1 = $app['link']->link_no_attr('messages', $app['pp_ary'],
 			['f' => ['uid' => $filter['uid']]],
-			'Vraag en aanbod', []);
+			'Vraag en aanbod');
+
 		$h1 .= ' van ';
 		$h1 .= link_user($filter['uid'], $app['tschema']);
 	}
@@ -2505,8 +2507,10 @@ if ($v_list)
 		echo '</td>';
 
 		echo '<td>';
-		echo $app['link']->link('messages', $app['pp_ary'],
-			['id' => $msg['id']], $msg['content'], []);
+
+		echo $app['link']->link_no_attr('messages', $app['pp_ary'],
+			['id' => $msg['id']], $msg['content']);
+
 		echo '</td>';
 
 		if (!isset($filter['uid']))
@@ -2523,9 +2527,9 @@ if ($v_list)
 		if (!($filter['cid'] ?? false))
 		{
 			echo '<td>';
-			echo $app['link']->link('messages', $app['pp_ary'],
+			echo $app['link']->link_no_attr('messages', $app['pp_ary'],
 				$cat_params[$msg['id_category']],
-				$categories[$msg['id_category']], []);
+				$categories[$msg['id_category']]);
 			echo '</td>';
 		}
 
@@ -2584,8 +2588,9 @@ else if ($v_extended)
 
 		echo '<div class="media-body">';
 		echo '<h3 class="media-heading">';
-		echo $app['link']->link('messages', $app['pp_ary'],
-			['id' => $msg['id']], $type_str . ': ' . $msg['content'], []);
+
+		echo $app['link']->link_no_attr('messages', $app['pp_ary'],
+			['id' => $msg['id']], $type_str . ': ' . $msg['content']);
 
 		if ($exp)
 		{
@@ -2596,6 +2601,7 @@ else if ($v_extended)
 		echo '</h3>';
 
 		echo htmlspecialchars($msg['Description'], ENT_QUOTES);
+
 		echo '</div>';
 		echo '</div>';
 
@@ -2610,12 +2616,12 @@ else if ($v_extended)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 
-			echo $app['link']->link('messages', $app['pp_ary'],
+			echo $app['link']->link_fa('messages', $app['pp_ary'],
 				['edit' => $msg['id']], 'Aanpassen',
 				['class'	=> 'btn btn-primary btn-xs'],
 				'pencil');
 
-			echo $app['link']->link('messages', $app['pp_ary'],
+			echo $app['link']->link_fa('messages', $app['pp_ary'],
 				['del' => $msg['id']], 'Verwijderen',
 				['class' => 'btn btn-danger btn-xs'],
 				'times');

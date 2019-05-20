@@ -93,7 +93,7 @@ class btn_nav
 	)
 	{
 
-		return $this->link->link_fa($route, $params_context,
+		return $this->link->link_fa_only($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default' . ($active ? ' active' : ''),
 				'title'	=> $title,
@@ -109,7 +109,7 @@ class btn_nav
 		string $fa
 	):string
 	{
-		return $this->link->link_fa($route, $params_context,
+		return $this->link->link_fa_only($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default',
 				'title'	=> $title,
