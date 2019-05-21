@@ -14,4 +14,13 @@ class status
         6	=> 'Info-moment',
         7	=> 'Extern',
     ];
+
+    const CLASS_ARY = [
+        0 => 'inactive',
+        2 => 'danger',
+        3 => 'success',
+        5 => 'warning',
+        6 => 'info',
+        7 => 'extern',
+    ];
 }

@@ -2577,15 +2577,6 @@ if ($app['s_admin'])
 	];
 }
 
-$st_class_ary = [
-	0 => 'inactive',
-	2 => 'danger',
-	3 => 'success',
-	5 => 'warning',
-	6 => 'info',
-	7 => 'extern',
-];
-
 /*
  * Show a user
  */
@@ -2748,7 +2739,7 @@ if ($id)
 	if ($status != 1)
 	{
 		$app['h1']->add(' <small><span class="text-');
-		$app['h1']->add($st_class_ary[$status]);
+		$app['h1']->add(cnst_status::CLASS_ARY[$status]);
 		$app['h1']->add('">');
 		$app['h1']->add($h_status_ary[$status]);
 		$app['h1']->add('</span></small>');
@@ -4320,11 +4311,20 @@ if ($v_list)
 
 		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
 
-		$class = isset($st_class_ary[$row_stat]) ? ' class="' . $st_class_ary[$row_stat] . '"' : '';
-
 		$first = true;
 
-		echo '<tr' . $class . ' data-balance="' . $u['saldo'] . '">';
+		echo '<tr';
+
+		if (isset(cnst_status::CLASS_ARY[$row_stat]))
+		{
+			echo ' class="';
+			echo cnst_status::CLASS_ARY[$row_stat];
+			echo '"';
+		}
+
+		echo ' data-balance="';
+		echo $u['saldo'];
+		echo '">';
 
 		if (isset($show_columns['u']))
 		{
@@ -4719,13 +4719,20 @@ else if ($v_tiles)
 	foreach ($users as $u)
 	{
 		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
-		$class = $st_class_ary[$row_stat] ?? false;
-		$class = $class ? ' class="bg-' . $class . '"' : '';
 
 		$url = generate_url('users', ['id' => $u['id'], 'link' => $status]);
 
 		echo '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
-		echo '<div' . $class . '>';
+		echo '<div';
+
+		if (isset(cnst_status::CLASS_ARY[$row_stat]))
+		{
+			echo ' class="bg-';
+			echo cnst_status::CLASS_ARY[$row_stat];
+			echo '"';
+		}
+
+		echo '>';
 		echo '<div class="thumbnail text-center">';
 		echo '<a href="' . $url . '">';
 
