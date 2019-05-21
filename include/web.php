@@ -542,19 +542,6 @@ $app['render_stat']->before('nav', '')
 
 /**************** FUNCTIONS ***************/
 
-function btn_filter():string
-{
-	$ret = '<div class="pull-right">';
-	$ret .= '&nbsp;<button class="btn btn-default hidden-xs" ';
-	$ret .= 'title="Filters" ';
-	$ret .= 'data-toggle="collapse" data-target="#filter"';
-	$ret .= '><i class="fa fa-caret-down"></i>';
-	$ret .= '<span class="hidden-xs hidden-sm"> ';
-	$ret .= 'Filters</span></button>';
-	$ret .= '</div>';
-	return $ret;
-}
-
 /**
  * generate url
  */
