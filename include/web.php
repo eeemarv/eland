@@ -1,13 +1,14 @@
 <?php
 
-use util\cnst;
-use util\app;
+use cnst\role as cnst_role;
+use cnst\access as cnst_access;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
 header('Cache-Control: private, no-cache');
-header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') . ', http://img.letsa.net');
+header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') .
+	', http://img.letsa.net');
 
 $app['assets']->add([
 	'jquery',
@@ -50,7 +51,7 @@ if (getenv('WEBSITE_MAINTENANCE'))
 /** page access **/
 
 if (!isset($app['page_access'])
-	|| !isset(cnst::ACCESS[$app['page_access']]))
+	|| !isset(cnst_access::ACCESS[$app['page_access']]))
 {
 	internal_server_error($app['twig']);
 }
@@ -85,13 +86,13 @@ if (!$app['tschema'])
 	page_not_found($app['twig']);
 }
 
-if (isset($app['pp_role_short']) && isset(cnst::ROLE_LONG[$app['pp_role_short']]))
+if (isset($app['pp_role_short']) && isset(cnst_role::LONG[$app['pp_role_short']]))
 {
 	$app['pp_ary'] = [
 		'system'		=> $app['pp_system'],
 		'role_short'	=> $app['pp_role_short'],
 	];
-	$app['pp_role'] = cnst::ROLE_LONG[$app['pp_role_short']];
+	$app['pp_role'] = cnst_role::LONG[$app['pp_role_short']];
 }
 else
 {
@@ -130,6 +131,7 @@ $app['s_master'] = false;
 $app['s_admin'] = false;
 $app['s_user'] = false;
 $app['s_guest'] = false;
+$app['s_anonymous'] = false;
 $app['s_elas_guest'] = false;
 $app['s_id'] = 0;
 $app['s_accountrole'] = 'anonymous';
@@ -394,7 +396,7 @@ switch ($app['s_accountrole'])
  * some vars
  **/
 
-$app['s_access_level'] = cnst::ACCESS_ARY[$app['p_role']];
+// $app['s_access_level'] = cnst::ACCESS_ARY[$app['p_role']];
 
 $errors = [];
 

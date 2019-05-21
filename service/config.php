@@ -3,7 +3,7 @@
 namespace service;
 
 use service\xdb;
-use util\cnst_config;
+use cnst\config as cnst_config;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
 

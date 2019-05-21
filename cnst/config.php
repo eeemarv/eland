@@ -1,8 +1,8 @@
 <?php
 
-namespace util;
+namespace cnst;
 
-class cnst_config
+class config
 {
     const TAG = [
         'input'    => [

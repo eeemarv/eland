@@ -5,7 +5,7 @@ namespace service;
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as predis;
 use service\cache;
-use util\cnst;
+use cnst\process as cnst_process;
 
 class monitor_process
 {
@@ -107,7 +107,7 @@ class monitor_process
 		$this->predis->set('monitor_processes', json_encode($monitor));
 		$this->predis->expire('monitor_processes', 86400);
 
-		sleep(cnst::PROCESS_INTERVAL[$this->process_name]['wait']);
+		sleep(cnst_process::INTERVAL[$this->process_name]['wait']);
 
 		return true;
 	}
@@ -115,7 +115,7 @@ class monitor_process
 	public function periodic_log():void
 	{
 		if ($this->loop_count
-			% cnst::PROCESS_INTERVAL[$this->process_name]['log']
+			% cnst_process::INTERVAL[$this->process_name]['log']
 			=== 0)
 		{
 			error_log('.. ' . $this->process_name . ' .. ' .
@@ -163,7 +163,7 @@ class monitor_process
 				$monitor_processes = json_decode($monitor_processes, true);
 				$now = time();
 
-				foreach (cnst::PROCESS_INTERVAL as $process_name => $process_interval)
+				foreach (cnst_process::INTERVAL as $process_name => $process_interval)
 				{
 					if (!isset($monitor_processes[$process_name]))
 					{

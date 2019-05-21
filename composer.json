@@ -55,7 +55,8 @@
 			"schema_task\\": "schema_task/",
 			"util\\": "util/",
 			"twig\\": "twig/",
-			"render\\": "render/"
+			"render\\": "render/",
+			"cnst\\": "cnst/"
         }
     },
 	"scripts": {

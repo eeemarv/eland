@@ -1,6 +1,7 @@
 <?php
 
-use util\cnst;
+use cnst\role as cnst_role;
+use cnst\status as cnst_status;
 
 $q = $_GET['q'] ?? '';
 $status = $_GET['status'] ?? false;
@@ -72,13 +73,13 @@ if ($app['s_admin'])
 		],
 		'accountrole'		=> [
 			'lbl'		=> 'Rechten',
-			'options'	=> cnst::ROLE_ARY,
+			'options'	=> cnst_role::LABEL_ARY,
 			'string'	=> true,
 			'fa'		=> 'hand-paper-o',
 		],
 		'status'			=> [
 			'lbl'		=> 'Status',
-			'options'	=> cnst::STATUS_ARY,
+			'options'	=> cnst_status::LABEL_ARY,
 			'fa'		=> 'star-o',
 		],
 		'admincomment'		=> [
@@ -2173,7 +2174,7 @@ if ($add || $edit)
 		echo '<span class="fa fa-hand-paper-o"></span></span>';
 		echo '<select id="accountrole" name="accountrole" ';
 		echo 'class="form-control">';
-		echo $app['select']->get_options(cnst::ROLE_ARY, $user['accountrole']);
+		echo $app['select']->get_options(cnst_role::LABEL_ARY, $user['accountrole']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -2203,7 +2204,7 @@ if ($add || $edit)
 		echo '<span class="input-group-addon">';
 		echo '<span class="fa fa-star-o"></span></span>';
 		echo '<select id="status" name="status" class="form-control">';
-		echo $app['select']->get_options(cnst::STATUS_ARY, $user['status']);
+		echo $app['select']->get_options(cnst_status::LABEL_ARY, $user['status']);
 		echo '</select>';
 		echo '</div>';
 		echo '</div>';
@@ -2734,7 +2735,7 @@ if ($id)
 	$status = $user['status'];
 	$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
 
-	$h_status_ary = cnst::STATUS_ARY;
+	$h_status_ary = cnst_status::LABEL_ARY;
 	$h_status_ary[3] = 'Instapper';
 
 	if ($s_owner && !$app['s_admin'])
@@ -2958,12 +2959,12 @@ if ($id)
 		echo '<dt>';
 		echo 'Rechten / rol';
 		echo '</dt>';
-		echo get_dd(cnst::ROLE_ARY[$user['accountrole']]);
+		echo get_dd(cnst_role::LABEL_ARY[$user['accountrole']]);
 
 		echo '<dt>';
 		echo 'Status';
 		echo '</dt>';
-		echo get_dd(cnst::STATUS_ARY[$user['status']]);
+		echo get_dd(cnst_status::LABEL_ARY[$user['status']]);
 
 		echo '<dt>';
 		echo 'Commentaar van de admin';
@@ -4370,7 +4371,7 @@ if ($v_list)
 				}
 				else if ($key === 'accountrole')
 				{
-					echo cnst::ROLE_ARY[$u['accountrole']];
+					echo cnst_role::LABEL_ARY[$u['accountrole']];
 				}
 				else
 				{

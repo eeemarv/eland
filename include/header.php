@@ -1,5 +1,7 @@
 <?php
 
+use cnst\landing_pages as cnst_landing_pages;
+
 if ($css = $app['config']->get('css', $app['tschema']))
 {
 	$app['assets']->add_external_css([$css]);
@@ -161,7 +163,7 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 
 				echo '>';
 
-				$page = isset(\util\cnst::INTERSYSTEM_LANDING_PAGES[$app['script_name']])
+				$page = isset(cnst_landing_pages::INTERSYSTEM[$app['script_name']])
 					? $app['script_name']
 					: 'messages';
 

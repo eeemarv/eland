@@ -1,6 +1,6 @@
 <?php
 
-use util\cnst;
+use cnst\role as cnst_role;
 
 $app['page_access'] = 'anonymous';
 
@@ -287,7 +287,7 @@ if ($submit)
 
 		$params = array_merge($query, [
 			'system'	=> $app['pp_system'],
-			'role'		=> cnst::ROLE_SHORT[$user['accountrole']],
+			'role'		=> cnst_role::SHORT[$user['accountrole']],
 		]);
 
 		header('Location: ' . $app->path($location, $params));

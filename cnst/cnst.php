@@ -1,6 +1,6 @@
 <?php
 
-namespace util;
+namespace cnst;
 
 class cnst
 {
