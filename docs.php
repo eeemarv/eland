@@ -4,7 +4,7 @@ $rootpath = '';
 $app['page_access'] = 'guest';
 require_once __DIR__ . '/include/web.php';
 
-$app['h1']->fa('files-o');
+$app['heading']->fa('files-o');
 
 $q = $_GET['q'] ?? '';
 $del = $_GET['del'] ?? false;
@@ -92,8 +92,8 @@ if ($map_edit)
 
 	$app['assets']->add(['typeahead', 'typeahead.js']);
 
-	$app['h1']->add('Map aanpassen: ');
-	$app['h1']->add($app['link']->link_no_attr('docs', $app['pp_ary'],
+	$app['heading']->add('Map aanpassen: ');
+	$app['heading']->add($app['link']->link_no_attr('docs', $app['pp_ary'],
 		['map' => $map_edit], $map_name));
 
 	require_once __DIR__ . '/include/header.php';
@@ -238,7 +238,7 @@ if ($edit)
 
 	$app['assets']->add(['typeahead', 'typeahead.js']);
 
-	$app['h1']->add('Document aanpassen');
+	$app['heading']->add('Document aanpassen');
 
 	require_once __DIR__ . '/include/header.php';
 
@@ -390,7 +390,7 @@ if ($del)
 
 	if ($doc)
 	{
-		$app['h1']->add('Document verwijderen?');
+		$app['heading']->add('Document verwijderen?');
 
 		require_once __DIR__ . '/include/header.php';
 
@@ -551,7 +551,7 @@ if ($add)
 
 	$app['assets']->add(['typeahead', 'typeahead.js', 'access_input_cache.js']);
 
-	$app['h1']->add('Nieuw document opladen');
+	$app['heading']->add('Nieuw document opladen');
 
 	include __DIR__ . '/include/header.php';
 
@@ -757,11 +757,11 @@ if ($app['s_admin'])
 	$app['btn_nav']->csv();
 }
 
-$app['h1']->add($app['link']->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
+$app['heading']->add($app['link']->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
 
 if ($map)
 {
-	$app['h1']->add(': map "' . $map_name . '"');
+	$app['heading']->add(': map "' . $map_name . '"');
 }
 
 include __DIR__ . '/include/header.php';

@@ -132,9 +132,9 @@ $filtered = (isset($filter['q']) && $filter['q'] !== '')
 	|| (isset($filter['fdate']) && $filter['fdate'] !== '')
 	|| (isset($filter['tdate']) && $filter['tdate'] !== '');
 
-$app['h1']->add('Logs');
-$app['h1']->add_filtered($filtered);
-$app['h1']->fa('history');
+$app['heading']->add('Logs');
+$app['heading']->add_filtered($filtered);
+$app['heading']->fa('history');
 
 include __DIR__ . '/include/header.php';
 

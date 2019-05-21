@@ -384,14 +384,14 @@ if ($img_del && $id)
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
-	$app['h1']->add('Profielfoto ');
+	$app['heading']->add('Profielfoto ');
 
 	if ($app['s_admin'])
 	{
-		$app['h1']->add('van ' . link_user($id, $app['tschema']) . ' ');
+		$app['heading']->add('van ' . link_user($id, $app['tschema']) . ' ');
 	}
 
-	$app['h1']->add('verwijderen?');
+	$app['heading']->add('verwijderen?');
 
 	include __DIR__ . '/include/header.php';
 
@@ -895,14 +895,14 @@ if ($pw)
 		'generate_password.js',
 	]);
 
-	$app['h1']->add('Paswoord aanpassen');
+	$app['heading']->add('Paswoord aanpassen');
 
 	if (!$s_owner)
 	{
-		$app['h1']->add('voor ' . link_user($user, $app['tschema']));
+		$app['heading']->add('voor ' . link_user($user, $app['tschema']));
 	}
 
-	$app['h1']->fa('key');
+	$app['heading']->fa('key');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1158,10 +1158,10 @@ if ($del)
 		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
-	$app['h1']->add('Gebruiker ');
-	$app['h1']->add(link_user($del, $app['tschema']));
-	$app['h1']->add(' verwijderen?');
-	$app['h1']->fa('user');
+	$app['heading']->add('Gebruiker ');
+	$app['heading']->add(link_user($del, $app['tschema']));
+	$app['heading']->add(' verwijderen?');
+	$app['heading']->fa('user');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1962,15 +1962,15 @@ if ($add || $edit)
 
 	if ($s_owner && !$app['s_admin'] && $edit)
 	{
-		$app['h1']->add('Je profiel aanpassen');
+		$app['heading']->add('Je profiel aanpassen');
 	}
 	else
 	{
-		$app['h1']->add('Gebruiker ');
-		$app['h1']->add($edit ? 'aanpassen: ' . link_user($user, $app['tschema']) : 'toevoegen');
+		$app['heading']->add('Gebruiker ');
+		$app['heading']->add($edit ? 'aanpassen: ' . link_user($user, $app['tschema']) : 'toevoegen');
 	}
 
-	$app['h1']->fa('user');
+	$app['heading']->fa('user');
 
 	include __DIR__ . '/include/header.php';
 
@@ -2731,38 +2731,38 @@ if ($id)
 
 	if ($s_owner && !$app['s_admin'])
 	{
-		$app['h1']->add('Mijn gegevens: ');
+		$app['heading']->add('Mijn gegevens: ');
 	}
 
-	$app['h1']->add(link_user($user, $app['tschema']));
+	$app['heading']->add(link_user($user, $app['tschema']));
 
 	if ($status != 1)
 	{
-		$app['h1']->add(' <small><span class="text-');
-		$app['h1']->add(cnst_status::CLASS_ARY[$status]);
-		$app['h1']->add('">');
-		$app['h1']->add($h_status_ary[$status]);
-		$app['h1']->add('</span></small>');
+		$app['heading']->add(' <small><span class="text-');
+		$app['heading']->add(cnst_status::CLASS_ARY[$status]);
+		$app['heading']->add('">');
+		$app['heading']->add($h_status_ary[$status]);
+		$app['heading']->add('</span></small>');
 	}
 
 	if ($app['s_admin'])
 	{
 		if ($intersystem_missing)
 		{
-			$app['h1']->add(' <span class="label label-warning label-sm">');
-			$app['h1']->add('<i class="fa fa-exclamation-triangle"></i> ');
-			$app['h1']->add('De interSysteem-verbinding ontbreekt</span>');
+			$app['heading']->add(' <span class="label label-warning label-sm">');
+			$app['heading']->add('<i class="fa fa-exclamation-triangle"></i> ');
+			$app['heading']->add('De interSysteem-verbinding ontbreekt</span>');
 		}
 		else if ($intersystem_id)
 		{
-			$app['h1']->add(' ');
-			$app['h1']->add($app['link']->link_fa('intersystem', $app['pp_ary'],
+			$app['heading']->add(' ');
+			$app['heading']->add($app['link']->link_fa('intersystem', $app['pp_ary'],
 				['id' => $intersystem_id], 'Gekoppeld interSysteem',
 				['class' => 'btn btn-default'], 'share-alt'));
 		}
 	}
 
-	$app['h1']->fa('user');
+	$app['heading']->fa('user');
 
 	include __DIR__ . '/include/header.php';
 
@@ -3622,11 +3622,11 @@ if ($app['s_admin'])
 		$app['btn_top']->local('#actions', 'Bulk acties', 'envelope-o');
 	}
 
-	$app['h1']->add('Gebruikers');
+	$app['heading']->add('Gebruikers');
 }
 else
 {
-	$app['h1']->add('Leden');
+	$app['heading']->add('Leden');
 }
 
 if ($v_list)
@@ -3646,7 +3646,7 @@ $app['btn_nav']->view('users', $app['pp_ary'],
 	array_merge($params, ['view' => 'map']),
 	'Kaart', 'map-marker', $v_map);
 
-$app['h1']->fa('users');
+$app['heading']->fa('users');
 
 if ($v_list)
 {

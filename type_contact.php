@@ -42,8 +42,8 @@ if ($add)
 		$app['alert']->error('Corrigeer één of meerdere velden.');
 	}
 
-	$app['h1']->add('Contact type toevoegen');
-	$app['h1']->fa('circle-o-notch');
+	$app['heading']->add('Contact type toevoegen');
+	$app['heading']->fa('circle-o-notch');
 
 	include __DIR__ . '/include/header.php';
 
@@ -143,8 +143,8 @@ if ($edit)
 		$tc = $tc_prefetch;
 	}
 
-	$app['h1']->add('Contact type aanpassen');
-	$app['h1']->fa('circle-o-notch');
+	$app['heading']->add('Contact type aanpassen');
+	$app['heading']->fa('circle-o-notch');
 
 	include __DIR__ . '/include/header.php';
 
@@ -231,8 +231,8 @@ if ($del)
 		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
-	$app['h1']->add('Contact type verwijderen: ' . $ct['name']);
-	$app['h1']->fa('circle-o-notch');
+	$app['heading']->add('Contact type verwijderen: ' . $ct['name']);
+	$app['heading']->fa('circle-o-notch');
 
 	include __DIR__ . '/include/header.php';
 
@@ -274,8 +274,8 @@ while($row = $rs->fetch())
 $app['btn_top']->add('type_contact', $app['pp_ary'],
 	['add' => 1], 'Contact type toevoegen');
 
-$app['h1']->add('Contact types');
-$app['h1']->fa('circle-o-notch');
+$app['heading']->add('Contact types');
+$app['heading']->fa('circle-o-notch');
 
 include __DIR__ . '/include/header.php';
 

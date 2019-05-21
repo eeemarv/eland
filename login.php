@@ -304,8 +304,8 @@ if($app['config']->get('maintenance', $app['tschema']))
 		wegens onderhoudswerken.  Enkel admins kunnen inloggen');
 }
 
-$app['h1']->add('Login');
-$app['h1']->fa('sign-in');
+$app['heading']->add('Login');
+$app['heading']->fa('sign-in');
 
 require_once __DIR__ . '/include/header.php';
 

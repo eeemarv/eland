@@ -327,8 +327,8 @@ if (isset(cnst_config::TAB_PANES[$active_tab]['assets']))
 	$app['assets']->add(cnst_config::TAB_PANES[$active_tab]['assets']);
 }
 
-$app['h1']->add('Instellingen');
-$app['h1']->fa('gears');
+$app['heading']->add('Instellingen');
+$app['heading']->fa('gears');
 
 include __DIR__ . '/include/header.php';
 

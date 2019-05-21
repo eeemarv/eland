@@ -539,8 +539,8 @@ $app['link'] = function ($app){
 	);
 };
 
-$app['h1'] = function (){
-	return new render\h1();
+$app['heading'] = function (){
+	return new render\heading();
 };
 
 $app['btn_nav'] = function ($app){

@@ -162,8 +162,8 @@ else if (!$app['config']->get('support', $app['tschema']))
 		Je kan dit formulier niet gebruiken.');
 }
 
-$app['h1']->add('Contact');
-$app['h1']->fa('comment-o');
+$app['heading']->add('Contact');
+$app['heading']->fa('comment-o');
 
 require_once __DIR__ . '/include/header.php';
 

@@ -231,8 +231,8 @@ foreach ($export_ary as $ex_key => $export)
 	$buttons .= '</form>';
 }
 
-$app['h1']->add('Export');
-$app['h1']->fa('download');
+$app['heading']->add('Export');
+$app['heading']->fa('download');
 
 include __DIR__ . '/include/header.php';
 

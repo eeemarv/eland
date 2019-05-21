@@ -970,8 +970,8 @@ if ($add)
 	$systems_en = count($systems) > 1
 		&& $app['config']->get('currencyratio', $app['tschema']) > 0;
 
-	$app['h1']->add('Nieuwe transactie');
-	$app['h1']->fa('exchange');
+	$app['heading']->add('Nieuwe transactie');
+	$app['heading']->fa('exchange');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1420,8 +1420,8 @@ if ($edit)
 		$app['alert']->error($errors);
 	}
 
-	$app['h1']->add('Omschrijving transactie aanpassen');
-	$app['h1']->fa('exchange');
+	$app['heading']->add('Omschrijving transactie aanpassen');
+	$app['heading']->fa('exchange');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1604,8 +1604,8 @@ if ($id)
 	$app['btn_nav']->nav_list('transactions', $app['pp_ary'],
 		[], 'Lijst', 'exchange');
 
-	$app['h1']->add('Transactie');
-	$app['h1']->fa('exchange');
+	$app['heading']->add('Transactie');
+	$app['heading']->fa('exchange');
 
 	include __DIR__ . '/include/header.php';
 
@@ -2213,28 +2213,28 @@ if (isset($filter['uid']))
 {
 	if ($s_owner && !$app['p_inline'])
 	{
-		$app['h1']->add('Mijn transacties');
+		$app['heading']->add('Mijn transacties');
 	}
 	else
 	{
-		$app['h1']->add($app['link']->link_no_attr('transactions', $app['pp_ary'],
+		$app['heading']->add($app['link']->link_no_attr('transactions', $app['pp_ary'],
 			['f' => ['uid' => $filter['uid']]], 'Transacties'));
 
-		$app['h1']->add(' van ');
-		$app['h1']->add(link_user($filter['uid'], $app['tschema']));
+		$app['heading']->add(' van ');
+		$app['heading']->add(link_user($filter['uid'], $app['tschema']));
 	}
 }
 else
 {
-	$app['h1']->add('Transacties');
-	$app['h1']->add_filtered($filtered);
+	$app['heading']->add('Transacties');
+	$app['heading']->add_filtered($filtered);
 }
 
-$app['h1']->fa('exchange');
+$app['heading']->fa('exchange');
 
 if (!$app['p_inline'])
 {
-	$app['h1']->btn_filter();
+	$app['heading']->btn_filter();
 
 	$app['assets']->add([
 		'datepicker',
@@ -2443,8 +2443,8 @@ else
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	$app['h1']->add_inline_btn($app['btn_top']->get());
-	echo $app['h1']->get_h3();
+	$app['heading']->add_inline_btn($app['btn_top']->get());
+	echo $app['heading']->get_h3();
 }
 
 echo $app['pagination']->get();

@@ -493,8 +493,9 @@ if ($img_del == 'all' && $id)
 	$str_this_ow .= $app['link']->link_no_attr('messages', $app['pp_ary'],
 		['id' => $id], $message['content']);
 	$str_this_ow .= '"';
-	$app['h1']->add('Afbeeldingen verwijderen voor ' . $str_this_ow);
-	$app['h1']->fa('newspaper-o');
+
+	$app['heading']->add('Afbeeldingen verwijderen voor ' . $str_this_ow);
+	$app['heading']->fa('newspaper-o');
 
 	$app['assets']->add(['msg_img_del.js']);
 
@@ -695,13 +696,13 @@ if ($del)
 		$app['alert']->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
 	}
 
-	$app['h1']->add(ucfirst($ow_type_this) . ' ');
+	$app['heading']->add(ucfirst($ow_type_this) . ' ');
 
-	$app['h1']->add($app['link']->link_no_attr('messages', $app['pp_ary'],
+	$app['heading']->add($app['link']->link_no_attr('messages', $app['pp_ary'],
 		['id' => $del], $message['content']));
 
-	$app['h1']->add(' verwijderen?');
-	$app['h1']->fa('newspaper-o');
+	$app['heading']->add(' verwijderen?');
+	$app['heading']->fa('newspaper-o');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1236,8 +1237,8 @@ if (($edit || $add))
 		'access_input_cache.js',
 	]);
 
-	$app['h1']->add($add ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen');
-	$app['h1']->fa('newspaper-o');
+	$app['heading']->add($add ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen');
+	$app['heading']->fa('newspaper-o');
 
 	include __DIR__ . '/include/header.php';
 
@@ -1574,10 +1575,10 @@ if ($id)
 	$app['btn_nav']->nav_list('messages', $app['pp_ary'],
 		[], 'Lijst', 'newspaper-o');
 
-	$app['h1']->add($ow_type_uc);
-	$app['h1']->add(': ' . htmlspecialchars($message['content'], ENT_QUOTES));
-	$app['h1']->add(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
-	$app['h1']->fa('newspaper-o');
+	$app['heading']->add($ow_type_uc);
+	$app['heading']->add(': ' . htmlspecialchars($message['content'], ENT_QUOTES));
+	$app['heading']->add(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+	$app['heading']->fa('newspaper-o');
 
 	include __DIR__ . '/include/header.php';
 
@@ -2191,30 +2192,30 @@ if (isset($filter['uid']))
 {
 	if ($s_owner && !$app['p_inline'])
 	{
-		$app['h1']->add('Mijn vraag en aanbod');
+		$app['heading']->add('Mijn vraag en aanbod');
 	}
 	else
 	{
-		$app['h1']->add($app['link']->link_no_attr('messages', $app['pp_ary'],
+		$app['heading']->add($app['link']->link_no_attr('messages', $app['pp_ary'],
 			['f' => ['uid' => $filter['uid']]],
 			'Vraag en aanbod'));
 
-		$app['h1']->add(' van ');
-		$app['h1']->add(link_user($filter['uid'], $app['tschema']));
+		$app['heading']->add(' van ');
+		$app['heading']->add(link_user($filter['uid'], $app['tschema']));
 	}
 }
 else
 {
-	$app['h1']->add('Vraag en aanbod');
+	$app['heading']->add('Vraag en aanbod');
 }
 
 if (isset($filter['cid']) && $filter['cid'])
 {
-	$app['h1']->add(', categorie "' . $categories[$filter['cid']] . '"');
+	$app['heading']->add(', categorie "' . $categories[$filter['cid']] . '"');
 }
 
-$app['h1']->add_filtered($filtered);
-$app['h1']->fa('newspaper-o');
+$app['heading']->add_filtered($filtered);
+$app['heading']->fa('newspaper-o');
 
 if (!$app['p_inline'])
 {
@@ -2399,8 +2400,8 @@ if ($app['p_inline'])
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	$app['h1']->add_inline_btn($app['btn_top']->get());
-	echo $app['h1']->get_h3();
+	$app['heading']->add_inline_btn($app['btn_top']->get());
+	echo $app['heading']->get_h3();
 }
 
 echo $app['pagination']->get();

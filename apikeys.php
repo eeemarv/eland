@@ -40,8 +40,8 @@ if ($del)
 		from ' . $app['tschema'] . '.apikeys
 		where id = ?', [$del]);
 
-	$app['h1']->add('Apikey verwijderen?');
-	$app['h1']->fa('key');
+	$app['heading']->add('Apikey verwijderen?');
+	$app['heading']->fa('key');
 
 	include __DIR__ . '/include/header.php';
 
@@ -104,8 +104,8 @@ if ($add)
 
 	$key = sha1($app['config']->get('systemname', $app['tschema']) . microtime());
 
-	$app['h1']->add('Apikey toevoegen');
-	$app['h1']->fa('key');
+	$app['heading']->add('Apikey toevoegen');
+	$app['heading']->fa('key');
 
 	include __DIR__ . '/include/header.php';
 
@@ -164,8 +164,8 @@ $apikeys = $app['db']->fetchAll('select *
 
 $app['btn_top']->add('apikeys', $app['pp_ary'], ['add' => '1'], 'Apikey toevoegen');
 
-$app['h1']->add('Apikeys');
-$app['h1']->fa('key');
+$app['heading']->add('Apikeys');
+$app['heading']->fa('key');
 
 include __DIR__ . '/include/header.php';
 

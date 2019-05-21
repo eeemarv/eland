@@ -2,7 +2,7 @@
 
 namespace render;
 
-class h1
+class heading
 {
 	protected $str = '';
 	protected $fa;

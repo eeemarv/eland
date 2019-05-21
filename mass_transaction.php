@@ -421,8 +421,8 @@ $app['assets']->add([
 	'combined_filter.js',
 ]);
 
-$app['h1']->add('Massa transactie');
-$app['h1']->fa('exchange');
+$app['heading']->add('Massa transactie');
+$app['heading']->fa('exchange');
 
 include __DIR__ . '/include/header.php';
 

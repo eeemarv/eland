@@ -56,8 +56,8 @@ if ($token)
 		}
 	}
 
-	$app['h1']->add('Nieuw paswoord ingeven.');
-	$app['h1']->fa('key');
+	$app['heading']->add('Nieuw paswoord ingeven.');
+	$app['heading']->fa('key');
 
 	$app['assets']->add([
 		'generate_password.js',
@@ -162,8 +162,8 @@ if (isset($_POST['zend']))
 	}
 }
 
-$app['h1']->add('Paswoord vergeten');
-$app['h1']->fa('key');
+$app['heading']->add('Paswoord vergeten');
+$app['heading']->fa('key');
 
 require_once __DIR__ . '/include/header.php';
 

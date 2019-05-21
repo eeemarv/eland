@@ -92,7 +92,7 @@ if ($del)
 		where c.id_type_contact = tc.id
 			and c.id = ?', [$del]);
 
-	$app['h1']->add('Contact verwijderen?');
+	$app['heading']->add('Contact verwijderen?');
 
 	include __DIR__ . '/include/header.php';
 
@@ -447,17 +447,17 @@ if ($edit || $add)
 
 	if ($edit)
 	{
-		$app['h1']->add('Contact aanpassen');
+		$app['heading']->add('Contact aanpassen');
 	}
 	else
 	{
-		$app['h1']->add('Contact toevoegen');
+		$app['heading']->add('Contact toevoegen');
 	}
 
 
 	if (!(($s_owner && !$app['s_admin']) || ($app['s_admin'] && $add && !$uid)))
 	{
-		$app['h1']->add(' voor ' . link_user($user_id, $app['tschema']));
+		$app['heading']->add(' voor ' . link_user($user_id, $app['tschema']));
 	}
 
 	include __DIR__ . '/include/header.php';
@@ -624,15 +624,15 @@ if ($uid)
 	{
 		if ($s_owner)
 		{
-			$app['h1']->add('Mijn contacten');
+			$app['heading']->add('Mijn contacten');
 		}
 		else
 		{
-			$app['h1']->add('Contacten Gebruiker ');
-			$app['h1']->add(link_user($user, $app['tschema']));
+			$app['heading']->add('Contacten Gebruiker ');
+			$app['heading']->add(link_user($user, $app['tschema']));
 		}
 
-		$app['h1']->fa('map-marker');
+		$app['heading']->fa('map-marker');
 
 		include __DIR__ . '/include/header.php';
 		echo '<br>';
@@ -1049,10 +1049,10 @@ $panel_collapse = !$filtered;
 
 $app['assets']->add(['typeahead', 'typeahead.js']);
 
-$app['h1']->add('Contacten');
-$app['h1']->add_filtered($filtered);
-$app['h1']->btn_filter();
-$app['h1']->fa('map-marker');
+$app['heading']->add('Contacten');
+$app['heading']->add_filtered($filtered);
+$app['heading']->btn_filter();
+$app['heading']->fa('map-marker');
 
 include __DIR__ . '/include/header.php';
 
