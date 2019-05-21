@@ -120,9 +120,7 @@ $tableheader_ary = [
 $tableheader_ary[$params['sort']['orderby']]['asc'] = $params['sort']['asc'] ? 0 : 1;
 $tableheader_ary[$params['sort']['orderby']]['indicator'] = $params['sort']['asc'] ? '-asc' : '-desc';
 
-$top_right .= '<a href="#" class="csv">';
-$top_right .= '<i class="fa fa-file"></i>';
-$top_right .= '&nbsp;csv</a>';
+$app['btn_nav']->csv();
 
 $app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
 

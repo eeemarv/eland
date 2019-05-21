@@ -61,16 +61,6 @@ if (isset($_GET['et']))
 	$app['email_validate']->validate($_GET['et']);
 }
 
-/**
- *
- **/
-
-$top_right = '';
-
-/**
- *
- */
-
 if (isset($app['pp_system']))
 {
 	$app['tschema'] = $app['systems']->get_schema_from_system($app['pp_system']);
@@ -92,6 +82,7 @@ if (isset($app['pp_role_short']) && isset(cnst_role::LONG[$app['pp_role_short']]
 		'system'		=> $app['pp_system'],
 		'role_short'	=> $app['pp_role_short'],
 	];
+
 	$app['pp_role'] = cnst_role::LONG[$app['pp_role_short']];
 }
 else
@@ -99,6 +90,7 @@ else
 	$app['pp_ary'] = [
 		'system'	=> $app['pp_system'],
 	];
+
 	$app['pp_role'] = 'anonymous';
 }
 
@@ -138,7 +130,7 @@ $app['s_accountrole'] = 'anonymous';
 
 if (count($app['s_logins']) && isset($app['s_logins'][$app['s_schema']]))
 {
-	switch ($app['s_logins']['s_schema'])
+	switch ($app['s_logins'][$app['s_schema']])
 	{
 		case 'master':
 			$app['s_accountrole'] = 'admin';
@@ -169,6 +161,7 @@ if (count($app['s_logins']) && isset($app['s_logins'][$app['s_schema']]))
 					$s_logins = $app['s_logins'];
 					unset($s_logins[$app['s_schema']]);
 					$app['session']->set('logins', $s_logins);
+
 					error_log('Unvalid accountrole ' .
 						$app['s_accountrole'] .
 						' for schema ' . $app['s_schema']);

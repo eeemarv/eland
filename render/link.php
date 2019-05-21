@@ -30,7 +30,7 @@ class link
 		array $params
 	):string
 	{
-        return $this['url_generator']->generate(
+        return $this->url_generator->generate(
 			$route, array_merge($params, $params_context),
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 	}

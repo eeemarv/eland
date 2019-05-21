@@ -500,11 +500,4 @@ if ($app['btn_nav']->has_content())
 echo '</div>';
 echo '</div>';
 
-if (isset($top_right))
-{
-	echo '<div class="pull-right hidden-xs">';
-	echo $top_right;
-	echo '</div>';
-}
-
 echo $app['heading']->get_h1();
