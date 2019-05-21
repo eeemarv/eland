@@ -2399,12 +2399,8 @@ if ($app['p_inline'])
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
 
-	echo '<h3><i class="fa fa-newspaper-o"></i> ';
-	echo $h1;
-	echo '<span class="inline-buttons">';
-	echo $app['btn_top']->get();
-	echo '</span>';
-	echo '</h3>';
+	$app['h1']->add_inline_btn($app['btn_top']->get());
+	echo $app['h1']->get_h3();
 }
 
 echo $app['pagination']->get();

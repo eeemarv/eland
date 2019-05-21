@@ -212,14 +212,16 @@ if ($del)
 			$app['pp_ary'], ['t' => $t], $forum_post['subject']));
 	}
 
-	$h1 .= ' verwijderen?';
+	$app['h1']->add(' verwijderen?');
 
 	require_once __DIR__ . '/include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
 
-	echo '<p>' . $forum_post['content'] . '</p>';
+	echo '<p>';
+	echo $forum_post['content'];
+	echo '</p>';
 
 	echo '<form method="post">';
 	echo $app['link']->btn_cancel('forum', $app['pp_ary'], ['f' => $t]);

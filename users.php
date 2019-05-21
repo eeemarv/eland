@@ -2747,28 +2747,27 @@ if ($id)
 
 	if ($status != 1)
 	{
-		$h1 .= ' <small><span class="text-' . $st_class_ary[$status] . '">';
-		$h1 .= $h_status_ary[$status];
-		$h1 .= '</span></small>';
+		$app['h1']->add(' <small><span class="text-');
+		$app['h1']->add($st_class_ary[$status]);
+		$app['h1']->add('">');
+		$app['h1']->add($h_status_ary[$status]);
+		$app['h1']->add('</span></small>');
 	}
 
 	if ($app['s_admin'])
 	{
 		if ($intersystem_missing)
 		{
-			$h1 .= ' <span class="label label-warning label-sm">';
-			$h1 .= '<i class="fa fa-exclamation-triangle"></i> ';
-			$h1 .= 'De interSysteem-verbinding ontbreekt</span>';
+			$app['h1']->add(' <span class="label label-warning label-sm">');
+			$app['h1']->add('<i class="fa fa-exclamation-triangle"></i> ');
+			$app['h1']->add('De interSysteem-verbinding ontbreekt</span>');
 		}
 		else if ($intersystem_id)
 		{
-			$h1 .= ' ';
-			$h1 .= $app['link']->link_fa('intersystem', $app['pp_ary'],
-				['id' => $intersystem_id],
-				'Gekoppeld interSysteem',
-				['class' => 'btn btn-default'],
-				'share-alt'
-			);
+			$app['h1']->add(' ');
+			$app['h1']->add($app['link']->link_fa('intersystem', $app['pp_ary'],
+				['id' => $intersystem_id], 'Gekoppeld interSysteem',
+				['class' => 'btn btn-default'], 'share-alt'));
 		}
 	}
 

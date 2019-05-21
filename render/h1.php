@@ -21,19 +21,29 @@ class h1
 
 	public function get():string
 	{
-		if ($this->str === '')
-		{
-			return '';
-		}
-
-		$out = '<h1>';
-		$out .= isset($this->fa) ? '<i class="fa fa-' . $this->fa . '"></i>&nbsp;' : '';
+		$out = isset($this->fa) ? '<i class="fa fa-' . $this->fa . '"></i>&nbsp;' : '';
 		$out .= $this->str;
 		$out .= $this->filtered ? '&nbsp;<small>Gefilterd</small>' : '';
 		$out .= $this->btn_filter ? implode('', self::BTN_FILTER) : '';
-		$out .= '</h1>';
 
 		return $out;
+	}
+
+	public function get_h1():string
+	{
+		return '<h1>' . $this->get() . '</h1>';
+	}
+
+	public function get_h3():string
+	{
+		return '<h3>' . $this->get() . '</h3>';
+	}
+
+	public function add_inline_btn(string $str):void
+	{
+		$this->str .= '<span class="inline-buttons">';
+		$this->str .= $str;
+		$this->str .= '</span>';
 	}
 
 	public function fa(string $fa):void
