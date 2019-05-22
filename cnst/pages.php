@@ -2,9 +2,15 @@
 
 namespace cnst;
 
-class landing_pages
+class pages
 {
-    const INTERSYSTEM = [
+    const DEFAULT_VIEW = [
+        'users'		=> 'list',
+        'messages'	=> 'extended',
+        'news'		=> 'extended',
+    ];
+
+    const INTERSYSTEM_LANDING = [
         'messages'		=> true,
         'users'			=> true,
         'transactions'	=> true,

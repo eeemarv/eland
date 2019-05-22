@@ -1,6 +1,6 @@
 <?php
 
-use cnst\landing_pages as cnst_landing_pages;
+use cnst\landing_pages as cnst_pages;
 
 if ($css = $app['config']->get('css', $app['tschema']))
 {
@@ -163,11 +163,11 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 
 				echo '>';
 
-				$page = isset(cnst_landing_pages::INTERSYSTEM[$app['script_name']])
-					? $app['script_name']
+				$route = isset(cnst_pages::INTERSYSTEM_LANDING[$app['matched_route']])
+					? $app['matched_route']
 					: 'messages';
 
-				echo $app['link']->link_no_attr($page, $app['pp_ary'],
+				echo $app['link']->link_no_attr($route, $app['pp_ary'],
 					['welcome' => 1],
 					$app['config']->get('systemname', $sch));
 

@@ -2,6 +2,7 @@
 
 use cnst\role as cnst_role;
 use cnst\access as cnst_access;
+use cnst\pages as cnst_pages;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
@@ -97,10 +98,9 @@ else
 $app['matched_route'] = $app['request']->attributes->get('_route');
 
 /**
- * authentication
+ * user schema: s_schema
+ * (authentication 1)
  */
-
-$app['session_user'] = [];
 
 $app['s_schema'] = function () use ($app){
 
@@ -114,6 +114,16 @@ $app['s_schema'] = function () use ($app){
 
 	return $s_schema;
 };
+
+/**
+ * Load interSystems
+ */
+
+
+
+
+
+$app['session_user'] = [];
 
 $app['s_system_self'] = $app['s_schema'] === $app['tschema'];
 
@@ -415,83 +425,31 @@ if ($app['page_access'] != 'anonymous'
 $app['xdb']->set_user($app['s_schema'],
 	ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
 
-/* view (global for all systems) */
-
-$app['p_inline'] = isset($_GET['inline']) ? true : false;
-$app['p_view'] = $_GET['view'] ?? false;
-
-$app['s_view'] = $app['session']->get('view') ?? [
-	'users'		=> 'list',
-	'messages'	=> 'extended',
-	'news'		=> 'extended',
-];
-
-if ($app['script_name'] === 'users'
-	&& $app['p_view'] !== $app['s_view']['users'])
-{
-	if ($app['p_view'])
-	{
-		$app['s_view'] = array_merge($app['s_view'], [
-			'users'	=> $app['p_view'],
-		]);
-
-		$app['session']->set('view', $app['s_view']);
-	}
-	else
-	{
-		$app['p_view'] = $app['s_view']['users'];
-	}
-}
-else if ($app['script_name'] === 'messages'
-	&& $app['p_view'] !== $app['s_view']['messages'])
-{
-	if ($app['p_view'])
-	{
-		$app['s_view'] = array_merge($app['s_view'], [
-			'messages'	=> $app['p_view'],
-		]);
-
-		$app['session']->set('view', $app['s_view']);
-	}
-	else
-	{
-		$app['p_view'] = $app['s_view']['messages'];
-	}
-}
-else if ($app['script_name'] === 'news'
-	&& $app['p_view'] !== $app['s_view']['news'])
-{
-	if ($app['p_view'])
-	{
-		$app['s_view'] = array_merge($app['s_view'], [
-			'news'		=> $app['p_view'],
-		]);
-
-		$app['session']->set('view', $app['s_view']);
-	}
-	else
-	{
-		$app['p_view'] = $app['s_view']['news'];
-	}
-}
-
 /**
- * remember adapted role in own system (for links to own system)
+ * inline
  */
 
-$app['s_ary'] = [];
+$app['p_inline'] = isset($_GET['inline']) ? true : false;
 
-if ($app['s_user'] || $app['s_admin'] || $app['s_master'])
+/**
+ * view (global for all systems)
+ */
+
+if (isset(cnst_pages::DEFAULT_VIEW[$app['matched_route']]))
 {
-	$app['session']->set('role_short.' . $app['tschema'], $app['pp_role_short']);
-	$app['s_ary'] = $app['pp_ary'];
-}
-else if ($app['s_guest'] && !$app['s_elas_guest'])
-{
-	$app['s_ary'] = [
-		'system'		=> $app['systems']->get_system_from_schema($app['s_schema']),
-		'role_short'	=> $app['session']->get('role_short.' . $app['s_schema']),
-	];
+	$app['s_view'] = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
+
+	if (isset($_GET['view'])
+		&& $_GET['view'] !== $app['s_view'][$app['matched_route']])
+	{
+		$app['s_view'] = array_merge($app['s_view'], [
+			$app['matched_route']	=> $_GET['view'],
+		]);
+
+		$app['session']->set('view', $app['s_view']);
+	}
+
+	$app['p_view'] = $app['s_view'][$app['matched_route']];
 }
 
 /* */
