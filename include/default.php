@@ -582,10 +582,7 @@ $app['elas_db_upgrade'] = function ($app){
 };
 
 $app['form_token'] = function ($app){
-	return new service\form_token(
-		$app['predis'],
-		$app['script_name']
-	);
+	return new service\form_token($app['predis']);
 };
 
 $app['access_control'] = function($app){

@@ -9,12 +9,10 @@ class form_token
 	protected $ttl = 14400; // 4 hours
 	protected $redis;
 	protected $token;
-	protected $script_name;
 
-	public function __construct(Redis $redis, string $script_name)
+	public function __construct(Redis $redis)
 	{
 		$this->redis = $redis;
-		$this->script_name = $script_name;
 	}
 
 	public function get():string

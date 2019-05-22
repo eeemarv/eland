@@ -98,22 +98,20 @@ else
 $app['matched_route'] = $app['request']->attributes->get('_route');
 
 /**
- * user schema: s_schema
- * (authentication 1)
+ * Authentication User: s_schema, s_id, session_user
  */
 
-$app['s_schema'] = function () use ($app){
+$app['s_schema'] = $app['session']->get('schema');
+$app['s_system_self'] = $app['s_schema'] === $app['tschema'];
+$app['session_user'] = [];
+$app['s_logins'] = $app['session']->get('logins') ?? [];
 
-	$s_schema = $app['session']->get('schema');
+if (count($app['s_logins'])
+	&& isset($app['s_logins'][$app['s_schema']]))
+{
+	$app['s_id'] = $app['s_logins'][$app['s_schema']];
+}
 
-	if (!isset($s_schema))
-	{
-		$s_schema = $app['tschema'];
-		$app['session']->set('schema', $s_schema);
-	}
-
-	return $s_schema;
-};
 
 /**
  * Load interSystems
@@ -125,9 +123,7 @@ $app['s_schema'] = function () use ($app){
 
 $app['session_user'] = [];
 
-$app['s_system_self'] = $app['s_schema'] === $app['tschema'];
 
-$app['s_logins'] = $app['session']->get('logins') ?? [];
 
 $app['s_master'] = false;
 $app['s_admin'] = false;
