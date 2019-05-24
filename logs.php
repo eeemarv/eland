@@ -90,7 +90,8 @@ $query .= ' offset ' . $params['p']['start'];
 
 $rows = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init('logs', $row_count, $params);
+$app['pagination']->init('logs', $app['pp_ary'],
+	$row_count, $params);
 
 $asc_preset_ary = [
 	'asc'	=> 0,

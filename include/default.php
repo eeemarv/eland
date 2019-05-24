@@ -510,12 +510,6 @@ $app['alert'] = function ($app){
 		$app['tschema']);
 };
 
-$app['pagination'] = function ($app){
-	return new service\pagination(
-		$app['select']
-	);
-};
-
 $app['password_strength'] = function (){
 	return new service\password_strength();
 };
@@ -532,6 +526,13 @@ $app['autominlimit'] = function ($app){
 /**
  * render
  */
+
+$app['pagination'] = function ($app){
+	return new render\pagination(
+		$app['select'],
+		$app['link']
+	);
+};
 
 $app['link'] = function ($app){
 	return new render\link(

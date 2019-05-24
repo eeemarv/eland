@@ -522,7 +522,10 @@ if ($img_del == 'all' && $id)
 		echo $img_id;
 		echo '" ';
 		echo 'data-url="';
-		echo generate_url('messages', ['img_del' => $img_id]);
+
+		echo $app['link']->context_path('messages', $app['pp_ary'],
+			['img_del' => $img_id]);
+
 		echo '" role="button">';
         echo '<i class="fa fa-times"></i> ';
         echo 'Verwijderen</span>';
@@ -1410,7 +1413,10 @@ if (($edit || $add))
 	echo '<i class="fa fa-plus" id="img_plus"></i> Opladen';
 	echo '<input id="fileupload" type="file" name="images[]" ';
 	echo 'data-url="';
-	echo generate_url('messages', $upload_img_param);
+
+	echo $app['link']->context_path('messages', $app['pp_ary'],
+		$upload_img_param);
+
 	echo '" ';
 	echo 'data-data-type="json" data-auto-upload="true" ';
 	echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
@@ -1585,11 +1591,11 @@ if ($id)
 	if ($message['cid'])
 	{
 		echo '<p>Categorie: ';
-		echo '<a href="';
-		echo generate_url('messages', ['f' => ['cid' => $message['cid']]]);
-		echo '">';
-		echo $message['catname'];
-		echo '</a></p>';
+
+		echo $app['link']->link_no_attr('messages', $app['pp_ary'],
+			['f' => ['cid' => $message['cid']]], $message['catname']);
+
+		echo '</p>';
 	}
 
 	echo '<div class="row">';
@@ -1620,11 +1626,13 @@ if ($id)
 		echo '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
 		echo '<input id="fileupload" type="file" name="images[]" ';
 		echo 'data-url="';
-		echo generate_url('messages', [
+
+		echo $app['link']->context_path('messages', $app['pp_ary'], [
 			'img' => 1,
 			'id' => $id,
 			'insert_img' => 1,
 		]);
+
 		echo '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
@@ -2055,11 +2063,12 @@ if ($v_extended)
 	}
 }
 
-$app['pagination']->init('messages', $row_count, $params, $app['p_inline']);
+$app['pagination']->init('messages', $app['pp_ary'],
+	$row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
-	'indicator' => '',
+	'fa' 	=> 'sort',
 ];
 
 $tableheader_ary = [
@@ -2112,8 +2121,8 @@ if (!$app['s_guest'] && $app['count_intersystems'])
 
 $tableheader_ary[$params['sort']['orderby']]['asc']
 	= $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['indicator']
-	= $params['sort']['asc'] ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['fa']
+	= $params['sort']['asc'] ? 'sort-asc' : 'sort-desc';
 
 unset($tableheader_ary['m.cdate']);
 
@@ -2459,14 +2468,8 @@ if ($v_list)
 				'asc' 		=> $data['asc'],
 			];
 
-			echo '<a href="';
-			echo generate_url('messages', $th_params);
-			echo '">';
-			echo $data['lbl'];
-			echo '&nbsp;<i class="fa fa-sort';
-			echo $data['indicator'];
-			echo '"></i>';
-			echo '</a>';
+			echo $app['link']->link_fa('messages', $app['pp_ary'],
+				$th_params, $data['lbl'], [], $data['fa']);
 		}
 		echo '</th>';
 	}
@@ -2565,7 +2568,10 @@ else if ($v_extended)
 		{
 			echo '<div class="media-left">';
 			echo '<a href="';
-			echo generate_url('messages', ['id' => $msg['id']]);
+
+			echo $app['link']->context_path('messages', $app['pp_ary'],
+				['id' => $msg['id']]);
+
 			echo '">';
 			echo '<img class="media-object" src="';
 			echo $app['s3_url'] . $imgs[$msg['id']];

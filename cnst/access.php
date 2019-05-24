@@ -4,6 +4,27 @@ namespace cnst;
 
 class access
 {
+    const ROUTE = [
+        'login'         => 'anonymous',
+        'contact'       => 'anonymous',
+        'register'      => 'anonymous',
+        'index'         => 'anonymous',
+        'messages'      => 'guest',
+        'users'         => 'guest',
+        'news'          => 'guest',
+        'docs'          => 'guest',
+        'forum'         => 'guest',
+        'support'       => 'user',
+        'status'        => 'admin',
+        'categories'    => 'admin',
+        'contact_types' => 'admin',
+        'contacts'      => 'guest',
+        'config'        => 'admin',
+        'autominlimit'  => 'admin',
+        'logs'          => 'admin',
+        'apikeys'       => 'admin',
+    ];
+
     const LABEL_ARY = [
         'admin'		=> 'Admin',
         'user'		=> 'User',

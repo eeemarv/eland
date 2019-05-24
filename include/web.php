@@ -26,7 +26,7 @@ $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'
 $app['server_name'] = $_SERVER['SERVER_NAME'];
 $app['base_url'] = $app['protocol'] . $app['server_name'];
 $app['request_uri'] = $_SERVER['REQUEST_URI'];
-$app['is_http_post'] = $_SERVER['REQUEST_METHOD'] == 'GET' ? false : true;
+$app['is_http_post'] = $_SERVER['REQUEST_METHOD'] === 'POST';
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
@@ -49,7 +49,9 @@ if (getenv('WEBSITE_MAINTENANCE'))
 	exit;
 }
 
-/** page access **/
+/**
+ * Page access
+*/
 
 if (!isset($app['page_access'])
 	|| !isset(cnst_access::ACCESS[$app['page_access']]))
@@ -57,9 +59,9 @@ if (!isset($app['page_access'])
 	internal_server_error($app['twig']);
 }
 
-if (isset($_GET['et']))
+if ($app['request']->query->get('et') !== null)
 {
-	$app['email_validate']->validate($_GET['et']);
+	$app['email_validate']->validate($app['request']->query->get('et'));
 }
 
 if (isset($app['pp_system']))
@@ -67,17 +69,26 @@ if (isset($app['pp_system']))
 	$app['tschema'] = $app['systems']->get_schema_from_system($app['pp_system']);
 }
 
+/*
 if (!$app['tschema'])
 {
 	$app['tschema'] = $app['systems']->get_schema($app['server_name']);
 }
+*/
 
 if (!$app['tschema'])
 {
 	page_not_found($app['twig']);
 }
 
-if (isset($app['pp_role_short']) && isset(cnst_role::LONG[$app['pp_role_short']]))
+/**
+ * Route and parameters
+ */
+
+$app['matched_route'] = $app['request']->attributes->get('_route');
+
+if (isset($app['pp_role_short'])
+	&& isset(cnst_role::LONG[$app['pp_role_short']]))
 {
 	$app['pp_ary'] = [
 		'system'		=> $app['pp_system'],
@@ -95,88 +106,53 @@ else
 	$app['pp_role'] = 'anonymous';
 }
 
-$app['matched_route'] = $app['request']->attributes->get('_route');
+$app['s_system_self'] = true;
+$app['s_schema'] = $app['tschema'];
+$app['s_elas_guest'] = false;
+$app['s_guest'] = false;
+$app['s_user'] = false;
+$app['s_admin'] = false;
+$app['s_anonymous'] = false;
+$app['s_master'] = false;
+$app['s_accountrole'] = $app['pp_role'];
 
-/**
- * Authentication User: s_schema, s_id, session_user
- */
-
-$app['s_schema'] = $app['session']->get('schema');
-$app['s_system_self'] = $app['s_schema'] === $app['tschema'];
-$app['session_user'] = [];
-$app['s_logins'] = $app['session']->get('logins') ?? [];
-
-if (count($app['s_logins'])
-	&& isset($app['s_logins'][$app['s_schema']]))
+if ($app['pp_role'] === 'guest')
 {
-	$app['s_id'] = $app['s_logins'][$app['s_schema']];
+	if ($app['request']->query->get('s') !== null
+		&& $app['request']->query->get('s') !== $app['tschema'])
+	{
+		$app['pp_ary']['s'] = $app['request']->query->get('s');
+		$app['s_schema'] = $app['pp_ary']['s'];
+		$app['s_system_self'] = false;
+	}
+	else if ($app['request']->query->get('elas_guest') !== null)
+	{
+		$app['pp_ary']['elas_guest'] = $app['request']->query->get('elas_guest');
+		$app['s_elas_guest'] = true;
+	}
 }
 
-
-/**
- * Load interSystems
- */
-
-
-
-
-
-$app['session_user'] = [];
-
-
-
-$app['s_master'] = false;
-$app['s_admin'] = false;
-$app['s_user'] = false;
-$app['s_guest'] = false;
-$app['s_anonymous'] = false;
-$app['s_elas_guest'] = false;
-$app['s_id'] = 0;
-$app['s_accountrole'] = 'anonymous';
-
-if (count($app['s_logins']) && isset($app['s_logins'][$app['s_schema']]))
+switch ($app['pp_role'])
 {
-	switch ($app['s_logins'][$app['s_schema']])
-	{
-		case 'master':
-			$app['s_accountrole'] = 'admin';
-			$app['s_master'] = true;
-			break;
-		case 'elas':
-			$app['s_accountrole'] = 'guest';
-			$app['s_guest'] = true;
-			$app['s_elas_guest'] = true;
-			break;
-		default:
-			$app['s_id'] = $app['s_logins'][$app['s_schema']];
-			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
-			$app['s_accountrole'] = $app['session_user']['accountrole'];
+	case 'guest':
+		$app['s_guest'] = true;
+		break;
 
-			switch ($app['s_accountrole'])
-			{
-				case 'user':
-					$app['s_admin'] = true;
-					break;
-				case 'user':
-					$app['s_user'] = true;
-					break;
-				case 'guest':
-					$app['s_guest'] = true;
-					break;
-				default:
-					$s_logins = $app['s_logins'];
-					unset($s_logins[$app['s_schema']]);
-					$app['session']->set('logins', $s_logins);
+	case 'user':
+		$app['s_user'] = true;
+		break;
 
-					error_log('Unvalid accountrole ' .
-						$app['s_accountrole'] .
-						' for schema ' . $app['s_schema']);
-					internal_server_error($app['twig']);
-					break;
-			}
+	case 'admin':
+		$app['s_admin'] = true;
+		break;
 
-			break;
-	}
+	case 'anonymous':
+		$app['s_anonymous'] = true;
+		break;
+
+	default:
+		internal_server_error($app['twig']);
+		break;
 }
 
 /**
@@ -211,16 +187,83 @@ $app['count_intersystems'] = count($app['intersystem_ary']['eland'])
 	+ count($app['intersystem_ary']['elas']);
 
 /**
- * authorization
+ * Authentication User: s_schema, s_id, session_user
  */
 
-if (!count($app['s_logins']))
+$app['session_user'] = [];
+$app['s_role'] = 'anonymous';
+$app['s_id'] = 0;
+$app['s_logins'] = $app['session']->get('logins') ?? [];
+$app['s_auth_en'] = count($app['s_logins'])
+	&& isset($app['s_logins'][$app['s_schema']]);
+
+if ($app['s_auth_en'])
 {
-	if ($app['s_accountrole'] != 'anonymous')
+	switch($app['s_logins'][$app['s_schema']])
 	{
-		redirect_login();
+		case 'master':
+			$app['s_master'] = true;
+			$app['s_role'] = 'admin';
+			break;
+
+		case 'elas':
+			$app['s_role'] = 'guest';
+			break;
+
+		default:
+			$app['s_id'] = $app['s_logins'][$app['s_schema']];
+			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+			break;
 	}
 }
+
+error_log($app['request']->getPathInfo());
+
+/**
+ * Authorization
+ */
+
+if ($app['page_access'] === 'anonymous')
+{
+	if (!isset($app['allow_authenticated'])
+		&& $app['s_auth_en'])
+	{
+		$default_landing_page = $app['config']->get('default_landing_page', $app['tschema']);
+		$app['link']->redirect();
+	}
+}
+else
+{
+	if (!$app['s_auth_en'])
+	{
+		$location = $app['request']->getQueryString();
+		$location = isset($location) ? '?' . $location : '';
+		$location = $app['request']->getPathInfo() . $location;
+
+		$app['link']->redirect('login',
+			['system' => $app['pp_system']],
+			['location'	=> $location],
+		);
+	}
+}
+
+if ($app['s_guest'] && !$app['s_system_self'])
+{
+	if (!isset($app['intersystem_ary']['eland'][$app['tschema']]))
+	{
+		$app['link']->redirect('login',
+			['system' => $app['pp_system']],
+			['location'	=> $location],
+		);
+	}
+}
+
+
+
+
+
+
+
 
 if (!$app['s_id'])
 {
@@ -454,7 +497,7 @@ $app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['ts
 
 /** welcome message **/
 
-if (isset($_GET['welcome']) && $app['s_guest'])
+if ($app['request']->query->get('welcome') !== null && $app['s_guest'])
 {
 	$msg = '<strong>Welkom bij ';
 	$msg .= $app['config']->get('systemname', $app['tschema']);

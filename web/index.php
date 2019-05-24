@@ -20,18 +20,22 @@ $c_system_user = $app['controllers_factory'];
 $c_system_admin = $app['controllers_factory'];
 
 $c_locale->assert('_locale', 'nl');
+
 $c_system->assert('_locale', 'nl')
     ->assert('system', '[a-z][a-z0-9]*');
+
 $c_system_auth->assert('_locale', 'nl')
     ->assert('system', '[a-z][a-z0-9]*')
     ->assert('role_short', '[gua]')
     ->assert('id', '\d+')
     ->assert('view', 'extended|list|map|tiles');
+
 $c_system_user->assert('_locale', 'nl')
     ->assert('system', '[a-z][a-z0-9]*')
     ->assert('role_short', '[ua]')
     ->assert('id', '\d+')
     ->assert('view', 'extended|list|map|tiles');
+
 $c_system_admin->assert('_locale', 'nl')
     ->assert('system', '[a-z][a-z0-9]*')
     ->assert('role_short', 'a')

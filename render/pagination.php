@@ -1,20 +1,25 @@
 <?php
 
-namespace service;
+namespace render;
 
 use render\select;
+use render\link;
 
 class pagination
 {
+	protected $link;
+	protected $select;
+
+	protected $route;
+	protected $pp_ary;
+
 	protected $start;
 	protected $limit;
 	protected $page = 0;
-	protected $table;
 
 	protected $adjacent_num = 2;
 	protected $row_count = 0;
 	protected $page_num = 0;
-	protected $entity = '';
 	protected $params = [];
 	protected $inline = false;
 	protected $out;
@@ -29,22 +34,28 @@ class pagination
 		1000 	=> 1000,
 	];
 
-	public function __construct(select $select)
+	public function __construct(
+		select $select,
+		link $link
+	)
 	{
+		$this->select = $select;
+		$this->link = $link;
 	}
 
 	public function init(
-		string $entity,
+		string $route,
+		array $pp_ary,
 		int $row_count,
 		array $params = [],
 		bool $inline = false
 	):void
 	{
-		$this->out = '';
 		$this->limit = $params['p']['limit'] ?? 25;
 		$this->start = $params['p']['start'] ?? 0;
 		$this->row_count = $row_count;
-		$this->entity = $entity;
+		$this->route = $route;
+		$this->pp_ary = $pp_ary;
 		$this->params = $params;
 		$this->inline = $inline;
 
@@ -60,7 +71,7 @@ class pagination
 
 	public function get():string
 	{
-		if ($this->out)
+		if (isset($this->out))
 		{
 			return $this->out;
 		}
@@ -156,11 +167,11 @@ class pagination
 		$out = '<li';
 		$out .= $page == $this->page ? ' class="active"' : '';
 		$out .= '>';
-		$out .= '<a href="';
-		$out .= generate_url($this->entity, $params);
-		$out .= '">';
-		$out .= $page + 1;
-		$out .= '</a></li>';
+
+		$out .= $this->link->link_no_attr($this->route, $this->pp_ary,
+			$params, (string) ($page + 1));
+
+		$out .= '</li>';
 
 		return $out;
 	}

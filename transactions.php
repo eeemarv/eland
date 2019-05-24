@@ -2118,12 +2118,8 @@ $row = $app['db']->fetchAssoc('select count(t.*), sum(t.amount)
 $row_count = $row['count'];
 $amount_sum = $row['sum'];
 
-$app['pagination']->init(
-	'transactions',
-	$row_count,
-	$params,
-	$app['p_inline']
-);
+$app['pagination']->init('transactions', $app['pp_ary'],
+	$row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = [
 	'asc'	=> 0,

@@ -82,7 +82,8 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins'])) > 1)
+if (!$app['s_anonymous']
+	&& ($app['count_intersystems'] + count($app['s_logins'])) > 1)
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';
@@ -94,34 +95,42 @@ if (!$app['s_anonymous'] && ($app['count_intersystems'] + count($app['s_logins']
 	echo '<ul class="dropdown-menu" role="menu">';
 	echo '<li class="dropdown-header">';
 
-	if (count($app['s_logins']) === 1
-		&& current($app['s_logins']) === 'eLAS')
+	if (count($app['s_logins']) > 1)
 	{
-		echo 'eLAS Gast Login';
+		echo 'Eigen Systemen';
 	}
 	else
 	{
-		echo count($app['s_logins']) > 1
-			? 'Eigen Systemen'
-			: 'Eigen Systeem';
+		echo 'Eigen Systeem';
 	}
 
 	echo '</li>';
 
 	foreach ($app['s_logins'] as $login_schema => $login_id)
 	{
-		$class = $app['s_schema'] === $login_schema
-			&& count($app['s_logins']) > 1
-				? ' class="active-group"'
-				: '';
-		$class = $login_schema === $app['tschema']
-			&& $login_schema === $app['s_schema']
-				? ' class="active"'
-				: $class;
-
 		echo '<li';
-		echo $class;
+
+		if ($login_schema === $app['s_schema'])
+		{
+			if ($login_schema === $app['tschema'])
+			{
+				echo ' class="active"';
+			}
+			else if (count($app['s_logins']) > 1)
+			{
+				echo ' class="active-group"';
+			}
+
+		}
+
 		echo '>';
+
+		echo $app['link']->link_no_attr($app['matched_route'], [
+			'system' 		=> $app['systems']->get_system_from_schema($login_schema),
+			'role_short'	=> $login_id === 'elas'
+				? 'g'
+				: $app['pp_role_short'],
+		], [], $app['config']->get('systemname', $login_schema));
 
 		echo '<a href="';
 		echo $app['protocol'];

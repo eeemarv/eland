@@ -981,16 +981,12 @@ $query .= ' offset ' . $params['p']['start'];
 
 $contacts = $app['db']->fetchAll($query, $params_sql);
 
-$app['pagination']->init(
-	'contacts',
-	$row_count,
-	$params,
-	$app['p_inline']
-);
+$app['pagination']->init('contacts', $app['pp_ary'],
+	$row_count, $params, $app['p_inline']);
 
 $asc_preset_ary = [
 	'asc'		=> 0,
-	'indicator' => '',
+	'fa' 		=> 'sort',
 ];
 
 $tableheader_ary = [
@@ -1014,8 +1010,8 @@ $tableheader_ary = [
 
 $tableheader_ary[$params['sort']['orderby']]['asc']
 	= $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['indicator']
-	= $params['sort']['asc'] ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['fa']
+	= $params['sort']['asc'] ? 'sort-asc' : 'sort-desc';
 
 unset($tableheader_ary['c.id']);
 
@@ -1258,14 +1254,8 @@ foreach ($tableheader_ary as $key_orderby => $data)
 			'asc'		=> $data['asc'],
 		];
 
-		echo '<a href="';
-		echo generate_url('contacts', $th_params);
-		echo '">';
-		echo $data['lbl'];
-		echo '&nbsp;<i class="fa fa-sort';
-		echo $data['indicator'];
-		echo '"></i>';
-		echo '</a>';
+		echo $app['link']->link_fa('contacts', $app['pp_ary'],
+			$th_params, $data['lbl'], [], $data['fa']);
 	}
 
 	echo '</th>';
