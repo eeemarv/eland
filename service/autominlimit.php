@@ -102,7 +102,7 @@ class autominlimit
 		if ($user['status'] != 1)
 		{
 			$this->monolog->debug('autominlimit: to user not active. ' .
-				link_user($user, $this->schema, false),
+				$this->account->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
 		}
@@ -110,7 +110,7 @@ class autominlimit
 		if ($user['minlimit'] === '')
 		{
 			$this->monolog->debug('autominlimit: to user has no minlimit. ' .
-				link_user($user, $this->schema, false),
+				$this->account->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
 		}
@@ -118,7 +118,7 @@ class autominlimit
 		if ($this->group_minlimit !== '' && $user['minlimit'] < $this->group_minlimit)
 		{
 			$this->monolog->debug('autominlimit: to user minlimit is lower than group minlimit. ' .
-				link_user($user, $this->schema, false),
+				$this->account->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
 		}
@@ -144,7 +144,8 @@ class autominlimit
 		if (!$extract)
 		{
 			$debug = 'autominlimit: (extract = 0) ';
-			$debug .= 'no new minlimit for user ' . link_user($user, $this->schema, false);
+			$debug .= 'no new minlimit for user ';
+			$debug .= $this->account->str_id($user['id'], $this->schema);
 			$this->monolog->debug($debug, ['schema' => $this->schema]);
 			return;
 		}
@@ -164,7 +165,7 @@ class autominlimit
 
 			$debug = 'autominlimit: minlimit reached group minlimit, ';
 			$debug .= 'individual minlimit erased for user ';
-			$debug .= link_user($user, $this->schema, false);
+			$debug .= $this->account->str_id($user['id'], $this->schema);
 			$this->monolog->debug($debug, ['schema' => $this->schema]);
 			return;
 		}
@@ -181,7 +182,8 @@ class autominlimit
 
 		$this->monolog->info('autominlimit: new minlimit : ' .
 			$new_minlimit .
-			' for user ' . link_user($user, $this->schema, false, true),
+			' for user ' .
+			$this->account->str_id($user['id'], $this->schema),
 			['schema' => $this->schema]);
 
 		return;

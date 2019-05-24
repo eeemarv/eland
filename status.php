@@ -191,7 +191,7 @@ if ($status_msgs)
 
 			foreach($ary['users'] as $user_id => $dummy)
 			{
-				$user_ary[] = link_user($user_id, $app['tschema']);
+				$user_ary[] = $app['account']->link($user_id, $app['pp_ary']);
 			}
 
 			echo implode(', ', $user_ary);
@@ -235,7 +235,7 @@ if ($status_msgs)
 
 			foreach($ary['users'] as $user_id => $dummy)
 			{
-				$user_ary[] = link_user($user_id, $app['tschema']);
+				$user_ary[] = $app['account']->link($user_id, $app['pp_ary']);
 			}
 
 			echo implode(', ', $user_ary);
@@ -273,7 +273,7 @@ if ($status_msgs)
 
 			foreach($ary['users'] as $user_id => $dummy)
 			{
-				$user_ary[] = link_user($user_id, $app['tschema']);
+				$user_ary[] = $app['account']->link($user_id, $app['pp_ary']);
 			}
 
 			echo implode(', ', $user_ary);
@@ -317,7 +317,7 @@ if ($status_msgs)
 				['class' => 'btn btn-danger btn-xs']);
 			echo ' : ';
 
-			echo link_user($ary['id_user'], $app['tschema']);
+			echo $app['account']->link($ary['id_user'], $app['pp_ary']);
 
 			echo '</li>';
 		}
@@ -343,7 +343,7 @@ if ($status_msgs)
 		foreach ($no_mail as $user_id)
 		{
 			echo '<li>';
-			echo link_user($user_id, $app['tschema']);
+			echo $app['account']->link($user_id, $app['pp_ary']);
 			echo '</li>';
 		}
 
@@ -367,7 +367,7 @@ if ($status_msgs)
 		foreach ($empty_name as $ary)
 		{
 			echo '<li>';
-			echo link_user($ary['id'], $app['tschema']);
+			echo $app['account']->link($ary['id'], $app['pp_ary']);
 			echo '</li>';
 		}
 
@@ -391,7 +391,7 @@ if ($status_msgs)
 		foreach ($empty_letscode as $ary)
 		{
 			echo '<li>';
-			echo link_user($ary['id'], $app['tschema']);
+			echo $app['account']->link($ary['id'], $app['pp_ary']);
 			echo '</li>';
 		}
 
@@ -418,8 +418,8 @@ if ($status_msgs)
 		foreach ($no_msgs_users as $u)
 		{
 			echo '<li>';
-			echo link_user($u['id'], $app['tschema']);
-			echo ($u['status'] == 2) ? ' <span class="text-danger">Uitstapper</span>' : '';
+			echo $app['account']->link($u['id'], $app['pp_ary']);
+			echo $u['status'] == 2 ? ' <span class="text-danger">Uitstapper</span>' : '';
 			echo ', saldo: ';
 			echo $u['saldo'];
 			echo ' ';

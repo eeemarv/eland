@@ -316,7 +316,7 @@ foreach($rows as $value)
 		&& ctype_digit((string) $value['user_id'])
 		&& !empty($value['user_schema']))
 	{
-		echo link_user($value['user_id'], $value['user_schema']);
+		echo $app['account']->link($value['user_id'], $value['user_schema']);
 	}
 	else
 	{

@@ -50,7 +50,7 @@ if ($del)
 		where c.id = ?
 			and tc.id = c.id_type_contact', [$del]);
 
-	$owner = $app['user_cache']->get($contact['id_user'], $app['tschema']);
+	$owner = $app['user_cache']->get($del, $app['tschema']);
 
 	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
@@ -102,13 +102,17 @@ if ($del)
 	echo '<div class="panel-heading">';
 
 	echo '<dl>';
+
 	if (!$s_owner)
 	{
 		echo '<dt>Gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($user_id, $app['tschema']);
+
+		echo $app['account']->link($user_id, $app['pp_ary']);
+
 		echo '</dd>';
 	}
+
 	echo '<dt>Type</dt>';
 	echo '<dd>';
 	echo $contact['abbrev'];
@@ -212,7 +216,7 @@ if ($edit || $add)
 
 			if ($user_id)
 			{
-				$letscode = link_user($user_id, $app['tschema'], false);
+				$letscode = $app['account']->str($user_id, $app['tschema']);
 			}
 			else
 			{
@@ -457,7 +461,8 @@ if ($edit || $add)
 
 	if (!(($s_owner && !$app['s_admin']) || ($app['s_admin'] && $add && !$uid)))
 	{
-		$app['heading']->add(' voor ' . link_user($user_id, $app['tschema']));
+		$app['heading']->add(' voor ');
+		$app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
 	}
 
 	include __DIR__ . '/include/header.php';
@@ -629,7 +634,7 @@ if ($uid)
 		else
 		{
 			$app['heading']->add('Contacten Gebruiker ');
-			$app['heading']->add(link_user($user, $app['tschema']));
+			$app['heading']->add($app['account']->link($uid, $app['tschema']));
 		}
 
 		$app['heading']->fa('map-marker');
@@ -645,7 +650,7 @@ if ($uid)
 		echo '<h3>';
 		echo '<i class="fa fa-map-marker"></i>';
 		echo ' Contactinfo van ';
-		echo link_user($user, $app['tschema']);
+		echo $app['account']->link($uid, $app['pp_ary']);
 		echo ' ';
 		echo $app['btn_top']->get();
 		echo '</h3>';
@@ -840,9 +845,8 @@ $params_sql = $where_sql = [];
 
 if (isset($filter['uid']))
 {
-	$user = $app['user_cache']->get($uid, $app['tschema']);
 	$params['f']['uid'] = $filter['uid'];
-	$filter['code'] = link_user($user, $app['tschema'], false);
+	$filter['code'] = $app['account']->str($filter['uid'], $app['tschema']);
 }
 
 if (isset($filter['code']) && $filter['code'])
@@ -857,7 +861,7 @@ if (isset($filter['code']) && $filter['code'])
 	{
 		$where_sql[] = 'c.id_user = ?';
 		$params_sql[] = $fuid;
-		$params['f']['code'] = link_user($fuid, $app['tschema'], false);
+		$params['f']['code'] = $app['account']->str($fuid, $app['tschema']);
 	}
 	else
 	{
@@ -1282,7 +1286,7 @@ foreach ($contacts as $c)
 		$out[] = '&nbsp;';
 	}
 
-	$out[] = link_user($c['id_user'], $app['tschema']);
+	$out[] = $app['account']->link($c['id_user'], $app['pp_ary']);
 
 	if (isset($c['comments']))
 	{

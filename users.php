@@ -388,7 +388,9 @@ if ($img_del && $id)
 
 	if ($app['s_admin'])
 	{
-		$app['heading']->add('van ' . link_user($id, $app['tschema']) . ' ');
+		$app['heading']->add('van ');
+		$app['heading']->add($app['account']->link($id, $app['pp_ary']));
+		$app['heading']->add(' ');
 	}
 
 	$app['heading']->add('verwijderen?');
@@ -519,7 +521,8 @@ if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_po
 
 	foreach ($rows as $row)
 	{
-		$users_log .= ', ' . link_user($row, $app['tschema'], false, true);
+		$users_log .= ', ';
+		$users_log .= $app['account']->str_id($row['id'], $app['tschema'], false, true);
 	}
 
 	$users_log = ltrim($users_log, ', ');
@@ -716,7 +719,7 @@ if ($app['s_admin']
 			'template'			=> 'skeleton',
 		], random_int(1000, 4000));
 
-		$alert_msg_users[] = link_user($sel_user, $app['tschema']);
+		$alert_msg_users[] = $app['account']->link($sel_user['id'], $app['pp_ary']);
 
 		$count++;
 	}
@@ -741,7 +744,8 @@ if ($app['s_admin']
 
 		foreach ($sel_ary as $warning_user_id => $dummy)
 		{
-			$missing_users .= link_user($warning_user_id, $app['tschema']) . '<br>';
+			$missing_users .= $app['acccount']->link($warning_user_id, $app['pp_ary']);
+			$missing_users .= '<br>';
 		}
 
 		$alert_warning = 'Naar volgende gebruikers werd geen
@@ -899,7 +903,8 @@ if ($pw)
 
 	if (!$s_owner)
 	{
-		$app['heading']->add('voor ' . link_user($user, $app['tschema']));
+		$app['heading']->add(' voor ');
+		$app['heading']->add($app['account']->link($pw, $app['pp_ary']));
 	}
 
 	$app['heading']->fa('key');
@@ -1159,7 +1164,7 @@ if ($del)
 	}
 
 	$app['heading']->add('Gebruiker ');
-	$app['heading']->add(link_user($del, $app['tschema']));
+	$app['heading']->add($app['account']->link($del, $app['pp_ary']));
 	$app['heading']->add(' verwijderen?');
 	$app['heading']->fa('user');
 
@@ -1167,7 +1172,7 @@ if ($del)
 
 	echo '<p><font color="red">Alle Gegevens, Vraag en aanbod, ';
 	echo 'Contacten en Afbeeldingen van ';
-	echo $user['letscode'] . ' ' . $user['name'];
+	echo $app['account']->link($del, $app['pp_ary']);
 	echo ' worden verwijderd.</font></p>';
 
 	echo '<div class="panel panel-info">';
@@ -1967,7 +1972,16 @@ if ($add || $edit)
 	else
 	{
 		$app['heading']->add('Gebruiker ');
-		$app['heading']->add($edit ? 'aanpassen: ' . link_user($user, $app['tschema']) : 'toevoegen');
+
+		if ($edit)
+		{
+			$app['heading']->add('aanpassen: ');
+			$app['heading']->add($app['account']->link($edit, $app['pp_ary']);
+		}
+		else
+		{
+			$app['heading']->add('toevoegen');
+		}
 	}
 
 	$app['heading']->fa('user');
@@ -1994,15 +2008,19 @@ if ($add || $edit)
 		echo $user['letscode'] ?? '';
 		echo '" required maxlength="20" ';
 		echo 'data-typeahead="';
+
 		echo $app['typeahead']->get([['account_codes', [
 			'schema'	=> $app['tschema'],
 		]]]);
+
 		echo '" ';
 		echo 'data-typeahead-render="';
+
 		echo htmlspecialchars(json_encode([
 			'exists_check'	=> 10,
 			'exists_omit'	=> $edit_user_cached['letscode'] ?? '',
 		]));
+
 		echo '">';
 		echo '</div>';
 		echo '<span class="help-block hidden exists_query_results">';
@@ -2710,7 +2728,7 @@ if ($id)
 		}
 
 		$app['btn_top']->add_trans('transactions', $app['s_ary'],
-			$tus, 'Transactie naar ' . link_user($user, $app['tschema'], false));
+			$tus, 'Transactie naar ' . $app['account']->str($id, $app['tschema']));
 	}
 
 	$link_ary = $link ? ['link' => $link] : [];
@@ -2734,7 +2752,7 @@ if ($id)
 		$app['heading']->add('Mijn gegevens: ');
 	}
 
-	$app['heading']->add(link_user($user, $app['tschema']));
+	$app['heading']->add($app['account']->link($id, $app['pp_ary']));
 
 	if ($status != 1)
 	{
@@ -3044,7 +3062,7 @@ if ($id)
 
 	echo '<h3><i class="fa fa-envelop-o"></i> ';
 	echo 'Stuur een bericht naar ';
-	echo  link_user($id, $app['tschema']);
+	echo  $app['account']->link($id, $app['pp_ary']);
 	echo '</h3>';
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -3852,7 +3870,7 @@ if ($v_map)
 						$not_geocoded['adr']);
 
 					echo ' gebruiker: ';
-					echo link_user($not_geocoded['uid'], $app['tschema']);
+					echo $app['account']->link($not_geocoded['uid'], $app['pp_ary']);
 					echo '</li>';
 				}
 
@@ -3873,7 +3891,7 @@ if ($v_map)
 			foreach ($not_present_ary as $not_present_addres_uid)
 			{
 				echo '<li>';
-				echo link_user($not_present_addres_uid, $app['tschema']);
+				echo $app['account']->link($not_present_addres_uid, $app['pp_ary']);
 				echo '</li>';
 			}
 
@@ -4342,7 +4360,15 @@ if ($v_list)
 
 				if (isset($link_user_keys[$key]))
 				{
-					echo link_user($u, $app['tschema'], $can_link, false, $key);
+					if ($can_link)
+					{
+						echo $app['link']->link_no_attr('users', $app['pp_ary'],
+							['id' => $u['id']], $u[$key]);
+					}
+					else
+					{
+						echo htmlspecialchars($u[$key], ENT_QUOTES);
+					}
 				}
 				else if (isset($date_keys[$key]))
 				{
@@ -4357,13 +4383,19 @@ if ($v_list)
 				}
 				else if ($key === 'fullname')
 				{
-					if ($app['s_admin'] || $u['fullname_access'] === 'interlets')
+					if ($app['s_admin']
+						|| $u['fullname_access'] === 'interlets'
+						|| ($app['s_user'] && $u['fullname_access'] !== 'admin'))
 					{
-						echo link_user($u, $app['tschema'], $can_link, false, 'fullname');
-					}
-					else if ($app['s_user'] && $u['fullname_access'] !== 'admin')
-					{
-						echo link_user($u, $app['tschema'], $can_link, false, 'fullname');
+						if ($can_link)
+						{
+							echo $app['link']->link_no_attr('users', $app['pp_ary'],
+								['id' => $u['id']], $u['fullname']);
+						}
+						else
+						{
+							echo htmlspecialchars($u['fullname'], ENT_QUOTES);
+						}
 					}
 					else
 					{
@@ -4433,7 +4465,11 @@ if ($v_list)
 
 						if ($geo)
 						{
-							echo ' data-lat="' . $geo['lat'] . '" data-lng="' . $geo['lng'] . '"';
+							echo ' data-lat="';
+							echo $geo['lat'];
+							echo '" data-lng="';
+							echo $geo['lng'];
+							echo '"';
 						}
 					}
 

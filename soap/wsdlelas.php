@@ -251,7 +251,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
 			' amount ' . $transaction['amount'] . ' failed. ' .
-			link_user($touser, $app['tschema'], false) .
+			$app['account']->str_id($touser['id'], $app['tschema']) .
 			' over maxlimit.', ['schema' => $app['tschema']]);
 		return 'FAILED';
 	}

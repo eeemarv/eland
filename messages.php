@@ -504,7 +504,7 @@ if ($img_del == 'all' && $id)
 	if ($app['s_admin'])
 	{
 		echo 'Gebruiker: ';
-		echo link_user($message['id_user'], $app['tschema']);
+		echo $app['account']->link($message['id_user'], $app['pp_ary']);
 	}
 
 	echo '<div class="row">';
@@ -717,7 +717,7 @@ if ($del)
 
 	echo '<dt>Wie</dt>';
 	echo '<dd>';
-	echo link_user($message['id_user'], $app['tschema']);
+	echo $app['account']->link($message['id_user'], $app['pp_ary']);
 	echo '</dd>';
 
 	echo '<dt>Categorie</dt>';
@@ -1671,6 +1671,7 @@ if ($id)
 	echo '</div>';
 	echo '<div class="panel-body">';
 	echo '<p>';
+
 	if ($message['Description'])
 	{
 		echo htmlspecialchars($message['Description'],ENT_QUOTES);
@@ -1679,6 +1680,7 @@ if ($id)
 	{
 		echo '<i>Er werd geen omschrijving ingegeven.</i>';
 	}
+
 	echo '</p>';
 	echo '</div></div>';
 
@@ -1707,7 +1709,9 @@ if ($id)
 	echo '<dt>Van gebruiker: ';
 	echo '</dt>';
 	echo '<dd>';
-	echo link_user($user, $app['tschema']);
+
+	echo $app['account']->link($message['id_user'], $app['pp_ary']);
+
 	echo ' (saldo: <span class="label label-info">';
 	echo $balance;
 	echo '</span> ';
@@ -1792,7 +1796,7 @@ if ($id)
 	$disabled = (!$app['s_schema'] || !count($mail_to) || !count($mail_from) || $s_owner) ? true : false;
 
 	echo '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
-	echo  link_user($message['id_user'], $app['tschema']);
+	echo  $app['account']->link($message['id_user'], $app['pp_ary']);
 	echo '</h3>';
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1868,8 +1872,7 @@ if (isset($filter['uid'])
 	&& $filter['uid']
 	&& !isset($filter['s']))
 {
-	$user = $app['user_cache']->get($filter['uid'], $app['tschema']);
-	$filter['fcode'] = link_user($user, $app['tschema'], false);
+	$filter['fcode'] = $app['account']->str($filter['uid'], $app['tschema']);
 }
 
 if (isset($filter['uid']))
@@ -1901,7 +1904,7 @@ if (isset($filter['fcode'])
 		$where_sql[] = 'u.id = ?';
 		$params_sql[] = $fuid;
 
-		$fcode = link_user($fuid, $app['tschema'], false);
+		$fcode = $app['account']->str($fuid, $app['tschema']);
 		$params['f']['fcode'] = $fcode;
 	}
 	else
@@ -2177,7 +2180,7 @@ if ($app['s_admin'] || $app['s_user'])
 		if ($app['s_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
-			$str .= link_user($filter['uid'], $app['tschema'], false);
+			$str .= $app['account']->str($filter['uid'], $app['tschema']);
 
 			$app['btn_top']->add('messages', $app['pp_ary'],
 				['add' => 1, 'uid' => $filter['uid']], $str);
@@ -2210,7 +2213,7 @@ if (isset($filter['uid']))
 			'Vraag en aanbod'));
 
 		$app['heading']->add(' van ');
-		$app['heading']->add(link_user($filter['uid'], $app['tschema']));
+		$app['heading']->add($app['account']->link($filter['uid'], $app['pp_ary']));
 	}
 }
 else
@@ -2507,7 +2510,7 @@ if ($v_list)
 		if (!isset($filter['uid']))
 		{
 			echo '<td>';
-			echo link_user($msg['id_user'], $app['tschema']);
+			echo $app['account']->link($msg['id_user'], $app['pp_ary']);
 			echo '</td>';
 
 			echo '<td>';
@@ -2603,7 +2606,7 @@ else if ($v_extended)
 
 		echo '<div class="panel-footer">';
 		echo '<p><i class="fa fa-user"></i> ';
-		echo link_user($msg['id_user'], $app['tschema']);
+		echo $app['account']->link($msg['id_user'], $app['pp_ary']);
 		echo $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
 		if ($app['s_admin'] || $sf_owner)

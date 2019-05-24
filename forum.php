@@ -466,7 +466,7 @@ if ($topic)
 
 		echo '<div class="panel-footer">';
 		echo '<p>';
-		echo link_user((int) $p['uid'], $app['tschema']);
+		echo $app['account']->link((int) $p['uid'], $app['pp_ary']);
 		echo ' @';
 		echo $app['date_format']->get($p['ts'], 'min', $app['tschema']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
@@ -659,7 +659,7 @@ foreach($forum_posts as $p)
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($p['uid'], $app['tschema']);
+	echo $app['account']->link($p['uid'], $app['pp_ary']);
 	echo '</td>';
 
 	echo $app['date_format']->get_td($p['ts'], 'min', $app['tschema']);

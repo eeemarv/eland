@@ -540,6 +540,14 @@ $app['link'] = function ($app){
 	);
 };
 
+$app['account'] = function ($app) {
+	return new render\account(
+		$app['link'],
+		$app['systems'],
+		$app['user_cache']
+	);
+};
+
 $app['heading'] = function (){
 	return new render\heading();
 };
@@ -593,45 +601,3 @@ $app['access_control'] = function($app){
 		$app['s_access_level']
 	);
 };
-
-/**
- * functions
- */
-
-function link_user($user, string $sch, $link = true, $show_id = false, $field = ''):string
-{
-	global $app;
-
-	if (!$user)
-	{
-		return '<i>** leeg **</i>';
-	}
-
-	$user = is_array($user) ? $user : $app['user_cache']->get($user, $sch);
-
-	$str = $field ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
-	$str = trim($str) === '' ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
-
-	if ($link)
-	{
-		$param = ['id' => $user['id']];
-
-		if (is_string($link))
-		{
-			$param['link'] = $link;
-		}
-
-		$out = $app['link']->link_no_attr('users', [
-			'system'	=> $app['systems']->get_system_from_schema($sch),
-			'role_short'	=> $app['pp_role_short'],
-		], $param, $str);
-	}
-	else
-	{
-		$out = $str;
-	}
-
-	$out .= $show_id ? ' (id: ' . $user['id'] . ')' : '';
-
-	return $out;
-}

@@ -157,7 +157,7 @@ class geocode implements queue_interface
 		$this->queue($data, $priority);
 
 		$log = 'Queued for Geocoding: ';
-		$log .= link_user($data['uid'], $data['schema'], false, true);
+		$log .= $this->account->str_id($data['uid'], $data['schema']);
 		$log .= ', ';
 		$log .= $data['adr'];
 

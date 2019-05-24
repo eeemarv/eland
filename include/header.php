@@ -222,7 +222,7 @@ if (!$app['s_anonymous'])
 	else if ($app['s_schema'] && $app['s_id'])
 	{
 		echo $app['s_system_self'] ? '' : $app['s_schema'] . '.';
-		echo link_user($app['s_id'], $app['s_schema'], false);
+		echo $app['account']->str($app['s_id'], $app['s_schema']);
 	}
 
 	echo '<span class="caret"></span></a>';

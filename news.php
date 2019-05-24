@@ -392,7 +392,7 @@ if ($del)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news['id_user'], $app['tschema']);
+	echo $app['account']->link($news['id_user'], $app['pp_ary']);
 	echo '</dd>';
 
 	echo '</dl>';
@@ -622,7 +622,7 @@ if ($id)
 
 	echo '<dt>Ingegeven door</dt>';
 	echo '<dd>';
-	echo link_user($news_item['id_user'], $app['tschema']);
+	echo $app['account']->link($news_item['id_user'], $app['pp_ary']);
 	echo '</dd>';
 
 	echo '</dl>';
@@ -857,7 +857,8 @@ else if ($v_extended)
 
 		echo '<div class="panel-footer">';
 		echo '<p><i class="fa fa-user"></i> ';
-		echo link_user($n['id_user'], $app['tschema']);
+
+		echo $app['account']->link($n['id_user'], $app['pp_ary']);
 
 		if ($app['s_admin'])
 		{

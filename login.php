@@ -261,7 +261,7 @@ if ($submit)
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 
 		$app['monolog']->info('User ' .
-			link_user($user, $app['tschema'], false, true) .
+			$app['account']->str_id($user_id, $app['tschema']) .
 			' logged in, agent: ' . $browser, $log_ary);
 
 		$app['db']->update($app['tschema'] . '.users',

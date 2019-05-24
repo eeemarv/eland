@@ -765,11 +765,11 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo link_user($user, $app['tschema'], true, false, 'letscode');
+	echo $app['account']->link_code($user_id, $app['pp_ary']);
 	echo '</td>';
 
 	echo '<td>';
-	echo link_user($user, $app['tschema'], true, false, 'name');
+	echo $app['account']->link_name($user_id, $app['pp_ary']);
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';
@@ -999,7 +999,7 @@ function mail_mass_transaction($mail_ary)
 		'users'		=> $users,
 		'user'		=> [
 			'url'	=> $app['base_url'] . '/users.php?id=' . $one_user_id,
-			'text'	=> link_user($one_user_id, $app['tschema'], false),
+			'text'	=> $app['account']->str($one_user_id, $app['tschema']),
 		],
 		'total'		=> $total_amount,
 	];

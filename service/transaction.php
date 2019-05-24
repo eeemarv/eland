@@ -87,8 +87,9 @@ class transaction
 			$transaction['amount'] . ' ' .
 			$this->config->get('currency', $schema) .
 			' from user ' .
-			link_user($transaction['id_from'], $schema, false, true) . ' to user ' .
-			link_user($transaction['id_to'], $schema, false, true),
+			$this->account->str_id($transaction['id_from'], $schema) .
+			' to user ' .
+			$this->account->str_id($transaction['id_to'], $schema),
 			['schema' => $schema]);
 
 		return $id;

@@ -414,7 +414,7 @@ if ($add)
 			$result = $client->call('dopayment', [
 				'apikey' 		=> $group['remoteapikey'],
 				'from' 			=> $group['myremoteletscode'],
-				'real_from' 	=> link_user($fromuser, $app['tschema'], false),
+				'real_from' 	=> $app['account']->str($fromuser['id'], $app['tschema']),
 				'to' 			=> $letscode_to,
 				'description' 	=> $trans['description'],
 				'amount' 		=> $trans['amount'],
@@ -712,7 +712,8 @@ if ($add)
 					$transaction['amount'] = $remote_amount;
 					$transaction['id_from'] = $remote_interlets_account['id'];
 					$transaction['id_to'] = $to_remote_user['id'];
-					$transaction['real_from'] = link_user($fromuser['id'], $app['tschema'], false);
+					$transaction['real_from'] = $app['account']->str($fromuser['id'], $app['tschema']);
+
 					unset($transaction['real_to']);
 
 					$app['db']->insert($remote_schema . '.transactions', $transaction);
@@ -747,8 +748,8 @@ if ($add)
 				$app['mail_transaction']->queue($transaction, $remote_schema);
 
 				$app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
-					$amount . ' from user: ' .  link_user($fromuser['id'], $app['tschema'], false) .
-					' to user: ' . link_user($touser['id'], $app['tschema'], false),
+					$amount . ' from user: ' .  $app['account']->str_id($fromuser['id'], $app['tschema']) .
+					' to user: ' . $app['account']->str_id($touser['id'], $app['tschema']),
 					['schema' => $app['tschema']]);
 
 				$app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
@@ -765,7 +766,9 @@ if ($add)
 		}
 
 		$transaction['letscode_to'] = $_POST['letscode_to'];
-		$transaction['letscode_from'] = $app['s_admin'] || $app['s_master'] ? $_POST['letscode_from'] : link_user($app['s_id'], $app['tschema'], false);
+		$transaction['letscode_from'] = $app['s_admin'] || $app['s_master']
+			? $_POST['letscode_from']
+			: $app['account']->str($app['s_id'], $app['tschema']);
 	}
 	else
 	{
@@ -778,7 +781,7 @@ if ($add)
 
 		$transaction = [
 			'date'			=> gmdate('Y-m-d H:i:s'),
-			'letscode_from'	=> $app['s_master'] ? '' : link_user($app['s_id'], $app['tschema'], false),
+			'letscode_from'	=> $app['s_master'] ? '' : $app['account']->str($app['s_id'], $app['tschema']),
 			'letscode_to'	=> '',
 			'amount'		=> '',
 			'description'	=> '',
@@ -823,7 +826,7 @@ if ($add)
 
 					if (in_array($to_user['status'], [1, 2]))
 					{
-						$transaction['letscode_to'] = link_user($tuid, $tus, false);
+						$transaction['letscode_to'] = $app['account']->str($tuid, $tus);
 					}
 				}
 			}
@@ -868,7 +871,7 @@ if ($add)
 
 			if (in_array($to_user['status'], [1, 2]) || $app['s_admin'])
 			{
-				$transaction['letscode_to'] = link_user($tuid, $app['tschema'], false);
+				$transaction['letscode_to'] = $app['account']->str($tuid, $app['tschema']);
 			}
 
 			if ($tuid === $app['s_id'])
@@ -1448,7 +1451,16 @@ if ($edit)
 	{
 		echo '<dt>Van interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
+
+		if ($app['s_admin'])
+		{
+			echo $app['account']->link($transaction['id_from'], $app['pp_ary']);
+		}
+		else
+		{
+			echo $app['account']->str($transaction['id_from'], $app['tschema']);
+		}
+
 		echo '</dd>';
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
@@ -1458,9 +1470,16 @@ if ($edit)
 
 		if ($inter_transaction)
 		{
-			echo link_user($inter_transaction['id_from'],
-				$inter_schema,
-				isset($s_inter_schema_check[$inter_schema]));
+			if (isset($s_inter_schema_check[$inter_schema]))
+			{
+				echo $app['account']->inter_link($inter_transaction['id_from'],
+					$inter_schema);
+			}
+			else
+			{
+				echo $app['account']->str($inter_transaction['id_from'],
+					$inter_schema);
+			}
 		}
 		else
 		{
@@ -1473,7 +1492,7 @@ if ($edit)
 	{
 		echo '<dt>Van gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema']);
+		echo $app['account']->link($transaction['id_from'], $app['pp_ary']);
 		echo '</dd>';
 	}
 
@@ -1481,7 +1500,16 @@ if ($edit)
 	{
 		echo '<dt>Naar interSysteem account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
+
+		if ($app['s_admin'])
+		{
+			echo $app['account']->link($transaction['id_to'], $app['pp_ary']);
+		}
+		else
+		{
+			echo $app['account']->str($transaction['id_to'], $app['tschema']);
+		}
+
 		echo '</dd>';
 
 		echo '<dt>Naar interSysteem gebruiker</dt>';
@@ -1490,9 +1518,16 @@ if ($edit)
 
 		if ($inter_transaction)
 		{
-			echo link_user($inter_transaction['id_to'],
-				$inter_schema,
-				isset($s_inter_schema_check[$inter_schema]));
+			if (isset($s_inter_schema_check[$inter_schema]))
+			{
+				echo $app['account']->inter_link($inter_transaction['id_to'],
+					$inter_schema);
+			}
+			else
+			{
+				echo $app['account']->str($inter_transaction['id_to'],
+					$inter_schema);
+			}
 		}
 		else
 		{
@@ -1505,7 +1540,7 @@ if ($edit)
 	{
 		echo '<dt>Naar gebruiker</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema']);
+		echo $app['account']->link($transaction['id_to'], $app['pp_ary']);
 		echo '</dd>';
 	}
 
@@ -1635,7 +1670,16 @@ if ($id)
 	{
 		echo '<dt>Van interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema'], $app['s_admin']);
+
+		if ($app['s_admin'])
+		{
+			echo $app['account']->link($transaction['id_from'], $app['pp_ary']);
+		}
+		else
+		{
+			echo $app['account']->str($transaction['id_from'], $app['tschema']);		}
+		}
+
 		echo '</dd>';
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
@@ -1645,9 +1689,16 @@ if ($id)
 
 		if ($inter_transaction)
 		{
-			$user_from = link_user($inter_transaction['id_from'],
-				$inter_schema,
-				$s_inter_schema_check[$inter_schema]);
+			if ($s_inter_schema_check[$inter_schema]))
+			{
+				$user_from = $app['account']->inter_link($inter_transaction['id_from'],
+					$inter_schema);
+			}
+			else
+			{
+				$user_from = $app['account']->str($inter_transaction['id_from'],
+					$inter_schema);
+			}
 		}
 		else
 		{
@@ -1662,7 +1713,7 @@ if ($id)
 	{
 		echo '<dt>Van Account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_from'], $app['tschema']);
+		echo $app['account']->link($transaction['id_from'], $app['pp_ary']);
 		echo '</dd>';
 	}
 
@@ -1670,7 +1721,16 @@ if ($id)
 	{
 		echo '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema'], $app['s_admin']);
+
+		if ($app['s_admin'])
+		{
+			echo $app['account']->link($transaction['id_to'], $app['pp_ary']);
+		}
+		else
+		{
+			echo $app['account']->str($transaction['id_to'], $app['tschema']);
+		}
+
 		echo '</dd>';
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
@@ -1680,9 +1740,16 @@ if ($id)
 
 		if ($inter_transaction)
 		{
-			$user_to = link_user($inter_transaction['id_to'],
-				$inter_schema,
-				$s_inter_schema_check[$inter_schema]);
+			if ($s_inter_schema_check[$inter_schema])
+			{
+				$user_to = $app['account']->inter_link($inter_transaction['id_to'],
+					$inter_schema);
+			}
+			else
+			{
+				$user_to = $app['account']->str($inter_transaction['id_to'],
+					$inter_schema);
+			}
 		}
 		else
 		{
@@ -1697,7 +1764,7 @@ if ($id)
 	{
 		echo '<dt>Naar Account</dt>';
 		echo '<dd>';
-		echo link_user($transaction['id_to'], $app['tschema']);
+		echo $app['account']->link($transaction['id_to'], $app['pp_ary']);
 		echo '</dd>';
 	}
 
@@ -1762,7 +1829,7 @@ if ($id)
 		}
 		else
 		{
-			echo link_user($transaction['id_from'], $app['tschema']);
+			echo $app['account']->link($transaction['id_from'], $app['pp_ary']);
 		}
 
 		echo ')';
@@ -1814,9 +1881,18 @@ if ($id)
 		{
 			echo 'Het interSysteem Account van het andere Systeem ';
 			echo 'in dit Systeem. (';
-			echo link_user($transaction['id_to'],
-				$app['tschema'],
-				$app['s_admin']);
+
+			if ($app['s_admin'])
+			{
+				echo $app['account']->link($transaction['id_to'],
+					$app['pp_ary']);
+			}
+			else
+			{
+				echo $app['account']->str($transaction['id_to'],
+					$app['tschema']);
+			}
+
 			echo ')';
 		}
 
@@ -1842,9 +1918,18 @@ if ($id)
 			echo 'het andere Systeem in dit ';
 			echo 'Systeem. ';
 			echo '(';
-			echo link_user($transaction['id_from'],
-				$app['tschema'],
-				$app['s_admin']);
+
+			if ($app['s_admin'])
+			{
+				echo $app['account']->link($transaction['id_from'],
+					$app['pp_ary']);
+			}
+			else
+			{
+				echo $app['account']->str($transaction['id_from'],
+					$app['tschema']);
+			}
+
 			echo ')';
 		}
 		else
@@ -1896,7 +1981,7 @@ if ($id)
 		{
 			echo 'Het bestemmings Account in dit Systeem ';
 			echo '(';
-			echo link_user($transaction['id_to'], $app['tschema']);
+			echo $app['account']->link($transaction['id_to'], $app['pp_ary']);
 			echo ').';
 		}
 		else
@@ -1947,8 +2032,7 @@ $params = [
 
 if (isset($filter['uid']))
 {
-	$user = $app['user_cache']->get($filter['uid'], $app['tschema']);
- 	$filter['fcode'] = link_user($user, $app['tschema'], false);
+ 	$filter['fcode'] = $app['account']->str($filter['uid'], $app['tschema']);
 	$filter['tcode'] = $filter['fcode'];
 	$filter['andor'] = 'or';
 	$params['f']['uid'] = $filter['uid'];
@@ -1978,7 +2062,7 @@ if (isset($filter['fcode']) && $filter['fcode'])
 		$where_code_sql[] = $fuid_sql;
 		$params_sql[] = $fuid;
 
-		$fcode = link_user($fuid, $app['tschema'], false);
+		$fcode = $app['account']->str($fuid, $app['tschema']);
 	}
 	else if ($filter['andor'] !== 'nor')
 	{
@@ -2004,7 +2088,7 @@ if (isset($filter['tcode']) && $filter['tcode'])
 		$where_code_sql[] = $tuid_sql;
 		$params_sql[] = $tuid;
 
-		$tcode = link_user($tuid, $app['tschema'], false);
+		$tcode = $app['account']->str($tuid, $app['tschema']);
 	}
 	else if ($filter['andor'] !== 'nor')
 	{
@@ -2163,7 +2247,7 @@ if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 {
 	if (isset($filter['uid']))
 	{
-		$user_str = link_user($user, $app['tschema'], false);
+		$user_str = $app['account']->str($user['id'], $app['tschema']);
 
 		if ($user['status'] != 7)
 		{
@@ -2211,7 +2295,7 @@ if (isset($filter['uid']))
 			['f' => ['uid' => $filter['uid']]], 'Transacties'));
 
 		$app['heading']->add(' van ');
-		$app['heading']->add(link_user($filter['uid'], $app['tschema']));
+		$app['heading']->add($app['account']->link($filter['uid'], $app['pp_ary']));
 	}
 }
 else
@@ -2549,9 +2633,16 @@ if (isset($filter['uid']))
 
 				if (isset($t['inter_transaction']))
 				{
-					echo link_user($t['inter_transaction']['id_to'],
-						$t['inter_schema'],
-						$s_inter_schema_check[$t['inter_schema']]);
+					if ($s_inter_schema_check[$t['inter_schema']])
+					{
+						echo $app['account']->inter_link($t['inter_transaction']['id_to'],
+							$t['inter_schema']);
+					}
+					else
+					{
+						echo $app['account']->str($t['inter_transaction']['id_to'],
+							$t['inter_schema']);
+					}
 				}
 				else
 				{
@@ -2562,7 +2653,7 @@ if (isset($filter['uid']))
 			}
 			else
 			{
-				echo link_user($t['id_to'], $app['tschema']);
+				echo $app['account']->link($t['id_to'], $app['pp_ary']);
 			}
 		}
 		else
@@ -2574,9 +2665,16 @@ if (isset($filter['uid']))
 
 				if (isset($t['inter_transaction']))
 				{
-					echo link_user($t['inter_transaction']['id_from'],
-						$t['inter_schema'],
-						$s_inter_schema_check[$t['inter_schema']]);
+					if ($s_inter_schema_check[$t['inter_schema']])
+					{
+						echo $app['account']->inter_link($t['inter_transaction']['id_from'],
+							$t['inter_schema']);
+					}
+					else
+					{
+						echo $app['account']->str($t['inter_transaction']['id_from'],
+							$t['inter_schema']);
+					}
 				}
 				else
 				{
@@ -2587,7 +2685,7 @@ if (isset($filter['uid']))
 			}
 			else
 			{
-				echo link_user($t['id_from'], $app['tschema']);
+				echo $app['account']->link($t['id_from'], $app['pp_ary']);
 			}
 		}
 
@@ -2629,9 +2727,16 @@ else
 
 			if (isset($t['inter_transaction']))
 			{
-				echo link_user($t['inter_transaction']['id_from'],
-					$t['inter_schema'],
-					$s_inter_schema_check[$t['inter_schema']]);
+				if ($s_inter_schema_check[$t['inter_schema']])
+				{
+					echo $app['account']->inter_link($t['inter_transaction']['id_from'],
+						$t['inter_schema']);
+				}
+				else
+				{
+					echo $app['account']->str($t['inter_transaction']['id_from'],
+						$t['inter_schema']);
+				}
 			}
 			else
 			{
@@ -2642,7 +2747,7 @@ else
 		}
 		else
 		{
-			echo link_user($t['id_from'], $app['tschema']);
+			echo $app['account']->link($t['id_from'], $app['pp_ary']);
 		}
 
 		echo '</td>';
@@ -2656,9 +2761,16 @@ else
 
 			if (isset($t['inter_transaction']))
 			{
-				echo link_user($t['inter_transaction']['id_to'],
-					$t['inter_schema'],
-					$s_inter_schema_check[$t['inter_schema']]);
+				if ($s_inter_schema_check[$t['inter_schema']])
+				{
+					echo $app['account']->inter_link($t['inter_transaction']['id_to'],
+						$t['inter_schema']);
+				}
+				else
+				{
+					echo $app['account']->str($t['inter_transaction']['id_to'],
+						$t['inter_schema']);
+				}
 			}
 			else
 			{
@@ -2669,7 +2781,7 @@ else
 		}
 		else
 		{
-			echo link_user($t['id_to'], $app['tschema']);
+			echo $app['account']->link($t['id_to'], $app['pp_ary']);
 		}
 
 		echo '</td>';
