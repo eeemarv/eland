@@ -608,6 +608,7 @@ function link_user($user, string $sch, $link = true, $show_id = false, $field = 
 	}
 
 	$user = is_array($user) ? $user : $app['user_cache']->get($user, $sch);
+
 	$str = $field ? $user[$field] : $user['letscode'] . ' ' . $user['name'];
 	$str = trim($str) === '' ? '<i>** leeg **</i>' : htmlspecialchars($str, ENT_QUOTES);
 
@@ -620,9 +621,10 @@ function link_user($user, string $sch, $link = true, $show_id = false, $field = 
 			$param['link'] = $link;
 		}
 
-		$out = '<a href="';
-		$out .= generate_url('users', $param, $sch);
-		$out .= '">' . $str . '</a>';
+		$out = $app['link']->link_no_attr('users', [
+			'system'	=> $app['systems']->get_system_from_schema($sch),
+			'role_short'	=> $app['pp_role_short'],
+		], $param, $str);
 	}
 	else
 	{

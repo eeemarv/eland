@@ -446,11 +446,10 @@ if ($app['page_access'] != 'anonymous'
 	&& !$app['s_system_self']
 	&& !$app['intersystem_ary']['eland'][$app['tschema']])
 {
-	header('Location: ' .
-		generate_url('messages',
-			[],
-			$app['s_schema']));
-	exit;
+	$app['link']->redirect('messages', [
+			'system'		=> $app['systems']->get_system_from_schema($app['tschema']),
+			'role_short'	=> $app['pp_role_short'],
+		], []);
 }
 
 if ($app['page_access'] != 'anonymous'
@@ -532,22 +531,6 @@ $app['render_stat']->before('nav', '')
 
 /**************** FUNCTIONS ***************/
 
-/**
- * generate url
- */
-function generate_url(string $entity, array $params = [], string $schema):string
-{
-	global $app;
-
-	$params = http_build_query($params);
-
-	$params = $params ? '?' . $params : '';
-
-	$path = $schema ? $app['protocol'] . $app['systems']->get_host($schema) . '/' : $app['rootpath'];
-
-	return $path . $entity . $params;
-}
-
 function redirect_default_page()
 {
 	header('Location: ' . get_default_page());
@@ -560,7 +543,7 @@ function get_default_page():string
 
 	$page = $app['config']->get('default_landing_page', $app['tschema']);
 
-	$default_page = generate_url($page, [], $app['tschema']);
+	$default_page = $app['link']->context_path($page, $app['pp_ary'], []);
 
 	return $default_page;
 }

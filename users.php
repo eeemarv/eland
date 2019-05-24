@@ -2817,7 +2817,10 @@ if ($id)
 		echo '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
 		echo '<input id="fileupload" type="file" name="image" ';
 		echo 'data-url="';
-		echo generate_url('users', ['img' => 1, 'id' => $id]);
+
+		echo $app['link']->context_path('users', $app['pp_ary'],
+			['img' => 1, 'id' => $id]);
+
 		echo '" ';
 		echo 'data-data-type="json" data-auto-upload="true" ';
 		echo 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
@@ -4720,7 +4723,8 @@ else if ($v_tiles)
 	{
 		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
 
-		$url = generate_url('users', ['id' => $u['id'], 'link' => $status]);
+		$url = $app['link']->context_path('users', $app['pp_ary'],
+			['id' => $u['id'], 'link' => $status]);
 
 		echo '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
 		echo '<div';

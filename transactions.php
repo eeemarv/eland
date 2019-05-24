@@ -1772,24 +1772,21 @@ if ($id)
 
 		if ($real_from)
 		{
+			$str = 'De transactie in het andere ';
+			$str .= 'Systeem uitgedrukt ';
+			$str .= 'in de eigen tijdsmunt.';
+
 			if ($inter_transaction
 				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
-				echo '<a href="';
-				echo generate_url('transactions',
-					['id' => $inter_transaction['id']],
-					$inter_schema);
-				echo '">';
+				echo $app['link']->link_no_attr('transactions', [
+						'system'		=> $app['systems']->get_system_from_schema($inter_schema),
+						'role_short'	=> 'g',
+					], ['id' => $inter_transaction['id']], $str);
 			}
-
-			echo 'De transactie in het andere ';
-			echo 'Systeem uitgedrukt ';
-			echo 'in de eigen tijdsmunt.';
-
-			if ($inter_transaction
-				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
+			else
 			{
-				echo '</a>';
+				echo $str;
 			}
 		}
 		else
@@ -1872,25 +1869,22 @@ if ($id)
 		}
 		else
 		{
+			$str = 'De transactie in het andere ';
+			$str .= 'Systeem uitgedrukt ';
+			$str .= 'in de eigen tijdsmunt ';
+			$str .= 'met gelijke tijdswaarde als Tr-1.';
+
 			if ($inter_transaction
 				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
-				echo '<a href="';
-				echo generate_url('transactions',
-					['id' => $inter_transaction['id']],
-					$inter_schema);
-				echo '">';
+				echo $app['link']->link_no_attr('transactions', [
+						'system'	=> $app['systems']->get_system_from_schema($inter_schema),
+						'role_short'	=> 'g',
+					], ['id' => $inter_transaction['id']], $str);
 			}
-
-			echo 'De transactie in het andere ';
-			echo 'Systeem uitgedrukt ';
-			echo 'in de eigen tijdsmunt ';
-			echo 'met gelijke tijdswaarde als Tr-1.';
-
-			if ($inter_transaction
-				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
+			else
 			{
-				echo '</a>';
+				echo $str;
 			}
 		}
 
@@ -2123,7 +2117,7 @@ $app['pagination']->init('transactions', $app['pp_ary'],
 
 $asc_preset_ary = [
 	'asc'	=> 0,
-	'indicator' => '',
+	'fa' 	=> 'sort',
 ];
 
 $tableheader_ary = [
@@ -2162,8 +2156,8 @@ else
 
 $tableheader_ary[$params['sort']['orderby']]['asc']
 	= $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['indicator']
-	= $params['sort']['asc'] ? '-asc' : '-desc';
+$tableheader_ary[$params['sort']['orderby']]['fa']
+	= $params['sort']['asc'] ? 'sort-asc' : 'sort-desc';
 
 if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 {
@@ -2495,14 +2489,8 @@ foreach ($tableheader_ary as $key_orderby => $data)
 			'asc'		=> $data['asc'],
 		];
 
-		echo '<a href="';
-		echo generate_url('transactions', $h_params);
-		echo '">';
-		echo $data['lbl'];
-		echo '&nbsp;<i class="fa fa-sort';
-		echo $data['indicator'];
-		echo '"></i>';
-		echo '</a>';
+		echo $app['link']->link_fa('transactions', $app['pp_ary'],
+			$h_params, $data['lbl'], [], $data['fa']);
 	}
 
 	echo '</th>';
