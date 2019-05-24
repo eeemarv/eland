@@ -9,6 +9,7 @@ use service\queue;
 use service\user_cache;
 use Monolog\Logger;
 use service\geocode as geocode_service;
+use render\account;
 
 class geocode implements queue_interface
 {
@@ -17,8 +18,8 @@ class geocode implements queue_interface
 	protected $cache;
 	protected $db;
 	protected $user_cache;
-
 	protected $geocode_service;
+	protected $account;
 
 	public function __construct(
 		db $db,
@@ -26,7 +27,8 @@ class geocode implements queue_interface
 		queue $queue,
 		Logger $monolog,
 		user_cache $user_cache,
-		geocode_service $geocode_service
+		geocode_service $geocode_service,
+		account $account
 	)
 	{
 		$this->queue = $queue;
@@ -35,6 +37,7 @@ class geocode implements queue_interface
 		$this->db = $db;
 		$this->user_cache = $user_cache;
 		$this->geocode_service = $geocode_service;
+		$this->account = $account;
 	}
 
 	public function process(array $data):void

@@ -7,9 +7,9 @@ use Doctrine\DBAL\Connection as db;
 use service\cache;
 use Monolog\Logger;
 use queue\geocode as geocode_queue;
-
 use service\schedule;
 use service\systems;
+use render\account;
 
 class geocode extends schema_task
 {
@@ -20,6 +20,7 @@ class geocode extends schema_task
 	protected $curl;
 	protected $geocoder;
 	protected $geocode_queue;
+	protected $account;
 
 	public function __construct(
 		db $db,
@@ -27,7 +28,8 @@ class geocode extends schema_task
 		Logger $monolog,
 		geocode_queue $geocode_queue,
 		schedule $schedule,
-		systems $systems
+		systems $systems,
+		account $account
 	)
 	{
 		parent::__construct($schedule, $systems);
@@ -35,6 +37,7 @@ class geocode extends schema_task
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
+		$this->account = $account;
 	}
 
 	public function process():void

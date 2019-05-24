@@ -1976,7 +1976,7 @@ if ($add || $edit)
 		if ($edit)
 		{
 			$app['heading']->add('aanpassen: ');
-			$app['heading']->add($app['account']->link($edit, $app['pp_ary']);
+			$app['heading']->add($app['account']->link($edit, $app['pp_ary']));
 		}
 		else
 		{

@@ -1433,7 +1433,7 @@ if ($edit)
 
 	echo '<form  method="post" autocomplete="off">';
 
-// copied from "show a transaction"
+	// copied from "show a transaction"
 
 	echo '<dl>';
 
@@ -1677,7 +1677,7 @@ if ($id)
 		}
 		else
 		{
-			echo $app['account']->str($transaction['id_from'], $app['tschema']);		}
+			echo $app['account']->str($transaction['id_from'], $app['tschema']);
 		}
 
 		echo '</dd>';
@@ -1689,7 +1689,7 @@ if ($id)
 
 		if ($inter_transaction)
 		{
-			if ($s_inter_schema_check[$inter_schema]))
+			if ($s_inter_schema_check[$inter_schema])
 			{
 				$user_from = $app['account']->inter_link($inter_transaction['id_from'],
 					$inter_schema);

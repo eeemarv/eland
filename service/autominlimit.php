@@ -7,6 +7,7 @@ use Monolog\Logger;
 use Doctrine\DBAL\Connection as db;
 use service\config;
 use service\user_cache;
+use render\account;
 
 class autominlimit
 {
@@ -15,6 +16,7 @@ class autominlimit
 	protected $db;
 	protected $config;
 	protected $user_cache;
+	protected $account;
 
 	protected $exclusive;
 	protected $trans_exclusive;
@@ -28,7 +30,8 @@ class autominlimit
 		xdb $xdb,
 		db $db,
 		config $config,
-		user_cache $user_cache
+		user_cache $user_cache,
+		account $account
 	)
 	{
 		$this->monolog = $monolog;
@@ -36,6 +39,7 @@ class autominlimit
 		$this->db = $db;
 		$this->user_cache = $user_cache;
 		$this->config = $config;
+		$this->account = $account;
 	}
 
 	public function init(string $schema):self

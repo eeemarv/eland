@@ -19,11 +19,11 @@ class geocode
         $this->geocoder->setLimit(1);
     }
 
-    public function getCoordinates(string $adress):array
+    public function getCoordinates(string $address):array
     {
         try
         {
-            $addressCollection = $this->geocoder->geocodeQuery(GeocodeQuery::create($adress));
+            $addressCollection = $this->geocoder->geocodeQuery(GeocodeQuery::create($address));
 
             if (is_object($addressCollection))
             {

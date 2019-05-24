@@ -7,6 +7,7 @@ use Monolog\Logger;
 use service\user_cache;
 use service\autominlimit;
 use service\config;
+use render\account;
 
 class transaction
 {
@@ -15,13 +16,15 @@ class transaction
 	protected $user_cache;
 	protected $autominlimit;
 	protected $config;
+	protected $account;
 
 	public function __construct(
 		db $db,
 		Logger $monolog,
 		user_cache $user_cache,
 		autominlimit $autominlimit,
-		config $config
+		config $config,
+		account $account
 	)
 	{
 		$this->db = $db;
@@ -29,11 +32,12 @@ class transaction
 		$this->user_cache = $user_cache;
 		$this->autominlimit = $autominlimit;
 		$this->config = $config;
+		$this->account = $account;
 	}
 
-	public function generate_transid(string $s_id, string $server_name):string
+	public function generate_transid(string $s_id, string $system_name):string
 	{
-		return substr(sha1($s_id . microtime()), 0, 12) . '_' . $s_id . '@' . $server_name;
+		return substr(sha1($s_id . microtime()), 0, 12) . '_' . $s_id . '@' . $system_name;
 	}
 
 	public function sign(
