@@ -1,7 +1,7 @@
 <?php
 
 $app['page_access'] = 'guest';
-$allow_guest_post = true;
+
 require_once __DIR__ . '/include/web.php';
 
 use render\link;

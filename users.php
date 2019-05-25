@@ -30,10 +30,10 @@ $selected_users = isset($_POST['sel']) && $_POST['sel'] != '' ? explode(',', $_P
 $app['page_access'] = ($edit || $pw || $img_del || $password || $submit || $img)
 	? 'user'
 	: 'guest';
+
 $app['page_access'] = ($add || $del || $bulk_mail_submit || $bulk_mail_test)
 	? 'admin'
 	: $app['page_access'];
-$allow_guest_post = $app['page_access'] === 'guest' && $user_mail_submit;
 
 require_once __DIR__ . '/include/web.php';
 
