@@ -765,11 +765,17 @@ foreach($users as $user_id => $user)
 	echo '<tr' . $class . ' data-user-id="' . $user_id . '">';
 
 	echo '<td>';
-	echo $app['account']->link_code($user_id, $app['pp_ary']);
+
+	echo $app['link']->link_no_attr('users', $app['pp_ary'],
+		['id' => $user_id], $user['letscode']);
+
 	echo '</td>';
 
 	echo '<td>';
-	echo $app['account']->link_name($user_id, $app['pp_ary']);
+
+	echo $app['link']->link_no_attr('users', $app['pp_ary'],
+		['id' => $user_id], $user['name']);
+
 	echo '</td>';
 
 	echo '<td data-value="' . $hsh . '">';

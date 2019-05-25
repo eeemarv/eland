@@ -23,32 +23,16 @@ class account
 		$this->user_cache = $user_cache;
 	}
 
-	public function get_str_from_ary(array $user_ary):string
+	public function get_str(int $id, string $schema):string
 	{
-		if (!count($user_ary))
-		{
-			return '** (leeg) **';
-		}
+		$user = $this->user_cache->get($id, $schema);
 
-		if (!$user_ary['letscode'])
-		{
-			if (!$user_ary['name'])
-			{
-				return '** (gn code & naam) **';
-			}
+		$str = trim($user['letscode'] . ' ' . $user['name']);
 
-			return '** (gn code) ** ' . $user_ary['name'];
-		}
-
-		if (!$user_ary['name'])
-		{
-			return $user_ary['letscode'] . ' ** (gn naam) **';
-		}
-
-		return $user_ary['letscode'] . ' ' . $user_ary['name'];
+		return $str === '' ? '** (leeg) ***' : $str;
 	}
 
-	public function get_str_from_id(
+	public function str(
 		int $id,
 		string $schema
 	):string
@@ -58,33 +42,44 @@ class account
 			return '** (id: 0) **';
 		}
 
-		$user_ary = $this->user_cache->get($id, $schema);
-
-		return $this->get_str_from_ary($user_ary);
+		return $this->get_str($id, $schema);
 	}
 
-	public function link_field(
+	public function str_id(
 		int $id,
-		array $pp_ary,
-		string $field
+		string $schema
 	):string
 	{
-		$user = $this->user_cache->get($id,
-			$this->systems->get_schema_from_system($pp_ary['system']));
+		if ($id === 0)
+		{
+			return '** (id: 0) **';
+		}
+
+		return $this->str($id, $schema) . ' (' . $id . ')';
+	}
+
+	public function link(
+		int $id,
+		array $pp_ary
+	):string
+	{
+		$schema = $this->systems->get_schema_from_system($pp_ary['system']);
 
 		return $this->link->link_no_attr('users', $pp_ary,
-			['id' => $id], $user[$field]);
+			['id' => $id], $this->get_str($id, $schema));
 	}
 
-	public function link(int $id, array $pp_ary):string
+	public function inter_link(
+		int $id,
+		string $schema
+	):string
 	{
+		$pp_ary = [
+			'role_short'	=> 'g',
+			'system'		=> $this->systems->get_system_from_schema($schema),
+		];
 
-	}
-
-	public function link_code(int $id, array $pp_ary):string
-	{
-		$user = $this->user_cache->get($id,
-			$this->systems->get_schema_from_system($pp_ary['system']));
-
+		return $this->link->link_no_attr('users', $pp_ary,
+			['id' => $id], $this->get_str($id, $schema));
 	}
 }
