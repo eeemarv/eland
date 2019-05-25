@@ -430,8 +430,7 @@ $app['page_access'] = 'guest';
 require_once __DIR__ . '/include/web.php';
 
 $show_visibility = ($app['s_user']
-	&& $app['config']->get('template_lets', $app['tschema'])
-	&& $app['config']->get('interlets_en', $app['tschema']))
+		&& $app['intersystem_en'])
 	|| $app['s_admin'];
 
 $news_access_ary = $no_access_ary = [];

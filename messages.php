@@ -2672,8 +2672,7 @@ else if ($v_list)
 		echo '<li class="active"><a href="#extend_tab" ';
 		echo 'data-toggle="tab">Verlengen</a></li>';
 
-		if ($app['config']->get('template_lets', $app['tschema'])
-			&& $app['config']->get('interlets_en', $app['tschema']))
+		if ($app['intersystem_en'])
 		{
 			echo '<li>';
 			echo '<a href="#access_tab" data-toggle="tab">';
@@ -2708,8 +2707,7 @@ else if ($v_list)
 
 		echo '</div>';
 
-		if ($app['config']->get('template_lets', $app['tschema'])
-			&& $app['config']->get('interlets_en', $app['tschema']))
+		if ($app['intersystem_en'])
 		{
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';

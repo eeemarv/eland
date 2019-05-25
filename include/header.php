@@ -281,8 +281,7 @@ if (!$app['s_anonymous'])
 			'logs'				=> ['history', 'Logs'],
 		];
 
-		if (!$app['config']->get('template_lets', $app['tschema'])
-			|| !$app['config']->get('interlets_en', $app['tschema']))
+		if (!$app['intersystem_en'])
 		{
 			unset($menu['intersystem'], $menu['apikeys']);
 		}
@@ -337,8 +336,7 @@ if (!$app['s_anonymous'])
 		echo ' Leden modus</a>';
 		echo '</li>';
 
-		if ($app['config']->get('template_lets', $app['tschema'])
-			&& $app['config']->get('interlets_en', $app['tschema']))
+		if ($app['intersystem_en'])
 		{
 			$u_param['r'] = 'guest';
 

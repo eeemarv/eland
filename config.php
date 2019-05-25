@@ -32,8 +32,7 @@ if (!$app['config']->get('forum_en', $app['tschema']))
 	unset($block_ary['periodic_mail']['forum']);
 }
 
-if (!$app['config']->get('interlets_en', $app['tschema'])
-	|| !$app['config']->get('template_lets', $app['tschema']))
+if (!$app['intersystem_en'])
 {
 	unset($block_ary['periodic_mail']['interlets']);
 	unset($cond_ary['config_template_lets']);

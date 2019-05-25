@@ -19,9 +19,6 @@ $sort = $_GET['sort'] ?? [];
 
 $currency = $app['config']->get('currency', $app['tschema']);
 
-$intersystem_en = $app['config']->get('template_lets', $app['tschema'])
-	&& $app['config']->get('interlets_en', $app['tschema']);
-
 /**
  * add
  */
@@ -953,8 +950,7 @@ if ($add)
 		}
 	}
 
-	if ($app['config']->get('template_lets', $app['tschema'])
-		&& $app['config']->get('interlets_en', $app['tschema']))
+	if ($app['intersystem_en'])
 	{
 		$mail_systems = $app['db']->executeQuery('select l.id, l.groupname
 			from ' . $app['tschema'] . '.letsgroups l, ' .
@@ -1242,8 +1238,7 @@ if ($add)
 		echo '<li id="info_admin_limit">';
 		echo 'Admins kunnen over en onder limieten gaan';
 
-		if ($app['config']->get('interlets_en', $app['tschema'])
-			&& $app['config']->get('template_lets', $app['tschema']))
+		if ($app['intersystem_en'])
 		{
 			echo ' in het eigen Systeem.';
 		}
@@ -1647,7 +1642,7 @@ if ($id)
 	$real_to = $transaction['real_to'] ? true : false;
 	$real_from = $transaction['real_from'] ? true : false;
 
-	$intersystem_trans = ($real_from || $real_to) && $intersystem_en;
+	$intersystem_trans = ($real_from || $real_to) && $app['intersystem_en'];
 
 	echo '<div class="panel panel-';
 	echo $intersystem_trans ? 'warning' : 'default';
@@ -2590,7 +2585,7 @@ if (isset($filter['uid']))
 	{
 		echo '<tr';
 
-		if ($intersystem_en && ($t['real_to'] || $t['real_from']))
+		if ($app['intersystem_en'] && ($t['real_to'] || $t['real_from']))
 		{
 			echo ' class="warning"';
 		}
@@ -2699,7 +2694,7 @@ else
 	{
 		echo '<tr';
 
-		if ($intersystem_en && ($t['real_to'] || $t['real_from']))
+		if ($app['intersystem_en'] && ($t['real_to'] || $t['real_from']))
 		{
 			echo ' class="warning"';
 		}

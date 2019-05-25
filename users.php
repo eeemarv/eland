@@ -2666,9 +2666,9 @@ if ($id)
 
 	$intersystem_missing = false;
 
-	if ($app['s_admin'] && $user['accountrole'] === 'interlets'
-		&& $app['config']->get('interlets_en', $app['tschema'])
-		&& $app['config']->get('template_lets', $app['tschema']))
+	if ($app['s_admin']
+		&& $user['accountrole'] === 'interlets'
+		&& $app['intersystem_en'])
 	{
 		$intersystem_id = $app['db']->fetchColumn('select id
 			from ' . $app['tschema'] . '.letsgroups

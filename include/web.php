@@ -106,6 +106,9 @@ else
 	$app['pp_role'] = 'anonymous';
 }
 
+$app['intersystem_en'] = $app['config']->get('template_lets', $app['tschema'])
+	&& $app['config']->get('interlets_en', $app['tschema']);
+
 $app['s_system_self'] = true;
 $app['s_schema'] = $app['tschema'];
 $app['s_elas_guest'] = false;
@@ -159,8 +162,7 @@ switch ($app['pp_role'])
  * load interSystems
  **/
 
-if ($app['config']->get('template_lets', $app['tschema'])
-	&& $app['config']->get('interlets_en', $app['tschema']))
+if ($app['intersystem_en'])
 {
 	$app['intersystem_ary'] = [
 		'elas'	=> $app['intersystems']->get_elas($app['s_schema']),

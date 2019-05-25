@@ -7,12 +7,7 @@ $del = $_GET['del'] ?? false;
 $add = $_GET['add'] ?? false;
 $submit = isset($_POST['zend']);
 
-if (!$app['config']->get('template_lets', $app['tschema']))
-{
-	redirect_default_page();
-}
-
-if (!$app['config']->get('interlets_en', $app['tschema']))
+if (!$app['intersystem_en'])
 {
 	redirect_default_page();
 }

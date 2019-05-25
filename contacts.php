@@ -1095,8 +1095,7 @@ $access_options = [
 	'interlets'	=> 'interSysteem',
 ];
 
-if (!$app['config']->get('template_lets', $app['tschema'])
-	|| !$app['config']->get('interlets_en', $app['tschema']))
+if (!$app['intersystem_en'])
 {
 	unset($access_options['interlets']);
 }

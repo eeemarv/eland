@@ -348,9 +348,8 @@ if ($add || $edit)
 if ($topic)
 {
 	$show_visibility = ($app['s_user']
-		&& $app['config']->get('template_lets', $app['tschema'])
-		&& $app['config']->get('interlets_en', $app['tschema']))
-		|| $app['s_admin'] ? true : false;
+			&& $app['intersystem_en'])
+		|| $app['s_admin'];
 
 	$forum_posts = [];
 
@@ -564,8 +563,7 @@ if ($app['s_admin'])
 }
 
 $show_visibility = (!$app['s_guest']
-	&& $app['config']->get('template_lets', $app['tschema'])
-	&& $app['config']->get('interlets_en', $app['tschema']))
+		&& $app['intersystem_en'])
 	|| $app['s_admin'];
 
 $app['heading']->add('Forum');

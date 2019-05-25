@@ -26,12 +26,7 @@ if ($id || $edit || $del)
 	}
 }
 
-if (!$app['config']->get('template_lets', $app['tschema']))
-{
-	redirect_default_page();
-}
-
-if (!$app['config']->get('interlets_en', $app['tschema']))
+if (!$app['intersystem_en'])
 {
 	redirect_default_page();
 }
@@ -930,7 +925,8 @@ function get_schemas_groups():string
 	{
 		$out .= '<tr';
 
-		if (!$app['config']->get('template_lets', $s) || !$app['config']->get('interlets_en', $s))
+		if (!$app['config']->get('template_lets', $s)
+			|| !$app['config']->get('interlets_en', $s))
 		{
 			$out .= ' class="danger"';
 
