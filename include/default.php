@@ -1,5 +1,7 @@
 <?php
 
+use Silex\Provider;
+
 $app = new util\app();
 
 if(!isset($rootpath))
@@ -28,13 +30,13 @@ $app->register(new Predis\Silex\ClientServiceProvider(), [
 	],
 ]);
 
-$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+$app->register(new Provider\DoctrineServiceProvider(), [
     'db.options' => [
         'url'   => getenv('DATABASE_URL'),
     ],
 ]);
 
-$app->register(new Silex\Provider\TwigServiceProvider(), [
+$app->register(new Provider\TwigServiceProvider(), [
 	'twig.path' => __DIR__ . '/../view',
 	'twig.options'	=> [
 		'cache'		=> __DIR__ . '/../cache',
@@ -48,7 +50,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 $app->extend('twig', function($twig, $app) {
 
 	$twig->addGlobal('s3_url', $app['s3_url']);
-	$twig->addExtension(new \twig\extension());
+	$twig->addExtension(new twig\extension());
 	$twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader([
 		twig\config::class => function() use ($app){
 			return new twig\config($app['config']);
@@ -112,16 +114,16 @@ $app->extend('twig', function($twig, $app) {
 	return $twig;
 });
 
-$app->register(new Silex\Provider\LocaleServiceProvider());
+$app->register(new Provider\LocaleServiceProvider());
 
-$app->register(new Silex\Provider\TranslationServiceProvider(), [
+$app->register(new Provider\TranslationServiceProvider(), [
     'locale_fallbacks' 	=> ['nl'],
     'locale'			=> 'nl',
 ]);
 
 $app->extend('translator', function($translator, $app) {
 
-	$translator->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
+	$translator->addLoader('yaml', new Symfony\Component\Translation\Loader\YamlFileLoader());
 
 	$trans_dir = __DIR__ . '/../translation/';
 
@@ -132,7 +134,7 @@ $app->extend('translator', function($translator, $app) {
 	return $translator;
 });
 
-$app->register(new Silex\Provider\MonologServiceProvider(), []);
+$app->register(new Provider\MonologServiceProvider(), []);
 
 $app->extend('monolog', function($monolog, $app) {
 
@@ -172,6 +174,21 @@ $app->extend('monolog', function($monolog, $app) {
 
 	return $monolog;
 });
+
+if ($app['debug'])
+{
+	$app->register(new Provider\WebProfilerServiceProvider(), array(
+		'profiler.cache_dir' => __DIR__.'/../cache/profiler',
+		'profiler.mount_prefix' => '/_profiler',
+	));
+}
+
+$app->register(new Provider\HttpFragmentServiceProvider());
+$app->register(new Provider\ServiceControllerServiceProvider());
+
+/**
+ *
+ */
 
 $app['s3'] = function($app){
 	return new service\s3(

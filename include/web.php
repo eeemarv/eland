@@ -117,7 +117,6 @@ $app['s_user'] = false;
 $app['s_admin'] = false;
 $app['s_anonymous'] = false;
 $app['s_master'] = false;
-$app['s_accountrole'] = $app['pp_role'];
 
 if ($app['pp_role'] === 'guest')
 {
@@ -215,6 +214,7 @@ if ($app['s_auth_en'])
 		default:
 			$app['s_id'] = $app['s_logins'][$app['s_schema']];
 			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+			$app['s_role'] = $app['session_user']['accountrole'];
 			break;
 	}
 }
@@ -224,6 +224,42 @@ error_log($app['request']->getPathInfo());
 /**
  * Authorization
  */
+
+if (!ctype_digit((string) $app['s_id']))
+{
+	unset($app['s_logins'][$app['s_schema']]);
+	$app['session']->set('logins', $app['s_logins']);
+
+	$app['monolog']->debug('Non numeric s_id: ' . $app['s_id'],
+		['schema' => $app['tschema']]);
+
+	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
+}
+
+if (!$app['s_anonymous'] && $app['s_role'] === 'anonymous')
+{
+	$app['monolog']->debug('Not authenticated, redirect to login.',
+		['schema' => $app['tschema']]);
+
+	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
+}
+
+if ($app['s_guest'] && !$app['intersystem_en'])
+{
+	$app['monolog']->debug('Guest routes disabled',
+		['schema' => $app['tschema']]);
+
+
+
+	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
+}
+
+
+
+
+
+
+
 
 if ($app['page_access'] === 'anonymous')
 {

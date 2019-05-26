@@ -41,7 +41,8 @@
 		"php-http/message": "^1.6",
 		"symfony/dotenv": "^4.0",
 		"symfony/templating": "^4.2",
-		"vlucas/phpdotenv": "^3.3"
+		"vlucas/phpdotenv": "^3.3",
+		"silex/web-profiler": "^2.0"
 	},
 
     "minimum-stability": "stable",
