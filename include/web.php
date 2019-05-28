@@ -587,9 +587,6 @@ if ($app['request']->query->get('welcome') !== null && $app['s_guest'])
 	$app['alert']->info($msg);
 }
 
-$app['render_stat']->before('nav', '')
-	->after('nav', '');
-
 /**************** FUNCTIONS ***************/
 
 function redirect_default_page()

@@ -1,6 +1,6 @@
 <?php
 
-use cnst\landing_pages as cnst_pages;
+use cnst\pages as cnst_pages;
 
 if ($css = $app['config']->get('css', $app['tschema']))
 {
