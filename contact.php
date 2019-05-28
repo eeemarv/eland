@@ -56,7 +56,7 @@ if ($token)
 	$app['alert']->error('Ongeldig of verlopen token.');
 }
 
-if($app['is_http_post'] && isset($_POST['zend']))
+if($app['request']->isMethod('POST') && isset($_POST['zend']))
 {
 	$email = trim(strtolower($_POST['email']));
 	$message = trim($_POST['message']);

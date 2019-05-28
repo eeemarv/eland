@@ -28,7 +28,7 @@ $pag = $_GET['p'] ?? [];
 
 $access = $app['access_control']->get_post_value();
 
-if ($app['is_http_post']
+if ($app['request']->isMethod('POST')
 	&& $app['s_guest']
 	&& ($add || $edit || $del || $img || $img_del || $images
 		|| $extend_submit || $access_submit || $extend || $access))
@@ -37,7 +37,7 @@ if ($app['is_http_post']
 	$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 }
 
-if (!$app['is_http_post'])
+if ($app['request']->isMethod('GET'))
 {
 	$extend = $_GET['extend'] ?? false;
 }
@@ -45,7 +45,7 @@ if (!$app['is_http_post'])
 /*
  * bulk actions (set access or validity)
  */
-if ($app['is_http_post']
+if ($app['request']->isMethod('POST')
 	&& (($extend_submit && $extend)
 		|| ($access_submit && $access))
 	& ($app['s_admin'] || $app['s_user']))
@@ -247,7 +247,8 @@ if ($id && $extend)
 /**
  * post images
  */
-if ($app['is_http_post'] && $img && $images && !$app['s_guest'])
+if ($app['request']->isMethod('POST')
+	&& $img && $images && !$app['s_guest'])
 {
 	$ret_ary = [];
 
@@ -410,7 +411,8 @@ if ($app['is_http_post'] && $img && $images && !$app['s_guest'])
  * Delete all images
  */
 
-if ($img_del == 'all' && $id && $app['is_http_post'])
+if ($img_del == 'all' && $id
+	&& $app['request']->isMethod('POST'))
 {
 	if (!($s_owner || $app['s_admin']))
 	{
@@ -429,7 +431,8 @@ if ($img_del == 'all' && $id && $app['is_http_post'])
 /*
  * delete an image
  */
-if ($img_del && $app['is_http_post'] && ctype_digit((string) $img_del))
+if ($img_del && $app['request']->isMethod('POST')
+	&& ctype_digit((string) $img_del))
 {
 	if (!($msg = $app['db']->fetchAssoc('select m.id_user, p."PictureFile"
 		from ' . $app['tschema'] . '.msgpictures p, ' . $app['tschema'] . '.messages m
@@ -563,7 +566,7 @@ if ($img_del == 'all' && $id)
 /*
  * send email
  */
-if ($mail && $app['is_http_post'] && $id)
+if ($mail && $app['request']->isMethod('POST') && $id)
 {
 	$content = $_POST['content'];
 	$cc = isset($_POST['cc']);
@@ -1472,7 +1475,7 @@ if (($edit || $add))
  */
 if ($id)
 {
-	$cc = $app['is_http_post'] ? $cc : 1;
+	$cc = $app['request']->isMethod('POST') ? $cc : 1;
 
 	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 

@@ -26,7 +26,6 @@ $app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'
 $app['server_name'] = $_SERVER['SERVER_NAME'];
 $app['base_url'] = $app['protocol'] . $app['server_name'];
 $app['request_uri'] = $_SERVER['REQUEST_URI'];
-$app['is_http_post'] = $_SERVER['REQUEST_METHOD'] === 'POST';
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
@@ -250,6 +249,30 @@ if ($app['s_guest'] && !$app['intersystem_en'])
 		['schema' => $app['tschema']]);
 
 
+	if ($app['s_role'] === 'user')
+	{
+		if ($app['page_access'] === 'admin')
+		{
+			$app['link']->redirect($app['matched_route'], [
+				'system' 		=> $app['pp_system'],
+				'role_short' 	=> 'u',
+			], []);
+		}
+
+		$landing_route = $app['config']->get('default_landing_page', $app['tschema']);
+
+		$app['link']->redirect($landing_route, [
+			'system' => $app['pp_system'],
+			'role_short' => 'u',
+		], []);
+	}
+	else if ($app['s_role'] === 'admin')
+	{
+		$app['link']->redirect($app['matched_route'],
+			['system' => $app['pp_system'], 'role_short' => 'a'], []);
+	}
+
+	// s_role === 'guest'
 
 	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
 }
@@ -291,7 +314,7 @@ if ($app['s_guest'] && !$app['s_system_self'])
 	{
 		$app['link']->redirect('login',
 			['system' => $app['pp_system']],
-			['location'	=> $location],
+			[],
 		);
 	}
 }

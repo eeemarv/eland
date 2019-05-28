@@ -15,7 +15,11 @@ $add = isset($_GET['add']) ? true : false;
 $submit = isset($_POST['zend']) ? true : false;
 $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
-if (($confirm_del || $submit || $add || $edit || $del || $app['is_http_post'] || $map_edit) & !$app['s_admin'])
+if (($confirm_del || $submit
+		|| $add || $edit || $del
+		|| $app['request']->isMethod('POST')
+		|| $map_edit)
+	& !$app['s_admin'])
 {
 	$app['alert']->error('Je hebt onvoldoende rechten voor deze actie.');
 	$app['link']->redirect('docs', $app['pp_ary'], []);

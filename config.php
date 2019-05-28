@@ -75,7 +75,7 @@ foreach ($pane['inputs'] as $input_name => $input_config)
 	$config[$input_name] = $app['config']->get($input_name, $app['tschema']);
 }
 
-if ($app['is_http_post'])
+if ($app['request']->isMethod('POST'))
 {
 	if (!isset($_POST[$active_tab . '_submit']))
 	{

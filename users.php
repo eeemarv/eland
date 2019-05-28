@@ -104,7 +104,7 @@ if ($app['s_admin'])
 		],
 	];
 
-	if ($app['is_http_post'] && $bulk_field)
+	if ($app['request']->isMethod('POST') && $bulk_field)
 	{
 		if (isset($_POST[$bulk_field . '_bulk_submit']))
 		{
@@ -119,7 +119,7 @@ if ($app['s_admin'])
  * mail to user
  */
 
-if ($user_mail_submit && $id && $app['is_http_post'])
+if ($user_mail_submit && $id && $app['request']->isMethod('POST'))
 {
 	$user_mail_content = $_POST['user_mail_content'] ?? '';
 	$user_mail_cc = isset($_POST['user_mail_cc']);
@@ -223,7 +223,7 @@ if ($user_mail_submit && $id && $app['is_http_post'])
  * upload image
  */
 
-if ($app['is_http_post'] && $img && $id )
+if ($app['request']->isMethod('POST') && $img && $id )
 {
 	$s_owner = !$app['s_guest']
 		&& $app['s_system_self']
@@ -373,7 +373,7 @@ if ($img_del && $id)
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
-	if ($app['is_http_post'])
+	if ($app['request']->isMethod('POST'))
 	{
 		$app['db']->update($app['tschema'] . '.users',
 			['"PictureFile"' => ''],
@@ -432,7 +432,8 @@ if ($img_del && $id)
  * bulk actions
  */
 
-if ($bulk_submit && $app['is_http_post'] && $app['s_admin'])
+if ($bulk_submit && $app['request']->isMethod('POST')
+	&& $app['s_admin'])
 {
 	$verify = ($bulk_mail_submit || $bulk_mail_test) ? 'verify_mail' : 'verify_' . $bulk_field;
 	$verify = isset($_POST[$verify]) ? true : false;
@@ -510,7 +511,9 @@ if ($bulk_submit && $app['is_http_post'] && $app['s_admin'])
  * bulk action: change a field for multiple users
  */
 
-if ($app['s_admin'] && !count($errors) && $bulk_field_submit && $app['is_http_post'])
+if ($app['s_admin'] && !count($errors)
+	&& $bulk_field_submit
+	&& $app['request']->isMethod('POST'))
 {
 	$users_log = '';
 
@@ -661,7 +664,7 @@ if ($app['s_admin'])
 if ($app['s_admin']
 	&& !count($errors)
 	&& ($bulk_mail_submit || $bulk_mail_test)
-	&& $app['is_http_post'])
+	&& $app['request']->isMethod('POST'))
 {
 	if ($bulk_mail_test)
 	{
@@ -2606,7 +2609,7 @@ if ($id)
 		&& $app['s_id'] == $id
 		&& $id;
 
-	$user_mail_cc = $app['is_http_post'] ? $user_mail_cc : 1;
+	$user_mail_cc = $app['request']->isMethod('POST') ? $user_mail_cc : 1;
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
@@ -4561,7 +4564,7 @@ if ($v_list)
 
 	if ($app['s_admin'] & isset($show_columns['u']))
 	{
-		$bulk_mail_cc = $app['is_http_post'] ? $bulk_mail_cc : true;
+		$bulk_mail_cc = $app['request']->isMethod('POST') ? $bulk_mail_cc : true;
 
 		$inp =  '<div class="form-group">';
 		$inp .=  '<label for="%5$s" class="control-label">%2$s</label>';
