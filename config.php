@@ -44,8 +44,8 @@ $select_options = [
 ];
 
 $explain_replace_ary = [
-	'%path_register%'	=> $app['base_url'] . '/register.php',
-	'%path_contact%'	=> $app['base_url'] . '/contact.php',
+	'%path_register%'	=> $app['link']->path('register', ['system' => $app['pp_system']]),
+	'%path_contact%'	=> $app['link']->path('contact', ['system' => $app['pp_system']]),
 ];
 
 $addon_replace_ary = [

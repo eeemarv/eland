@@ -771,7 +771,7 @@ if ($add)
 	{
 		//GET form
 
-		$transid = $app['transaction']->generate_transid($app['s_id'], $app['server_name']);
+		$transid = $app['transaction']->generate_transid($app['s_id'], $app['pp_system']);
 
 		$app['predis']->set($redis_transid_key, $transid);
 		$app['predis']->expire($redis_transid_key, 3600);
