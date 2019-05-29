@@ -132,21 +132,6 @@ if (!$app['s_anonymous']
 				: $app['pp_role_short'],
 		], [], $app['config']->get('systemname', $login_schema));
 
-		echo '<a href="';
-		echo $app['protocol'];
-		echo $app['systems']->get_host($login_schema);
-		echo '/';
-		echo $app['script_name'];
-		echo '.php?r=';
-		echo $login_id === 'elas'
-			? 'guest'
-			: $app['session']->get('role.' . $login_schema);
-		echo '&u=';
-		echo $login_id;
-		echo '">';
-
-		echo $app['config']->get('systemname', $login_schema);
-		echo '</a>';
 		echo '</li>';
 	}
 

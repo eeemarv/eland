@@ -9,51 +9,37 @@ use service\config;
 
 class intersystems
 {
-	protected $ttl = 14400; // 4 hours
+	const ELAND = '_eland_intersystems';
+	const ELAS = '_elas_intersystems';
+	const ELAND_ACCOUNTS_SCHEMAS = '_eland_accounts_schemas';
+	const TTL = 854000;
+	const TTL_ELAND_ACCOUNTS_SCHEMAS = 864000;
+
 	protected $redis;
 	protected $db;
 	protected $systems;
 	protected $config;
-	protected $app_protocol;
+	protected $legacy_eland_host_pattern;
 
-	protected $eland_ary;
-	protected $elas_ary;
-
-	protected $eland_accounts_schemas;
-	protected $ttl_eland_accounts_schemas = 86400; // 1 day
+	protected $elas_ary = [];
+	protected $eland_ary = [];
+	protected $eland_accounts_schemas = [];
+	protected $eland_intersystems = [];
 
 	public function __construct(
 		db $db,
 		redis $redis,
 		systems $systems,
 		config $config,
-		string $app_protocol
+		string $legacy_eland_host_pattern
 	)
 	{
 		$this->db = $db;
 		$this->redis = $redis;
 		$this->systems = $systems;
 		$this->config = $config;
-		$this->app_protocol = $app_protocol;
+		$this->legacy_eland_host_pattern = $legacy_eland_host_pattern;
 	}
-
-	public function get_eland_accounts_schemas(string $schema):array
-	{
-		$ret = json_decode($this->redis->get($schema . '_interlets_accounts_schemas'), true);
-
-		if (is_array($ret))
-		{
-			return $ret;
-		}
-
-		$this->get_eland($schema, true);
-
-		return json_decode($this->redis->get($schema . '_interlets_accounts_schemas'), true);
-	}
-
-	/**
-	*
-	*/
 
 	public function clear_cache(string $s_schema):void
 	{
@@ -61,53 +47,31 @@ class intersystems
 		$this->clear_eland_cache();
 	}
 
-	/**
-	 *
-	 */
-
 	public function clear_elas_cache(string $s_schema):void
 	{
-		$this->redis->del($s_schema . '_elas_interlets_groups');
-		$this->redis->del($s_schema . '_elas_intersystems');
+		unset($this->elas_ary[$s_schema]);
+		$this->redis->del($s_schema . self::ELAS);
 	}
-
-	/**
-	 *
-	 */
 
 	public function clear_eland_cache():void
 	{
-		foreach ($this->systems->get_schemas() as $s)
+		unset($this->eland_ary);
+		unset($this->eland_account_schemas);
+
+		foreach ($this->systems->get_schemas() as $schema)
 		{
-			$this->redis->del($s . '_eland_interlets_groups');
-			$this->redis->del($s . '_eland_intersystems');
+			$this->redis->del($schema . self::ELAND);
+			$this->redis->del($schema . self::ELAND_ACCOUNTS_SCHEMAS);
 		}
 	}
 
-	/**
-	 *
-	 */
-
-	public function get_eland(string $s_schema, bool $refresh = false):array
+	private function load_eland_intersystems_from_db(string $schema):void
 	{
-		if (!$s_schema)
-		{
-			return [];
-		}
-
-		$redis_key = $s_schema . '_eland_intersystems';
-
-		if (!$refresh && $this->redis->exists($redis_key))
-		{
-			$this->redis->expire($redis_key, $this->ttl);
-
-			return json_decode($this->redis->get($redis_key), true);
-		}
-
-		$interlets_hosts = $this->eland_accounts_schemas = [];
+		$this->eland_intersystems[$schema] = [];
+		$this->eland_accounts_schemas[$schema] = [];
 
 		$st = $this->db->prepare('select g.url, u.id
-			from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
+			from ' . $schema . '.letsgroups g, ' . $schema . '.users u
 			where g.apimethod = \'elassoap\'
 				and u.letscode = g.localletscode
 				and u.letscode <> \'\'
@@ -118,45 +82,94 @@ class intersystems
 
 		while($row = $st->fetch())
 		{
-			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
+			$host = parse_url($row['url'], PHP_URL_HOST);
+			[$system] = explode('.', $host);
+			$system = strtolower($system);
 
-			if ($s = $this->systems->get_schema($h))
+			if ($interschema = $this->systems->get_schema_from_system($system))
 			{
-				// ignore if the group is not LETS or not interLETS
-
-				if (!$this->config->get('template_lets', $s))
+				if (!$this->config->get('template_lets', $interschema))
 				{
 					continue;
 				}
 
-				if (!$this->config->get('interlets_en', $s))
+				if (!$this->config->get('interlets_en', $interschema))
 				{
 					continue;
 				}
 
-				$interlets_hosts[] = $h;
-
-				$this->eland_accounts_schemas[$row['id']] = $s;
+				$this->eland_intersystems[$schema][] = $system;
+				$this->eland_accounts_schemas[$schema][$row['id']] = $interschema;
 			}
 		}
+	}
 
-		// cache interlets account ids for user interlets linking. (in transactions)
-		$key_interlets_accounts = $s_schema . '_interlets_accounts_schemas';
-
-		$this->redis->set($key_interlets_accounts, json_encode($this->eland_accounts_schemas));
-
-		$this->redis->expire($key_interlets_accounts, $this->ttl_eland_accounts_schemas);
-
-		$s_url = $this->app_protocol . $this->systems->get_host($s_schema);
-
-		$this->eland_ary = [];
-
-		foreach ($interlets_hosts as $h)
+	public function get_eland_accounts_schemas(string $schema):array
+	{
+		if (!$schema)
 		{
-			$s = $this->systems->get_schema($h);
+			return [];
+		}
+
+		if (isset($this->eland_accounts_schemas[$schema]))
+		{
+			return $this->eland_accounts_schemas[$schema];
+		}
+
+		$redis_key = $schema . self::ELAND_ACCOUNTS_SCHEMAS;
+
+		if ($this->redis->exists($redis_key))
+		{
+			$this->redis->expire($redis_key, self::TTL_ELAND_ACCOUNTS_SCHEMAS);
+
+			return $this->eland_accounts_schemas[$schema] = json_decode($this->redis->get($redis_key), true);
+		}
+
+		$this->load_eland_intersystems_from_db($schema);
+
+		$this->redis->set($redis_key, json_encode($this->eland_accounts_schemas[$schema]));
+		$this->redis->expire($redis_key, self::TTL_ELAND_ACCOUNTS_SCHEMAS);
+
+		return $this->eland_accounts_schemas[$schema];
+	}
+
+	public function get_eland(string $s_schema):array
+	{
+		if (!$s_schema)
+		{
+			return [];
+		}
+
+		if (isset($this->eland_ary[$s_schema]))
+		{
+			return $this->eland_ary[$s_schema];
+		}
+
+		$redis_key = $s_schema . self::ELAND;
+
+		if ($this->redis->exists($redis_key))
+		{
+			$this->redis->expire($redis_key, self::TTL);
+
+			return $this->eland_ary[$s_schema] = json_decode($this->redis->get($redis_key), true);
+		}
+
+		if (!isset($this->eland_intersystems[$s_schema]))
+		{
+			$this->load_eland_intersystems_from_db($s_schema);
+		}
+
+		$s_system = $this->systems->get_system_from_schema($s_schema);
+		$s_url = str_replace('_', $s_system, $this->legacy_eland_host_pattern);
+		$this->eland_ary[$s_schema] = [];
+
+		foreach ($this->eland_intersystems[$s_schema] as $intersystem)
+		{
+			$interschema = $this->systems->get_schema_from_system($intersystem);
 
 			$url = $this->db->fetchColumn('select g.url
-				from ' . $s . '.letsgroups g, ' . $s . '.users u
+				from ' . $interschema . '.letsgroups g, ' .
+					$interschema . '.users u
 				where g.apimethod = \'elassoap\'
 					and u.letscode = g.localletscode
 					and u.letscode <> \'\'
@@ -169,18 +182,14 @@ class intersystems
 				continue;
 			}
 
-			$this->eland_ary[$s] = $h;
+			$this->eland_ary[$s_schema][$interschema] = $intersystem;
 		}
 
-		$this->redis->set($redis_key, json_encode($this->eland_ary));
-		$this->redis->expire($redis_key, $this->ttl);
+		$this->redis->set($redis_key, json_encode($this->eland_ary[$s_schema]));
+		$this->redis->expire($redis_key, self::TTL);
 
-		return $this->eland_ary;
+		return $this->eland_ary[$s_schema];
 	}
-
-	/**
-	 *
-	 */
 
 	public function get_elas(string $s_schema):array
 	{
@@ -189,15 +198,20 @@ class intersystems
 			return [];
 		}
 
-		$redis_key = $s_schema . '_elas_intersystems';
+		if (isset($this->elas_ary[$s_schema]))
+		{
+			return $this->elas_ary[$s_schema];
+		}
+
+		$redis_key = $s_schema . self::ELAS;
 
 		if ($this->redis->exists($redis_key))
 		{
-			$this->redis->expire($redis_key, $this->ttl);
-			return json_decode($this->redis->get($redis_key), true);
+			$this->redis->expire($redis_key, self::TTL);
+			return $this->elas_ary[$s_schema] = json_decode($this->redis->get($redis_key), true);
 		}
 
-		$this->elas_ary = [];
+		$this->elas_ary[$s_schema] = [];
 
 		$st = $this->db->prepare('select g.id, g.groupname, g.url
 			from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
@@ -217,18 +231,34 @@ class intersystems
 
 		while($row = $st->fetch())
 		{
-			$h = strtolower(parse_url($row['url'], PHP_URL_HOST));
+			$host = strtolower(parse_url($row['url'], PHP_URL_HOST));
+			[$system] = explode('.', $host);
 
-			if (!$this->systems->get_schema($h))
+			if (!$this->systems->get_schema_from_system($system))
 			{
-				$row['domain'] = $h;
-				$this->elas_ary[$row['id']] = $row;
+				$row['domain'] = $host;
+				$this->elas_ary[$s_schema][$row['id']] = $row;
 			}
 		}
 
-		$this->redis->set($redis_key, json_encode($this->elas_ary));
-		$this->redis->expire($redis_key, $this->ttl);
+		$this->redis->set($redis_key, json_encode($this->elas_ary[$s_schema]));
+		$this->redis->expire($redis_key, self::TTL);
 
-		return $this->elas_ary;
+		return $this->elas_ary[$s_schema];
+	}
+
+	public function get_count(string $s_schema):int
+	{
+		return $this->get_eland_count($s_schema) + $this->get_elas_count($s_schema);
+	}
+
+	public function get_eland_count(string $s_schema):int
+	{
+		return count($this->get_eland($s_schema));
+	}
+
+	public function get_elas_count(string $s_schema):int
+	{
+		return count($this->get_elas($s_schema));
 	}
 }

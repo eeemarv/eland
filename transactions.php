@@ -1313,7 +1313,7 @@ if ($add)
  * interSystem accounts schemas needed for interlinking users.
  */
 
-$interlets_accounts_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
+$intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 
 $s_inter_schema_check = array_merge($app['intersystem_ary']['eland'],
 	[$app['s_schema'] => true]);
@@ -1332,13 +1332,13 @@ if ($id || $edit)
 
 	$inter_schema = false;
 
-	if (isset($interlets_accounts_schemas[$transaction['id_from']]))
+	if (isset($intersystem_account_schemas[$transaction['id_from']]))
 	{
-		$inter_schema = $interlets_accounts_schemas[$transaction['id_from']];
+		$inter_schema = $intersystem_account_schemas[$transaction['id_from']];
 	}
-	else if (isset($interlets_accounts_schemas[$transaction['id_to']]))
+	else if (isset($intersystem_account_schemas[$transaction['id_to']]))
 	{
-		$inter_schema = $interlets_accounts_schemas[$transaction['id_to']];
+		$inter_schema = $intersystem_account_schemas[$transaction['id_to']];
 	}
 
 	if ($inter_schema)
@@ -2161,13 +2161,13 @@ foreach ($transactions as $key => $t)
 
 	$inter_schema = false;
 
-	if (isset($interlets_accounts_schemas[$t['id_from']]))
+	if (isset($intersystem_account_schemas[$t['id_from']]))
 	{
-		$inter_schema = $interlets_accounts_schemas[$t['id_from']];
+		$inter_schema = $intersystem_account_schemas[$t['id_from']];
 	}
-	else if (isset($interlets_accounts_schemas[$t['id_to']]))
+	else if (isset($intersystem_account_schemas[$t['id_to']]))
 	{
-		$inter_schema = $interlets_accounts_schemas[$t['id_to']];
+		$inter_schema = $intersystem_account_schemas[$t['id_to']];
 	}
 
 	if ($inter_schema)

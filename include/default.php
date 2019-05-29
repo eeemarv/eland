@@ -14,6 +14,7 @@ $app['rootpath'] = $rootpath;
 $app['debug'] = getenv('DEBUG');
 $app['route_class'] = 'util\route';
 $app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
+$app['legacy_eland_host_pattern'] = getenv('LEGACY_ELAND_HOST_PATTERN');
 $app['overall_domain'] = getenv('OVERALL_DOMAIN');
 $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
 $app['s3_region'] = getenv('AWS_S3_REGION');
@@ -291,7 +292,7 @@ $app['intersystems'] = function ($app){
 		$app['predis'],
 		$app['systems'],
 		$app['config'],
-		$app['protocol']
+		$app['legacy_eland_host_pattern']
 	);
 };
 
