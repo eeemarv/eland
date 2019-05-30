@@ -19,7 +19,6 @@ class intersystems
 	protected $db;
 	protected $systems;
 	protected $config;
-	protected $legacy_eland_host_pattern;
 
 	protected $elas_ary = [];
 	protected $eland_ary = [];
@@ -30,15 +29,13 @@ class intersystems
 		db $db,
 		redis $redis,
 		systems $systems,
-		config $config,
-		string $legacy_eland_host_pattern
+		config $config
 	)
 	{
 		$this->db = $db;
 		$this->redis = $redis;
 		$this->systems = $systems;
 		$this->config = $config;
-		$this->legacy_eland_host_pattern = $legacy_eland_host_pattern;
 	}
 
 	public function clear_cache(string $s_schema):void
@@ -159,8 +156,8 @@ class intersystems
 			$this->load_eland_intersystems_from_db($s_schema);
 		}
 
-		$s_system = $this->systems->get_system_from_schema($s_schema);
-		$s_url = str_replace('_', $s_system, $this->legacy_eland_host_pattern);
+		$s_url = $this->systems->get_legacy_eland_origin($s_schema);
+
 		$this->eland_ary[$s_schema] = [];
 
 		foreach ($this->eland_intersystems[$s_schema] as $intersystem)

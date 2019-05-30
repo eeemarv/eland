@@ -69,6 +69,17 @@ class account
 			['id' => $id], $this->get_str($id, $schema));
 	}
 
+	public function link_url(
+		int $id,
+		array $pp_ary
+	):string
+	{
+		$schema = $this->systems->get_schema_from_system($pp_ary['system']);
+
+		return $this->link->link_url('users', $pp_ary,
+			['id' => $id], $this->get_str($id, $schema), []);
+	}
+
 	public function inter_link(
 		int $id,
 		string $schema

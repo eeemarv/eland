@@ -318,15 +318,18 @@ if ($add)
 		}
 		else if ($group['apimethod'] != 'elassoap')
 		{
-			$app['alert']->error('InterSysteem ' . $group['groupname'] . ' heeft geen geldige Api Methode.' . $contact_admin);
+			$app['alert']->error('InterSysteem ' .
+				$group['groupname'] .
+				' heeft geen geldige Api Methode.' . $contact_admin);
 			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
 		else if (!$group_domain)
 		{
-			$app['alert']->error('Geen URL ingesteld voor interSysteem ' . $group['groupname'] . '. ' . $contact_admin);
+			$app['alert']->error('Geen URL ingesteld voor interSysteem ' .
+				$group['groupname'] . '. ' . $contact_admin);
 			$app['link']->redirect('transactions', $app['pp_ary'], []);
 		}
-		else if (!$app['systems']->get_schema($group_domain))
+		else if (!$app['systems']->get_schema_from_legacy_eland_origin($group['url']))
 		{
 			// The interSysteem group uses eLAS or is on another server
 
@@ -507,7 +510,7 @@ if ($add)
 		{
 			// the interSystem group is on the same server (eLAND)
 
-			$remote_schema = $app['systems']->get_schema($group_domain);
+			$remote_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
 
 			$to_remote_user = $app['db']->fetchAssoc('select *
 				from ' . $remote_schema . '.users
@@ -789,13 +792,13 @@ if ($add)
 
 		if ($tus)
 		{
-			if ($app['systems']->get_host($tus))
+			if ($app['systems']->get_legacy_eland_origin($tus))
 			{
-				$host_from_tus = $app['systems']->get_host($tus);
+				$origin_from_tus = $app['systems']->get_legacy_eland_origin($tus);
 
 				$group_id = $app['db']->fetchColumn('select id
 					from ' . $app['tschema'] . '.letsgroups
-					where url = ?', [$app['protocol'] . $host_from_tus]);
+					where url = ?', [$origin_from_tus]);
 
 				if ($mid)
 				{
@@ -1842,7 +1845,7 @@ if ($id)
 				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo $app['link']->link_no_attr('transactions', [
-						'system'		=> $app['systems']->get_system_from_schema($inter_schema),
+						'system'		=> $app['systems']->get_system($inter_schema),
 						'role_short'	=> 'g',
 					], ['id' => $inter_transaction['id']], $str);
 			}
@@ -1958,7 +1961,7 @@ if ($id)
 				&& isset($app['intersystem_ary']['eland'][$inter_schema]))
 			{
 				echo $app['link']->link_no_attr('transactions', [
-						'system'	=> $app['systems']->get_system_from_schema($inter_schema),
+						'system'	=> $app['systems']->get_system($inter_schema),
 						'role_short'	=> 'g',
 					], ['id' => $inter_transaction['id']], $str);
 			}

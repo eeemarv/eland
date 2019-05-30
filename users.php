@@ -676,8 +676,7 @@ if ($app['s_admin']
 		$sel_ary = $selected_users;
 	}
 
-	$count = 0;
-	$users_log = $alert_msg_users = [];
+	$alert_users_sent_ary = $mail_users_sent_ary = [];
 
 	$config_htmlpurifier = HTMLPurifier_Config::createDefault();
 	$config_htmlpurifier->set('Cache.DefinitionImpl', null);
@@ -722,19 +721,21 @@ if ($app['s_admin']
 			'template'			=> 'skeleton',
 		], random_int(1000, 4000));
 
-		$alert_msg_users[] = $app['account']->link($sel_user['id'], $app['pp_ary']);
-
-		$count++;
+		$alert_users_sent_ary[] = $app['account']->link($sel_user['id'], $app['pp_ary']);
+		$mail_users_sent_ary[] = $app['account']->link_url($sel_user['id'], $app['pp_ary']);
 	}
 
-	if ($count)
+	if (count($alert_users_sent_ary))
 	{
-		$alert_msg = 'E-mail verzonden naar ' . $count . ' ';
-		$alert_msg .= $count > 1 ? 'accounts' : 'account';
-		$alert_msg .= '<br>';
-		$alert_msg .= implode('<br>', $alert_msg_users);
+		$msg_users_sent = 'E-mail verzonden naar ';
+		$msg_users_sent .= count($alert_users_sent_ary);
+		$msg_users_sent .= ' ';
+		$msg_users_sent .= count($alert_users_sent_ary) > 1 ? 'accounts' : 'account';
+		$msg_users_sent .= ':';
+		$alert_users_sent = $msg_users_sent . '<br>';
+		$alert_users_sent .= implode('<br>', $alert_users_sent_ary);
 
-		$app['alert']->success($alert_msg);
+		$app['alert']->success($alert_users_sent);
 	}
 	else
 	{
@@ -743,19 +744,22 @@ if ($app['s_admin']
 
 	if (count($sel_ary))
 	{
-		$missing_users = '';
+		$msg_missing_users = 'Naar volgende gebruikers werd geen
+			E-mail verzonden wegens ontbreken van E-mail adres:';
+
+		$alert_missing_users = $msg_missing_users . '<br>';
+		$mail_missing_users = $msg_missing_users . '<br />';
 
 		foreach ($sel_ary as $warning_user_id => $dummy)
 		{
-			$missing_users .= $app['acccount']->link($warning_user_id, $app['pp_ary']);
-			$missing_users .= '<br>';
+			$alert_missing_users .= $app['account']->link($warning_user_id, $app['pp_ary']);
+			$alert_missing_users .= '<br>';
+
+			$mail_missing_users .= $app['account']->link_url($warning_user_id, $app['pp_ary']);
+			$mail_missing_users .= '<br />';
 		}
 
-		$alert_warning = 'Naar volgende gebruikers werd geen
-			E-mail verzonden wegens ontbreken van E-mail adres: <br>' .
-			$missing_users;
-
-		$app['alert']->warning($alert_warning);
+		$app['alert']->warning($alert_missing_users);
 	}
 
 	if ($bulk_mail_submit && $count && $bulk_mail_cc)
@@ -769,28 +773,28 @@ if ($app['s_admin']
 			$vars[$key] = '{{ ' . $key . ' }}';
 		}
 
-		$replace = $app['protocol'] . $app['systems']->get_host($app['tschema']) . '/users.php?';
+		$mail_users_info = $msg_users_sent . '<br />';
+		$mail_users_info .= implode('<br />', $alert_users_sent_ary);
+		$mail_users_info .= '<br /><br />';
 
-		$out = str_replace('./users.php?', $replace, $alert_msg);
-		$out .= '<br><br>';
-
-		if (isset($alert_warning))
+		if (isset($mail_missing_users))
 		{
-			$out .= str_replace('./users.php?', $replace, $alert_warning);
-			$out .= '<br><br>';
+			$mail_users_info .= $mail_missing_users;
+			$mail_users_info .= '<br/>';
 		}
 
-		$out .= '<hr><br>';
+		$mail_users_info .= '<hr /><br />';
 
 		$app['queue.mail']->queue([
 			'schema'			=> $app['tschema'],
 			'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
 			'template'			=> 'skeleton',
-			'pre_html_template'	=> $out . $bulk_mail_content,
+			'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
 			'vars'				=> $vars,
 		], 8000);
 
-		$app['monolog']->debug('#bulk mail',
+		$app['monolog']->debug('#bulk mail:: ' .
+			$mail_users_info . $bulk_mail_content,
 			['schema' => $app['tschema']]);
 
 		$app['link']->redirect('users', $app['pp_ary'], []);
@@ -1911,28 +1915,24 @@ if ($add || $edit)
 				{
 					$user['name'] = $user['fullname'] = $group['groupname'];
 
-					if ($group['url'] && ($remote_schema = $app['systems']->get_schema($group['url'])))
+					if ($group['url']
+						&& ($app['systems']->get_schema_from_legacy_eland_origin($group['url'])))
 					{
-						$group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
+						$remote_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
 
-						if ($app['systems']->get_schema($group['domain']))
+						$admin_mail = $app['config']->get('admin', $remote_schema);
+
+						foreach ($contact as $k => $c)
 						{
-							$remote_schema = $app['systems']->get_schema($group['domain']);
-
-							$admin_mail = $app['config']->get('admin', $remote_schema);
-
-							foreach ($contact as $k => $c)
+							if ($c['abbrev'] == 'mail')
 							{
-								if ($c['abbrev'] == 'mail')
-								{
-									$contact[$k]['value'] = $admin_mail;
-									break;
-								}
+								$contact[$k]['value'] = $admin_mail;
+								break;
 							}
-
-							// name from source is preferable
-							$user['name'] = $user['fullname'] = $app['config']->get('systemname', $remote_schema);
 						}
+
+						// name from source is preferable
+						$user['name'] = $user['fullname'] = $app['config']->get('systemname', $remote_schema);
 					}
 				}
 

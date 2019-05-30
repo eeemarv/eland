@@ -7,11 +7,9 @@ use Doctrine\DBAL\Connection as db;
 class systems
 {
 	protected $db;
+	protected $legacy_eland_origin_pattern;
 	protected $schemas = [];
-	protected $hosts = [];
-	protected $systems_schemas = [];
-	protected $schemas_systems = [];
-	protected $overall_domain;
+	protected $systems = [];
 
 	const IGNORE = [
 		'xdb'					=> true,
@@ -30,10 +28,10 @@ class systems
 		'letsdendermonde'	=> 'dendermonde',
 	];
 
-	public function __construct(db $db, string $overall_domain)
+	public function __construct(db $db, string $legacy_eland_origin_pattern)
 	{
 		$this->db = $db;
-		$this->overall_domain = $overall_domain;
+		$this->legacy_eland_origin_pattern = $legacy_eland_origin_pattern;
 
 		$rs = $this->db->prepare('select schema_name
 			from information_schema.schemata');
@@ -54,58 +52,63 @@ class systems
 			}
 
 			$system = self::TEMP_ALT[$schema] ?? $schema;
-			$host = $system . '.' . $this->overall_domain;
 
-			$this->schemas[$host] = $schema;
-			$this->hosts[$schema] = $host;
-
-			$this->systems_schemas[$system] = $schema;
-			$this->schemas_systems[$schema] = $system;
+			$this->schemas[$system] = $schema;
+			$this->systems[$schema] = $system;
 		}
 	}
+
+	public function get_legacy_eland_origin(string $schema):string
+	{
+		if (!isset($this->systems[$schema]))
+		{
+			return '';
+		}
+
+		return str_replace('_', $this->systems[$schema], $this->legacy_eland_origin_pattern);
+	}
+
+	public function get_schema_from_legacy_eland_origin(string $origin):string
+	{
+		$host = strtolower(parse_url($origin, PHP_URL_HOST));
+
+		if (!$host)
+		{
+			return '';
+		}
+
+		[$system] = explode('.', $host);
+
+		if (!isset($this->schemas[$system]))
+		{
+			return '';
+		}
+
+		return $this->schemas[$system];
+ 	}
 
 	public function get_schemas():array
 	{
 		return $this->schemas;
 	}
 
-	public function get_hosts():array
+	public function get_systems():array
 	{
-		return $this->hosts;
+		return $this->systems;
 	}
 
-	public function get_schema(string $host):string
+	public function get_schema(string $system):string
 	{
-		return $this->schemas[$host] ?? '';
+		return $this->schemas[$system] ?? '';
 	}
 
-	public function get_host(string $schema):string
+	public function get_system(string $schema):string
 	{
-		return $this->hosts[$schema] ?? '';
+		return $this->systems[$schema] ?? '';
 	}
 
 	public function count():int
 	{
 		return count($this->schemas);
-	}
-
-	public function get_schema_from_system(string $system):string
-	{
-		return $this->systems_schemas[$system] ?? '';
-	}
-
-	public function get_system_from_schema(string $schema):string
-	{
-		return $this->schemas_systems[$schema] ?? '';
-	}
-
-	public function get_schemas_systems():array
-	{
-		return $this->schemas_systems;
-	}
-
-	public function get_systems_schemas():array
-	{
-		return $this->systems_schemas;
 	}
 }

@@ -198,9 +198,9 @@ if ($add || $edit)
 
 	if ($add_schema && $add)
 	{
-		if ($app['systems']->get_host($add_schema))
+		if ($app['systems']->get_system($add_schema))
 		{
-			$group['url'] = $app['protocol'] . $app['systems']->get_host($add_schema);
+			$group['url'] = $app['systems']->get_legacy_eland_origin($add_schema);
 			$group['groupname'] = $app['config']->get('systemname', $add_schema);
 			$group['localletscode'] = $app['config']->get('systemtag', $add_schema);
 		}
@@ -422,11 +422,6 @@ if ($del)
  */
 if ($id)
 {
-	if (isset($group['url']))
-	{
-		$group['host'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
-	}
-
 	if ($group['localletscode'] === '')
 	{
 		$user = false;
@@ -461,7 +456,9 @@ if ($id)
 	echo '<dl class="dl-horizontal">';
 	echo '<dt>Status</dt>';
 
-	if ($group_schema = $app['systems']->get_schema($group['host']))
+	$group_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
+
+	if ($group_schema)
 	{
 		echo '<dd><span class="btn btn-info btn-xs">eLAND server</span>';
 
@@ -589,24 +586,24 @@ $groups = $app['db']->fetchAll('select *
 
 $letscodes = [];
 
-foreach ($groups as $key => $g)
+foreach ($groups as $key => $sys)
 {
-	$h = strtolower(parse_url($g['url'], PHP_URL_HOST));
+	$sys_host = strtolower(parse_url($sys['url'], PHP_URL_HOST));
 
-	$letscodes[] = $g['localletscode'];
+	$letscodes[] = $sys['localletscode'];
 
-	if ($app['systems']->get_schema($h))
+	$sys_schema = $app['systems']->get_schema_from_legacy_eland_origin($sys['url']);
+
+	if ($sys_schema)
 	{
-		$s = $app['systems']->get_schema($h);
-
 		$groups[$key]['eland'] = true;
-		$groups[$key]['schema'] = $s;
+		$groups[$key]['schema'] = $sys_schema;
 
 		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
-			from ' . $s . '.users
+			from ' . $sys_schema . '.users
 			where status in (1, 2)');
 	}
-	else if ($g['apimethod'] == 'internal')
+	else if ($sys['apimethod'] == 'internal')
 	{
 		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
 			from ' . $app['tschema'] . '.users
@@ -614,19 +611,19 @@ foreach ($groups as $key => $g)
 	}
 	else
 	{
-		$groups[$key]['user_count'] = $app['predis']->get($h . '_active_user_count');
+		$groups[$key]['user_count'] = $app['predis']->get($sys_host . '_active_user_count');
 	}
 }
 
 $users_letscode = [];
 
-$interlets_users = $app['db']->executeQuery('select id, status, letscode, accountrole
+$intersystem_users = $app['db']->executeQuery('select id, status, letscode, accountrole
 	from ' . $app['tschema'] . '.users
 	where letscode in (?)',
 	[$letscodes],
 	[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
-foreach ($interlets_users as $u)
+foreach ($intersystem_users as $u)
 {
 	$users_letscode[$u['letscode']] = [
 		'id'			=> $u['id'],
@@ -839,9 +836,9 @@ function get_schemas_groups():string
 
 	$url_ary = [];
 
-	foreach ($app['systems']->get_hosts() as $h)
+	foreach ($app['systems']->get_schemas() as $sys_schema)
 	{
-		$url_ary[] = $app['protocol'] . $h;
+		$url_ary[] = $app['systems']->get_legacy_eland_origin($sys_schema);
 	}
 
 	$loc_group_ary = $loc_account_ary = [];
@@ -872,28 +869,30 @@ function get_schemas_groups():string
 		$loc_account_ary[$u['letscode']] = $u;
 	}
 
-	foreach ($app['systems']->get_schemas() as $h => $s)
+	foreach ($app['systems']->get_schemas() as $rem_schema)
 	{
 		$rem_group = $app['db']->fetchAssoc('select localletscode, url, id
-			from ' . $s . '.letsgroups
+			from ' . $rem_schema . '.letsgroups
 			where url = ?', [$app['base_url']]);
 
-		$group_user_count_ary[$s] = $app['db']->fetchColumn('select count(*)
-			from ' . $s . '.users
+		$group_user_count_ary[$rem_schema] = $app['db']->fetchColumn('select count(*)
+			from ' . $rem_schema . '.users
 			where status in (1, 2)');
 
 		if ($rem_group)
 		{
-			$rem_group_ary[$h] = $rem_group;
+			$rem_origin = $app['systems']->get_legacy_eland_origin($rem_schema);
+
+			$rem_group_ary[$rem_origin] = $rem_group;
 
 			if ($rem_group['localletscode'])
 			{
 				$rem_account = $app['db']->fetchAssoc('select id, letscode, status, accountrole
-					from ' . $s . '.users where letscode = ?', [$rem_group['localletscode']]);
+					from ' . $rem_schema . '.users where letscode = ?', [$rem_group['localletscode']]);
 
 				if ($rem_account)
 				{
-					$rem_account_ary[$h] = $rem_account;
+					$rem_account_ary[$rem_origin] = $rem_account;
 				}
 			}
 		}
@@ -921,12 +920,14 @@ function get_schemas_groups():string
 
 	$unavailable_explain = false;
 
-	foreach($app['systems']->get_schemas() as $h => $s)
+	foreach($app['systems']->get_schemas() as $rem_schema)
 	{
+		$rem_origin = $app['systems']->get_legacy_eland_origin($rem_schema);
+
 		$out .= '<tr';
 
-		if (!$app['config']->get('template_lets', $s)
-			|| !$app['config']->get('interlets_en', $s))
+		if (!$app['config']->get('template_lets', $rem_schema)
+			|| !$app['config']->get('interlets_en', $rem_schema))
 		{
 			$out .= ' class="danger"';
 
@@ -936,9 +937,9 @@ function get_schemas_groups():string
 		$out .= '>';
 
 		$out .= '<td>';
-		$out .= $app['config']->get('systemname', $s);
+		$out .= $app['config']->get('systemname', $rem_schema);
 
-		if (!$app['config']->get('template_lets', $s))
+		if (!$app['config']->get('template_lets', $rem_schema))
 		{
 			$out .= ' <span class="label label-danger" ';
 			$out .= 'title="Dit Systeem is niet ';
@@ -947,7 +948,7 @@ function get_schemas_groups():string
 			$out .= '</i></span>';
 		}
 
-		if (!$app['config']->get('interlets_en', $s))
+		if (!$app['config']->get('interlets_en', $rem_schema))
 		{
 			$out .= ' <span class="label label-danger" ';
 			$out .= 'title="interSysteem is niet ';
@@ -959,14 +960,14 @@ function get_schemas_groups():string
 		$out .= '</td>';
 
 		$out .= '<td>';
-		$out .= $h;
+		$out .= $rem_origin;
 		$out .= '</td>';
 
 		$out .= '<td>';
-		$out .= $group_user_count_ary[$s];
+		$out .= $group_user_count_ary[$rem_schema];
 		$out .= '</td>';
 
-		if ($app['tschema'] === $s)
+		if ($app['tschema'] === $rem_schema)
 		{
 			$out .= '<td colspan="4">';
 			$out .= 'Eigen Systeem';
@@ -976,9 +977,10 @@ function get_schemas_groups():string
 		{
 			$out .= '<td>';
 
-			if (isset($loc_group_ary[$h]) && is_array($loc_group_ary[$h]))
+			if (isset($loc_group_ary[$rem_origin])
+				&& is_array($loc_group_ary[$rem_origin]))
 			{
-				$loc_group = $loc_group_ary[$h];
+				$loc_group = $loc_group_ary[$rem_origin];
 
 				$out .= $app['link']->link('intersystem', $app['pp_ary'],
 					['id' => $loc_group['id']], 'OK',
@@ -986,10 +988,11 @@ function get_schemas_groups():string
 			}
 			else
 			{
-				if ($app['config']->get('template_lets', $s) && $app['config']->get('interlets_en', $s))
+				if ($app['config']->get('template_lets', $rem_schema)
+					&& $app['config']->get('interlets_en', $rem_schema))
 				{
 					$out .= $app['link']->link('intersystem', $app['pp_ary'],
-						['add' => 1, 'add_schema' => $s], 'Creëer',
+						['add' => 1, 'add_schema' => $rem_schema], 'Creëer',
 						['class' => 'btn btn-default btn-xs']);
 				}
 				else
@@ -1001,9 +1004,9 @@ function get_schemas_groups():string
 			$out .= '</td>';
 			$out .= '<td>';
 
-			if (isset($loc_group_ary[$h]))
+			if (isset($loc_group_ary[$rem_origin]))
 			{
-				$loc_group = $loc_group_ary[$h];
+				$loc_group = $loc_group_ary[$rem_origin];
 
 				if (is_array($loc_acc = $loc_account_ary[$loc_group['localletscode']]))
 				{
@@ -1051,7 +1054,7 @@ function get_schemas_groups():string
 			$out .= '</td>';
 			$out .= '<td>';
 
-			if (isset($rem_group_ary[$h]))
+			if (isset($rem_group_ary[$rem_origin]))
 			{
 				$out .= '<span class="btn btn-success btn-xs">OK</span>';
 			}
@@ -1063,9 +1066,9 @@ function get_schemas_groups():string
 			$out .= '</td>';
 			$out .= '<td>';
 
-			if (isset($rem_account_ary[$h]))
+			if (isset($rem_account_ary[$rem_origin]))
 			{
-				$rem_acc = $rem_account_ary[$h];
+				$rem_acc = $rem_account_ary[$rem_origin];
 
 				if ($rem_acc['accountrole'] != 'interlets')
 				{

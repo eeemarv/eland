@@ -126,7 +126,7 @@ if (!$app['s_anonymous']
 		echo '>';
 
 		echo $app['link']->link_no_attr($app['matched_route'], [
-			'system' 		=> $app['systems']->get_system_from_schema($login_schema),
+			'system' 		=> $app['systems']->get_system($login_schema),
 			'role_short'	=> $login_id === 'elas'
 				? 'g'
 				: $app['pp_role_short'],

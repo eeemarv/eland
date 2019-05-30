@@ -65,15 +65,12 @@ if ($app['request']->query->get('et') !== null)
 
 if (isset($app['pp_system']))
 {
-	$app['tschema'] = $app['systems']->get_schema_from_system($app['pp_system']);
+	$app['tschema'] = $app['systems']->get_schema($app['pp_system']);
 }
-
-/*
-if (!$app['tschema'])
+else
 {
-	$app['tschema'] = $app['systems']->get_schema($app['server_name']);
+	// system-less routes
 }
-*/
 
 if (!$app['tschema'])
 {
@@ -405,10 +402,10 @@ else if (ctype_digit((string) $app['s_id']))
 
 	if (!$app['s_system_self'] && $app['s_accountrole'] != 'guest')
 	{
-		$location = $app['protocol'] . $app['systems']->get_host($app['s_schema']) . '/messages.php?r=';
-		$location .= $app['session_user']['accountrole'] . '&u=' . $app['s_id'];
-		header('Location: ' . $location);
-		exit;
+		$location = $app['link']->redirect('messages', [
+			'system' => $app['systems']->get_system($app['s_schema']),
+			'role_short' => cnst_role::SHORT[$app['session_user']['accountrole']],
+		], []);
 	}
 
 	if (cnst::ACCESS_ARY[$app['session_user']['accountrole']] > cnst::ACCESS_ARY[$app['s_accountrole']])
@@ -437,9 +434,10 @@ else if ($app['s_id'] == 'master')
 {
 	if (!$app['s_system_self'] && $app['s_accountrole'] != 'guest')
 	{
-		$location = $app['protocol'] . $app['systems']->get_host($app['s_schema']) . '/messages.php?r=admin&u=master';
-		header('Location: ' . $location);
-		exit;
+		$app['link']->redirect('messages', [
+			'system' 		=> $app['systems']->get_system($app['s_schema']),
+			'role_short' 	=> 'a',
+		], []);
 	}
 
 	$app['s_master'] = true;
@@ -508,7 +506,7 @@ if ($app['page_access'] != 'anonymous'
 	&& !$app['intersystem_ary']['eland'][$app['tschema']])
 {
 	$app['link']->redirect('messages', [
-			'system'		=> $app['systems']->get_system_from_schema($app['tschema']),
+			'system'		=> $app['systems']->get_system($app['tschema']),
 			'role_short'	=> $app['pp_role_short'],
 		], []);
 }

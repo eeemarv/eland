@@ -15,6 +15,50 @@ class link
 		$this->url_generator = $url_generator;
 	}
 
+    public function url(
+		string $route,
+		array $params
+	):string
+    {
+        return $this->url_generator->generate(
+			$route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+	}
+
+	public function context_url(
+		string $route,
+		array $params_context,
+		array $params
+	):string
+	{
+        return $this->url_generator->generate(
+			$route, array_merge($params, $params_context),
+			UrlGeneratorInterface::ABSOLUTE_URL);
+	}
+
+	public function link_url(
+		string $route,
+		array $params_context,
+		array $params,
+		string $label,
+		array $attr
+	):string
+	{
+		$out = '<a href="';
+		$out .= $this->context_path($route, $params_context, $params);
+		$out .= '"';
+
+		foreach ($attr as $name => $val)
+		{
+			$out .= ' ' . $name . '="' . $val . '"';
+		}
+
+		$out .= '>';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= '</a>';
+
+		return $out;
+	}
+
     public function path(
 		string $route,
 		array $params
