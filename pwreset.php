@@ -1,8 +1,9 @@
 <?php
 
-$app['page_access'] = 'anonymous';
-
-require_once __DIR__ . '/include/web.php';
+if (!$app['s_anonymous'])
+{
+	exit;
+}
 
 $token = $_GET['token'] ?? false;
 

@@ -1,8 +1,9 @@
 <?php
 
-$app['page_access'] = 'user';
-
-require_once __DIR__ . '/include/web.php';
+if (!($app['s_admin'] || $app['s_user']))
+{
+	exit;
+}
 
 if ($app['s_master'])
 {

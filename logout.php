@@ -1,8 +1,5 @@
 <?php
 
-$app['page_access'] = 'guest';
-require_once __DIR__ . '/include/web.php';
-
 $app['s_logins'] = $app['session']->get('logins') ?? [];
 
 foreach($app['s_logins'] as $sch => $uid)

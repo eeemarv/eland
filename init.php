@@ -15,9 +15,7 @@ if (!ctype_digit((string) $step))
 	exit;
 }
 
-$php_sapi_name = php_sapi_name();
-
-if ($php_sapi_name == 'cli')
+if (php_sapi_name() == 'cli')
 {
 	error_log('The init should not run from the cli but from the http web server.');
 	exit;
@@ -26,8 +24,10 @@ if ($php_sapi_name == 'cli')
 defined('__DIR__') or define('__DIR__', dirname(__FILE__));
 chdir(__DIR__);
 
+/*
 $app['page_access'] = 'anonymous';
 require_once __DIR__ . '/include/web.php';
+*/
 
 if ($step == 2 || $step == 3)
 {

@@ -1,7 +1,9 @@
 <?php
 
-$app['page_access'] = 'admin';
-require_once __DIR__ . '/include/web.php';
+if (!$app['s_admin'])
+{
+	exit;
+}
 
 $status_msgs = false;
 

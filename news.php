@@ -1,5 +1,10 @@
 <?php
 
+if ($app['s_anonymous'])
+{
+	exit;
+}
+
 $approve = $_GET['approve'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;

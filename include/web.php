@@ -11,6 +11,188 @@ use Symfony\Component\HttpFoundation\Response;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
+/***
+ * Routes begin
+ */
+
+$app['controllers']
+	->assert('id', '\d+')
+	->assert('locale', 'nl')
+	->assert('role_short', '[gua]')
+	->assert('system', '[a-z][a-z0-9]*');
+
+$c_locale = $app['controllers_factory'];
+$c_system_anon = $app['controllers_factory'];
+$c_system_guest = $app['controllers_factory'];
+$c_system_user = $app['controllers_factory'];
+$c_system_admin = $app['controllers_factory'];
+
+$c_locale->assert('_locale', 'nl');
+
+$c_system_anon->assert('_locale', 'nl')
+	->assert('system', '[a-z][a-z0-9]*')
+	->before(function(Request $request, app $app){
+
+	});
+
+$c_system_guest->assert('_locale', 'nl')
+	->assert('system', '[a-z][a-z0-9]*')
+	->assert('role_short', '[gua]')
+	->assert('id', '\d+')
+	->assert('view', 'extended|list|map|tiles')
+	->before(function(Request $request, app $app){
+
+	});
+
+$c_system_user->assert('_locale', 'nl')
+	->assert('system', '[a-z][a-z0-9]*')
+	->assert('role_short', '[ua]')
+	->assert('id', '\d+')
+	->assert('view', 'extended|list|map|tiles')
+	->before(function(Request $request, app $app){
+
+	});
+
+$c_system_admin->assert('_locale', 'nl')
+	->assert('system', '[a-z][a-z0-9]*')
+	->assert('role_short', 'a')
+	->assert('id', '\d+')
+	->assert('view', 'extended|list|map|tiles')
+	->before(function(Request $request, app $app){
+
+	});
+
+$app->get('/monitor', function(Request $request){
+	return new Response('OK');
+})->bind('monitor');
+
+$c_locale->match('/contact', function(Request $request){
+	return new Response('Contact');
+})->bind('contact_host');
+
+$c_system_anon->match('/login', function (Request $request, string $system) use ($app) {
+	return render_legacy($app, $request, 'login', $system, 'p');
+})->bind('login');
+
+$c_system_anon->match('/contact', function (Request $request, string $system) use ($app) {
+	return render_legacy($app, $request, 'contact', $system, 'p');
+})->bind('contact');
+
+$c_system_anon->match('/register', function (Request $request, string $system) use ($app) {
+	return render_legacy($app, $request, 'register', $system, 'p');
+})->bind('register');
+
+$c_system_anon->match('/password-reset', function (Request $request, string $system) use ($app) {
+	return render_legacy($app, $request, 'pwreset', $system, 'p');
+})->bind('password_reset');
+
+$c_system_guest->get('/logout', function (Request $request, string $system, string $role_short) use ($app) {
+	return render_legacy($app, $request, 'logout', $system, $role_short);
+})->bind('logout');
+
+$c_system_admin->get('/status', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'status', $system, $role_short);
+})->bind('status');
+
+$c_system_admin->get('/categories', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'categories', $system, $role_short);
+})->bind('categories');
+
+$c_system_admin->get('/contact-types', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'type_contact', $system, $role_short);
+})->bind('contact_types');
+
+$c_system_guest->get('/contacts', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'contacts', $system, $role_short);
+})->bind('contacts');
+
+$c_system_admin->get('/config', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'config', $system, $role_short);
+})->bind('config');
+
+$c_system_admin->get('/intersystem', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'intersystem', $system, $role_short);
+})->bind('intersystem');
+
+$c_system_admin->get('/apikeys', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'apikeys', $system, $role_short);
+})->bind('apikeys');
+
+$c_system_admin->get('/export', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'export', $system, $role_short);
+})->bind('export');
+
+$c_system_admin->get('/autominlimit', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'autominlimit', $system, $role_short);
+})->bind('autominlimit');
+
+$c_system_admin->get('/mass-transaction', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'mass_transaction', $system, $role_short);
+})->bind('mass_transaction');
+
+$c_system_admin->get('/logs', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'logs', $system, $role_short);
+})->bind('logs');
+
+$c_system_user->get('/support', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'support', $system, $role_short);
+})->bind('support');
+
+$c_system_guest->get('/', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'index', $system, $role_short);
+})->bind('home');
+
+$c_system_guest->get('/messages', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'messages', $system, $role_short);
+})->bind('messages');
+
+$c_system_guest->get('/users', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'users', $system, $role_short);
+})->bind('users');
+
+$c_system_guest->get('/transactions', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'transactions', $system, $role_short);
+})->bind('transactions');
+
+$c_system_guest->get('/docs', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'docs', $system, $role_short);
+})->bind('docs');
+
+$c_system_guest->get('/forum', function (Request $request, string $system, string $role_short) use ($app){
+	return render_legacy($app, $request, 'forum', $system, $role_short);
+})->bind('forum');
+
+$c_system_anon->mount('/{role_short}', $c_system_guest);
+$c_system_anon->mount('/{role_short}', $c_system_user);
+$c_system_anon->mount('/{role_short}', $c_system_admin);
+$c_locale->mount('/{system}', $c_system_anon);
+$app->mount('/{_locale}', $c_locale);
+
+$app->run();
+
+function render_legacy(
+	app &$app,
+	Request $request,
+	string $name,
+	string $system,
+	string $role_short
+):Response
+{
+	$app['request'] = $request;
+	$app['pp_system'] = $system;
+	$app['pp_role_short'] = $role_short;
+
+	ob_start();
+	require_once __DIR__ . '/../' . $name . '.php';
+	return new Response(ob_get_clean());
+}
+
+/**
+ * Routes end
+ *
+ */
+
+
 $app->after(function (Request $request, Response $response, app $app){
 	$origin = rtrim($app['s3_url'], '/');
 	$origin .= ', http://img.letsa.net';
@@ -31,6 +213,7 @@ if ($app['script_name'] == 'index'
 	return;
 }
 
+/*
 if (getenv('WEBSITE_MAINTENANCE'))
 {
 	echo $app['twig']->render('website_maintenance.html.twig',
@@ -39,12 +222,8 @@ if (getenv('WEBSITE_MAINTENANCE'))
 }
 */
 
-$app->before(function(Request $request, app $app){
 
-	if ($request->query->get('et') !== null)
-	{
-		$app['email_validate']->validate($request->query->get('et'));
-	}
+$app->before(function(Request $request, app $app){
 
 	$app['assets']->add([
 		'jquery', 'bootstrap', 'fontawesome',
@@ -52,6 +231,14 @@ $app->before(function(Request $request, app $app){
 	]);
 
 	$app['assets']->add_print_css(['print.css']);
+});
+
+$c_system_anon->before(function(Request $request, app $app){
+
+	if ($request->query->get('et') !== null)
+	{
+		$app['email_validate']->validate($request->query->get('et'));
+	}
 });
 
 if (isset($app['pp_system']))

@@ -1,9 +1,11 @@
 <?php
 
-set_time_limit(60);
+if (!$app['s_admin'])
+{
+	exit;
+}
 
-$app['page_access'] = 'admin';
-require_once __DIR__ . '/include/web.php';
+set_time_limit(60);
 
 $db_elas = isset($_GET['db_elas']);
 $db_eland_aggs = !$db_elas && isset($_GET['db_eland_aggs']);

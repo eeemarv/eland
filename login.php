@@ -2,10 +2,6 @@
 
 use cnst\role as cnst_role;
 
-$app['page_access'] = 'anonymous';
-
-require_once __DIR__ . '/include/web.php';
-
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
 $monitor = $_GET['monitor'] ?? false;

@@ -1,8 +1,5 @@
 <?php
 
-$app['page_access'] = 'guest';
-require_once __DIR__ . '/include/web.php';
-
 if (isset($app['app_hoster_contact']))
 {
 	[$title, $link] = explode('@', $app['app_hoster_contact']);

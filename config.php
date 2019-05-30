@@ -1,9 +1,11 @@
 <?php
 
-use cnst\config as cnst_config;
+if (!$app['s_admin'])
+{
+	exit;
+}
 
-$app['page_access'] = 'admin';
-require_once __DIR__ . '/include/web.php';
+use cnst\config as cnst_config;
 
 $setting = $_GET['edit'] ?? false;
 $submit = isset($_POST['zend']) ? true : false;

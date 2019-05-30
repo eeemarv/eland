@@ -1,5 +1,10 @@
 <?php
 
+if ($app['s_anonymous'])
+{
+	exit;
+}
+
 use cnst\role as cnst_role;
 use cnst\status as cnst_status;
 
@@ -26,7 +31,7 @@ $selected_users = isset($_POST['sel']) && $_POST['sel'] != '' ? explode(',', $_P
 /*
  * general access
  */
-
+/*
 $app['page_access'] = ($edit || $pw || $img_del || $password || $submit || $img)
 	? 'user'
 	: 'guest';
@@ -34,8 +39,7 @@ $app['page_access'] = ($edit || $pw || $img_del || $password || $submit || $img)
 $app['page_access'] = ($add || $del || $bulk_mail_submit || $bulk_mail_test)
 	? 'admin'
 	: $app['page_access'];
-
-require_once __DIR__ . '/include/web.php';
+*/
 
 /**
  * selectors for bulk actions
