@@ -63,7 +63,7 @@ class account
 		array $pp_ary
 	):string
 	{
-		$schema = $this->systems->get_schema_from_system($pp_ary['system']);
+		$schema = $this->systems->get_schema($pp_ary['system']);
 
 		return $this->link->link_no_attr('users', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
@@ -74,7 +74,7 @@ class account
 		array $pp_ary
 	):string
 	{
-		$schema = $this->systems->get_schema_from_system($pp_ary['system']);
+		$schema = $this->systems->get_schema($pp_ary['system']);
 
 		return $this->link->link_url('users', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema), []);
@@ -87,7 +87,7 @@ class account
 	{
 		$pp_ary = [
 			'role_short'	=> 'g',
-			'system'		=> $this->systems->get_system_from_schema($schema),
+			'system'		=> $this->systems->get_system($schema),
 		];
 
 		return $this->link->link_no_attr('users', $pp_ary,

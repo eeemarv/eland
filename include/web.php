@@ -61,8 +61,6 @@ $app->before(function(Request $request, app $app){
 	$app['assets']->add_print_css(['print.css']);
 });
 
-$app['mapbox_token'] = getenv('MAPBOX_TOKEN');
-
 if (isset($app['pp_system']))
 {
 	$app['tschema'] = $app['systems']->get_schema($app['pp_system']);

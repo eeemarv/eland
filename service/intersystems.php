@@ -83,7 +83,7 @@ class intersystems
 			[$system] = explode('.', $host);
 			$system = strtolower($system);
 
-			if ($interschema = $this->systems->get_schema_from_system($system))
+			if ($interschema = $this->systems->get_schema($system))
 			{
 				if (!$this->config->get('template_lets', $interschema))
 				{
@@ -162,7 +162,7 @@ class intersystems
 
 		foreach ($this->eland_intersystems[$s_schema] as $intersystem)
 		{
-			$interschema = $this->systems->get_schema_from_system($intersystem);
+			$interschema = $this->systems->get_schema($intersystem);
 
 			$url = $this->db->fetchColumn('select g.url
 				from ' . $interschema . '.letsgroups g, ' .
@@ -231,7 +231,7 @@ class intersystems
 			$host = strtolower(parse_url($row['url'], PHP_URL_HOST));
 			[$system] = explode('.', $host);
 
-			if (!$this->systems->get_schema_from_system($system))
+			if (!$this->systems->get_schema($system))
 			{
 				$row['domain'] = $host;
 				$this->elas_ary[$s_schema][$row['id']] = $row;

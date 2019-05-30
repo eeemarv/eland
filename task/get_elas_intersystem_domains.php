@@ -40,9 +40,7 @@ class get_elas_intersystem_domains
 
 			foreach ($groups as $group)
 			{
-				$domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
-
-				if ($this->systems->get_schema($domain))
+				if ($this->systems->get_schema_from_legacy_eland_origin($group['url']))
 				{
 					continue;
 				}
@@ -51,6 +49,8 @@ class get_elas_intersystem_domains
 				{
 					continue;
 				}
+
+				$domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
 				$domains[$domain][$sch] = [
 					'remoteapikey'	=> trim($group['remoteapikey']),

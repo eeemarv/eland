@@ -77,7 +77,7 @@ class cleanup_images
 			return;
 		}
 
-		if (!$this->systems->get_host($sch))
+		if (!$this->systems->get_system($sch))
 		{
 			error_log('-> unknown schema. ' . $sch . ' (no delete)');
 			return;

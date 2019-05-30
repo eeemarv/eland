@@ -2,6 +2,9 @@
 
 use Silex\Provider;
 
+setlocale(LC_TIME, 'nl_NL.UTF-8');
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
+
 $app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
@@ -12,10 +15,7 @@ $app['overall_domain'] = getenv('OVERALL_DOMAIN');
 $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
 $app['s3_region'] = getenv('AWS_S3_REGION');
 $app['s3_url'] = 'https://s3.' . $app['s3_region'] . '.amazonaws.com/' . $app['s3_bucket'] . '/';
-
-setlocale(LC_TIME, 'nl_NL.UTF-8');
-
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
+$app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
@@ -443,19 +443,6 @@ $app['schema_task.saldo'] = function ($app){
 		$app['config'],
 		$app['mail_addr_user'],
 		$app['account']
-	);
-};
-
-$app['schema_task.interlets_fetch'] = function ($app){
-	return new schema_task\interlets_fetch(
-		$app['predis'],
-		$app['db'],
-		$app['xdb'],
-		$app['cache'],
-		$app['typeahead'],
-		$app['monolog'],
-		$app['schedule'],
-		$app['systems']
 	);
 };
 
