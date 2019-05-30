@@ -11,8 +11,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::create(__DIR__ . '/..', '.env_m');
 $dotenv->load();
 
-$rootpath = '../';
-
 require_once __DIR__ . '/../include/default.php';
 
 error_log('TEST notify expired messages, schema x');

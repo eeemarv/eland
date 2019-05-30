@@ -287,8 +287,8 @@ if ($submit)
 		$app['alert']->success('Open je E-mailbox en klik op de
 			bevestigingslink in de E-mail die we naar je gestuurd
 			hebben om je inschrijving te voltooien.');
-		header('Location: ' . $app['rootpath'] . 'login.php');
-		exit;
+
+		$app['link']->redirect('login', $app['pp_ary'], []);
 	}
 }
 

@@ -4,13 +4,6 @@ use Silex\Provider;
 
 $app = new util\app();
 
-if(!isset($rootpath))
-{
-	$rootpath = './';
-}
-
-$app['rootpath'] = $rootpath;
-
 $app['debug'] = getenv('DEBUG');
 $app['route_class'] = 'util\route';
 $app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';

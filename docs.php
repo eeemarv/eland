@@ -1,6 +1,5 @@
 <?php
 
-$rootpath = '';
 $app['page_access'] = 'guest';
 require_once __DIR__ . '/include/web.php';
 

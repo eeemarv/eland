@@ -70,8 +70,8 @@ if ($step == 1)
 		$app['monolog']->info('DB: ' . $m, ['schema' => $app['tschema']]);
 	}
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=2');
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 2]);
 }
 else if ($step == 2)
 {
@@ -156,12 +156,13 @@ else if ($step == 2)
 	{
 		error_log(' found img ');
 		$start += 50;
-		header('Location: ' . $app['rootpath'] . 'init.php?step=2&start=' . $start);
-		exit;
+
+		$app['link']->redirect('init', $app['pp_ary'],
+			['step' => 2, 'start' => $start]);
 	}
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=3');
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 3]);
 }
 else if ($step == 3)
 {
@@ -174,8 +175,8 @@ else if ($step == 3)
 	if (!count($message_images))
 	{
 		error_log(' to step 4 ');
-		header('Location: ' . $app['rootpath'] . 'init.php?step=4');
-		exit;
+		$app['link']->redirect('init', $app['pp_ary'],
+			['step' => 4]);
 	}
 
 	foreach ($message_images as $image)
@@ -246,8 +247,8 @@ else if ($step == 3)
 
 	$start += 50;
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=3&start=' . $start);
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 3, 'start' => $start]);
 }
 else if ($step == 4)
 {
@@ -262,8 +263,8 @@ else if ($step == 4)
 		$app['predis']->del($app['tschema'] . '_user_' . $u['id']);
 	}
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=5');
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 5]);
 }
 else if ($step == 5)
 {
@@ -272,8 +273,8 @@ else if ($step == 5)
 
 	error_log('*** empty tokens table (is not used anymore) *** ');
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=6');
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 6]);
 }
 else if ($step == 6)
 {
@@ -282,8 +283,8 @@ else if ($step == 6)
 
 	error_log('*** empty city_distance table (is not used anymore) *** ');
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=7');
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 7]);
 }
 else if ($step == 7)
 {
@@ -315,12 +316,13 @@ else if ($step == 7)
 	if ($more_geocoding)
 	{
 		$start += 50;
-		header('Location: ' . $app['rootpath'] . 'init.php?step=7&start=' . $start);
-		exit;
+
+		$app['link']->redirect('init', $app['pp_ary'],
+			['step' => 7, 'start' => $start]);
 	}
 
-	header('Location: ' . $app['rootpath'] . 'init.php?step=8');
-	exit;
+	$app['link']->redirect('init', $app['pp_ary'],
+		['step' => 8]);
 }
 else if ($step == 8)
 {
