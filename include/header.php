@@ -63,7 +63,15 @@ $homepage_url = $app['config']->get('homepage_url', $app['tschema']);
 
 if (!$homepage_url)
 {
-	$homepage_url = get_default_page();
+	if ($app['s_anonymous'])
+	{
+		$homepage_url = $app['link']->path('login', ['system' => $app['pp_system']]);
+	}
+	else
+	{
+		$route = $app['config']->get('default_landing_page', $app['tschema']);
+		$homepage_url = $app['link']->path($route, $app['pp_ary']);
+	}
 }
 
 echo '<a href="';

@@ -1,36 +1,29 @@
 <?php
 
+use util\app;
 use cnst\role as cnst_role;
 use cnst\access as cnst_access;
 use cnst\pages as cnst_pages;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
-header('Cache-Control: private, no-cache');
-header('Access-Control-Allow-Origin: ' . rtrim($app['s3_url'], '/') .
-	', http://img.letsa.net');
+$app->after(function (Request $request, Response $response, app $app){
+	$origin = rtrim($app['s3_url'], '/');
+	$origin .= ', http://img.letsa.net';
+	$response->headers->set('Access-Control-Allow-Origin', $origin);
+});
 
-$app['assets']->add([
-	'jquery',
-	'bootstrap',
-	'fontawesome',
-	'footable',
-	'base.css',
-	'base.js',
-]);
-
-$app['assets']->add_print_css(['print.css']);
-
-$app['script_name'] = str_replace('.php', '', ltrim($_SERVER['SCRIPT_NAME'], '/'));
 $app['server_name'] = $_SERVER['SERVER_NAME'];
 $app['base_url'] = $app['protocol'] . $app['server_name'];
-$app['request_uri'] = $_SERVER['REQUEST_URI'];
-$app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 /*
  * check if we are on the contact url.
  */
+/*
 $app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
 
 if ($app['script_name'] == 'index'
@@ -47,21 +40,28 @@ if (getenv('WEBSITE_MAINTENANCE'))
 		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
 	exit;
 }
-
-/**
- * Page access
 */
 
-if (!isset($app['page_access'])
-	|| !isset(cnst_access::ACCESS[$app['page_access']]))
-{
-	internal_server_error($app['twig']);
-}
+$app->before(function(Request $request, app $app){
 
-if ($app['request']->query->get('et') !== null)
-{
-	$app['email_validate']->validate($app['request']->query->get('et'));
-}
+	if ($request->query->get('et') !== null)
+	{
+		$app['email_validate']->validate($request->query->get('et'));
+	}
+
+	$app['assets']->add([
+		'jquery',
+		'bootstrap',
+		'fontawesome',
+		'footable',
+		'base.css',
+		'base.js',
+	]);
+
+	$app['assets']->add_print_css(['print.css']);
+});
+
+$app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 
 if (isset($app['pp_system']))
 {
@@ -220,7 +220,7 @@ error_log($app['request']->getPathInfo());
 /**
  * Authorization
  */
-
+/*
 if (!ctype_digit((string) $app['s_id']))
 {
 	unset($app['s_logins'][$app['s_schema']]);
@@ -316,13 +316,6 @@ if ($app['s_guest'] && !$app['s_system_self'])
 	}
 }
 
-
-
-
-
-
-
-
 if (!$app['s_id'])
 {
 	if ($app['page_access'] != 'anonymous')
@@ -412,7 +405,10 @@ else if (ctype_digit((string) $app['s_id']))
 	{
 		$app['s_accountrole'] = $app['session_user']['accountrole'];
 
-		redirect_default_page();
+		$route = $app['config']->get('default_landing_page', $app['tschema']);
+
+		$app['link']->redirect($route, $app['pp_ary'], []);
+
 	}
 
 	if (!($app['session_user']['status'] == 1 || $app['session_user']['status'] == 2))
@@ -462,7 +458,9 @@ switch ($app['s_accountrole'])
 
 		if ($app['page_access'] != 'guest')
 		{
-			redirect_default_page();
+			$route = $app['config']->get('default_landing_page', $app['tschema']);
+
+			$app['link']->redirect($route, $app['pp_ary'], []);
 		}
 
 		break;
@@ -471,7 +469,9 @@ switch ($app['s_accountrole'])
 
 		if (!($app['page_access'] == 'user' || $app['page_access'] == 'guest'))
 		{
-			redirect_default_page();
+			$route = $app['config']->get('default_landing_page', $app['tschema']);
+
+			$app['link']->redirect($route, $app['pp_ary'], []);
 		}
 
 		break;
@@ -480,7 +480,9 @@ switch ($app['s_accountrole'])
 
 		if ($app['page_access'] == 'anonymous')
 		{
-			redirect_default_page();
+			$page = $app['config']->get('default_landing_page', $app['tschema']);
+
+			$app['link']->redirect($route, $app['pp_ary'], []);
 		}
 
 		break;
@@ -492,7 +494,7 @@ switch ($app['s_accountrole'])
 		break;
 }
 
-
+*/
 /**
  * some vars
  **/
@@ -586,38 +588,6 @@ if ($app['request']->query->get('welcome') !== null && $app['s_guest'])
 }
 
 /**************** FUNCTIONS ***************/
-
-function redirect_default_page()
-{
-	header('Location: ' . get_default_page());
-	exit;
-}
-
-function get_default_page():string
-{
-	global $app;
-
-	$page = $app['config']->get('default_landing_page', $app['tschema']);
-
-	$default_page = $app['link']->context_path($page, $app['pp_ary'], []);
-
-	return $default_page;
-}
-
-/**
- *
- */
-function redirect_login()
-{
-	global $app;
-	$location = parse_url($app['request_uri'], PHP_URL_PATH);
-	$get = $_GET;
-	unset($get['u'], $get['s'], $get['r']);
-	$query_string = http_build_query($get);
-	$location .= ($query_string == '') ? '' : '?' . $query_string;
-	header('Location: ' . $app['rootpath'] . 'login.php?location=' . urlencode($location));
-	exit;
-}
 
 function array_intersect_key_recursive(array $ary_1, array $ary_2)
 {
