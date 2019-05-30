@@ -9,7 +9,6 @@ $app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
 $app['route_class'] = 'util\route';
-$app['protocol'] = getenv('ELAND_HTTPS') ? 'https://' : 'http://';
 $app['legacy_eland_origin_pattern'] = getenv('LEGACY_ELAND_ORIGIN_PATTERN');
 $app['overall_domain'] = getenv('OVERALL_DOMAIN');
 $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
@@ -58,13 +57,13 @@ $app->extend('twig', function($twig, $app) {
 		twig\base_url::class => function() use ($app){
 			return new twig\base_url(
 				$app['systems'],
-				$app['protocol']
+//				$app['protocol']
 			);
 		},
 		twig\mail_url::class => function() use ($app){
 			return new twig\mail_url(
 				$app['systems'],
-				$app['protocol']
+//				$app['protocol']
 			);
 		},
 		twig\s3_url::class => function() use ($app){

@@ -17,9 +17,6 @@ $app->after(function (Request $request, Response $response, app $app){
 	$response->headers->set('Access-Control-Allow-Origin', $origin);
 });
 
-$app['server_name'] = $_SERVER['SERVER_NAME'];
-$app['base_url'] = $app['protocol'] . $app['server_name'];
-
 /*
  * check if we are on the contact url.
  */
@@ -50,12 +47,8 @@ $app->before(function(Request $request, app $app){
 	}
 
 	$app['assets']->add([
-		'jquery',
-		'bootstrap',
-		'fontawesome',
-		'footable',
-		'base.css',
-		'base.js',
+		'jquery', 'bootstrap', 'fontawesome',
+		'footable', 'base.css', 'base.js',
 	]);
 
 	$app['assets']->add_print_css(['print.css']);
