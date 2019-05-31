@@ -61,19 +61,13 @@ if ($app['request']->isMethod('POST'))
 	}
 	else
 	{
-		$token = $app['token']->gen();
-		$key = $app['tschema'] . '_register_' . $token;
-		$app['predis']->set($key, json_encode($reg));
-		$app['predis']->expire($key, 604800); // 1 week
-
-		$vars = [
-			'token'		=> $token,
-		];
+		$token = $app['data_token']->store($reg,
+			'register', $app['tschema'], 604800); // 1 week
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to' 		=> [$reg['email'] => $reg['first_name'] . ' ' . $reg['last_name']],
-			'vars'		=> $vars,
+			'vars'		=> ['token' => $token],
 			'template'	=> 'register/confirm',
 		], 10000);
 

@@ -8,7 +8,6 @@ if (!$app['s_anonymous'])
 if (!$app['config']->get('contact_form_en', $app['tschema']))
 {
 	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
-
 	$app['link']->redirect('login', $app['pp_ary'], []);
 }
 
@@ -51,25 +50,19 @@ if($app['request']->isMethod('POST'))
 			'ip'		=> $app['request']->getClientIp(),
 		];
 
-		$token = $app['token']->gen();
-		$key = $app['tschema'] . '_contact_' . $token;
-		$app['predis']->set($key, json_encode($contact));
-		$app['predis']->expire($key, 86400);
+		$token = $app['data_token']->store($contact,
+			'contact', $app['tschema'], 86400);
 
 		$app['monolog']->info('Contact form filled in with address ' .
 			$email . ' ' .
 			json_encode($contact),
 			['schema' => $app['tschema']]);
 
-		$vars = [
-			'token'			=> $token,
-		];
-
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
 			'to' 		=> [$email => $email],
 			'template'	=> 'contact/confirm',
-			'vars'		=> $vars,
+			'vars'		=> ['token' => $token],
 		], 10000);
 
 		$app['alert']->success('Open je E-mailbox en klik
@@ -89,17 +82,23 @@ else
 	$email = '';
 }
 
+$form_disabled = false;
+
 if (!$app['config']->get('mailenabled', $app['tschema']))
 {
 	$app['alert']->warning('E-mail functies zijn
 		uitgeschakeld door de beheerder.
 		Je kan dit formulier niet gebruiken');
+
+	$form_disabled = true;
 }
 else if (!$app['config']->get('support', $app['tschema']))
 {
 	$app['alert']->warning('Er is geen support E-mail adres
 		ingesteld door de beheerder.
 		Je kan dit formulier niet gebruiken.');
+
+	$form_disabled = true;
 }
 
 $app['heading']->add('Contact');
@@ -130,7 +129,9 @@ echo '</span>';
 echo '<input type="email" class="form-control" id="email" name="email" ';
 echo 'value="';
 echo $email;
-echo '" required>';
+echo '" required';
+echo $form_disabled ? ' disabled' : '';
+echo '>';
 echo '</div>';
 echo '<p>';
 echo 'Er wordt een validatielink die je moet ';
@@ -141,12 +142,14 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="message">Je Bericht</label>';
 echo '<textarea name="message" id="message" ';
+echo $form_disabled ? 'disabled ' : '';
 echo 'class="form-control" rows="4">';
 echo $message;
 echo '</textarea>';
 echo '</div>';
 
 echo '<input type="submit" name="zend" ';
+echo $form_disabled ? 'disabled ' : '';
 echo 'value="Verzenden" class="btn btn-default">';
 echo $app['form_token']->get_hidden_input();
 

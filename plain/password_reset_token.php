@@ -6,14 +6,13 @@ if (!$app['s_anonymous'])
 }
 
 $token = $app['request']->attributes->get('token');
+$data = $app['data_token']->retrieve($token, 'password_reset', $app['tschema']);
 
-if (!$token)
+if (!$data)
 {
-	exit;
+	$app['alert']->error('Het reset-token is niet meer geldig.');
+	$app['link']->redirect('password_reset', $app['pp_ary'], []);
 }
-
-$data = $app['predis']->get($app['tschema'] . '_token_' . $token);
-$data = json_decode($data, true);
 
 $user_id = $data['user_id'];
 $email = $data['email'];
@@ -28,31 +27,25 @@ if ($app['request']->isMethod('POST'))
 	}
 	else if (!($app['password_strength']->get($password) < 50))
 	{
-		if ($user_id)
-		{
-			$app['db']->update($app['tschema'] . '.users',
-				['password' => hash('sha512', $password)],
-				['id' => $user_id]);
+		$app['db']->update($app['tschema'] . '.users',
+			['password' => hash('sha512', $password)],
+			['id' => $user_id]);
 
-			$app['user_cache']->clear($user_id, $app['tschema']);
-			$app['alert']->success('Paswoord opgeslagen.');
+		$app['user_cache']->clear($user_id, $app['tschema']);
+		$app['alert']->success('Paswoord opgeslagen.');
 
-			$app['queue.mail']->queue([
-				'schema'	=> $app['tschema'],
-				'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
-				'template'	=> 'password_reset/user',
-				'vars'		=> [
-					'password'		=> $password,
-					'user_id'		=> $user_id,
-				],
-			], 10000);
+		$app['queue.mail']->queue([
+			'schema'	=> $app['tschema'],
+			'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+			'template'	=> 'password_reset/user',
+			'vars'		=> [
+				'password'		=> $password,
+				'user_id'		=> $user_id,
+			],
+		], 10000);
 
-			$app['link']->redirect('login', $app['pp_ary'], []);
-		}
-
-		$app['alert']->error('Het reset-token is niet meer geldig.');
-
-		$app['link']->redirect('password_reset', $app['pp_ary'], []);
+		$data = $app['data_token']->del($token, 'password_reset', $app['tschema']);
+		$app['link']->redirect('login', $app['pp_ary'], []);
 	}
 	else
 	{

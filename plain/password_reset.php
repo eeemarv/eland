@@ -33,15 +33,10 @@ if ($app['request']->isMethod('POST'))
 			{
 				$user_id = $user['id'];
 
-				$token = $app['token']->gen();
-				$key = $app['tschema'] . '_token_' . $token;
-
-				$app['predis']->set($key, json_encode([
-					'user_id' 	=> $user_id,
-					'email' 	=> $email,
-				]));
-
-				$app['predis']->expire($key, 86400);
+				$token = $app['data_token']->store([
+					'user_id'	=> $user_id,
+					'email'		=> $email,
+				], 'password_reset', $app['tschema'], 86400);
 
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
@@ -53,7 +48,8 @@ if ($app['request']->isMethod('POST'))
 					],
 				], 10000);
 
-				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
+				$app['alert']->success('Een link om je paswoord te resetten werd
+					naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
 				$app['link']->redirect('login', $app['pp_ary'], []);
 			}
