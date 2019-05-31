@@ -193,6 +193,34 @@ $c_system_guest->get('/forum', function () use ($app){
 	return render_legacy($app, 'forum');
 })->bind('forum');
 
+$c_system_user->get('/typeahead/account-codes', function () use ($app){
+	return render_legacy($app, 'typeahead/account_codes');
+})->bind('typeahead_account_codes');
+
+$c_system_guest->get('/typeahead/accounts', function () use ($app){
+	return render_legacy($app, 'typeahead/accounts');
+})->bind('typeahead_accounts');
+
+$c_system_admin->get('/typeahead/doc-map-names', function () use ($app){
+	return render_legacy($app, 'typeahead/doc_map_names');
+})->bind('typeahead_doc_map_names');
+
+$c_system_user->get('/typeahead/eland-intersystem-accounts', function () use ($app){
+	return render_legacy($app, 'typeahead/eland_intersystem_accounts');
+})->bind('typeahead_eland_intersystem_accounts');
+
+$c_system_user->get('/typeahead/elas-intersystem-accounts', function () use ($app){
+	return render_legacy($app, 'typeahead/elas_intersystem_accounts');
+})->bind('typeahead_elas_intersystem_accounts');
+
+$c_system_admin->get('/typeahead/log-types', function () use ($app){
+	return render_legacy($app, 'typeahead/log_types');
+})->bind('typeahead_log_types');
+
+$c_system_user->get('/typeahead/postcodes', function () use ($app){
+	return render_legacy($app, 'typeahead/postcodes');
+})->bind('typeahead_postcodes');
+
 $c_system_anon->mount('/{role_short}', $c_system_guest);
 $c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_admin);
@@ -204,12 +232,6 @@ function render_legacy(
 	string $name
 ):Response
 {
-	/*
-	$app['request'] = $request;
-	$app['pp_system'] = $system;
-	$app['pp_role_short'] = $role_short;
-	*/
-
 	ob_start();
 	require_once __DIR__ . '/../' . $name . '.php';
 	return new Response(ob_get_clean());
