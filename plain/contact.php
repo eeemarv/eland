@@ -5,77 +5,17 @@ if (!$app['s_anonymous'])
 	exit;
 }
 
-$token = $_GET['token'] ?? false;
-
 if (!$app['config']->get('contact_form_en', $app['tschema']))
 {
 	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
-	redirect_login();
+
+	$app['link']->redirect('login', $app['pp_ary'], []);
 }
 
-if ($token)
+if($app['request']->isMethod('POST'))
 {
-	$key = $app['tschema'] . '_contact_' . $token;
-	$data = $app['predis']->get($key);
-
-	if ($data)
-	{
-		$app['predis']->del($key);
-
-		$data = json_decode($data, true);
-
-		$vars = [
-			'message'		=> $data['message'],
-			'ip'			=> $data['ip'],
-			'agent'			=> $data['agent'],
-			'email'			=> $data['email'],
-		];
-
-		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
-			'template'	=> 'contact/copy',
-			'vars'		=> $vars,
-			'to'		=> [$data['email'] => $data['email']],
-		], 9000);
-
-		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
-			'template'	=> 'contact/support',
-			'vars'		=> $vars,
-			'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
-			'reply_to'	=> [$data['email']],
-		], 8000);
-
-		$app['alert']->success('Je bericht werd succesvol verzonden.');
-
-		$success_text = $app['config']->get('contact_form_success_text', $app['tschema']);
-
-		header('Location: ' . $app->path('contact', $app['pp_ary']));
-		exit;
-	}
-
-	$app['alert']->error('Ongeldig of verlopen token.');
-}
-
-if($app['request']->isMethod('POST') && isset($_POST['zend']))
-{
-	$email = trim(strtolower($_POST['email']));
-	$message = trim($_POST['message']);
-
-	$agent = $_SERVER['HTTP_USER_AGENT'];
-
-	if (isset($_SERVER['HTTP_CLIENT_IP']))
-	{
-		$ip = $_SERVER['HTTP_CLIENT_IP'];
-	}
-	else if (isset($_SERVER['HTTP_X_FORWARDE‌​D_FOR']))
-	{
-		$ip = $_SERVER['HTTP_X_FORWARDE‌​D_FOR'];
-	}
-	else
-	{
-		$ip = $_SERVER['REMOTE_ADDR'];
-	}
+	$email = strtolower($app['request']->request->get('email'));
+	$message = $app['request']->request->get('message');
 
 	if (empty($email) || !$email)
 	{
@@ -107,11 +47,11 @@ if($app['request']->isMethod('POST') && isset($_POST['zend']))
 		$contact = [
 			'message' 	=> $message,
 			'email'		=> $email,
-			'agent'		=> $agent,
-			'ip'		=> $ip,
+			'agent'		=> $app['request']->headers->get('User-Agent'),
+			'ip'		=> $app['request']->getClientIp(),
 		];
 
-		$token = substr(hash('sha512', $app['tschema'] . microtime()), 0, 10);
+		$token = $app['token']->gen();
 		$key = $app['tschema'] . '_contact_' . $token;
 		$app['predis']->set($key, json_encode($contact));
 		$app['predis']->expire($key, 86400);
@@ -136,8 +76,7 @@ if($app['request']->isMethod('POST') && isset($_POST['zend']))
 			de link aan die we je zonden om je
 			bericht te bevestigen.');
 
-		header('Location: ' . $app->path('contact', $app['pp_ary']));
-		exit;
+		$app['link']->redirect('contact', $app['pp_ary'], []);
 	}
 	else
 	{

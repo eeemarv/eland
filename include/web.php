@@ -4,6 +4,7 @@ use util\app;
 use cnst\role as cnst_role;
 use cnst\access as cnst_access;
 use cnst\pages as cnst_pages;
+use cnst\assert as cnst_assert;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,10 +39,10 @@ $app->after(function (Request $request, Response $response, app $app){
 });
 
 $app['controllers']
-	->assert('id', '\d+')
-	->assert('locale', 'nl')
-	->assert('role_short', '[gua]')
-	->assert('system', '[a-z][a-z0-9]*');
+	->assert('id', cnst_assert::ID)
+	->assert('locale', cnst_assert::LOCALE)
+	->assert('role_short', cnst_assert::GUEST)
+	->assert('system', cnst_assert::SYSTEM);
 
 $c_locale = $app['controllers_factory'];
 $c_system_anon = $app['controllers_factory'];
@@ -49,10 +50,10 @@ $c_system_guest = $app['controllers_factory'];
 $c_system_user = $app['controllers_factory'];
 $c_system_admin = $app['controllers_factory'];
 
-$c_locale->assert('_locale', 'nl');
+$c_locale->assert('_locale', cnst_assert::LOCALE);
 
-$c_system_anon->assert('_locale', 'nl')
-	->assert('system', '[a-z][a-z0-9]*')
+$c_system_anon->assert('_locale', cnst_assert::LOCALE)
+	->assert('system', cnst_assert::SYSTEM)
 	->before(function(Request $request, app $app){
 
 		if ($request->query->get('et') !== null)
@@ -66,29 +67,29 @@ $c_system_anon->assert('_locale', 'nl')
 		$app['pp_ary'] = ['system' => $system];
 	});
 
-$c_system_guest->assert('_locale', 'nl')
-	->assert('system', '[a-z][a-z0-9]*')
-	->assert('role_short', '[gua]')
-	->assert('id', '\d+')
-	->assert('view', 'extended|list|map|tiles')
+$c_system_guest->assert('_locale', cnst_assert::LOCALE)
+	->assert('system', cnst_assert::SYSTEM)
+	->assert('role_short', cnst_assert::GUEST)
+	->assert('id', cnst_assert::ID)
+	->assert('view', cnst_assert::VIEW)
 	->before(function(Request $request, app $app){
 
 	});
 
-$c_system_user->assert('_locale', 'nl')
-	->assert('system', '[a-z][a-z0-9]*')
-	->assert('role_short', '[ua]')
-	->assert('id', '\d+')
-	->assert('view', 'extended|list|map|tiles')
+$c_system_user->assert('_locale', cnst_assert::LOCALE)
+	->assert('system', cnst_assert::SYSTEM)
+	->assert('role_short', cnst_assert::USER)
+	->assert('id', cnst_assert::ID)
+	->assert('view', cnst_assert::VIEW)
 	->before(function(Request $request, app $app){
 
 	});
 
-$c_system_admin->assert('_locale', 'nl')
-	->assert('system', '[a-z][a-z0-9]*')
-	->assert('role_short', 'a')
-	->assert('id', '\d+')
-	->assert('view', 'extended|list|map|tiles')
+$c_system_admin->assert('_locale', cnst_assert::LOCALE)
+	->assert('system', cnst_assert::SYSTEM)
+	->assert('role_short', cnst_assert::ADMIN)
+	->assert('id', cnst_assert::ID)
+	->assert('view', cnst_assert::VIEW)
 	->before(function(Request $request, app $app){
 
 	});
@@ -109,13 +110,28 @@ $c_system_anon->match('/contact', function () use ($app) {
 	return render_legacy($app, 'plain/contact');
 })->bind('contact');
 
+$c_system_anon->match('/contact/{token}', function () use ($app) {
+	return render_legacy($app, 'plain/contact_token');
+})->assert('token', cnst_assert::TOKEN)
+	->bind('contact_token');
+
 $c_system_anon->match('/register', function () use ($app) {
 	return render_legacy($app, 'plain/register');
 })->bind('register');
 
+$c_system_anon->match('/register/{token}', function () use ($app) {
+	return render_legacy($app, 'plain/register_token');
+})->assert('token', cnst_assert::TOKEN)
+	->bind('register_token');
+
 $c_system_anon->match('/password-reset', function () use ($app) {
 	return render_legacy($app, 'plain/password_reset');
 })->bind('password_reset');
+
+$c_system_anon->match('/password-reset/{token}', function () use ($app) {
+	return render_legacy($app, 'plain/password_reset_token');
+})->assert('token', cnst_assert::TOKEN)
+	->bind('password_reset_token');
 
 $c_system_guest->get('/logout', function () use ($app) {
 	return render_legacy($app, 'plain/logout');

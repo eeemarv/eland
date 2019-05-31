@@ -5,7 +5,7 @@ if (!$app['s_anonymous'])
 	exit;
 }
 
-$token = $app['request']->query->get('token');
+$token = $app['request']->attributes->get('token');
 
 if (!$token)
 {
@@ -33,6 +33,7 @@ if ($app['request']->isMethod('POST'))
 			$app['db']->update($app['tschema'] . '.users',
 				['password' => hash('sha512', $password)],
 				['id' => $user_id]);
+
 			$app['user_cache']->clear($user_id, $app['tschema']);
 			$app['alert']->success('Paswoord opgeslagen.');
 
