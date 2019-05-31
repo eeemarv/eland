@@ -93,12 +93,12 @@ $c_system_admin->assert('_locale', 'nl')
 
 	});
 
-$app->get('/monitor', function(Request $request){
-	return new Response('OK');
+$app->get('/monitor', function() use ($app){
+	return render_legacy($app, 'plain/monitor');
 })->bind('monitor');
 
-$c_locale->match('/contact', function(Request $request){
-	return new Response('Contact');
+$c_locale->match('/contact', function() use ($app){
+	return render_legacy($app, 'plain/contact_host');
 })->bind('contact_host');
 
 $c_system_anon->match('/login', function () use ($app) {

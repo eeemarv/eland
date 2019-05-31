@@ -5,102 +5,9 @@ if (!$app['s_anonymous'])
 	exit;
 }
 
-$token = $_GET['token'] ?? false;
-
-if ($token)
+if ($app['request']->isMethod('POST'))
 {
-	$data = $app['predis']->get($app['tschema'] . '_token_' . $token);
-	$data = json_decode($data, true);
-
-	$user_id = $data['user_id'];
-	$email = $data['email'];
-
-	if ($_POST['zend'])
-	{
-		$password = $_POST['password'];
-
-		if ($error_token = $app['form_token']->get_error())
-		{
-			$app['alert']->error($error_token);
-		}
-		else if (!($app['password_strength']->get($password) < 50))
-		{
-			if ($user_id)
-			{
-				$app['db']->update($app['tschema'] . '.users',
-					['password' => hash('sha512', $password)],
-					['id' => $user_id]);
-				$app['user_cache']->clear($user_id, $app['tschema']);
-				$app['alert']->success('Paswoord opgeslagen.');
-
-				$app['queue.mail']->queue([
-					'schema'	=> $app['tschema'],
-					'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
-					'template'	=> 'password_reset/user',
-					'vars'		=> [
-						'password'		=> $password,
-						'user_id'		=> $user_id,
-					],
-				], 10000);
-
-				header('Location: ' . $app->path('login', $app['pp_ary']));
-				exit;
-			}
-
-			$app['alert']->error('Het reset-token is niet meer geldig.');
-			header('Location: ' . $app->path('password_reset', $app['pp_ary']));
-			exit;
-		}
-		else
-		{
-			$app['alert']->error('Te zwak paswoord.');
-		}
-	}
-
-	$app['heading']->add('Nieuw paswoord ingeven.');
-	$app['heading']->fa('key');
-
-	$app['assets']->add([
-		'generate_password.js',
-	]);
-
-	require_once __DIR__ . '/../include/header.php';
-
-	echo '<div class="panel panel-info">';
-	echo '<div class="panel-heading">';
-
-	echo '<form method="post" role="form">';
-
-	echo '<div class="form-group">';
-	echo '<label for="password">Nieuw paswoord</label>';
-	echo '<div class="input-group">';
-	echo '<span class="input-group-addon">';
-	echo '<i class="fa fa-key"></i>';
-	echo '</span>';
-	echo '<input type="text" class="form-control" id="password" name="password" ';
-	echo 'value="';
-	echo $password;
-	echo '" required>';
-	echo '<span class="input-group-btn">';
-    echo '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
-    echo '</span>';
-	echo '</div>';
-	echo '</div>';
-
-	echo '<input type="submit" class="btn btn-default" value="Bewaar paswoord" name="zend">';
-	echo $app['form_token']->get_hidden_input();
-	echo '</form>';
-
-	echo '</div>';
-	echo '</div>';
-
-	require_once __DIR__ . '/../include/footer.php';
-	exit;
-}
-
-if (isset($_POST['zend']))
-{
-	$email = trim($_POST['email']);
+	$email = $app['request']->request->get('email');
 
 	if ($error_token = $app['form_token']->get_error())
 	{
@@ -126,10 +33,14 @@ if (isset($_POST['zend']))
 			{
 				$user_id = $user['id'];
 
-				$token = substr(hash('sha512', $user_id . $app['tschema'] . time() . $email), 0, 12);
+				$token = $app['token']->gen();
 				$key = $app['tschema'] . '_token_' . $token;
 
-				$app['predis']->set($key, json_encode(['user_id' => $user_id, 'email' => $email]));
+				$app['predis']->set($key, json_encode([
+					'user_id' 	=> $user_id,
+					'email' 	=> $email,
+				]));
+
 				$app['predis']->expire($key, 86400);
 
 				$app['queue.mail']->queue([
@@ -144,8 +55,7 @@ if (isset($_POST['zend']))
 
 				$app['alert']->success('Een link om je paswoord te resetten werd naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
-				header('Location: ' . $app->path('login', $app['pp_ary']));
-				exit;
+				$app['link']->redirect('login', $app['pp_ary'], []);
 			}
 			else
 			{

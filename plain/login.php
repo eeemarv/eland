@@ -1,10 +1,14 @@
 <?php
 
+if (!$app['s_anonymous'])
+{
+	exit;
+}
+
 use cnst\role as cnst_role;
 
 $token = $_GET['token'] ?? false;
 $login = $_GET['login'] ?? '';
-$monitor = $_GET['monitor'] ?? false;
 $location = $_GET['location'] ?? false;
 
 if (!$location
@@ -17,12 +21,6 @@ if (!$location
 }
 
 $submit = isset($_POST['zend']);
-
-if ($monitor)
-{
-	$app['monitor_process']->monitor();
-	exit;
-}
 
 if ($token)
 {
