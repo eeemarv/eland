@@ -221,6 +221,26 @@ $c_system_user->get('/typeahead/postcodes', function () use ($app){
 	return render_legacy($app, 'typeahead/postcodes');
 })->bind('typeahead_postcodes');
 
+$c_system_guest->get('/elas-group-login', function () use ($app){
+	return render_legacy($app, 'ajax/elas_group_login');
+})->bind('elas_group_login');
+
+$c_system_admin->get('/elas-soap-status', function () use ($app){
+	return render_legacy($app, 'ajax/elas_soap_status');
+})->bind('elas_soap_status');
+
+$c_system_guest->get('/plot-user-transactions', function () use ($app){
+	return render_legacy($app, 'ajax/plot_user_transactions');
+})->bind('plot_user_transactions');
+
+$c_system_admin->get('/transactions-sum', function () use ($app){
+	return render_legacy($app, 'ajax/transactions_sum');
+})->bind('transactions_sum');
+
+$c_system_admin->get('/weighted-balances', function () use ($app){
+	return render_legacy($app, 'ajax/weighted_balances');
+})->bind('weighted_balances');
+
 $c_system_anon->mount('/{role_short}', $c_system_guest);
 $c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_admin);
