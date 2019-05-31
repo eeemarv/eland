@@ -4,7 +4,7 @@ namespace service;
 
 class token
 {
-	protected $length = 16;
+	protected $length = 12;
 	protected $hyphen_chance = 2;
 	protected $chars = '0123456789abcdefghijklmnopqrstuvwxyz';
 	protected $chars_h;
