@@ -426,7 +426,7 @@ $app['assets']->add([
 $app['heading']->add('Massa transactie');
 $app['heading']->fa('exchange');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-warning">';
 echo '<div class="panel-heading">';
@@ -906,4 +906,4 @@ echo '" name="transid">';
 
 echo '</form>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

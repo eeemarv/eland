@@ -303,7 +303,7 @@ if($app['config']->get('maintenance', $app['tschema']))
 $app['heading']->add('Login');
 $app['heading']->fa('sign-in');
 
-require_once __DIR__ . '/include/header.php';
+require_once __DIR__ . '/../include/header.php';
 
 if(empty($token))
 {
@@ -355,4 +355,4 @@ if(empty($token))
 	echo '</div>';
 }
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

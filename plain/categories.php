@@ -87,7 +87,7 @@ if ($add)
 	$app['heading']->add('Categorie toevoegen');
 	$app['heading']->fa('clone');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -127,7 +127,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -227,7 +227,7 @@ if ($edit)
 	$app['heading']->add($cat['name']);
 	$app['heading']->fa('clone');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -268,7 +268,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -299,7 +299,7 @@ if ($del)
 	$app['heading']->add($fullname);
 	$app['heading']->fa('clone');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -319,7 +319,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -345,7 +345,7 @@ $app['btn_top']->add('categories',
 $app['heading']->add('Categorieën');
 $app['heading']->fa('clone');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-default printview">';
 
@@ -459,4 +459,4 @@ echo 'of hoofdcategorieën met subcategorieën kan je niet verwijderen.</li>';
 echo '<li>Enkel subcategorieën kunnen berichten bevatten.</li></ul>';
 echo '</p>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

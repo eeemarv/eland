@@ -64,7 +64,7 @@ if ($token)
 		'generate_password.js',
 	]);
 
-	require_once __DIR__ . '/include/header.php';
+	require_once __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -94,7 +94,7 @@ if ($token)
 	echo '</div>';
 	echo '</div>';
 
-	require_once __DIR__ . '/include/footer.php';
+	require_once __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -166,7 +166,7 @@ if (isset($_POST['zend']))
 $app['heading']->add('Paswoord vergeten');
 $app['heading']->fa('key');
 
-require_once __DIR__ . '/include/header.php';
+require_once __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -197,4 +197,4 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-require_once __DIR__ . '/include/footer.php';
+require_once __DIR__ . '/../include/footer.php';

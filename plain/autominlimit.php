@@ -47,7 +47,7 @@ else
 $app['heading']->add('Automatische minimum limiet');
 $app['heading']->fa('arrows-v');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-info">';
 
@@ -156,4 +156,4 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

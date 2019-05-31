@@ -137,7 +137,7 @@ $app['heading']->add('Logs');
 $app['heading']->add_filtered($filtered);
 $app['heading']->fa('history');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -336,4 +336,4 @@ echo '</div></div>';
 
 echo $app['pagination']->get();
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

@@ -331,7 +331,7 @@ if (isset(cnst_config::TAB_PANES[$active_tab]['assets']))
 $app['heading']->add('Instellingen');
 $app['heading']->fa('gears');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div>';
 echo '<ul class="nav nav-pills">';
@@ -733,7 +733,7 @@ echo '</form>';
 
 echo '</div>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';
 
 function get_sortable_items_str(
 	array $input_ary,

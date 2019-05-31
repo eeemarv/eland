@@ -195,7 +195,7 @@ if ($add || $edit)
 	$app['heading']->add($add ? 'toevoegen' : 'aanpassen');
 	$app['heading']->add('calendar-o');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -298,7 +298,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -342,7 +342,7 @@ if ($del)
 	$app['heading']->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
 	$app['heading']->add('calendar-o');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	$background = $news['approved'] ? '' : ' bg-warning';
 
@@ -427,7 +427,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -567,7 +567,7 @@ if ($id)
 	$app['heading']->add('Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES));
 	$app['heading']->add('calendar-o');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	$background = $news_item['approved'] ? '' : ' bg-warning';
 
@@ -641,7 +641,7 @@ if ($id)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -693,7 +693,7 @@ else
 
 	$app['heading']->add('calendar-o');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 }
 
 if (!count($news))
@@ -705,7 +705,7 @@ if (!count($news))
 
 	if (!$app['p_inline'])
 	{
-		include __DIR__ . '/include/footer.php';
+		include __DIR__ . '/../include/footer.php';
 	}
 	exit;
 }
@@ -900,5 +900,5 @@ else if ($v_extended)
 
 if (!$app['p_inline'])
 {
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 }

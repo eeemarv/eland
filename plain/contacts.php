@@ -109,7 +109,7 @@ if ($del)
 
 	$app['heading']->add('Contact verwijderen?');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<br>';
 
@@ -167,7 +167,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -480,7 +480,7 @@ if ($edit || $add)
 		$app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
 	}
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -611,7 +611,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -654,7 +654,7 @@ if ($uid)
 
 		$app['heading']->fa('map-marker');
 
-		include __DIR__ . '/include/header.php';
+		include __DIR__ . '/../include/header.php';
 		echo '<br>';
 	}
 	else
@@ -681,7 +681,7 @@ if ($uid)
 
 		if (!$app['p_inline'])
 		{
-			include __DIR__ . '/include/footer.php';
+			include __DIR__ . '/../include/footer.php';
 		}
 		exit;
 	}
@@ -826,7 +826,7 @@ if ($uid)
 		exit;
 	}
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -1069,7 +1069,7 @@ $app['heading']->add_filtered($filtered);
 $app['heading']->btn_filter();
 $app['heading']->fa('map-marker');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div id="filter" class="panel panel-info';
 echo $panel_collapse ? ' collapse' : '';
@@ -1235,7 +1235,7 @@ if (!count($contacts))
 
 	echo $app['pagination']->get();
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -1332,4 +1332,4 @@ echo '</div></div>';
 
 echo $app['pagination']->get();
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

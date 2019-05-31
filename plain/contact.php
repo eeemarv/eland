@@ -166,7 +166,7 @@ else if (!$app['config']->get('support', $app['tschema']))
 $app['heading']->add('Contact');
 $app['heading']->fa('comment-o');
 
-require_once __DIR__ . '/include/header.php';
+require_once __DIR__ . '/../include/header.php';
 
 $top_text = $app['config']->get('contact_form_top_text', $app['tschema']);
 
@@ -230,4 +230,4 @@ echo 'kan je altijd zelf een nieuw paswoord ';
 echo 'aanvragen met je E-mail adres ';
 echo 'vanuit de login-pagina!</i></p>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

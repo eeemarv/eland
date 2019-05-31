@@ -216,7 +216,7 @@ if ($del)
 
 	$app['heading']->add(' verwijderen?');
 
-	require_once __DIR__ . '/include/header.php';
+	require_once __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -237,7 +237,7 @@ if ($del)
 
 	echo '</div>';
 	echo '</div>';
-	require_once __DIR__ . '/include/footer.php';
+	require_once __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -274,7 +274,7 @@ if ($add || $edit)
 		$app['heading']->add($topic ? 'Nieuwe reactie' : 'Nieuw forum onderwerp');
 	}
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
@@ -339,7 +339,7 @@ if ($add || $edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -441,7 +441,7 @@ if ($topic)
 
 	$app['heading']->add($topic_post['subject']);
 
-	require_once __DIR__ . '/include/header.php';
+	require_once __DIR__ . '/../include/header.php';
 
 	if ($show_visibility)
 	{
@@ -522,7 +522,7 @@ if ($topic)
 		echo '</div>';
 	}
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -570,7 +570,7 @@ $show_visibility = (!$app['s_guest']
 
 $app['heading']->add('Forum');
 
-require_once __DIR__ . '/include/header.php';
+require_once __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -610,7 +610,7 @@ if ($forum_empty)
 	echo '<p>Er zijn nog geen forum onderwerpen.</p>';
 	echo '</div></div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -679,4 +679,4 @@ echo '</table>';
 echo '</div>';
 echo '</div>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

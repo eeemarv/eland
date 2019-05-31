@@ -180,7 +180,7 @@ if ($token)
 
 		$app['alert']->success('Inschrijving voltooid.');
 
-		require_once __DIR__ . '/include/header.php';
+		require_once __DIR__ . '/../include/header.php';
 
 		$registration_success_text = $app['config']->get('registration_success_text', $app['tschema']);
 
@@ -189,14 +189,14 @@ if ($token)
 			echo $registration_success_text;
 		}
 
-		require_once __DIR__ . '/include/footer.php';
+		require_once __DIR__ . '/../include/footer.php';
 
 		exit;
 	}
 
 	$app['alert']->error('Geen geldig token.');
 
-	require_once __DIR__ . '/include/header.php';
+	require_once __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-danger">';
 	echo '<div class="panel-heading">';
@@ -212,7 +212,7 @@ if ($token)
 	echo '</div>';
 	echo '</div>';
 
-	require_once __DIR__ . '/include/footer.php';
+	require_once __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -296,7 +296,7 @@ if ($submit)
 $app['heading']->add('Inschrijven');
 $app['heading']->fa('check-square-o');
 
-require_once __DIR__ . '/include/header.php';
+require_once __DIR__ . '/../include/header.php';
 
 $top_text = $app['config']->get('registration_top_text', $app['tschema']);
 
@@ -403,5 +403,5 @@ if ($bottom_text)
 	echo $bottom_text;
 }
 
-require_once __DIR__ . '/include/footer.php';
+require_once __DIR__ . '/../include/footer.php';
 exit;

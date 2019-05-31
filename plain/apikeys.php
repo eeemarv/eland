@@ -40,7 +40,7 @@ if ($del)
 	$app['heading']->add('Apikey verwijderen?');
 	$app['heading']->fa('key');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -66,7 +66,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -104,7 +104,7 @@ if ($add)
 	$app['heading']->add('Apikey toevoegen');
 	$app['heading']->fa('key');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo get_apikey_explain();
 
@@ -152,7 +152,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -164,7 +164,7 @@ $app['btn_top']->add('apikeys', $app['pp_ary'], ['add' => '1'], 'Apikey toevoege
 $app['heading']->add('Apikeys');
 $app['heading']->fa('key');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo get_apikey_explain();
 
@@ -204,7 +204,7 @@ echo '</tbody>';
 echo '</table>';
 echo '</div></div>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';
 
 function get_apikey_explain():string
 {

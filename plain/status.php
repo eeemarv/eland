@@ -152,7 +152,7 @@ if (count($no_msgs_users))
 $app['heading']->add('Status');
 $app['heading']->fa('exclamation-triangle');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 if ($status_msgs)
 {
@@ -445,4 +445,4 @@ else
 	echo '</div>';
 }
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

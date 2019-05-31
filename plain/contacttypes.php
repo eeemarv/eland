@@ -47,7 +47,7 @@ if ($add)
 	$app['heading']->add('Contact type toevoegen');
 	$app['heading']->fa('circle-o-notch');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -88,7 +88,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -148,7 +148,7 @@ if ($edit)
 	$app['heading']->add('Contact type aanpassen');
 	$app['heading']->fa('circle-o-notch');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -187,7 +187,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -236,7 +236,7 @@ if ($del)
 	$app['heading']->add('Contact type verwijderen: ' . $ct['name']);
 	$app['heading']->fa('circle-o-notch');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -254,7 +254,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -279,7 +279,7 @@ $app['btn_top']->add('type_contact', $app['pp_ary'],
 $app['heading']->add('Contact types');
 $app['heading']->fa('circle-o-notch');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-default printview">';
 
@@ -374,4 +374,4 @@ echo '<p>Kunnen niet verwijderd worden: ';
 echo 'contact types waarvan contacten ';
 echo 'bestaan en beschermde contact types (*).</p>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

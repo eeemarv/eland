@@ -184,5 +184,5 @@ if (isset($app['app_hoster_contact']))
 	exit;
 }
 
-include __DIR__ . '/include/header.php';
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/header.php';
+include __DIR__ . '/../include/footer.php';

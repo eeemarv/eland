@@ -977,7 +977,7 @@ if ($add)
 	$app['heading']->add('Nieuwe transactie');
 	$app['heading']->fa('exchange');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1310,7 +1310,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -1426,7 +1426,7 @@ if ($edit)
 	$app['heading']->add('Omschrijving transactie aanpassen');
 	$app['heading']->fa('exchange');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -1602,7 +1602,7 @@ if ($edit)
 	echo 'bij vergissing.</li>';
 	echo '</i></ul>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -1642,7 +1642,7 @@ if ($id)
 	$app['heading']->add('Transactie');
 	$app['heading']->fa('exchange');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	$real_to = $transaction['real_to'] ? true : false;
 	$real_from = $transaction['real_from'] ? true : false;
@@ -2005,7 +2005,7 @@ if ($id)
 
 	echo '</div></div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -2316,7 +2316,7 @@ if (!$app['p_inline'])
 		'typeahead.js',
 	]);
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info';
 	echo $filtered ? '' : ' collapse';
@@ -2534,7 +2534,7 @@ if (!count($transactions))
 
 	if (!$app['p_inline'])
 	{
-		include __DIR__ . '/include/footer.php';
+		include __DIR__ . '/../include/footer.php';
 	}
 	exit;
 }
@@ -2811,7 +2811,7 @@ else
 	echo get_valuation($app['tschema']);
 	echo '</ul>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 }
 
 function get_valuation(string $schema):string

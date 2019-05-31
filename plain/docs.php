@@ -101,7 +101,7 @@ if ($map_edit)
 	$app['heading']->add($app['link']->link_no_attr('docs', $app['pp_ary'],
 		['map' => $map_edit], $map_name));
 
-	require_once __DIR__ . '/include/header.php';
+	require_once __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
@@ -136,7 +136,7 @@ if ($map_edit)
 	echo '</div>';
 	echo '</div>';
 
-	require_once __DIR__ . '/include/footer.php';
+	require_once __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -245,7 +245,7 @@ if ($edit)
 
 	$app['heading']->add('Document aanpassen');
 
-	require_once __DIR__ . '/include/header.php';
+	require_once __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
@@ -323,7 +323,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	require_once __DIR__ . '/include/footer.php';
+	require_once __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -397,7 +397,7 @@ if ($del)
 	{
 		$app['heading']->add('Document verwijderen?');
 
-		require_once __DIR__ . '/include/header.php';
+		require_once __DIR__ . '/../include/header.php';
 
 		echo '<div class="panel panel-info">';
 		echo '<div class="panel-heading">';
@@ -422,7 +422,7 @@ if ($del)
 		echo '</div>';
 		echo '</div>';
 
-		require_once __DIR__ . '/include/footer.php';
+		require_once __DIR__ . '/../include/footer.php';
 		exit;
 	}
 
@@ -558,7 +558,7 @@ if ($add)
 
 	$app['heading']->add('Nieuw document opladen');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info" id="add">';
 	echo '<div class="panel-heading">';
@@ -621,7 +621,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -769,7 +769,7 @@ if ($map)
 	$app['heading']->add(': map "' . $map_name . '"');
 }
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -924,4 +924,4 @@ else if (!count($maps))
 	echo '</div></div>';
 }
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

@@ -112,7 +112,7 @@ else if (!$app['config']->get('support', $app['tschema']))
 $app['heading']->add('Help / Probleem melden');
 $app['heading']->fa('ambulance');
 
-require_once __DIR__ . '/include/header.php';
+require_once __DIR__ . '/../include/header.php';
 
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
@@ -163,4 +163,4 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';

@@ -212,7 +212,7 @@ if ($add || $edit)
 	$app['heading']->add($edit ? 'aanpassen' : 'toevoegen');
 	$app['heading']->fa('share-alt');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -360,7 +360,7 @@ if ($add || $edit)
 
 	echo get_schemas_groups();
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -393,7 +393,7 @@ if ($del)
 	$app['heading']->add('InterSysteem verwijderen: ' . $group['groupname']);
 	$app['heading']->fa('share-alt');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info">';
 	echo '<div class="panel-heading">';
@@ -415,7 +415,7 @@ if ($del)
 	echo '</div>';
 	echo '</div>';
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -450,7 +450,7 @@ if ($id)
 	$app['heading']->add($group['groupname']);
 	$app['heading']->fa('share-alt');
 
-	include __DIR__ . '/include/header.php';
+	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-default printview">';
 	echo '<div class="panel-heading">';
@@ -575,7 +575,7 @@ if ($id)
 
 	echo get_schemas_groups();
 
-	include __DIR__ . '/include/footer.php';
+	include __DIR__ . '/../include/footer.php';
 	exit;
 }
 
@@ -640,7 +640,7 @@ $app['btn_top']->add('intersystem', $app['pp_ary'],
 $app['heading']->add('eLAS/eLAND InterSysteem');
 $app['heading']->fa('share-alt');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 echo '<p>';
 echo 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
@@ -776,7 +776,7 @@ else
 
 echo get_schemas_groups();
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';
 exit;
 
 /**

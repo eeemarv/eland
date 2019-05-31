@@ -236,7 +236,7 @@ foreach ($export_ary as $ex_key => $export)
 $app['heading']->add('Export');
 $app['heading']->fa('download');
 
-include __DIR__ . '/include/header.php';
+include __DIR__ . '/../include/header.php';
 
 if ($exec_en)
 {
@@ -300,4 +300,4 @@ echo $buttons;
 
 echo '</div></div>';
 
-include __DIR__ . '/include/footer.php';
+include __DIR__ . '/../include/footer.php';
