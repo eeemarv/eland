@@ -472,7 +472,7 @@ echo '</div>';
 echo '<div id="wrap">';
 echo '<div id="main" ';
 echo 'class="container-fluid clear-top';
-echo $app['page_access'] === 'admin' ? ' admin' : '';
+echo $app['s_admin'] ? ' admin' : '';
 echo '">';
 
 echo $app['alert']->get();

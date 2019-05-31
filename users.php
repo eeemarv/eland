@@ -28,18 +28,20 @@ $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
 $bulk_field = $_POST['bulk_field'] ?? false;
 $selected_users = isset($_POST['sel']) && $_POST['sel'] != '' ? explode(',', $_POST['sel']) : [];
 
-/*
- * general access
- */
-/*
-$app['page_access'] = ($edit || $pw || $img_del || $password || $submit || $img)
-	? 'user'
-	: 'guest';
-
-$app['page_access'] = ($add || $del || $bulk_mail_submit || $bulk_mail_test)
-	? 'admin'
-	: $app['page_access'];
-*/
+if ($add || $del || $bulk_mail_submit || $bulk_mail_test)
+{
+	if (!$app['s_admin'])
+	{
+		exit;
+	}
+}
+else if ($edit || $pw || $img_del || $password || $submit || $img)
+{
+	if (!($app['s_admin'] || $app['s_user']))
+	{
+		exit;
+	}
+}
 
 /**
  * selectors for bulk actions

@@ -18,9 +18,10 @@ $submit = isset($_POST['zend']) ? true : false;
 
 if ($approve)
 {
-	$app['page_access'] = 'admin';
-
-	require_once __DIR__ . '/include/web.php';
+	if (!$app['s_admin'])
+	{
+		exit;
+	}
 
 	if ($app['db']->update($app['tschema'] . '.news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
@@ -40,8 +41,10 @@ if ($approve)
 
 if ($add || $edit)
 {
-	$app['page_access'] = 'user';
-	require_once __DIR__ . '/include/web.php';
+	if (!($app['s_admin'] || $app['s_user']))
+	{
+		exit;
+	}
 
 	$news = [];
 
@@ -305,8 +308,10 @@ if ($add || $edit)
 
 if ($del)
 {
-	$app['page_access'] = 'admin';
-	require_once __DIR__ . '/include/web.php';
+	if (!$app['s_admin'])
+	{
+		exit;
+	}
 
 	if ($submit)
 	{
@@ -431,8 +436,10 @@ if ($del)
  * Fetch all newsitems
  */
 
-$app['page_access'] = 'guest';
-require_once __DIR__ . '/include/web.php';
+if (!$app['s_anonymous'])
+{
+	exit;
+}
 
 $show_visibility = ($app['s_user']
 		&& $app['intersystem_en'])

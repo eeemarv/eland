@@ -1,7 +1,9 @@
 <?php
 
-$app['page_access'] = 'guest';
-require_once __DIR__ . '/../include/web.php';
+if ($app['s_anonymous'])
+{
+	exit;
+}
 
 $days = $_GET['days'] ?? 365;
 $user_id = $_GET['user_id'] ?? false;

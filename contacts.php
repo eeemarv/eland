@@ -15,10 +15,20 @@ $filter = $_GET['f'] ?? [];
 $pag = $_GET['p'] ?? [];
 $sort = $_GET['sort'] ?? [];
 
-/*
-$app['page_access'] = $del || $add || $edit ? 'user' : 'guest';
-$app['page_access'] = $uid ? $app['page_access'] : 'admin';
-*/
+if ($uid)
+{
+	if (!$app['s_admin'])
+	{
+		exit;
+	}
+}
+else if ($del || $add || $edit)
+{
+	if (!($app['s_admin'] || $app['s_user']))
+	{
+		exit;
+	}
+}
 
 if ($del)
 {

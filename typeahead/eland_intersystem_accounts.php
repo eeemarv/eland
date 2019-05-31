@@ -1,7 +1,9 @@
 <?php
-$rootpath = '../';
-$app['page_access'] = 'user';
-require_once __DIR__ . '/../include/web.php';
+
+if (!($app['s_admin'] || $app['s_user']))
+{
+	exit;
+}
 
 $schema = $_GET['schema'] ?? '';
 $remote_schema = $_GET['remote_schema'] ?? '';

@@ -11,9 +11,32 @@ use Symfony\Component\HttpFoundation\Response;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/default.php';
 
-/***
- * Routes begin
- */
+$app->before(function(Request $request, app $app){
+
+	$app['assets']->add([
+		'jquery', 'bootstrap', 'fontawesome',
+		'footable', 'base.css', 'base.js',
+	]);
+
+	$app['assets']->add_print_css(['print.css']);
+
+	$app['s_anonymous'] = true;
+	$app['s_guest'] = false;
+	$app['s_user'] = false;
+	$app['s_admin'] = false;
+	$app['s_master'] = false;
+	$app['s_elas_guest'] = false;
+	$app['s_system_self'] = true;
+
+	$app['request'] = $request;
+	$app['matched_route'] = $request->attributes->get('_route');
+});
+
+$app->after(function (Request $request, Response $response, app $app){
+	$origin = rtrim($app['s3_url'], '/');
+	$origin .= ', http://img.letsa.net';
+	$response->headers->set('Access-Control-Allow-Origin', $origin);
+});
 
 $app['controllers']
 	->assert('id', '\d+')
@@ -33,6 +56,15 @@ $c_system_anon->assert('_locale', 'nl')
 	->assert('system', '[a-z][a-z0-9]*')
 	->before(function(Request $request, app $app){
 
+		if ($request->query->get('et') !== null)
+		{
+			$app['email_validate']->validate($request->query->get('et'));
+		}
+
+		$system = $request->attributes->get('system');
+		$app['tschema'] = $app['systems']->get_schema($system);
+		$app['pp_system'] = $system;
+		$app['pp_ary'] = ['system' => $system];
 	});
 
 $c_system_guest->assert('_locale', 'nl')
@@ -168,8 +200,6 @@ $c_system_anon->mount('/{role_short}', $c_system_admin);
 $c_locale->mount('/{system}', $c_system_anon);
 $app->mount('/{_locale}', $c_locale);
 
-$app->run();
-
 function render_legacy(
 	app &$app,
 	Request $request,
@@ -192,12 +222,6 @@ function render_legacy(
  *
  */
 
-
-$app->after(function (Request $request, Response $response, app $app){
-	$origin = rtrim($app['s3_url'], '/');
-	$origin .= ', http://img.letsa.net';
-	$response->headers->set('Access-Control-Allow-Origin', $origin);
-});
 
 /*
  * check if we are on the contact url.
@@ -222,43 +246,13 @@ if (getenv('WEBSITE_MAINTENANCE'))
 }
 */
 
+$app->run();
 
-$app->before(function(Request $request, app $app){
-
-	$app['assets']->add([
-		'jquery', 'bootstrap', 'fontawesome',
-		'footable', 'base.css', 'base.js',
-	]);
-
-	$app['assets']->add_print_css(['print.css']);
-});
-
-$c_system_anon->before(function(Request $request, app $app){
-
-	if ($request->query->get('et') !== null)
-	{
-		$app['email_validate']->validate($request->query->get('et'));
-	}
-});
-
-if (isset($app['pp_system']))
-{
-	$app['tschema'] = $app['systems']->get_schema($app['pp_system']);
-}
-else
-{
-	// system-less routes
-}
-
-if (!$app['tschema'])
-{
-	page_not_found($app['twig']);
-}
 
 /**
  * Route and parameters
  */
-
+/*
 $app['matched_route'] = $app['request']->attributes->get('_route');
 
 if (isset($app['pp_role_short'])
@@ -331,10 +325,12 @@ switch ($app['pp_role'])
 		break;
 }
 
+*/
 /**
  * load interSystems
  **/
 
+/*
 if ($app['intersystem_en'])
 {
 	$app['intersystem_ary'] = [
@@ -365,6 +361,7 @@ $app['count_intersystems'] = count($app['intersystem_ary']['eland'])
  * Authentication User: s_schema, s_id, session_user
  */
 
+/*
 $app['session_user'] = [];
 $app['s_role'] = 'anonymous';
 $app['s_id'] = 0;
@@ -678,6 +675,7 @@ switch ($app['s_accountrole'])
  **/
 
 // $app['s_access_level'] = cnst::ACCESS_ARY[$app['p_role']];
+
 
 $errors = [];
 
