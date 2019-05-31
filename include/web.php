@@ -29,7 +29,6 @@ $app->before(function(Request $request, app $app){
 	$app['s_system_self'] = true;
 
 	$app['request'] = $request;
-	$app['matched_route'] = $request->attributes->get('_route');
 });
 
 $app->after(function (Request $request, Response $response, app $app){
@@ -102,96 +101,96 @@ $c_locale->match('/contact', function(Request $request){
 	return new Response('Contact');
 })->bind('contact_host');
 
-$c_system_anon->match('/login', function (Request $request, string $system) use ($app) {
-	return render_legacy($app, $request, 'login', $system, 'p');
+$c_system_anon->match('/login', function () use ($app) {
+	return render_legacy($app, 'login');
 })->bind('login');
 
-$c_system_anon->match('/contact', function (Request $request, string $system) use ($app) {
-	return render_legacy($app, $request, 'contact', $system, 'p');
+$c_system_anon->match('/contact', function () use ($app) {
+	return render_legacy($app, 'contact');
 })->bind('contact');
 
-$c_system_anon->match('/register', function (Request $request, string $system) use ($app) {
-	return render_legacy($app, $request, 'register', $system, 'p');
+$c_system_anon->match('/register', function () use ($app) {
+	return render_legacy($app, 'register');
 })->bind('register');
 
-$c_system_anon->match('/password-reset', function (Request $request, string $system) use ($app) {
-	return render_legacy($app, $request, 'pwreset', $system, 'p');
+$c_system_anon->match('/password-reset', function () use ($app) {
+	return render_legacy($app, 'pwreset');
 })->bind('password_reset');
 
-$c_system_guest->get('/logout', function (Request $request, string $system, string $role_short) use ($app) {
-	return render_legacy($app, $request, 'logout', $system, $role_short);
+$c_system_guest->get('/logout', function () use ($app) {
+	return render_legacy($app, 'logout');
 })->bind('logout');
 
-$c_system_admin->get('/status', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'status', $system, $role_short);
+$c_system_admin->get('/status', function () use ($app){
+	return render_legacy($app, 'status');
 })->bind('status');
 
-$c_system_admin->get('/categories', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'categories', $system, $role_short);
+$c_system_admin->get('/categories', function () use ($app){
+	return render_legacy($app, 'categories');
 })->bind('categories');
 
-$c_system_admin->get('/contact-types', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'type_contact', $system, $role_short);
+$c_system_admin->get('/contact-types', function () use ($app){
+	return render_legacy($app, 'type_contact');
 })->bind('contact_types');
 
-$c_system_guest->get('/contacts', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'contacts', $system, $role_short);
+$c_system_guest->get('/contacts', function () use ($app){
+	return render_legacy($app, 'contacts');
 })->bind('contacts');
 
-$c_system_admin->get('/config', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'config', $system, $role_short);
+$c_system_admin->get('/config', function () use ($app){
+	return render_legacy($app, 'config');
 })->bind('config');
 
-$c_system_admin->get('/intersystem', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'intersystem', $system, $role_short);
+$c_system_admin->get('/intersystem', function () use ($app){
+	return render_legacy($app, 'intersystem');
 })->bind('intersystem');
 
-$c_system_admin->get('/apikeys', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'apikeys', $system, $role_short);
+$c_system_admin->get('/apikeys', function () use ($app){
+	return render_legacy($app, 'apikeys');
 })->bind('apikeys');
 
-$c_system_admin->get('/export', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'export', $system, $role_short);
+$c_system_admin->get('/export', function () use ($app){
+	return render_legacy($app, 'export');
 })->bind('export');
 
-$c_system_admin->get('/autominlimit', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'autominlimit', $system, $role_short);
+$c_system_admin->get('/autominlimit', function () use ($app){
+	return render_legacy($app, 'autominlimit');
 })->bind('autominlimit');
 
-$c_system_admin->get('/mass-transaction', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'mass_transaction', $system, $role_short);
+$c_system_admin->get('/mass-transaction', function () use ($app){
+	return render_legacy($app, 'mass_transaction');
 })->bind('mass_transaction');
 
-$c_system_admin->get('/logs', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'logs', $system, $role_short);
+$c_system_admin->get('/logs', function () use ($app){
+	return render_legacy($app, 'logs');
 })->bind('logs');
 
-$c_system_user->get('/support', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'support', $system, $role_short);
+$c_system_user->get('/support', function () use ($app){
+	return render_legacy($app, 'support');
 })->bind('support');
 
-$c_system_guest->get('/', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'index', $system, $role_short);
+$c_system_guest->get('/', function () use ($app){
+	return render_legacy($app, 'index');
 })->bind('home');
 
-$c_system_guest->get('/messages', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'messages', $system, $role_short);
+$c_system_guest->get('/messages', function () use ($app){
+	return render_legacy($app, 'messages');
 })->bind('messages');
 
-$c_system_guest->get('/users', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'users', $system, $role_short);
+$c_system_guest->get('/users', function () use ($app){
+	return render_legacy($app, 'users');
 })->bind('users');
 
-$c_system_guest->get('/transactions', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'transactions', $system, $role_short);
+$c_system_guest->get('/transactions', function () use ($app){
+	return render_legacy($app, 'transactions');
 })->bind('transactions');
 
-$c_system_guest->get('/docs', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'docs', $system, $role_short);
+$c_system_guest->get('/docs', function () use ($app){
+	return render_legacy($app, 'docs');
 })->bind('docs');
 
-$c_system_guest->get('/forum', function (Request $request, string $system, string $role_short) use ($app){
-	return render_legacy($app, $request, 'forum', $system, $role_short);
+$c_system_guest->get('/forum', function () use ($app){
+	return render_legacy($app, 'forum');
 })->bind('forum');
 
 $c_system_anon->mount('/{role_short}', $c_system_guest);
@@ -201,16 +200,15 @@ $c_locale->mount('/{system}', $c_system_anon);
 $app->mount('/{_locale}', $c_locale);
 
 function render_legacy(
-	app &$app,
-	Request $request,
-	string $name,
-	string $system,
-	string $role_short
+	app $app,
+	string $name
 ):Response
 {
+	/*
 	$app['request'] = $request;
 	$app['pp_system'] = $system;
 	$app['pp_role_short'] = $role_short;
+	*/
 
 	ob_start();
 	require_once __DIR__ . '/../' . $name . '.php';

@@ -2,6 +2,8 @@
 
 use cnst\pages as cnst_pages;
 
+$matched_route = $app['request']->attributes->get('_route');
+
 if ($css = $app['config']->get('css', $app['tschema']))
 {
 	$app['assets']->add_external_css([$css]);
@@ -133,7 +135,7 @@ if (!$app['s_anonymous']
 
 		echo '>';
 
-		echo $app['link']->link_no_attr($app['matched_route'], [
+		echo $app['link']->link_no_attr($matched_route, [
 			'system' 		=> $app['systems']->get_system($login_schema),
 			'role_short'	=> $login_id === 'elas'
 				? 'g'
@@ -165,8 +167,8 @@ if (!$app['s_anonymous']
 
 				echo '>';
 
-				$route = isset(cnst_pages::INTERSYSTEM_LANDING[$app['matched_route']])
-					? $app['matched_route']
+				$route = isset(cnst_pages::INTERSYSTEM_LANDING[$matched_route])
+					? $matched_route
 					: 'messages';
 
 				echo $app['link']->link_no_attr($route, $app['pp_ary'],
@@ -289,14 +291,12 @@ if (!$app['s_anonymous'])
 
 		foreach ($menu as $route => $item)
 		{
-			$active = $app['matched_route'] === $route ? ' class="active"' : '';
+			$active = $matched_route === $route ? ' class="active"' : '';
 
 			echo '<li' . $active . '>';
 
-			echo $app['link']->link_fa($route, [
-					'system'		=> $app['pp_system'],
-					'role_short' 	=> $app['pp_role_short'],
-				], [], $item[1], [], $item[0]);
+			echo $app['link']->link_fa($route, $app['pp_ary'],
+				[], $item[1], [], $item[0]);
 
 			echo '</li>';
 		}
@@ -457,7 +457,7 @@ echo '<ul class="nav nav-pills nav-stacked">';
 foreach ($menu as $route => $item)
 {
 	echo '<li';
-	echo $app['matched_route'] == $route ? ' class="active"' : '';
+	echo $matched_route == $route ? ' class="active"' : '';
 	echo '>';
 
 	echo $app['link']->link_fa($route, $app['pp_ary'],

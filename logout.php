@@ -12,10 +12,4 @@ $app['session']->invalidate();
 $app['monolog']->info('user logged out',
 	['schema' => $app['tschema']]);
 
-$app['pp_ary'] = [
-	'system' => $app['pp_system'],
-];
-
-header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-header('Location: ' . $app->path('login', $app['pp_ary']));
-exit;
+$app['link']->redirect('login', ['system' => $app['pp_system']], []);
