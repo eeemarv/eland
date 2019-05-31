@@ -102,122 +102,122 @@ $c_locale->match('/contact', function(Request $request){
 })->bind('contact_host');
 
 $c_system_anon->match('/login', function () use ($app) {
-	return render_legacy($app, 'login');
+	return render_legacy($app, 'plain/login');
 })->bind('login');
 
 $c_system_anon->match('/contact', function () use ($app) {
-	return render_legacy($app, 'contact');
+	return render_legacy($app, 'plain/contact');
 })->bind('contact');
 
 $c_system_anon->match('/register', function () use ($app) {
-	return render_legacy($app, 'register');
+	return render_legacy($app, 'plain/register');
 })->bind('register');
 
 $c_system_anon->match('/password-reset', function () use ($app) {
-	return render_legacy($app, 'pwreset');
+	return render_legacy($app, 'plain/password_reset');
 })->bind('password_reset');
 
 $c_system_guest->get('/logout', function () use ($app) {
-	return render_legacy($app, 'logout');
+	return render_legacy($app, 'plain/logout');
 })->bind('logout');
 
 $c_system_admin->get('/status', function () use ($app){
-	return render_legacy($app, 'status');
+	return render_legacy($app, 'plain/status');
 })->bind('status');
 
 $c_system_admin->get('/categories', function () use ($app){
-	return render_legacy($app, 'categories');
+	return render_legacy($app, 'plain/categories');
 })->bind('categories');
 
 $c_system_admin->get('/contact-types', function () use ($app){
-	return render_legacy($app, 'type_contact');
-})->bind('contact_types');
+	return render_legacy($app, 'plain/contact_types');
+})->bind('contacttypes');
 
 $c_system_guest->get('/contacts', function () use ($app){
-	return render_legacy($app, 'contacts');
+	return render_legacy($app, 'plain/contacts');
 })->bind('contacts');
 
 $c_system_admin->get('/config', function () use ($app){
-	return render_legacy($app, 'config');
+	return render_legacy($app, 'plain/config');
 })->bind('config');
 
 $c_system_admin->get('/intersystem', function () use ($app){
-	return render_legacy($app, 'intersystem');
+	return render_legacy($app, 'plain/intersystem');
 })->bind('intersystem');
 
 $c_system_admin->get('/apikeys', function () use ($app){
-	return render_legacy($app, 'apikeys');
+	return render_legacy($app, 'plain/apikeys');
 })->bind('apikeys');
 
 $c_system_admin->get('/export', function () use ($app){
-	return render_legacy($app, 'export');
+	return render_legacy($app, 'plain/export');
 })->bind('export');
 
 $c_system_admin->get('/autominlimit', function () use ($app){
-	return render_legacy($app, 'autominlimit');
+	return render_legacy($app, 'plain/autominlimit');
 })->bind('autominlimit');
 
 $c_system_admin->get('/mass-transaction', function () use ($app){
-	return render_legacy($app, 'mass_transaction');
-})->bind('mass_transaction');
+	return render_legacy($app, 'plain/mass_transaction');
+})->bind('masstransaction');
 
 $c_system_admin->get('/logs', function () use ($app){
-	return render_legacy($app, 'logs');
+	return render_legacy($app, 'plain/logs');
 })->bind('logs');
 
 $c_system_user->get('/support', function () use ($app){
-	return render_legacy($app, 'support');
+	return render_legacy($app, 'plain/support');
 })->bind('support');
 
 $c_system_guest->get('/', function () use ($app){
-	return render_legacy($app, 'index');
+	return render_legacy($app, 'plain/index');
 })->bind('home');
 
 $c_system_guest->get('/messages', function () use ($app){
-	return render_legacy($app, 'messages');
+	return render_legacy($app, 'plain/messages');
 })->bind('messages');
 
 $c_system_guest->get('/users', function () use ($app){
-	return render_legacy($app, 'users');
+	return render_legacy($app, 'plain/users');
 })->bind('users');
 
 $c_system_guest->get('/transactions', function () use ($app){
-	return render_legacy($app, 'transactions');
+	return render_legacy($app, 'plain/transactions');
 })->bind('transactions');
 
 $c_system_guest->get('/docs', function () use ($app){
-	return render_legacy($app, 'docs');
+	return render_legacy($app, 'plain/docs');
 })->bind('docs');
 
 $c_system_guest->get('/forum', function () use ($app){
-	return render_legacy($app, 'forum');
+	return render_legacy($app, 'plain/forum');
 })->bind('forum');
 
-$c_system_user->get('/typeahead/account-codes', function () use ($app){
+$c_system_user->get('/typeahead-account-codes', function () use ($app){
 	return render_legacy($app, 'typeahead/account_codes');
 })->bind('typeahead_account_codes');
 
-$c_system_guest->get('/typeahead/accounts', function () use ($app){
+$c_system_guest->get('/typeahead-accounts', function () use ($app){
 	return render_legacy($app, 'typeahead/accounts');
 })->bind('typeahead_accounts');
 
-$c_system_admin->get('/typeahead/doc-map-names', function () use ($app){
+$c_system_admin->get('/typeahead-doc-map-names', function () use ($app){
 	return render_legacy($app, 'typeahead/doc_map_names');
 })->bind('typeahead_doc_map_names');
 
-$c_system_user->get('/typeahead/eland-intersystem-accounts', function () use ($app){
+$c_system_user->get('/typeahead-eland-intersystem-accounts', function () use ($app){
 	return render_legacy($app, 'typeahead/eland_intersystem_accounts');
 })->bind('typeahead_eland_intersystem_accounts');
 
-$c_system_user->get('/typeahead/elas-intersystem-accounts', function () use ($app){
+$c_system_user->get('/typeahead-elas-intersystem-accounts', function () use ($app){
 	return render_legacy($app, 'typeahead/elas_intersystem_accounts');
 })->bind('typeahead_elas_intersystem_accounts');
 
-$c_system_admin->get('/typeahead/log-types', function () use ($app){
+$c_system_admin->get('/typeahead-log-types', function () use ($app){
 	return render_legacy($app, 'typeahead/log_types');
 })->bind('typeahead_log_types');
 
-$c_system_user->get('/typeahead/postcodes', function () use ($app){
+$c_system_user->get('/typeahead-postcodes', function () use ($app){
 	return render_legacy($app, 'typeahead/postcodes');
 })->bind('typeahead_postcodes');
 
