@@ -51,16 +51,19 @@ $app->extend('twig', function($twig, $app) {
 		twig\account::class => function() use ($app){
 			return new twig\account($app['user_cache']);
 		},
+		twig\link_url::class => function() use ($app){
+			return new twig\link_url($app['url_generator']);
+		},
 		twig\base_url::class => function() use ($app){
 			return new twig\base_url(
 				$app['systems'],
-//				$app['protocol']
+				$app['protocol']
 			);
 		},
 		twig\mail_url::class => function() use ($app){
 			return new twig\mail_url(
 				$app['systems'],
-//				$app['protocol']
+				$app['protocol']
 			);
 		},
 		twig\s3_url::class => function() use ($app){

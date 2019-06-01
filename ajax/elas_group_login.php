@@ -89,4 +89,3 @@ if ($err)
 echo json_encode([
 	'login_url'	=> $group['url'] . '/login.php?token=' . $token,
 ]);
-exit;
