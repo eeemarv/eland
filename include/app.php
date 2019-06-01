@@ -9,8 +9,11 @@ use cnst\assert as cnst_assert;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+setlocale(LC_TIME, 'nl_NL.UTF-8');
+date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
+
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/default.php';
+require_once __DIR__ . '/deps.php';
 
 $app->before(function(Request $request, app $app){
 
@@ -302,7 +305,7 @@ if (getenv('WEBSITE_MAINTENANCE'))
 }
 */
 
-$app->run();
+//$app->run();
 
 
 /**
@@ -734,7 +737,7 @@ switch ($app['s_accountrole'])
 
 
 $errors = [];
-
+/*
 if ($app['page_access'] != 'anonymous'
 	&& !$app['s_system_self']
 	&& !$app['intersystem_ary']['eland'][$app['tschema']])
@@ -755,17 +758,17 @@ if ($app['page_access'] != 'anonymous'
 
 $app['xdb']->set_user($app['s_schema'],
 	ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
-
+*/
 /**
  * inline
  */
 
-$app['p_inline'] = isset($_GET['inline']) ? true : false;
+//$app['p_inline'] = isset($_GET['inline']) ? true : false;
 
 /**
  * view (global for all systems)
  */
-
+/**
 if (isset(cnst_pages::DEFAULT_VIEW[$app['matched_route']]))
 {
 	$app['s_view'] = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
@@ -782,13 +785,14 @@ if (isset(cnst_pages::DEFAULT_VIEW[$app['matched_route']]))
 
 	$app['p_view'] = $app['s_view'][$app['matched_route']];
 }
+*/
 
 /* */
-
+/*
 $app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
-
+*/
 /** welcome message **/
-
+/*
 if ($app['request']->query->get('welcome') !== null && $app['s_guest'])
 {
 	$msg = '<strong>Welkom bij ';
@@ -818,6 +822,7 @@ if ($app['request']->query->get('welcome') !== null && $app['s_guest'])
 
 	$app['alert']->info($msg);
 }
+*/
 
 /**************** FUNCTIONS ***************/
 

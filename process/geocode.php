@@ -6,13 +6,7 @@ if (php_sapi_name() !== 'cli')
 	exit;
 }
 
-$rootpath = '../';
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../include/default.php';
-
-$app['monitor_process']->boot();
-
-$loop_count = 1;
+require_once __DIR__ . '/../include/process.php';
 
 while (true)
 {

@@ -9,13 +9,8 @@ if (php_sapi_name() !== 'cli')
 	exit;
 }
 
-$rootpath = '../';
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../include/default.php';
+require_once __DIR__ . '/../include/process.php';
 
-$app['monitor_process']->boot();
-
-error_log('overall domain: ' . getenv('OVERALL_DOMAIN'));
 error_log(' --- ');
 error_log('schemas: ' . json_encode($app['systems']->get_schemas()));
 error_log(' --- ');

@@ -2,9 +2,6 @@
 
 use Silex\Provider;
 
-setlocale(LC_TIME, 'nl_NL.UTF-8');
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
-
 $app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
@@ -159,6 +156,7 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if ($ip)
 		{
+//			$record['extra']['ip'] = $app['request']->getClientIp();
 			$record['extra']['ip'] = $ip;
 		}
 
