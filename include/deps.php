@@ -54,6 +54,9 @@ $app->extend('twig', function($twig, $app) {
 		twig\link_url::class => function() use ($app){
 			return new twig\link_url($app['url_generator']);
 		},
+		twig\system::class => function() use ($app){
+			return new twig\system($app['systems']);
+		},
 		twig\base_url::class => function() use ($app){
 			return new twig\base_url(
 				$app['systems'],
