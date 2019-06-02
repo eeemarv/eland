@@ -33,9 +33,7 @@ class log_db
 
 			$log = json_decode($log_json, true);
 
-			$sch = $log['context']['schema'] ?? $log['extra']['schema'];
-
-			if (!isset($sch))
+			if (!isset($log['context']['schema']))
 			{
 				continue;
 			}
