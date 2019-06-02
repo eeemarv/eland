@@ -137,12 +137,14 @@ class assets
 		$finder = new Finder();
 		$finder->files()
 			->in([
-				__DIR__ . '/../gfx',
-				__DIR__ . '/../js',
+				__DIR__ . '/../web/gfx',
+				__DIR__ . '/../web/js',
 			])
 			->name([
 				'*.js',
 				'*.css',
+				'*.png',
+				'*.gif',
 			]);
 
 		error_log('+-----------------------+');

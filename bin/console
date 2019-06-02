@@ -41,7 +41,14 @@ $app->flush();
 
 $console = $app['console'];
 
-$console->add(new command\router_debug());
+$console->add(new command\process_cleanup_cache());
+$console->add(new command\process_cleanup_images());
+$console->add(new command\process_cleanup_logs());
+$console->add(new command\process_fetch_elas_intersystem());
+$console->add(new command\process_geocode());
+$console->add(new command\process_log());
 $console->add(new command\process_mail());
+$console->add(new command\process_worker());
+$console->add(new command\router_debug());
 
 $console->run();
