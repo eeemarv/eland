@@ -50,5 +50,7 @@ $console->add(new command\process_log());
 $console->add(new command\process_mail());
 $console->add(new command\process_worker());
 $console->add(new command\router_debug());
+$console->add(new command\test_periodic_mail());
+$console->add(new command\test_expired_messages());
 
 $console->run();

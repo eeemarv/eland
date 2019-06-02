@@ -8,3 +8,5 @@ geocode: php bin/console process:geocode
 log: php bin/console process:log
 mail: php bin/console process:mail
 worker: php bin/console process:worker
+test_periodic_mail: php bin/console test:periodic_mail x
+test_expired_messages: php bin/console test:expired_messages x
