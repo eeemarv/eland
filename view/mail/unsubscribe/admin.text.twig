@@ -5,4 +5,5 @@
     '%link_close%': '',
 })|raw }}
 
-{{ mail_url('config', {'tab': 'mailaddresses'}, schema, email_token)|raw }}
+{{ context_url('config', {'system': pp_ary.system, 'role_short': 'a'},
+    {'tab': 'mailaddresses', 'et': et})|raw }}

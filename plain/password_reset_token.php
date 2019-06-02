@@ -41,6 +41,7 @@ if ($app['request']->isMethod('POST'))
 			'vars'		=> [
 				'password'		=> $password,
 				'user_id'		=> $user_id,
+				'pp_ary'		=> $app['pp_ary'],
 			],
 		], 10000);
 

@@ -9,7 +9,8 @@
 
 <p>
     {{- 'password_reset_confirm.html_msg'|trans({
-        '%link_open%': mail_link_open('pwreset', {'token': token}, schema, email_token),
+        '%link_open%': context_url_open(
+            'password_reset_token', pp_ary, {'token': token, 'et': et}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -22,7 +23,7 @@
 <p>
     {{- 'password_reset_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': mail_link_open('home', {}, schema, email_token),
+        '%link_open%': context_url_open('home_system', pp_ary, {'et': et}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -35,7 +36,7 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ mail_url('pwreset', {'token': token}, schema, email_token) }}
+{{ context_url('password_reset_token', pp_ary, {'token': token, 'et': et}) }}
 
 {{ 'expiration.1_day'|trans }}
 

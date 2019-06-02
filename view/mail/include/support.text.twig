@@ -8,4 +8,4 @@
     '%system_name%': config('systemname', schema)
 })|raw }}:
 
-{{ mail_url('support', {}, schema, email_token)|raw }}
+{{ context_url('support', pp_ary_self(user_id, schema), {'et': et})|raw }}

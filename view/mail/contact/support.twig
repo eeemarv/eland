@@ -12,7 +12,8 @@
 <hr />
 <p>
     {{- 'contact_support.explain'|trans({
-        '%link_open%': mail_link_open('home', {}, schema, email_token),
+        '%link_open%': context_url_open(
+            'home_system', pp_ary, {'et': et}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -32,7 +33,7 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ mail_url('home', {}, schema, email_token) }}
+{{ context_url('home_system', pp_ary, {'et': et}) }}
 {% include 'mail/include/sender_info.text.twig' %}
 {% endautoescape %}
 {% endblock text_content %}

@@ -5,7 +5,8 @@
 
 <p>
     {{ 'b.support.explain'|trans({
-        '%link_open%': mail_link_open('support', {}, schema, email_token),
+        '%link_open%': context_url_open('support',
+            pp_ary_self(user_id, schema), {'et': et}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw }}.

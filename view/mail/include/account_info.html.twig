@@ -5,7 +5,8 @@
 
 <ul>
 <li>
-    <a href="{{- mail_url('login', {'login': account_code(user_id, schema)}, schema, email_token) -}}">
+    <a href="{{- context_url('login', pp_ary_self(user_id, schema),
+        {'login': account_code(user_id, schema), 'et': et}) -}}">
         {{- 'label.login'|trans -}}
     </a>
 </li>

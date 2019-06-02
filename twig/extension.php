@@ -38,6 +38,7 @@ class extension extends \Twig_Extension
 			new \Twig_Function('account_balance', 'twig\\account::get_balance'),
 			new \Twig_Function('account_min', 'twig\\account::get_min'),
 			new \Twig_Function('account_max', 'twig\\account::get_max'),
+			new \Twig_Function('pp_ary_self', 'twig\\user_pp_ary::get_self'),
 		];
 	}
 

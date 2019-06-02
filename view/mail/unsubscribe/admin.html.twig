@@ -1,7 +1,9 @@
 {%- trans_default_domain 'mail' -%}
 <p>
     {{- 'subscribed.admin'|trans({
-        '%link_open%': mail_link_open('config', {'tab': 'mailaddresses'}, schema, email_token),
+        '%link_open%': context_url_open('config',
+            {'system': pp_ary.system, 'role_short': 'a'},
+            {'tab': 'mailaddresses', 'et': et}),
         '%link_close%': '</a>',
     })|raw -}}
 </p>

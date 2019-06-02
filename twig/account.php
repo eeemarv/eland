@@ -56,5 +56,4 @@ class account
 		$maxlimit = $maxlimit == 999999999 ? '' : $maxlimit;
 		return $maxlimit;
 	}
-
 }
