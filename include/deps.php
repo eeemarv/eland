@@ -1,6 +1,7 @@
 <?php
 
 use Silex\Provider;
+use Knp\Provider\ConsoleServiceProvider;
 
 $app = new util\app();
 
@@ -182,6 +183,8 @@ if ($app['debug'])
 
 $app->register(new Provider\HttpFragmentServiceProvider());
 $app->register(new Provider\ServiceControllerServiceProvider());
+
+$app->register(new ConsoleServiceProvider());
 
 /**
  *

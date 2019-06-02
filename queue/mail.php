@@ -203,8 +203,10 @@ class mail implements queue_interface
 
 			$val_data = $data;
 			$val_data['to'] = [$email => $name];
+
 			$email_token = $this->email_validate->get_token($email, $schema, $data['template']);
 			$val_data['vars']['email_token'] = $email_token;
+			$val_data['vars']['et'] = $email_token;
 
 			$this->queue->set('mail', $val_data, $priority);
 

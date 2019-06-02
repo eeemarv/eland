@@ -60,9 +60,14 @@ if($app['request']->isMethod('POST'))
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> [$email => $email],
+			'to' 		=> [
+				$email => $email
+			],
 			'template'	=> 'contact/confirm',
-			'vars'		=> ['token' => $token],
+			'vars'		=> [
+				'token' 	=> $token,
+				'pp_ary'	=> $app['pp_ary'],
+			],
 		], 10000);
 
 		$app['alert']->success('Open je E-mailbox en klik

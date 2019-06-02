@@ -12,7 +12,7 @@ if (!$app['config']->get('contact_form_en', $app['tschema']))
 }
 
 $token = $app['request']->attributes->get('token');
-$data = $app['data_token']->retrieve($token, 'contact', $app['schema']);
+$data = $app['data_token']->retrieve($token, 'contact', $app['tschema']);
 
 if (!$data)
 {

@@ -25,12 +25,12 @@
 		"symfony/security": "^3.2",
 		"symfony/finder": "^4.2",
 		"predis/service-provider": "^2.0",
-		"symfony/form": "^3.2",
-		"symfony/validator": "^3.2",
+		"symfony/form": "^3",
+		"symfony/validator": "^3",
 		"symfony/yaml": "^4.2",
 		"symfony/process": "^3.2",
 		"symfony/console": "^3.2",
-		"knplabs/console-service-provider": "^2.0",
+		"knplabs/console-service-provider": "^2.2",
 		"symfony/config": "^4.2",
 		"symfony/security-csrf": "^3.2",
 		"symfony/monolog-bridge": "^3.2",
@@ -42,7 +42,8 @@
 		"symfony/dotenv": "^4.0",
 		"symfony/templating": "^4.2",
 		"vlucas/phpdotenv": "^3.3",
-		"silex/web-profiler": "^2.0"
+		"silex/web-profiler": "^2.0",
+		"symfony/contracts": "^1.1"
 	},
 
     "minimum-stability": "stable",
@@ -57,7 +58,8 @@
 			"util\\": "util/",
 			"twig\\": "twig/",
 			"render\\": "render/",
-			"cnst\\": "cnst/"
+			"cnst\\": "cnst/",
+			"command\\": "command/"
         }
     },
 	"scripts": {

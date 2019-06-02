@@ -31,14 +31,12 @@ class monitor_process
 		$this->is_cli = php_sapi_name() === 'cli';
 	}
 
-	public function boot():void
+	public function boot(string $process_name):void
 	{
 		if (!$this->is_cli)
 		{
 			return;
 		}
-
-		$process_name = basename($_SERVER['SCRIPT_FILENAME'], '.php');
 
 		$boot = $this->cache->get('boot');
 

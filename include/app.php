@@ -188,9 +188,9 @@ $c_system_user->get('/support', function () use ($app){
 	return render_legacy($app, 'plain/support');
 })->bind('support');
 
-$c_system_guest->get('/', function () use ($app){
-	return render_legacy($app, 'plain/index');
-})->bind('home');
+$c_system_anon->get('/', function () use ($app){
+	return render_legacy($app, 'plain/home_system');
+})->bind('home_system');
 
 $c_system_guest->get('/messages', function () use ($app){
 	return render_legacy($app, 'plain/messages');
