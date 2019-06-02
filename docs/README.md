@@ -10,8 +10,8 @@ Webtoepassing voor gemeenschapsmunten, gebaseerd op wederzijds krediet
 
 Je kan eLAND uitproberen in deze twee test-Systemen:
 
-* [Test A](http://a.letsa.net)
-* [Test B](http://b.letsa.net)
+* [Tijdbank A](http://a.letsa.net)
+* [Tijdbank B](http://b.letsa.net)
 
 Voor beide is de gebruikersnaam admin en het wachtwoord eland.
 Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
