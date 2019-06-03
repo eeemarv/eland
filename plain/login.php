@@ -279,14 +279,12 @@ if ($submit)
 			parse_str($query_str, $query);
 		}
 
-		$params = array_merge($query, [
-			'system'	=> $app['pp_system'],
-			'role'		=> cnst_role::SHORT[$user['accountrole']],
-		]);
+		$pp_ary = [
+			'system'		=> $app['pp_system'],
+			'role_short'	=> cnst_role::SHORT[$user['accountrole']],
+		];
 
-		header('Location: ' . $app->path($location, $params));
-
-		exit;
+		$app['link']->redirect($location, $pp_ary, $query);
 	}
 
 	$app['alert']->error($errors);

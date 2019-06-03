@@ -193,6 +193,22 @@ $app->register(new ConsoleServiceProvider());
  *
  */
 
+$app['new_user_treshold'] = function($app){
+	$new_user_days = (int) $app['config']->get('newuserdays', $app['tschema']);
+	return time() -  ($new_user_days * 86400);
+};
+
+$app['oufti'] = function ($app){
+	static $count;
+
+	if (isset($count))
+	{
+		return ++$count;
+	}
+
+	return $count = 0;
+};
+
 $app['s3'] = function($app){
 	return new service\s3(
 		$app['s3_bucket'],

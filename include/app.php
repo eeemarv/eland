@@ -15,7 +15,13 @@ date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/deps.php';
 
-$app->before(function(Request $request, app $app){
+$fn_after_locale = function (Request $request, Response $response, app $app){
+	$origin = rtrim($app['s3_url'], '/');
+	$origin .= ', http://img.letsa.net';
+	$response->headers->set('Access-Control-Allow-Origin', $origin);
+};
+
+$fn_before_locale = function (Request $request, app $app){
 
 	$app['assets']->add([
 		'jquery', 'bootstrap', 'fontawesome',
@@ -23,6 +29,11 @@ $app->before(function(Request $request, app $app){
 	]);
 
 	$app['assets']->add_print_css(['print.css']);
+
+	$app['request'] = $request;
+};
+
+$fn_before_system = function(Request $request, app $app){
 
 	$app['s_anonymous'] = true;
 	$app['s_guest'] = false;
@@ -32,14 +43,71 @@ $app->before(function(Request $request, app $app){
 	$app['s_elas_guest'] = false;
 	$app['s_system_self'] = true;
 
-	$app['request'] = $request;
-});
+	if ($request->query->get('et') !== null)
+	{
+		$app['email_validate']->validate($request->query->get('et'));
+	}
 
-$app->after(function (Request $request, Response $response, app $app){
-	$origin = rtrim($app['s3_url'], '/');
-	$origin .= ', http://img.letsa.net';
-	$response->headers->set('Access-Control-Allow-Origin', $origin);
-});
+	$system = $request->attributes->get('system');
+
+	$app['pp_system'] = $system;
+	$app['pp_ary'] = ['system' => $system];
+	$app['tschema'] = $app['systems']->get_schema($system);
+
+	$app['s_logins'] = $app['session']->get('logins') ?? [];
+};
+
+$fn_before_system_auth = function(Request $request, app $app){
+
+	$app['s_anonymous'] = false;
+
+	$role_short = $request->attributes->get('role_short');
+
+	$app['pp_role_short'] = $role_short;
+	$app['pp_role'] = cnst_role::LONG[$role_short];
+	$app['pp_ary']['role_short'] = $role_short;
+
+	switch($role_short)
+	{
+		case 'g':
+			$app['s_guest'] = true;
+			break;
+		case 'u':
+			$app['s_user'] = true;
+			break;
+		case 'a':
+			$app['s_admin'] = true;
+			break;
+		default:
+			throw \Exception('Role error in path.');
+			break;
+	}
+
+	$app['intersystem_en'] = $app['config']->get('template_lets', $app['tschema'])
+		&& $app['config']->get('interlets_en', $app['tschema']);
+};
+
+$fn_before_system_guest = function(Request $request, app $app){
+
+	if (!$app['intersystem_en'])
+	{
+		throw \Exception('Guest routes are not enabled.');
+	}
+
+
+};
+
+$fn_before_system_role = function(Request $request, app $app){
+
+};
+
+$fn_before_system_user = function(Request $request, app $app){
+
+};
+
+$fn_before_system_admin = function(Request $request, app $app){
+
+};
 
 $app['controllers']
 	->assert('id', cnst_assert::ID)
@@ -53,53 +121,63 @@ $c_system_guest = $app['controllers_factory'];
 $c_system_user = $app['controllers_factory'];
 $c_system_admin = $app['controllers_factory'];
 
-$c_locale->assert('_locale', cnst_assert::LOCALE);
+$c_locale->assert('_locale', cnst_assert::LOCALE)
+	->after($fn_after_locale)
+	->before($fn_before_locale);
 
 $c_system_anon->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
-	->before(function(Request $request, app $app){
-
-		if ($request->query->get('et') !== null)
-		{
-			$app['email_validate']->validate($request->query->get('et'));
-		}
-
-		$system = $request->attributes->get('system');
-		$app['tschema'] = $app['systems']->get_schema($system);
-		$app['pp_system'] = $system;
-		$app['pp_ary'] = ['system' => $system];
-	});
+	->after($fn_after_locale)
+	->before($fn_before_locale)
+	->before($fn_before_system);
 
 $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::GUEST)
 	->assert('id', cnst_assert::ID)
 	->assert('view', cnst_assert::VIEW)
-	->before(function(Request $request, app $app){
-
-	});
+	->after($fn_after_locale)
+	->before($fn_before_locale)
+	->before($fn_before_system)
+	->before($fn_before_system_auth)
+	->before($fn_before_system_guest);
 
 $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::USER)
 	->assert('id', cnst_assert::ID)
 	->assert('view', cnst_assert::VIEW)
-	->before(function(Request $request, app $app){
-
-	});
+	->after($fn_after_locale)
+	->before($fn_before_locale)
+	->before($fn_before_system)
+	->before($fn_before_system_auth)
+	->before($fn_before_system_role)
+	->before($fn_before_system_user);
 
 $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::ADMIN)
 	->assert('id', cnst_assert::ID)
 	->assert('view', cnst_assert::VIEW)
-	->before(function(Request $request, app $app){
-
-	});
+	->after($fn_after_locale)
+	->before($fn_before_locale)
+	->before($fn_before_system)
+	->before($fn_before_system_auth)
+	->before($fn_before_system_role)
+	->before($fn_before_system_admin);
 
 $app->get('/monitor', function() use ($app){
 	return render_legacy($app, 'plain/monitor');
 })->bind('monitor');
+
+$app->get('/test', function () use ($app){
+
+	$test = '<html><head></head><body>';
+	$test .= '<p>TEST</p>';
+	$test .= '</body>';
+
+	return new Response($test);
+});
 
 $c_locale->match('/contact', function() use ($app){
 	return render_legacy($app, 'plain/contact_host');
@@ -768,6 +846,7 @@ $app['xdb']->set_user($app['s_schema'],
 /**
  * view (global for all systems)
  */
+
 /**
 if (isset(cnst_pages::DEFAULT_VIEW[$app['matched_route']]))
 {
@@ -785,11 +864,12 @@ if (isset(cnst_pages::DEFAULT_VIEW[$app['matched_route']]))
 
 	$app['p_view'] = $app['s_view'][$app['matched_route']];
 }
+
 */
 
 /* */
 /*
-$app['new_user_treshold'] = time() - $app['config']->get('newuserdays', $app['tschema']) * 86400;
+
 */
 /** welcome message **/
 /*
