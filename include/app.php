@@ -234,7 +234,7 @@ $c_system_guest->match('/docs', 'controller\\docs::match')
 $c_system_guest->match('/forum', 'controller\\forum::match')
 	->bind('forum');
 
-$c_system_user->get('/typeahead-account-codes', 'controller\\typeahead::account_codes')
+$c_system_user->get('/typeahead-account-codes', 'controller\\typeahead_account_codes::get')
 	->bind('typeahead_account_codes');
 
 $c_system_guest->get('/typeahead-accounts', 'controller\\typeahead::accounts')
