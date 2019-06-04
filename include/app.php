@@ -8,6 +8,7 @@ use cnst\assert as cnst_assert;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 setlocale(LC_TIME, 'nl_NL.UTF-8');
 date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
@@ -42,57 +43,30 @@ $fn_before_system = function(Request $request, app $app){
 	$app['s_master'] = false;
 	$app['s_elas_guest'] = false;
 	$app['s_system_self'] = true;
+	$app['s_id'] = 0;
+	$app['session_user'] = [];
 
 	if ($request->query->get('et') !== null)
 	{
 		$app['email_validate']->validate($request->query->get('et'));
 	}
 
-	$system = $request->attributes->get('system');
-
-	$app['pp_system'] = $system;
-	$app['pp_ary'] = ['system' => $system];
-	$app['tschema'] = $app['systems']->get_schema($system);
-
-	$app['s_logins'] = $app['session']->get('logins') ?? [];
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
 
 	$app['s_anonymous'] = false;
 
-	$role_short = $request->attributes->get('role_short');
-
-	$app['pp_role_short'] = $role_short;
-	$app['pp_role'] = cnst_role::LONG[$role_short];
-	$app['pp_ary']['role_short'] = $role_short;
-
-	switch($role_short)
-	{
-		case 'g':
-			$app['s_guest'] = true;
-			break;
-		case 'u':
-			$app['s_user'] = true;
-			break;
-		case 'a':
-			$app['s_admin'] = true;
-			break;
-		default:
-			throw \Exception('Role error in path.');
-			break;
-	}
-
-	$app['intersystem_en'] = $app['config']->get('template_lets', $app['tschema'])
-		&& $app['config']->get('interlets_en', $app['tschema']);
 };
 
 $fn_before_system_guest = function(Request $request, app $app){
 
-	if (!$app['intersystem_en'])
+	if ($app['pp_role'] === 'guest' && !$app['intersystem_en'])
 	{
-		throw \Exception('Guest routes are not enabled.');
+		throw new NotFoundHttpException('Guest routes not enabled (intersystem_en)');
 	}
+
+
 
 
 };
@@ -846,26 +820,6 @@ $app['xdb']->set_user($app['s_schema'],
 /**
  * view (global for all systems)
  */
-
-/**
-if (isset(cnst_pages::DEFAULT_VIEW[$app['matched_route']]))
-{
-	$app['s_view'] = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
-
-	if (isset($_GET['view'])
-		&& $_GET['view'] !== $app['s_view'][$app['matched_route']])
-	{
-		$app['s_view'] = array_merge($app['s_view'], [
-			$app['matched_route']	=> $_GET['view'],
-		]);
-
-		$app['session']->set('view', $app['s_view']);
-	}
-
-	$app['p_view'] = $app['s_view'][$app['matched_route']];
-}
-
-*/
 
 /* */
 /*

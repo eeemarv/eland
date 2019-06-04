@@ -3167,14 +3167,11 @@ if ($id)
  * List all users
  */
 
-if (!$app['p_view'])
-{
-	$app['link']->redirect('users', $app['pp_ary'], []);
-}
+$view = $app['s_view']['users'];
 
-$v_list = $app['p_view'] === 'list';
-$v_tiles = $app['p_view'] === 'tiles';
-$v_map = $app['p_view'] === 'map';
+$v_list = $view === 'list';
+$v_tiles = $view === 'tiles';
+$v_map = $view === 'map';
 
 $sql_bind = [];
 $params = [];
@@ -3594,7 +3591,7 @@ else
 		where ' . $st[$status]['sql'] . '
 		order by u.letscode asc', $sql_bind);
 
-	if ($v_list || $v_map)
+	if ($v_map)
 	{
 		$c_ary = $app['db']->fetchAll('select tc.abbrev,
 			c.id_user, c.value, c.flag_public, c.id

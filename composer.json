@@ -59,7 +59,8 @@
 			"twig\\": "twig/",
 			"render\\": "render/",
 			"cnst\\": "cnst/",
-			"command\\": "command/"
+			"command\\": "command/",
+			"controller\\": "controller"
         }
     },
 	"scripts": {

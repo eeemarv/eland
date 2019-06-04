@@ -2,6 +2,7 @@
 
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
+use cnst\pages as cnst_pages;
 
 $app = new util\app();
 
@@ -198,16 +199,68 @@ $app['new_user_treshold'] = function($app){
 	return time() -  ($new_user_days * 86400);
 };
 
-$app['oufti'] = function ($app){
-	static $count;
+$app['s_view'] = function ($app){
 
-	if (isset($count))
+	$s_view = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
+	$view = $app['request']->query->get('view');
+	$route = $app['request']->attributes->get('_route');
+
+	if ($view !== null && $view !== $s_view[$route])
 	{
-		return ++$count;
+		$s_view[$route] = $view;
 	}
 
-	return $count = 0;
+	return $s_view;
 };
+
+$app['intersystem_en'] = function($app){
+	return $app['config']->get('template_lets', $app['tschema'])
+		&& $app['config']->get('interlets_en', $app['tschema']);
+};
+
+$app['pp_role_short'] = function ($app){
+	return $app['request']->attributes->get('role_short');
+};
+
+$app['pp_role'] =  function ($app){
+	return cnst_role::LONG[$app['pp_role_short']];
+};
+
+$app['pp_system'] = function ($app){
+	return $app['request']->attributes->get('system');
+};
+
+$app['pp_ary'] = function ($app){
+
+	if (isset($app['pp_system']))
+	{
+		if (isset($app['pp_role_short']))
+		{
+			return [
+				'system'		=> $app['pp_system'],
+				'role_short'	=> $app['pp_role_short'],
+			];
+		}
+
+		return [
+			'system'	=> $app['pp_system'],
+		];
+	}
+
+	return [];
+};
+
+$app['tschema'] = function ($app){
+	return $app['systems']->get_schema($app['pp_system']);
+};
+
+$app['s_logins'] = function ($app){
+	return $app['session']->get('logins') ?? [];
+};
+
+/**
+ *
+ */
 
 $app['s3'] = function($app){
 	return new service\s3(
