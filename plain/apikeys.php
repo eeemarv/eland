@@ -9,10 +9,12 @@ $del = $_GET['del'] ?? false;
 $add = $_GET['add'] ?? false;
 $submit = isset($_POST['zend']);
 
+/*
 if (!$app['intersystem_en'])
 {
 	redirect_default_page();
 }
+*/
 
 if ($del)
 {

@@ -158,16 +158,18 @@ $app->extend('monolog', function($monolog, $app) {
 			$record['extra']['username'] = $app['session_user']['name'] ?? '';
 		}
 
+/*
 		if (isset($app['s_schema']))
 		{
 			$record['extra']['user_schema'] = $app['s_schema'];
 		}
+*/
 
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
 
 		if ($ip)
 		{
-//			$record['extra']['ip'] = $app['request']->getClientIp();
+			$record['extra']['ip'] = $app['request']->getClientIp();
 			$record['extra']['ip'] = $ip;
 		}
 
@@ -194,7 +196,11 @@ $app->register(new ConsoleServiceProvider());
  *
  */
 
-$app['new_user_treshold'] = function($app){
+$app['legacy_route'] = function ($app){
+	return new service\legacy_route($app);
+};
+
+$app['new_user_treshold'] = function ($app){
 	$new_user_days = (int) $app['config']->get('newuserdays', $app['tschema']);
 	return time() -  ($new_user_days * 86400);
 };
@@ -254,8 +260,34 @@ $app['tschema'] = function ($app){
 	return $app['systems']->get_schema($app['pp_system']);
 };
 
+$app['request'] = function ($app){
+	return $app['request_stack']->getCurrentRequest();
+};
+
+$app['s_schema'] = function ($app){
+	if (isset($app['role_short']) && $app['role_short'] === 'g')
+	{
+		$s_schema = $app['request']->query->get('schema');
+
+		if (isset($s_schema))
+		{
+			return $s_schema;
+		}
+	}
+
+	return $app['tschema'];
+};
+
+$app['s_system_self'] = function ($app){
+	return $app['s_schema'] === $app['tschema'];
+};
+
 $app['s_logins'] = function ($app){
 	return $app['session']->get('logins') ?? [];
+};
+
+$app['s_login'] = function ($app){
+	return $app['s_login'][$app['tschema']];
 };
 
 /**

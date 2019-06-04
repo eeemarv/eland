@@ -93,7 +93,7 @@ echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
 if (!$app['s_anonymous']
-	&& ($app['count_intersystems'] + count($app['s_logins'])) > 1)
+	&& ($app['intersystems']->get_count($app['s_schema']) + count($app['s_logins'])) > 1)
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';

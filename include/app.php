@@ -31,7 +31,7 @@ $fn_before_locale = function (Request $request, app $app){
 
 	$app['assets']->add_print_css(['print.css']);
 
-	$app['request'] = $request;
+//	$app['request'] = $request;
 };
 
 $fn_before_system = function(Request $request, app $app){
@@ -80,7 +80,7 @@ $fn_before_system_user = function(Request $request, app $app){
 };
 
 $fn_before_system_admin = function(Request $request, app $app){
-
+	$app['s_admin'] = true;
 };
 
 $app['controllers']
@@ -140,9 +140,8 @@ $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_system_role)
 	->before($fn_before_system_admin);
 
-$app->get('/monitor', function() use ($app){
-	return render_legacy($app, 'plain/monitor');
-})->bind('monitor');
+$app->get('/monitor', 'controller\\monitor::get')
+	->bind('monitor');
 
 $app->get('/test', function () use ($app){
 
@@ -153,180 +152,131 @@ $app->get('/test', function () use ($app){
 	return new Response($test);
 });
 
-$c_locale->match('/contact', function() use ($app){
-	return render_legacy($app, 'plain/contact_host');
-})->bind('contact_host');
+$c_locale->match('/contact', 'controller\\contact_host::form')
+	->bind('contact_host');
 
-$c_system_anon->match('/login', function () use ($app) {
-	return render_legacy($app, 'plain/login');
-})->bind('login');
+$c_system_anon->match('/login', 'controller\\login::form')
+	->bind('login');
 
-$c_system_anon->match('/contact', function () use ($app) {
-	return render_legacy($app, 'plain/contact');
-})->bind('contact');
+$c_system_anon->match('/contact', 'controller\\contact::form')
+	->bind('contact');
 
-$c_system_anon->match('/contact/{token}', function () use ($app) {
-	return render_legacy($app, 'plain/contact_token');
-})->assert('token', cnst_assert::TOKEN)
+$c_system_anon->match('/contact/{token}', 'controller\\contact_token::form')
+	->assert('token', cnst_assert::TOKEN)
 	->bind('contact_token');
 
-$c_system_anon->match('/register', function () use ($app) {
-	return render_legacy($app, 'plain/register');
-})->bind('register');
+$c_system_anon->match('/register', 'controller\\register::form')
+	->bind('register');
 
-$c_system_anon->match('/register/{token}', function () use ($app) {
-	return render_legacy($app, 'plain/register_token');
-})->assert('token', cnst_assert::TOKEN)
+$c_system_anon->match('/register/{token}', 'controller\\register_token::form')
+	->assert('token', cnst_assert::TOKEN)
 	->bind('register_token');
 
-$c_system_anon->match('/password-reset', function () use ($app) {
-	return render_legacy($app, 'plain/password_reset');
-})->bind('password_reset');
+$c_system_anon->match('/password-reset', 'controller\\password_reset::form')
+	->bind('password_reset');
 
-$c_system_anon->match('/password-reset/{token}', function () use ($app) {
-	return render_legacy($app, 'plain/password_reset_token');
-})->assert('token', cnst_assert::TOKEN)
+$c_system_anon->match('/password-reset/{token}', 'controller\\password_reset_token::form')
+	->assert('token', cnst_assert::TOKEN)
 	->bind('password_reset_token');
 
-$c_system_guest->get('/logout', function () use ($app) {
-	return render_legacy($app, 'plain/logout');
-})->bind('logout');
+$c_system_guest->get('/logout', 'controller\\logout::get')
+	->bind('logout');
 
-$c_system_admin->get('/status', function () use ($app){
-	return render_legacy($app, 'plain/status');
-})->bind('status');
+$c_system_admin->get('/status', 'controller\\status::get')
+	->bind('status');
 
-$c_system_admin->get('/categories', function () use ($app){
-	return render_legacy($app, 'plain/categories');
-})->bind('categories');
+$c_system_admin->match('/categories', 'controller\\categories::match')
+	->bind('categories');
 
-$c_system_admin->get('/contact-types', function () use ($app){
-	return render_legacy($app, 'plain/contact_types');
-})->bind('contacttypes');
+$c_system_admin->match('/contact-types', 'controller\\contact_types::match')
+	->bind('contact_types');
 
-$c_system_guest->get('/contacts', function () use ($app){
-	return render_legacy($app, 'plain/contacts');
-})->bind('contacts');
+$c_system_guest->match('/contacts', 'controller\\contacts::match')
+	->bind('contacts');
 
-$c_system_admin->get('/config', function () use ($app){
-	return render_legacy($app, 'plain/config');
-})->bind('config');
+$c_system_admin->match('/config', 'controller\\config::match')
+	->bind('config');
 
-$c_system_admin->get('/intersystem', function () use ($app){
-	return render_legacy($app, 'plain/intersystem');
-})->bind('intersystem');
+$c_system_admin->match('/intersystem', 'controller\\intersystem::match')
+	->bind('intersystem');
 
-$c_system_admin->get('/apikeys', function () use ($app){
-	return render_legacy($app, 'plain/apikeys');
-})->bind('apikeys');
+$c_system_admin->match('/apikeys', 'controller\\apikeys::match')
+	->bind('apikeys');
 
-$c_system_admin->get('/export', function () use ($app){
-	return render_legacy($app, 'plain/export');
-})->bind('export');
+$c_system_admin->get('/export', 'controller\\export::get')
+	->bind('export');
 
-$c_system_admin->get('/autominlimit', function () use ($app){
-	return render_legacy($app, 'plain/autominlimit');
-})->bind('autominlimit');
+$c_system_admin->match('/autominlimit', 'controller\\autominlimit::form')
+	->bind('autominlimit');
 
-$c_system_admin->get('/mass-transaction', function () use ($app){
-	return render_legacy($app, 'plain/mass_transaction');
-})->bind('masstransaction');
+$c_system_admin->match('/mass-transaction', 'controller\\mass_transaction::form')
+	->bind('mass_transaction');
 
-$c_system_admin->get('/logs', function () use ($app){
-	return render_legacy($app, 'plain/logs');
-})->bind('logs');
+$c_system_admin->get('/logs', 'controller\\logs::get')
+	->bind('logs');
 
-$c_system_user->get('/support', function () use ($app){
-	return render_legacy($app, 'plain/support');
-})->bind('support');
+$c_system_user->match('/support', 'controller\\support::form')
+	->bind('support');
 
-$c_system_anon->get('/', function () use ($app){
-	return render_legacy($app, 'plain/home_system');
-})->bind('home_system');
+$c_system_anon->get('/', 'controller\\home_system::get')
+	->bind('home_system');
 
-$c_system_guest->get('/messages', function () use ($app){
-	return render_legacy($app, 'plain/messages');
-})->bind('messages');
+$c_system_guest->match('/messages', 'controller\\messages::match')
+	->bind('messages');
 
-$c_system_guest->get('/users', function () use ($app){
-	return render_legacy($app, 'plain/users');
-})->bind('users');
+$c_system_guest->match('/users', 'controller\\users::match')
+	->bind('users');
 
-$c_system_guest->get('/transactions', function () use ($app){
-	return render_legacy($app, 'plain/transactions');
-})->bind('transactions');
+$c_system_guest->match('/transactions', 'controller\\transactions::match')
+	->bind('transactions');
 
-$c_system_guest->get('/docs', function () use ($app){
-	return render_legacy($app, 'plain/docs');
-})->bind('docs');
+$c_system_guest->match('/docs', 'controller\\docs::match')
+	->bind('docs');
 
-$c_system_guest->get('/forum', function () use ($app){
-	return render_legacy($app, 'plain/forum');
-})->bind('forum');
+$c_system_guest->match('/forum', 'controller\\forum::match')
+	->bind('forum');
 
-$c_system_user->get('/typeahead-account-codes', function () use ($app){
-	return render_legacy($app, 'typeahead/account_codes');
-})->bind('typeahead_account_codes');
+$c_system_user->get('/typeahead-account-codes', 'controller\\typeahead::account_codes')
+	->bind('typeahead_account_codes');
 
-$c_system_guest->get('/typeahead-accounts', function () use ($app){
-	return render_legacy($app, 'typeahead/accounts');
-})->bind('typeahead_accounts');
+$c_system_guest->get('/typeahead-accounts', 'controller\\typeahead::accounts')
+	->bind('typeahead_accounts');
 
-$c_system_admin->get('/typeahead-doc-map-names', function () use ($app){
-	return render_legacy($app, 'typeahead/doc_map_names');
-})->bind('typeahead_doc_map_names');
+$c_system_admin->get('/typeahead-doc-map-names', 'controller\\typeahead::doc_map_names')
+	->bind('typeahead_doc_map_names');
 
-$c_system_user->get('/typeahead-eland-intersystem-accounts', function () use ($app){
-	return render_legacy($app, 'typeahead/eland_intersystem_accounts');
-})->bind('typeahead_eland_intersystem_accounts');
+$c_system_user->get('/typeahead-eland-intersystem-accounts', 'controller\\typeahead::eland_intersystem_accounts')
+	->bind('typeahead_eland_intersystem_accounts');
 
-$c_system_user->get('/typeahead-elas-intersystem-accounts', function () use ($app){
-	return render_legacy($app, 'typeahead/elas_intersystem_accounts');
-})->bind('typeahead_elas_intersystem_accounts');
+$c_system_user->get('/typeahead-elas-intersystem-accounts', 'controller\\typeahead::elas_intersystem_accounts')
+	->bind('typeahead_elas_intersystem_accounts');
 
-$c_system_admin->get('/typeahead-log-types', function () use ($app){
-	return render_legacy($app, 'typeahead/log_types');
-})->bind('typeahead_log_types');
+$c_system_admin->get('/typeahead-log-types', 'controller\\typeahead::log_types')
+	->bind('typeahead_log_types');
 
-$c_system_user->get('/typeahead-postcodes', function () use ($app){
-	return render_legacy($app, 'typeahead/postcodes');
-})->bind('typeahead_postcodes');
+$c_system_user->get('/typeahead-postcodes', 'controller\\typeahead::postcodes')
+	->bind('typeahead_postcodes');
 
-$c_system_guest->get('/elas-group-login', function () use ($app){
-	return render_legacy($app, 'ajax/elas_group_login');
-})->bind('elas_group_login');
+$c_system_guest->get('/elas-group-login', 'controller\\ajax::elas_group_login')
+	->bind('elas_group_login');
 
-$c_system_admin->get('/elas-soap-status', function () use ($app){
-	return render_legacy($app, 'ajax/elas_soap_status');
-})->bind('elas_soap_status');
+$c_system_admin->get('/elas-soap-status', 'controller\\ajax::elas_soap_status')
+	->bind('elas_soap_status');
 
-$c_system_guest->get('/plot-user-transactions', function () use ($app){
-	return render_legacy($app, 'ajax/plot_user_transactions');
-})->bind('plot_user_transactions');
+$c_system_guest->get('/plot-user-transactions', 'controller\\ajax::plot_user_transactions')
+	->bind('plot_user_transactions');
 
-$c_system_admin->get('/transactions-sum', function () use ($app){
-	return render_legacy($app, 'ajax/transactions_sum');
-})->bind('transactions_sum');
+$c_system_admin->get('/transactions-sum', 'controller\\ajax::transactions_sum')
+	->bind('transactions_sum');
 
-$c_system_admin->get('/weighted-balances', function () use ($app){
-	return render_legacy($app, 'ajax/weighted_balances');
-})->bind('weighted_balances');
+$c_system_admin->get('/weighted-balances', 'controller\\ajax::weighted_balances')
+	->bind('weighted_balances');
 
 $c_system_anon->mount('/{role_short}', $c_system_guest);
 $c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_admin);
 $c_locale->mount('/{system}', $c_system_anon);
 $app->mount('/{_locale}', $c_locale);
-
-function render_legacy(
-	app $app,
-	string $name
-):Response
-{
-	ob_start();
-	require_once __DIR__ . '/../' . $name . '.php';
-	return new Response(ob_get_clean());
-}
 
 /**
  * Routes end
