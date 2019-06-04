@@ -240,7 +240,7 @@ $c_system_user->get('/typeahead-account-codes', 'controller\\typeahead::account_
 $c_system_guest->get('/typeahead-accounts', 'controller\\typeahead::accounts')
 	->bind('typeahead_accounts');
 
-$c_system_admin->get('/typeahead-doc-map-names', 'controller\\typeahead::doc_map_names')
+$c_system_admin->get('/typeahead-doc-map-names', 'controller\\typeahead_doc_map_names::get')
 	->bind('typeahead_doc_map_names');
 
 $c_system_user->get('/typeahead-eland-intersystem-accounts', 'controller\\typeahead::eland_intersystem_accounts')
