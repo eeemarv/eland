@@ -12,4 +12,5 @@ class assert
     const TOKEN = '[a-z0-9-]{12}';
     const USER = '[ua]';
     const VIEW = 'extended|list|map|tiles';
+    const PRIMARY_STATUS = 'active|inactive|im|ip|extern';
 }

@@ -237,7 +237,8 @@ $c_system_guest->match('/forum', 'controller\\forum::match')
 $c_system_user->get('/typeahead-account-codes', 'controller\\typeahead_account_codes::get')
 	->bind('typeahead_account_codes');
 
-$c_system_guest->get('/typeahead-accounts', 'controller\\typeahead::accounts')
+$c_system_guest->get('/typeahead-accounts/{status}', 'controller\\typeahead_accounts::get')
+	->assert('status', cnst_assert::PRIMARY_STATUS)
 	->bind('typeahead_accounts');
 
 $c_system_admin->get('/typeahead-doc-map-names', 'controller\\typeahead_doc_map_names::get')
