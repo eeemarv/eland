@@ -265,7 +265,7 @@ if (!$app['s_anonymous'])
 		$menu = [
 			'status'			=> ['exclamation-triangle', 'Status'],
 			'categories'	 	=> ['clone', 'Categorieën'],
-			'type_contact'		=> ['circle-o-notch', 'Contact Types'],
+			'contact_types'		=> ['circle-o-notch', 'Contact Types'],
 			'contacts'			=> ['map-marker', 'Contacten'],
 			'config'			=> ['gears', 'Instellingen'],
 			'intersystem'		=> ['share-alt', 'InterSysteem'],

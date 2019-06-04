@@ -252,7 +252,7 @@ $c_system_user->get('/typeahead-elas-intersystem-accounts', 'controller\\typeahe
 $c_system_admin->get('/typeahead-log-types', 'controller\\typeahead::log_types')
 	->bind('typeahead_log_types');
 
-$c_system_user->get('/typeahead-postcodes', 'controller\\typeahead::postcodes')
+$c_system_user->get('/typeahead-postcodes', 'controller\\typeahead_postcodes::get')
 	->bind('typeahead_postcodes');
 
 $c_system_guest->get('/elas-group-login/{group_id}', 'controller\\elas_group_login::get')
