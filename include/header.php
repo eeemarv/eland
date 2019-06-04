@@ -145,7 +145,7 @@ if (!$app['s_anonymous']
 		echo '</li>';
 	}
 
-	if ($app['count_intersystems'])
+	if ($app['intersystems']->get_count($app['s_schema']))
 	{
 		echo '<li class="divider"></li>';
 		echo '<li class="dropdown-header">';
@@ -154,13 +154,13 @@ if (!$app['s_anonymous']
 			: 'Gekoppeld interSysteem';
 		echo '</li>';
 
-		if (count($app['intersystem_ary']['eland']))
+		if ($app['intersystems']->get_eland_count($app['s_schema']))
 		{
-			foreach ($app['intersystem_ary']['eland'] as $sch => $h)
+			foreach ($app['intersystems']->get_eland($app['s_schema']) as $eland_schema => $h)
 			{
 				echo '<li';
 
-				if ($app['tschema'] === $sch)
+				if ($app['tschema'] === $eland_schema)
 				{
 					echo ' class="active"';
 				}
@@ -173,21 +173,21 @@ if (!$app['s_anonymous']
 
 				echo $app['link']->link_no_attr($route, $app['pp_ary'],
 					['welcome' => 1],
-					$app['config']->get('systemname', $sch));
+					$app['config']->get('systemname', $eland_schema));
 
 				echo '</li>';
 			}
 		}
 
-		if (count($app['intersystem_ary']['elas']))
+		if ($app['intersystems']->get_elas_count($app['s_schema']))
 		{
-			foreach ($app['intersystem_ary']['elas'] as $grp_id => $grp)
+			foreach ($app['intersystems']->get_elas($app['s_schema']) as $elas_grp_id => $elas_grp)
 			{
 				echo '<li>';
 				echo '<a href="#" data-elas-group-id="';
-				echo $grp_id;
+				echo $elas_grp_id;
 				echo '">';
-				echo $grp['groupname'];
+				echo $elas_grp['groupname'];
 				echo '</a>';
 				echo '</li>';
 			}
@@ -300,6 +300,7 @@ if (!$app['s_anonymous'])
 
 			echo '</li>';
 		}
+
 		echo '<li class="divider"></li>';
 
 		if ($app['page_access'] == 'admin')

@@ -43,8 +43,6 @@ $fn_before_system = function(Request $request, app $app){
 	$app['s_master'] = false;
 	$app['s_elas_guest'] = false;
 	$app['s_system_self'] = true;
-	$app['s_id'] = 0;
-	$app['session_user'] = [];
 
 	if ($request->query->get('et') !== null)
 	{
@@ -257,19 +255,29 @@ $c_system_admin->get('/typeahead-log-types', 'controller\\typeahead::log_types')
 $c_system_user->get('/typeahead-postcodes', 'controller\\typeahead::postcodes')
 	->bind('typeahead_postcodes');
 
-$c_system_guest->get('/elas-group-login', 'controller\\ajax::elas_group_login')
+$c_system_guest->get('/elas-group-login/{group_id}', 'controller\\elas_group_login::get')
+	->assert('group_id', cnst_assert::ID)
 	->bind('elas_group_login');
 
-$c_system_admin->get('/elas-soap-status', 'controller\\ajax::elas_soap_status')
+$c_system_admin->get('/elas-soap-status/{group_id}', 'controller\\elas_soap_status::get')
+	->assert('group_id', cnst_assert::ID)
 	->bind('elas_soap_status');
 
-$c_system_guest->get('/plot-user-transactions', 'controller\\ajax::plot_user_transactions')
+$c_system_guest->get('/plot-user-transactions/{user_id}/{days}', 'controller\\plot_user_transactions::get')
+	->assert('user_id', cnst_assert::ID)
+	->assert('days', cnst_assert::ID)
 	->bind('plot_user_transactions');
 
-$c_system_admin->get('/transactions-sum', 'controller\\ajax::transactions_sum')
-	->bind('transactions_sum');
+$c_system_admin->get('/transactions-sum-in/{days}', 'controller\\transactions_sum::in')
+	->assert('days', cnst_assert::ID)
+	->bind('transactions_sum_in');
 
-$c_system_admin->get('/weighted-balances', 'controller\\ajax::weighted_balances')
+$c_system_admin->get('/transactions-sum-out/{days}', 'controller\\transactions_sum::out')
+	->assert('days', cnst_assert::ID)
+	->bind('transactions_sum_out');
+
+$c_system_admin->get('/weighted-balances/{days}', 'controller\\weighted_balances::get')
+	->assert('days', cnst_assert::ID)
 	->bind('weighted_balances');
 
 $c_system_anon->mount('/{role_short}', $c_system_guest);
@@ -306,10 +314,6 @@ if (getenv('WEBSITE_MAINTENANCE'))
 	exit;
 }
 */
-
-//$app->run();
-
-
 /**
  * Route and parameters
  */
@@ -361,29 +365,6 @@ if ($app['pp_role'] === 'guest')
 		$app['pp_ary']['elas_guest'] = $app['request']->query->get('elas_guest');
 		$app['s_elas_guest'] = true;
 	}
-}
-
-switch ($app['pp_role'])
-{
-	case 'guest':
-		$app['s_guest'] = true;
-		break;
-
-	case 'user':
-		$app['s_user'] = true;
-		break;
-
-	case 'admin':
-		$app['s_admin'] = true;
-		break;
-
-	case 'anonymous':
-		$app['s_anonymous'] = true;
-		break;
-
-	default:
-		internal_server_error($app['twig']);
-		break;
 }
 
 */

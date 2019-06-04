@@ -3,6 +3,7 @@
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
 use cnst\pages as cnst_pages;
+use cnst\role as cnst_role;
 
 $app = new util\app();
 
@@ -257,6 +258,7 @@ $app['pp_ary'] = function ($app){
 };
 
 $app['tschema'] = function ($app){
+	return 'x';
 	return $app['systems']->get_schema($app['pp_system']);
 };
 
@@ -265,7 +267,9 @@ $app['request'] = function ($app){
 };
 
 $app['s_schema'] = function ($app){
-	if (isset($app['role_short']) && $app['role_short'] === 'g')
+
+	if (isset($app['role_short'])
+		&& $app['role_short'] === 'g')
 	{
 		$s_schema = $app['request']->query->get('schema');
 
@@ -286,9 +290,28 @@ $app['s_logins'] = function ($app){
 	return $app['session']->get('logins') ?? [];
 };
 
-$app['s_login'] = function ($app){
-	return $app['s_login'][$app['tschema']];
+$app['s_id'] = function ($app){
+
+	$s_id = $app['s_logins'][$app['s_schema']] ?? 0;
+
+	if (ctype_digit((string) $s_id))
+	{
+		return $s_id;
+	}
+
+	return 0;
 };
+
+$app['session_user'] = function ($app){
+
+	if ($app['s_id'] === 0)
+	{
+		return [];
+	}
+
+	return $app['user_cache']->get($app['s_id'], $app['s_schema']);
+};
+
 
 /**
  *
