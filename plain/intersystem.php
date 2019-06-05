@@ -484,7 +484,10 @@ if ($id)
 	else
 	{
 		echo '<dd><i><span data-elas-soap-status="';
-		echo $group['id'];
+
+		echo htmlspecialchars($app['link']->context_path('elas_soap_status',
+			$app['pp_ary'], ['group_id' => $group['id']]));
+
 		echo '">';
 		echo 'Bezig met eLAS soap status te bekomen...</span></i>';
 		echo '</dd>';
