@@ -444,7 +444,24 @@ echo 'De bedragen kan je nadien nog individueel ';
 echo 'aanpassen alvorens de massa transactie uit te voeren. ';
 echo '</p>';
 
-echo '<form class="form" id="fill_in_aid">';
+echo '<form class="form" id="fill_in_aid" ';
+
+echo 'data-transactions-sum-in="';
+echo htmlspecialchars($app['link']->context_path('transactions_sum_in',
+	$app['pp_ary'], ['days' => 365]));
+echo '" ';
+
+echo 'data-transactions-sum-out="';
+echo htmlspecialchars($app['link']->context_path('transactions_sum_out',
+	$app['pp_ary'], ['days' => 365]));
+echo '" ';
+
+echo 'data-weighted-balances="';
+echo htmlspecialchars($app['link']->context_path('weighted_balances',
+	$app['pp_ary'], ['days' => 365]));
+echo '"';
+
+echo '>';
 
 echo '<div class="pan-sub bg-warning">';
 

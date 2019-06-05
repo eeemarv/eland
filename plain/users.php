@@ -3120,11 +3120,12 @@ if ($id)
 	echo '<div class="row print-hide">';
 	echo '<div class="col-md-6">';
 	echo '<div id="chartdiv" data-height="480px" data-width="960px" ';
-	echo 'data-user-id="';
-	echo $id;
-	echo '" ';
-	echo 'data-days="';
-	echo $tdays;
+
+	echo 'data-plot-user-transactions="';
+	echo htmlspecialchars($app['link']->context_path('plot_user_transactions',
+		$app['pp_ary'], ['user_id' => $id, 'days' => $tdays]));
+	echo '"';
+
 	echo '"></div>';
 	echo '</div>';
 	echo '<div class="col-md-6">';

@@ -1,9 +1,8 @@
 $(document).ready(function(){
 
-	var group_minlimit = $('table').data('minlimit');
-	var group_maxlimit = $('table').data('maxlimit');
+	var system_minlimit = $('table').data('minlimit');
 
-	var has_group_minlimit = group_minlimit === '' ? false : true;
+	var has_system_minlimit = system_minlimit === '' ? false : true;
 
 	$('table input[type="number"]').keyup(function(){
 		recalc_sum();
@@ -41,9 +40,11 @@ $(document).ready(function(){
 			selected_users += '.' + $(this).attr('data-user-id');
 		});
 		$('#selected_users').val(selected_users);
-	});	
+	});
 
-	$('#fill_in_aid').submit(function(e){
+	var $fill_in_aid = $('#fill_in_aid');
+
+	$fill_in_aid.submit(function(e){
 
 		var days = Number($('#var_days').val());
 
@@ -60,19 +61,18 @@ $(document).ready(function(){
 				return $.trim(s);
 			});
 
-			var session_params = $('body').data('session-params');
-			var params = {"days": days};
-			var params_out = {"days": days, "ex": var_ex_code_out};
-			var params_in = {"days": days, "in": 1, "ex": var_ex_code_in};
+			var path_transactions_sum_in = $fill_in_aid.data('transactions-sum-in');
+			var path_transactions_sum_out = $fill_in_aid.data('transactions-sum-out');
+			var path_weighted_balances = $fill_in_aid.data('weighted-balances');
 
-			$.extend(params, session_params);
-			$.extend(params_out, session_params);
-			$.extend(params_in, session_params);
+			path_transactions_sum_in = path_transactions_sum_in.replace('/365', '/' + days);
+			path_transactions_sum_out = path_transactions_sum_out.replace('/365', '/' + days);
+			path_weighted_balances = path_weighted_balances.replace('/365', '/' + days);
 
 			$.when(
-				$.get('./ajax/weighted_balances.php', params),
-				$.get('./ajax/transactions_sum.php', params_out),
-				$.get('./ajax/transactions_sum.php', params_in)
+				$.get(path_weighted_balances),
+				$.get(path_transactions_sum_out, params_out),
+				$.get(path_transactions_sum_in, params_in)
 			).done(function(w_bal, t_out, t_in){
 
 				fill_in(w_bal[0], JSON.parse(t_out[0]), JSON.parse(t_in[0]));
@@ -125,9 +125,9 @@ $(document).ready(function(){
 			var has_minlimit = minlimit === '' ? false : true;
 
 			if (!has_minlimit){
-				if (has_group_minlimit){
+				if (has_system_minlimit){
 
-					minlimit = group_minlimit;
+					minlimit = system_minlimit;
 					has_minlimit = true;
 
 					if (respect_minlimit && ((balance - minlimit) <= 0)){

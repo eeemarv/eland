@@ -5,14 +5,9 @@ $(document).ready(function(){
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');
 
-	var params = {
-		"user_id": $chart.data('user-id'),
-		"days": $chart.data('days')
-	};
+	var path = $chart.data('plot-user-transactions');
 
-	$.extend(params, session_params);
-
-	$.get('./ajax/plot_user_transactions.php', params, 'json')
+	$.get(path)
 	.done( function(data){
 
 		var transactions = data.transactions;
@@ -119,7 +114,7 @@ $(document).ready(function(){
 		$.each(donut, function(index, de){
 			var ddi = donutData[index];
 			var ui = ddi.userIndex;
-			
+
 			var ddd = (users[ui].g) ? '<tr><td>'+ groups.findById(users[ui].g).n +'</td></td>' : '';
 			ddd += (ddi.out) ? '<tr><td><strong>-</strong> '+ddi.out+' transacties, <strong>-</strong> '+ddi.amountOut+' '+data.currency+'</td></tr>' : '';
 			ddd += (ddi.in) ? '<tr><td><strong>+</strong> '+ddi.in+' transacties, <strong>+</strong> '+ddi.amountIn+' '+data.currency+'</td></tr>' : '';
@@ -189,7 +184,7 @@ $(document).ready(function(){
 		});
 
 		$chart.on('jqplotDataClick',
-			function (ev, seriesIndex, pointIndex, data) {                
+			function (ev, seriesIndex, pointIndex, data) {
 
 			if (seriesIndex != 1){
 				return;
@@ -216,7 +211,7 @@ $(document).ready(function(){
 		});
 
 		$chart.on('jqplotDataUnhighlight', function (ev, seriesIndex, pointIndex, evData) {
-			$('.jqplot-event-canvas').css('cursor', 'crosshair');			
+			$('.jqplot-event-canvas').css('cursor', 'crosshair');
 		});
 
 		var donut_c = $.jqplot('donutdiv', [donut] , {
@@ -238,8 +233,8 @@ $(document).ready(function(){
 				show: true,
 				yvalues: 4,
 				formatString: '<table class="jqplot-highlighter"><tr><td>%1$s %3$s</td></tr>%4$s</table>',
-				tooltipLocation: 'sw', 
-				useAxesFormatters: false 
+				tooltipLocation: 'sw',
+				useAxesFormatters: false
 			}
 		});
 
@@ -263,7 +258,7 @@ $(document).ready(function(){
 			} else {
 				$('.jqplot-event-canvas').css('cursor', 'default');
 			}
-		}); 
+		});
 
 		$donut.on('jqplotDataUnhighlight', function(ev, seriesIndex, pointIndex, evdata){
 			$('.jqplot-event-canvas').css('cursor', 'default');
