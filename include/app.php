@@ -260,6 +260,9 @@ $c_system_admin->get('/typeahead-log-types', 'controller\\typeahead_log_types::g
 $c_system_user->get('/typeahead-postcodes', 'controller\\typeahead_postcodes::get')
 	->bind('typeahead_postcodes');
 
+$c_system_admin->get('/typeahead-usernames', 'controller\\typeahead_usernames::get')
+	->bind('typeahead_usernames');
+
 $c_system_guest->get('/elas-group-login/{group_id}', 'controller\\elas_group_login::get')
 	->assert('group_id', cnst_assert::ID)
 	->bind('elas_group_login');
