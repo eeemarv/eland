@@ -149,7 +149,7 @@ if (!$app['s_anonymous']
 	{
 		echo '<li class="divider"></li>';
 		echo '<li class="dropdown-header">';
-		echo $app['count_intersystems'] > 1
+		echo $app['intersystems']->get_count() > 1
 			? 'Gekoppelde interSystemen'
 			: 'Gekoppeld interSysteem';
 		echo '</li>';
