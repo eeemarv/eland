@@ -9,6 +9,7 @@ class assert
     const ID = '\d+';
     const LOCALE = 'nl';
     const SYSTEM = '[a-z][a-z0-9]*';
+    const SCHEMA = '[a-z][a-z0-9]*';
     const TOKEN = '[a-z0-9-]{12}';
     const USER = '[ua]';
     const VIEW = 'extended|list|map|tiles';

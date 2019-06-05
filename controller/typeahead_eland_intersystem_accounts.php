@@ -1,0 +1,79 @@
+<?php
+
+namespace controller;
+
+use util\app;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class typeahead_eland_intersystem_accounts
+{
+    public function get(app $app, string $remote_schema):Response
+    {
+/*
+        if (!($app['s_admin'] || $app['s_user']))
+        {
+            exit;
+        }
+*/
+
+        $eland_intersystems = $app['intersystems']->get_eland($app['tschema']);
+
+        if (!isset($eland_intersystems[$remote_schema]))
+        {
+            $app['monolog']->debug('typeahead/eland_intersystem_accounts: ' .
+                $remote_schema . ' not valid',
+                ['schema' => $app['tschema']]);
+
+            return $app->json([], 404);
+        }
+
+        $fetched_users = $app['db']->fetchAll(
+            'select letscode as c,
+                name as n,
+                extract(epoch from adate) as a,
+                status as s,
+                postcode as p,
+                saldo as b,
+                minlimit as min,
+                maxlimit as max
+            from ' . $remote_schema . '.users
+            where status in (1, 2)
+            order by id asc'
+        );
+
+        $accounts = [];
+
+        foreach ($fetched_users as $account)
+        {
+            if ($account['s'] == 1)
+            {
+                unset($account['s']);
+            }
+
+            if ($account['max'] == 999999999)
+            {
+                unset($account['max']);
+            }
+
+            if ($account['min'] == -999999999)
+            {
+                unset($account['min']);
+            }
+
+            $accounts[] = $account;
+        }
+
+        $params = [
+            'schema'        => $app['tschema'],
+            'remote_schema' => $remote_schema,
+        ];
+
+        $crc = crc32(json_encode($accounts));
+
+        $app['typeahead']->set_thumbprint(
+            'eland_intersystem_accounts', $params, $crc);
+
+        return $app->json($accounts);
+    }
+}

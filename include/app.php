@@ -244,10 +244,13 @@ $c_system_guest->get('/typeahead-accounts/{status}', 'controller\\typeahead_acco
 $c_system_admin->get('/typeahead-doc-map-names', 'controller\\typeahead_doc_map_names::get')
 	->bind('typeahead_doc_map_names');
 
-$c_system_user->get('/typeahead-eland-intersystem-accounts', 'controller\\typeahead::eland_intersystem_accounts')
+$c_system_user->get('/typeahead-eland-intersystem-accounts/{remote_schema}',
+		'controller\\typeahead_eland_intersystem_accounts::get')
+	->assert('remote_schema', cnst_assert::SCHEMA)
 	->bind('typeahead_eland_intersystem_accounts');
 
-$c_system_user->get('/typeahead-elas-intersystem-accounts', 'controller\\typeahead::elas_intersystem_accounts')
+$c_system_user->get('/typeahead-elas-intersystem-accounts',
+		'controller\\typeahead::elas_intersystem_accounts')
 	->bind('typeahead_elas_intersystem_accounts');
 
 $c_system_admin->get('/typeahead-log-types', 'controller\\typeahead_log_types::get')
