@@ -327,7 +327,9 @@ $app['s3'] = function($app){
 $app['typeahead'] = function($app){
 	return new service\typeahead(
 		$app['predis'],
-		$app['monolog']
+		$app['monolog'],
+		$app['url_generator'],
+		$app['systems']
 	);
 };
 

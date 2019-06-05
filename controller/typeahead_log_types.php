@@ -26,13 +26,9 @@ class typeahead_log_types
             $log_types[] = $row['type'];
         }
 
-        $params = [
-            'schema'	=> $app['tschema'],
-        ];
-
         $crc = crc32(json_encode($log_types));
 
-        $app['typeahead']->set_thumbprint('log_types', $params, $crc, 345600); // 4 days
+        $app['typeahead']->set_thumbprint('log_types', $app['pp_ary'], [], $crc);
 
         return $app->json($log_types);
     }

@@ -168,8 +168,7 @@ echo 'Type</span>';
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="type_addon" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get([['log_types',
-	['schema' => $app['tschema']]]]);
+echo $app['typeahead']->get($app['pp_ary'], [['log_types', []]]);
 echo '" ';
 echo 'name="f[type]" id="type" placeholder="Type" ';
 echo 'value="';
@@ -185,7 +184,6 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 	$typeahead_ary[] = [
 		'accounts', [
 			'status'	=> $t_stat,
-			'schema'	=> $app['tschema'],
 		],
 	];
 }
@@ -198,7 +196,7 @@ echo '<span class="fa fa-user"></span></span>';
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="code_addon" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get($typeahead_ary);
+echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 echo '" ';
 echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $app['tschema']);

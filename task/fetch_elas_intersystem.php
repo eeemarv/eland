@@ -507,12 +507,12 @@ class fetch_elas_intersystem
 			}
 
 			$params = [
-				'schema'	=> $schema,
 				'group_id'	=> $ary['group_id'],
 			];
 
-			$this->typeahead->set_thumbprint(
+			$this->typeahead->set_thumbprint_by_schema(
 				'elas_intersystem_accounts',
+				$schema,
 				$params,
 				(string) $new_thumbprint
 			);

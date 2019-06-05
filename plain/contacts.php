@@ -496,7 +496,6 @@ if ($edit || $add)
 			$typeahead_ary[] = [
 				'accounts', [
 					'status'	=> $t_stat,
-					'schema'	=> $app['tschema'],
 				],
 			];
 		}
@@ -508,7 +507,7 @@ if ($edit || $add)
 		echo '<span class="fa fa-user"></span></span>';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get($typeahead_ary);
+		echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 		echo '" ';
 		echo 'data-newuserdays="';
 		echo $app['config']->get('newuserdays', $app['tschema']);
@@ -1166,7 +1165,6 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 	$typeahead_ary[] = [
 		'accounts', [
 			'status'	=> $t_stat,
-			'schema'	=> $app['tschema'],
 		],
 	];
 }
@@ -1174,7 +1172,7 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get($typeahead_ary);
+echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 echo '" ';
 echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $app['tschema']);

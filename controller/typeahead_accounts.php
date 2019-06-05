@@ -81,13 +81,12 @@ class typeahead_accounts
         }
 
         $params = [
-            'schema'	=> $app['tschema'],
             'status'	=> $status,
         ];
 
         $crc = crc32(json_encode($accounts));
 
-        $app['typeahead']->set_thumbprint('accounts', $params, $crc);
+        $app['typeahead']->set_thumbprint('accounts', $app['pp_ary'], $params, $crc);
 
         return $app->json($accounts);
     }

@@ -28,13 +28,9 @@ class typeahead_account_codes
             $account_codes[] = $row['letscode'];
         }
 
-        $params = [
-            'schema'	=> $app['tschema'],
-        ];
-
         $crc = crc32(json_encode($account_codes));
 
-        $app['typeahead']->set_thumbprint('account_codes', $params, $crc);
+        $app['typeahead']->set_thumbprint('account_codes', $app['pp_ary'], [], $crc);
 
         return $app->json($account_codes);
     }

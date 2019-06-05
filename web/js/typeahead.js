@@ -3,7 +3,6 @@ $(document).ready(function(){
 	var $data_text_inputs = $('form input[type="text"][data-typeahead]');
 	var $data_options = $('form select option[data-typeahead]');
 	var $target_text_inputs = $('form input[type="text"][data-typeahead-source]');
-	var session_params = $('body').data('session-params');
 	var $data_sources = $data_text_inputs.add($data_options);
 
 	$data_sources.each(function(){
@@ -17,14 +16,6 @@ $(document).ready(function(){
 		for(var i = 0; i < data.length; i++){
 
 			var rec = data[i];
-
-			if (rec.hasOwnProperty('params')){
-				var params = rec.params;
-			} else {
-				params = [];
-			}
-
-			$.extend(params, session_params);
 
 			if (render_params
 				&& render_params.hasOwnProperty('exists_check')){
@@ -42,8 +33,9 @@ $(document).ready(function(){
 
 				var exists_engine = new Bloodhound({
 					prefetch: {
-						url: './typeahead/' + rec.name + '.php?' + $.param(params),
+						url: rec.path,
 						cache: true,
+						cacheKey: rec.cacheKey,
 						ttl: 172800000, // 2 days
 						thumbprint: rec.thumbprint,
 						filter: filter

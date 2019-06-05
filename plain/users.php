@@ -2018,9 +2018,7 @@ if ($add || $edit)
 		echo '" required maxlength="20" ';
 		echo 'data-typeahead="';
 
-		echo $app['typeahead']->get([['account_codes', [
-			'schema'	=> $app['tschema'],
-		]]]);
+		echo $app['typeahead']->get($app['pp_ary'], [['account_codes', []]]);
 
 		echo '" ';
 		echo 'data-typeahead-render="';
@@ -2057,9 +2055,9 @@ if ($add || $edit)
 		echo $user['name'] ?? '';
 		echo '" required maxlength="50" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get([['usernames', [
-			'schema'	=> $app['tschema'],
-		]]]);
+
+		echo $app['typeahead']->get($app['pp_ary'], [['usernames', []]]);
+
 		echo '" ';
 		echo 'data-typeahead-render="';
 		echo htmlspecialchars(json_encode([
@@ -2126,9 +2124,9 @@ if ($add || $edit)
 	echo '" ';
 	echo 'required maxlength="6" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['postcodes', [
-		'schema'	=> $app['tschema'],
-	]]]);
+
+	echo $app['typeahead']->get($app['pp_ary'], [['postcodes', []]]);
+
 	echo '">';
 	echo '</div>';
 	echo '</div>';
@@ -4003,12 +4001,11 @@ if ($v_list)
 				$typeahead_ary[] = [
 					'accounts', [
 						'status'	=> $t_stat,
-						'schema'	=> $app['tschema'],
 					],
 				];
 			}
 
-			$typeahead = $app['typeahead']->get($typeahead_ary);
+			$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 			echo '<div class="form-group">';
 			echo '<label for="p_activity_filter_letscode" ';
@@ -4908,8 +4905,7 @@ function delete_thumbprint(string $status):void
 {
 	global $app;
 
-	$app['typeahead']->delete_thumbprint('accounts', [
-		'schema'	=> $app['tschema'],
+	$app['typeahead']->delete_thumbprint('accounts', $app['pp_ary'], [
 		'status'	=> $status,
 	]);
 
@@ -4918,10 +4914,10 @@ function delete_thumbprint(string $status):void
 		return;
 	}
 
-	foreach ($app['intersystem_ary']['eland'] as $remote_schema => $h)
+	foreach ($app['intersystems']->get_eland($app['tschema']) as $remote_schema => $h)
 	{
-		$app['typeahead']->delete_thumbprint('eland_intersystem_accounts', [
-			'schema'		=> $app['tschema'],
+		$app['typeahead']->delete_thumbprint('eland_intersystem_accounts',
+			$app['pp_ary'], [
 			'remote_schema'	=> $remote_schema,
 		]);
 	}

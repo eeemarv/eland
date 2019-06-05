@@ -1267,9 +1267,8 @@ if (($edit || $add))
 		echo '<input type="text" class="form-control" ';
 		echo 'id="user_letscode" name="user_letscode" ';
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get([['accounts', [
+		echo $app['typeahead']->get($app['pp_ary'], [['accounts', [
 			'status'	=> 'active',
-			'schema'	=> $app['tschema'],
 		]]]);
 		echo '" ';
 		echo 'data-newuserdays="';
@@ -2358,9 +2357,8 @@ if (!$app['p_inline'])
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="';
 
-	echo $app['typeahead']->get([['accounts', [
+	echo $app['typeahead']->get($app['pp_ary'], [['accounts', [
 		'status'	=> 'active',
-		'schema'	=> $app['tschema'],
 	]]]);
 
 	echo '" ';

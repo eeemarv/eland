@@ -84,9 +84,8 @@ if ($map_edit)
 
 			$app['alert']->success('Map naam aangepast.');
 
-			$app['typeahead']->delete_thumbprint('doc_map_names', [
-				'schema' => $app['tschema'],
-			]);
+			$app['typeahead']->delete_thumbprint('doc_map_names',
+				$app['pp_ary'], []);
 
 			$app['link']->redirect('docs', $app['pp_ary'],
 				['map' => $map_edit]);
@@ -117,7 +116,7 @@ if ($map_edit)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="map_name" name="map_name" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['doc_map_names', ['schema' => $app['tschema']]]]);
+	echo $app['typeahead']->get($app['pp_ary'], [['doc_map_names', []]]);
 	echo '" ';
 	echo 'value="';
 	echo $map_name;
@@ -220,9 +219,8 @@ if ($edit)
 
 			$app['xdb']->set('doc', $edit, $update, $app['tschema']);
 
-			$app['typeahead']->delete_thumbprint('doc_map_names', [
-				'schema' => $app['tschema'],
-			]);
+			$app['typeahead']->delete_thumbprint('doc_map_names',
+				$app['pp_ary'], []);
 
 			$app['alert']->success('Document aangepast');
 
@@ -306,7 +304,7 @@ if ($edit)
 	echo $map_name;
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['doc_map_names', ['schema' => $app['tschema']]]]);
+	echo $app['typeahead']->get($app['pp_ary'], [['doc_map_names', []]]);
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map ';
@@ -365,9 +363,8 @@ if ($confirm_del && $del)
 			{
 				$app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
 
-				$app['typeahead']->delete_thumbprint('doc_map_names', [
-					'schema' => $app['tschema'],
-				]);
+				$app['typeahead']->delete_thumbprint('doc_map_names',
+					$app['pp_ary'], []);
 
 				unset($doc['map_id']);
 			}
@@ -512,9 +509,8 @@ if ($submit)
 
 					$app['xdb']->set('doc', $map_id, $map, $app['tschema']);
 
-					$app['typeahead']->delete_thumbprint('doc_map_names', [
-						'schema' => $app['tschema'],
-					]);
+					$app['typeahead']->delete_thumbprint('doc_map_names',
+						$app['pp_ary'], []);
 				}
 
 				$doc['map_id'] = $map_id;
@@ -601,7 +597,7 @@ if ($add)
 	echo $map_name ?? '';
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get([['doc_map_names', ['schema' => $app['tschema']]]]);
+	echo $app['typeahead']->get($app['pp_ary'], [['doc_map_names', []]]);
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map of ';

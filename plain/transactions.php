@@ -1046,12 +1046,11 @@ if ($add)
 					$typeahead_ary[] = [
 						'accounts', [
 							'status'	=> $t_stat,
-							'schema'	=> $app['tschema'],
 						],
 					];
 				}
 
-				$typeahead = $app['typeahead']->get($typeahead_ary);
+				$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 				$config_schema = $app['tschema'];
 			}
@@ -1059,9 +1058,8 @@ if ($add)
 			{
 				$remote_schema = $sys['remote_schema'];
 
-				$typeahead = $app['typeahead']->get([[
+				$typeahead = $app['typeahead']->get($app['pp_ary'], [[
 					'eland_intersystem_accounts', [
-					'schema'		=> $app['tschema'],
 					'remote_schema'	=> $remote_schema,
 				]]]);
 
@@ -1069,9 +1067,8 @@ if ($add)
 			}
 			else if (isset($sys['elas']))
 			{
-				$typeahead = $app['typeahead']->get([[
+				$typeahead = $app['typeahead']->get($app['pp_ary'], [[
 					'elas_intersystem_accounts', [
-					'schema'	=> $app['tschema'],
 					'group_id'	=> $sys['id'],
 				]]]);
 
@@ -1146,12 +1143,11 @@ if ($add)
 			$typeahead_ary[] = [
 				'accounts', [
 					'status'	=> $t_stat,
-					'schema'	=> $app['tschema'],
 				],
 			];
 		}
 
-		$typeahead = $app['typeahead']->get($typeahead_ary);
+		$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 		echo '<input type="hidden" id="group_id" ';
 		echo 'name="group_id" value="self">';
@@ -2368,12 +2364,11 @@ if (!$app['p_inline'])
 		$typeahead_ary[] = [
 			'accounts', [
 				'status'	=> $t_status,
-				'schema'	=> $app['tschema'],
 			],
 		];
 	}
 
-	$typeahead = $app['typeahead']->get($typeahead_ary);
+	$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';

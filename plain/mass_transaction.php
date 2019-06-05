@@ -697,7 +697,6 @@ foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
 	$typeahead_ary[] = [
 		'accounts', [
 			'status'	=> $t_stat,
-			'schema'	=> $app['tschema'],
 		],
 	];
 }
@@ -718,7 +717,7 @@ echo 'data-newuserdays="';
 echo $app['config']->get('newuserdays', $app['tschema']);
 echo '" ';
 echo 'data-typeahead="';
-echo $app['typeahead']->get($typeahead_ary);
+echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 echo '">';
 echo '</div>';
 echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';

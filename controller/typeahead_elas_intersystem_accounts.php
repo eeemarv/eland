@@ -38,14 +38,13 @@ class typeahead_elas_intersystem_accounts
         }
 
         $params = [
-            'schema'    => $app['tschema'],
             'group_id'  => $group_id,
         ];
 
         $crc = crc32(json_encode($accounts));
 
         $app['typeahead']->set_thumbprint(
-            'elas_intersystem_accounts', $params, $crc);
+            'elas_intersystem_accounts', $app['pp_ary'], $params, $crc);
 
         return $app->json($accounts);
     }
