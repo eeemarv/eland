@@ -1,14 +1,6 @@
 $(document).ready(function(){
 
-	var now = Math.floor(new Date().getTime() / 1000);
-
 	var $form = $('form');
-
-	var $data_text_inputs = $form.find('input[type="text"][data-typeahead]');
-	var $data_options = $form.find('form select option[data-typeahead]');
-	var $target_text_inputs = $form.find('form input[type="text"][data-typeahead-source]');
-
-	var session_params = $('body').data('session-params');
 
 	var $remote_amount_container = $form.find('#remote_amount_container');
 	var $amount_container = $form.find('#amount_container');

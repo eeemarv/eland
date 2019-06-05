@@ -184,8 +184,11 @@ if (!$app['s_anonymous']
 			foreach ($app['intersystems']->get_elas($app['s_schema']) as $elas_grp_id => $elas_grp)
 			{
 				echo '<li>';
-				echo '<a href="#" data-elas-group-id="';
-				echo $elas_grp_id;
+				echo '<a href="#" data-elas-group-login="';
+
+				echo htmlspecialchars($app['link']->context_path('elas_group_login',
+					$app['pp_ary'], ['group_id' => $elas_grp_id]));
+
 				echo '">';
 				echo $elas_grp['groupname'];
 				echo '</a>';
