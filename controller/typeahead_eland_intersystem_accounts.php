@@ -10,13 +10,6 @@ class typeahead_eland_intersystem_accounts
 {
     public function get(app $app, string $remote_schema):Response
     {
-/*
-        if (!($app['s_admin'] || $app['s_user']))
-        {
-            exit;
-        }
-*/
-
         $eland_intersystems = $app['intersystems']->get_eland($app['tschema']);
 
         if (!isset($eland_intersystems[$remote_schema]))

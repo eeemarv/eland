@@ -249,8 +249,9 @@ $c_system_user->get('/typeahead-eland-intersystem-accounts/{remote_schema}',
 	->assert('remote_schema', cnst_assert::SCHEMA)
 	->bind('typeahead_eland_intersystem_accounts');
 
-$c_system_user->get('/typeahead-elas-intersystem-accounts',
-		'controller\\typeahead::elas_intersystem_accounts')
+$c_system_user->get('/typeahead-elas-intersystem-accounts/{group_id}',
+		'controller\\typeahead_elas_intersystem_accounts::get')
+	->assert('group_id', cnst_assert::ID)
 	->bind('typeahead_elas_intersystem_accounts');
 
 $c_system_admin->get('/typeahead-log-types', 'controller\\typeahead_log_types::get')
