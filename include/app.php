@@ -219,8 +219,16 @@ $c_system_user->get('/messages/extend/{id}/{days}',
 $c_system_guest->match('/messages', 'controller\\messages::match')
 	->bind('messages');
 
+$c_system_guest->match('/users/{id}', 'controller\\users_show::get')
+	->assert('id', cnst_assert::NUMBER)
+	->bind('users');
+
 $c_system_guest->match('/users', 'controller\\users::match')
 	->bind('users');
+
+$c_system_guest->match('/transactions/{id}', 'controller\\transactions_show::get')
+	->assert('id', cnst_access::NUMBER)
+	->bind('transactions_show');
 
 $c_system_guest->match('/transactions', 'controller\\transactions::match')
 	->bind('transactions');

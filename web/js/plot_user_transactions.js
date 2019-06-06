@@ -1,13 +1,13 @@
 $(document).ready(function(){
 
-	var session_params = $('body').data('session-params');
-
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');
 
-	var path = $chart.data('plot-user-transactions');
+	var path_plot_users_transactions = $chart.data('plot-user-transactions');
+	var path_transactions_show = $chart.data('transactions-show').replace('/1', '/');
+	var path_users_show = $chart.data('users-show').replace('/1', '/');
 
-	$.get(path)
+	$.get(path_plot_users_transactions)
 	.done( function(data){
 
 		var transactions = data.transactions;
@@ -192,12 +192,8 @@ $(document).ready(function(){
 
 			var tid = graphTrans[pointIndex];
 
-			var params = {"id" : tid};
-
-			$.extend(params, session_params);
-
 			if (tid){
-				window.location.href = './transactions.php?' + $.param(params);
+				window.location.href = path_transactions_show + tid;
 			}
 		});
 
@@ -265,14 +261,11 @@ $(document).ready(function(){
 		});
 
 		$donut.on('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
+
 			var user = users[donutData[pointIndex].userIndex];
+
 			if (user.l){
-
-				var params = {"id": user.id};
-
-				$.extend(params, session_params);
-
-				window.location.href = './users.php?' + $.param(params);
+				window.location.href = path_users_show + user.id;
 			}
 		});
 

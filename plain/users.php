@@ -3124,7 +3124,17 @@ if ($id)
 	echo 'data-plot-user-transactions="';
 	echo htmlspecialchars($app['link']->context_path('plot_user_transactions',
 		$app['pp_ary'], ['user_id' => $id, 'days' => $tdays]));
-	echo '"';
+	echo '" ';
+
+	echo 'data-transactions-show="';
+	echo htmlspecialchars($app['link']->context_path('transactions_show',
+		$app['pp_ary'], ['id' => 1]));
+	echo '" ';
+
+	echo 'data-users-show="';
+	echo htmlspecialchars($app['link']->context_path('users_show',
+		$app['pp_ary'], ['id' => 1]));
+	echo '" ';
 
 	echo '"></div>';
 	echo '</div>';
