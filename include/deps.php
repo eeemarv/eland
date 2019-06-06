@@ -334,6 +334,10 @@ $app['s_role'] = function ($app){
 	return 'anonymous';
 };
 
+$app['s_guest'] = function ($app){
+	return false;
+};
+
 $app['s_admin'] = function ($app){
 	return $app['s_role'] === 'admin';
 };
