@@ -36,14 +36,6 @@ $fn_before_locale = function (Request $request, app $app){
 
 $fn_before_system = function(Request $request, app $app){
 
-	$app['s_anonymous'] = true;
-	$app['s_guest'] = false;
-	$app['s_user'] = false;
-	$app['s_admin'] = false;
-	$app['s_master'] = false;
-	$app['s_elas_guest'] = false;
-	$app['s_system_self'] = true;
-
 	if ($request->query->get('et') !== null)
 	{
 		$app['email_validate']->validate($request->query->get('et'));
@@ -52,8 +44,6 @@ $fn_before_system = function(Request $request, app $app){
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
-
-	$app['s_anonymous'] = false;
 
 };
 
@@ -78,11 +68,12 @@ $fn_before_system_user = function(Request $request, app $app){
 };
 
 $fn_before_system_admin = function(Request $request, app $app){
-	$app['s_admin'] = true;
+
 };
 
 $app['controllers']
-	->assert('id', cnst_assert::ID)
+	->assert('id', cnst_assert::NUMBER)
+	->assert('days', cnst_assert::NUMBER)
 	->assert('locale', cnst_assert::LOCALE)
 	->assert('role_short', cnst_assert::GUEST)
 	->assert('system', cnst_assert::SYSTEM);
@@ -106,7 +97,7 @@ $c_system_anon->assert('_locale', cnst_assert::LOCALE)
 $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::GUEST)
-	->assert('id', cnst_assert::ID)
+	->assert('id', cnst_assert::NUMBER)
 	->assert('view', cnst_assert::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
@@ -117,7 +108,7 @@ $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::USER)
-	->assert('id', cnst_assert::ID)
+	->assert('id', cnst_assert::NUMBER)
 	->assert('view', cnst_assert::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
@@ -129,7 +120,7 @@ $c_system_user->assert('_locale', cnst_assert::LOCALE)
 $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::ADMIN)
-	->assert('id', cnst_assert::ID)
+	->assert('id', cnst_assert::NUMBER)
 	->assert('view', cnst_assert::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
@@ -219,6 +210,12 @@ $c_system_user->match('/support', 'controller\\support::form')
 $c_system_anon->get('/', 'controller\\home_system::get')
 	->bind('home_system');
 
+$c_system_user->get('/messages/extend/{id}/{days}',
+		'controller\\messages_extend::get')
+	->assert('id', cnst_assert::NUMBER)
+	->assert('days', cnst_assert::NUMBER)
+	->bind('messages_extend');
+
 $c_system_guest->match('/messages', 'controller\\messages::match')
 	->bind('messages');
 
@@ -251,7 +248,7 @@ $c_system_user->get('/typeahead-eland-intersystem-accounts/{remote_schema}',
 
 $c_system_user->get('/typeahead-elas-intersystem-accounts/{group_id}',
 		'controller\\typeahead_elas_intersystem_accounts::get')
-	->assert('group_id', cnst_assert::ID)
+	->assert('group_id', cnst_assert::NUMBER)
 	->bind('typeahead_elas_intersystem_accounts');
 
 $c_system_admin->get('/typeahead-log-types', 'controller\\typeahead_log_types::get')
@@ -264,28 +261,28 @@ $c_system_admin->get('/typeahead-usernames', 'controller\\typeahead_usernames::g
 	->bind('typeahead_usernames');
 
 $c_system_guest->get('/elas-group-login/{group_id}', 'controller\\elas_group_login::get')
-	->assert('group_id', cnst_assert::ID)
+	->assert('group_id', cnst_assert::NUMBER)
 	->bind('elas_group_login');
 
 $c_system_admin->get('/elas-soap-status/{group_id}', 'controller\\elas_soap_status::get')
-	->assert('group_id', cnst_assert::ID)
+	->assert('group_id', cnst_assert::NUMBER)
 	->bind('elas_soap_status');
 
 $c_system_guest->get('/plot-user-transactions/{user_id}/{days}', 'controller\\plot_user_transactions::get')
-	->assert('user_id', cnst_assert::ID)
-	->assert('days', cnst_assert::ID)
+	->assert('user_id', cnst_assert::NUMBER)
+	->assert('days', cnst_assert::NUMBER)
 	->bind('plot_user_transactions');
 
 $c_system_admin->get('/transactions-sum-in/{days}', 'controller\\transactions_sum::in')
-	->assert('days', cnst_assert::ID)
+	->assert('days', cnst_assert::NUMBER)
 	->bind('transactions_sum_in');
 
 $c_system_admin->get('/transactions-sum-out/{days}', 'controller\\transactions_sum::out')
-	->assert('days', cnst_assert::ID)
+	->assert('days', cnst_assert::NUMBER)
 	->bind('transactions_sum_out');
 
 $c_system_admin->get('/weighted-balances/{days}', 'controller\\weighted_balances::get')
-	->assert('days', cnst_assert::ID)
+	->assert('days', cnst_assert::NUMBER)
 	->bind('weighted_balances');
 
 $c_system_anon->mount('/{role_short}', $c_system_guest);

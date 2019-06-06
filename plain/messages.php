@@ -135,7 +135,7 @@ if ($app['request']->isMethod('POST')
 		if (!count($errors))
 		{
 			$m = [
-				'local' => ($access == '2') ? 'f' : 't',
+				'local' => $access == '2' ? 'f' : 't',
 				'mdate' => gmdate('Y-m-d H:i:s')
 			];
 

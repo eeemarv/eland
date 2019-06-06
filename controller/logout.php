@@ -21,6 +21,6 @@ class logout
 
         $app['link']->redirect('login', ['system' => $app['pp_system']], []);
 
-        return new Response();
+        return new Response('');
     }
 }

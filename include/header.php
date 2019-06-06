@@ -30,10 +30,17 @@ echo '<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">';
 echo '<meta name="theme-color" content="#ffffff">';
 
 echo '</head>';
-echo '<body data-session-params="';
-//
-echo '" class="';
-echo $app['s_admin'] ? 'admin' : ($app['s_guest'] ? 'guest' : 'member');
+echo '<body';
+
+if ($app['s_admin'])
+{
+	echo ' class="admin"';
+}
+else if ($app['s_guest'])
+{
+	echo ' class="guest"';
+}
+
 echo '">';
 
 echo '<img src="/gfx/loading.gif';

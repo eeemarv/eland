@@ -312,6 +312,58 @@ $app['session_user'] = function ($app){
 	return $app['user_cache']->get($app['s_id'], $app['s_schema']);
 };
 
+$app['s_role'] = function ($app){
+
+	$role = $app['session_user']['accountrole'] ?? 'anonymous';
+
+	if ($role === 'interlets')
+	{
+		return 'anonymous';
+	}
+
+	if ($role === 'admin')
+	{
+		return 'admin';
+	}
+
+	if ($role === 'user')
+	{
+		return 'user';
+	}
+
+	return 'anonymous';
+};
+
+$app['s_admin'] = function ($app){
+	return $app['s_role'] === 'admin';
+};
+
+$app['s_user'] = function ($app){
+	return $app['s_role'] === 'user';
+};
+
+$app['s_anonymous'] = function ($app){
+	return $app['s_role'] === 'anonymous';
+};
+
+$app['s_master'] = function ($app){
+	if (isset($app['s_logins'][$app['s_schema']]))
+	{
+		return $app['s_logins'][$app['s_schema']] === 'master';
+	}
+
+	return false;
+};
+
+$app['s_elas_guest'] = function ($app){
+	if (isset($app['s_logins'][$app['s_schema']]))
+	{
+		return $app['s_logins'][$app['s_schema']] === 'elas';
+	}
+
+	return false;
+};
+
 
 /**
  *
@@ -738,8 +790,9 @@ $app['data_token'] = function ($app){
 
 $app['access_control'] = function($app){
 	return new service\access_control(
+		$app['request'],
 		$app['tschema'],
-		$app['config'],
-		$app['s_access_level']
+		$app['s_role'],
+		$app['intersystem_en']
 	);
 };

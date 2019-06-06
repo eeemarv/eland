@@ -6,7 +6,7 @@ class assert
 {
     const ADMIN = '[a]';
     const GUEST = '[gua]';
-    const ID = '\d+';
+    const NUMBER = '\d+';
     const LOCALE = 'nl';
     const SYSTEM = '[a-z][a-z0-9]*';
     const SCHEMA = '[a-z][a-z0-9]*';

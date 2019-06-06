@@ -2,13 +2,15 @@
 
 namespace service;
 
-use service\config;
+use Symfony\Component\HttpFoundation\Request;
 
 class access_control
 {
-	protected $config;
-	protected $schema;
+	protected $request;
+	protected $tschema;
+	protected $s_role;
 	protected $access_level;
+	protected $intersystem_en;
 	protected $type_template;
 
 	protected $acc_ary = [
@@ -48,26 +50,24 @@ class access_control
 	];
 
 	public function __construct(
-		string $schema,
-		config $config,
-		string $access_level
+		Request $request,
+		string $tschema,
+		string $s_role,
+		bool $intersystem_en
 	)
 	{
-		$this->config = $config;
-		$this->schema = $schema;
+		$this->request = $request;
+		$this->tschema = $tschema;
+		$this->s_role = $s_role;
 		$this->access_level = $access_level;
+		$this->intersystem_en = $intersystem_en;
 
-		if (!$this->config->get('template_lets', $this->schema)
-			|| !$this->config->get('interlets_en', $this->schema))
+		if (!$this->intersystem_en)
 		{
 			unset($this->input_ary['interlets']);
 			$this->label_ary['interlets'] = 'users';
 		}
 	}
-
-	/*
-	 *
-	 */
 
 	public function is_visible($role_or_level)
 	{
@@ -75,10 +75,6 @@ class access_control
 
 		return $level >= $this->access_level;
 	}
-
-	/**
-	 *
-	 */
 
 	public function get_visible_ary()
 	{
@@ -95,10 +91,6 @@ class access_control
 		return $ary;
 	}
 
-	/*
-	 *
-	 */
-
 	public function get_role($access)
 	{
 		if (isset($this->acc_ary_search[$access]))
@@ -109,10 +101,6 @@ class access_control
 		return $access;
 	}
 
-	/*
-	 *
-	 */
-
 	public function get_level($access)
 	{
 		if (isset($this->acc_ary[$access]))
@@ -122,10 +110,6 @@ class access_control
 
 		return $access;
 	}
-
-	/*
-	 *
-	 */
 
 	public function get_label(
 		$access = 'admin'
@@ -146,9 +130,10 @@ class access_control
 		return $ret;
 	}
 
-	/*
-	 *
-	 */
+	public function get_post(string $name = 'access'):string
+	{
+		return $this->request->request->get($name);
+	}
 
 	public function get_post_value(
 		$name = 'access'
@@ -167,16 +152,14 @@ class access_control
 		return false;
 	}
 
-	public function get_post_error(
-		$name = 'access'
-	)
+	public function get_post_error($name = 'access'):string
 	{
-		if ($this->acc_ary[$_POST[$name]])
+		if (!$this->request->request->get($name))
 		{
-			return false;
+			return 'Kies een zichtbaarheid.';
 		}
 
-		return 'Kies een zichtbaarheid.';
+		return '';
 	}
 
 	public function get_radio_buttons(
@@ -243,7 +226,7 @@ class access_control
 		if ($access_cache_id)
 		{
 			$out .= ' data-access-cache-id="';
-			$out .= $this->schema . '_' . $access_cache_id . '"';
+			$out .= $this->tschema . '_' . $access_cache_id . '"';
 		}
 
 		$out .= ' id="' . $name . '">';
