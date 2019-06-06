@@ -294,6 +294,8 @@ $app['s_id'] = function ($app){
 
 	$s_id = $app['s_logins'][$app['s_schema']] ?? 0;
 
+	error_log('S_ID: ' . $s_id);
+
 	if (ctype_digit((string) $s_id))
 	{
 		return $s_id;

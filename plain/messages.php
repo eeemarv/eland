@@ -2,7 +2,8 @@
 
 if ($app['s_anonymous'])
 {
-	exit;
+	echo 'anonymous --';
+//	exit;
 }
 
 use render\link;
@@ -1844,19 +1845,17 @@ if ($id)
  * list messages
  */
 
-if (!($app['p_view'] || $app['p_inline']))
-{
-	$app['link']->redirect('messages', $app['pp_ary'], []);
-}
-
 $s_owner = !$app['s_guest']
 	&& $app['s_system_self']
 	&& isset($filter['uid'])
 	&& $app['s_id'] == $filter['uid']
 	&& $app['s_id'];
 
-$v_list = $app['p_view'] === 'list' || $app['p_inline'];
-$v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
+$view = $app['s_view']['messages'];
+$p_inline = $app['request']->query->get('inline') ? true : false;
+
+$v_list = $view === 'list' || $p_inline;
+$v_extended = $view === 'extended' && !$p_inline;
 
 $params = [
 	'sort'	=> [
@@ -2070,7 +2069,7 @@ if ($v_extended)
 }
 
 $app['pagination']->init('messages', $app['pp_ary'],
-	$row_count, $params, $app['p_inline']);
+	$row_count, $params, $p_inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -2115,7 +2114,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$app['s_guest'] && $app['count_intersystems'])
+if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2171,7 +2170,7 @@ while ($row = $st->fetch())
 
 if ($app['s_admin'] || $app['s_user'])
 {
-	if (!$app['p_inline']
+	if (!$p_inline
 		&& ($s_owner || !isset($filter['uid'])))
 	{
 		$app['btn_top']->add('messages', $app['pp_ary'],
@@ -2205,7 +2204,7 @@ $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
 if (isset($filter['uid']))
 {
-	if ($s_owner && !$app['p_inline'])
+	if ($s_owner && !$p_inline)
 	{
 		$app['heading']->add('Mijn vraag en aanbod');
 	}
@@ -2232,7 +2231,7 @@ if (isset($filter['cid']) && $filter['cid'])
 $app['heading']->add_filtered($filtered);
 $app['heading']->fa('newspaper-o');
 
-if (!$app['p_inline'])
+if (!$p_inline)
 {
 	$app['btn_nav']->view('messages', $app['pp_ary'],
 		array_merge($params, ['view' => 'list']),
@@ -2409,7 +2408,7 @@ if (!$app['p_inline'])
 	echo '</div>';
 }
 
-if ($app['p_inline'])
+if ($p_inline)
 {
 	echo '<div class="row">';
 	echo '<div class="col-md-12">';
@@ -2430,7 +2429,7 @@ if (!count($messages))
 
 	echo $app['pagination']->get();
 
-	if (!$app['p_inline'])
+	if (!$p_inline)
 	{
 		include __DIR__ . '/../include/footer.php';
 	}
@@ -2492,7 +2491,7 @@ if ($v_list)
 
 		echo '<td>';
 
-		if (!$app['p_inline'] && ($app['s_admin'] || $s_owner))
+		if (!$p_inline && ($app['s_admin'] || $s_owner))
 		{
 			echo '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
 			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
@@ -2636,7 +2635,7 @@ else if ($v_extended)
 
 echo $app['pagination']->get();
 
-if ($app['p_inline'])
+if ($p_inline)
 {
 	echo '</div></div>';
 }

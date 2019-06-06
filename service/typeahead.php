@@ -71,7 +71,7 @@ class typeahead
 		array $params):string
 	{
 		$key_pp_ary = [
-			'_locale'		=> 'en',
+			'_locale'		=> 'nl',
 			'system'		=> $params_context['system'],
 			'role_short'	=> 'a',
 		];
@@ -79,9 +79,10 @@ class typeahead
 		$key_path = $this->get_path($typeahead_route, $key_pp_ary, $params);
 
 		return strtr($key_path, [
-			'/en/'			=> '',
+			'/nl/'			=> '',
 			'/a/'			=> '_',
 			'/'				=> '_',
+			'-'				=> '_',
 		]);
 	}
 
