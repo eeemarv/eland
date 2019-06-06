@@ -217,7 +217,7 @@ if ($submit)
 			{
 				$app['db']->update($app['tschema'] . '.users',
 					['password' => hash('sha512', $password)],
-					['id' => $user['id']]);
+					['id' => $user_id]);
 
 				$app['monolog']->info('Password encryption updated to sha512', $log_ary);
 			}
@@ -243,16 +243,13 @@ if ($submit)
 
 	if (!count($errors))
 	{
-		$app['s_logins'] = array_merge($app['s_logins'], [
-			$app['tschema'] 	=> $user['id'],
+		$s_logins = array_merge($app['s_logins'], [
+			$app['tschema'] 	=> $user_id,
 		]);
-		$app['session']->set('logins', $app['s_logins']);
+		$app['session']->set('logins', $s_logins);
 		$app['session']->set('schema', $app['tschema']);
 
-		$app['s_id'] = $user['id'];
-		$app['s_schema'] = $app['tschema'];
-
-		$browser = $_SERVER['HTTP_USER_AGENT'];
+		$browser = $app['request']->server->get('HTTP_USER_AGENT');
 
 		$app['monolog']->info('User ' .
 			$app['account']->str_id($user_id, $app['tschema']) .
@@ -260,11 +257,11 @@ if ($submit)
 
 		$app['db']->update($app['tschema'] . '.users',
 			['lastlogin' => gmdate('Y-m-d H:i:s')],
-			['id' => $user['id']]);
+			['id' => $user_id]);
 
-		$app['user_cache']->clear($user['id'], $app['tschema']);
+		$app['user_cache']->clear($user_id, $app['tschema']);
 
-		$app['xdb']->set('login', $user['id'], [
+		$app['xdb']->set('login', $user_id, [
 			'browser' => $browser, 'time' => time()
 		], $app['s_schema']);
 
