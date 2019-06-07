@@ -780,6 +780,35 @@ $app['render_stat'] = function (){
 	return new render\stat();
 };
 
+$app['tpl'] = function ($app){
+	return new render\tpl(
+		$app['alert'],
+		$app['assets'],
+		$app['config'],
+		$app['systems'],
+		$app['intersystems'],
+		$app['account'],
+		$app['btn_nav'],
+		$app['btn_top'],
+		$app['heading'],
+		$app['link'],
+		$app['tschema'],
+		$app['s_schema'],
+		$app['s_id'],
+		$app['pp_ary'],
+		$app['session_user'],
+		$app['s_logins'],
+		$app['s_anonymous'],
+		$app['s_guest'],
+		$app['s_user'],
+		$app['s_admin'],
+		$app['s_master'],
+		$app['s_elas_guest'],
+		$app['s_system_self'],
+		$app['intersystem_en']
+	);
+};
+
 // init
 
 $app['elas_db_upgrade'] = function ($app){

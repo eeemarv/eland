@@ -9,7 +9,7 @@ use cnst\role as cnst_role;
 
 class login
 {
-    public function form(app $app):Response
+    public function form(Request $request, app $app):Response
     {
         $location = $_GET['location'] ?? false;
 
@@ -22,10 +22,10 @@ class login
             $location = $app['config']->get('default_landing_page', $app['tschema']);
         }
 
-        if ($app['request']->isMethod('POST'))
+        if ($request->isMethod('POST'))
         {
-            $login = trim(strtolower($app['request']->request->get('login')));
-            $password = trim($app['request']->request->get('password'));
+            $login = trim(strtolower($request->request->get('login')));
+            $password = trim($request->request->get('password'));
 
             if (!($login && $password))
             {
@@ -209,7 +209,7 @@ class login
                 $app['session']->set('logins', $s_logins);
                 $app['session']->set('schema', $app['tschema']);
 
-                $agent = $app['request']->server->get('HTTP_USER_AGENT');
+                $agent = $request->server->get('HTTP_USER_AGENT');
 
                 $app['monolog']->info('User ' .
                     $app['account']->str_id($user_id, $app['tschema']) .
@@ -256,59 +256,55 @@ class login
         $app['heading']->add('Login');
         $app['heading']->fa('sign-in');
 
-        ob_start();
+        $out = '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
 
-        require_once __DIR__ . '/../include/header.php';
+        $out .= '<form method="post">';
 
-        echo '<div class="panel panel-info">';
-        echo '<div class="panel-heading">';
+        $out .= '<div class="form-group">';
+        $out .= '<label for="login">';
+        $out .= 'Login</label>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" id="login" name="login" ';
+        $out .= 'value="';
+        $out .= $login;
+        $out .= '" required>';
+        $out .= '</div>';
+        $out .= '<p>';
+        $out .= 'E-mail, Account Code of Gebruikersnaam';
+        $out .= '</p>';
+        $out .= '</div>';
 
-        echo '<form method="post">';
-
-        echo '<div class="form-group">';
-        echo '<label for="login">';
-        echo 'Login</label>';
-        echo '<div class="input-group">';
-        echo '<span class="input-group-addon">';
-        echo '<i class="fa fa-user"></i>';
-        echo '</span>';
-        echo '<input type="text" class="form-control" id="login" name="login" ';
-        echo 'value="';
-        echo $login;
-        echo '" required>';
-        echo '</div>';
-        echo '<p>';
-        echo 'E-mail, Account Code of Gebruikersnaam';
-        echo '</p>';
-        echo '</div>';
-
-        echo '<div class="form-group">';
-        echo '<label for="password">Paswoord</label>';
-        echo '<div class="input-group">';
-        echo '<span class="input-group-addon">';
-        echo '<i class="fa fa-key"></i>';
-        echo '</span>';
-        echo '<input type="password" class="form-control" ';
-        echo 'id="password" name="password" ';
-        echo 'value="" required>';
-        echo '</div>';
-        echo '<p>';
-        echo $app['link']->link_no_attr('password_reset',
+        $out .= '<div class="form-group">';
+        $out .= '<label for="password">Paswoord</label>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<i class="fa fa-key"></i>';
+        $out .= '</span>';
+        $out .= '<input type="password" class="form-control" ';
+        $out .= 'id="password" name="password" ';
+        $out .= 'value="" required>';
+        $out .= '</div>';
+        $out .= '<p>';
+        $out .= $app['link']->link_no_attr('password_reset',
             $app['pp_ary'], [],
             'Klik hier als je je paswoord vergeten bent.');
-        echo '</p>';
-        echo '</div>';
+        $out .= '</p>';
+        $out .= '</div>';
 
-        echo '<input type="submit" class="btn btn-default" ';
-        echo 'value="Inloggen" name="zend">';
+        $out .= '<input type="submit" class="btn btn-default" ';
+        $out .= 'value="Inloggen" name="zend">';
 
-        echo '</form>';
+        $out .= '</form>';
 
-        echo '</div>';
-        echo '</div>';
+        $out .= '</div>';
+        $out .= '</div>';
 
-        include __DIR__ . '/../include/footer.php';
+        $app['tpl']->add($out);
 
-        return new Response(ob_get_clean());
+        return $app['tpl']->get($request);
     }
 }
