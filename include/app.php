@@ -155,14 +155,14 @@ $c_system_anon->match('/login', 'controller\\login::form')
 $c_system_anon->match('/contact', 'controller\\contact::form')
 	->bind('contact');
 
-$c_system_anon->match('/contact/{token}', 'controller\\contact_token::form')
+$c_system_anon->get('/contact/{token}', 'controller\\contact_token::get')
 	->assert('token', cnst_assert::TOKEN)
 	->bind('contact_token');
 
 $c_system_anon->match('/register', 'controller\\register::form')
 	->bind('register');
 
-$c_system_anon->match('/register/{token}', 'controller\\register_token::form')
+$c_system_anon->get('/register/{token}', 'controller\\register_token::get')
 	->assert('token', cnst_assert::TOKEN)
 	->bind('register_token');
 

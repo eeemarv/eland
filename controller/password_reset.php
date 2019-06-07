@@ -66,7 +66,7 @@ class password_reset
                 }
                 else
                 {
-                    $app['alert']->error('Het E-Mail adres niet uniek in dit Systeem.');
+                    $app['alert']->error('Het E-Mail adres is niet uniek in dit Systeem.');
                 }
             }
             else
