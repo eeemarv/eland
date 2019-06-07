@@ -117,7 +117,8 @@ class pagination
 		{
 			$this->out .= '<div>';
 			$this->out .= '<form action="';
-			$this->out .= $this->entity . '.php">';
+			$this->out .= $this->link->path($this->route, $this->pp_ary);
+			$this->out .= '">';
 
 			$this->out .= 'Per pagina: ';
 			$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';

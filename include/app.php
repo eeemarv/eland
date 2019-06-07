@@ -144,6 +144,11 @@ $app->get('/test', function () use ($app){
 $c_locale->match('/contact', 'controller\\contact_host::form')
 	->bind('contact_host');
 
+
+$c_system_anon->match('/login-elas/{elas_token}', 'controller\\login_elas_token::get')
+	->assert('elas_token', cnst_assert::ELAS_TOKEN)
+	->bind('login_elas_token');
+
 $c_system_anon->match('/login', 'controller\\login::form')
 	->bind('login');
 

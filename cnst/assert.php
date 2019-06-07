@@ -4,7 +4,8 @@ namespace cnst;
 
 class assert
 {
-    const ADMIN = '[a]';
+    const ADMIN = 'a';
+    const ELAS_TOKEN = 'elasv2[0-9a-f]+';
     const GUEST = '[gua]';
     const NUMBER = '\d+';
     const LOCALE = 'nl';
