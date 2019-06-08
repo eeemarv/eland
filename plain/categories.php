@@ -13,13 +13,13 @@ if ($add)
 {
 	$cat = [];
 
-	if (isset($_POST['zend']))
+	if ($app['request']->isMethod('POST'))
 	{
-		$cat['name'] = $_POST['name'];
-		$cat['id_parent'] = $_POST['id_parent'];
-		$cat['leafnote'] = ($_POST['id_parent'] == 0) ? 0 : 1;
+		$cat['name'] = $app['request']->request->get('name', '');
+		$cat['id_parent'] = $app['request']->request->get('id_parent', 0);
+		$cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
-		if (!isset($cat['name'])|| (trim($cat['name']) == ''))
+		if (trim($cat['name']) === '')
 		{
 			$errors[] = 'Vul naam in!';
 		}
@@ -29,7 +29,7 @@ if ($add)
 			$errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
 		}
 
-		if (!isset($cat['id_parent'])|| (trim($cat['id_parent']) == ''))
+		if ($cat['id_parent'] === 0)
 		{
 			$errors[] = 'Vul hoofdrubriek in!';
 		}
@@ -41,7 +41,7 @@ if ($add)
 
 		if (!count($errors))
 		{
-			$cat['cdate'] = date('Y-m-d H:i:s');
+			$cat['cdate'] = gmdate('Y-m-d H:i:s');
 			$cat['id_creator'] = $app['s_master'] ? 0 : $app['s_id'];
 			$cat['fullname'] = '';
 
@@ -155,11 +155,11 @@ if ($edit)
 
 	$cat = $cats[$edit];
 
-	if(isset($_POST['zend'])){
-
-		$cat['name'] = $_POST['name'];
-		$cat['id_parent'] = $_POST['id_parent'];
-		$cat['leafnote'] = ($_POST['id_parent'] == 0) ? 0 : 1;
+	if ($app['request']->isMethod('POST'))
+	{
+		$cat['name'] = $app['request']->request->get('name', '');
+		$cat['id_parent'] = $app['request']->request->get('id_parent', 0);
+		$cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
 		if (!$cat['name'])
 		{
@@ -274,7 +274,7 @@ if ($edit)
 
 if ($del)
 {
-	if(isset($_POST['zend']))
+	if($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{

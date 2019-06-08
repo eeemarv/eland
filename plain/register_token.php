@@ -5,8 +5,6 @@ if (!$app['s_anonymous'])
 	exit;
 }
 
-$submit = isset($_POST['zend']) ? true : false;
-
 if (!$app['config']->get('registration_en', $app['tschema']))
 {
 	$app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');

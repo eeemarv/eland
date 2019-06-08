@@ -8,7 +8,6 @@ if ($app['s_anonymous'])
 $id = $_GET['id'] ?? false;
 $add = isset($_GET['add']);
 $edit = $_GET['edit'] ?? false;
-$submit = isset($_POST['zend']);
 
 $mid = $_GET['mid'] ?? false;
 $tuid = $_GET['tuid'] ?? false;
@@ -36,7 +35,7 @@ if ($add)
 
 	$redis_transid_key = $app['tschema'] . '_transid_u_' . $app['s_id'];
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$stored_transid = $app['predis']->get($redis_transid_key);
 
@@ -1375,7 +1374,7 @@ if ($edit)
 		$app['link']->redirect('transactions', $app['pp_ary'], ['id' => $edit]);
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$description = trim($_POST['description'] ?? '');
 

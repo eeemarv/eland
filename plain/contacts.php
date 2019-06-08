@@ -231,7 +231,7 @@ if ($edit || $add)
 
 		if ($app['s_admin'] && $add && !$uid)
 		{
-			$letscode = $_POST['letscode'];
+			$letscode = $app['request']->request->get('letscode', '');
 			[$letscode] = explode(' ', trim($letscode));
 
 			$user_id = $app['db']->fetchColumn('select id
@@ -244,7 +244,7 @@ if ($edit || $add)
 			}
 			else
 			{
-				$errors[] = 'Ongeldige letscode.';
+				$errors[] = 'Ongeldige Account Code.';
 			}
 		}
 

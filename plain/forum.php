@@ -12,7 +12,6 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $q = $_GET['q'] ?? '';
-$submit = isset($_POST['zend']) ? true : false;
 
 if (!($app['s_user'] || $app['s_admin']))
 {
@@ -85,7 +84,7 @@ if ($del || $edit)
 	$topic = $forum_post['parent_id'] ?? false;
 }
 
-if ($submit)
+if ($app['request']->isMethod('POST'))
 {
 	if ($del)
 	{
@@ -118,12 +117,9 @@ if ($submit)
 			['t' => $forum_post['parent_id']]);
 	}
 
-	$content = $_POST['content'];
-
-	$content = trim(preg_replace('/(<br>)+$/', '', $_POST['content']));
-
+	$content = $app['request']->request->get('content', '');
+	$content = trim(preg_replace('/(<br>)+$/', '', $content));
 	$content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
-
 	$content = trim($content);
 
 	$config_htmlpurifier = HTMLPurifier_Config::createDefault();
@@ -139,8 +135,8 @@ if ($submit)
 	}
 	else
 	{
-		$forum_post['subject'] = $_POST['subject'];
-		$forum_post['access']	= $_POST['access'];
+		$forum_post['subject'] = $app['request']->request->get('subject', '');
+		$forum_post['access']	= $app['request']->request->get('access', '');
 	}
 
 	if (!$edit)

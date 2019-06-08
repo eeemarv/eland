@@ -7,9 +7,9 @@ if (!$app['s_admin'])
 
 set_time_limit(60);
 
-$db_elas = isset($_GET['db_elas']);
-$db_eland_aggs = !$db_elas && isset($_GET['db_eland_aggs']);
-$db_eland_events = !$db_eland_aggs && isset($_GET['db_eland_events']);
+$db_elas = $app['request']->query->get('db_elas', '') ? true : false;
+$db_eland_aggs = !$db_elas && ($app['request']->query->get('db_eland_aggs', '') ? true : false);
+$db_eland_events = !$db_eland_aggs && ($app['request']->query->get('db_eland_events', '') ? true : false);
 $db_download = $db_elas || $db_eland_aggs || $db_eland_events;
 
 $exec_en = function_exists('exec');

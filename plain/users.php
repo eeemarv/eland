@@ -21,7 +21,6 @@ $img = isset($_GET['img']) ? true : false;
 $img_del = isset($_GET['img_del']) ? true : false;
 $intersystem_code = $_GET['intersystem_code'] ?? false;
 $password = $_POST['password'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
 $user_mail_submit = isset($_POST['user_mail_submit']) ? true : false;
 $bulk_mail_submit = isset($_POST['bulk_mail_submit']) ? true : false;
 $bulk_mail_test = isset($_POST['bulk_mail_test']) ? true : false;
@@ -35,7 +34,7 @@ if ($add || $del || $bulk_mail_submit || $bulk_mail_test)
 		exit;
 	}
 }
-else if ($edit || $pw || $img_del || $password || $submit || $img)
+else if ($edit || $pw || $img_del || $password || $img)
 {
 	if (!($app['s_admin'] || $app['s_user']))
 	{
@@ -826,7 +825,7 @@ if ($pw)
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $pw]);
 	}
 
-	if($submit)
+	if($app['request']->isMethod('POST'))
 	{
 		$password = trim($_POST['password']);
 
@@ -1014,7 +1013,7 @@ if ($del)
 		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -1260,7 +1259,7 @@ if ($add || $edit)
 		$username_edit = $fullname_edit = false;
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$user = [
 			'postcode'		=> trim($_POST['postcode']),

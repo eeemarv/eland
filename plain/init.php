@@ -1,7 +1,7 @@
 <?php
 
-$step = $_GET['step'] ?? 1;
-$start = $_GET['start'] ?? 0;
+$step = $app['request']->query->get('step', 1);
+$start = $app['request']->query->get('start', 0);
 
 set_time_limit(300);
 

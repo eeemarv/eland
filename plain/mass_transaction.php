@@ -5,14 +5,13 @@ if (!$app['s_admin'])
 	exit;
 }
 
-$q = $_POST['q'] ?? ($_GET['q'] ?? '');
-$hsh = $_POST['hsh'] ?? ($_GET['hsh'] ?? '096024');
-$selected_users = $_POST['selected_users'] ?? '';
+$q = $app['request']->get('q', '');
+$hsh = $app['request']->get('hsh', '096024');
+
+$selected_users = $app['request']->request->get('selected_users', '');
 $selected_users = ltrim($selected_users, '.');
 $selected_users = explode('.', $selected_users);
 $selected_users = array_combine($selected_users, $selected_users);
-
-$submit = isset($_POST['zend']);
 
 $st = [
 	'active'	=> [
@@ -95,22 +94,28 @@ while ($row = $rs->fetch())
 	$users[$row['id']] = $row;
 }
 
-[$to_letscode] = isset($_POST['to_letscode']) ? explode(' ', trim($_POST['to_letscode'])) : [''];
-[$from_letscode] = isset($_POST['from_letscode']) ? explode(' ', trim($_POST['from_letscode'])) : [''];
+$to_letscode = trim($app['request']->request->get('to_letscode', ''));
 
-$amount = $_POST['amount'] ?? [];
-$description = $_POST['description'] ?? '';
-$description = trim($description);
-
-$transid = $_POST['transid'] ?? '';
-
-$mail_en = isset($_POST['mail_en']) ? true : false;
-
-if ($submit)
+if ($to_letscode !== '')
 {
-	$verify = isset($_POST['verify']) ? true : false;
+	$to_letscode = explode(' ', $to_letscode);
+}
 
-	if (!$verify)
+$from_letscode = trim($app['request']->request->get('from_letscode', ''));
+
+if ($from_letscode !== '')
+{
+	$from_letscode = explode(' ', $from_letscode);
+}
+
+$amount = $app['request']->request->get('amount', []);
+$description = trim($app['request']->request->get('description', ''));
+$transid = $app['request']->request->get('transid', '');
+$mail_en = $app['request']->request->get('mail_en', false);
+
+if ($app['request']->isMethod('POST'))
+{
+	if (!$app['request']->request->get('verify', false))
 	{
 		$errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
 	}

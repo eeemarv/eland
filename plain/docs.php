@@ -13,7 +13,7 @@ $edit = $_GET['edit'] ?? false;
 $map = $_GET['map'] ?? false;
 $map_edit = $_GET['map_edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
-$confirm_del = isset($_POST['confirm_del']) ? true : false;
+$confirm_del = $app['request']->request->get('confirm_del', '') ? true : false;
 
 if (($confirm_del
 		|| $add || $edit || $del
@@ -54,7 +54,7 @@ if ($map_edit)
 				['map' => $map_edit]);
 		}
 
-		$posted_map_name = trim($_POST['map_name']);
+		$posted_map_name = trim($app['request']->request->get('map_name', ''));
 
 		if (!strlen($posted_map_name))
 		{
@@ -158,8 +158,8 @@ if ($edit)
 			'user_id'		=> $doc['user_id'],
 			'filename'		=> $doc['filename'],
 			'org_filename'	=> $doc['org_filename'],
-			'name'			=> trim($_POST['name']),
-			'access'		=> $_POST['access'],
+			'name'			=> trim($app['request']->request->get('name', '')),
+			'access'		=> $app['request']->request->get('access', ''),
 		];
 
 		$access_error = $app['access_control']->get_post_error();
@@ -171,7 +171,7 @@ if ($edit)
 
 		if (!count($errors))
 		{
-			$map_name = trim($_POST['map_name']);
+			$map_name = trim($app['request']->request->get('map_name', ''));
 
 			if (strlen($map_name))
 			{
@@ -482,11 +482,11 @@ if ($app['request']->isMethod('POST'))
 			$doc = [
 				'filename'		=> $filename,
 				'org_filename'	=> $file,
-				'access'		=> $_POST['access'],
-				'user_id'		=> $app['s_master'] ? 0 : $app['s_id'],
+				'access'		=> $app['request']->request->get('access', ''),
+				'user_id'		=> $app['s_id'],
 			];
 
-			$map_name = trim($_POST['map_name']);
+			$map_name = trim($app['request']->request->get('map_name', ''));
 
 			if (strlen($map_name))
 			{
@@ -515,7 +515,7 @@ if ($app['request']->isMethod('POST'))
 				$doc['map_id'] = $map_id;
 			}
 
-			$name = trim($_POST['name']);
+			$name = trim($app['request']->request->get('name', ''));
 
 			if ($name)
 			{

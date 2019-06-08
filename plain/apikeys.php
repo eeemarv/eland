@@ -7,7 +7,6 @@ if (!$app['s_admin'])
 
 $del = $_GET['del'] ?? false;
 $add = $_GET['add'] ?? false;
-$submit = isset($_POST['zend']);
 
 /*
 if (!$app['intersystem_en'])
@@ -78,7 +77,7 @@ $apikey = [
 
 if ($add)
 {
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -87,8 +86,8 @@ if ($add)
 		}
 
 		$apikey = [
-			'apikey' 	=> $_POST['apikey'],
-			'comment'	=> $_POST['comment'],
+			'apikey' 	=> $app['request']->request->get('apikey', ''),
+			'comment'	=> $app['request']->request->get('comment', ''),
 			'type'		=> 'interlets',
 		];
 
@@ -188,17 +187,17 @@ echo '<tbody>';
 
 foreach($apikeys as $a)
 {
-	$out = [];
-	$out[] = $a['id'];
-	$out[] = $a['comment'];
-	$out[] = $a['apikey'];
-	$out[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
-	$out[] = $app['link']->link_fa('apikeys', $app['pp_ary'],
+	$td = [];
+	$td[] = $a['id'];
+	$td[] = $a['comment'];
+	$td[] = $a['apikey'];
+	$td[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
+	$td[] = $app['link']->link_fa('apikeys', $app['pp_ary'],
 		['del' => $a['id']], 'Verwijderen',
 		['class' => 'btn btn-danger btn-xs'], 'times');
 
 	echo '<tr><td>';
-	echo implode('</td><td>', $out);
+	echo implode('</td><td>', $td);
 	echo '</td></tr>';
 }
 

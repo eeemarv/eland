@@ -5,7 +5,7 @@ if (!$app['s_admin'])
 	exit;
 }
 
-if (isset($_POST['zend']))
+if ($app['request']->isMethod('POST'))
 {
 	if ($error_token = $app['form_token']->get_error())
 	{
@@ -14,10 +14,10 @@ if (isset($_POST['zend']))
 	}
 
 	$data = [
-		'enabled'						=> isset($_POST['enabled']),
-		'exclusive'						=> $_POST['exclusive'],
-		'trans_percentage'				=> $_POST['trans_percentage'],
-		'trans_exclusive'				=> $_POST['trans_exclusive'],
+		'enabled'			=> $app['request']->request->get('enabled', false),
+		'exclusive'			=> $app['request']->request->get('exclusive', ''),
+		'trans_percentage'	=> $app['request']->request->get('trans_percentage', 100),
+		'trans_exclusive'	=> $app['request']->request->get('trans_exclusive', ''),
 	];
 
 	$app['xdb']->set('setting', 'autominlimit', $data, $app['tschema']);
@@ -36,10 +36,10 @@ else
 	else
 	{
 		$data = [
-			'enabled'					=> false,
-			'exclusive'					=> '',
-			'trans_percentage'			=> 100,
-			'trans_exclusive'			=> '',
+			'enabled'				=> false,
+			'exclusive'				=> '',
+			'trans_percentage'		=> 100,
+			'trans_exclusive'		=> '',
 		];
 	}
 }

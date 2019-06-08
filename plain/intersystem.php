@@ -5,17 +5,20 @@ if (!$app['s_admin'])
 	exit;
 }
 
+if (!$app['intersystem_en'])
+{
+	redirect_default_page();
+}
+
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $add_schema = $_GET['add_schema'] ?? false;
 
-$submit = isset($_POST['zend']) ? true : false;
-
 if ($id || $edit || $del)
 {
-	$id = ($id) ?: (($edit) ?: $del);
+	$id = $id ?: ($edit ?: $del);
 
 	$group = $app['db']->fetchAssoc('select *
 		from ' . $app['tschema'] . '.letsgroups
@@ -28,28 +31,25 @@ if ($id || $edit || $del)
 	}
 }
 
-if (!$app['intersystem_en'])
-{
-	redirect_default_page();
-}
+
 
 /**
  *	add
  */
 if ($add || $edit)
 {
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$group = [
-			'url' 				=> $_POST['url'] ?? '',
-			'groupname' 		=> $_POST['groupname'] ?? '',
-			'apimethod' 		=> $_POST['apimethod'] ?? '',
-			'shortname' 		=> $_POST['shortname'] ?? '',
-			'prefix' 			=> $_POST['prefix'] ?? '',
-			'remoteapikey' 		=> $_POST['remoteapikey'] ?? '',
-			'localletscode' 	=> $_POST['localletscode'] ?? '',
-			'myremoteletscode'	=> $_POST['myremoteletscode'] ?? '',
-			'presharedkey' 		=> $_POST['presharedkey'] ?? '',
+			'url' 				=> $app['request']->request->get('url', ''),
+			'groupname' 		=> $app['request']->request->get('groupname', ''),
+			'apimethod' 		=> $app['request']->request->get('apimethod', ''),
+			'shortname' 		=> $app['request']->request->get('shortname', ''),
+			'prefix' 			=> $app['request']->request->get('prefix', ''),
+			'remoteapikey' 		=> $app['request']->request->get('remoteapikey', ''),
+			'localletscode' 	=> $app['request']->request->get('localletscode', ''),
+			'myremoteletscode'	=> $app['request']->request->get('myremoteletscode', ''),
+			'presharedkey' 		=> $app['request']->request->get('presharedkey', ''),
 		];
 
 		$group['elassoapurl'] = $group['url'] . '/soap';
@@ -369,7 +369,7 @@ if ($add || $edit)
  */
 if ($del)
 {
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 
 		if ($error_token = $app['form_token']->get_error())

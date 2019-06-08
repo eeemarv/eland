@@ -8,11 +8,8 @@ if (!$app['s_admin'])
 use cnst\config as cnst_config;
 
 $setting = $_GET['edit'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
 
-$active_tab = 'systemname';
-$active_tab = $_GET['tab'] ?? $active_tab;
-$active_tab = $_POST['tab'] ?? $active_tab;
+$active_tab = $app['request']->get('tab', 'systemname');
 
 if (!isset(cnst_config::TAB_PANES[$active_tab]))
 {
@@ -79,7 +76,7 @@ foreach ($pane['inputs'] as $input_name => $input_config)
 
 if ($app['request']->isMethod('POST'))
 {
-	if (!isset($_POST[$active_tab . '_submit']))
+	if (!$app['request']->request->get($active_tab . '_submit'))
 	{
 		$errors[] = 'Form submit error';
 	}
@@ -93,7 +90,7 @@ if ($app['request']->isMethod('POST'))
 
 	foreach ($config as $input_name => $loaded_value)
 	{
-		$posted_value = trim($_POST[$input_name] ?? '');
+		$posted_value = trim($app['request']->request->get($input_name, ''));
 		$input_data = cnst_config::INPUTS[$input_name];
 
 		if (isset($input_data['cond']) &&

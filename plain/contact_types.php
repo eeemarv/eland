@@ -11,7 +11,7 @@ $add = isset($_GET['add']) ? true : false;
 
 if ($add)
 {
-	if (isset($_POST['zend']))
+	if ($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -21,8 +21,8 @@ if ($add)
 		}
 
 		$tc = [];
-		$tc['name'] = $_POST['name'];
-		$tc['abbrev'] = $_POST['abbrev'];
+		$tc['name'] = $app['request']->request->get('name', '');
+		$tc['abbrev'] = $app['request']->request->get('abbrev', '');
 
 		$error = (empty($tc['name'])) ? 'Geen naam ingevuld! ' : '';
 		$error .= (empty($tc['abbrev'])) ? 'Geen afkorting ingevuld! ' : $error;
@@ -104,7 +104,7 @@ if ($edit)
 		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
-	if(isset($_POST['zend']))
+	if($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -113,8 +113,8 @@ if ($edit)
 		}
 
 		$tc = [
-			'name'		=> $_POST['name'],
-			'abbrev'	=> $_POST['abbrev'],
+			'name'		=> $app['request']->request->get('name', ''),
+			'abbrev'	=> $app['request']->request->get('abbrev', ''),
 			'id'		=> $edit,
 		];
 
@@ -213,7 +213,7 @@ if ($del)
 		$app['link']->redirect('contact_types', $app['pp_ary'], []);
 	}
 
-	if(isset($_POST['zend']))
+	if($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
