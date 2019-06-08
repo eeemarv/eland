@@ -13,10 +13,9 @@ $edit = $_GET['edit'] ?? false;
 $map = $_GET['map'] ?? false;
 $map_edit = $_GET['map_edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
-$submit = isset($_POST['zend']) ? true : false;
 $confirm_del = isset($_POST['confirm_del']) ? true : false;
 
-if (($confirm_del || $submit
+if (($confirm_del
 		|| $add || $edit || $del
 		|| $app['request']->isMethod('POST')
 		|| $map_edit)
@@ -45,7 +44,7 @@ if ($map_edit)
 		$app['link']->redirect('docs', $app['pp_ary'], []);
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -153,7 +152,7 @@ if ($edit)
 		$doc['ts'] = $row['event_time'];
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$update = [
 			'user_id'		=> $doc['user_id'],
@@ -429,7 +428,7 @@ if ($del)
 /**
  * add
  */
-if ($submit)
+if ($app['request']->isMethod('POST'))
 {
 	$tmpfile = $_FILES['file']['tmp_name'];
 	$file = $_FILES['file']['name'];

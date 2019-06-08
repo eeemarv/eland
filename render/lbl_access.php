@@ -1,17 +1,17 @@
 <?php
 
-namespace service;
+namespace render;
 
 use Symfony\Component\HttpFoundation\Request;
+use service\assets;
+use cnst\access as cnst_access;
 
-class access_control
+class lbl_access
 {
+	protected $assets;
 	protected $request;
-	protected $tschema;
 	protected $s_role;
-	protected $access_level;
 	protected $intersystem_en;
-	protected $type_template;
 
 	protected $acc_ary = [
 		'admin'	=> [
@@ -50,17 +50,20 @@ class access_control
 	];
 
 	public function __construct(
+		/*
 		Request $request,
-		string $tschema,
 		string $s_role,
-		bool $intersystem_en
+		bool $intersystem_en,
+		*/
+		assets $assets
 	)
 	{
+		/*
 		$this->request = $request;
-		$this->tschema = $tschema;
 		$this->s_role = $s_role;
-		$this->access_level = $access_level;
 		$this->intersystem_en = $intersystem_en;
+		*/
+		$this->assets = $assets;
 
 		if (!$this->intersystem_en)
 		{
@@ -112,33 +115,33 @@ class access_control
 	}
 
 	public function get_label(
-		$access = 'admin'
+		string $access
 	)
 	{
-		if (isset($this->acc_ary_search[$access]))
-		{
-			$access = $this->acc_ary_search[$access];
-		}
+		$access = $access === 'guest' && !$this->intersystem_en ? 'user' : $access;
 
-		$acc = $this->acc_ary[$this->label_ary[$access]];
+		$out = '<span class="btn btn-';
+		$out .= cnst_access::LABEL[$access]['class'];
+		$out .= ' btn-xs';
+		$out .= '">';
+		$out .= cnst_access::LABEL[$access]['lbl'];
+		$out .= '</span>';
 
-		$ret = '<span class="btn btn-';
-		$ret .= $acc['class'] . ' btn-xs';
-		$ret .= '">' . $acc['label'];
-		$ret .= '</span>';
-
-		return $ret;
+		return $out;
 	}
 
 	public function get_post(string $name = 'access'):string
 	{
-		return $this->request->request->get($name);
+		return $this->request->request->get($name, '');
 	}
 
 	public function get_post_value(
-		$name = 'access'
-	)
+		$name
+	):string
 	{
+		return $this->request->request->get($name);
+
+
 		if (!isset($_POST[$name]))
 		{
 			return false;
@@ -152,7 +155,7 @@ class access_control
 		return false;
 	}
 
-	public function get_post_error($name = 'access'):string
+	public function get_post_error(string $name = 'access'):string
 	{
 		if (!$this->request->request->get($name))
 		{
@@ -163,84 +166,47 @@ class access_control
 	}
 
 	public function get_radio_buttons(
-		$access_cache_id = false,
-		$value = false,
-		$omit_access = false,
-		$name = 'access',
-		$size = 'xs',
-		$label = 'Zichtbaarheid'
+		string $name,
+		string $value,
+		array $keys,
+		string $schema,
+		string $cache_id = '',
+		string $label = 'Zichtbaarheid'
 	)
 	{
-		$acc_ary = $this->acc_ary;
-
-		if ($value === false)
-		{
-			$selected = false;
-		}
-		else if (isset($this->acc_ary[$this->input_ary[$value]]))
-		{
-			$selected = $value;
-		}
-		else if (isset($this->input_ary[$this->acc_ary_search[$value]]))
-		{
-			$selected = $this->input_ary[$this->acc_ary_search[$value]];
-		}
-		else if ($value === 2 || $value === 'interlets')
-		{
-			$selected = 'users';
-		}
-		else
-		{
-			$selected = false;
-		}
-
-		if ($omit_access)
-		{
-			if (!is_array($omit_access))
-			{
-				$omit_access = [$omit_access];
-			}
-
-			foreach ($omit_access as $omit)
-			{
-				unset($acc_ary[$omit]);
-			}
-		}
-
-		$acc_ary = array_intersect_key($acc_ary, $this->input_ary);
-
-		if (count($acc_ary) === 0)
+		if (count($keys) === 0)
 		{
 			return '';
 		}
-		else if (count($acc_ary) === 1)
+		else if (count($keys) === 1)
 		{
 			return '<input type="hidden" name="' . $name . '" value="' . key($acc_ary) . '">';
 		}
 
 		$out = '<div class="form-group">';
 		$out .= '<label for="' . $name . '" class="control-label">';
-		$out .= $label . '</label>';
-		$out .= '<div ';
+		$out .= $label;
+		$out .= '</label>';
+		$out .= '<div';
 
-		if ($access_cache_id)
+		if ($cache_id)
 		{
+			$this->assets->add(['access_input_cache.js']);
+
 			$out .= ' data-access-cache-id="';
-			$out .= $this->tschema . '_' . $access_cache_id . '"';
+			$out .= $schema . '_' . $cache_id . '"';
 		}
 
 		$out .= ' id="' . $name . '">';
 
-		foreach ($acc_ary as $key => $ary)
+		foreach ($keys as $key)
 		{
 			$out .= '<label class="radio-inline">';
 			$out .= '<input type="radio" name="' . $name . '"';
 			$out .= $key === $selected ? ' checked="checked"' : '';
 			$out .= ' value="' . $key . '" ';
 			$out .= 'required> ';
-			$out .= '<span class="btn btn-' . $ary['class'] . ' btn-' . $size . '">';
-			$out .= $ary['label'];
-			$out .= '</span>';
+			$out .= $this->get_label($key);
 			$out .= '</label>';
 		}
 

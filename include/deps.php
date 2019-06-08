@@ -722,6 +722,12 @@ $app['autominlimit'] = function ($app){
  * render
  */
 
+$app['lbl_access'] = function($app){
+	return new render\lbl_access(
+		$app['assets']
+	);
+};
+
 $app['pagination'] = function ($app){
 	return new render\pagination(
 		$app['select'],
@@ -820,13 +826,4 @@ $app['form_token'] = function ($app){
 
 $app['data_token'] = function ($app){
 	return new service\data_token($app['predis'], $app['token']);
-};
-
-$app['access_control'] = function($app){
-	return new service\access_control(
-		$app['request'],
-		$app['tschema'],
-		$app['s_role'],
-		$app['intersystem_en']
-	);
 };

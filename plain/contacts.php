@@ -1,5 +1,7 @@
 <?php
 
+use cnst\access as cnst_access;
+
 if ($app['s_anonymous'])
 {
 	exit;
@@ -9,7 +11,6 @@ $uid = $_GET['uid'] ?? false;
 $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
 
 $filter = $_GET['f'] ?? [];
 $pag = $_GET['p'] ?? [];
@@ -81,7 +82,7 @@ if ($del)
 		}
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -101,7 +102,8 @@ if ($del)
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 	}
 
-	$contact = $app['db']->fetchAssoc('select tc.abbrev, c.value, c.comments, c.flag_public
+	$contact = $app['db']->fetchAssoc('select tc.abbrev,
+			c.value, c.comments, c.flag_public
 		from ' . $app['tschema'] . '.type_contact tc, ' .
 			$app['tschema'] . '.contact c
 		where c.id_type_contact = tc.id
@@ -142,7 +144,12 @@ if ($del)
 	echo '</dd>';
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
-	echo $app['access_control']->get_label($contact['flag_public']);
+
+	$access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
+
+
+	echo $app['lbl_access']->get_label($access);
+
 	echo '</dd>';
 	echo '</dl>';
 
@@ -213,8 +220,10 @@ if ($edit || $add)
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 	}
 
-	if($submit)
+	if($app['request']->isMethod('POST'))
 	{
+		$errors = [];
+
 		if ($error_token = $app['form_token']->get_error())
 		{
 			$errors[] = $error_token;
@@ -239,11 +248,23 @@ if ($edit || $add)
 			}
 		}
 
+		$access = $app['request']->request->get('access', '');
+
+		if ($access)
+		{
+			$flag_pulbic = cnst_access::TO_FLAG_PUBLIC[$access];
+		}
+		else
+		{
+			$errors[] = 'Vul een zichtbaarheid in!';
+			$flag_public = 2;
+		}
+
 		$contact = [
-			'id_type_contact'		=> $_POST['id_type_contact'],
-			'value'					=> trim($_POST['value']),
-			'comments' 				=> trim($_POST['comments']),
-			'flag_public'			=> $app['access_control']->get_post_value(),
+			'id_type_contact'		=> $app['request']->request->get('id_type_contact'),
+			'value'					=> $app['request']->request->get('value'),
+			'comments' 				=> $app['request']->request->get('comments'),
+			'flag_public'			=> $flag_public,
 			'id_user'				=> $user_id,
 		];
 
@@ -275,13 +296,6 @@ if ($edit || $add)
 		if(!$abbrev_type)
 		{
 			$errors[] = 'Contacttype bestaat niet!';
-		}
-
-		$access_error = $app['access_control']->get_post_error();
-
-		if ($access_error)
-		{
-			$errors[] = $access_error;
 		}
 
 		$mail_type_id = $app['db']->fetchColumn('select id
@@ -400,14 +414,17 @@ if ($edit || $add)
 		$contact = $app['db']->fetchAssoc('select *
 			from ' . $app['tschema'] . '.contact
 			where id = ?', [$edit]);
+
+		$access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
 	}
 	else if ($add)
 	{
 		$contact = [
 			'value'				=> '',
 			'comments'			=> '',
-			'flag_public'		=> false,
 		];
+
+		$access = '';
 	}
 
 	$tc = [];
@@ -578,7 +595,9 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['access_control']->get_radio_buttons(false, $contact['flag_public']);
+//	$contact['flag_public'];   $access defined above
+
+	echo $app['lbl_access']->get_radio_buttons('access', $access_keys, $access);
 
 	if ($uid)
 	{
@@ -788,7 +807,10 @@ if ($uid)
 
 		if ($app['s_admin'] || $s_owner)
 		{
-			$out[] = $app['access_control']->get_label($c['flag_public']);
+			$access = cnst_access::FROM_FLAG_PUBLIC[$c['flag_public']];
+
+
+			$out[] = $app['lbl_access']->get_label($access);
 
 			$out[] = $app['link']->link_fa('contacts', $app['pp_ary'],
 				['del' => $c['id'], 'uid' => $uid], 'Verwijderen',
@@ -1310,7 +1332,9 @@ foreach ($contacts as $c)
 		$out[] = '&nbsp;';
 	}
 
-	$out[] = $app['access_control']->get_label($c['flag_public']);
+	$access = cnst_access::FROM_FLAG_PUBLIC[$c['flag_public']];
+
+	$out[] = $app['lbl_access']->get_label($access);
 
 	$out[] = $app['link']->link_fa('contacts', $app['pp_ary'],
 		['del' => $c['id']], 'Verwijderen',

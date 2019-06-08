@@ -2099,15 +2099,14 @@ if ($add || $edit)
 
 	if (!isset($fullname_access))
 	{
-		$fullname_access = $add && !$intersystem_code ? false : 'admin';
+		$fullname_access = $add && !$intersystem_code ? '' : 'admin';
 	}
 
 	echo $app['access_control']->get_radio_buttons(
 		'users_fullname',
 		$fullname_access,
-		false,
+		'',
 		'fullname_access',
-		'xs',
 		'Zichtbaarheid Volledige Naam'
 	);
 
@@ -2496,10 +2495,11 @@ if ($add || $edit)
 
 			if (!isset($c['flag_public']))
 			{
-				$c['flag_public'] = false;
+				$c['flag_public'] = '';
 			}
 
-			echo $app['access_control']->get_radio_buttons($c['abbrev'], $c['flag_public'], false, 'contact_access_' . $key);
+			echo $app['access_control']->get_radio_buttons(
+				$c['abbrev'], $c['flag_public'], '', 'contact_access_' . $key);
 
 			echo '<input type="hidden" ';
 			echo 'name="contact['. $key . '][id]" value="' . $c['id'] . '">';

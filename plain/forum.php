@@ -247,7 +247,7 @@ if ($del)
 
 if ($add || $edit)
 {
-	$app['assets']->add(['summernote', 'rich_edit.js', 'access_input_cache.js']);
+	$app['assets']->add(['summernote', 'rich_edit.js']);
 
 	if ($topic)
 	{
@@ -311,11 +311,11 @@ if ($add || $edit)
 		if ($app['s_user'])
 		{
 			$omit_access = 'admin';
-			$forum_post['access'] = ($forum_post['access']) ?: 1;
+			$forum_post['access'] = $forum_post['access'] ?: 1;
 		}
 		else
 		{
-			$omit_access = false;
+			$omit_access = '';
 		}
 
 		echo $app['access_control']->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);

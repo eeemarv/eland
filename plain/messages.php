@@ -13,7 +13,6 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']);
 $uid = $_GET['uid'] ?? false;
-$submit = isset($_POST['zend']);
 $img = isset($_GET['img']);
 $insert_img = isset($_GET['insert_img']);
 $img_del = $_GET['img_del'] ?? false;
@@ -33,7 +32,7 @@ $access = $app['access_control']->get_post_value();
 if ($app['request']->isMethod('POST')
 	&& $app['s_guest']
 	&& ($add || $edit || $del || $img || $img_del || $images
-		|| $extend_submit || $access_submit || $extend || $access))
+		|| $extend_submit || $access_submit || $extend))
 {
 	$app['alert']->error('Geen toegang als gast tot deze actie');
 	$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
@@ -49,7 +48,7 @@ if ($app['request']->isMethod('GET'))
  */
 if ($app['request']->isMethod('POST')
 	&& (($extend_submit && $extend)
-		|| ($access_submit && $access))
+		|| ($access_submit))
 	& ($app['s_admin'] || $app['s_user']))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
@@ -136,7 +135,7 @@ if ($app['request']->isMethod('POST')
 		if (!count($errors))
 		{
 			$m = [
-				'local' => $access == '2' ? 'f' : 't',
+				'local' => $access !== 'guest',
 				'mdate' => gmdate('Y-m-d H:i:s')
 			];
 
@@ -190,6 +189,8 @@ if ($id || $edit || $del)
 		where m.id = ?
 			and c.id = m.id_category', [$id]);
 
+	$message['access'] = $message['local'] ? 'user' : 'guest';
+
 	if (!$message)
 	{
 		$app['alert']->error('Bericht niet gevonden.');
@@ -201,7 +202,7 @@ if ($id || $edit || $del)
 		&& $app['s_id'] == $message['id_user']
 		&& $message['id_user'];
 
-	if ($message['local'] && $app['s_guest'])
+	if ($message['access'] === 'user' && $app['s_guest'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit bericht.');
 		$app['link']->redirect('messages', $app['pp_ary'], []);
@@ -679,7 +680,7 @@ if ($del)
 		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $del]);
 	}
 
-	if($submit)
+	if($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{
@@ -794,7 +795,7 @@ if (($edit || $add))
 		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $edit]);
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$validity = $_POST['validity'];
 
@@ -1434,12 +1435,12 @@ if (($edit || $add))
 
 	if ($app['count_intersystems'])
 	{
-		$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : false;
+		$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : '';
 
 		echo $app['access_control']->get_radio_buttons('messages', $access_value, 'admin');
 	}
 
-	$btn = ($edit) ? 'primary' : 'success';
+	$btn = $edit ? 'primary' : 'success';
 
 	echo $app['link']->btn_cancel('messages', $app['pp_ary'], ['id' => $id]);
 	echo '&nbsp;';
@@ -2713,7 +2714,7 @@ else if ($v_list)
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';
 			echo '<form method="post">';
-			echo $app['access_control']->get_radio_buttons(false, false, 'admin');
+			echo $app['access_control']->get_radio_buttons('', '', 'admin');
 			echo '<input type="submit" value="Aanpassen" ';
 			echo 'name="access_submit" class="btn btn-primary">';
 			echo $app['form_token']->get_hidden_input();

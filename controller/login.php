@@ -22,21 +22,23 @@ class login
             $location = $app['config']->get('default_landing_page', $app['tschema']);
         }
 
+        $login = trim($request->request->get('login'));
+
         if ($request->isMethod('POST'))
         {
-            $login = trim(strtolower($request->request->get('login')));
+            $lc_login = strtolower($login);
             $password = trim($request->request->get('password'));
 
             $errors = [];
 
-            if (!($login && $password))
+            if (!($lc_login && $password))
             {
                 $errors[] = 'Login gefaald. Vul Login en Paswoord in.';
             }
 
             $master_password = getenv('MASTER_PASSWORD');
 
-            if ($login == 'master'
+            if ($lc_login === 'master'
                 && $master_password
                 && hash('sha512', $password) === $master_password)
             {
@@ -67,7 +69,7 @@ class login
 
             $user_id = false;
 
-            if (!count($errors) && filter_var($login, FILTER_VALIDATE_EMAIL))
+            if (!count($errors) && filter_var($lc_login, FILTER_VALIDATE_EMAIL))
             {
                 $count_email = $app['db']->fetchColumn('select count(c.*)
                     from ' . $app['tschema'] . '.contact c, ' .
@@ -77,7 +79,7 @@ class login
                         and tc.abbrev = \'mail\'
                         and c.id_user = u.id
                         and u.status in (1, 2)
-                        and lower(c.value) = ?', [$login]);
+                        and lower(c.value) = ?', [$lc_login]);
 
                 if ($count_email == 1)
                 {
@@ -89,7 +91,7 @@ class login
                             and tc.abbrev = \'mail\'
                             and c.id_user = u.id
                             and u.status in (1, 2)
-                            and lower(c.value) = ?', [$login]);
+                            and lower(c.value) = ?', [$lc_login]);
                 }
                 else
                 {
@@ -105,7 +107,7 @@ class login
             {
                 $count_letscode = $app['db']->fetchColumn('select count(u.*)
                     from ' . $app['tschema'] . '.users u
-                    where lower(letscode) = ?', [$login]);
+                    where lower(letscode) = ?', [$lc_login]);
 
                 if ($count_letscode > 1)
                 {
@@ -119,7 +121,7 @@ class login
                 {
                     $user_id = $app['db']->fetchColumn('select id
                         from ' . $app['tschema'] . '.users
-                        where lower(letscode) = ?', [$login]);
+                        where lower(letscode) = ?', [$lc_login]);
                 }
             }
 
@@ -127,7 +129,7 @@ class login
             {
                 $count_name = $app['db']->fetchColumn('select count(u.*)
                     from ' . $app['tschema'] . '.users u
-                    where lower(name) = ?', [$login]);
+                    where lower(name) = ?', [$lc_login]);
 
                 if ($count_name > 1)
                 {
@@ -141,7 +143,7 @@ class login
                 {
                     $user_id = $app['db']->fetchColumn('select id
                         from ' . $app['tschema'] . '.users
-                        where lower(name) = ?', [$login]);
+                        where lower(name) = ?', [$lc_login]);
                 }
             }
 

@@ -10,7 +10,6 @@ $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
 $del = $_GET['del'] ?? false;
 $id = $_GET['id'] ?? false;
-$submit = isset($_POST['zend']) ? true : false;
 
 /**
  * approve a newsitem
@@ -48,7 +47,7 @@ if ($add || $edit)
 
 	$news = [];
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		$news = [
 			'itemdate'		=> trim($_POST['itemdate'] ?? ''),
@@ -108,7 +107,7 @@ if ($add || $edit)
 	}
 }
 
-if ($add && $submit && !count($errors))
+if ($add && $app['request']->isMethod('POST') && !count($errors))
 {
 	$news['approved'] = $app['s_admin'] ? 't' : 'f';
 	$news['published'] = $app['s_admin'] ? 't' : 'f';
@@ -153,7 +152,7 @@ if ($add && $submit && !count($errors))
 	}
 }
 
-if ($edit && $submit && !count($errors))
+if ($edit && $app['request']->isMethod('POST') && !count($errors))
 {
 	if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $edit]))
 	{
@@ -180,7 +179,7 @@ if ($edit)
 		$app['tschema'])['data']['access'];
 }
 
-if ($add && !$submit)
+if ($add && !$app['request']->isMethod('POST'))
 {
 	$news['itemdate'] = gmdate('Y-m-d');
 }
@@ -278,7 +277,7 @@ if ($add || $edit)
 	}
 	else
 	{
-		$omit_access = false;
+		$omit_access = '';
 	}
 
 	echo $app['access_control']->get_radio_buttons('news', $news_access, $omit_access);
@@ -313,7 +312,7 @@ if ($del)
 		exit;
 	}
 
-	if ($submit)
+	if ($app['request']->isMethod('POST'))
 	{
 		if ($error_token = $app['form_token']->get_error())
 		{

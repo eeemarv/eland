@@ -31,6 +31,8 @@ $fn_before_locale = function (Request $request, app $app){
 
 	$app['assets']->add_print_css(['print.css']);
 
+	error_log('LOGINS: ' . json_encode($app['s_logins']));
+
 //	$app['request'] = $request;
 };
 
