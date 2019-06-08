@@ -5,14 +5,14 @@ if (!$app['s_admin'])
 	exit;
 }
 
-$filter = $_GET['f'] ?? [];
-$sort = $_GET['sort'] ?? [];
-$pag = $_GET['p'] ?? [];
+$filter = $app['request']->query->get('f', []);
+$pag = $app['request']->query->get('p', []);
+$sort = $app['request']->query->get('s', []);
 
 $app['log_db']->update();
 
 $params = [
-	'sort'	=> [
+	's'	=> [
 		'orderby'	=> $sort['orderby'] ?? 'ts',
 		'asc'		=> $sort['asc'] ?? 0,
 	],
@@ -80,13 +80,13 @@ else
 $query = 'select *
 	from xdb.logs
 		where schema = ?' . $where_sql . '
-	order by ' . $params['sort']['orderby'] . ' ';
+	order by ' . $params['s']['orderby'] . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(*)
 	from xdb.logs
 	where schema = ?' . $where_sql, $params_sql);
 
-$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= $params['s']['asc'] ? 'asc ' : 'desc ';
 $query .= ' limit ' . $params['p']['limit'];
 $query .= ' offset ' . $params['p']['start'];
 
@@ -120,8 +120,8 @@ $tableheader_ary = [
 	]),
 ];
 
-$tableheader_ary[$params['sort']['orderby']]['asc'] = $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['indicator'] = $params['sort']['asc'] ? '-asc' : '-desc';
+$tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;
+$tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '-asc' : '-desc';
 
 $app['btn_nav']->csv();
 
@@ -274,7 +274,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	}
 	else
 	{
-		$th_params['sort'] = [
+		$th_params['s'] = [
 			'orderby'	=> $key_orderby,
 			'asc' 		=> $data['asc'],
 		];

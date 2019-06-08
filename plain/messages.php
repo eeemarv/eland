@@ -23,9 +23,9 @@ $extend_submit = isset($_POST['extend_submit']);
 $extend = $_POST['extend'] ?? false;
 $access_submit = isset($_POST['access_submit']);
 
-$filter = $_GET['f'] ?? [];
-$sort = $_GET['sort'] ?? [];
-$pag = $_GET['p'] ?? [];
+$filter = $app['request']->query->get('f', []);
+$pag = $app['request']->query->get('p', []);
+$sort = $app['request']->query->get('s', []);
 
 $access = $app['access_control']->get_post_value();
 
@@ -1859,7 +1859,7 @@ $v_list = $view === 'list' || $p_inline;
 $v_extended = $view === 'extended' && !$p_inline;
 
 $params = [
-	'sort'	=> [
+	's'	=> [
 		'orderby'	=> $sort['orderby'] ?? 'm.cdate',
 		'asc'		=> $sort['asc'] ?? 0,
 	],
@@ -2030,14 +2030,14 @@ $query = 'select m.*, u.postcode
 	from ' . $app['tschema'] . '.messages m, ' .
 		$app['tschema'] . '.users u
 		where m.id_user = u.id' . $where_sql . '
-	order by ' . $params['sort']['orderby'] . ' ';
+	order by ' . $params['s']['orderby'] . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(m.*)
 	from ' . $app['tschema'] . '.messages m, ' .
 		$app['tschema'] . '.users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
-$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= $params['s']['asc'] ? 'asc ' : 'desc ';
 $query .= ' limit ' . $params['p']['limit'];
 $query .= ' offset ' . $params['p']['start'];
 
@@ -2125,10 +2125,10 @@ if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
 	];
 }
 
-$tableheader_ary[$params['sort']['orderby']]['asc']
-	= $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['fa']
-	= $params['sort']['asc'] ? 'sort-asc' : 'sort-desc';
+$tableheader_ary[$params['s']['orderby']]['asc']
+	= $params['s']['asc'] ? 0 : 1;
+$tableheader_ary[$params['s']['orderby']]['fa']
+	= $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
 unset($tableheader_ary['m.cdate']);
 
@@ -2468,7 +2468,7 @@ if ($v_list)
 		}
 		else
 		{
-			$th_params['sort'] = [
+			$th_params['s'] = [
 				'orderby'	=> $key_orderby,
 				'asc' 		=> $data['asc'],
 			];

@@ -15,9 +15,9 @@ $tuid = $_GET['tuid'] ?? false;
 $tus = $_GET['tus'] ?? false;
 $fuid = $_GET['fuid'] ?? false;
 
-$filter = $_GET['f'] ?? [];
-$pag = $_GET['p'] ?? [];
-$sort = $_GET['sort'] ?? [];
+$filter = $app['request']->query->get('f', []);
+$pag = $app['request']->query->get('p', []);
+$sort = $app['request']->query->get('s', []);
 
 $currency = $app['config']->get('currency', $app['tschema']);
 
@@ -2016,7 +2016,7 @@ $s_owner = !$app['s_guest']
 $params_sql = $where_sql = $where_code_sql = [];
 
 $params = [
-	'sort'	=> [
+	's'	=> [
 		'orderby'	=> $sort['orderby'] ?? 'cdate',
 		'asc'		=> $sort['asc'] ?? 0,
 	],
@@ -2146,8 +2146,8 @@ else
 $query = 'select t.*
 	from ' . $app['tschema'] . '.transactions t ' .
 	$where_sql . '
-	order by t.' . $params['sort']['orderby'] . ' ';
-$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+	order by t.' . $params['s']['orderby'] . ' ';
+$query .= $params['s']['asc'] ? 'asc ' : 'desc ';
 $query .= ' limit ' . $params['p']['limit'];
 $query .= ' offset ' . $params['p']['start'];
 
@@ -2234,10 +2234,10 @@ else
 	];
 }
 
-$tableheader_ary[$params['sort']['orderby']]['asc']
-	= $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['fa']
-	= $params['sort']['asc'] ? 'sort-asc' : 'sort-desc';
+$tableheader_ary[$params['s']['orderby']]['asc']
+	= $params['s']['asc'] ? 0 : 1;
+$tableheader_ary[$params['s']['orderby']]['fa']
+	= $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
 if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
 {
@@ -2563,7 +2563,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	{
 		$h_params = $params;
 
-		$h_params['sort'] = [
+		$h_params['s'] = [
 			'orderby' 	=> $key_orderby,
 			'asc'		=> $data['asc'],
 		];

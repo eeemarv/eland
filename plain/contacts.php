@@ -12,9 +12,9 @@ $del = $_GET['del'] ?? false;
 $edit = $_GET['edit'] ?? false;
 $add = $_GET['add'] ?? false;
 
-$filter = $_GET['f'] ?? [];
-$pag = $_GET['p'] ?? [];
-$sort = $_GET['sort'] ?? [];
+$filter = $app['request']->query->get('f', []);
+$pag = $app['request']->query->get('p', []);
+$sort = $app['request']->query->get('s', []);
 
 if ($uid)
 {
@@ -867,7 +867,7 @@ $s_owner = !$app['s_guest']
 	&& $app['s_id'] && $uid;
 
 $params = [
-	'sort'	=> [
+	's'	=> [
 		'orderby'	=> $sort['orderby'] ?? 'c.id',
 		'asc'		=> $sort['asc'] ?? 0,
 	],
@@ -989,7 +989,7 @@ else
 $user_table_sql = '';
 
 if ($params['f']['ustatus'] !== 'all'
-	|| $params['sort']['orderby'] === 'u.letscode')
+	|| $params['s']['orderby'] === 'u.letscode')
 {
 	$user_table_sql = ', ' . $app['tschema'] . '.users u ';
 	$where_sql[] = 'u.id = c.id_user';
@@ -1014,8 +1014,8 @@ $row_count = $app['db']->fetchColumn('select count(c.*)
 		$app['tschema'] . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
-$query .= ' order by ' . $params['sort']['orderby'] . ' ';
-$query .= $params['sort']['asc'] ? 'asc ' : 'desc ';
+$query .= ' order by ' . $params['s']['orderby'] . ' ';
+$query .= $params['s']['asc'] ? 'asc ' : 'desc ';
 $query .= ' limit ' . $params['p']['limit'];
 $query .= ' offset ' . $params['p']['start'];
 
@@ -1048,10 +1048,10 @@ $tableheader_ary = [
 		'no_sort'	=> true]),
 ];
 
-$tableheader_ary[$params['sort']['orderby']]['asc']
-	= $params['sort']['asc'] ? 0 : 1;
-$tableheader_ary[$params['sort']['orderby']]['fa']
-	= $params['sort']['asc'] ? 'sort-asc' : 'sort-desc';
+$tableheader_ary[$params['s']['orderby']]['asc']
+	= $params['s']['asc'] ? 0 : 1;
+$tableheader_ary[$params['s']['orderby']]['fa']
+	= $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
 unset($tableheader_ary['c.id']);
 
@@ -1287,7 +1287,7 @@ foreach ($tableheader_ary as $key_orderby => $data)
 	}
 	else
 	{
-		$th_params['sort'] = [
+		$th_params['s'] = [
 			'orderby'	=> $key_orderby,
 			'asc'		=> $data['asc'],
 		];
