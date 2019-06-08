@@ -2532,7 +2532,7 @@ if ($v_list)
 		echo $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
 		echo '</td>';
 
-		if (!$app['s_guest'] && $app['count_intersystems'])
+		if (!$app['s_guest'] && $app['intersystems']->get_count($app['s_schema']))
 		{
 			echo '<td>';
 			echo $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets');

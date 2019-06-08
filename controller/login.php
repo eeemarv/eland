@@ -27,6 +27,8 @@ class login
             $login = trim(strtolower($request->request->get('login')));
             $password = trim($request->request->get('password'));
 
+            $errors = [];
+
             if (!($login && $password))
             {
                 $errors[] = 'Login gefaald. Vul Login en Paswoord in.';

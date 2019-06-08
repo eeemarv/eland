@@ -687,7 +687,6 @@ $app->register(new Silex\Provider\SessionServiceProvider(), [
 	},
 	'session.storage.options'	=> [
 		'name'						=> 'eland',
-		'cookie_domain'				=> '.' . getenv('OVERALL_DOMAIN'),
 	],
 ]);
 

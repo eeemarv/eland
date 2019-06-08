@@ -45,7 +45,7 @@ class btn_nav
 			if ($is_group)
 			{
 				$out[] = '<span class="btn-group" role="group">' .
-					$this->out[$key] . '</span>';
+					implode('', $this->out[$key]) . '</span>';
 				continue;
 			}
 
@@ -90,7 +90,7 @@ class btn_nav
 		string $title,
 		string $fa,
 		bool $active
-	)
+	):string
 	{
 
 		return $this->link->link_fa_only($route, $params_context,
