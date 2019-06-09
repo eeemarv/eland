@@ -149,25 +149,33 @@ if ($edit)
 	if ($row)
 	{
 		$doc = $row['data'];
+
+		$access = cnst_access::FROM_XDB[$doc['access']];
 		$doc['ts'] = $row['event_time'];
 	}
 
 	if ($app['request']->isMethod('POST'))
 	{
+		$errors = [];
+
+		$access = $app['request']->request->get('access', '');
+
+		if (!$access)
+		{
+			$errors[] = 'Vul een zichtbaarheid in.';
+		}
+		else
+		{
+			$access = cnst_access::TO_XDB[$access];
+		}
+
 		$update = [
 			'user_id'		=> $doc['user_id'],
 			'filename'		=> $doc['filename'],
 			'org_filename'	=> $doc['org_filename'],
 			'name'			=> trim($app['request']->request->get('name', '')),
-			'access'		=> $app['request']->request->get('access', ''),
+			'access'		=> $access,
 		];
-
-		$access_error = $app['access_control']->get_post_error();
-
-		if ($access_error)
-		{
-			$errors[] = $access_error;
-		}
 
 		if (!count($errors))
 		{
@@ -288,7 +296,9 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['access_control']->get_radio_buttons('docs', $doc['access']);
+
+
+	echo $app['lbl_access']->get_radio_buttons('access', $access_ary, $access, 'docs');
 
 	$map_name = $map['map_name'] ?? '';
 
@@ -430,10 +440,12 @@ if ($del)
  */
 if ($app['request']->isMethod('POST'))
 {
-	$tmpfile = $_FILES['file']['tmp_name'];
-	$file = $_FILES['file']['name'];
-	$file_size = $_FILES['file']['size'];
-	$type = $_FILES['file']['type'];
+	$f_file = $app['request']->files->get('file');
+
+	$tmpfile = $f_file['tmp_name'];
+	$file = $f_file['name'];
+	$file_size = $f_file['size'];
+	$type = $f_file['type'];
 
 	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
@@ -447,11 +459,11 @@ if ($app['request']->isMethod('POST'))
 		$errors[] = 'Geen bestand geselecteerd.';
 	}
 
-	$access_error = $app['access_control']->get_post_error();
+	$access = $app['request']->request->get('access', '');
 
-	if ($access_error)
+	if (!$access)
 	{
-		$errors[] = $access_error;
+		$errors[] = 'Vul een zichtbaarheid in';
 	}
 
 	if ($token_error = $app['form_token']->get_error())
@@ -482,7 +494,7 @@ if ($app['request']->isMethod('POST'))
 			$doc = [
 				'filename'		=> $filename,
 				'org_filename'	=> $file,
-				'access'		=> $app['request']->request->get('access', ''),
+				'access'		=> cnst_access::TO_XDB[$access],
 				'user_id'		=> $app['s_id'],
 			];
 
@@ -549,7 +561,7 @@ if ($add)
 		}
 	}
 
-	$app['assets']->add(['typeahead', 'typeahead.js', 'access_input_cache.js']);
+	$app['assets']->add(['typeahead', 'typeahead.js']);
 
 	$app['heading']->add('Nieuw document opladen');
 
@@ -642,7 +654,7 @@ if ($map)
 	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
-		'access' => $app['access_control']->get_visible_ary()],
+		'access' => $app['item_access']->get_visible_ary_xdb()],
 		'order by event_time asc');
 
 	$docs = [];
@@ -690,7 +702,7 @@ else
 	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
-		'access' => $app['access_control']->get_visible_ary()],
+		'access' => $app['item_access']->get_visible_ary_xdb()],
 		'order by event_time asc');
 
 	$docs = [];

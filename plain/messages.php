@@ -27,8 +27,6 @@ $filter = $app['request']->query->get('f', []);
 $pag = $app['request']->query->get('p', []);
 $sort = $app['request']->query->get('s', []);
 
-$access = $app['access_control']->get_post_value();
-
 if ($app['request']->isMethod('POST')
 	&& $app['s_guest']
 	&& ($add || $edit || $del || $img || $img_del || $images
@@ -125,11 +123,11 @@ if ($app['request']->isMethod('POST')
 
 	if ($access_submit && !count($errors))
 	{
-		$access_error = $app['access_control']->get_post_error();
+		$access = $app['request']->request->get('access', '');
 
-		if ($access_error)
+		if (!$access)
 		{
-			$errors[] = $access_error;
+			$errors[] = 'Vul een zichtbaarheid in.';
 		}
 
 		if (!count($errors))
@@ -716,7 +714,6 @@ if ($del)
 	include __DIR__ . '/../include/header.php';
 
 	echo '<div class="panel panel-info printview">';
-
 	echo '<div class="panel-heading">';
 
 	echo '<dl>';
@@ -736,11 +733,11 @@ if ($del)
 	echo $message['validity'];
 	echo '</dd>';
 
-	if ($app['count_intersystems'])
+	if ($app['intersystem_en'] && $app['intersystems']->get_count($app['tschema']))
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
-		echo $app['access_control']->get_label($message['local'] ? 'users' : 'interlets');
+		echo $app['lbl_access']->get_label($message['local'] ? 'user' : 'guest');
 		echo '</dd>';
 	}
 
@@ -838,14 +835,14 @@ if (($edit || $add))
 
 		if ($app['count_intersystems'])
 		{
-			$access_error = $app['access_control']->get_post_error();
+			$access = $app['request']->query->get('access', '');
 
-			if ($access_error)
+			if (!$access)
 			{
-				$errors[] = $access_error;
+				$errors[] = 'Vul een zichtbaarheid in.';
 			}
 
-			$msg['local'] = $app['access_control']->get_post_value() == 2 ? 0 : 1;
+			$msg['local'] = $access === 'guest' ? 0 : 1;
 		}
 		else if ($add)
 		{

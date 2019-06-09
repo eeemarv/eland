@@ -6,14 +6,11 @@ use Symfony\Component\HttpFoundation\Request;
 use service\assets;
 use cnst\access as cnst_access;
 
-class lbl_access
+class item_access
 {
-	protected $assets;
-/*
 	protected $request;
 	protected $s_role;
 	protected $intersystem_en;
-*/
 
 	protected $acc_ary = [
 		'admin'	=> [
@@ -52,20 +49,14 @@ class lbl_access
 	];
 
 	public function __construct(
-		/*
 		Request $request,
 		string $s_role,
-		bool $intersystem_en,
-		*/
-		assets $assets
+		bool $intersystem_en
 	)
 	{
-		/*
 		$this->request = $request;
 		$this->s_role = $s_role;
 		$this->intersystem_en = $intersystem_en;
-		*/
-		$this->assets = $assets;
 
 		if (!$this->intersystem_en)
 		{
@@ -81,17 +72,9 @@ class lbl_access
 		return $level >= $this->access_level;
 	}
 
-	public function get_visible_ary()
+	public function get_access_ary():array
 	{
-		$ary = [];
-
-		foreach ($this->acc_ary_search as $lvl => $role)
-		{
-			if ($this->access_level <= $lvl)
-			{
-				$ary[] = $role;
-			}
-		}
+		$ary = cnst_access::ARY;
 
 		return $ary;
 	}

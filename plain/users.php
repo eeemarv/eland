@@ -492,11 +492,11 @@ if ($bulk_submit && $app['request']->isMethod('POST')
 
 	if ($bulk_field && strpos($bulk_field, '_access') !== false)
 	{
-		$access_value = $app['access_control']->get_post_value();
+		$access_value = $app['request']->request->get('access', '');
 
-		if ($access_error = $app['access_control']->get_post_error())
+		if (!$access_value)
 		{
-			$errors[] = $access_error;
+			$errors[] = 'Vul een zichtbaarheid in.';
 		}
 	}
 
@@ -537,7 +537,7 @@ if ($app['s_admin'] && !count($errors)
 
 	if ($bulk_field == 'fullname_access')
 	{
-		$fullname_access_role = $app['access_control']->get_role($access_value);
+		$fullname_access_role = $app['item_access']->get_xdb($access_value);
 
 		foreach ($user_ids as $user_id)
 		{
@@ -548,7 +548,7 @@ if ($app['s_admin'] && !count($errors)
 		}
 
 		$app['monolog']->info('bulk: Set fullname_access to ' .
-			$fullname_access_role . ' for users ' .
+			$access_value . ' for users ' .
 			$users_log, ['schema' => $app['tschema']]);
 
 		$app['alert']->success('De zichtbaarheid van de
@@ -606,16 +606,16 @@ if ($app['s_admin'] && !count($errors)
 			from ' . $app['tschema'] . '.type_contact
 			where abbrev = ?', [$abbrev]);
 
+		$flag_public = $app['item_access']->get_flag_public($acces_value);
+
 		$app['db']->executeUpdate('update ' . $app['tschema'] . '.contact
 		set flag_public = ?
 		where id_user in (?) and id_type_contact = ?',
-			[$access_value, $user_ids, $id_type_contact],
+			[$flag_public, $user_ids, $id_type_contact],
 			[\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
-		$access_role = $app['access_control']->get_role($access_value);
-
 		$app['monolog']->info('bulk: Set ' . $bulk_field .
-			' to ' . $access_role .
+			' to ' . $access_value .
 			' for users ' . $users_log,
 			['schema' => $app['tschema']]);
 		$app['alert']->success('Het veld werd aangepast.');
@@ -1314,17 +1314,14 @@ if ($add || $edit)
 
 			foreach ($contact as $key => $c)
 			{
-				$contact[$key]['flag_public'] = $app['access_control']->get_post_value('contact_access_' . $key);
+				$access_contact = $app['request']->request->get('contact_access_' . $key);
 
-				if ($c['value'])
+				if ($c['value'] && !$access_contact)
 				{
-					$contact_post_error = $app['access_control']->get_post_error('contact_access_' . $key);
-
-					if ($contact_post_error)
-					{
-						$errors[] = $contact_post_error;
-					}
+					$errors[] = 'Vul een zichtbaarheid in.';
 				}
+
+				$contact[$key]['flag_public'] = $app['item_access']->get_flag_public($access_contact);
 			}
 
 			foreach ($contact as $key => $c)
@@ -1405,7 +1402,7 @@ if ($add || $edit)
 			$user['fullname'] = trim($_POST['fullname']);
 		}
 
-		$fullname_access = $app['access_control']->get_post_value('fullname_access');
+		$fullname_access = $app['request']->request->get('fullname_access', '');
 
 		$name_sql = 'select name
 			from ' . $app['tschema'] . '.users
@@ -1429,11 +1426,9 @@ if ($add || $edit)
 			$user_prefetch = $app['user_cache']->get($edit, $app['tschema']);
 		}
 
-		$fullname_access_error = $app['access_control']->get_post_error('fullname_access');
-
-		if ($fullname_access_error)
+		if (!$fullname_access)
 		{
-			$errors[] = $fullname_access_error;
+			$errors[] = 'Vul een zichtbaarheid in voor de volledige naam.';
 		}
 
 		if ($username_edit)
@@ -1590,7 +1585,7 @@ if ($add || $edit)
 				{
 					$id = $app['db']->lastInsertId($app['tschema'] . '.users_id_seq');
 
-					$fullname_access_role = $app['access_control']->get_role($fullname_access);
+					$fullname_access_role = $app['item_access']->get_xdb($fullname_access);
 
 					$app['xdb']->set('user_fullname_access', $id, [
 						'fullname_access' => $fullname_access_role,
@@ -1700,7 +1695,7 @@ if ($add || $edit)
 				if($app['db']->update($app['tschema'] . '.users', $user, ['id' => $edit]))
 				{
 
-					$fullname_access_role = $app['access_control']->get_role($fullname_access);
+					$fullname_access_role = $app['item_access']->get_xdb($fullname_access);
 
 					$app['xdb']->set('user_fullname_access', $edit, [
 						'fullname_access' => $fullname_access_role,
@@ -2880,7 +2875,7 @@ if ($id)
 
 	if ($app['s_admin']
 		|| $s_owner
-		|| $app['access_control']->is_visible($fullname_access))
+		|| $app['item_access']->is_visible_xdb($fullname_access))
 	{
 		echo get_dd($user['fullname'] ?? '');
 	}

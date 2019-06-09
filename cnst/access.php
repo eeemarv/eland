@@ -19,6 +19,12 @@ class access
         ],
     ];
 
+    const ARY = [
+        'admin' => 'admin',
+        'user'  => 'user',
+        'guest' => 'guest',
+    ];
+
     const FROM_FLAG_PUBLIC = [
         0   => 'admin',
         1   => 'user',

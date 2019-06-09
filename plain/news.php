@@ -50,18 +50,18 @@ if ($add || $edit)
 	if ($app['request']->isMethod('POST'))
 	{
 		$news = [
-			'itemdate'		=> trim($_POST['itemdate'] ?? ''),
-			'location'		=> trim($_POST['location'] ?? ''),
-			'sticky'		=> isset($_POST['sticky']) ? 't' : 'f',
-			'newsitem'		=> trim($_POST['newsitem'] ?? ''),
-			'headline'		=> trim($_POST['headline'] ?? ''),
+			'itemdate'	=> trim($app['request']->request->get('$itemdate', '')),
+			'location'	=> trim($app['request']->request->get('location', '')),
+			'sticky'	=> $app['request']->request->get('sticky', false) ? 't' : 'f',
+			'newsitem'	=> trim($app['request']->request->get('newsitem', '')),
+			'headline'	=> trim($app['request']->request->get('headline', '')),
 		];
 
-		$access_error = $app['access_control']->get_post_error();
+		$access = $app['request']->request->get('access', '');
 
-		if ($access_error)
+		if (!$access)
 		{
-			$errors[] = $access_error;
+			$errors[] = 'Vul een zichtbaarheid in.';
 		}
 
 		if ($news['itemdate'])
@@ -119,7 +119,7 @@ if ($add && $app['request']->isMethod('POST') && !count($errors))
 		$id = $app['db']->lastInsertId($app['tschema'] . '.news_id_seq');
 
 		$app['xdb']->set('news_access', $id, [
-			'access' => $_POST['access']
+			'access' => cnst_access::TO_XDB[$access],
 		], $app['tschema']);
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
@@ -157,7 +157,7 @@ if ($edit && $app['request']->isMethod('POST') && !count($errors))
 	if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $edit]))
 	{
 		$app['xdb']->set('news_access', $edit, [
-			'access' => $_POST['access']
+			'access' => $app['item_access']->get_xdb($access)
 		], $app['tschema']);
 
 		$app['alert']->success('Nieuwsbericht aangepast.');
@@ -487,7 +487,7 @@ while ($row = $st->fetch())
 		$news[$news_id]['access'] = $news_access_ary[$news_id];
 	}
 
-	if (!$app['access_control']->is_visible($news[$news_id]['access']))
+	if (!$app['item_access']->is_visible_xdb($news[$news_id]['access']))
 	{
 		unset($news[$news_id]);
 		$no_access_ary[$news_id] = true;

@@ -127,7 +127,7 @@ if ($app['request']->isMethod('POST'))
 	$htmlpurifier = new HTMLPurifier($config_htmlpurifier);
 	$content = $htmlpurifier->purify($content);
 
-	$forum_post = ['content'	=> $content];
+	$forum_post = ['content' => $content];
 
 	if ($topic)
 	{
@@ -136,7 +136,7 @@ if ($app['request']->isMethod('POST'))
 	else
 	{
 		$forum_post['subject'] = $app['request']->request->get('subject', '');
-		$forum_post['access']	= $app['request']->request->get('access', '');
+		$forum_post['access'] = $app['request']->request->get('access', '');
 	}
 
 	if (!$edit)
@@ -156,11 +156,11 @@ if ($app['request']->isMethod('POST'))
 
 	if (!$topic)
 	{
-		$access_error = $app['access_control']->get_post_error();
+		$access = $app['request']->request->get('access', '');
 
-		if ($access_error)
+		if (!$access)
 		{
-			$errors[] = $access_error;
+			$errors[] = 'Vul een zichtbaarheid in.';
 		}
 	}
 
@@ -175,6 +175,7 @@ if ($app['request']->isMethod('POST'))
 	}
 	else if ($edit)
 	{
+
 		$app['xdb']->set('forum', $edit, $forum_post, $app['tschema']);
 
 		$app['alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
@@ -254,7 +255,7 @@ if ($add || $edit)
 			$topic_post = $row['data'];
 		}
 
-		if (!$app['access_control']->is_visible($topic_post['access']))
+		if (!$app['item_access']->is_visible_xdb($topic_post['access']))
 		{
 			$app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
 			$app['link']->redirect('forum', $app['pp_ary'], []);
@@ -371,7 +372,7 @@ if ($topic)
 		&& $app['s_system_self']
 		&& !$app['s_guest'];
 
-	if (!$app['access_control']->is_visible($topic_post['access']) && !$s_owner)
+	if (!$app['item_access']->is_visible_xdb($topic_post['access']) && !$s_owner)
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
 		$app['link']->redirect('forum', $app['pp_ary'], []);
@@ -402,7 +403,7 @@ if ($topic)
 		'agg_schema' => $app['tschema'],
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
-		'access' => $app['access_control']->get_visible_ary(),
+		'access' => $app['item_access']->get_visible_ary_xdb(),
 	], 'order by event_time asc limit 1');
 
 	$prev = count($rows) ? reset($rows)['eland_id'] : false;
@@ -411,7 +412,7 @@ if ($topic)
 		'agg_schema' => $app['tschema'],
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
-		'access' => $app['access_control']->get_visible_ary(),
+		'access' => $app['item_access']->get_visible_ary_xdb(),
 	], 'order by event_time desc limit 1');
 
 	$next = count($rows) ? reset($rows)['eland_id'] : false;
@@ -529,7 +530,8 @@ if ($topic)
 $rows = $app['xdb']->get_many([
 	'agg_schema' => $app['tschema'],
 	'agg_type' => 'forum',
-	'access' => $app['access_control']->get_visible_ary()], 'order by event_time desc');
+	'access' => $app['item_access']->get_visible_ary_xdb()],
+		'order by event_time desc');
 
 if (count($rows))
 {
@@ -592,7 +594,7 @@ $forum_empty = true;
 
 foreach($forum_posts as $p)
 {
-	if ($app['access_control']->is_visible($p['access']))
+	if ($app['item_access']->is_visible_xdb($p['access']))
 	{
 		$forum_empty = false;
 		break;
@@ -631,7 +633,7 @@ echo '<tbody>';
 
 foreach($forum_posts as $p)
 {
-	if (!$app['access_control']->is_visible($p['access']))
+	if (!$app['item_access']->is_visible_xdb($p['access']))
 	{
 		continue;
 	}
