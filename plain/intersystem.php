@@ -31,8 +31,6 @@ if ($id || $edit || $del)
 	}
 }
 
-
-
 /**
  *	add
  */
@@ -53,8 +51,6 @@ if ($add || $edit)
 		];
 
 		$group['elassoapurl'] = $group['url'] . '/soap';
-
-		unset($group['zend'], $group['form_token']);
 
 		if (strlen($group['groupname']) > 128)
 		{
@@ -350,7 +346,9 @@ if ($add || $edit)
 	$canc = $edit ? ['id' => $edit] : [];
 	echo $app['link']->btn_cancel('intersystem', $app['pp_ary'], $canc);
 
-	echo '<input type="submit" name="zend" value="Opslaan" class="btn btn-' . $btn . '">';
+	echo '<input type="submit" name="zend" value="Opslaan" ';
+	echo 'class="btn btn-' . $btn . '">';
+
 	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';

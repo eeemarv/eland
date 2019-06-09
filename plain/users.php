@@ -1963,7 +1963,6 @@ if ($add || $edit)
 		'generate_password.js',
 		'generate_password_onload.js',
 		'user_edit.js',
-		'access_input_cache.js',
 		'typeahead',
 		'typeahead.js',
 	]);

@@ -1240,7 +1240,6 @@ if (($edit || $add))
 	$app['assets']->add([
 		'fileupload',
 		'msg_edit.js',
-		'access_input_cache.js',
 	]);
 
 	$app['heading']->add($add ? 'Nieuw Vraag of Aanbod toevoegen' : 'Vraag of Aanbod aanpassen');

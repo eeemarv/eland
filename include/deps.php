@@ -703,6 +703,15 @@ $app['alert'] = function ($app){
 		$app['tschema']);
 };
 
+$app['item_access'] = function($app){
+	return new service\item_access(
+		$app['assets'],
+		$app['tschema'],
+		$app['s_role'],
+		$app['intersystem_en']
+	);
+};
+
 $app['password_strength'] = function (){
 	return new service\password_strength();
 };
@@ -721,12 +730,6 @@ $app['autominlimit'] = function ($app){
 /**
  * render
  */
-
-$app['lbl_access'] = function($app){
-	return new render\lbl_access(
-		$app['assets']
-	);
-};
 
 $app['pagination'] = function ($app){
 	return new render\pagination(

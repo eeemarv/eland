@@ -1,102 +1,125 @@
 <?php
 
-namespace render;
+namespace service;
 
-use Symfony\Component\HttpFoundation\Request;
 use service\assets;
 use cnst\access as cnst_access;
 
 class item_access
 {
-	protected $request;
+	protected $assets;
+	protected $tschema;
 	protected $s_role;
 	protected $intersystem_en;
 
-	protected $acc_ary = [
-		'admin'	=> [
-			'level'	=> 0,
-			'label'	=> 'admin',
-			'class'	=> 'info',
-		],
-		'users'	=> [
-			'level'	=> 1,
-			'label'	=> 'leden',
-			'class'	=> 'default',
-		],
-		'interlets'	=> [
-			'level'	=> 2,
-			'label'	=> 'interSysteem',
-			'class'	=> 'warning',
-		],
-	];
-
-	protected $acc_ary_search = [
-		0 => 'admin',
-		1 => 'users',
-		2 => 'interlets',
-	];
-
-	protected $input_ary = [
-		'admin'	=> 'admin',
-		'users'	=> 'users',
-		'interlets'	=> 'interlets',
-	];
-
-	protected $label_ary = [
-		'admin'	=> 'admin',
-		'users'	=> 'users',
-		'interlets' => 'interlets',
-	];
-
 	public function __construct(
-		Request $request,
+		assets $assets,
+		string $tschema,
 		string $s_role,
 		bool $intersystem_en
 	)
 	{
-		$this->request = $request;
+		$this->assets = $assets;
+		$this->tschema = $tschema;
 		$this->s_role = $s_role;
 		$this->intersystem_en = $intersystem_en;
-
-		if (!$this->intersystem_en)
-		{
-			unset($this->input_ary['interlets']);
-			$this->label_ary['interlets'] = 'users';
-		}
 	}
 
-	public function is_visible($role_or_level)
+	public function is_visible(string $access):bool
 	{
-		$level = $this->get_level($role_or_level);
+		if ($this->s_role === 'admin')
+		{
+			return true;
+		}
+		else if ($this->s_role === 'user')
+		{
+			if ($access === 'user' || $access === 'guest')
+			{
+				return true;
+			}
 
-		return $level >= $this->access_level;
+			return false;
+		}
+		else if ($this->s_role === 'guest')
+		{
+			if ($this->intersystem_en && $access === 'guest')
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
-	public function get_access_ary():array
+	public function is_visible_xdb(string $access_xdb):bool
+	{
+		if (!isset(cnst_access::FROM_XDB[$access_xdb]))
+		{
+			return false;
+		}
+
+		return $this->is_visible(cnst_access::FROM_XDB[$access_xdb]);
+	}
+
+	public function is_visible_flag_public(int $access_flag_public):bool
+	{
+		if (!isset(cnst_access::FROM_FLAG_PUBLIC[$access_flag_public]))
+		{
+			return false;
+		}
+
+		return $this->is_visible(cnst_access::FROM_XDB[$access_flag_public]);
+	}
+
+	public function is_visible_local(bool $local):bool
+	{
+		return $this->is_visible($local ? 'user' : 'guest');
+	}
+
+	public function get_visible_ary():array
 	{
 		$ary = cnst_access::ARY;
+
+		if (!isset($ary[$this->s_role]))
+		{
+			return [];
+		}
+
+		if ($this->s_role !== 'admin')
+		{
+			unset($ary['admin']);
+		}
+
+		if ($this->s_role === 'guest')
+		{
+			unset($ary['user']);
+		}
 
 		return $ary;
 	}
 
-	public function get_role($access)
+	public function get_visible_ary_xdb():array
 	{
-		if (isset($this->acc_ary_search[$access]))
+		$ary = [];
+
+		foreach ($this->get_visible_ary as $role)
 		{
-			return $this->acc_ary_search[$access];
+			$ary[] = cnst_access::TO_XDB[$role];
 		}
 
-		return $access;
+		return $ary;
 	}
 
-	public function get_level($access)
+	public function get_visible_ary_flag_public():array
 	{
-		if (isset($this->acc_ary[$access]))
+		$ary = [];
+
+		foreach ($this->get_visible_ary as $role)
 		{
-			return $this->acc_ary[$access]['level'];
+			$ary[] = cnst_access::TO_FLAG_PUBLIC[$role];
 		}
 
-		return $access;
+		return $ary;
 	}
 
 	public function get_label(
@@ -115,61 +138,62 @@ class item_access
 		return $out;
 	}
 
-	public function get_post(string $name = 'access'):string
+	public function get_label_xdb(string $access_xdb):string
 	{
-		return $this->request->request->get($name, '');
+/*
+		if (!isset(cnst_access::FROM_XDB[$access_xdb]))
+		{
+			return '';
+		}
+*/
+		return $this->get_label(cnst_access::FROM_XDB[$access_xdb]);
 	}
 
-	public function get_post_value(
-		$name
-	):string
+	public function get_label_flag_public(int $flag_public):string
 	{
-		return $this->request->request->get($name);
-
-
-		if (!isset($_POST[$name]))
+/*
+		if (!isset(cnst_access::FROM_FLAG_PUBLIC[$flag_public]))
 		{
-			return false;
+			return '';
 		}
-
-		if (isset($this->acc_ary[$_POST[$name]]))
-		{
-			return $this->acc_ary[$this->input_ary[$_POST[$name]]]['level'];
-		}
-
-		return false;
-	}
-
-	public function get_post_error(string $name = 'access'):string
-	{
-		if (!$this->request->request->get($name))
-		{
-			return 'Kies een zichtbaarheid.';
-		}
-
-		return '';
+*/
+		return $this->get_label(cnst_access::FROM_FLAG_PUBLIC[$flag_public]);
 	}
 
 	public function get_radio_buttons(
 		string $name,
-		string $value,
-		array $keys,
-		string $schema,
+		string $selected = '',
 		string $cache_id = '',
+		bool $omit_admin = false,
 		string $label = 'Zichtbaarheid'
 	)
 	{
-		if (count($keys) === 0)
+		$ary = cnst_access::ARY;
+
+		if (!$this->intersystem_en)
+		{
+			unset($ary['guest']);
+			$selected = $selected === 'guest' ? 'user' : $selected;
+		}
+
+		if ($omit_admin)
+		{
+			unset($ary['admin']);
+			$selected = $selected === 'admin' ? 'user' : $selected;
+		}
+
+		if (count($ary) === 0)
 		{
 			return '';
 		}
-		else if (count($keys) === 1)
+		else if (count($ary) === 1)
 		{
-			return '<input type="hidden" name="' . $name . '" value="' . key($acc_ary) . '">';
+			return '<input type="hidden" name="' . $name . '" value="user">';
 		}
 
 		$out = '<div class="form-group">';
-		$out .= '<label for="' . $name . '" class="control-label">';
+		$out .= '<label for="' . $name;
+		$out .= '" class="control-label">';
 		$out .= $label;
 		$out .= '</label>';
 		$out .= '<div';
@@ -179,12 +203,12 @@ class item_access
 			$this->assets->add(['access_input_cache.js']);
 
 			$out .= ' data-access-cache-id="';
-			$out .= $schema . '_' . $cache_id . '"';
+			$out .= $this->tschema . '_' . $cache_id . '"';
 		}
 
 		$out .= ' id="' . $name . '">';
 
-		foreach ($keys as $key)
+		foreach ($ary as $key)
 		{
 			$out .= '<label class="radio-inline">';
 			$out .= '<input type="radio" name="' . $name . '"';
