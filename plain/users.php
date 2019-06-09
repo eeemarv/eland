@@ -52,23 +52,23 @@ if ($app['s_admin'])
 	$edit_fields_tabs = [
 		'fullname_access'	=> [
 			'lbl'				=> 'Zichtbaarheid Volledige Naam',
-			'access_control'	=> true,
+			'item_access'	=> true,
 		],
 		'adr_access'		=> [
 			'lbl'		=> 'Zichtbaarheid adres',
-			'access_control'	=> true,
+			'item_access'	=> true,
 		],
 		'mail_access'		=> [
 			'lbl'		=> 'Zichtbaarheid E-mail adres',
-			'access_control'	=> true,
+			'item_access'	=> true,
 		],
 		'tel_access'		=> [
 			'lbl'		=> 'Zichtbaarheid telefoonnummer',
-			'access_control'	=> true,
+			'item_access'	=> true,
 		],
 		'gsm_access'		=> [
 			'lbl'		=> 'Zichtbaarheid GSM-nummer',
-			'access_control'	=> true,
+			'item_access'	=> true,
 		],
 		'comments'			=> [
 			'lbl'		=> 'Commentaar',
@@ -2095,11 +2095,11 @@ if ($add || $edit)
 		$fullname_access = $add && !$intersystem_code ? '' : 'admin';
 	}
 
-	echo $app['access_control']->get_radio_buttons(
+	echo $app['item_access']->get_radio_buttons(
 		'users_fullname',
 		$fullname_access,
-		'',
 		'fullname_access',
+		false,
 		'Zichtbaarheid Volledige Naam'
 	);
 
@@ -2486,13 +2486,11 @@ if ($add || $edit)
 			echo '</p>';
 			echo '</div>';
 
-			if (!isset($c['flag_public']))
-			{
-				$c['flag_public'] = '';
-			}
-
-			echo $app['access_control']->get_radio_buttons(
-				$c['abbrev'], $c['flag_public'], '', 'contact_access_' . $key);
+			echo $app['item_access']->get_radio_buttons(
+				$c['abbrev'],
+				$app['item_access']->get_value_from_flag_public($c['flag_public']),
+				'contact_access_' . $key
+			);
 
 			echo '<input type="hidden" ';
 			echo 'name="contact['. $key . '][id]" value="' . $c['id'] . '">';
@@ -2892,7 +2890,7 @@ if ($id)
 		echo 'Zichtbaarheid Volledige Naam';
 		echo '</dt>';
 		echo '<dd>';
-		echo $app['access_control']->get_label($fullname_access);
+		echo $app['item_access']->get_label_xdb($fullname_access);
 		echo '</dd>';
 	}
 
@@ -4693,7 +4691,7 @@ if ($v_list)
 			echo '<div role="tabpanel" class="tab-pane" id="';
 			echo $k;
 			echo '_tab"';
-			echo isset($t['access_control']) ? ' data-access-control="true"' : '';
+			echo isset($t['item_access']) ? ' data-access-control="true"' : '';
 			echo '>';
 			echo '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
 
@@ -4712,9 +4710,9 @@ if ($v_list)
 			{
 				echo sprintf($checkbox, $k, $t['lbl'], $t['type'], 'value="1"', $k);
 			}
-			else if (isset($t['access_control']))
+			else if (isset($t['item_access']))
 			{
-				echo $app['access_control']->get_radio_buttons();
+				echo $app['item_access']->get_radio_buttons('access');
 			}
 			else
 			{

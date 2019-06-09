@@ -302,20 +302,10 @@ if ($add || $edit)
 	{
 		if (!$edit)
 		{
-			$forum_post['access'] = false;
+			$forum_post['access'] = '';
 		}
 
-		if ($app['s_user'])
-		{
-			$omit_access = 'admin';
-			$forum_post['access'] = $forum_post['access'] ?: 1;
-		}
-		else
-		{
-			$omit_access = '';
-		}
-
-		echo $app['access_control']->get_radio_buttons('forum_topic', $forum_post['access'], $omit_access);
+		echo $app['item_access']->get_radio_buttons('access', $forum_post['access'], 'forum_topic', $app['s_user']);
 	}
 
 	$str = $topic ? 'Reactie' : 'Onderwerp';
@@ -443,7 +433,7 @@ if ($topic)
 	if ($show_visibility)
 	{
 		echo '<p>Zichtbaarheid: ';
-		echo $app['access_control']->get_label($topic_post['access']);
+		echo $app['item_access']->get_label_xdb($topic_post['access']);
 		echo '</p>';
 	}
 
@@ -665,7 +655,7 @@ foreach($forum_posts as $p)
 	if ($show_visibility)
 	{
 		echo '<td>';
-		echo $app['access_control']->get_label($p['access']);
+		echo $app['item_access']->get_label_xdb($p['access']);
 		echo '</td>';
 	}
 

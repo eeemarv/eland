@@ -160,6 +160,16 @@ class item_access
 		return $this->get_label(cnst_access::FROM_FLAG_PUBLIC[$flag_public]);
 	}
 
+	public function get_value_from_flag_public($flag_public):string
+	{
+		if (!isset($flag_public) || !isset(cnst_access::FROM_FLAG_PUBLIC[$flag_public]))
+		{
+			return '';
+		}
+
+		return cnst_access::FROM_FLAG_PUBLIC[$flag_public];
+	}
+
 	public function get_radio_buttons(
 		string $name,
 		string $selected = '',

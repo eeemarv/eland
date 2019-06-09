@@ -271,16 +271,7 @@ if ($add || $edit)
 	echo '</textarea>';
 	echo '</div>';
 
-	if ($app['s_user'])
-	{
-		$omit_access = 'admin';
-	}
-	else
-	{
-		$omit_access = '';
-	}
-
-	echo $app['access_control']->get_radio_buttons('news', $news_access, $omit_access);
+	echo $app['item_access']->get_radio_buttons('access', $news_access, 'news', $app['s_user']);
 
 	$btn = $add ? 'success' : 'primary';
 
@@ -396,7 +387,7 @@ if ($del)
 
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
-	echo $app['access_control']->get_label($news_access);
+	echo $app['item_access']->get_label_xdb($news_access);
 	echo '</dd>';
 
 	echo '<dt>Ingegeven door</dt>';
@@ -626,7 +617,7 @@ if ($id)
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
-		echo $app['access_control']->get_label($news_item['access']);
+		echo $app['item_access']->get_label_xdb($news_item['access']);
 		echo '</dd>';
 	}
 
@@ -756,7 +747,7 @@ if ($v_list)
 		if ($show_visibility)
 		{
 			echo '<td>';
-			echo $app['access_control']->get_label($n['access']);
+			echo $app['item_access']->get_label_xdb($n['access']);
 			echo '</td>';
 		}
 
@@ -855,7 +846,7 @@ else if ($v_extended)
 			echo 'Zichtbaarheid';
 			echo '</dt>';
 			echo '<dd>';
-			echo $app['access_control']->get_label($n['access']);
+			echo $app['item_access']->get_label_xdb($n['access']);
 			echo '</dd>';
 		}
 

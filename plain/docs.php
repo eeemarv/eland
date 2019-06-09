@@ -153,6 +153,10 @@ if ($edit)
 		$access = cnst_access::FROM_XDB[$doc['access']];
 		$doc['ts'] = $row['event_time'];
 	}
+	else
+	{
+		$access = '';
+	}
 
 	if ($app['request']->isMethod('POST'))
 	{
@@ -163,10 +167,11 @@ if ($edit)
 		if (!$access)
 		{
 			$errors[] = 'Vul een zichtbaarheid in.';
+			$access_xdb = 'user';
 		}
 		else
 		{
-			$access = cnst_access::TO_XDB[$access];
+			$access_xdb = cnst_access::TO_XDB[$access];
 		}
 
 		$update = [
@@ -174,7 +179,7 @@ if ($edit)
 			'filename'		=> $doc['filename'],
 			'org_filename'	=> $doc['org_filename'],
 			'name'			=> trim($app['request']->request->get('name', '')),
-			'access'		=> $access,
+			'access'		=> $access_xdb,
 		];
 
 		if (!count($errors))
@@ -296,9 +301,7 @@ if ($edit)
 	echo '</div>';
 	echo '</div>';
 
-
-
-	echo $app['lbl_access']->get_radio_buttons('access', $access_ary, $access, 'docs');
+	echo $app['item_access']->get_radio_buttons('access', $access, 'docs');
 
 	$map_name = $map['map_name'] ?? '';
 
@@ -595,7 +598,7 @@ if ($add)
 	echo '</div>';
 	echo '</div>';
 
-	echo $app['access_control']->get_radio_buttons('docs');
+	echo $app['item_access']->get_radio_buttons('access', $access, 'docs');
 
 	echo '<div class="form-group">';
 	echo '<label for="map_name" class="control-label">';
@@ -897,7 +900,7 @@ if (count($docs))
 
 		if ($show_visibility)
 		{
-			$out[] = $app['access_control']->get_label($d['access']);
+			$out[] = $app['item_access']->get_label_xdb($d['access']);
 		}
 
 		if ($app['s_admin'])

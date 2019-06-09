@@ -145,10 +145,7 @@ if ($del)
 	echo '<dt>Zichtbaarheid</dt>';
 	echo '<dd>';
 
-	$access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
-
-
-	echo $app['lbl_access']->get_label($access);
+	echo $app['item_access']->get_label_flag_public($contact['flag_public']);
 
 	echo '</dd>';
 	echo '</dl>';
@@ -595,9 +592,7 @@ if ($edit || $add)
 	echo '</div>';
 	echo '</div>';
 
-//	$contact['flag_public'];   $access defined above
-
-	echo $app['lbl_access']->get_radio_buttons('access', $access_keys, $access);
+	echo $app['item_access']->get_radio_buttons('access', $access);
 
 	if ($uid)
 	{
@@ -807,10 +802,7 @@ if ($uid)
 
 		if ($app['s_admin'] || $s_owner)
 		{
-			$access = cnst_access::FROM_FLAG_PUBLIC[$c['flag_public']];
-
-
-			$out[] = $app['lbl_access']->get_label($access);
+			$out[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
 			$out[] = $app['link']->link_fa('contacts', $app['pp_ary'],
 				['del' => $c['id'], 'uid' => $uid], 'Verwijderen',
@@ -1332,9 +1324,7 @@ foreach ($contacts as $c)
 		$out[] = '&nbsp;';
 	}
 
-	$access = cnst_access::FROM_FLAG_PUBLIC[$c['flag_public']];
-
-	$out[] = $app['lbl_access']->get_label($access);
+	$out[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
 	$out[] = $app['link']->link_fa('contacts', $app['pp_ary'],
 		['del' => $c['id']], 'Verwijderen',

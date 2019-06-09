@@ -737,7 +737,7 @@ if ($del)
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
-		echo $app['lbl_access']->get_label($message['local'] ? 'user' : 'guest');
+		echo $app['item_access']->get_label($message['local'] ? 'user' : 'guest');
 		echo '</dd>';
 	}
 
@@ -1431,9 +1431,9 @@ if (($edit || $add))
 
 	if ($app['count_intersystems'])
 	{
-		$access_value = $edit ? ($msg['local'] ? 'users' : 'interlets') : '';
+		$access_value = $edit ? ($msg['local'] ? 'user' : 'guest') : '';
 
-		echo $app['access_control']->get_radio_buttons('messages', $access_value, 'admin');
+		echo $app['item_access']->get_radio_buttons('access', $access_value, 'messages', true);
 	}
 
 	$btn = $edit ? 'primary' : 'success';
@@ -1747,11 +1747,11 @@ if ($id)
 		echo '</dd>';
 	}
 
-	if ($app['count_intersystems'])
+	if ($app['intersystems']->get_count($app['tschema']))
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
-		echo  $app['access_control']->get_label($message['local'] ? 'users' : 'interlets');
+		echo  $app['item_access']->get_label($message['local'] ? 'user' : 'guest');
 		echo '</dd>';
 	}
 
@@ -2529,10 +2529,10 @@ if ($v_list)
 		echo $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
 		echo '</td>';
 
-		if (!$app['s_guest'] && $app['intersystems']->get_count($app['s_schema']))
+		if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
 		{
 			echo '<td>';
-			echo $app['access_control']->get_label($msg['local'] ? 'users' : 'interlets');
+			echo $app['item_access']->get_label($msg['local'] ? 'user' : 'guest');
 			echo '</td>';
 		}
 
@@ -2710,7 +2710,9 @@ else if ($v_list)
 			echo '<div role="tabpanel" class="tab-pane" id="access_tab">';
 			echo '<h3>Zichtbaarheid instellen</h3>';
 			echo '<form method="post">';
-			echo $app['access_control']->get_radio_buttons('', '', 'admin');
+
+			echo $app['item_access']->get_radio_buttons('access', '', '', true);
+
 			echo '<input type="submit" value="Aanpassen" ';
 			echo 'name="access_submit" class="btn btn-primary">';
 			echo $app['form_token']->get_hidden_input();
