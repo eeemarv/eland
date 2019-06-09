@@ -196,7 +196,13 @@ $c_system_admin->match('/config', 'controller\\config::match')
 $c_system_admin->match('/intersystem', 'controller\\intersystem::match')
 	->bind('intersystem');
 
-$c_system_admin->match('/apikeys', 'controller\\apikeys::match')
+$c_system_admin->match('/apikeys/del/{id}', 'controller\\apikeys::del')
+	->bind('apikeys_del');
+
+$c_system_admin->match('/apikeys/add', 'controller\\apikeys::add')
+	->bind('apikeys_add');
+
+$c_system_admin->match('/apikeys', 'controller\\apikeys::list')
 	->bind('apikeys');
 
 $c_system_admin->get('/export', 'controller\\export::get')
@@ -239,6 +245,9 @@ $c_system_guest->match('/transactions/{id}', 'controller\\transactions_show::get
 
 $c_system_guest->match('/transactions', 'controller\\transactions::match')
 	->bind('transactions');
+
+$c_system_guest->match('/news', 'controller\\news::match')
+	->bind('news');
 
 $c_system_guest->match('/docs', 'controller\\docs::match')
 	->bind('docs');

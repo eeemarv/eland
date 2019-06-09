@@ -1315,7 +1315,7 @@ if ($add)
 
 $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 
-$s_inter_schema_check = array_merge($app['intersystem_ary']['eland'],
+$s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['tschema']),
 	[$app['s_schema'] => true]);
 
 /**
@@ -2007,6 +2007,8 @@ if ($id)
 /**
  * list
  */
+$pp_inline = $app['request']->query->get('inline', false) ? true : false;
+
 $s_owner = !$app['s_guest']
 	&& $app['s_system_self']
 	&& isset($filter['uid'])
@@ -2192,7 +2194,7 @@ $row_count = $row['count'];
 $amount_sum = $row['sum'];
 
 $app['pagination']->init('transactions', $app['pp_ary'],
-	$row_count, $params, $app['p_inline']);
+	$row_count, $params, $pp_inline);
 
 $asc_preset_ary = [
 	'asc'	=> 0,
@@ -2238,7 +2240,7 @@ $tableheader_ary[$params['s']['orderby']]['asc']
 $tableheader_ary[$params['s']['orderby']]['fa']
 	= $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-if (!$app['p_inline'] && ($app['s_admin'] || $app['s_user']))
+if (!$pp_inline && ($app['s_admin'] || $app['s_user']))
 {
 	if (isset($filter['uid']))
 	{
@@ -2280,7 +2282,7 @@ $filtered = !isset($filter['uid']) && (
 
 if (isset($filter['uid']))
 {
-	if ($s_owner && !$app['p_inline'])
+	if ($s_owner && !$pp_inline)
 	{
 		$app['heading']->add('Mijn transacties');
 	}
@@ -2301,7 +2303,7 @@ else
 
 $app['heading']->fa('exchange');
 
-if (!$app['p_inline'])
+if (!$pp_inline)
 {
 	$app['heading']->btn_filter();
 
@@ -2526,7 +2528,7 @@ if (!count($transactions))
 	echo '</div></div>';
 	echo $app['pagination']->get();
 
-	if (!$app['p_inline'])
+	if (!$pp_inline)
 	{
 		include __DIR__ . '/../include/footer.php';
 	}
@@ -2788,7 +2790,7 @@ echo '</table></div></div>';
 
 echo $app['pagination']->get();
 
-if ($app['p_inline'])
+if ($pp_inline)
 {
 	echo '</div></div>';
 }

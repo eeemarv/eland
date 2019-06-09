@@ -137,7 +137,7 @@ if ($add)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="comment" name="comment" ';
 	echo 'value="';
-	echo $apikey['comment'];
+	echo $apikey['comment'] ?? '';
 	echo '">';
 	echo '</div>';
 	echo '</div>';
