@@ -526,7 +526,8 @@ $app['queue.mail'] = function ($app){
 		$app['twig'],
 		$app['config'],
 		$app['mail_addr_system'],
-		$app['email_validate']
+		$app['email_validate'],
+		$app['systems']
 	);
 };
 

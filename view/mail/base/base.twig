@@ -23,7 +23,7 @@
             <p>
                 {{- 'b.footer'|trans({
                     '%link_open%': context_url_open(
-                        'home_system', pp_ary, {'et': et}),
+                        'home_system', pp_anon_ary, {'et': et}),
                     '%link_close%': '</a>',
                     '%system_name%': config('systemname', schema)
                 })|raw -}}
@@ -47,7 +47,7 @@
     '%link_close%': '',
     '%system_name%': config('systemname', schema)
 })|raw }}
-{{ context_url('home_system', pp_ary, {'et': et})|raw }}
+{{ context_url('home_system', pp_anon_ary, {'et': et})|raw }}
 {% endif %}
 {% endblock text_footer %}
 {% endblock text_body %}

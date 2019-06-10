@@ -10,6 +10,7 @@ use Twig_Environment as Twig;
 use service\config;
 use service\mail_addr_system;
 use service\email_validate;
+use service\systems;
 
 class mail implements queue_interface
 {
@@ -21,6 +22,7 @@ class mail implements queue_interface
 	protected $config;
 	protected $mail_addr_system;
 	protected $email_validate;
+	protected $systems;
 
 	public function __construct(
 		queue $queue,
@@ -28,7 +30,8 @@ class mail implements queue_interface
 		Twig $twig,
 		config $config,
 		mail_addr_system $mail_addr_system,
-		email_validate $email_validate
+		email_validate $email_validate,
+		systems $systems
 	)
 	{
 		$this->queue = $queue;
@@ -37,6 +40,7 @@ class mail implements queue_interface
 		$this->config = $config;
 		$this->mail_addr_system = $mail_addr_system;
 		$this->email_validate = $email_validate;
+		$this->systems = $systems;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
@@ -67,6 +71,21 @@ class mail implements queue_interface
 		}
 
 		$data['vars']['schema'] = $schema;
+
+		$system = $this->systems->get_system($schema);
+
+		$data['vars']['system'] = $system;
+		$data['vars']['pp_anon_ary'] = [
+			'system' 		=> $system,
+		];
+		$data['vars']['pp_user_ary'] = [
+			'system'		=> $system,
+			'role_short'	=> 'u',
+		];
+		$data['vars']['pp_admin_ary'] = [
+			'system'		=> $system,
+			'role_short'	=> 'a',
+		];
 
 		if (isset($data['pre_html_template']))
 		{

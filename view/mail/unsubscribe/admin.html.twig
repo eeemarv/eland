@@ -2,7 +2,7 @@
 <p>
     {{- 'subscribed.admin'|trans({
         '%link_open%': context_url_open('config',
-            {'system': pp_ary.system, 'role_short': 'a'},
+            pp_admin_ary,
             {'tab': 'mailaddresses', 'et': et}),
         '%link_close%': '</a>',
     })|raw -}}
