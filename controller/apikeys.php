@@ -138,6 +138,7 @@ class apikeys
         $out .= '</div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('apikeys');
 
         return $app['tpl']->get($request);
     }
@@ -210,6 +211,7 @@ class apikeys
         $out .= '</div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('apikeys');
 
         return $app['tpl']->get($request);
     }

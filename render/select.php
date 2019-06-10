@@ -15,7 +15,7 @@ class select
 		{
 			$out .= '<option value="' . $value . '"';
 			$out .= $value == $selected ? ' selected="selected"' : '';
-			$out .= '>' . htmlspecialchars($value, ENT_QUOTES) . '</option>';
+			$out .= '>' . htmlspecialchars($label, ENT_QUOTES) . '</option>';
 		}
 
 		return $out;

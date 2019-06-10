@@ -105,14 +105,21 @@ class tpl
 		$this->content .= $add;
 	}
 
-	public function set_menu(string $menu):void
+	public function menu(string $menu):void
 	{
 		$this->menu = $menu;
 	}
 
 	public function get(Request $request):Response
 	{
-		$matched_route = $request->attributes->get('_route');
+		if (isset($this->menu))
+		{
+			$menu_route = $this->menu;
+		}
+		else
+		{
+			$menu_route = $request->attributes->get('_route');
+		}
 
 		if ($css = $this->config->get('css', $this->tschema))
 		{
@@ -253,7 +260,7 @@ class tpl
 
 				$out .= '>';
 
-				$out .= $this->link->link_no_attr($matched_route, [
+				$out .= $this->link->link_no_attr($menu_route, [
 					'system' 		=> $this->systems->get_system($login_schema),
 					'role_short'	=> $login_id === 'elas'
 						? 'g'
@@ -285,8 +292,8 @@ class tpl
 
 						$out .= '>';
 
-						$route = isset(cnst_pages::INTERSYSTEM_LANDING[$matched_route])
-							? $matched_route
+						$route = isset(cnst_pages::INTERSYSTEM_LANDING[$menu_route])
+							? $menu_route
 							: 'messages';
 
 						$out .= $this->link->link_no_attr($route, $this->pp_ary,
@@ -412,7 +419,7 @@ class tpl
 
 				foreach ($menu as $route => $item)
 				{
-					$active = $matched_route === $route ? ' class="active"' : '';
+					$active = $menu_route === $route ? ' class="active"' : '';
 
 					$out .= '<li' . $active . '>';
 
@@ -579,7 +586,7 @@ class tpl
 		foreach ($menu as $route => $item)
 		{
 			$out .= '<li';
-			$out .= $matched_route == $route ? ' class="active"' : '';
+			$out .= $menu_route == $route ? ' class="active"' : '';
 			$out .= '>';
 
 			$out .= $this->link->link_fa($route, $this->pp_ary,

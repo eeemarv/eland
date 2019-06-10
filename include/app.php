@@ -181,7 +181,16 @@ $c_system_guest->get('/logout', 'controller\\logout::get')
 $c_system_admin->get('/status', 'controller\\status::get')
 	->bind('status');
 
-$c_system_admin->match('/categories', 'controller\\categories::match')
+$c_system_admin->match('/categories/del/{id}', 'controller\\categories_del::match')
+	->bind('categories_del');
+
+$c_system_admin->match('/categories/edit/{id}', 'controller\\categories_edit::match')
+	->bind('categories_edit');
+
+$c_system_admin->match('/categories/add', 'controller\\categories_add::match')
+	->bind('categories_add');
+
+$c_system_admin->get('/categories', 'controller\\categories::get')
 	->bind('categories');
 
 $c_system_admin->match('/contact-types', 'controller\\contact_types::match')
