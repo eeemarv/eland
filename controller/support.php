@@ -8,8 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class support
 {
-    public function form(app $app):Response
+    public function form(Request $request, app $app):Response
     {
-        return $app['legacy_route']->render('support');
+
+
+
+        $app['tpl']->add($out);
+
+        return $app['tpl']->get($request);
     }
 }
