@@ -193,7 +193,16 @@ $c_system_admin->match('/categories/add', 'controller\\categories_add::match')
 $c_system_admin->get('/categories', 'controller\\categories::get')
 	->bind('categories');
 
-$c_system_admin->match('/contact-types', 'controller\\contact_types::match')
+$c_system_admin->match('/contact-types/edit/{id}', 'controller\\contact_types_edit::match')
+	->bind('contact_types_edit');
+
+$c_system_admin->match('/contact-types/del/{id}', 'controller\\contact_types_del::match')
+	->bind('contact_types_del');
+
+$c_system_admin->match('/contact-types/add', 'controller\\contact_types_add::match')
+	->bind('contact_types_add');
+
+$c_system_admin->get('/contact-types', 'controller\\contact_types::get')
 	->bind('contact_types');
 
 $c_system_guest->match('/contacts', 'controller\\contacts::match')
