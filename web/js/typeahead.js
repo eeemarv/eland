@@ -9,24 +9,36 @@ $(document).ready(function(){
 
 		var datasets = [];
 		var data = $(this).data('typeahead');
-		var render_params = $(this).data('typeahead-render');
-		var newuserdays = $(this).data('newuserdays');
-		var treshold = now - (newuserdays * 86400);
 
-		for(var i = 0; i < data.length; i++){
+		if (!data.hasOwnProperty('fetch')){
+			return;
+		}
 
-			var rec = data[i];
+		var show_new_en = false;
+		var treshold = 0;
 
-			if (render_params
-				&& render_params.hasOwnProperty('exists_check')){
+		if (data.hasOwnProperty('newuserdays')){
+			show_new_en = true;
+			treshold = now - (data.newuserdays * 86400);
+		}
+
+		for(var i = 0; i < data.fetch.length; i++){
+
+			var rec = data.fetch[i];
+
+			if (data.hasOwnProperty('exists')){
+
+				if (!data.exists.hasOwnProperty('check')){
+					continue;
+				}
 
 				var $input_container = $(this).parent().parent();
 				var $exists_msg = $input_container.find('span.exists_msg');
 				var $exists_query_results = $input_container.find('span.exists_query_results');
 				var $query_results = $exists_query_results.find('span.query_results');
 
-				if (render_params.hasOwnProperty('exists_omit')){
-					var exists_omit = render_params.exists_omit.toLowerCase();
+				if (data.exists.hasOwnProperty('omit')){
+					var exists_omit = data.exists.omit.toLowerCase();
 				} else {
 					exists_omit = '';
 				}
@@ -70,9 +82,9 @@ $(document).ready(function(){
 							$exists_query_results.show();
 
 							$query_results.text(results_ary
-								.slice(0, render_params.exists_check)
+								.slice(0, data.exists.check)
 								.join(', ') +
-								(results_ary.length > render_params.exists_check ?
+								(results_ary.length > data.exists.check ?
 									', ...' : '')
 							);
 						} else {
@@ -90,14 +102,13 @@ $(document).ready(function(){
 				continue;
 			}
 
-			if (rec['name'] === 'accounts'
-				|| rec['name'] === 'elas_intersystem_accounts'
-				|| rec['name'] === 'eland_intersystem_accounts'){
+			if (data.hasOwnProperty('filter')
+				&& data.filter === 'accounts'){
 
 				var filter = function(users){
 					return $.map(users, function(user){
 
-						var cl = (user.a && (user.a > treshold)) ? ' class="success"' : '';
+						var cl = show_new_en && (user.a && (user.a > treshold)) ? ' class="success"' : '';
 
 						switch (user.s){
 							case 0:
