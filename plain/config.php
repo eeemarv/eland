@@ -7,8 +7,6 @@ if (!$app['s_admin'])
 
 use cnst\config as cnst_config;
 
-$setting = $_GET['edit'] ?? false;
-
 $active_tab = $app['request']->get('tab', 'systemname');
 
 if (!isset(cnst_config::TAB_PANES[$active_tab]))

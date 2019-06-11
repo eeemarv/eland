@@ -5,6 +5,7 @@ namespace cnst;
 class assert
 {
     const ADMIN = 'a';
+    const CONFIG_TAB = 'system-name|currency|mail-addr|balance|periodic-mail|contact|register|messages|users|news|forum|system';
     const ELAS_TOKEN = 'elasv2[0-9a-f]+';
     const GUEST = '[gua]';
     const NUMBER = '\d+';

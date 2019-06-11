@@ -217,7 +217,9 @@ $c_system_admin->match('/contacts/add', 'controller\\contacts_add::match')
 $c_system_admin->get('/contacts', 'controller\\contacts::get')
 	->bind('contacts');
 
-$c_system_admin->match('/config', 'controller\\config::match')
+$c_system_admin->match('/config/{tab}', 'controller\\config::match')
+	->assert('tab', cnst_assert::CONFIG_TAB)
+	->value('tab', 'system-name')
 	->bind('config');
 
 $c_system_admin->match('/intersystem', 'controller\\intersystem::match')

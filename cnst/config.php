@@ -385,7 +385,7 @@ class config
 
     const TAB_PANES = [
 
-        'systemname'	=> [
+        'system-name'	=> [
             'lbl'	=> 'Systeemsnaam',
             'inputs' => [
                 'systemname' => true,
@@ -401,7 +401,7 @@ class config
             ],
         ],
 
-        'mailaddresses'	=> [
+        'mail-addr'	=> [
             'assets'        => [
                 'config_max_inputs.js',
             ],
@@ -428,7 +428,7 @@ class config
             ],
         ],
 
-        'saldomail'		=> [
+        'periodic-mail'		=> [
             'assets'    => [
                 'sortable',
                 'config_periodic_mail.js',
@@ -466,7 +466,7 @@ class config
             ],
         ],
 
-        'registration'	=> [
+        'register'	=> [
             'assets'    => [
                 'summernote',
                 'rich_edit.js',
