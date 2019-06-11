@@ -396,7 +396,7 @@ class tpl
 					'contact_types'		=> ['circle-o-notch', 'Contact Types'],
 					'contacts'			=> ['map-marker', 'Contacten'],
 					'config'			=> ['gears', 'Instellingen'],
-					'intersystem'		=> ['share-alt', 'InterSysteem'],
+					'intersystems'		=> ['share-alt', 'InterSysteem'],
 					'apikeys'			=> ['key', 'Apikeys'],
 					'export'			=> ['download', 'Export'],
 					'autominlimit'		=> ['arrows-v', 'Auto Min Limiet'],

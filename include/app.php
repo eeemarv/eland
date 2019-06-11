@@ -222,8 +222,20 @@ $c_system_admin->match('/config/{tab}', 'controller\\config::match')
 	->value('tab', 'system-name')
 	->bind('config');
 
-$c_system_admin->match('/intersystem', 'controller\\intersystem::match')
-	->bind('intersystem');
+$c_system_admin->match('/intersystems/edit/{id}', 'controller\\intersystems_edit::match')
+	->bind('intersystems_edit');
+
+$c_system_admin->match('/intersystems/del/{id}', 'controller\\intersystems_del::match')
+	->bind('intersystems_del');
+
+$c_system_admin->match('/intersystems/add', 'controller\\intersystems_add::match')
+	->bind('intersystems_add');
+
+$c_system_admin->get('/intersystems/{id}', 'controller\\intersystems_show::get')
+	->bind('intersystems_show');
+
+$c_system_admin->get('/intersystems', 'controller\\intersystems::get')
+	->bind('intersystems');
 
 $c_system_admin->match('/apikeys/del/{id}', 'controller\\apikeys::del')
 	->bind('apikeys_del');
