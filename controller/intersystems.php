@@ -199,7 +199,7 @@ class intersystems
             $out .= '</div></div>';
         }
 
-        $out .= $this->get_schemas_groups();
+        $out .= self::get_schemas_groups();
 
         $app['tpl']->add($out);
         $app['tpl']->menu('intersystems');
@@ -207,7 +207,7 @@ class intersystems
         return $app['tpl']->get($request);
     }
 
-    public function get_schemas_groups():string
+    public static function get_schemas_groups():string
     {
         global $app;
 

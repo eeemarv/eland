@@ -14,7 +14,7 @@ class intersystems_del
 
 
         $app['tpl']->add($out);
-        $app['tpl']->menu('intersystem');
+        $app['tpl']->menu('intersystems');
 
         return $app['tpl']->get($request);
     }

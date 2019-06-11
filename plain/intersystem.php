@@ -27,7 +27,7 @@ if ($id || $edit || $del)
 	if (!$group)
 	{
 		$app['alert']->error('Systeem niet gevonden.');
-		$app['link']->redirect('intersystem', $app['pp_ary'], []);
+		$app['link']->redirect('intersystems', $app['pp_ary'], []);
 	}
 }
 
