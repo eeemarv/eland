@@ -12,7 +12,7 @@ class contacts_add
 {
     public function match(Request $request, app $app):Response
     {
-        if($app['request']->isMethod('POST'))
+        if($request->isMethod('POST'))
         {
             $errors = [];
 
@@ -21,7 +21,7 @@ class contacts_add
                 $errors[] = $error_token;
             }
 
-            $letscode = $app['request']->request->get('letscode', '');
+            $letscode = $request->request->get('letscode', '');
             [$letscode] = explode(' ', trim($letscode));
 
             $user_id = $app['db']->fetchColumn('select id
@@ -37,7 +37,7 @@ class contacts_add
                 $errors[] = 'Ongeldige Account Code.';
             }
 
-            $access = $app['request']->request->get('access', '');
+            $access = $request->request->get('access', '');
 
             if ($access)
             {
@@ -50,9 +50,9 @@ class contacts_add
             }
 
             $contact = [
-                'id_type_contact'		=> $app['request']->request->get('id_type_contact'),
-                'value'					=> $app['request']->request->get('value'),
-                'comments' 				=> $app['request']->request->get('comments'),
+                'id_type_contact'		=> $request->request->get('id_type_contact'),
+                'value'					=> $request->request->get('value'),
+                'comments' 				=> $request->request->get('comments'),
                 'flag_public'			=> $flag_public,
                 'id_user'				=> $user_id,
             ];
@@ -288,7 +288,7 @@ class contacts_add
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access);
+        $out .= $app['item_access']->get_radio_buttons('access', $access, 'contacts_add');
 
         $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
         $out .= '&nbsp;';

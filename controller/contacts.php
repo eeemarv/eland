@@ -455,8 +455,8 @@ class contacts
 
             if (isset($c['value']))
             {
-                $td[] = $app['link']->link_no_attr('contacts', $app['pp_ary'],
-                    ['edit' => $c['id']], $c['value']);
+                $td[] = $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
+                    ['id' => $c['id']], $c['value']);
             }
             else
             {
@@ -467,8 +467,8 @@ class contacts
 
             if (isset($c['comments']))
             {
-                $td[] = $app['link']->link_no_attr('contacts', $app['pp_ary'],
-                    ['edit' => $c['id']], $c['comments']);
+                $td[] = $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
+                    ['id' => $c['id']], $c['comments']);
             }
             else
             {
