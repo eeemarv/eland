@@ -93,8 +93,6 @@ if ($map_edit)
 		$app['alert']->error($errors);
 	}
 
-	$app['assets']->add(['typeahead', 'typeahead.js']);
-
 	$app['heading']->add('Map aanpassen: ');
 	$app['heading']->add($app['link']->link_no_attr('docs', $app['pp_ary'],
 		['map' => $map_edit], $map_name));
@@ -254,8 +252,6 @@ if ($edit)
 		$map = $app['xdb']->get('doc', $map_id,
 			$app['tschema'])['data'];
 	}
-
-	$app['assets']->add(['typeahead', 'typeahead.js']);
 
 	$app['heading']->add('Document aanpassen');
 
@@ -571,8 +567,6 @@ if ($add)
 			$map_name = $row['data']['map_name'];
 		}
 	}
-
-	$app['assets']->add(['typeahead', 'typeahead.js']);
 
 	$app['heading']->add('Nieuw document opladen');
 

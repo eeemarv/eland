@@ -387,7 +387,8 @@ $app['typeahead'] = function($app){
 		$app['predis'],
 		$app['monolog'],
 		$app['url_generator'],
-		$app['systems']
+		$app['systems'],
+		$app['assets']
 	);
 };
 

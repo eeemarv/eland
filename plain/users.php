@@ -1963,8 +1963,6 @@ if ($add || $edit)
 		'generate_password.js',
 		'generate_password_onload.js',
 		'user_edit.js',
-		'typeahead',
-		'typeahead.js',
 	]);
 
 	if ($s_owner && !$app['s_admin'] && $edit)
@@ -3683,8 +3681,6 @@ if ($v_list)
 		'calc_sum.js',
 		'users_distance.js',
 		'datepicker',
-		'typeahead',
-		'typeahead.js',
 	]);
 
 	if ($app['s_admin'])

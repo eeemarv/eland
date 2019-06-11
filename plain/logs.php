@@ -125,7 +125,7 @@ $tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '
 
 $app['btn_nav']->csv();
 
-$app['assets']->add(['datepicker', 'typeahead', 'typeahead.js', 'csv.js']);
+$app['assets']->add(['datepicker', 'csv.js']);
 
 $filtered = (isset($filter['q']) && $filter['q'] !== '')
 	|| (isset($filter['type']) && $filter['type'] !== '')

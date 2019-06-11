@@ -6,6 +6,7 @@ use Predis\Client as Redis;
 use Monolog\Logger;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use service\systems;
+use service\assets;
 
 class typeahead
 {
@@ -13,21 +14,25 @@ class typeahead
 	protected $monolog;
 	protected $url_generator;
 	protected $systems;
+	protected $assets;
 	const TTL = 5184000; // 60 days
 
 	protected $build_ary;
+	protected $assets_included;
 
 	public function __construct(
 		Redis $redis,
 		Logger $monolog,
 		UrlGeneratorInterface $url_generator,
-		systems $systems
+		systems $systems,
+		assets $assets
 	)
 	{
 		$this->redis = $redis;
 		$this->monolog = $monolog;
 		$this->url_generator = $url_generator;
 		$this->systems = $systems;
+		$this->assets = $assets;
 	}
 
 	public function ini(array $pp_ary):self
@@ -86,6 +91,12 @@ class typeahead
 		}
 
 		unset ($this->build_ary);
+
+		if (!isset($this->assets_included))
+		{
+			$this->assets->add(['typeahead', 'typeahead.js']);
+			$this->assets_included = true;
+		}
 
 		return htmlspecialchars(json_encode($out));
 	}
@@ -190,7 +201,7 @@ class typeahead
 		}
 
 		$params_context = [
-			'_locale'		=> 'en',
+			'_locale'		=> 'nl',
 			'system'		=> $system,
 			'role_short'	=> 'a',
 		];

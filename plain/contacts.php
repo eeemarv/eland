@@ -443,11 +443,6 @@ if ($edit || $add)
 		$contact['id_type_contact'] = $row['id'];
 	}
 
-	if ($app['s_admin'] && $add && !$uid)
-	{
-		$app['assets']->add(['typeahead', 'typeahead.js']);
-	}
-
 	$app['assets']->add(['contacts_edit.js']);
 
 	$contacts_format = [
@@ -1071,8 +1066,6 @@ $filtered = !isset($filter['uid']) && (
 		&& !in_array($filter['access'], ['all', ''])));
 
 $panel_collapse = !$filtered;
-
-$app['assets']->add(['typeahead', 'typeahead.js']);
 
 $app['heading']->add('Contacten');
 $app['heading']->add_filtered($filtered);

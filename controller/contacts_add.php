@@ -93,6 +93,8 @@ class contacts_add
 
             if ($contact['id_type_contact'] == $mail_type_id)
             {
+                $mailadr = $contact['value'];
+
                 $mail_count = $app['db']->fetchColumn('select count(c.*)
                     from ' . $app['tschema'] . '.contact c, ' .
                         $app['tschema'] . '.type_contact tc, ' .
@@ -102,7 +104,7 @@ class contacts_add
                         and c.id_user = u.id
                         and u.status in (1, 2)
                         and u.id <> ?
-                        and c.value = ?', [$user_id, $contact['value']]);
+                        and c.value = ?', [$user_id, $mailadr]);
 
                 if ($mail_count && $app['s_admin'])
                 {

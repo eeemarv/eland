@@ -1229,14 +1229,6 @@ if (($edit || $add))
 
 	array_walk($msg, function(&$value, $key){ $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); });
 
-	if ($app['s_admin'])
-	{
-		$app['assets']->add([
-			'typeahead',
-			'typeahead.js',
-		]);
-	}
-
 	$app['assets']->add([
 		'fileupload',
 		'msg_edit.js',
@@ -2243,8 +2235,6 @@ if (!$p_inline)
 	$app['assets']->add([
 		'msgs.js',
 		'table_sel.js',
-		'typeahead',
-		'typeahead.js',
 	]);
 
 	include __DIR__ . '/../include/header.php';

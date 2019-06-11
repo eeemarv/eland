@@ -231,8 +231,6 @@ class contacts
 
         $panel_collapse = !$filtered;
 
-        $app['assets']->add(['typeahead', 'typeahead.js']);
-
         $app['heading']->add('Contacten');
         $app['heading']->add_filtered($filtered);
         $app['heading']->btn_filter();

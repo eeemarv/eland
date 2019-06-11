@@ -890,8 +890,6 @@ if ($add)
 	}
 
 	$app['assets']->add([
-		'typeahead',
-		'typeahead.js',
 		'transaction_add.js',
 	]);
 
@@ -2287,11 +2285,7 @@ if (!$pp_inline)
 {
 	$app['heading']->btn_filter();
 
-	$app['assets']->add([
-		'datepicker',
-		'typeahead',
-		'typeahead.js',
-	]);
+	$app['assets']->add(['datepicker']);
 
 	include __DIR__ . '/../include/header.php';
 
