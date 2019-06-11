@@ -477,8 +477,8 @@ class contacts
 
             $td[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
-            $td[] = $app['link']->link_fa('contacts', $app['pp_ary'],
-                ['del' => $c['id']], 'Verwijderen',
+            $td[] = $app['link']->link_fa('contacts_del', $app['pp_ary'],
+                ['id' => $c['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger btn-xs'],
                 'times');
 
