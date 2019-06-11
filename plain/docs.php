@@ -115,7 +115,11 @@ if ($map_edit)
 	echo '<input type="text" class="form-control" ';
 	echo 'id="map_name" name="map_name" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get($app['pp_ary'], [['doc_map_names', []]]);
+
+	echo $app['typeahead']->ini($app['pp_ary'])
+		->add('doc_map_names')
+		->str();
+
 	echo '" ';
 	echo 'value="';
 	echo $map_name;
@@ -316,7 +320,11 @@ if ($edit)
 	echo $map_name;
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get($app['pp_ary'], [['doc_map_names', []]]);
+
+	echo $app['typeahead']->ini($app['pp_ary'])
+		->add('doc_map_names')
+		->str();
+
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map ';
@@ -611,7 +619,11 @@ if ($add)
 	echo $map_name ?? '';
 	echo '" ';
 	echo 'data-typeahead="';
-	echo $app['typeahead']->get($app['pp_ary'], [['doc_map_names', []]]);
+
+	echo $app['typeahead']->ini($app['pp_ary'])
+		->add('doc_map_names')
+		->str();
+
 	echo '">';
 	echo '</div>';
 	echo '<p>Optioneel. Creëer een nieuwe map of ';

@@ -712,17 +712,6 @@ echo 'name="selected_users" id="selected_users">';
 echo '<div class="panel panel-info">';
 echo '<div class="panel-heading">';
 
-$typeahead_ary = [];
-
-foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
-{
-	$typeahead_ary[] = [
-		'accounts', [
-			'status'	=> $t_stat,
-		],
-	];
-}
-
 echo '<div class="form-group">';
 echo '<label for="from_letscode" class="control-label">';
 echo 'Van Account Code';
@@ -735,12 +724,20 @@ echo 'id="from_letscode" name="from_letscode" ';
 echo 'value="';
 echo $from_letscode;
 echo '" ';
-echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $app['tschema']);
-echo '" ';
+
 echo 'data-typeahead="';
-echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
+echo $app['typeahead']->ini($app['pp_ary'])
+	->add('accounts', ['status' => 'active'])
+	->add('accounts', ['status' => 'inactive'])
+	->add('accounts', ['status' => 'ip'])
+	->add('accounts', ['status' => 'im'])
+	->add('accounts', ['status' => 'extern'])
+	->str([
+		'filter'        => 'accounts',
+		'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+	]);
 echo '">';
+
 echo '</div>';
 echo '<p>Gebruik dit voor een "Eén naar veel" transactie.';
 echo 'Alle ingevulde bedragen hieronder ';

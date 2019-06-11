@@ -2011,15 +2011,14 @@ if ($add || $edit)
 		echo '" required maxlength="20" ';
 		echo 'data-typeahead="';
 
-		echo $app['typeahead']->get($app['pp_ary'], [['account_codes', []]]);
-
-		echo '" ';
-		echo 'data-typeahead-render="';
-
-		echo htmlspecialchars(json_encode([
-			'exists_check'	=> 10,
-			'exists_omit'	=> $edit_user_cached['letscode'] ?? '',
-		]));
+		echo $app['typeahead']->ini($app['pp_ary'])
+			->add('account_codes', [])
+			->str([
+				'render'	=> [
+					'check'	=> 10,
+					'omit'	=> $edit_user_cached['letscode'] ?? '',
+				]
+			]);
 
 		echo '">';
 		echo '</div>';
@@ -2049,14 +2048,15 @@ if ($add || $edit)
 		echo '" required maxlength="50" ';
 		echo 'data-typeahead="';
 
-		echo $app['typeahead']->get($app['pp_ary'], [['usernames', []]]);
+		echo $app['typeahead']->ini($app['pp_ary'])
+			->add('usernames', [])
+			->str([
+				'render'	=> [
+					'check'	=> 10,
+					'omit'	=> $edit_user_cached['name'] ?? '',
+				]
+			]);
 
-		echo '" ';
-		echo 'data-typeahead-render="';
-		echo htmlspecialchars(json_encode([
-			'exists_check'	=> 10,
-			'exists_omit'	=> $edit_user_cached['name'] ?? '',
-		]));
 		echo '">';
 		echo '</div>';
 		echo '<span class="help-block hidden exists_query_results">';
@@ -2117,7 +2117,9 @@ if ($add || $edit)
 	echo 'required maxlength="6" ';
 	echo 'data-typeahead="';
 
-	echo $app['typeahead']->get($app['pp_ary'], [['postcodes', []]]);
+	echo $app['typeahead']->ini($app['pp_ary'])
+		->add('postcodes', [])
+		->str();
 
 	echo '">';
 	echo '</div>';
@@ -3982,32 +3984,20 @@ if ($v_list)
 			echo '</div>';
 			echo '</div>';
 
-			$typeahead_ary = [];
+			$app['typeahead']->ini($app['pp_ary'])
+				->add('accounts', ['status' => 'active']);
 
-			if ($app['s_guest'])
+			if (!$app['s_guest'])
 			{
-				$typeahead_status_ary = ['active'];
-			}
-			else if ($app['s_user'])
-			{
-				$typeahead_status_ary = ['active', 'extern'];
-			}
-			else if ($app['s_admin'])
-			{
-				$typeahead_status_ary = ['active', 'extern',
-					'inactive', 'im', 'ip'];
+				$app['typeahead']->add('accounts', ['status' => 'extern']);
 			}
 
-			foreach ($typeahead_status_ary as $t_stat)
+			if ($app['s_admin'])
 			{
-				$typeahead_ary[] = [
-					'accounts', [
-						'status'	=> $t_stat,
-					],
-				];
+				$app['typeahead']->add('accounts', ['status' => 'inactive'])
+					->add('accounts', ['status' => 'ip'])
+					->add('accounts', ['status' => 'im']);
 			}
-
-			$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 			echo '<div class="form-group">';
 			echo '<label for="p_activity_filter_letscode" ';
@@ -4026,11 +4016,13 @@ if ($v_list)
 			echo '" ';
 			echo 'placeholder="Account Code" ';
 			echo 'class="form-control" ';
-			echo 'data-newuserdays="';
-			echo $app['config']->get('newuserdays', $app['tschema']);
-			echo '" ';
 			echo 'data-typeahead="';
-			echo $typeahead;
+
+			echo $app['typeahead']->str([
+				'filter'		=> 'accounts',
+				'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+			]);
+
 			echo '">';
 			echo '</div>';
 			echo '</div>';

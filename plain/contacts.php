@@ -520,12 +520,20 @@ if ($edit || $add)
 		echo '<span class="input-group-addon" id="fcode_addon">';
 		echo '<span class="fa fa-user"></span></span>';
 		echo '<input type="text" class="form-control" id="letscode" name="letscode" ';
+
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
+		echo $app['typeahead']->ini($app['pp_ary'])
+			->add('accounts', ['status' => 'active'])
+			->add('accounts', ['status' => 'inactive'])
+			->add('accounts', ['status' => 'ip'])
+			->add('accounts', ['status' => 'im'])
+			->add('accounts', ['status' => 'extern'])
+			->str([
+				'filter'        => 'accounts',
+				'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+			]);
 		echo '" ';
-		echo 'data-newuserdays="';
-		echo $app['config']->get('newuserdays', $app['tschema']);
-		echo '" ';
+
 		echo 'placeholder="Account Code" ';
 		echo 'value="';
 		echo $letscode;
@@ -1172,25 +1180,22 @@ echo '<div class="input-group margin-bottom">';
 echo '<span class="input-group-addon" id="code_addon">Van ';
 echo '<span class="fa fa-user"></span></span>';
 
-$typeahead_ary = [];
-
-foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
-{
-	$typeahead_ary[] = [
-		'accounts', [
-			'status'	=> $t_stat,
-		],
-	];
-}
-
 echo '<input type="text" class="form-control" ';
 echo 'aria-describedby="letscode_addon" ';
+
 echo 'data-typeahead="';
-echo $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
+echo $app['typeahead']->ini($app['pp_ary'])
+	->add('accounts', ['status' => 'active'])
+	->add('accounts', ['status' => 'inactive'])
+	->add('accounts', ['status' => 'ip'])
+	->add('accounts', ['status' => 'im'])
+	->add('accounts', ['status' => 'extern'])
+	->str([
+		'filter'        => 'accounts',
+		'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+	]);
 echo '" ';
-echo 'data-newuserdays="';
-echo $app['config']->get('newuserdays', $app['tschema']);
-echo '" ';
+
 echo 'name="f[code]" id="code" placeholder="Account Code" ';
 echo 'value="';
 echo $filter['code'] ?? '';

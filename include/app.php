@@ -205,7 +205,16 @@ $c_system_admin->match('/contact-types/add', 'controller\\contact_types_add::mat
 $c_system_admin->get('/contact-types', 'controller\\contact_types::get')
 	->bind('contact_types');
 
-$c_system_guest->match('/contacts', 'controller\\contacts::match')
+$c_system_admin->match('/contacts/edit/{id}', 'controller\\contacts_edit::match')
+	->bind('contacts_edit');
+
+$c_system_admin->match('/contacts/del/{id}', 'controller\\contacts_del::match')
+	->bind('contacts_del');
+
+$c_system_admin->match('/contacts/add', 'controller\\contacts_add::match')
+	->bind('contacts_add');
+
+$c_system_admin->get('/contacts', 'controller\\contacts::get')
 	->bind('contacts');
 
 $c_system_admin->match('/config', 'controller\\config::match')

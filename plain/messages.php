@@ -1264,14 +1264,16 @@ if (($edit || $add))
 		echo '</span>';
 		echo '<input type="text" class="form-control" ';
 		echo 'id="user_letscode" name="user_letscode" ';
+
 		echo 'data-typeahead="';
-		echo $app['typeahead']->get($app['pp_ary'], [['accounts', [
-			'status'	=> 'active',
-		]]]);
+		echo $app['typeahead']->ini($app['pp_ary'])
+			->add('accounts', ['status' => 'active'])
+			->str([
+				'filter'        => 'accounts',
+				'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+			]);
 		echo '" ';
-		echo 'data-newuserdays="';
-		echo $app['config']->get('newuserdays', $app['tschema']);
-		echo '" ';
+
 		echo 'value="';
 		echo $user_letscode;
 		echo '" required>';
@@ -2353,13 +2355,13 @@ if (!$p_inline)
 	echo 'aria-describedby="fcode_addon" ';
 	echo 'data-typeahead="';
 
-	echo $app['typeahead']->get($app['pp_ary'], [['accounts', [
-		'status'	=> 'active',
-	]]]);
+	echo $app['typeahead']->ini($app['pp_ary'])
+		->add('accounts', ['status'	=> 'active'])
+		->str([
+			'filter'		=> 'accounts',
+			'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+		]);
 
-	echo '" ';
-	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays', $app['tschema']);
 	echo '" ';
 	echo 'name="f[fcode]" id="fcode" placeholder="Account" ';
 	echo 'value="';

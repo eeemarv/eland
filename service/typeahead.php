@@ -15,6 +15,8 @@ class typeahead
 	protected $systems;
 	const TTL = 5184000; // 60 days
 
+	protected $build_ary;
+
 	public function __construct(
 		Redis $redis,
 		Logger $monolog,
@@ -28,27 +30,62 @@ class typeahead
 		$this->systems = $systems;
 	}
 
-	public function get(array $params_context, array $identifiers):string
+	public function ini(array $pp_ary):self
 	{
-		$out = [];
+		$this->build_ary = ['pp_ary' => $pp_ary];
+		return $this;
+	}
 
-		foreach($identifiers as $identifier)
+	public function add(string $route, array $params):self
+	{
+		if (!isset($this->build_ary))
 		{
-			$typeahead_route = $identifier[0];
-			$params = $identifier[1];
+			return $this;
+		}
 
-			$path = $this->get_path($typeahead_route, $params_context, $params);
-			$cache_key = $this->get_thumbprint_key($typeahead_route, $params_context, $params);
-			$thumbprint = $this->get_thumbprint_by_key($cache_key, $params_context);
+		if (!isset($this->build_ary['paths']))
+		{
+			$this->build_ary['paths'] = [];
+		}
 
-			$rec = [
+		$this->build_ary['paths'][] = [
+			'route'		=> $route,
+			'params'	=> $params,
+		];
+
+		return $this;
+	}
+
+	public function str(array $process_ary = []):string
+	{
+		if (!isset($this->build_ary)
+			|| !isset($this->build_ary['pp_ary'])
+			|| !isset($this->build_ary['paths']))
+		{
+			return '';
+		}
+
+		$pp_ary = $this->build_ary['pp_ary'];
+		$paths = $this->build_ary['paths'];
+
+		$out = array_merge($process_ary, [
+			'fetch' => [],
+		]);
+
+		foreach($paths as $p)
+		{
+			$path = $this->get_path($p['route'], $pp_ary, $p['params']);
+			$cache_key = $this->get_thumbprint_key($p['route'], $pp_ary, $p['params']);
+			$thumbprint = $this->get_thumbprint_by_key($cache_key, $pp_ary);
+
+			$out['fetch'][] = [
 				'thumbprint'	=> $thumbprint,
 				'cacheKey'		=> $cache_key,
 				'path'			=> $path,
 			];
-
-			$out[] = $rec;
 		}
+
+		unset ($this->build_ary);
 
 		return htmlspecialchars(json_encode($out));
 	}

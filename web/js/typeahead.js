@@ -164,8 +164,9 @@ $(document).ready(function(){
 
 			datasets.push({data: new Bloodhound({
 					prefetch: {
-						url: './typeahead/' + rec.name + '.php?' + $.param(params),
+						url: rec.path,
 						cache: true,
+						cacheKey: rec.cacheKey,
 						ttl: 172800000,	// 2 days
 						thumbprint: rec.thumbprint,
 						filter: filter

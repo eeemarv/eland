@@ -1025,31 +1025,20 @@ if ($add)
 			echo $sys['id'];
 			echo '" ';
 
+			$app['typeahead']->ini($app['pp_ary']);
+
 			if ($sys['id'] == 'self')
 			{
 				echo 'id="group_self" ';
 
-				$typeahead_ary = [];
+				$app['typeahead']->add('accounts', ['status' => 'active']);
 
 				if ($app['s_admin'])
 				{
-					$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
+					$app['typeahaed']->add('accounts', ['status' => 'inactive'])
+						->add('accounts', ['status' => 'ip'])
+						->add('accounts', ['status' => 'im']);
 				}
-				else if ($app['s_user'])
-				{
-					$typeahead_status_ary = ['active'];
-				}
-
-				foreach ($typeahead_status_ary as $t_stat)
-				{
-					$typeahead_ary[] = [
-						'accounts', [
-							'status'	=> $t_stat,
-						],
-					];
-				}
-
-				$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 				$config_schema = $app['tschema'];
 			}
@@ -1057,32 +1046,29 @@ if ($add)
 			{
 				$remote_schema = $sys['remote_schema'];
 
-				$typeahead = $app['typeahead']->get($app['pp_ary'], [[
-					'eland_intersystem_accounts', [
+				$app['typeahead']->add('eland_intersystem_accounts', [
 					'remote_schema'	=> $remote_schema,
-				]]]);
+				]);
 
 				$config_schema = $remote_schema;
 			}
 			else if (isset($sys['elas']))
 			{
-				$typeahead = $app['typeahead']->get($app['pp_ary'], [[
-					'elas_intersystem_accounts', [
+				$app['typeahead']->add('elas_intersystem_accounts', [
 					'group_id'	=> $sys['id'],
-				]]]);
+				]);
 
 				unset($config_schema);
 			}
 			else if (isset($sys['mail']))
 			{
-				$typeahead = '';
 				unset($config_schema);
 			}
 
+			$typeahead_process_ary = ['filter' => 'accounts'];
+
 			if (isset($config_schema))
 			{
-				echo ' data-newuserdays="';
-				echo $app['config']->get('newuserdays', $config_schema) . '"';
 				echo ' data-minlimit="';
 				echo $app['config']->get('minlimit', $config_schema) . '"';
 				echo ' data-maxlimit="';
@@ -1093,7 +1079,11 @@ if ($add)
 				echo $app['config']->get('currencyratio', $config_schema) . '"';
 				echo ' data-balance-equilibrium="';
 				echo $app['config']->get('balance_equilibrium', $config_schema) . '"';
+
+				$typeahead_process_ary['newuserdays'] = $app['config']->get('newuserdays', $config_schema);
 			}
+
+			$typeahead = $app['typeahead']->str($typeahead_process_ary);
 
 			if ($typeahead)
 			{
@@ -1126,28 +1116,6 @@ if ($add)
 	}
 	else
 	{
-		$typeahead_ary = [];
-
-		if ($app['s_admin'])
-		{
-			$typeahead_status_ary = ['active', 'inactive', 'ip', 'im'];
-		}
-		else if ($app['s_user'])
-		{
-			$typeahead_status_ary = ['active'];
-		}
-
-		foreach ($typeahead_status_ary as $t_stat)
-		{
-			$typeahead_ary[] = [
-				'accounts', [
-					'status'	=> $t_stat,
-				],
-			];
-		}
-
-		$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
-
 		echo '<input type="hidden" id="group_id" ';
 		echo 'name="group_id" value="self">';
 	}
@@ -1170,13 +1138,25 @@ if ($add)
 	else
 	{
 		echo 'data-typeahead="';
-		echo $typeahead;
+
+		$app['typeahead']->ini($app['pp_ary'])
+			->add('accounts', ['status' => 'active']);
+
+		if ($app['s_admin'])
+		{
+			$app['typeahead']->add('accounts', ['status' => 'inactive'])
+				->add('accounts', ['status' => 'ip'])
+				->add('accounts', ['status' => 'im']);
+		}
+
+		echo $app['typeahead']->str([
+			'filter'		=> 'accounts',
+			'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+		]);
+
 		echo '" ';
 	}
 
-	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays', $app['tschema']);
-	echo '" ';
 	echo 'value="';
 	echo $transaction['letscode_to'];
 	echo '" required>';
@@ -2344,41 +2324,31 @@ if (!$pp_inline)
 	echo '<span class="input-group-addon" id="fcode_addon">Van ';
 	echo '<span class="fa fa-user"></span></span>';
 
-	$typeahead_ary = [];
+	$app['typeahead']->ini($app['pp_ary'])
+		->add('accounts', ['status' => 'active']);
 
-	if ($app['s_guest'])
+	if (!$app['s_guest'])
 	{
-		$typeahead_status_ary = ['active'];
-	}
-	else if ($app['s_user'])
-	{
-		$typeahead_status_ary = ['active', 'extern'];
-	}
-	else if ($app['s_admin'])
-	{
-		$typeahead_status_ary = ['active', 'extern',
-			'inactive', 'im', 'ip'];
+		$app['typeahead']->add('accounts', ['status' => 'extern']);
 	}
 
-	foreach ($typeahead_status_ary as $t_status)
+	if ($app['s_admin'])
 	{
-		$typeahead_ary[] = [
-			'accounts', [
-				'status'	=> $t_status,
-			],
-		];
+		$app['typeahead']->add('accounts', ['status' => 'inactive']);
+		$app['typeahead']->add('accounts', ['status' => 'ip']);
+		$app['typeahead']->add('accounts', ['status' => 'im']);
 	}
-
-	$typeahead = $app['typeahead']->get($app['pp_ary'], $typeahead_ary);
 
 	echo '<input type="text" class="form-control" ';
 	echo 'aria-describedby="fcode_addon" ';
+
 	echo 'data-typeahead="';
-	echo $typeahead;
+	echo $app['typeahead']->str([
+		'filter'		=> 'accounts',
+		'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+	]);
 	echo '" ';
-	echo 'data-newuserdays="';
-	echo $app['config']->get('newuserdays', $app['tschema']);
-	echo '" ';
+
 	echo 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
 	echo 'value="';
 	echo $fcode ?? '';
