@@ -361,6 +361,7 @@ if ($app['request']->isMethod('POST'))
 				'transactions'	=> $transactions,
 				'total_amount'	=> $total_amount,
 				'description'	=> $description,
+				'pp_ary'		=> $app['pp_ary'],
 			];
 
 			if ($to_one)

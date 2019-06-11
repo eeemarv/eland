@@ -16,7 +16,7 @@
 {%- endblock html_before_many -%}
 
 {%- block html_account_many -%}
-    {{- mail_link_open('users', {'id': t.id_from}, schema, email_token)|raw -}}
+    {{- context_url_open('users', pp_ary, {'id': t.id_from, 'et': et})|raw -}}
     {{- account(t.id_from, schema) -}}
     </a>
 {%- endblock -%}
@@ -26,7 +26,7 @@
     {{- 'label.to'|trans -}}
 </p>
 <p>
-    {{- mail_link_open('users', {'id': to_user_id}, schema, email_token)|raw -}}
+    {{- context_url_open('users', pp_ary, {'id': to_user_id, 'et': et})|raw -}}
     {{- account(to_user_id, schema) -}}
     </a>
 </p>

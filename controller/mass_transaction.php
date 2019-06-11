@@ -352,6 +352,7 @@ class mass_transaction
                             'from_user_id'	=> $transaction['id_from'],
                             'to_user_id'	=> $transaction['id_to'],
                             'user_id'		=> $user_id,
+                            'pp_ary'        => $app['pp_ary'],
                         ];
 
                         $app['queue.mail']->queue([
@@ -366,6 +367,7 @@ class mass_transaction
                         'transactions'	=> $transactions,
                         'total_amount'	=> $total_amount,
                         'description'	=> $description,
+                        'pp_ary'        => $app['pp_ary'],
                     ];
 
                     if ($to_one)
