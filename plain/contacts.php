@@ -503,17 +503,6 @@ if ($edit || $add)
 
 	if ($app['s_admin'] && $add && !$uid)
 	{
-		$typeahead_ary = [];
-
-		foreach (['active', 'inactive', 'ip', 'im', 'extern'] as $t_stat)
-		{
-			$typeahead_ary[] = [
-				'accounts', [
-					'status'	=> $t_stat,
-				],
-			];
-		}
-
 		echo '<div class="form-group">';
 		echo '<label for="letscode" class="control-label">Voor</label>';
 		echo '<div class="input-group">';

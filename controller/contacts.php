@@ -217,8 +217,8 @@ class contacts
 
         $app['btn_nav']->csv();
 
-        $app['btn_top']->add('contacts', $app['pp_ary'],
-            ['add' => 1], 'Contact toevoegen');
+        $app['btn_top']->add('contacts_add', $app['pp_ary'],
+            [], 'Contact toevoegen');
 
         $filtered = !isset($filter['uid']) && (
             (isset($filter['q']) && $filter['q'] !== '')
