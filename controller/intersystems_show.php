@@ -171,7 +171,7 @@ class intersystems_show
 
         $out .= '</div></div>';
 
-        $out .= intersystems::get_schemas_groups();
+        $out .= intersystems::get_schemas_groups($app);
 
         $app['tpl']->add($out);
         $app['tpl']->menu('intersystems');

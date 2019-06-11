@@ -199,7 +199,7 @@ class intersystems
             $out .= '</div></div>';
         }
 
-        $out .= self::get_schemas_groups();
+        $out .= self::get_schemas_groups($app);
 
         $app['tpl']->add($out);
         $app['tpl']->menu('intersystems');
@@ -207,10 +207,8 @@ class intersystems
         return $app['tpl']->get($request);
     }
 
-    public static function get_schemas_groups():string
+    public static function get_schemas_groups(app $app):string
     {
-        global $app;
-
         $out = '<div class="panel panel-default"><div class="panel-heading">';
         $out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
         $out .= 'Zie <a href="https://eland.letsa.net/elas-intersysteem-koppeling-maken.html">hier</a> ';

@@ -222,13 +222,13 @@ $c_system_admin->match('/config/{tab}', 'controller\\config::match')
 	->value('tab', 'system-name')
 	->bind('config');
 
-$c_system_admin->match('/intersystems/edit/{id}', 'controller\\intersystems_edit::match')
+$c_system_admin->match('/intersystems/edit/{id}', 'controller\\intersystems_edit::edit')
 	->bind('intersystems_edit');
 
 $c_system_admin->match('/intersystems/del/{id}', 'controller\\intersystems_del::match')
 	->bind('intersystems_del');
 
-$c_system_admin->match('/intersystems/add', 'controller\\intersystems_add::match')
+$c_system_admin->match('/intersystems/add', 'controller\\intersystems_edit::add')
 	->bind('intersystems_add');
 
 $c_system_admin->get('/intersystems/{id}', 'controller\\intersystems_show::get')
