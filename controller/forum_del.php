@@ -24,7 +24,6 @@ class forum_del
         if ($row)
         {
             $forum_post = $row['data'];
-            $agg_version = $row['agg_version'];
         }
 
         if (!isset($forum_post))
