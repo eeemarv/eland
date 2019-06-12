@@ -36,6 +36,11 @@ class forum_topic
                 $topic_post['edit_count'] = $row['agg_version'] - 1;
             }
         }
+        else
+        {
+            $app['alert']->error('Dit forum onderwerp bestaat niet');
+            $app['link']->redirect('forum', $app['pp_ary'], []);
+        }
 
         $topic_post['id'] = $topic_id;
 
@@ -46,6 +51,54 @@ class forum_topic
         {
             $app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
             $app['link']->redirect('forum', $app['pp_ary'], []);
+        }
+
+        if ($request->isMethod('POST'))
+        {
+            if (!($app['s_user'] || $app['s_admin']))
+            {
+                $app['alert']->error('Actie niet toegelaten.');
+                $app['link']->redirect('forum', $app['pp_ary'], []);
+            }
+
+            $content = $request->request->get('content', '');
+            $content = trim(preg_replace('/(<br>)+$/', '', $content));
+            $content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
+            $content = trim($content);
+
+            $config_htmlpurifier = \HTMLPurifier_Config::createDefault();
+            $config_htmlpurifier->set('Cache.DefinitionImpl', null);
+            $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
+            $content = $htmlpurifier->purify($content);
+
+            $reply = [
+                'content'   => $content,
+                'parent_id' => $topic_id,
+                'uid'       => $app['s_id'],
+            ];
+
+            if (strlen($content) < 2)
+            {
+                $errors[] = 'De inhoud van je bericht is te kort.';
+            }
+
+            if ($token_error = $app['form_token']->get_error())
+            {
+                $errors[] = $token_error;
+            }
+
+            if (!count($errors))
+            {
+                $new_id = substr(sha1(microtime() . $app['tschema']), 0, 24);
+
+                $app['xdb']->set('forum', $new_id, $reply, $app['tschema']);
+
+                $app['alert']->success('Reactie toegevoegd.');
+                $app['link']->redirect('forum_topic', $app['pp_ary'],
+                    ['topic_id' => $topic_id]);
+            }
+
+            $app['alert']->error($errors);
         }
 
         $forum_posts[] = $topic_post;
@@ -166,12 +219,11 @@ class forum_topic
             $out .= '<div class="panel-heading">';
 
             $out .= '<form method="post">';
-
             $out .= '<div class="form-group">';
             $out .= '<textarea name="content" ';
             $out .= 'class="form-control rich-edit" ';
             $out .= 'id="content" rows="4" required>';
-            $out .= $forum_post['content'] ?? '';
+            $out .= $content ?? '';
             $out .= '</textarea>';
             $out .= '</div>';
 

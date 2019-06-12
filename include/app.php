@@ -301,7 +301,7 @@ $c_system_user->match('/forum/del/{forum_id}', 'controller\\forum_del::match')
 	->assert('forum_id', cnst_assert::FORUM_ID)
 	->bind('forum_del');
 
-$c_system_guest->get('/forum/{topic_id}', 'controller\\forum_topic::match')
+$c_system_guest->match('/forum/{topic_id}', 'controller\\forum_topic::match')
 	->assert('topic_id', cnst_assert::FORUM_ID)
 	->bind('forum_topic');
 
