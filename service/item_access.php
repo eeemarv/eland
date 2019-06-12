@@ -102,7 +102,7 @@ class item_access
 	{
 		$ary = [];
 
-		foreach ($this->get_visible_ary as $role)
+		foreach ($this->get_visible_ary() as $role)
 		{
 			$ary[] = cnst_access::TO_XDB[$role];
 		}
@@ -114,7 +114,7 @@ class item_access
 	{
 		$ary = [];
 
-		foreach ($this->get_visible_ary as $role)
+		foreach ($this->get_visible_ary() as $role)
 		{
 			$ary[] = cnst_access::TO_FLAG_PUBLIC[$role];
 		}

@@ -293,7 +293,22 @@ $c_system_guest->match('/news', 'controller\\news::match')
 $c_system_guest->match('/docs', 'controller\\docs::match')
 	->bind('docs');
 
-$c_system_guest->match('/forum', 'controller\\forum::match')
+$c_system_user->match('/forum/edit/{forum_id}', 'controller\\forum_edit::match')
+	->assert('forum_id', cnst_assert::FORUM_ID)
+	->bind('forum_edit');
+
+$c_system_user->match('/forum/del/{forum_id}', 'controller\\forum_del::match')
+	->assert('forum_id', cnst_assert::FORUM_ID)
+	->bind('forum_del');
+
+$c_system_guest->get('/forum/{topic_id}', 'controller\\forum_topic::match')
+	->assert('topic_id', cnst_assert::FORUM_ID)
+	->bind('forum_topic');
+
+$c_system_user->match('/forum/add-topic', 'controller\\forum_add_topic::match')
+	->bind('forum_add_topic');
+
+$c_system_guest->get('/forum', 'controller\\forum::get')
 	->bind('forum');
 
 $c_system_user->get('/typeahead-account-codes', 'controller\\typeahead_account_codes::get')
