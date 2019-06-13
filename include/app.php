@@ -290,7 +290,26 @@ $c_system_guest->match('/transactions', 'controller\\transactions::match')
 $c_system_guest->match('/news', 'controller\\news::match')
 	->bind('news');
 
-$c_system_guest->match('/docs', 'controller\\docs::match')
+$c_system_admin->match('/docs/edit/{doc_id}', 'controller\\docs_edit::match')
+	->assert('doc_id', cnst_assert::DOC_ID)
+	->bind('docs_edit');
+
+$c_system_admin->match('/docs/del/{doc_id}', 'controller\\docs_del::match')
+	->assert('doc_id', cnst_assert::DOC_ID)
+	->bind('docs_del');
+
+$c_system_admin->match('/docs/add', 'controller\\docs_add::match')
+	->bind('docs_add');
+
+$c_system_admin->match('/docs/map-edit/{map_id}', 'controller\\docs_map_edit::match')
+	->assert('map_id', cnst_assert::DOC_MAP_ID)
+	->bind('docs_map_edit');
+
+$c_system_guest->get('/docs/map/{map_id}', 'controller\\docs_map::get')
+	->assert('map_id', cnst_assert::DOC_MAP_ID)
+	->bind('docs_map');
+
+$c_system_guest->get('/docs', 'controller\\docs::get')
 	->bind('docs');
 
 $c_system_user->match('/forum/edit/{forum_id}', 'controller\\forum_edit::match')

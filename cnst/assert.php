@@ -11,6 +11,7 @@ class assert
     const GUEST = '[gua]';
     const NUMBER = '\d+';
     const DOC_ID = '[0-9a-f]{24}';
+    const DOC_MAP_ID = '[0-9a-f]{24}';
     const LOCALE = 'nl';
     const SYSTEM = '[a-z][a-z0-9]*';
     const SCHEMA = '[a-z][a-z0-9]*';
