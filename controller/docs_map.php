@@ -138,12 +138,12 @@ class docs_map
 
                 if ($app['s_admin'])
                 {
-                    $td_c = $app['link']->link_fa('docs', $app['pp_ary'],
-                        ['edit' => $did], 'Aanpassen',
+                    $td_c = $app['link']->link_fa('docs_edit', $app['pp_ary'],
+                        ['doc_id' => $did], 'Aanpassen',
                         ['class' => 'btn btn-primary btn-xs'], 'pencil');
                     $td_c .= '&nbsp;';
-                    $td_c .= $app['link']->link_fa('docs', $app['pp_ary'],
-                        ['del' => $did], 'Verwijderen',
+                    $td_c .= $app['link']->link_fa('docs_del', $app['pp_ary'],
+                        ['doc_id' => $did], 'Verwijderen',
                         ['class' => 'btn btn-danger btn-xs'], 'times');
                     $td[] = $td_c;
                 }
