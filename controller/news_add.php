@@ -7,9 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\access as cnst_access;
 
-class news_edit
+class news_add
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function match(Request $request, app $app):Response
     {
         $news = [];
 
@@ -39,6 +39,8 @@ class news_edit
                 if ($news['itemdate'] === '')
                 {
                     $errors[] = 'Fout formaat in agendadatum.';
+
+                    $news['itemdate'] = '';
                 }
             }
             else
@@ -68,36 +70,61 @@ class news_edit
 
             if (!count($errors))
             {
-                if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $id]))
+                $news['approved'] = $app['s_admin'] ? 't' : 'f';
+                $news['published'] = $app['s_admin'] ? 't' : 'f';
+                $news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
+                $news['cdate'] = gmdate('Y-m-d H:i:s');
+
+                if ($app['db']->insert($app['tschema'] . '.news', $news))
                 {
+                    $id = $app['db']->lastInsertId($app['tschema'] . '.news_id_seq');
+
                     $app['xdb']->set('news_access', $id, [
-                        'access' => cnst_access::TO_XDB[$access]
+                        'access' => cnst_access::TO_XDB[$access],
                     ], $app['tschema']);
 
-                    $app['alert']->success('Nieuwsbericht aangepast.');
-                    $app['link']->redirect('news_show', $app['pp_ary'], ['id' => $id]);
-                }
+                    $app['alert']->success('Nieuwsbericht opgeslagen.');
 
-                $errors[] = 'Nieuwsbericht niet aangepast.';
+                    $news['id'] = $id;
+
+                    if(!$app['s_admin'])
+                    {
+                        $vars = [
+                            'news'			=> $news,
+                        ];
+
+                        $app['queue.mail']->queue([
+                            'schema'	=> $app['tschema'],
+                            'to' 		=> $app['mail_addr_system']->get_newsadmin($app['tschema']),
+                            'template'	=> 'news/review_admin',
+                            'vars'		=> $vars,
+                        ], 7000);
+
+                        $app['alert']->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
+                        $app['link']->redirect('news', $app['pp_ary'], []);
+
+                    }
+
+                    $app['link']->redirect('news_show', $app['pp_ary'],
+                        ['id' => $id]);
+                }
+                else
+                {
+                    $errors[] = 'Nieuwsbericht niet opgeslagen.';
+                }
             }
 
             $app['alert']->error($errors);
         }
         else
         {
-            $news = $app['db']->fetchAssoc('select *
-                from ' . $app['tschema'] . '.news
-                where id = ?', [$id]);
-
-            $access = $app['xdb']->get('news_access', $id,
-                $app['tschema'])['data']['access'];
-
-            $access = cnst_access::FROM_XDB[$access];
+            $news['itemdate'] = gmdate('Y-m-d');
+            $access = '';
         }
 
         $app['assets']->add(['datepicker']);
 
-        $app['heading']->add('Nieuwsbericht aanpassen');
+        $app['heading']->add('Nieuwsbericht toevoegen');
         $app['heading']->fa('calendar-o');
 
         $out = '<div class="panel panel-info">';
@@ -177,12 +204,11 @@ class news_edit
 
         $out .= $app['item_access']->get_radio_buttons('access', $access, 'news', $app['s_user']);
 
-        $out .= $app['link']->btn_cancel('news_show', $app['pp_ary'],
-            ['id' => $id]);
+        $out .= $app['link']->btn_cancel('news_list', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-primary">';
+        $out .= 'value="Opslaan" class="btn btn-success">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

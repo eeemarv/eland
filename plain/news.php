@@ -192,7 +192,7 @@ if ($add || $edit)
 
 	$app['heading']->add('Nieuwsbericht ');
 	$app['heading']->add($add ? 'toevoegen' : 'aanpassen');
-	$app['heading']->add('calendar-o');
+	$app['heading']->fa('calendar-o');
 
 	include __DIR__ . '/../include/header.php';
 

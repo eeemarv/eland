@@ -51,7 +51,8 @@ class news
                 $app['xdb']->set('news_access', $news_id, [
                     'access' => 'interlets',
                 ], $app['tschema']);
-                $news[$k]['access'] = 'interlets';
+
+                $news[$news_id]['access'] = 'interlets';
             }
             else
             {
