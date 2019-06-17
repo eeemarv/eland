@@ -22,7 +22,8 @@ class docs_edit
         }
         else
         {
-            $access = '';
+            $app['alert']->error('Document niet gevonden');
+            $app['link']->redirect('docs', $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
