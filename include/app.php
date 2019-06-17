@@ -287,8 +287,26 @@ $c_system_guest->match('/transactions/{id}', 'controller\\transactions_show::get
 $c_system_guest->match('/transactions', 'controller\\transactions::match')
 	->bind('transactions');
 
-$c_system_guest->match('/news', 'controller\\news::match')
-	->bind('news');
+$c_system_admin->match('/news/del/{id}', 'controller\\news_del::match')
+	->bind('news_del');
+
+$c_system_admin->match('/news/edit/{id}', 'controller\\news_edit::match')
+	->bind('news_edit');
+
+$c_system_guest->match('/news/{id}', 'controller\\news_show::get')
+	->bind('news_show');
+
+$c_system_user->match('/news/add', 'controller\\news_add::match')
+	->bind('news_add');
+
+$c_system_admin->get('/news/approve/{id}', 'controller\\news_approve::get')
+	->bind('news_approve');
+
+$c_system_guest->get('/news/extended', 'controller\\news::extended')
+	->bind('news_extended');
+
+$c_system_guest->get('/news', 'controller\\news::list')
+	->bind('news_list');
 
 $c_system_admin->match('/docs/edit/{doc_id}', 'controller\\docs_edit::match')
 	->assert('doc_id', cnst_assert::DOC_ID)

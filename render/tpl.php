@@ -549,7 +549,7 @@ class tpl
 					'Transacties',
 					[],
 				],
-				'news'			=> [
+				'news_list'			=> [
 					'calendar-o',
 					'Nieuws',
 					[],

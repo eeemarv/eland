@@ -258,6 +258,7 @@ $app['pp_ary'] = function ($app){
 };
 
 $app['tschema'] = function ($app){
+	error_log('SYSTEM: ' . $app['request']->attributes->get('system'));
 	return 'x';
 	return $app['systems']->get_schema($app['pp_system']);
 };
