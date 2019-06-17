@@ -114,8 +114,13 @@ class docs_add
 
                     $app['alert']->success('Het bestand is opgeladen.');
 
-                    $app['link']->redirect('docs', $app['pp_ary'],
-                        $doc['map_id'] ? ['map' => $doc['map_id']] : []);
+                    if (isset($doc['map_id']))
+                    {
+                        $app['link']->redirect('docs_map', $app['pp_ary'],
+                            ['map_id' => $doc['map_id']]);
+                    }
+
+                    $app['link']->redirect('docs', $app['pp_ary'], []);
                 }
             }
         }
