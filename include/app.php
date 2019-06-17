@@ -298,7 +298,9 @@ $c_system_admin->match('/docs/del/{doc_id}', 'controller\\docs_del::match')
 	->assert('doc_id', cnst_assert::DOC_ID)
 	->bind('docs_del');
 
-$c_system_admin->match('/docs/add', 'controller\\docs_add::match')
+$c_system_admin->match('/docs/add/{map_id}', 'controller\\docs_add::match')
+	->assert('map_id', cnst_assert::DOC_MAP_ID)
+	->value('map_id', '')
 	->bind('docs_add');
 
 $c_system_admin->match('/docs/map-edit/{map_id}', 'controller\\docs_map_edit::match')

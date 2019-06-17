@@ -84,6 +84,7 @@ class docs
         }
 
         $app['heading']->add('Documenten');
+        $app['heading']->fa('files-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
