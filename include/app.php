@@ -284,7 +284,7 @@ $c_system_guest->match('/transactions/{id}', 'controller\\transactions_show::get
 	->assert('id', cnst_assert::NUMBER)
 	->bind('transactions_show');
 
-$c_system_guest->match('/transactions', 'controller\\transactions::match')
+$c_system_guest->get('/transactions', 'controller\\transactions::get')
 	->bind('transactions');
 
 $c_system_admin->match('/news/del/{id}', 'controller\\news_del::match')
