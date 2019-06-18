@@ -805,7 +805,7 @@ class transactions
             $out .= '</strong> ';
             $out .= $app['config']->get('currency', $app['tschema']);
             $out .= '</li>';
-            $out .= $this->get_valuation($app['config'], $app['tschema']);
+            $out .= self::get_valuation($app['config'], $app['tschema']);
             $out .= '</ul>';
         }
 
@@ -816,7 +816,7 @@ class transactions
     }
 
 
-    public function get_valuation(config $config, string $schema):string
+    static public function get_valuation(config $config, string $schema):string
     {
         $out = '';
 
