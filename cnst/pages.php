@@ -5,9 +5,9 @@ namespace cnst;
 class pages
 {
     const DEFAULT_VIEW = [
-        'users'		=> 'list',
-        'messages'	=> 'extended',
-        'news'		=> 'extended',
+        'users'		=> 'users_list',
+        'messages'	=> 'messages_extended',
+        'news'		=> 'news_extended',
     ];
 
     const INTERSYSTEM_LANDING = [
@@ -58,6 +58,5 @@ class pages
                 ],
             ],
         ],
-
     ];
 }
