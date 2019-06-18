@@ -263,21 +263,21 @@ class transactions
                 {
                     if ($s_owner)
                     {
-                        $app['btn_top']->add('transactions', $app['pp_ary'],
+                        $app['btn_top']->add('transactions_add', $app['pp_ary'],
                             ['add' => 1], 'Transactie toevoegen');
                     }
                     else
                     {
-                        $app['btn_top']->add_trans('transactions', $app['pp_ary'],
-                            ['add' => 1, 'tuid' => $user['id']],
+                        $app['btn_top']->add_trans('transactions_add', $app['pp_ary'],
+                            ['tuid' => $user['id']],
                             'Transactie naar ' . $user_str);
                     }
                 }
             }
             else
             {
-                $app['btn_top']->add('transactions', $app['pp_ary'],
-                    ['add' => 1], 'Transactie toevoegen');
+                $app['btn_top']->add('transactions_add', $app['pp_ary'],
+                    [], 'Transactie toevoegen');
             }
         }
 
@@ -594,7 +594,7 @@ class transactions
                 $out .= '>';
                 $out .= '<td>';
 
-                $out .= $app['link']->link_no_attr('transactions', $app['pp_ary'],
+                $out .= $app['link']->link_no_attr('transactions_show', $app['pp_ary'],
                     ['id' => $t['id']], $t['description']);
 
                 $out .= '</td>';
@@ -702,7 +702,7 @@ class transactions
 
                 $out .= '>';
                 $out .= '<td>';
-                $out .= $app['link']->link_no_attr('transactions', $app['pp_ary'],
+                $out .= $app['link']->link_no_attr('transactions_show', $app['pp_ary'],
                     ['id' => $t['id']], $t['description']);
                 $out .= '</td>';
 

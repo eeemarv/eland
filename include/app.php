@@ -280,8 +280,13 @@ $c_system_guest->match('/users/{id}', 'controller\\users_show::get')
 $c_system_guest->match('/users', 'controller\\users::match')
 	->bind('users');
 
-$c_system_guest->match('/transactions/{id}', 'controller\\transactions_show::get')
-	->assert('id', cnst_assert::NUMBER)
+$c_system_admin->match('/transactions/edit/{id}', 'controller\\transactions_edit::match')
+	->bind('transactions_edit');
+
+$c_system_user->match('/transactions/add', 'controller\\transactions_add::match')
+	->bind('transactions_add');
+
+$c_system_guest->get('/transactions/{id}', 'controller\\transactions_show::get')
 	->bind('transactions_show');
 
 $c_system_guest->get('/transactions', 'controller\\transactions::get')
