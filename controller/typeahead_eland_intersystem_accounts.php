@@ -3,7 +3,6 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_eland_intersystem_accounts

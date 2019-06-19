@@ -270,15 +270,67 @@ $c_system_user->get('/messages/extend/{id}/{days}',
 	->assert('days', cnst_assert::NUMBER)
 	->bind('messages_extend');
 
-$c_system_guest->match('/messages', 'controller\\messages::match')
-	->bind('messages');
+$c_system_user->match('/messages/edit/{id}', 'controller\\messages_edit::match')
+	->bind('messages_edit');
 
-$c_system_guest->match('/users/{id}', 'controller\\users_show::get')
-	->assert('id', cnst_assert::NUMBER)
-	->bind('users');
+$c_system_user->match('/messages/add', 'controller\\messages_add::match')
+	->bind('messages_add');
 
-$c_system_guest->match('/users', 'controller\\users::match')
-	->bind('users');
+$c_system_guest->get('/messages/{id}', 'controller\\messages_show::get')
+	->bind('messages_show');
+
+$c_system_guest->match('/messages/user-inline/{user_id}', 'controller\\messages::user_inline')
+	->assert('user_id', cnst_assert::NUMBER)
+	->bind('messages_user_inline');
+
+$c_system_guest->get('/messages/extended', 'controller\\messages::extended')
+	->bind('messages_extended');
+
+$c_system_guest->get('/messages', 'controller\\messages::list')
+	->bind('messages_list');
+
+$c_system_admin->get('/users/{status}/{id}', 'controller\\users_show::status_admin')
+	->assert('status', cnst_assert::USER_STATUS)
+	->bind('users_show_status_admin');
+
+$c_system_guest->get('/users/{status}/{id}', 'controller\\users_show::status')
+	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
+	->bind('users_show_status');
+
+$c_system_guest->get('/users/{id}', 'controller\\users_show::get')
+	->bind('users_show');
+
+$c_system_guest->get('/users/map', 'controller\\users_map::get')
+	->bind('users_map');
+
+$c_system_admin->match('/users/edit/{id}', 'controller\\users_edit_admin::match')
+	->bind('users_edit_admin');
+
+$c_system_admin->match('/users/edit/{id}', 'controller\\users_edit::match')
+	->bind('users_edit');
+
+$c_system_admin->match('/users/add', 'controller\\users_add::match')
+	->bind('users_add');
+
+$c_system_admin->get('/users/tiles/{status}', 'controller\\users_tiles::admin')
+	->assert('status', cnst_assert::USER_STATUS)
+	->value('status', 'active')
+	->bind('users_tiles_admin');
+
+$c_system_admin->get('/users/{status}', 'controller\\users_list::admin')
+	->assert('status', cnst_assert::USER_STATUS)
+	->value('status', 'active')
+	->bind('users_list_admin');
+
+$c_system_guest->get('/users/tiles/{status}', 'controller\\users_tiles::get')
+	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
+	->value('status', 'active')
+	->bind('users_tiles');
+
+$c_system_guest->get('/users/{status}', 'controller\\users_list::get')
+	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
+	->value('status', 'active')
+	->bind('users_list');
 
 $c_system_admin->match('/transactions/edit/{id}', 'controller\\transactions_edit::match')
 	->bind('transactions_edit');
@@ -288,6 +340,10 @@ $c_system_user->match('/transactions/add', 'controller\\transactions_add::match'
 
 $c_system_guest->get('/transactions/{id}', 'controller\\transactions_show::get')
 	->bind('transactions_show');
+
+$c_system_guest->get('/transactions/user-inline/{user_id}', 'controller\\transactions::user_inline')
+	->assert('user_id', cnst_assert::NUMBER)
+	->bind('transactions_user_inline');
 
 $c_system_guest->get('/transactions', 'controller\\transactions::get')
 	->bind('transactions');
@@ -359,7 +415,7 @@ $c_system_user->get('/typeahead-account-codes', 'controller\\typeahead_account_c
 	->bind('typeahead_account_codes');
 
 $c_system_guest->get('/typeahead-accounts/{status}', 'controller\\typeahead_accounts::get')
-	->assert('status', cnst_assert::PRIMARY_STATUS)
+	->assert('status', cnst_assert::USER_PRIMARY_STATUS)
 	->bind('typeahead_accounts');
 
 $c_system_admin->get('/typeahead-doc-map-names', 'controller\\typeahead_doc_map_names::get')

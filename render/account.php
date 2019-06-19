@@ -65,7 +65,7 @@ class account
 	{
 		$schema = $this->systems->get_schema($pp_ary['system']);
 
-		return $this->link->link_no_attr('users', $pp_ary,
+		return $this->link->link_no_attr('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
 	}
 
@@ -76,7 +76,7 @@ class account
 	{
 		$schema = $this->systems->get_schema($pp_ary['system']);
 
-		return $this->link->link_url('users', $pp_ary,
+		return $this->link->link_url('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema), []);
 	}
 
@@ -90,7 +90,7 @@ class account
 			'system'		=> $this->systems->get_system($schema),
 		];
 
-		return $this->link->link_no_attr('users', $pp_ary,
+		return $this->link->link_no_attr('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
 	}
 }

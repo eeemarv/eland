@@ -19,6 +19,14 @@ use render\link;
 
 class tpl
 {
+	const LINK_ROUTE = [
+		'messages'		=> 'messages_extended',
+		'users'			=> 'users_list',
+		'transactions'	=> 'transactions',
+		'docs'			=> 'docs',
+		'news'			=> 'news_extended',
+	];
+
 	protected $content = '';
 	protected $menu;
 
@@ -198,6 +206,7 @@ class tpl
 			else
 			{
 				$route = $this->config->get('default_landing_page', $this->tschema);
+				$route = self::LINK_ROUTE[$route];
 				$homepage_url = $this->link->path($route, $this->pp_ary);
 			}
 		}
@@ -355,14 +364,14 @@ class tpl
 			{
 				$out .= '<li>';
 
-				$out .= $this->link->link_fa('users', $this->pp_ary,
+				$out .= $this->link->link_fa('users_show', $this->pp_ary,
 					['id' => $this->s_id], 'Mijn gegevens', [], 'user');
 
 				$out .= '</li>';
 
 				$out .= '<li>';
 
-				$out .= $this->link->link_fa('messages', $this->pp_ary,
+				$out .= $this->link->link_fa('messages_extended', $this->pp_ary,
 					['f' => ['uid' => $this->s_id]],
 					'Mijn vraag en aanbod', [], 'newspaper-o');
 
@@ -534,12 +543,12 @@ class tpl
 		else
 		{
 			$menu = [
-				'messages'		=> [
+				'messages_extended'		=> [
 					'newspaper-o',
 					'Vraag & Aanbod',
 					[],
 				],
-				'users'			=> [
+				'users_list'			=> [
 					'users',
 					$this->s_admin ? 'Gebruikers' : 'Leden',
 					['status' => 'active'],

@@ -68,7 +68,7 @@ class item_access
 			return false;
 		}
 
-		return $this->is_visible(cnst_access::FROM_XDB[$access_flag_public]);
+		return $this->is_visible(cnst_access::FROM_FLAG_PUBLIC[$access_flag_public]);
 	}
 
 	public function is_visible_local(bool $local):bool
@@ -130,7 +130,7 @@ class item_access
 
 		$out = '<span class="btn btn-';
 		$out .= cnst_access::LABEL[$access]['class'];
-		$out .= ' btn-xs';
+		$out .= ' btn-md';
 		$out .= '">';
 		$out .= cnst_access::LABEL[$access]['lbl'];
 		$out .= '</span>';

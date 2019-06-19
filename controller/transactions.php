@@ -14,7 +14,7 @@ class transactions
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
-        $pp_inline = $request->query->get('inline', false) ? true : false;
+        $inline_en = $request->query->get('inline', false) ? true : false;
 
         $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 
@@ -206,7 +206,7 @@ class transactions
         $amount_sum = $row['sum'];
 
         $app['pagination']->init('transactions', $app['pp_ary'],
-            $row_count, $params, $pp_inline);
+            $row_count, $params, $inline_en);
 
         $asc_preset_ary = [
             'asc'	=> 0,
@@ -252,7 +252,7 @@ class transactions
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        if (!$pp_inline && ($app['s_admin'] || $app['s_user']))
+        if (!$inline_en && ($app['s_admin'] || $app['s_user']))
         {
             if (isset($filter['uid']))
             {
@@ -295,7 +295,7 @@ class transactions
 
         if (isset($filter['uid']))
         {
-            if ($s_owner && !$pp_inline)
+            if ($s_owner && !$inline_en)
             {
                 $app['heading']->add('Mijn transacties');
             }
@@ -318,7 +318,7 @@ class transactions
 
         $out = '';
 
-        if (!$pp_inline)
+        if (!$inline_en)
         {
             $app['heading']->btn_filter();
 
@@ -789,7 +789,7 @@ class transactions
 
         $out .= $app['pagination']->get();
 
-        if ($pp_inline)
+        if ($inline_en)
         {
             $out .= '</div></div>';
 
