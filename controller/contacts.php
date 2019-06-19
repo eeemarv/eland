@@ -479,7 +479,7 @@ class contacts
 
             $td[] = $app['link']->link_fa('contacts_del', $app['pp_ary'],
                 ['id' => $c['id']], 'Verwijderen',
-                ['class' => 'btn btn-danger btn-xs'],
+                ['class' => 'btn btn-danger'],
                 'times');
 
             $out .= '<tr><td>';

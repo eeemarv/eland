@@ -2785,7 +2785,7 @@ function btn_extend(link $link, array $pp_ary, int $id, int $days, string $label
 		],
 		$label,
 		[
-			'class' => 'btn btn-default btn-xs',
+			'class' => 'btn btn-default',
 		]
 	);
 }

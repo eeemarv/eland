@@ -493,7 +493,7 @@ echo '<div class="col-md-12 top-buttons">';
 
 echo '<div class="visible-xs pull-left ';
 echo 'button-offcanvas menu-button">';
-echo '<button type="button" class="btn btn-primary btn-md" ';
+echo '<button type="button" class="btn btn-primary" ';
 echo 'data-toggle="offcanvas"';
 echo ' title="Menu"><i class="fa fa-chevron-left">';
 echo '</i></button>';

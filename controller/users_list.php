@@ -14,7 +14,7 @@ class users_list
 {
     public function admin(Request $request, app $app, string $status):Response
     {
-        return $this->list($request, $app, $status);
+        return $this->get($request, $app, $status);
     }
 
     public function get(Request $request, app $app, string $status):Response
@@ -994,7 +994,7 @@ class users_list
                             }
                             else
                             {
-                                $out .= '<span class="btn btn-default btn-xs">';
+                                $out .= '<span class="btn btn-default">';
                                 $out .= 'verborgen</span>';
                             }
                         }
@@ -1072,7 +1072,7 @@ class users_list
                         }
                         else
                         {
-                            $out .= '><span class="btn btn-default btn-xs">verborgen</span>';
+                            $out .= '><span class="btn btn-default">verborgen</span>';
                         }
                     }
                     else
@@ -1346,13 +1346,17 @@ class users_list
         string $matched_route
     ):void
     {
-        $btn_nav->view('users_list', $pp_ary,
+        $admin_suffix = $pp_ary['role_short'] === 'a' ? '_admin' : '';
+
+        $btn_nav->view('users_list' . $admin_suffix, $pp_ary,
             $params, 'Lijst', 'align-justify',
             $matched_route === 'users_list');
 
-        $btn_nav->view('users_tiles', $pp_ary,
+        $btn_nav->view('users_tiles' . $admin_suffix, $pp_ary,
             $params, 'Tegels met foto\'s', 'th',
             $matched_route === 'users_tiles');
+
+        unset($params['status']);
 
         $btn_nav->view('users_map', $pp_ary,
             $params, 'Kaart', 'map-marker',

@@ -515,7 +515,7 @@ if ($id)
 		echo $app['link']->link('users', $app['pp_ary'],
 			['id' => $user['id']], $group['localletscode'],
 			[
-				'class' => 'btn btn-default btn-xs',
+				'class' => 'btn btn-default',
 				'title'	=> 'Ga naar het interSysteem account',
 			]);
 
@@ -683,7 +683,7 @@ if (count($groups))
 				echo $app['link']->link('users', $app['pp_ary'],
 					['id' => $user['id']], $g['localletscode'],
 					[
-						'class'	=> 'btn btn-default btn-xs',
+						'class'	=> 'btn btn-default',
 						'title'	=> 'Ga naar het interSysteem account',
 					]);
 
@@ -996,7 +996,7 @@ function get_schemas_groups():string
 				{
 					$out .= $app['link']->link('intersystem', $app['pp_ary'],
 						['add' => 1, 'add_schema' => $rem_schema], 'Creëer',
-						['class' => 'btn btn-default btn-xs']);
+						['class' => 'btn btn-default']);
 				}
 				else
 				{
@@ -1044,7 +1044,7 @@ function get_schemas_groups():string
 						['add' => 1, 'intersystem_code' => $loc_group['localletscode']],
 						'Creëer',
 						[
-							'class'	=> 'btn btn-default btn-xs text-danger',
+							'class'	=> 'btn btn-default text-danger',
 							'title'	=> 'Creëer een interSysteem-account met gelijke Accunt Code en status extern.',
 						]);
 				}

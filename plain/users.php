@@ -2879,7 +2879,7 @@ if ($id)
 	else
 	{
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs">';
+		echo '<span class="btn btn-default">';
 		echo 'verborgen</span>';
 		echo '</dd>';
 	}
@@ -4392,7 +4392,7 @@ if ($v_list)
 					}
 					else
 					{
-						echo '<span class="btn btn-default btn-xs">';
+						echo '<span class="btn btn-default">';
 						echo 'verborgen</span>';
 					}
 				}
@@ -4470,7 +4470,7 @@ if ($v_list)
 				}
 				else
 				{
-					echo '><span class="btn btn-default btn-xs">verborgen</span>';
+					echo '><span class="btn btn-default">verborgen</span>';
 				}
 			}
 			else
@@ -4837,7 +4837,7 @@ function get_contacts_str(array $contacts, string $abbrev):string
 				continue;
 			}
 
-			$ret .= '<span class="btn btn-default btn-xs">';
+			$ret .= '<span class="btn btn-default">';
 			$ret .= 'verborgen</span>';
 			$ret .= '<br>';
 		}

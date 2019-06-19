@@ -45,7 +45,7 @@ class apikeys
             $td[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
             $td[] = $app['link']->link_fa('apikeys_del', $app['pp_ary'],
                 ['id' => $a['id']], 'Verwijderen',
-                ['class' => 'btn btn-danger btn-xs'], 'times');
+                ['class' => 'btn btn-danger'], 'times');
 
             $out .= '<tr><td>';
             $out .= implode('</td><td>', $td);

@@ -465,9 +465,9 @@ $c_system_admin->get('/weighted-balances/{days}', 'controller\\weighted_balances
 	->assert('days', cnst_assert::NUMBER)
 	->bind('weighted_balances');
 
-$c_system_anon->mount('/{role_short}', $c_system_guest);
-$c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_admin);
+$c_system_anon->mount('/{role_short}', $c_system_user);
+$c_system_anon->mount('/{role_short}', $c_system_guest);
 $c_locale->mount('/{system}', $c_system_anon);
 $app->mount('/{_locale}', $c_locale);
 

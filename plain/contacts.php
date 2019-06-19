@@ -724,7 +724,7 @@ if ($uid)
 
 		if (($c['flag_public'] < $app['s_access_level']) && !$s_owner)
 		{
-			$out_c = '<span class="btn btn-default btn-xs">verborgen</span>';
+			$out_c = '<span class="btn btn-default">verborgen</span>';
 			$out[] = $out_c;
 			$out[] = $out_c;
 		}

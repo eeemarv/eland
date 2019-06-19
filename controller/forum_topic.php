@@ -198,10 +198,10 @@ class forum_topic
                 $out .= '<span class="inline-buttons pull-right">';
                 $out .= $app['link']->link_fa('forum_edit', $app['pp_ary'],
                     ['forum_id' => $pid], 'Aanpassen',
-                    ['class' => 'btn btn-primary btn-xs'], 'pencil');
+                    ['class' => 'btn btn-primary'], 'pencil');
                 $out .= $app['link']->link_fa('forum_del', $app['pp_ary'],
                     ['forum_id' => $pid], 'Verwijderen',
-                    ['class' => 'btn btn-danger btn-xs'], 'times');
+                    ['class' => 'btn btn-danger'], 'times');
                 $out .= '</span>';
             }
 

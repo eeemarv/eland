@@ -95,7 +95,7 @@ class contact_types
             {
                 $out .= $app['link']->link_fa('contact_types_del', $app['pp_ary'],
                     ['id' => $t['id']], 'Verwijderen',
-                    ['class' => 'btn btn-danger btn-xs'],
+                    ['class' => 'btn btn-danger'],
                     'times');
             }
 

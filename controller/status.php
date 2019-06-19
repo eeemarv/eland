@@ -316,7 +316,7 @@ class status
 
                     $out .= $app['link']->link('contacts', $app['pp_ary'],
                         ['edit' => $ary['id']], 'Aanpassen',
-                        ['class' => 'btn btn-default btn-xs']);
+                        ['class' => 'btn btn-default']);
 
                     $out .= ' ';
 

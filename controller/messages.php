@@ -914,7 +914,7 @@ class messages
             ],
             $label,
             [
-                'class' => 'btn btn-default btn-xs',
+                'class' => 'btn btn-default',
             ]
         );
     }

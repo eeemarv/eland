@@ -57,18 +57,18 @@ class intersystems_show
 
         if ($group_schema)
         {
-            $out .= '<dd><span class="btn btn-info btn-xs">eLAND server</span>';
+            $out .= '<dd><span class="btn btn-info">eLAND server</span>';
 
             if (!$app['config']->get('template_lets', $group_schema))
             {
-                $out .= ' <span class="btn btn-danger btn-xs">';
+                $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
                 $out .= 'Niet geconfigureerd als Tijdsbank</span>';
             }
 
             if (!$app['config']->get('interlets_en', $group_schema))
             {
-                $out .= ' <span class="btn btn-danger btn-xs">';
+                $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
                 $out .= 'De InterSysteem-mogelijkheid is niet ingeschakeld ';
                 $out .= 'in configuratie</span>';
@@ -112,7 +112,7 @@ class intersystems_show
             $out .= $app['link']->link('users', $app['pp_ary'],
                 ['id' => $user['id']], $group['localletscode'],
                 [
-                    'class' => 'btn btn-default btn-xs',
+                    'class' => 'btn btn-default',
                     'title'	=> 'Ga naar het interSysteem account',
                 ]);
 
@@ -123,7 +123,7 @@ class intersystems_show
                 $out .= $app['link']->link_fa('users', $app['pp_ary'],
                     ['edit' => $user['id']], 'Status!',
                     [
-                        'class'	=> 'btn btn-danger btn-xs',
+                        'class'	=> 'btn btn-danger',
                         'title'	=> 'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
                     ],
                     'exclamation-triangle');
@@ -134,7 +134,7 @@ class intersystems_show
                 $out .= $app['link']->link_fa('users', $app['pp_ary'],
                     ['edit' => $user['id']], 'Rol!',
                     [
-                        'class'	=> 'btn btn-danger btn-xs',
+                        'class'	=> 'btn btn-danger',
                         'title'	=> 'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
                     ],
                     'fa-exclamation-triangle');

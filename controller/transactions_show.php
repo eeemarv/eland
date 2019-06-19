@@ -114,7 +114,7 @@ class transactions_show
 
             $out .= '<dt>Van Account in het andere Systeem</dt>';
             $out .= '<dd>';
-            $out .= '<span class="btn btn-default btn-xs">';
+            $out .= '<span class="btn btn-default">';
             $out .= '<i class="fa fa-share-alt"></i></span> ';
 
             if ($inter_transaction)
@@ -165,7 +165,7 @@ class transactions_show
 
             $out .= '<dt>Naar Account in het andere Systeem</dt>';
             $out .= '<dd>';
-            $out .= '<span class="btn btn-default btn-xs">';
+            $out .= '<span class="btn btn-default">';
             $out .= '<i class="fa fa-share-alt"></i></span> ';
 
             if ($inter_transaction)
@@ -253,7 +253,7 @@ class transactions_show
 
             if ($real_from)
             {
-                $out .= '<span class="btn btn-default btn-xs">';
+                $out .= '<span class="btn btn-default">';
                 $out .= '<i class="fa fa-share-alt"></i></span> ';
                 $out .= $user_from;
             }
@@ -419,7 +419,7 @@ class transactions_show
                 $out .= 'Het bestemmings Account in het andere ';
                 $out .= 'Systeem ';
                 $out .= '(';
-                $out .= '<span class="btn btn-default btn-xs">';
+                $out .= '<span class="btn btn-default">';
                 $out .= '<i class="fa fa-share-alt"></i></span> ';
                 $out .= $user_to;
                 $out .= ').';

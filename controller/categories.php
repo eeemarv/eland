@@ -129,7 +129,7 @@ class categories
             {
                 $td[] = $app['link']->link_fa('categories_del', $app['pp_ary'],
                     ['id' => $cat['id']], 'Verwijderen',
-                    ['class' => 'btn btn-danger btn-xs'], 'times');
+                    ['class' => 'btn btn-danger'], 'times');
             }
             else
             {

@@ -130,7 +130,6 @@ class item_access
 
 		$out = '<span class="btn btn-';
 		$out .= cnst_access::LABEL[$access]['class'];
-		$out .= ' btn-md';
 		$out .= '">';
 		$out .= cnst_access::LABEL[$access]['lbl'];
 		$out .= '</span>';

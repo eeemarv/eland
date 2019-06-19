@@ -620,7 +620,7 @@ class tpl
 
 		$out .= '<div class="visible-xs pull-left ';
 		$out .= 'button-offcanvas menu-button">';
-		$out .= '<button type="button" class="btn btn-primary btn-md" ';
+		$out .= '<button type="button" class="btn btn-primary" ';
 		$out .= 'data-toggle="offcanvas"';
 		$out .= ' title="Menu"><i class="fa fa-chevron-left">';
 		$out .= '</i></button>';

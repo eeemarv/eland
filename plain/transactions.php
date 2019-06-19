@@ -1438,7 +1438,7 @@ if ($edit)
 
 		echo '<dt>Van interSysteem gebruiker</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs">';
+		echo '<span class="btn btn-default">';
 		echo '<i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
@@ -1487,7 +1487,7 @@ if ($edit)
 
 		echo '<dt>Naar interSysteem gebruiker</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+		echo '<span class="btn btn-default"><i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
 		{
@@ -1657,7 +1657,7 @@ if ($id)
 
 		echo '<dt>Van Account in het andere Systeem</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs">';
+		echo '<span class="btn btn-default">';
 		echo '<i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
@@ -1708,7 +1708,7 @@ if ($id)
 
 		echo '<dt>Naar Account in het andere Systeem</dt>';
 		echo '<dd>';
-		echo '<span class="btn btn-default btn-xs">';
+		echo '<span class="btn btn-default">';
 		echo '<i class="fa fa-share-alt"></i></span> ';
 
 		if ($inter_transaction)
@@ -1796,7 +1796,7 @@ if ($id)
 
 		if ($real_from)
 		{
-			echo '<span class="btn btn-default btn-xs">';
+			echo '<span class="btn btn-default">';
 			echo '<i class="fa fa-share-alt"></i></span> ';
 			echo $user_from;
 		}
@@ -1962,7 +1962,7 @@ if ($id)
 			echo 'Het bestemmings Account in het andere ';
 			echo 'Systeem ';
 			echo '(';
-			echo '<span class="btn btn-default btn-xs">';
+			echo '<span class="btn btn-default">';
 			echo '<i class="fa fa-share-alt"></i></span> ';
 			echo $user_to;
 			echo ').';
@@ -2588,7 +2588,7 @@ if (isset($filter['uid']))
 		{
 			if ($t['real_to'])
 			{
-				echo '<span class="btn btn-default btn-xs">';
+				echo '<span class="btn btn-default">';
 				echo '<i class="fa fa-share-alt"></i></span> ';
 
 				if (isset($t['inter_transaction']))
@@ -2620,7 +2620,7 @@ if (isset($filter['uid']))
 		{
 			if ($t['real_from'])
 			{
-				echo '<span class="btn btn-default btn-xs">';
+				echo '<span class="btn btn-default">';
 				echo '<i class="fa fa-share-alt"></i></span> ';
 
 				if (isset($t['inter_transaction']))
@@ -2682,7 +2682,7 @@ else
 
 		if ($t['real_from'])
 		{
-			echo '<span class="btn btn-default btn-xs">';
+			echo '<span class="btn btn-default">';
 			echo '<i class="fa fa-share-alt"></i></span> ';
 
 			if (isset($t['inter_transaction']))
@@ -2716,7 +2716,7 @@ else
 
 		if ($t['real_to'])
 		{
-			echo '<span class="btn btn-default btn-xs">';
+			echo '<span class="btn btn-default">';
 			echo '<i class="fa fa-share-alt"></i></span> ';
 
 			if (isset($t['inter_transaction']))

@@ -143,7 +143,7 @@ class transactions_edit
 
             $out .= '<dt>Van interSysteem gebruiker</dt>';
             $out .= '<dd>';
-            $out .= '<span class="btn btn-default btn-xs">';
+            $out .= '<span class="btn btn-default">';
             $out .= '<i class="fa fa-share-alt"></i></span> ';
 
             if ($inter_transaction)
@@ -192,7 +192,7 @@ class transactions_edit
 
             $out .= '<dt>Naar interSysteem gebruiker</dt>';
             $out .= '<dd>';
-            $out .= '<span class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i></span> ';
+            $out .= '<span class="btn btn-default"><i class="fa fa-share-alt"></i></span> ';
 
             if ($inter_transaction)
             {
