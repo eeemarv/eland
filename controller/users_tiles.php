@@ -20,6 +20,9 @@ class users_tiles
 
     public function get(Request $request, app $app, string $status):Response
     {
+        $q = $request->get('q', '');
+        $users_route = $app['s_admin'] ? 'users_tiles_admin' : 'users_tiles';
+
         $st = users_list::get_st($app['s_admin'], $app['new_user_treshold']);
 
         $params = ['status'	=> $status];
@@ -46,6 +49,11 @@ class users_tiles
 
         users_list::btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'users_tiles');
         users_list::heading($app['heading']);
+
+        $out = users_list::get_filter_and_tab_selector(
+            $users_route, $app['pp_ary'], $params, $app['link'],
+            $app['s_admin'], '', $q, $app['new_user_treshold']
+        );
 
         $out .= '<p>';
         $out .= '<span class="btn-group sort-by" role="group">';

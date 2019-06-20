@@ -10,9 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-setlocale(LC_TIME, 'nl_NL.UTF-8');
-date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
-
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/deps.php';
 
@@ -23,6 +20,10 @@ $fn_after_locale = function (Request $request, Response $response, app $app){
 };
 
 $fn_before_locale = function (Request $request, app $app){
+
+	setlocale(LC_TIME, 'nl_NL.UTF-8');
+	date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
+
 
 	$app['assets']->add([
 		'jquery', 'bootstrap', 'fontawesome',
@@ -42,7 +43,6 @@ $fn_before_system = function(Request $request, app $app){
 	{
 		$app['email_validate']->validate($request->query->get('et'));
 	}
-
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
@@ -55,10 +55,6 @@ $fn_before_system_guest = function(Request $request, app $app){
 	{
 		throw new NotFoundHttpException('Guest routes not enabled (intersystem_en)');
 	}
-
-
-
-
 };
 
 $fn_before_system_role = function(Request $request, app $app){
