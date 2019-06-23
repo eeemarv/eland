@@ -10,6 +10,7 @@ use render\link;
 use render\heading;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
+use service\item_access;
 
 class users_list
 {
@@ -281,7 +282,10 @@ class users_list
 
             foreach ($c_ary as $c)
             {
-                $contacts[$c['id_user']][$c['abbrev']][] = [$c['value'], $c['flag_public']];
+                $contacts[$c['id_user']][$c['abbrev']][] = [
+                    'value'         => $c['value'],
+                    'flag_public'   => $c['flag_public'],
+                ];
             }
         }
 
@@ -297,9 +301,10 @@ class users_list
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'adr\'', [$app['s_id']]);
             }
-            else if (!$app['s_guest'])
+            else if (!$app['s_guest']
+                && isset($contacts[$app['s_id']]['adr'][0]['value']))
             {
-                $my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
+                $my_adr = trim($contacts[$app['s_id']]['adr'][0]['value']);
             }
 
             if (isset($my_adr))
@@ -919,15 +924,23 @@ class users_list
                             continue;
                         }
 
-                        [$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0][0]);
+                        [$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0]['value']);
 
-                        $out .= get_contacts_str([[$adr_1, $contacts[$id]['adr'][0][1]]], 'adr');
+                        $out .= self::get_contacts_str($app['item_access'], [[
+                            'value'         => $adr_1,
+                            'flag_public'   => $contacts[$id]['adr'][0][1]]],
+                        'adr');
+
                         $out .= '</td><td>';
-                        $out .= get_contacts_str([[$adr_2, $contacts[$id]['adr'][0][1]]], 'adr');
+
+                        $out .= self::get_contacts_str($app['item_access'], [[
+                            'value'         => $adr_2,
+                            'flag_public'   => $contacts[$id]['adr'][0][1]]],
+                        'adr');
                     }
                     else if (isset($contacts[$id][$key]))
                     {
-                        $out .= get_contacts_str($contacts[$id][$key], $key);
+                        $out .= self::get_contacts_str($app['item_access'], $contacts[$id][$key], $key);
                     }
                     else
                     {
@@ -944,13 +957,13 @@ class users_list
 
                 $adr_ary = $contacts[$id]['adr'][0] ?? [];
 
-                if (isset($adr_ary[1]))
+                if (isset($adr_ary['flag_public']))
                 {
-                    if ($app['item_access']->is_visible_flag_public($adr_ary[1]))
+                    if ($app['item_access']->is_visible_flag_public($adr_ary['flag_public']))
                     {
-                        if (count($adr_ary) && $adr_ary[0])
+                        if (count($adr_ary) && $adr_ary['value'])
                         {
-                            $geo = $app['cache']->get('geo_' . $adr_ary[0]);
+                            $geo = $app['cache']->get('geo_' . $adr_ary['value']);
 
                             if ($geo)
                             {
@@ -1457,5 +1470,58 @@ class users_list
         $out .= '</ul>';
 
         return $out;
+    }
+
+    public static function get_contacts_str(
+        item_access $item_access,
+        array $contacts,
+        string $abbrev
+    ):string
+    {
+        $ret = '';
+
+        if (count($contacts))
+        {
+            end($contacts);
+            $end = key($contacts);
+
+            $tpl = '%1$s';
+
+            if ($abbrev === 'mail')
+            {
+                $tpl = '<a href="mailto:%1$s">%1$s</a>';
+            }
+            else if ($abbrev === 'web')
+            {
+                $tpl = '<a href="%1$s">%1$s</a>';
+            }
+
+            foreach ($contacts as $key => $contact)
+            {
+                if ($item_access->is_visible_flag_public($contact['flag_public']))
+                {
+                    $ret .= sprintf($tpl, htmlspecialchars($contact['value'], ENT_QUOTES));
+
+                    if ($key === $end)
+                    {
+                        break;
+                    }
+
+                    $ret .= ',<br>';
+
+                    continue;
+                }
+
+                $ret .= '<span class="btn btn-default">';
+                $ret .= 'verborgen</span>';
+                $ret .= '<br>';
+            }
+        }
+        else
+        {
+            $ret .= '&nbsp;';
+        }
+
+        return $ret;
     }
 }
