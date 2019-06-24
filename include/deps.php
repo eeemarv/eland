@@ -209,15 +209,46 @@ $app['new_user_treshold'] = function ($app){
 $app['s_view'] = function ($app){
 
 	$s_view = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
-	$view = $app['request']->query->get('view');
 	$route = $app['request']->attributes->get('_route');
 
-	if ($view !== null && $view !== $s_view[$route])
+	if (isset(cnst_pages::ROUTE_TO_VIEW[$route]))
 	{
-		$s_view[$route] = $view;
+		[$menu, $view] = cnst_pages::ROUTE_TO_VIEW[$route];
+
+		if ($s_view[$menu] !== $view)
+		{
+			$s_view[$menu] = $view;
+			$app['session']->set('view', $s_view);
+		}
 	}
 
 	return $s_view;
+};
+
+$app['r_users'] = function ($app){
+
+	if ($app['s_view']['users'] === 'map')
+	{
+		return 'users_map';
+	}
+
+	$route = 'users_';
+	$route .= $app['s_view']['users'];
+
+	if ($app['pp_role'] === 'admin')
+	{
+		$route .= '_admin';
+	}
+
+	return $route;
+};
+
+$app['r_messages'] = function ($app){
+	return 'messages_' . $app['s_view']['messages'];
+};
+
+$app['r_news'] = function ($app){
+	return 'news_' . $app['s_view']['news'];
 };
 
 $app['intersystem_en'] = function($app){
@@ -798,6 +829,7 @@ $app['tpl'] = function ($app){
 		$app['config'],
 		$app['systems'],
 		$app['intersystems'],
+		$app['item_access'],
 		$app['account'],
 		$app['btn_nav'],
 		$app['btn_top'],
@@ -816,7 +848,10 @@ $app['tpl'] = function ($app){
 		$app['s_master'],
 		$app['s_elas_guest'],
 		$app['s_system_self'],
-		$app['intersystem_en']
+		$app['intersystem_en'],
+		$app['r_messages'],
+		$app['r_users'],
+		$app['r_news']
 	);
 };
 

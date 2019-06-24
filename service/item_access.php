@@ -27,6 +27,16 @@ class item_access
 
 	public function is_visible(string $access):bool
 	{
+		if ($access === 'anonymous')
+		{
+			if ($this->s_role === 'anonymous')
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		if ($this->s_role === 'admin')
 		{
 			return true;
@@ -37,8 +47,6 @@ class item_access
 			{
 				return true;
 			}
-
-			return false;
 		}
 		else if ($this->s_role === 'guest')
 		{

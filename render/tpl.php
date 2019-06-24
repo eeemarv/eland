@@ -11,6 +11,7 @@ use service\assets;
 use service\config;
 use service\systems;
 use service\intersystems;
+use service\item_access;
 use render\account;
 use render\btn_nav;
 use render\btn_top;
@@ -35,6 +36,7 @@ class tpl
 	protected $config;
 	protected $systems;
 	protected $intersystems;
+	protected $item_access;
 	protected $account;
 	protected $btn_nav;
 	protected $btn_top;
@@ -54,6 +56,9 @@ class tpl
 	protected $s_elas_guest;
 	protected $s_system_self;
 	protected $intersystem_en;
+	protected $r_messages;
+	protected $r_users;
+	protected $r_news;
 
 	public function __construct(
 		alert $alert,
@@ -61,6 +66,7 @@ class tpl
 		config $config,
 		systems $systems,
 		intersystems $intersystems,
+		item_access $item_access,
 		account $account,
 		btn_nav $btn_nav,
 		btn_top $btn_top,
@@ -79,7 +85,10 @@ class tpl
 		bool $s_master,
 		bool $s_elas_guest,
 		bool $s_system_self,
-		bool $intersystem_en
+		bool $intersystem_en,
+		string $r_messages,
+		string $r_users,
+		string $r_news
 	)
 	{
 		$this->alert = $alert;
@@ -87,6 +96,7 @@ class tpl
 		$this->config = $config;
 		$this->systems = $systems;
 		$this->intersystems = $intersystems;
+		$this->item_access = $item_access;
 		$this->account = $account;
 		$this->btn_nav = $btn_nav;
 		$this->btn_top = $btn_top;
@@ -106,6 +116,9 @@ class tpl
 		$this->s_elas_guest = $s_elas_guest;
 		$this->s_system_self = $s_system_self;
 		$this->intersystem_en = $intersystem_en;
+		$this->r_messages = $r_messages;
+		$this->r_users = $r_users;
+		$this->r_news = $r_news;
 	}
 
 	public function add(string $add):void
@@ -512,97 +525,43 @@ class tpl
 		$out .= '<div class="row-offcanvas row-offcanvas-left">';
 		$out .= '<div id="sidebar" class="sidebar-offcanvas">';
 
-		if ($this->s_anonymous)
-		{
-			$menu = [
-				'login'			=> [
-					'sign-in',
-					'Login',
-					[],
-				],
-			];
-
-			if ($this->config->get('contact_form_en', $this->tschema))
-			{
-				$menu['contact'] = [
-					'comment-o',
-					'Contact',
-					[],
-				];
-			}
-
-			if ($this->config->get('registration_en', $this->tschema))
-			{
-				$menu['register'] = [
-					'check-square-o',
-					'Inschrijven',
-					[],
-				];
-			}
-		}
-		else
-		{
-			$menu = [
-				'messages_extended'		=> [
-					'newspaper-o',
-					'Vraag & Aanbod',
-					[],
-				],
-				'users_list'			=> [
-					'users',
-					$this->s_admin ? 'Gebruikers' : 'Leden',
-					['status' => 'active'],
-				],
-				'transactions'	=> [
-					'exchange',
-					'Transacties',
-					[],
-				],
-				'news_list'			=> [
-					'calendar-o',
-					'Nieuws',
-					[],
-				],
-				'docs' 			=> [
-					'files-o',
-					'Documenten',
-					[],
-				],
-			];
-
-			if ($this->config->get('forum_en', $this->tschema))
-			{
-				$menu['forum'] = [
-					'comments-o',
-					'Forum',
-					[],
-				];
-			}
-
-			if ($this->s_user || $this->s_admin)
-			{
-				$menu['support'] = [
-					'ambulance',
-					'Probleem melden',
-					[],
-				];
-			}
-		}
-
 		$out .= '<br>';
 		$out .= '<ul class="nav nav-pills nav-stacked">';
 
-		foreach ($menu as $route => $item)
+		foreach (cnst_pages::SIDE_MENU as $route => $item)
 		{
+			if (!$this->item_access->is_visible($item['access']))
+			{
+				continue;
+			}
+
+			if (isset($item['config_en']))
+			{
+				if (!$this->config->get($item['config_en'], $this->tschema))
+				{
+					continue;
+				}
+			}
+
 			$out .= '<li';
 			$out .= $menu_route == $route ? ' class="active"' : '';
 			$out .= '>';
 
-			$out .= $this->link->link_fa($route, $this->pp_ary,
-				$item[2], $item[1], [], $item[0]);
+			if (isset($item['var_route']))
+			{
+				$v_route = $this->{$item['var_route']};
+			}
+			else
+			{
+				$v_route = $route;
+			}
+
+			$out .= $this->link->link_fa($v_route, $this->pp_ary,
+				[], $item['lbl'], [], $item['fa']);
 
 			$out .= '</li>';
 		}
+
 		$out .= '</ul>';
 
 		$out .= '</div>';
