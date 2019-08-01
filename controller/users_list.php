@@ -998,7 +998,7 @@ class users_list
 
                     if (isset($msgs_count[$id][$key]))
                     {
-                        $out .= $app['link']->link_no_attr('messages', $app['pp_ary'],
+                        $out .= $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
                             [
                                 'f'	=> [
                                     'uid' 	=> $id,

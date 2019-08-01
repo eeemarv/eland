@@ -8,6 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class messages
 {
+    static public function fetch(Request $request, app $app):array
+    {
+
+    }
+
     public function list(Request $request, app $app):Response
     {
         $filter = $request->query->get('f', []);
@@ -238,7 +243,7 @@ class messages
             }
         }
 
-        $app['pagination']->init('messages', $app['pp_ary'],
+        $app['pagination']->init($app['r_messages'], $app['pp_ary'],
             $row_count, $params, $inline_en);
 
         $asc_preset_ary = [
@@ -343,8 +348,8 @@ class messages
             if (!$inline_en
                 && ($s_owner || !isset($filter['uid'])))
             {
-                $app['btn_top']->add('messages', $app['pp_ary'],
-                    ['add' => '1'], 'Vraag of aanbod toevoegen');
+                $app['btn_top']->add('messages_add', $app['pp_ary'],
+                    [], 'Vraag of aanbod toevoegen');
             }
 
             if (isset($filter['uid']))
@@ -354,8 +359,8 @@ class messages
                     $str = 'Vraag of aanbod voor ';
                     $str .= $app['account']->str($filter['uid'], $app['tschema']);
 
-                    $app['btn_top']->add('messages', $app['pp_ary'],
-                        ['add' => 1, 'uid' => $filter['uid']], $str);
+                    $app['btn_top']->add('messages_add', $app['pp_ary'],
+                        ['uid' => $filter['uid']], $str);
                 }
             }
         }
@@ -380,7 +385,7 @@ class messages
             }
             else
             {
-                $app['heading']->add($app['link']->link_no_attr('messages', $app['pp_ary'],
+                $app['heading']->add($app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
                     ['f' => ['uid' => $filter['uid']]],
                     'Vraag en aanbod'));
 
@@ -633,7 +638,7 @@ class messages
                         'asc' 		=> $data['asc'],
                     ];
 
-                    $out .= $app['link']->link_fa('messages', $app['pp_ary'],
+                    $out .= $app['link']->link_fa($app['r_messages'], $app['pp_ary'],
                         $th_params, $data['lbl'], [], $data['fa']);
                 }
                 $out .= '</th>';
@@ -654,17 +659,24 @@ class messages
 
                 if (!$inline_en && ($app['s_admin'] || $s_owner))
                 {
-                    $out .= '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
-                    $out .= (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
+                    $out .= '<label>';
+                    $out .= '<input type="checkbox" name="sel[';
+                    $out .= $msg['id'] . ']" value="1"';
+                    $out .= isset($selected_msgs[$id]) ? ' checked="checked"' : '';
                     $out .= '>&nbsp;';
+                    $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
+                    $out .= '</label>';
+                }
+                else
+                {
+                    $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
                 }
 
-                $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
                 $out .= '</td>';
 
                 $out .= '<td>';
 
-                $out .= $app['link']->link_no_attr('messages', $app['pp_ary'],
+                $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
                     ['id' => $msg['id']], $msg['content']);
 
                 $out .= '</td>';
@@ -683,7 +695,7 @@ class messages
                 if (!($filter['cid'] ?? false))
                 {
                     $out .= '<td>';
-                    $out .= $app['link']->link_no_attr('messages', $app['pp_ary'],
+                    $out .= $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
                         $cat_params[$msg['id_category']],
                         $categories[$msg['id_category']]);
                     $out .= '</td>';
@@ -734,7 +746,7 @@ class messages
                     $out .= '<div class="media-left">';
                     $out .= '<a href="';
 
-                    $out .= $app['link']->context_path('messages', $app['pp_ary'],
+                    $out .= $app['link']->context_path('messages_show', $app['pp_ary'],
                         ['id' => $msg['id']]);
 
                     $out .= '">';
@@ -748,7 +760,7 @@ class messages
                 $out .= '<div class="media-body">';
                 $out .= '<h3 class="media-heading">';
 
-                $out .= $app['link']->link_no_attr('messages', $app['pp_ary'],
+                $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
                     ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
 
                 if ($exp)
@@ -775,13 +787,13 @@ class messages
                 {
                     $out .= '<span class="inline-buttons pull-right hidden-xs">';
 
-                    $out .= $app['link']->link_fa('messages', $app['pp_ary'],
-                        ['edit' => $msg['id']], 'Aanpassen',
+                    $out .= $app['link']->link_fa('messages_edit', $app['pp_ary'],
+                        ['id' => $msg['id']], 'Aanpassen',
                         ['class'	=> 'btn btn-primary btn-xs'],
                         'pencil');
 
-                    $out .= $app['link']->link_fa('messages', $app['pp_ary'],
-                        ['del' => $msg['id']], 'Verwijderen',
+                    $out .= $app['link']->link_fa('messages_del', $app['pp_ary'],
+                        ['id' => $msg['id']], 'Verwijderen',
                         ['class' => 'btn btn-danger btn-xs'],
                         'times');
 
@@ -907,7 +919,7 @@ class messages
         string $label
     ):string
     {
-        return $link->link('messages', $pp_ary,
+        return $link->link('messages_extend', $pp_ary,
             [
                 'id' 		=> $id,
                 'extend' 	=> $days,

@@ -37,11 +37,11 @@ class messages_extend
         if (!$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]))
         {
             $app['alert']->error('Fout: ' . msg_type::THE[$message['msg_type']] . ' is niet verlengd.');
-            $app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
+            $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
         }
 
         $app['alert']->success(msg_type::UC_THE[$message['msg_type']] . ' is verlengd.');
-        $app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
+        $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
 
         return new Response('');
     }
