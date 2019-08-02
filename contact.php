@@ -1,5 +1,7 @@
 <?php
 
+use Gregwar\Captcha\CaptchaBuilder;
+
 $page_access = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
@@ -101,6 +103,16 @@ if($app['is_http_post'] && isset($_POST['zend']))
 		$errors[] = $token_error;
 	}
 
+	$captcha_key = 'captcha_';
+	$captcha_key .= $app['form_token']->get_posted();
+	$captcha_key .= '_';
+	$captcha_key .= '_' . $_POST['captcha'];
+
+	if(!$app['predis']->get($captcha_key))
+	{
+		$errors[] = 'De verificatiecode werd niet correct ingevuld.';
+	}
+
 	if(!count($errors))
 	{
 		$contact = [
@@ -149,6 +161,8 @@ else
 	$email = '';
 }
 
+$captcha_inline = '';
+
 if (!$app['config']->get('mailenabled', $app['tschema']))
 {
 	$app['alert']->warning('E-mail functies zijn
@@ -160,6 +174,21 @@ else if (!$app['config']->get('support', $app['tschema']))
 	$app['alert']->warning('Er is geen support E-mail adres
 		ingesteld door de beheerder.
 		Je kan dit formulier niet gebruiken.');
+}
+else
+{
+	$captcha = new CaptchaBuilder;
+	$captcha->setDistortion(false);
+	$captcha->setIgnoreAllEffects(true);
+	$captcha->build();
+	$captcha_inline = $captcha->inline();
+	$captcha_phrase = $captcha->getPhrase();
+	$captcha_key = 'captcha_';
+	$captcha_key .= $app['form_token']->get();
+	$captcha_key .= '_';
+	$captcha_key .= '_' . $captcha->getPhrase();
+	$app['predis']->set($captcha_key, '1');
+	$app['predis']->expire($captcha_key, 14400);
 }
 
 $h1 = 'Contact';
@@ -204,6 +233,25 @@ echo '<textarea name="message" id="message" ';
 echo 'class="form-control" rows="4">';
 echo $message;
 echo '</textarea>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="captcha">';
+echo 'Anti-spam verificatiecode';
+echo '</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-code"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="captcha" name="captcha" ';
+echo 'value="" required>';
+echo '</div>';
+echo '<p>';
+echo 'Type de code in die hieronder getoond wordt.';
+echo '</p>';
+echo '<img src="';
+echo $captcha_inline;
+echo '" alt="Captcha niet geladen.">';
 echo '</div>';
 
 echo '<input type="submit" name="zend" ';
