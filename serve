@@ -8,4 +8,4 @@ if [ -z "$1" ]; then
 else
   LOCAL=$1
 fi
-eval "$( cat .env_m | tr  '\n' ' ' )" php -d variables_order=EGPCS -S $LOCAL
+eval "$( cat .env_m | sed '/^#/d' | tr  '\n' ' ' )" php -d variables_order=EGPCS -S $LOCAL
