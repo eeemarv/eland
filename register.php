@@ -1,5 +1,7 @@
 <?php
 
+use Gregwar\Captcha\CaptchaBuilder;
+
 $page_access = 'anonymous';
 
 require_once __DIR__ . '/include/web.php';
@@ -225,10 +227,19 @@ if ($submit)
 		'gsm'			=> $_POST['gsm'] ?? '',
 	];
 
+	$captcha_key = 'captcha_';
+	$captcha_key .= $app['form_token']->get_posted();
+	$captcha_key .= '_';
+	$captcha_key .= '_' . $_POST['captcha'];
+
 	$app['monolog']->info('Registration request for ' .
 		$reg['email'], ['schema' => $app['tschema']]);
 
-	if(!$reg['email'])
+	if(!$app['predis']->get($captcha_key))
+	{
+		$app['alert']->error('De verificatiecode werd niet correct ingevuld.');
+	}
+	else if(!$reg['email'])
 	{
 		$app['alert']->error('Vul een E-mail adres in.');
 	}
@@ -290,6 +301,19 @@ if ($submit)
 		exit;
 	}
 }
+
+$captcha = new CaptchaBuilder;
+$captcha->setDistortion(false);
+$captcha->setIgnoreAllEffects(true);
+$captcha->build();
+$captcha_inline = $captcha->inline();
+$captcha_phrase = $captcha->getPhrase();
+$captcha_key = 'captcha_';
+$captcha_key .= $app['form_token']->get();
+$captcha_key .= '_';
+$captcha_key .= '_' . $captcha->getPhrase();
+$app['predis']->set($captcha_key, '1');
+$app['predis']->expire($captcha_key, 14400);
 
 $h1 = 'Inschrijven';
 $fa = 'check-square-o';
@@ -384,6 +408,25 @@ echo 'value="';
 echo $reg['tel'] ?? '';
 echo '">';
 echo '</div>';
+echo '</div>';
+
+echo '<div class="form-group">';
+echo '<label for="captcha">';
+echo 'Anti-spam verificatiecode*';
+echo '</label>';
+echo '<div class="input-group">';
+echo '<span class="input-group-addon">';
+echo '<i class="fa fa-code"></i>';
+echo '</span>';
+echo '<input type="text" class="form-control" id="captcha" name="captcha" ';
+echo 'value="" required>';
+echo '</div>';
+echo '<p>';
+echo 'Type de code in die hieronder getoond wordt.';
+echo '</p>';
+echo '<img src="';
+echo $captcha_inline;
+echo '" alt="Code niet geladen.">';
 echo '</div>';
 
 echo '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';

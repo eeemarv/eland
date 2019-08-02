@@ -251,7 +251,7 @@ echo 'Type de code in die hieronder getoond wordt.';
 echo '</p>';
 echo '<img src="';
 echo $captcha_inline;
-echo '" alt="Captcha niet geladen.">';
+echo '" alt="Code niet geladen.">';
 echo '</div>';
 
 echo '<input type="submit" name="zend" ';
