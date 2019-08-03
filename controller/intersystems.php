@@ -104,7 +104,7 @@ class intersystems
 
                     if ($user)
                     {
-                        $out .= $app['link']->link('users', $app['pp_ary'],
+                        $out .= $app['link']->link('users_show', $app['pp_ary'],
                             ['id' => $user['id']], $g['localletscode'],
                             [
                                 'class'	=> 'btn btn-default',
@@ -114,7 +114,7 @@ class intersystems
                         if (!in_array($user['status'], [1, 2, 7]))
                         {
                             $out .= ' ';
-                            $out .= $app['link']->link_fa('users', $app['pp_ary'],
+                            $out .= $app['link']->link_fa('users_show', $app['pp_ary'],
                                 ['edit' => $user['id']], 'Status!',
                                 [
                                     'class'	=> 'btn btn-danger btn-xs',
@@ -125,7 +125,7 @@ class intersystems
                         if ($user['accountrole'] != 'interlets')
                         {
                             $out .= ' ';
-                            $out .= $app['link']->link_fa('users', $app['pp_ary'],
+                            $out .= $app['link']->link_fa('users_show', $app['pp_ary'],
                                 ['edit' => $user['id']], 'Rol!',
                                 [
                                     'class'	=> 'btn btn-danger btn-xs',
@@ -436,7 +436,7 @@ class intersystems
                     {
                         if ($loc_acc['accountrole'] != 'interlets')
                         {
-                            $out .= $app['link']->link('users', $app['pp_ary'],
+                            $out .= $app['link']->link('users_show', $app['pp_ary'],
                                 ['edit' => $loc_acc['id']], 'rol',
                                 [
                                     'class'	=> 'btn btn-warning btn-xs',
@@ -445,7 +445,7 @@ class intersystems
                         }
                         else if (!in_array($loc_acc['status'], [1, 2, 7]))
                         {
-                            $out .= $app['link']->link('users', $app['pp_ary'],
+                            $out .= $app['link']->link('users_show', $app['pp_ary'],
                                 ['edit' => $loc_acc['id']], 'status',
                                 [
                                     'class'	=> 'btn btn-warning btn-xs',
@@ -454,15 +454,15 @@ class intersystems
                         }
                         else
                         {
-                            $out .= $app['link']->link('users', $app['pp_ary'],
+                            $out .= $app['link']->link('users_show', $app['pp_ary'],
                                 ['id' => $loc_acc['id']], 'OK',
                                 ['class' => 'btn btn-success btn-xs']);
                         }
                     }
                     else
                     {
-                        $out .= $app['link']->link('users', $app['pp_ary'],
-                            ['add' => 1, 'intersystem_code' => $loc_group['localletscode']],
+                        $out .= $app['link']->link('users_add', $app['pp_ary'],
+                            ['intersystem_code' => $loc_group['localletscode']],
                             'Creëer',
                             [
                                 'class'	=> 'btn btn-default text-danger',
