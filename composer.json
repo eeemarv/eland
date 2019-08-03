@@ -14,6 +14,8 @@
 		"fabpot/goutte": "^3",
 		"ext-imagick": "*",
 		"ext-exif": "*",
+		"ext-gd": "*",
+		"ext-mbstring": "*",
         "imagine/imagine": "^0.6",
         "doctrine/dbal": "^2.5",
 
@@ -43,7 +45,8 @@
 		"symfony/templating": "^4.2",
 		"vlucas/phpdotenv": "^3.3",
 		"silex/web-profiler": "^2.0",
-		"symfony/contracts": "^1.1"
+		"symfony/contracts": "^1.1",
+		"gregwar/captcha": "^1.1"
 	},
 
     "minimum-stability": "stable",

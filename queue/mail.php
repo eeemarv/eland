@@ -117,6 +117,8 @@ class mail implements queue_interface
 			->setFrom($data['from'])
 			->addPart($html, 'text/html');
 
+		$headers = $message->getHeaders();
+
 		if (isset($data['reply_to']))
 		{
 			$message->setReplyTo($data['reply_to']);
@@ -125,6 +127,11 @@ class mail implements queue_interface
 		if (isset($data['cc']))
 		{
 			$message->setCc($data['cc']);
+		}
+
+		if (isset($data['vars']['email_token']))
+		{
+			$headers->addTextHeader('X-Eland', $data['vars']['email_token']);
 		}
 
 		try

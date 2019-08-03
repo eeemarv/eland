@@ -18,6 +18,11 @@ class contact
 
         if($request->isMethod('POST'))
         {
+            if (!$app['captcha']->validate())
+            {
+                $errors[] = 'De anti-spam verifiactiecode is niet juist ingevuld.';
+            }
+
             $email = strtolower($request->request->get('email'));
             $message = $request->request->get('message');
 
@@ -152,6 +157,8 @@ class contact
         $out .= $message;
         $out .= '</textarea>';
         $out .= '</div>';
+
+        $out .= $app['captcha']->get_form_field();
 
         $out .= '<input type="submit" name="zend" ';
         $out .= $form_disabled ? 'disabled ' : '';

@@ -865,6 +865,10 @@ $app['form_token'] = function ($app){
 	return new service\form_token($app['predis'], $app['token']);
 };
 
+$app['captcha'] = function ($app){
+	return new service\captcha($app['predis'], $app['form_token']);
+};
+
 $app['data_token'] = function ($app){
 	return new service\data_token($app['predis'], $app['token']);
 };

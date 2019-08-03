@@ -19,6 +19,11 @@ class form_token
 		$this->token_gen = $token_gen;
 	}
 
+	public function get_posted()
+	{
+		return $_POST['form_token'];
+	}
+
 	public function get():string
 	{
 		if (!isset($this->token))
@@ -44,8 +49,7 @@ class form_token
 			return 'Het formulier bevat geen form token';
 		}
 
-		$token = $_POST['form_token'];
-		$key = 'form_token_' . $token;
+		$key = 'form_token_' . $this->get_posted();
 
 		$value = $this->redis->get($key);
 

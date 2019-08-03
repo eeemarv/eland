@@ -34,6 +34,10 @@ class register
             {
                 $app['alert']->error('Vul een E-mail adres in.');
             }
+            else if (!$app['captcha']->validate())
+            {
+                $app['alert']->error('De anti-spam verifiactiecode is niet juist ingevuld.');
+            }
             else if (!filter_var($reg['email'], FILTER_VALIDATE_EMAIL))
             {
                 $app['alert']->error('Geen geldig E-mail adres.');
@@ -173,6 +177,8 @@ class register
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';
+
+        $out .= $app['captcha']->get_form_field();
 
         $out .= '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
         $out .= $app['form_token']->get_hidden_input();
