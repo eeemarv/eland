@@ -292,7 +292,7 @@ $c_system_guest->get('/users/{status}/{id}', 'controller\\users_show::status')
 	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
 	->bind('users_show_status');
 
-$c_system_guest->get('/users/{id}', 'controller\\users_show::get')
+$c_system_guest->match('/users/{id}', 'controller\\users_show::get')
 	->bind('users_show');
 
 $c_system_guest->get('/users/map', 'controller\\users_map::get')
