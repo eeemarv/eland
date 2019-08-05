@@ -2,8 +2,10 @@
 
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
+use Symfony\Component\HttpFoundation\Request;
 use cnst\pages as cnst_pages;
 use cnst\role as cnst_role;
+use render\stat;
 
 $app = new util\app();
 
@@ -201,12 +203,12 @@ $app['legacy_route'] = function ($app){
 	return new service\legacy_route($app);
 };
 
-$app['new_user_treshold'] = function ($app){
+$app['new_user_treshold'] = function ($app):int{
 	$new_user_days = (int) $app['config']->get('newuserdays', $app['tschema']);
 	return time() -  ($new_user_days * 86400);
 };
 
-$app['s_view'] = function ($app){
+$app['s_view'] = function ($app):array{
 
 	$s_view = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
 	$route = $app['request']->attributes->get('_route');
@@ -225,7 +227,7 @@ $app['s_view'] = function ($app){
 	return $s_view;
 };
 
-$app['r_users'] = function ($app){
+$app['r_users'] = function ($app):string{
 
 	if ($app['s_view']['users'] === 'map')
 	{
@@ -243,40 +245,40 @@ $app['r_users'] = function ($app){
 	return $route;
 };
 
-$app['r_users_show'] = function ($app){
+$app['r_users_show'] = function ($app):string{
 	return 'users_show' . ($app['s_admin'] ? '_admin' : '');
 };
 
-$app['r_users_edit'] = function ($app){
+$app['r_users_edit'] = function ($app):string{
 	return 'users_edit' . ($app['s_admin'] ? '_admin' : '');
 };
 
-$app['r_messages'] = function ($app){
+$app['r_messages'] = function ($app):string{
 	return 'messages_' . $app['s_view']['messages'];
 };
 
-$app['r_news'] = function ($app){
+$app['r_news'] = function ($app):string{
 	return 'news_' . $app['s_view']['news'];
 };
 
-$app['intersystem_en'] = function($app){
+$app['intersystem_en'] = function($app):bool{
 	return $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']);
 };
 
-$app['pp_role_short'] = function ($app){
+$app['pp_role_short'] = function ($app):string{
 	return $app['request']->attributes->get('role_short');
 };
 
-$app['pp_role'] =  function ($app){
+$app['pp_role'] =  function ($app):string{
 	return cnst_role::LONG[$app['pp_role_short']];
 };
 
-$app['pp_system'] = function ($app){
+$app['pp_system'] = function ($app):string{
 	return $app['request']->attributes->get('system');
 };
 
-$app['pp_ary'] = function ($app){
+$app['pp_ary'] = function ($app):array{
 
 	if (isset($app['pp_system']))
 	{
@@ -296,17 +298,17 @@ $app['pp_ary'] = function ($app){
 	return [];
 };
 
-$app['tschema'] = function ($app){
+$app['tschema'] = function ($app):string{
 	error_log('SYSTEM: ' . $app['request']->attributes->get('system'));
 	return 'x';
 	return $app['systems']->get_schema($app['pp_system']);
 };
 
-$app['request'] = function ($app){
+$app['request'] = function ($app):Request{
 	return $app['request_stack']->getCurrentRequest();
 };
 
-$app['s_schema'] = function ($app){
+$app['s_schema'] = function ($app):string{
 
 	if (isset($app['role_short'])
 		&& $app['role_short'] === 'g')
@@ -322,15 +324,15 @@ $app['s_schema'] = function ($app){
 	return $app['tschema'];
 };
 
-$app['s_system_self'] = function ($app){
+$app['s_system_self'] = function ($app):bool{
 	return $app['s_schema'] === $app['tschema'];
 };
 
-$app['s_logins'] = function ($app){
+$app['s_logins'] = function ($app):array{
 	return $app['session']->get('logins') ?? [];
 };
 
-$app['s_id'] = function ($app){
+$app['s_id'] = function ($app):int{
 
 	$s_id = $app['s_logins'][$app['s_schema']] ?? 0;
 
@@ -344,7 +346,7 @@ $app['s_id'] = function ($app){
 	return 0;
 };
 
-$app['session_user'] = function ($app){
+$app['session_user'] = function ($app):array{
 
 	if ($app['s_id'] === 0)
 	{
@@ -354,7 +356,7 @@ $app['session_user'] = function ($app){
 	return $app['user_cache']->get($app['s_id'], $app['s_schema']);
 };
 
-$app['s_role'] = function ($app){
+$app['s_role'] = function ($app):string{
 
 	$role = $app['session_user']['accountrole'] ?? 'anonymous';
 
@@ -376,23 +378,23 @@ $app['s_role'] = function ($app){
 	return 'anonymous';
 };
 
-$app['s_guest'] = function ($app){
+$app['s_guest'] = function ($app):bool{
 	return false;
 };
 
-$app['s_admin'] = function ($app){
+$app['s_admin'] = function ($app):bool{
 	return $app['s_role'] === 'admin';
 };
 
-$app['s_user'] = function ($app){
+$app['s_user'] = function ($app):bool{
 	return $app['s_role'] === 'user';
 };
 
-$app['s_anonymous'] = function ($app){
+$app['s_anonymous'] = function ($app):bool{
 	return $app['s_role'] === 'anonymous';
 };
 
-$app['s_master'] = function ($app){
+$app['s_master'] = function ($app):bool{
 	if (isset($app['s_logins'][$app['s_schema']]))
 	{
 		return $app['s_logins'][$app['s_schema']] === 'master';
