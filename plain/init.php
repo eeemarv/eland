@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $step = $app['request']->query->get('step', 1);
 $start = $app['request']->query->get('start', 0);

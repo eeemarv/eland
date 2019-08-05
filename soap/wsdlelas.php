@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 if (!$app['config']->get('template_lets', $app['tschema']))
 {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 if (!($app['s_admin'] || $app['s_user']))
 {

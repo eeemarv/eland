@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use util\app;
 use cnst\role as cnst_role;
