@@ -146,7 +146,7 @@ class forum
             $out .= '</td>';
 
             $out .= '<td>';
-            $out .= $app['account']->link($p['uid'], $app['pp_ary']);
+            $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
             $out .= '</td>';
 
             $out .= $app['date_format']->get_td($p['ts'], 'min', $app['tschema']);

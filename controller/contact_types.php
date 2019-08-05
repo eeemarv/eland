@@ -106,7 +106,7 @@ class contact_types
             if ($count)
             {
                 $out .= $app['link']->link_no_attr('contacts', $app['pp_ary'],
-                    ['f' => ['abbrev' => $t['abbrev']]], $count);
+                    ['f' => ['abbrev' => $t['abbrev']]], (string) $count);
             }
             else
             {

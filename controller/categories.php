@@ -99,7 +99,7 @@ class categories
                 ]);
 
                 $td[] = $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
-                    $count_wanted);
+                    (string) $count_wanted);
             }
             else
             {
@@ -118,7 +118,7 @@ class categories
                 ]);
 
                 $td[] = $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
-                    $count_offers);
+                    (string) $count_offers);
             }
             else
             {

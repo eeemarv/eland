@@ -25,13 +25,13 @@ class pagination
 	protected $out;
 
 	protected $limit_options = [
-		10 		=> 10,
-		25 		=> 25,
-		50 		=> 50,
-		100 	=> 100,
-		250		=> 250,
-		500		=> 500,
-		1000 	=> 1000,
+		'10' 		=> '10',
+		'25' 		=> '25',
+		'50' 		=> '50',
+		'100'		=> '100',
+		'250'		=> '250',
+		'500'		=> '500',
+		'1000'		=> '1000',
 	];
 
 	public function __construct(
@@ -51,20 +51,20 @@ class pagination
 		bool $inline = false
 	):void
 	{
-		$this->limit = $params['p']['limit'] ?? 25;
-		$this->start = $params['p']['start'] ?? 0;
+		$this->limit = (int) $params['p']['limit'] ?? 25;
+		$this->start = (int) $params['p']['start'] ?? 0;
 		$this->row_count = $row_count;
 		$this->route = $route;
 		$this->pp_ary = $pp_ary;
 		$this->params = $params;
 		$this->inline = $inline;
 
-		$this->page_num = ceil($this->row_count / $this->limit);
-		$this->page = floor($this->start / $this->limit);
+		$this->page_num = (int) ceil($this->row_count / $this->limit);
+		$this->page = (int) floor($this->start / $this->limit);
 
 		if (!isset($this->limit_options[$this->limit]))
 		{
-			$this->limit_options[$this->limit] = $this->limit;
+			$this->limit_options[(string) $this->limit] = (string) $this->limit;
 			ksort($this->limit_options);
 		}
 	}
@@ -122,7 +122,7 @@ class pagination
 
 			$this->out .= 'Per pagina: ';
 			$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
-			$this->out .= $this->select->get_options($this->limit_options, $this->limit);
+			$this->out .= $this->select->get_options($this->limit_options, (string) $this->limit);
 			$this->out .= '</select>';
 
 			$action_params = $this->params;

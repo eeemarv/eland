@@ -10,6 +10,7 @@ use render\link;
 use render\heading;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
+use cnst\bulk as cnst_bulk;
 use service\item_access;
 
 class users_list
@@ -814,7 +815,14 @@ class users_list
 
             $id = $u['id'];
 
-            $row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
+            $row_stat = $u['status'];
+
+            if (isset($u['adate'])
+                && $u['status'] == 1
+                && $app['new_user_treshold'] < strtotime($u['adate']))
+            {
+                $row_stat = 3;
+            }
 
             $first = true;
 
@@ -895,7 +903,7 @@ class users_list
                     }
                     else
                     {
-                        $out .= htmlspecialchars($u[$key]);
+                        $out .= htmlspecialchars((string) $u[$key]);
                     }
 
                     if ($app['s_admin'] && $first)
@@ -1118,7 +1126,7 @@ class users_list
             $out .= '<span class="caret"></span></a>';
             $out .= '<ul class="dropdown-menu">';
 
-            foreach (self::get_edit_fields_tabs() as $k => $t)
+            foreach (cnst_bulk::USER_TABS as $k => $t)
             {
                 $out .= '<li>';
                 $out .= '<a href="#' . $k . '_tab" data-toggle="tab">';
@@ -1150,7 +1158,7 @@ class users_list
             $out .= 'class="form-control rich-edit" ';
             $out .= 'id="bulk_mail_content" rows="8" ';
             $out .= 'data-template-vars="';
-            $out .= implode(',', array_keys($map_template_vars));
+            $out .= implode(',', array_keys(cnst_bulk::USER_TPL_VARS));
             $out .= '" ';
             $out .= 'required>';
             $out .= $bulk_mail_content ?? '';
@@ -1183,7 +1191,7 @@ class users_list
             $out .= '</form>';
             $out .= '</div>';
 
-            foreach(self::get_edit_fields_tabs() as $k => $t)
+            foreach(cnst_bulk::USER_TABS as $k => $t)
             {
                 $out .= '<div role="tabpanel" class="tab-pane" id="';
                 $out .= $k;
@@ -1200,7 +1208,7 @@ class users_list
                     $out .= sprintf($acc_sel,
                         $k,
                         $t['lbl'],
-                        $app['select']->get_options($options, 0),
+                        $app['select']->get_options($options, ''),
                         $t['fa']);
                 }
                 else if (isset($t['type']) && $t['type'] == 'checkbox')
@@ -1333,69 +1341,6 @@ class users_list
         }
 
         return $st;
-    }
-
-    static public function get_edit_fields_tabs():array
-    {
-        return [
-            'fullname_access'	=> [
-                'lbl'				=> 'Zichtbaarheid Volledige Naam',
-                'item_access'	=> true,
-            ],
-            'adr_access'		=> [
-                'lbl'		=> 'Zichtbaarheid adres',
-                'item_access'	=> true,
-            ],
-            'mail_access'		=> [
-                'lbl'		=> 'Zichtbaarheid E-mail adres',
-                'item_access'	=> true,
-            ],
-            'tel_access'		=> [
-                'lbl'		=> 'Zichtbaarheid telefoonnummer',
-                'item_access'	=> true,
-            ],
-            'gsm_access'		=> [
-                'lbl'		=> 'Zichtbaarheid GSM-nummer',
-                'item_access'	=> true,
-            ],
-            'comments'			=> [
-                'lbl'		=> 'Commentaar',
-                'type'		=> 'text',
-                'string'	=> true,
-                'fa'		=> 'comment-o',
-            ],
-            'accountrole'		=> [
-                'lbl'		=> 'Rechten',
-                'options'	=> cnst_role::LABEL_ARY,
-                'string'	=> true,
-                'fa'		=> 'hand-paper-o',
-            ],
-            'status'			=> [
-                'lbl'		=> 'Status',
-                'options'	=> cnst_status::LABEL_ARY,
-                'fa'		=> 'star-o',
-            ],
-            'admincomment'		=> [
-                'lbl'		=> 'Commentaar van de Admin',
-                'type'		=> 'text',
-                'string'	=> true,
-                'fa'		=> 'comment-o',
-            ],
-            'minlimit'			=> [
-                'lbl'		=> 'Minimum Account Limiet',
-                'type'		=> 'number',
-                'fa'		=> 'arrow-down',
-            ],
-            'maxlimit'			=> [
-                'lbl'		=> 'Maximum Account Limiet',
-                'type'		=> 'number',
-                'fa'		=> 'arrow-up',
-            ],
-            'cron_saldo'		=> [
-                'lbl'	=> 'Periodieke Overzichts E-mail (aan/uit)',
-                'type'	=> 'checkbox',
-            ],
-        ];
     }
 
     static public function get_filter_and_tab_selector(

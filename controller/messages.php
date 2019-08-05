@@ -441,7 +441,7 @@ class messages
             $out .= '</span>';
             $out .= '<select class="form-control" id="cid" name="f[cid]">';
 
-            $out .= $app['select']->get_options($cats, $filter['cid'] ?? 0);
+            $out .= $app['select']->get_options($cats, (string) $filter['cid'] ?? '');
 
             $out .= '</select>';
             $out .= '</div>';

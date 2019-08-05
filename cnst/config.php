@@ -121,7 +121,7 @@ class config
             'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt
                 deze waarde standaard ingevuld in het formulier.',
             'type'	=> 'number',
-            'attr'	=> ['min' => 1, 'max' => 1460],
+            'attr'	=> ['min' => '1', 'max' => '1460'],
             'default'	=> '365',
         ],
 
@@ -132,7 +132,7 @@ class config
 
         'msgexpcleanupdays'	=> [
             'type'	=> 'number',
-            'attr'	=> ['min' => 1, 'max' => 365],
+            'attr'	=> ['min' => '1', 'max' => '365'],
             'default'	=> '30',
         ],
 
@@ -154,7 +154,7 @@ class config
                 van alle E-mail-berichten',
             'required'	=> true,
             'addon_fa'	=> 'tag',
-            'attr'		=> ['maxlength' => 30],
+            'attr'		=> ['maxlength' => '30'],
             'default'	=> '',
         ],
 
@@ -168,7 +168,7 @@ class config
         'currencyratio'	=> [
             'cond'		=> 'config_template_lets',
             'lbl'		=> 'Aantal per uur',
-            'attr'		=> ['max' => 240, 'min' => 1],
+            'attr'		=> ['max' => '240', 'min' => '1'],
             'type'		=> 'number',
             'addon_fa'	=> 'clock-o',
             'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdsbanken.
@@ -181,7 +181,7 @@ class config
             'lbl'	=> 'Algemeen admin/beheerder',
             'explain_top'	=> 'Krjgt algemene E-mail notificaties
                 van het Systeem',
-            'attr' 	=> ['minlength' => 7],
+            'attr' 	=> ['minlength' => '7'],
             'type'	=> 'email',
             'addon_fa'		=> 'envelope-o',
             'max_inputs'	=> 5,
@@ -194,7 +194,7 @@ class config
             'explain_top'	=> 'Krjgt E-mail wanneer een nieuwsbericht,
                 gepost door een gewoon lid, goedgekeurd of
                 verwijderd dient te worden',
-            'attr'	=> ['minlength' => 7],
+            'attr'	=> ['minlength' => '7'],
             'type'	=> 'email',
             'addon_fa'		=> 'envelope-o',
             'max_inputs'	=> 5,
@@ -206,7 +206,7 @@ class config
             'lbl'	=> 'Support / Helpdesk',
             'explain_top'	=> 'Krjgt E-mail berichten
                 van het Help- en Contactformulier.',
-            'attr'	=> ['minlength' => 7],
+            'attr'	=> ['minlength' => '7'],
             'type'	=> 'email',
             'addon_fa'		=> 'envelope-o',
             'max_inputs'	=> 5,
@@ -216,7 +216,7 @@ class config
 
         'saldofreqdays'	=> [
             'type'		=> 'number',
-            'attr'		=> ['class' => 'sm-size', 'min' => 1, 'max' => 120],
+            'attr'		=> ['class' => 'sm-size', 'min' => '1', 'max' => '120'],
             'required'	=> true,
             'default'	=> '14',
         ],
@@ -310,7 +310,7 @@ class config
             'addon'		=> 'dagen',
             'lbl'		=> 'Periode dat een nieuw lid als instapper getoond wordt.',
             'type'		=> 'number',
-            'attr'		=> ['min' => 0, 'max' => 365],
+            'attr'		=> ['min' => '0', 'max' => '365'],
             'required'	=> true,
             'default'	=> '7',
         ],
@@ -377,7 +377,7 @@ class config
             'type' 		=> 'url',
             'explain'	=> 'Url van extra stijlblad (css-bestand).
                 Laat dit veld leeg wanneer het niet gebruikt wordt.',
-            'attr'		=> ['maxlength'	=> 100],
+            'attr'		=> ['maxlength'	=> '100'],
             'addon_fa'	=> 'link',
             'default'	=> '',
         ],
