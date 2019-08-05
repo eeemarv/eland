@@ -848,7 +848,7 @@ class users_list
                     {
                         if ($can_link)
                         {
-                            $out .= $app['link']->link_no_attr('users_show', $app['pp_ary'],
+                            $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
                                 ['id' => $u['id']], $u[$key] ?: '**leeg**');
                         }
                         else
@@ -875,7 +875,7 @@ class users_list
                         {
                             if ($can_link)
                             {
-                                $out .= $app['link']->link_no_attr('users_show', $app['pp_ary'],
+                                $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
                                     ['id' => $u['id']], $u['fullname']);
                             }
                             else

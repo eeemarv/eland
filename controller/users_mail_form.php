@@ -37,7 +37,7 @@ class users_mail_form
             {
                 $app['alert']->error('Het master account kan
                     geen E-mail berichten versturen.');
-                $app['link']->redirect('users_show', $app['pp_ary'], ['id' => $user_id]);
+                $app['link']->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $user_id]);
             }
 
             if (!$app['s_schema'])
@@ -50,7 +50,7 @@ class users_mail_form
             if (!$user_mail_content)
             {
                 $app['alert']->error('Fout: leeg bericht. E-mail niet verzonden.');
-                $app['link']->redirect('users_show', $app['pp_ary'], ['id' => $user_id]);
+                $app['link']->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $user_id]);
             }
 
             $reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);

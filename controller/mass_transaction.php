@@ -788,14 +788,14 @@ class mass_transaction
 
             $out .= '<td>';
 
-            $out .= $app['link']->link_no_attr('users_show', $app['pp_ary'],
+            $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
                 ['id' => $user_id], $user['letscode']);
 
             $out .= '</td>';
 
             $out .= '<td>';
 
-            $out .= $app['link']->link_no_attr('users_show', $app['pp_ary'],
+            $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
                 ['id' => $user_id], $user['name']);
 
             $out .= '</td>';

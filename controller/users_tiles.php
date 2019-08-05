@@ -75,7 +75,7 @@ class users_tiles
         {
             $row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
 
-            $url = $app['link']->context_path('users_show', $app['pp_ary'],
+            $url = $app['link']->context_path($app['r_users_show'], $app['pp_ary'],
                 ['id' => $u['id'], 'link' => $status]);
 
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';

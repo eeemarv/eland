@@ -11,16 +11,19 @@ class account
 	protected $link;
 	protected $systems;
 	protected $user_cache;
+	protected $r_users_show;
 
 	public function __construct(
 		link $link,
 		systems $systems,
-		user_cache $user_cache
+		user_cache $user_cache,
+		string $r_users_show
 	)
 	{
 		$this->link = $link;
 		$this->systems = $systems;
 		$this->user_cache = $user_cache;
+		$this->r_users_show = $r_users_show;
 	}
 
 	public function get_str(int $id, string $schema):string
@@ -65,7 +68,7 @@ class account
 	{
 		$schema = $this->systems->get_schema($pp_ary['system']);
 
-		return $this->link->link_no_attr('users_show', $pp_ary,
+		return $this->link->link_no_attr($this->r_users_show, $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
 	}
 
@@ -76,7 +79,7 @@ class account
 	{
 		$schema = $this->systems->get_schema($pp_ary['system']);
 
-		return $this->link->link_url('users_show', $pp_ary,
+		return $this->link->link_url($this->r_users_show, $pp_ary,
 			['id' => $id], $this->get_str($id, $schema), []);
 	}
 
@@ -90,7 +93,7 @@ class account
 			'system'		=> $this->systems->get_system($schema),
 		];
 
-		return $this->link->link_no_attr('users_show', $pp_ary,
+		return $this->link->link_no_attr($this->r_users_show, $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
 	}
 }

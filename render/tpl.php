@@ -88,7 +88,8 @@ class tpl
 		bool $intersystem_en,
 		string $r_messages,
 		string $r_users,
-		string $r_news
+		string $r_news,
+		string $r_users_show
 	)
 	{
 		$this->alert = $alert;
@@ -119,6 +120,7 @@ class tpl
 		$this->r_messages = $r_messages;
 		$this->r_users = $r_users;
 		$this->r_news = $r_news;
+		$this->r_users_show = $r_users_show;
 	}
 
 	public function add(string $add):void
@@ -377,7 +379,7 @@ class tpl
 			{
 				$out .= '<li>';
 
-				$out .= $this->link->link_fa('users_show', $this->pp_ary,
+				$out .= $this->link->link_fa($this->r_users_show, $this->pp_ary,
 					['id' => $this->s_id], 'Mijn gegevens', [], 'user');
 
 				$out .= '</li>';

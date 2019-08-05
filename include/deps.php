@@ -243,6 +243,14 @@ $app['r_users'] = function ($app){
 	return $route;
 };
 
+$app['r_users_show'] = function ($app){
+	return 'users_show' . ($app['s_admin'] ? '_admin' : '');
+};
+
+$app['r_users_edit'] = function ($app){
+	return 'users_edit' . ($app['s_admin'] ? '_admin' : '');
+};
+
 $app['r_messages'] = function ($app){
 	return 'messages_' . $app['s_view']['messages'];
 };
@@ -782,7 +790,8 @@ $app['account'] = function ($app) {
 	return new render\account(
 		$app['link'],
 		$app['systems'],
-		$app['user_cache']
+		$app['user_cache'],
+		$app['r_users_show']
 	);
 };
 
@@ -851,7 +860,8 @@ $app['tpl'] = function ($app){
 		$app['intersystem_en'],
 		$app['r_messages'],
 		$app['r_users'],
-		$app['r_news']
+		$app['r_news'],
+		$app['r_users_show']
 	);
 };
 

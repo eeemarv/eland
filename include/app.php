@@ -284,24 +284,23 @@ $c_system_guest->get('/messages/extended', 'controller\\messages::extended')
 $c_system_guest->get('/messages', 'controller\\messages::list')
 	->bind('messages_list');
 
-$c_system_admin->get('/users/{status}/{id}', 'controller\\users_show::status_admin')
+$c_system_admin->match('/users/{id}/{status}', 'controller\\users_show::all_status')
 	->assert('status', cnst_assert::USER_STATUS)
-	->bind('users_show_status_admin');
+	->value('status', 'active')
+	->bind('users_show_admin');
 
-$c_system_guest->get('/users/{status}/{id}', 'controller\\users_show::status')
+$c_system_guest->match('/users/{id}/{status}', 'controller\\users_show::active_status')
 	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
-	->bind('users_show_status');
-
-$c_system_guest->match('/users/{id}', 'controller\\users_show::get')
+	->value('status', 'active')
 	->bind('users_show');
 
 $c_system_guest->get('/users/map', 'controller\\users_map::get')
 	->bind('users_map');
 
-$c_system_admin->match('/users/edit/{id}', 'controller\\users_edit_admin::match')
+$c_system_admin->match('/users/edit/{id}', 'controller\\users_edit_admin::match_admin')
 	->bind('users_edit_admin');
 
-$c_system_admin->match('/users/edit/{id}', 'controller\\users_edit::match')
+$c_system_user->match('/users/edit/{id}', 'controller\\users_edit::match')
 	->bind('users_edit');
 
 $c_system_admin->match('/users/add', 'controller\\users_add::match')

@@ -8,17 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class users_show
 {
-    public function no_context(Request $request, app $app, int $id):Response
-    {
-        return $this->status($request, $app, 'active', $id);
-    }
-
-    public function status_admin(Request $request, app $app, string $status, int $id):Response
+    public function active_status(Request $request, app $app, string $status, int $id):Response
     {
         return $this->status($request, $app, $status, $id);
     }
 
-    public function status(Request $request, app $app, string $status, int $id):Response
+    public function all_status(Request $request, app $app, string $status, int $id):Response
     {
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
@@ -205,7 +200,7 @@ class users_show
 
         $app['heading']->fa('user');
 
-        $out .= '<div class="row">';
+        $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
 
         $out .= '<div class="panel panel-default">';
@@ -546,7 +541,7 @@ class users_show
         $out .= '" ';
 
         $out .= 'data-users-show="';
-        $out .= htmlspecialchars($app['link']->context_path('users_show',
+        $out .= htmlspecialchars($app['link']->context_path($app['r_users_show'],
             $app['pp_ary'], ['id' => 1]));
         $out .= '" ';
 
