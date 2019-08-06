@@ -13,9 +13,7 @@ class forum_topic
         if (!$app['config']->get('forum_en', $app['tschema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
-
-            $default_route = $app['config']->get('default_landing_page', $app['tschema']);
-            $app['link']->redirect($default_route, $app['pp_ary'], []);
+            $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
         $show_visibility = ($app['s_user']

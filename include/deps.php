@@ -261,6 +261,23 @@ $app['r_news'] = function ($app):string{
 	return 'news_' . $app['s_view']['news'];
 };
 
+$app['r_default'] = function ($app):string{
+
+	$route = $app['config']->get('default_landing_page', $app['tschema']);
+
+	switch ($route)
+	{
+		case 'users':
+			return $app['r_users'];
+		case 'messages':
+			return $app['r_messages'];
+		case 'news':
+			return $app['r_news'];
+	}
+
+	return $route;
+};
+
 $app['intersystem_en'] = function($app):bool{
 	return $app['config']->get('template_lets', $app['tschema'])
 		&& $app['config']->get('interlets_en', $app['tschema']);

@@ -78,8 +78,7 @@ if (!$homepage_url)
 	}
 	else
 	{
-		$route = $app['config']->get('default_landing_page', $app['tschema']);
-		$homepage_url = $app['link']->path($route, $app['pp_ary']);
+		$homepage_url = $app['link']->path($app['r_default'], $app['pp_ary']);
 	}
 }
 

@@ -19,7 +19,7 @@ class login
             || $location == ''
             || $location == '/')
         {
-            $location = $app['config']->get('default_landing_page', $app['tschema']);
+            $location = $app['r_default'];
         }
 
         $login = trim($request->request->get('login', ''));

@@ -34,7 +34,7 @@ class login_elas_token
                 $elas_token . ' succeeded. referrer: ' . $referrer,
                 ['schema' => $app['tschema']]);
 
-            $location = $app['config']->get('default_landing_page', $app['tschema']);
+            $location = $app['config']->get($app['r_default'], $app['tschema']);
 
             return $app['link']->redirect($location, [
                 'welcome'	    => '1',

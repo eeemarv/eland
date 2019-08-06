@@ -14,9 +14,7 @@ class forum_del
         if (!$app['config']->get('forum_en', $app['tschema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
-
-            $default_route = $app['config']->get('default_landing_page', $app['tschema']);
-            $app['link']->redirect($default_route, $app['pp_ary'], []);
+            $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
         $row = $app['xdb']->get('forum', $forum_id, $app['tschema']);

@@ -76,10 +76,7 @@ class support
                 ], 8000);
 
                 $app['alert']->success('De Support E-mail is verzonden.');
-
-                $default_route = $app['config']->get('default_landing_page', $app['tschema']);
-
-                $app['link']->redirect($default_route, $app['pp_ary'], []);
+                $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
             }
             else
             {
