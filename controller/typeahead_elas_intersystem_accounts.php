@@ -40,7 +40,7 @@ class typeahead_elas_intersystem_accounts
             'group_id'  => $group_id,
         ];
 
-        $crc = crc32(json_encode($accounts));
+        $crc = (string) crc32(json_encode($accounts));
 
         $app['typeahead']->set_thumbprint(
             'elas_intersystem_accounts', $app['pp_ary'], $params, $crc);

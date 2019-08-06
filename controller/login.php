@@ -22,7 +22,7 @@ class login
             $location = $app['config']->get('default_landing_page', $app['tschema']);
         }
 
-        $login = trim($request->request->get('login'));
+        $login = trim($request->request->get('login', ''));
 
         if ($request->isMethod('POST'))
         {
@@ -225,7 +225,7 @@ class login
 
                 $app['user_cache']->clear($user_id, $app['tschema']);
 
-                $app['xdb']->set('login', $user_id, [
+                $app['xdb']->set('login', (string) $user_id, [
                     'browser' => $agent, 'time' => time()
                 ], $app['s_schema']);
 

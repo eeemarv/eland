@@ -60,7 +60,7 @@ class typeahead_eland_intersystem_accounts
             'remote_schema' => $remote_schema,
         ];
 
-        $crc = crc32(json_encode($accounts));
+        $crc = (string) crc32(json_encode($accounts));
 
         $app['typeahead']->set_thumbprint(
             'eland_intersystem_accounts', $app['pp_ary'], $params, $crc);

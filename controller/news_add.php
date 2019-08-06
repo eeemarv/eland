@@ -79,7 +79,7 @@ class news_add
                 {
                     $id = $app['db']->lastInsertId($app['tschema'] . '.news_id_seq');
 
-                    $app['xdb']->set('news_access', $id, [
+                    $app['xdb']->set('news_access', (string) $id, [
                         'access' => cnst_access::TO_XDB[$access],
                     ], $app['tschema']);
 

@@ -204,7 +204,7 @@ class users_list
             {
                 $user['fullname_access'] = $app['xdb']->get(
                     'user_fullname_access',
-                    $user['id'],
+                    (string) $user['id'],
                     $app['tschema']
                 )['data']['fullname_access'] ?? 'admin';
 

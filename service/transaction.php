@@ -35,9 +35,13 @@ class transaction
 		$this->account = $account;
 	}
 
-	public function generate_transid(string $s_id, string $system_name):string
+	public function generate_transid(int $s_id, string $system_name):string
 	{
-		return substr(sha1($s_id . microtime()), 0, 12) . '_' . $s_id . '@' . $system_name;
+		$transid = substr(sha1($s_id . microtime()), 0, 12);
+		$transid .= '_';
+		$transid .= (string) $s_id;
+		$transid .= '@' . $system_name;
+		return $transid;
 	}
 
 	public function sign(
@@ -66,7 +70,7 @@ class transaction
 		try
 		{
 			$this->db->insert($schema . '.transactions', $transaction);
-			$id = $this->db->lastInsertId($schema . '.transactions_id_seq');
+			$id = (int) $this->db->lastInsertId($schema . '.transactions_id_seq');
 			$this->db->executeUpdate('update ' . $schema . '.users set saldo = saldo + ? where id = ?', [$transaction['amount'], $transaction['id_to']]);
 			$this->db->executeUpdate('update ' . $schema . '.users set saldo = saldo - ? where id = ?', [$transaction['amount'], $transaction['id_from']]);
 			$this->db->commit();
@@ -84,8 +88,8 @@ class transaction
 
 		$this->autominlimit->init($schema)
 			->process($transaction['id_from'],
-			$transaction['id_to'],
-			$transaction['amount']);
+				$transaction['id_to'],
+				(int) $transaction['amount']);
 
 		$this->monolog->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$transaction['amount'] . ' ' .

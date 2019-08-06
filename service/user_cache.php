@@ -87,7 +87,7 @@ class user_cache
 		$user['maxlimit'] = $user['maxlimit'] == 999999999 ? '' : $user['maxlimit'];
 
 		$row = $this->xdb->get('user_fullname_access',
-			$id, $schema);
+			(string) $id, $schema);
 
 		if ($row)
 		{
@@ -98,7 +98,7 @@ class user_cache
 			$user += ['fullname_access' => 'admin'];
 
 			$this->xdb->set('user_fullname_access',
-				$id, ['fullname_access' => 'admin'], $schema);
+				(string) $id, ['fullname_access' => 'admin'], $schema);
 		}
 
 		return $user;

@@ -20,7 +20,7 @@ class news_del
 
             if($app['db']->delete($app['tschema'] . '.news', ['id' => $id]))
             {
-                $app['xdb']->del('news_access', $id, $app['tschema']);
+                $app['xdb']->del('news_access', (string) $id, $app['tschema']);
 
                 $app['alert']->success('Nieuwsbericht verwijderd.');
                 $app['link']->redirect('news_list', $app['pp_ary'], []);
@@ -33,7 +33,7 @@ class news_del
             from ' . $app['tschema'] . '.news n
             where n.id = ?', [$id]);
 
-        $news_access = $app['xdb']->get('news_access', $id,
+        $news_access = $app['xdb']->get('news_access', (string) $id,
             $app['tschema'])['data']['access'];
 
         $app['heading']->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');

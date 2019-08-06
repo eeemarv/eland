@@ -266,12 +266,12 @@ $app['intersystem_en'] = function($app):bool{
 		&& $app['config']->get('interlets_en', $app['tschema']);
 };
 
-$app['pp_role_short'] = function ($app):string{
+$app['pp_role_short'] = function ($app){
 	return $app['request']->attributes->get('role_short');
 };
 
 $app['pp_role'] =  function ($app):string{
-	return cnst_role::LONG[$app['pp_role_short']];
+	return cnst_role::LONG[$app['pp_role_short']] ?? 'anonymous';
 };
 
 $app['pp_system'] = function ($app):string{

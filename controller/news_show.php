@@ -47,7 +47,7 @@ class news_show
 
             if (!isset($news_access_ary[$news_id]))
             {
-                $app['xdb']->set('news_access', $news_id, [
+                $app['xdb']->set('news_access', (string) $news_id, [
                     'access' => 'interlets',
                 ], $app['tschema']);
 

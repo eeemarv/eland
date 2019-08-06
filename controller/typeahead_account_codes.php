@@ -27,7 +27,7 @@ class typeahead_account_codes
             $account_codes[] = $row['letscode'];
         }
 
-        $crc = crc32(json_encode($account_codes));
+        $crc = (string) crc32(json_encode($account_codes));
 
         $app['typeahead']->set_thumbprint('account_codes', $app['pp_ary'], [], $crc);
 

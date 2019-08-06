@@ -11,6 +11,8 @@ class transactions_add
 {
     public function match(Request $request, app $app):Response
     {
+        $errors = [];
+
         $mid = $request->query->get('mid', 0);
         $tuid = $request->query->get('tuid', 0);
         $tus = $request->query->get('tus', '');
@@ -761,7 +763,8 @@ class transactions_add
         {
             //GET form
 
-            $transid = $app['transaction']->generate_transid($app['s_id'], $app['pp_system']);
+            $transid = $app['transaction']->generate_transid(
+                $app['s_id'], $app['pp_system']);
 
             $app['predis']->set($redis_transid_key, $transid);
             $app['predis']->expire($redis_transid_key, 3600);

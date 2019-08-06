@@ -41,7 +41,7 @@ class cleanup_news extends schema_task
 
 		foreach ($news as $n)
 		{
-			$this->xdb->del('news_access', $n['id'], $this->schema);
+			$this->xdb->del('news_access', (string) $n['id'], $this->schema);
 			$this->db->delete($this->schema . '.news', ['id' => $n['id']]);
 			$this->monolog->info('removed news item ' . $n['headline'],
 				['schema' => $this->schema]);

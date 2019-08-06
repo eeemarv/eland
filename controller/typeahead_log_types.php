@@ -25,7 +25,7 @@ class typeahead_log_types
             $log_types[] = $row['type'];
         }
 
-        $crc = crc32(json_encode($log_types));
+        $crc = (string) crc32(json_encode($log_types));
 
         $app['typeahead']->set_thumbprint('log_types', $app['pp_ary'], [], $crc);
 

@@ -173,7 +173,8 @@ class date_format
 			return '';
 		}
 
-		$time = mktime(12, 0, 0, $parts['%m'], $parts['%d'], $parts['%Y']);
+		$time = mktime(12, 0, 0,
+			(int) $parts['%m'], (int) $parts['%d'], (int) $parts['%Y']);
 
 		return gmdate('Y-m-d H:i:s', $time);
 	}

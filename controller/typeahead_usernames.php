@@ -27,7 +27,7 @@ class typeahead_usernames
             $usernames[] = $row['name'];
         }
 
-        $crc = crc32(json_encode($usernames));
+        $crc = (string) crc32(json_encode($usernames));
 
         $app['typeahead']->set_thumbprint('usernames', $app['pp_ary'], [], $crc);
 

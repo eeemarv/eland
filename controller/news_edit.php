@@ -70,7 +70,7 @@ class news_edit
             {
                 if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $id]))
                 {
-                    $app['xdb']->set('news_access', $id, [
+                    $app['xdb']->set('news_access', (string) $id, [
                         'access' => cnst_access::TO_XDB[$access]
                     ], $app['tschema']);
 
@@ -89,7 +89,7 @@ class news_edit
                 from ' . $app['tschema'] . '.news
                 where id = ?', [$id]);
 
-            $access = $app['xdb']->get('news_access', $id,
+            $access = $app['xdb']->get('news_access', (string) $id,
                 $app['tschema'])['data']['access'];
 
             $access = cnst_access::FROM_XDB[$access];

@@ -27,7 +27,7 @@ class typeahead_doc_map_names
             $map_names[] = $row['map_name'];
         }
 
-        $crc = crc32(json_encode($map_names));
+        $crc = (string) crc32(json_encode($map_names));
 
         $app['typeahead']->set_thumbprint('doc_map_names', $app['pp_ary'], [], $crc);
 

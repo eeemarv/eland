@@ -27,7 +27,7 @@ class typeahead_postcodes
             $postcodes[] = $row['postcode'];
         }
 
-        $crc = crc32(json_encode($postcodes));
+        $crc = (string) crc32(json_encode($postcodes));
 
         $app['typeahead']->set_thumbprint('postcodes', $app['pp_ary'], [], $crc);
 

@@ -11,7 +11,7 @@ class logout
     {
         foreach($app['s_logins'] as $sch => $uid)
         {
-            $app['xdb']->set('logout', $uid, ['time' => time()], $sch);
+            $app['xdb']->set('logout', (string) $uid, ['time' => time()], $sch);
         }
 
         $app['session']->invalidate();

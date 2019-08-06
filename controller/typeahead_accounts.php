@@ -83,7 +83,7 @@ class typeahead_accounts
             'status'	=> $status,
         ];
 
-        $crc = crc32(json_encode($accounts));
+        $crc = (string) crc32(json_encode($accounts));
 
         $app['typeahead']->set_thumbprint('accounts', $app['pp_ary'], $params, $crc);
 
