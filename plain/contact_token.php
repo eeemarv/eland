@@ -25,7 +25,6 @@ $vars = [
 	'ip'			=> $data['ip'],
 	'agent'			=> $data['agent'],
 	'email'			=> $data['email'],
-	'pp_ary'		=> $app['pp_ary'],
 ];
 
 $app['queue.mail']->queue([

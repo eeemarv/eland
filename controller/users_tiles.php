@@ -6,10 +6,7 @@ use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\users_list;
-use render\btn_nav;
-use render\heading;
 use cnst\status as cnst_status;
-use cnst\role as cnst_role;
 
 class users_tiles
 {

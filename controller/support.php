@@ -54,7 +54,6 @@ class support
                     'user_id'	=> $app['s_id'],
                     'can_reply'	=> $can_reply,
                     'message'	=> $message,
-                    'pp_ary'    => $app['pp_ary'],
                 ];
 
                 if ($cc && $can_reply)

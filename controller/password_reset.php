@@ -50,7 +50,6 @@ class password_reset
                             'vars'		=> [
                                 'token'			=> $token,
                                 'user_id'		=> $user_id,
-                                'pp_ary'		=> $app['pp_ary'],
                             ],
                         ], 10000);
 
