@@ -6,7 +6,7 @@ use service\user_cache;
 use service\systems;
 use cnst\role as cnst_role;
 
-class user_pp_ary
+class mpp_ary
 {
 	protected $user_cache;
 	protected $systems;
@@ -20,23 +20,27 @@ class user_pp_ary
 		$this->systems = $systems;
 	}
 
-	public function get_self(int $id, string $schema):array
+	public function get(array $context, int $id, string $schema):array
 	{
 		$system = $this->systems->get_system($schema);
 
 		$role = $this->user_cache->get($id, $schema)['accountrole'];
 		$role_short = cnst_role::SHORT[$role] ?? 'g';
 
-		if ($role_short === 'a' || $role_short === 'u')
-		{
-			return [
-				'system'		=> $system,
-				'role_short'	=> $role_short,
-			];
-		}
-
-		return [
+		$mpp_ary = [
 			'system'	=> $system,
 		];
+
+		if (isset($context['et']))
+		{
+			$mpp_ary['et'] = $context['et'];
+		}
+
+		if (in_array($role_short, ['u', 'a']))
+		{
+			$mpp_ary['role_short'] = $role_short;
+		}
+
+		return $mpp_ary;
 	}
 }

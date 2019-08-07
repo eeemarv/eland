@@ -56,8 +56,8 @@ $app->extend('twig', function($twig, $app) {
 		twig\account::class => function() use ($app){
 			return new twig\account($app['user_cache']);
 		},
-		twig\user_pp_ary::class => function() use ($app){
-			return new twig\user_pp_ary($app['user_cache'], $app['systems']);
+		twig\mpp_ary::class => function() use ($app){
+			return new twig\mpp_ary($app['user_cache'], $app['systems']);
 		},
 		twig\link_url::class => function() use ($app){
 			return new twig\link_url($app['url_generator']);

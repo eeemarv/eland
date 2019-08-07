@@ -10,14 +10,14 @@
 {% block html_content -%}
 <p>
 {{- 'account_activation.welcome'|trans({
-    '%link_open%': mail_link_open('home', {}, schema, email_token),
+    '%link_open%': context_url_open('home_system', mpp_anon_ary, {}),
     '%link_close%': '</a>',
     '%system_name%': config('systemname', schema)
 })|raw -}}
 </p>
 <p>
 {{- 'account_activation.login'|trans({
-    '%base_url%': mail_link_open('home', {}, schema, email_token) ~ mail_url('home', {}, schema, '') ~ '</a>',
+    '%login_url%': context_url_open('login', mpp_anon_ary, {}) ~ context_url('login', {'system': system}, {}) ~ '</a>',
 })|raw -}}
 </p>
 <p>
@@ -39,10 +39,10 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ mail_url('home', {}, schema, email_token) }}
+{{ context_url('home_system', mpp_anon_ary, {})|raw }}
 
 {{ 'account_activation.login'|trans({
-    '%base_url%': mail_url('home', {}, schema, email_token)
+    '%login_url%': context_url('home_system', mpp_anon_ary, {})|raw
 }) }}
 
 {{ 'label.login'|trans }}: {{ account_code(user_id, schema) }}

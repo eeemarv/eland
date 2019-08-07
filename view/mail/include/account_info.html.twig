@@ -5,7 +5,7 @@
 
 <ul>
 <li>
-    <a href="{{- context_url('login', pp_ary_self(user_id, schema),
+    <a href="{{- context_url('login', mpp_ary(user_id, schema),
         {'login': account_code(user_id, schema), 'et': et}) -}}">
         {{- 'label.login'|trans -}}
     </a>

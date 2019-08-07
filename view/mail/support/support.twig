@@ -9,11 +9,11 @@
 <p>
     {{- 'support.explain'|trans({
         '%link_open%': context_url_open('home_system',
-            pp_anon_ary, {'et': et}),
+            mpp_anon_ary, {}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema),
         '%account%':  context_url_open('users_show',
-                pp_user_ary, {'id': user_id, 'et': et})
+                mpp_user_ary, {'id': user_id})
             ~ account(user_id, schema)
             ~ '</a>'
     })|raw -}}
@@ -23,8 +23,8 @@
     {{- 'support.explain_reply'|trans -}}
 {%- else -%}
     {{- 'support.explain_no_reply'|trans({
-        '%link_open%': context_url_open('users_show', pp_ary_self(user_id, schema),
-            {'id': user_id, 'et': et}),
+        '%link_open%': context_url_open('users_show', mpp_ary(user_id, schema),
+            {'id': user_id}),
         '%link_close%': '</a>'
     })|raw -}}
 {%- endif -%}
@@ -52,7 +52,7 @@
     '%link_open%': '',
     '%link_close%': ''
 }) }}
-{{ context_url('users_show', pp_ary_self(user_id, schema), {'id': user_id, 'et': et}) }}
+{{ context_url('users_show', mpp_ary(user_id, schema), {'id': user_id}) }}
 {% endif %}
 
 - - - - - -

@@ -75,17 +75,23 @@ class mail implements queue_interface
 		$system = $this->systems->get_system($schema);
 
 		$data['vars']['system'] = $system;
-		$data['vars']['pp_anon_ary'] = [
-			'system' 		=> $system,
+
+		$mpp_anon_ary = [
+			'system'	=> $system,
 		];
-		$data['vars']['pp_user_ary'] = [
-			'system'		=> $system,
-			'role_short'	=> 'u',
-		];
-		$data['vars']['pp_admin_ary'] = [
-			'system'		=> $system,
-			'role_short'	=> 'a',
-		];
+
+		if (isset($data['vars']['et']))
+		{
+			$mpp_anon_ary['et'] = $data['vars']['et'];
+		}
+
+		$data['vars']['mpp_anon_ary'] = $mpp_anon_ary;
+
+		$data['vars']['mpp_user_ary'] = $mpp_anon_ary;
+		$data['vars']['mpp_user_ary']['role_short'] = 'u';
+
+		$data['vars']['mpp_admin_ary'] = $mpp_anon_ary;
+		$data['vars']['mpp_admin_ary']['role_short'] = 'a';
 
 		if (isset($data['pre_html_template']))
 		{
@@ -129,9 +135,9 @@ class mail implements queue_interface
 			$message->setCc($data['cc']);
 		}
 
-		if (isset($data['vars']['email_token']))
+		if (isset($data['vars']['et']))
 		{
-			$headers->addTextHeader('X-Eland', $data['vars']['email_token']);
+			$headers->addTextHeader('X-Eland', $data['vars']['et']);
 		}
 
 		try
@@ -231,7 +237,6 @@ class mail implements queue_interface
 			$val_data['to'] = [$email => $name];
 
 			$email_token = $this->email_validate->get_token($email, $schema, $data['template']);
-			$val_data['vars']['email_token'] = $email_token;
 			$val_data['vars']['et'] = $email_token;
 
 			$this->queue->set('mail', $val_data, $priority);

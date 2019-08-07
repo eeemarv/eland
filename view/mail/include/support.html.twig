@@ -6,7 +6,7 @@
 <p>
     {{ 'b.support.explain'|trans({
         '%link_open%': context_url_open('support',
-            pp_ary_self(user_id, schema), {'et': et}),
+            mpp_ary(user_id, schema)),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw }}.

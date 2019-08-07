@@ -36,7 +36,7 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ context_url('password_reset_token', pp_anon_ary, {'token': token, 'et': et}) }}
+{{ context_url('password_reset_token', mpp_anon_ary, {'token': token}) }}
 
 {{ 'expiration.1_day'|trans }}
 

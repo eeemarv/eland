@@ -29,8 +29,6 @@ class extension extends \Twig_Extension
 			new \Twig_Function('context_url', 'twig\\link_url::context_url'),
 			new \Twig_Function('context_url_open', 'twig\\link_url::context_url_open'),
 			new \Twig_Function('system', 'twig\\system::get'),
-			new \Twig_Function('mail_url', 'twig\\mail_url::get'),
-			new \Twig_Function('mail_link_open', 'twig\\mail_url::get_link_open'),
 			new \Twig_Function('account', 'twig\\account::get'),
 			new \Twig_Function('user_fullname', 'twig\\account::get_fullname'),
 			new \Twig_Function('username', 'twig\\account::get_name'),
@@ -38,7 +36,9 @@ class extension extends \Twig_Extension
 			new \Twig_Function('account_balance', 'twig\\account::get_balance'),
 			new \Twig_Function('account_min', 'twig\\account::get_min'),
 			new \Twig_Function('account_max', 'twig\\account::get_max'),
-			new \Twig_Function('pp_ary_self', 'twig\\user_pp_ary::get_self'),
+			new \Twig_Function('mpp_ary', 'twig\\mpp_ary::get', [
+				'needs_context'	=> true,
+			]),
 		];
 	}
 

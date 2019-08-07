@@ -91,7 +91,7 @@ account_activation:
   welcome: >-
     Welkom bij %link_open%%system_name%%link_close%.
   login: >-
-    Surf naar %base_url% en meld je aan met
+    Surf naar %login_url% en meld je aan met
     onderstaande gegevens.
   change_profile: >-
     Je gebruikersgegevens, je vraag en aanbod kan je

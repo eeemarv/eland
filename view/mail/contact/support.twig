@@ -13,7 +13,7 @@
 <p>
     {{- 'contact_support.explain'|trans({
         '%link_open%': context_url_open(
-            'home_system', pp_ary, {'et': et}),
+            'home_system', mpp_anon_ary, {}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -33,7 +33,7 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ context_url('home_system', pp_anon_ary, {'et': et}) }}
+{{ context_url('home_system', mpp_anon_ary, {}) }}
 {% include 'mail/include/sender_info.text.twig' %}
 {% endautoescape %}
 {% endblock text_content %}
