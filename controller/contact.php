@@ -76,7 +76,6 @@ class contact
                     'template'	=> 'contact/confirm',
                     'vars'		=> [
                         'token' 	=> $token,
-                        'pp_ary'	=> $app['pp_ary'],
                     ],
                 ], 10000);
 

@@ -12,7 +12,7 @@
             pp_anon_ary, {'et': et}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema),
-        '%account%':  context_url_open('users',
+        '%account%':  context_url_open('users_show',
                 pp_user_ary, {'id': user_id, 'et': et})
             ~ account(user_id, schema)
             ~ '</a>'
@@ -23,7 +23,7 @@
     {{- 'support.explain_reply'|trans -}}
 {%- else -%}
     {{- 'support.explain_no_reply'|trans({
-        '%link_open%': context_url_open('users', pp_user_ary,
+        '%link_open%': context_url_open('users_show', pp_ary_self(user_id, schema),
             {'id': user_id, 'et': et}),
         '%link_close%': '</a>'
     })|raw -}}
@@ -52,7 +52,7 @@
     '%link_open%': '',
     '%link_close%': ''
 }) }}
-{{ context_url('users', pp_user_ary, {'id': user_id, 'et': et}) }}
+{{ context_url('users_show', pp_ary_self(user_id, schema), {'id': user_id, 'et': et}) }}
 {% endif %}
 
 - - - - - -

@@ -316,7 +316,7 @@ $app['pp_ary'] = function ($app):array{
 };
 
 $app['tschema'] = function ($app):string{
-	error_log('SYSTEM: ' . $app['request']->attributes->get('system'));
+//	error_log('SYSTEM: ' . $app['request']->attributes->get('system'));
 	return 'x';
 	return $app['systems']->get_schema($app['pp_system']);
 };

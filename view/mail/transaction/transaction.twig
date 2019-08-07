@@ -58,7 +58,7 @@
 </p>
 
 <p>
-{{- context_url_open('transactions', pp_ary,
+{{- context_url_open('transactions_show', pp_user_ary,
     {'id': transaction.id, 'et': et})|raw -}}
 {{- 'label.link'|trans -}}
 </a>
@@ -92,8 +92,8 @@
 {{ 'label.description'|trans }}
 {{ transaction.description }}
 
-{{ 'label.link'|trans }}: {{ context_url('transactions',
-    pp_ary, {'id': transaction.id, 'et': et}) }}
+{{ 'label.link'|trans }}: {{ context_url('transactions_show',
+    pp_user_ary, {'id': transaction.id, 'et': et}) }}
 
 {% block text_trans_id %}{% endblock %}
 
