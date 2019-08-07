@@ -1,13 +1,13 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html_extend_link(days, lang_key, message, schema, email_token) -%}
+{%- macro html_extend_link(days, lang_key, message, schema, user_id) -%}
 <li>
-    {{- mail_link_open('messages', {'id': message.id, 'extend': days}, schema, email_token)|raw -}}
+    {{- context_url_open('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': days})|raw -}}
     {{- ('message_extend.' ~ lang_key)|trans -}}
     </a>
 </li>
 {%- endmacro html_extend_link -%}
 
-{% macro text_extend_link(days, lang_key, message, schema, email_token) %}
-{{ ('message_extend.' ~ lang_key)|trans|raw }}: {{ mail_url('messages', {'id': message.id, 'extend': days}, schema, email_token)|raw }}
+{% macro text_extend_link(days, lang_key, message, schema, user_id) %}
+{{ ('message_extend.' ~ lang_key)|trans|raw }}: {{ context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': days})|raw }}
 {% endmacro text_extend_link %}

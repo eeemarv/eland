@@ -1,6 +1,6 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(forum, schema, email_token) -%}
+{%- macro html(forum, schema, user_id) -%}
 
 	<h3>
 		{{- 'periodic_overview.forum.title'|trans -}}
@@ -10,7 +10,7 @@
 	<ul>
 	{%- for f in forum -%}
 	<li>
-	{{- mail_link_open('forum', {'t': f.id}, schema, email_token)|raw -}}
+	{{- context_url_open('forum_topic', mpp_ary(user_id, schema), {'t': f.id})|raw -}}
 	{{- f.subject -}}
 	</a>
 	{#	&nbsp;[{{ msg.new_reply_count }}]  #}
@@ -20,7 +20,7 @@
 	{%- else -%}
 	<p>
 	{{- 'periodic_overview.forum.none'|trans({
-		'%link_open%': mail_link_open('forum', {}, schema, email_token),
+		'%link_open%': context_url_open('forum', mpp_ary(user_id, schema), {}),
 		'%link_close%': '</a>'
 	})|raw -}}
 	</p>
@@ -28,13 +28,13 @@
 
 {%- endmacro html -%}
 
-{% macro text(forum, schema, email_token) %}
+{% macro text(forum, user_id, schema) %}
 {% autoescape false %}
 
 {{ 'periodic_overview.forum.title'|trans|underline }}
 
 {% for f in forum %}
-* {{ f.subject }} {{ mail_url('forum', {'t': f.id}, schema, email_token) }}
+* {{ f.subject }} {{ context_url('forum_topic', mpp_ary(user_id, schema), {'t': f.id}) }}
 {% else %}
 {{ 'periodic_overview.forum.none'|trans({
 	'%link_open%' : '',

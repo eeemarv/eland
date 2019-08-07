@@ -11,7 +11,7 @@
 
 <p>
     {{- 'register_confirm.html_msg'|trans({
-        '%link_open%': mail_link_open('register', {'token': token}, schema, email_token),
+        '%link_open%': context_url_open('register_token', mpp_anon_ary(schema), {'token': token}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -23,7 +23,7 @@
 <p>
     {{- 'register_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': mail_link_open('register', {}, schema, email_token),
+        '%link_open%': context_url_open('register', mpp_anon_ary(schema), {}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -34,7 +34,7 @@
 
 {{ 'register_confirm.text_msg'|trans }}
 
-{{ mail_url('register', {'token': token}, schema, email_token) }}
+{{ context_url('register_token', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'expiration.1_week'|trans }}
 
@@ -44,7 +44,7 @@
     '%link_close%': ''
 }) }}
 
-{{ mail_url('register', {}, schema, email_token) }}
+{{ context_url('register', mpp_anon_ary(schema), {}) }}
 
 {% endautoescape %}
 {% endblock text_content %}

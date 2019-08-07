@@ -76,23 +76,6 @@ class mail implements queue_interface
 
 		$data['vars']['system'] = $system;
 
-		$mpp_anon_ary = [
-			'system'	=> $system,
-		];
-
-		if (isset($data['vars']['et']))
-		{
-			$mpp_anon_ary['et'] = $data['vars']['et'];
-		}
-
-		$data['vars']['mpp_anon_ary'] = $mpp_anon_ary;
-
-		$data['vars']['mpp_user_ary'] = $mpp_anon_ary;
-		$data['vars']['mpp_user_ary']['role_short'] = 'u';
-
-		$data['vars']['mpp_admin_ary'] = $mpp_anon_ary;
-		$data['vars']['mpp_admin_ary']['role_short'] = 'a';
-
 		if (isset($data['pre_html_template']))
 		{
 			try

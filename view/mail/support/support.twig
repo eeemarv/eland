@@ -9,7 +9,7 @@
 <p>
     {{- 'support.explain'|trans({
         '%link_open%': context_url_open('home_system',
-            mpp_anon_ary, {}),
+            mpp_anon_ary(schema), {}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema),
         '%account%':  context_url_open('users_show',

@@ -1,6 +1,6 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(intersystem, schema, email_token) -%}
+{%- macro html(intersystem, user_id, schema) -%}
 
 {%- if intersystem -%}
 <h3>
@@ -9,7 +9,7 @@
 
 <p>
 	{{- 'periodic_overview.intersystem.explain'|trans({
-		'%link_open%': mail_link_open('login', {}, schema, email_token),
+		'%link_open%': context_url_open('login', mpp_anon_ary(schema), {}),
 		'%link_close%': '</a>'
 	})|raw -}}
 </p>
@@ -47,7 +47,7 @@
 
 {%- endmacro html -%}
 
-{% macro text(intersystem, schema, email_token) %}
+{% macro text(intersystem, user_id, schema) %}
 {% autoescape false %}
 
 {% if intersystem %}

@@ -2,7 +2,7 @@
 <p>
     {{- 'subscribed.support'|trans({
         '%link_open%': context_url_open(
-            'config', mpp_admin_ary,
+            'config', mpp_admin_ary(schema),
             {'tab': 'mail-addr'}),
         '%link_close%': '</a>',
     })|raw -}}

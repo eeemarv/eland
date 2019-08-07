@@ -20,27 +20,46 @@ class mpp_ary
 		$this->systems = $systems;
 	}
 
-	public function get(array $context, int $id, string $schema):array
+	private function get_ary(
+		string $role_short,
+		string $et,
+		string $schema
+	):array
 	{
 		$system = $this->systems->get_system($schema);
-
-		$role = $this->user_cache->get($id, $schema)['accountrole'];
-		$role_short = cnst_role::SHORT[$role] ?? 'g';
 
 		$mpp_ary = [
 			'system'	=> $system,
 		];
 
-		if (isset($context['et']))
+		if ($et !== '')
 		{
-			$mpp_ary['et'] = $context['et'];
+			$mpp_ary['et'] = $et;
 		}
 
-		if (in_array($role_short, ['u', 'a']))
+		if ($role_short !== '')
 		{
 			$mpp_ary['role_short'] = $role_short;
-		}
+ 		}
 
 		return $mpp_ary;
+	}
+
+	public function get(array $context, int $id, string $schema):array
+	{
+		$role = $this->user_cache->get($id, $schema)['accountrole'];
+		$role_short = cnst_role::SHORT[$role] ?? '';
+
+		return $this->get_ary($role_short, $context['et'] ?? '', $schema);
+	}
+
+	public function get_admin(array $context, string $schema):array
+	{
+		return $this->get_ary('a', $context['et'] ?? '', $schema);
+	}
+
+	public function get_anon(array $context, string $schema):array
+	{
+		return $this->get_ary('', $context['et'] ?? '', $schema);
 	}
 }
