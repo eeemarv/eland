@@ -73,7 +73,14 @@ class users_tiles
 
         foreach ($users as $u)
         {
-            $row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
+            $row_stat = $u['status'];
+
+            if (isset($u['adate'])
+                && $u['status'] == 1
+                && $app['new_user_treshold'] < strtotime($u['adate']))
+            {
+                $row_stat = 3;
+            }
 
             $url = $app['link']->context_path($app['r_users_show'], $app['pp_ary'],
                 ['id' => $u['id'], 'link' => $status]);
