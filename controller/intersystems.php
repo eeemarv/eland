@@ -17,7 +17,7 @@ class intersystems
 
         foreach ($groups as $key => $sys)
         {
-            $sys_host = strtolower(parse_url($sys['url'], PHP_URL_HOST));
+            $sys_host = strtolower(parse_url($sys['url'], PHP_URL_HOST) ?? '');
 
             $letscodes[] = $sys['localletscode'];
 

@@ -5,13 +5,12 @@ use Knp\Provider\ConsoleServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use cnst\pages as cnst_pages;
 use cnst\role as cnst_role;
-use render\stat;
 
 $app = new util\app();
 
 $app['debug'] = getenv('DEBUG');
 $app['route_class'] = 'util\route';
-$app['legacy_eland_origin_pattern'] = getenv('LEGACY_ELAND_ORIGIN_PATTERN') ?: '';
+$app['legacy_eland_origin_pattern'] = getenv('LEGACY_ELAND_ORIGIN_PATTERN');
 $app['overall_domain'] = getenv('OVERALL_DOMAIN');
 $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
 $app['s3_region'] = getenv('AWS_S3_REGION');

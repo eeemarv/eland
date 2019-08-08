@@ -21,7 +21,7 @@ Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 De code is open source en te vinden op [Github](https://github.com/eeemarv/eland).
 Vanaf [rubriek "Dokku"](dokku.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
 
-Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank. Gebruik vrijblijvend het [contactformulier](http://hosting.letsa.net).
+Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank.
 
 eLAND is een persoonlijk en onafhankelijk project.
 
@@ -33,5 +33,3 @@ Er zal gewerkt worden om eLAND geschikt te maken voor het [LETSysteem](https://m
 The LETSystem, het LETSysteem of kortweg "LETS" is wereldwijd het best gekende concept van Persoonlijk Geld (Personal Money) en wederzijds krediet. Het werd door Linton gelanceerd in 1983. Ik maakte [een vertaling naar het Nederlands](https://manual.letsa.net/nl) van Linton's referentiewerk the LETSystem Design Manual.
 
 Maarten Vandekeybus [("eeemarv" op Github)](https://github.com/eeemarv)
-
-[contactformulier](http://hosting.letsa.net)
