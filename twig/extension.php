@@ -37,8 +37,8 @@ class extension extends \Twig_Extension
 			new \Twig_Function('account_min', 'twig\\account::get_min'),
 			new \Twig_Function('account_max', 'twig\\account::get_max'),
 			new \Twig_Function('mpp_ary', 'twig\\mpp_ary::get', ['needs_context'	=> true]),
-			new \Twig_Function('mpp_anon_ary', 'twig\\mpp_ary::get', ['needs_context'	=> true]),
-			new \Twig_Function('mpp_admin_ary', 'twig\\mpp_ary::get', ['needs_context'	=> true]),
+			new \Twig_Function('mpp_anon_ary', 'twig\\mpp_ary::get_anon', ['needs_context'	=> true]),
+			new \Twig_Function('mpp_admin_ary', 'twig\\mpp_ary::get_admin', ['needs_context'	=> true]),
 		];
 	}
 

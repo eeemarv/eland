@@ -1,32 +1,32 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html_list(users, schema, email_token) -%}
+{%- macro html_list(users, user_id, schema) -%}
 <ul>
-	{%- for user_id in users -%}
+	{%- for uid in users -%}
 		<li>
-		{{- mail_link_open('users', {'id': user_id}, schema, email_token)|raw -}}
-			{{- account(user_id, schema) -}}
+		{{- context_url_open('users_show', mpp_ary(user_id, schema), {'id': uid})|raw -}}
+			{{- account(uid, schema) -}}
 		</a>
 		</li>
 	{%- endfor -%}
 </ul>
 {%- endmacro html_list -%}
 
-{% macro text_list(users, schema, email_token) %}
+{% macro text_list(users, user_id, schema) %}
 {% autoescape false %}
-{% for user_id in users %}
-* {{ account(user_id, schema) }} {{ mail_url('users', {'id': user_id}, schema, email_token) }}
+{% for uid in users %}
+* {{ account(uid, schema) }} {{ context_url('users_show', mpp_ary(user_id, schema), {'id': uid}) }}
 {% endfor %}
 {% endautoescape %}
 {% endmacro text_list %}
 
-{%- macro html(users, type, option, schema, email_token) -%}
+{%- macro html(users, type, option, user_id, schema) -%}
 {%- import _self as u -%}
 <h3>
 	{{- ('periodic_overview.'~type~'_users.title')|trans -}}
 </h3>
 {%- if users -%}
-	{{- u.html_list(users, schema, email_token) -}}
+	{{- u.html_list(users, user_id, schema) -}}
 {%- else -%}
 	{%- if option == 'recent' -%}
 		<p>
@@ -40,14 +40,14 @@
 {%- endif -%}
 {%- endmacro html -%}
 
-{% macro text(users, type, option, schema, email_token) %}
+{% macro text(users, type, option, user_id, schema) %}
 {% import _self as u %}
 {% autoescape false %}
 
 {{ ('periodic_overview.'~type~'_users.title')|trans|underline }}
 
 {% if users %}
-{{ u.text_list(users, schema, email_token) }}
+{{ u.text_list(users, user_id, schema) }}
 {% else %}
 {% if option == 'recent' %}
 {{ ('periodic_overview.'~type~'_users.no_recent')|trans }}

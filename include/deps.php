@@ -71,12 +71,6 @@ $app->extend('twig', function($twig, $app) {
 				$app['protocol']
 			);
 		},
-		twig\mail_url::class => function() use ($app){
-			return new twig\mail_url(
-				$app['systems'],
-				$app['protocol']
-			);
-		},
 		twig\s3_url::class => function() use ($app){
 			return new twig\s3_url(
 				$app['s3_url']

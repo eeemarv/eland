@@ -21,7 +21,7 @@
 <br />
     {{- 'label.email'|trans -}}: {{ email -}}
 <br />
-<a href="{{ mail_url('users', {'id': user_id}, schema, email_token) -}}">
+<a href="{{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) -}}">
     {{- 'label.link'|trans -}}
 </a>
 </p>
@@ -37,7 +37,7 @@
 {{ 'label.full_name'|trans }}: {{ user_fullname(user_id, schema) }}
 {{ 'label.postcode'|trans }}: {{ postcode }}
 {{ 'label.email'|trans }}: {{ email }}
-{{ 'label.link'|trans }}: {{ mail_url('users', {'id': user_id}, schema, email_token) }}
+{{ 'label.link'|trans }}: {{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) }}
 
 {% endautoescape %}
 {% endblock text_content %}

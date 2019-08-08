@@ -20,7 +20,7 @@
 </p>
 
 <p>
-    <a href="{{- mail_url('news', {'id': news.id}, schema, email_token) -}}">
+    <a href="{{- context_url('news_show', mpp_ary(user_id, schema), {'id': news.id}) -}}">
         {{- 'news_review_admin.action'|trans -}}
     </a>
 </p>
@@ -38,7 +38,7 @@
 
 {{ 'news_review_admin.action'|trans }}
 
-{{ mail_url('news', {'id': news.id}, schema, email_token) }}
+{{ context_url('news_show', mpp_ary(user_id, schema), {'id': news.id}) }}
 
 {% endautoescape %}
 {% endblock text_content %}
