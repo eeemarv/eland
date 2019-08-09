@@ -121,11 +121,19 @@ class users_show
         {
             $title = $app['s_admin'] ? 'Gebruiker' : 'Mijn gegevens';
 
-            $app['btn_top']->edit('users', $app['pp_ary'],
-                ['edit' => $id], $title . ' aanpassen');
+            $app['btn_top']->edit($app['r_users_edit'], $app['pp_ary'],
+                ['id' => $id], $title . ' aanpassen');
 
-            $app['btn_top']->edit_pw('users', $app['pp_ary'],
-                ['pw' => $id], 'Paswoord aanpassen');
+            if ($app['s_admin'])
+            {
+                $app['btn_top']->edit_pw('users_password_admin', $app['pp_ary'],
+                ['id' => $id], 'Paswoord aanpassen');
+            }
+            else if ($s_owner)
+            {
+                $app['btn_top']->edit_pw('users_password', $app['pp_ary'],
+                    [], 'Paswoord aanpassen');
+            }
         }
 
         if ($app['s_admin'] && !$count_transactions && !$s_owner)
@@ -145,7 +153,7 @@ class users_show
                 $tus['tus'] = $app['tschema'];
             }
 
-            $app['btn_top']->add_trans('transactions', $app['s_ary'],
+            $app['btn_top']->add_trans('transactions_add', $app['s_ary'],
                 $tus, 'Transactie naar ' . $app['account']->str($id, $app['tschema']));
         }
 

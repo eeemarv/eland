@@ -147,12 +147,14 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
+/*
 		if (isset($app['session_user']) && count($app['session_user']))
 		{
 			$record['extra']['letscode'] = $app['session_user']['letscode'] ?? '';
 			$record['extra']['user_id'] = $app['session_user']['id'] ?? '';
 			$record['extra']['username'] = $app['session_user']['name'] ?? '';
 		}
+*/
 
 /*
 		if (isset($app['s_schema']))
@@ -165,7 +167,7 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if ($ip)
 		{
-			$record['extra']['ip'] = $app['request']->getClientIp();
+//			$record['extra']['ip'] = $app['request']->getClientIp();
 			$record['extra']['ip'] = $ip;
 		}
 
@@ -276,8 +278,8 @@ $app['intersystem_en'] = function($app):bool{
 		&& $app['config']->get('interlets_en', $app['tschema']);
 };
 
-$app['pp_role_short'] = function ($app){
-	return $app['request']->attributes->get('role_short');
+$app['pp_role_short'] = function ($app):string{
+	return $app['request']->attributes->get('role_short', '');
 };
 
 $app['pp_role'] =  function ($app):string{
@@ -285,23 +287,28 @@ $app['pp_role'] =  function ($app):string{
 };
 
 $app['pp_system'] = function ($app):string{
-	return $app['request']->attributes->get('system');
+	return $app['request']->attributes->get('system', '');
 };
 
 $app['pp_ary'] = function ($app):array{
 
-	if (isset($app['pp_system']))
+	if ($app['pp_system'] === '')
 	{
-		if (isset($app['pp_role_short']))
-		{
-			return [
-				'system'		=> $app['pp_system'],
-				'role_short'	=> $app['pp_role_short'],
-			];
-		}
+		return [];
+	}
 
+	if ($app['pp_role_short'] === '')
+	{
 		return [
 			'system'	=> $app['pp_system'],
+		];
+	}
+
+	if (isset(cnst_role::LONG[$app['pp_role_short']]))
+	{
+		return [
+			'system'		=> $app['pp_system'],
+			'role_short'	=> $app['pp_role_short'],
 		];
 	}
 
@@ -309,8 +316,6 @@ $app['pp_ary'] = function ($app):array{
 };
 
 $app['tschema'] = function ($app):string{
-//	error_log('SYSTEM: ' . $app['request']->attributes->get('system'));
-	return 'x';
 	return $app['systems']->get_schema($app['pp_system']);
 };
 
@@ -320,18 +325,44 @@ $app['request'] = function ($app):Request{
 
 $app['s_schema'] = function ($app):string{
 
-	if (isset($app['role_short'])
-		&& $app['role_short'] === 'g')
-	{
-		$s_schema = $app['request']->query->get('schema');
+	$s_schema = $app['session']->get('schema');
 
-		if (isset($s_schema))
+	if ($app['pp_role_short'] === 'g')
+	{
+		if ($s_schema)
 		{
 			return $s_schema;
 		}
+
+	}
+
+	if ($s_schema !== $app['tschema'])
+	{
+		$app['session']->set('schema', $app['tschema']);
 	}
 
 	return $app['tschema'];
+};
+
+$app['s_system'] = function ($app){
+	return $app['systems']->get_system($app['s_schema']);
+};
+
+$app['s_ary'] = function ($app){
+	if ($app['s_role_short'] === '')
+	{
+		return [];
+	}
+
+	if ($app['s_system'] === '')
+	{
+		return [];
+	}
+
+	return [
+		'system'		=> $app['s_system'],
+		'role_short'	=> $app['s_role_short']
+	];
 };
 
 $app['s_system_self'] = function ($app):bool{
@@ -345,8 +376,6 @@ $app['s_logins'] = function ($app):array{
 $app['s_id'] = function ($app):int{
 
 	$s_id = $app['s_logins'][$app['s_schema']] ?? 0;
-
-	error_log('S_ID: ' . $s_id);
 
 	if (ctype_digit((string) $s_id))
 	{
@@ -388,6 +417,20 @@ $app['s_role'] = function ($app):string{
 	return 'anonymous';
 };
 
+$app['s_role_short'] = function ($app):string{
+	if ($app['s_role'] === 'user')
+	{
+		return 'u';
+	}
+
+	if ($app['s_role'] === 'admin')
+	{
+		return 'a';
+	}
+
+	return '';
+};
+
 $app['s_guest'] = function ($app):bool{
 	return false;
 };
@@ -405,6 +448,7 @@ $app['s_anonymous'] = function ($app):bool{
 };
 
 $app['s_master'] = function ($app):bool{
+
 	if (isset($app['s_logins'][$app['s_schema']]))
 	{
 		return $app['s_logins'][$app['s_schema']] === 'master';
@@ -413,7 +457,8 @@ $app['s_master'] = function ($app):bool{
 	return false;
 };
 
-$app['s_elas_guest'] = function ($app){
+$app['s_elas_guest'] = function ($app):bool{
+
 	if (isset($app['s_logins'][$app['s_schema']]))
 	{
 		return $app['s_logins'][$app['s_schema']] === 'elas';
@@ -421,7 +466,6 @@ $app['s_elas_guest'] = function ($app){
 
 	return false;
 };
-
 
 /**
  *

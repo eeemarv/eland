@@ -1,9 +1,6 @@
 <?php declare(strict_types=1);
 
 use util\app;
-use cnst\role as cnst_role;
-use cnst\access as cnst_access;
-use cnst\pages as cnst_pages;
 use cnst\assert as cnst_assert;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -32,8 +29,6 @@ $fn_before_locale = function (Request $request, app $app){
 	$app['assets']->add_print_css(['print.css']);
 
 	error_log('LOGINS: ' . json_encode($app['s_logins']));
-
-//	$app['request'] = $request;
 };
 
 $fn_before_system = function(Request $request, app $app){
@@ -283,6 +278,12 @@ $c_system_guest->get('/messages/extended', 'controller\\messages::extended')
 
 $c_system_guest->get('/messages', 'controller\\messages::list')
 	->bind('messages_list');
+
+$c_system_admin->match('/users/password/{id}', 'controller\\users_password::form_admin')
+	->bind('users_password_admin');
+
+$c_system_user->match('/users/password', 'controller\\users_password::form_self')
+	->bind('users_password');
 
 $c_system_admin->match('/users/{id}/{status}', 'controller\\users_show::all_status')
 	->assert('status', cnst_assert::USER_STATUS)
@@ -897,8 +898,6 @@ switch ($app['s_accountrole'])
 
 // $app['s_access_level'] = cnst::ACCESS_ARY[$app['p_role']];
 
-
-$errors = [];
 /*
 if ($app['page_access'] != 'anonymous'
 	&& !$app['s_system_self']

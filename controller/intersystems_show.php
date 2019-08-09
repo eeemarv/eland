@@ -109,7 +109,7 @@ class intersystems_show
 
         if ($user)
         {
-            $out .= $app['link']->link('users', $app['pp_ary'],
+            $out .= $app['link']->link('users_show_admin', $app['pp_ary'],
                 ['id' => $user['id']], $group['localletscode'],
                 [
                     'class' => 'btn btn-default',
@@ -120,8 +120,8 @@ class intersystems_show
             {
                 $out .= ' ';
 
-                $out .= $app['link']->link_fa('users', $app['pp_ary'],
-                    ['edit' => $user['id']], 'Status!',
+                $out .= $app['link']->link_fa('users_edit_admin', $app['pp_ary'],
+                    ['id' => $user['id']], 'Status!',
                     [
                         'class'	=> 'btn btn-danger',
                         'title'	=> 'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
@@ -131,8 +131,8 @@ class intersystems_show
             if ($user['accountrole'] != 'interlets')
             {
                 $out .= ' ';
-                $out .= $app['link']->link_fa('users', $app['pp_ary'],
-                    ['edit' => $user['id']], 'Rol!',
+                $out .= $app['link']->link_fa('users_edit_admin', $app['pp_ary'],
+                    ['id' => $user['id']], 'Rol!',
                     [
                         'class'	=> 'btn btn-danger',
                         'title'	=> 'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',

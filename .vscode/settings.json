@@ -1,6 +1,7 @@
 {
     "files.watcherExclude": {
         "**/cache/**": true,
-        "**/vendor/**": true
+        "**/vendor/**": true,
+        "**/_book/**": true
     }
 }

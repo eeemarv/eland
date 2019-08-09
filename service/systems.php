@@ -70,7 +70,7 @@ class systems
 
 	public function get_schema_from_legacy_eland_origin(string $origin):string
 	{
-		$host = strtolower(parse_url($origin, PHP_URL_HOST));
+		$host = strtolower(parse_url($origin, PHP_URL_HOST) ?? '');
 
 		if (!$host)
 		{
@@ -79,12 +79,7 @@ class systems
 
 		[$system] = explode('.', $host);
 
-		if (!isset($this->schemas[$system]))
-		{
-			return '';
-		}
-
-		return $this->schemas[$system];
+		return $this->schemas[$system] ?? '';
  	}
 
 	public function get_schemas():array
