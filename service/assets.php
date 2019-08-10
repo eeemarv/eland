@@ -9,7 +9,6 @@ class assets
 {
 	protected $cache;
 	protected $file_hash_ary;
-	protected $version = '28';
 
 	const CACHE_HASH_KEY = 'assets_files_hashes';
 
@@ -119,9 +118,8 @@ class assets
 		],
 	];
 
-	protected $include_css = [];
-	protected $include_css_print = [];
-	protected $include_js = [];
+	protected $include_ary = [];
+	protected $include_css_print_ary = [];
 
 	public function __construct(
 		cache $cache
@@ -137,14 +135,17 @@ class assets
 		$finder = new Finder();
 		$finder->files()
 			->in([
-				__DIR__ . '/../web/gfx',
+				__DIR__ . '/../web/css',
 				__DIR__ . '/../web/js',
+				__DIR__ . '/../web/img',
 			])
 			->name([
 				'*.js',
 				'*.css',
 				'*.png',
 				'*.gif',
+				'*.jpg',
+				'*.jpeg',
 			]);
 
 		error_log('+-----------------------+');
@@ -191,55 +192,41 @@ class assets
 
 				foreach ($asset as $type => $ary)
 				{
-					switch ($type)
+					if ($type !== 'js' && $type !== 'css')
 					{
-						case 'js':
-							foreach ($ary as $loc)
-							{
-								$this->include_js[] = self::PROTOCOL . $loc;
-							}
-							break;
-						case 'css':
-							foreach ($ary as $loc)
-							{
-								$this->include_css[] = self::PROTOCOL . $loc;
-							}
-							break;
-						default:
-							break;
+						continue;
+					}
+
+					foreach ($ary as $loc)
+					{
+						$this->include_ary[$type][] = self::PROTOCOL . $loc;
 					}
 				}
 
 				continue;
 			}
 
-			$ext = strtolower(pathinfo($asset_name, PATHINFO_EXTENSION));
-
-			switch ($ext)
-			{
-				case 'js':
-					$include = '/js/' . $asset_name . '?';
-					$include .= $this->file_hash_ary[$asset_name];
-					$this->include_js[] = $include;
-					break;
-				case 'css':
-					$include = '/gfx/' . $asset_name . '?';
-					$include .= $this->file_hash_ary[$asset_name];
-					$this->include_css[] = $include;
-					break;
-				default:
-					break;
-			}
+			$type = $this->get_type($asset_name);
+			$this->include_ary[$type][] = $this->get_location($asset_name, $type);
 		}
+	}
+
+	private function get_type(string $asset_name):string
+	{
+		$ext = strtolower(pathinfo($asset_name, PATHINFO_EXTENSION));
+		return  $ext === 'js' || $ext === 'css' ? $ext : 'img';
+	}
+
+	private function get_location(string $asset_name, string $type):string
+	{
+		return '/' . $type . '/' . $asset_name . '?' . $this->file_hash_ary[$asset_name];
 	}
 
 	public function add_print_css(array $asset_ary):void
 	{
 		foreach ($asset_ary as $asset_name)
 		{
-			$include = '/gfx/' . $asset_name . '?';
-			$include .= $this->file_hash_ary[$asset_name];
-			$this->include_css_print[] = $include;
+			$this->include_css_print_ary[] = $this->get_location($asset_name, 'css');
 		}
 	}
 
@@ -247,7 +234,7 @@ class assets
 	{
 		foreach ($asset_ary as $asset_name)
 		{
-			$this->include_css[] = $asset_name;
+			$this->include['css'][] = $asset_name;
 		}
 	}
 
@@ -255,7 +242,7 @@ class assets
 	{
 		$out = '';
 
-		foreach ($this->include_js as $js)
+		foreach ($this->include_ary['js'] as $js)
 		{
 			$out .= '<script src="' . $js . '"></script>';
 		}
@@ -267,12 +254,12 @@ class assets
 	{
 		$out = '';
 
-		foreach ($this->include_css as $css)
+		foreach ($this->include_ary['css'] as $css)
 		{
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
 		}
 
-		foreach ($this->include_css_print as $css)
+		foreach ($this->include_css_print_ary as $css)
 		{
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="print">';
 		}
@@ -280,8 +267,9 @@ class assets
 		return $out;
 	}
 
-	public function get_version_param():string
+	public function get(string $asset_name):string
 	{
-		return '?v=' . $this->version;
+		$type = $this->get_type($asset_name);
+		return $this->get_location($asset_name, $type);
 	}
 }

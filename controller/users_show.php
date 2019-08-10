@@ -5,6 +5,7 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use cnst\status as cnst_status;
 
 class users_show
 {
@@ -52,15 +53,15 @@ class users_show
 
         $sql_bind = [$user['letscode']];
 
-        if ($link && isset($st[$link]))
+        if ($status && isset($st[$status]))
         {
-            $and_status = isset($st[$link]['sql'])
-                ? ' and ' . $st[$link]['sql']
+            $and_status = isset($st[$status]['sql'])
+                ? ' and ' . $st[$status]['sql']
                 : '';
 
-            if (isset($st[$link]['sql_bind']))
+            if (isset($st[$status]['sql_bind']))
             {
-                $sql_bind[] = $st[$link]['sql_bind'];
+                $sql_bind[] = $st[$status]['sql_bind'];
             }
         }
         else
@@ -138,8 +139,8 @@ class users_show
 
         if ($app['s_admin'] && !$count_transactions && !$s_owner)
         {
-            $app['btn_top']->del('users', $app['pp_ary'],
-                ['del' => $id], 'Gebruiker verwijderen');
+            $app['btn_top']->del('users_del', $app['pp_ary'],
+                ['id' => $id], 'Gebruiker verwijderen');
         }
 
         if ($app['s_admin']
@@ -157,18 +158,17 @@ class users_show
                 $tus, 'Transactie naar ' . $app['account']->str($id, $app['tschema']));
         }
 
-        $link_ary = $link ? ['link' => $link] : [];
-        $prev_ary = $prev ? array_merge($link_ary, ['id' => $prev]) : [];
-        $next_ary = $next ? array_merge($link_ary, ['id' => $next]) : [];
+        $pp_status_ary = $app['pp_ary'];
+        $pp_status_ary['status'] = $status;
 
-        $app['btn_nav']->nav('users', $app['pp_ary'],
-            $prev_ary, $next_ary, false);
+        $app['btn_nav']->nav($app['r_users_show'], $pp_status_ary,
+            ['id' => $prev], ['id' => $next], false);
 
-        $app['btn_nav']->nav_list('users', $app['pp_ary'],
-            ['link' => $link], 'Overzicht', 'users');
+        $app['btn_nav']->nav_list($app['r_users'], $pp_status_ary,
+            [], 'Overzicht', 'users');
 
-        $status = $user['status'];
-        $status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
+        $status_id = $user['status'];
+        $status_id = ($app['new_user_treshold'] < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
 
         $h_status_ary = cnst_status::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
@@ -180,12 +180,12 @@ class users_show
 
         $app['heading']->add($app['account']->link($id, $app['pp_ary']));
 
-        if ($status != 1)
+        if ($status_id != 1)
         {
             $app['heading']->add(' <small><span class="text-');
-            $app['heading']->add(cnst_status::CLASS_ARY[$status]);
+            $app['heading']->add(cnst_status::CLASS_ARY[$status_id]);
             $app['heading']->add('">');
-            $app['heading']->add($h_status_ary[$status]);
+            $app['heading']->add($h_status_ary[$status_id]);
             $app['heading']->add('</span></small>');
         }
 
@@ -231,7 +231,7 @@ class users_show
         }
         else
         {
-            $out .= $app['rootpath'] . 'gfx/1.gif';
+            $out .= $app['assets']->get('1.gif');
         }
 
         $out .= '" ';

@@ -237,9 +237,18 @@ class transactions_show
 
             $out .= '<div class="col-md-6">';
             $out .= '<div class="thumbnail">';
-            $out .= '<img src="/gfx/';
-            $out .= $real_from ? 'there-from' : 'here-to';
-            $out .= '-inter.png">';
+            $out .= '<img src="';
+
+            if ($real_from)
+            {
+                $out .= $app['assets']->get('there-from-inter.png');
+            }
+            else
+            {
+                $out .= $app['assets']->get('here-from-inter.png');
+            }
+
+            $out .= '">';
             $out .= '</div>';
             $out .= '<div class="caption">';
             $out .= '<ul>';
@@ -333,9 +342,18 @@ class transactions_show
 
             $out .= '<div class="col-md-6">';
             $out .= '<div class="thumbnail">';
-            $out .= '<img src="/gfx/';
-            $out .= $real_from ? 'here-from' : 'there-to';
-            $out .= '-inter.png">';
+            $out .= '<img src="';
+
+            if ($real_from)
+            {
+                $out .= $app['assets']->get('here-from-inter.png');
+            }
+            else
+            {
+                $out .= $app['assets']->get('there-from-inter.png');
+            }
+
+            $out .= '">';
             $out .= '</div>';
             $out .= '<div class="caption bg-warning">';
             $out .= '<ul>';

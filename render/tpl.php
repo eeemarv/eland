@@ -183,8 +183,8 @@ class tpl
 
 		$out .= '">';
 
-		$out .= '<img src="/gfx/loading.gif';
-		$out .= $this->assets->get_version_param();
+		$out .= '<img src="';
+		$out .= $this->assets->get('loading.gif');
 		$out .= '" ';
 		$out .= 'class="ajax-loader" alt="waiting">';
 
