@@ -72,10 +72,10 @@ class plot_user_transactions
                 else
                 {
                     [$name, $code] = explode('(', $real);
-                    $name = trim($name);
+                    $name = trim($name ?? '');
                 }
 
-                $code = $t['letscode'] . '.' . trim($code, ' ()\t\n\r\0\x0B');
+                $code = $t['letscode'] . '.' . trim($code ?? '', ' ()\t\n\r\0\x0B');
             }
             else
             {
