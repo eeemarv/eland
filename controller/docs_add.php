@@ -213,6 +213,6 @@ class docs_add
         $app['tpl']->add($out);
         $app['tpl']->menu('docs');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

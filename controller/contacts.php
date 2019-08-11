@@ -399,7 +399,7 @@ class contacts
 
             $app['tpl']->add($out);
 
-            return $app['tpl']->get($request);
+            return $app['tpl']->get();
         }
 
         $out .= '<div class="panel panel-danger">';
@@ -498,6 +498,6 @@ class contacts
         $app['tpl']->add($out);
         $app['tpl']->menu('contacts');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

@@ -69,7 +69,7 @@ class config
 
 		if ($row)
 		{
-			$value = $row['data']['value'];
+			$value = (string) $row['data']['value'];
 		}
 		else if (isset(cnst_config::INPUTS[$key]['default']))
 		{

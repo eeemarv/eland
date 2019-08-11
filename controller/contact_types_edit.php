@@ -105,6 +105,6 @@ class contact_types_edit
         $app['tpl']->add($out);
         $app['tpl']->menu('contact_types');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

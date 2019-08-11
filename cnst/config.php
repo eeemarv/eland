@@ -243,14 +243,14 @@ class config
             'lbl'	=> 'Tekst boven het contact formulier',
             'type'	=> 'textarea',
             'rich_edit'	=> true,
-            'default'	=> '0',
+            'default'	=> '',
         ],
 
         'contact_form_bottom_text' => [
             'lbl'		=> 'Tekst onder het contact formulier',
             'type'		=> 'textarea',
             'rich_edit'	=> true,
-            'default'	=> '0',
+            'default'	=> '',
         ],
 
         'registration_en' => [

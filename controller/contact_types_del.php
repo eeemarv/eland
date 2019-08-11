@@ -73,6 +73,6 @@ class contact_types_del
         $app['tpl']->add($out);
         $app['tpl']->menu('contact_types');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

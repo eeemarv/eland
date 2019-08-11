@@ -28,6 +28,6 @@ class news_approve
         $app['link']->redirect('news_list', $app['pp_ary'], ['id' => $id]);
 
         $app['tpl']->menu('news');
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

@@ -66,6 +66,6 @@ class intersystems_del
         $app['tpl']->add($out);
         $app['tpl']->menu('intersystems');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

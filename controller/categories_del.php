@@ -56,6 +56,6 @@ class categories_del
         $app['tpl']->add($out);
         $app['tpl']->menu('categories');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

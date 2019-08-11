@@ -310,6 +310,6 @@ class login
         $app['tpl']->add($out);
         $app['tpl']->menu('login');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

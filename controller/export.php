@@ -307,6 +307,6 @@ class export
         $app['tpl']->add($out);
         $app['tpl']->menu('export');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

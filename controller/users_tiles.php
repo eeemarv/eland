@@ -126,6 +126,6 @@ class users_tiles
         $app['tpl']->add($out);
         $app['tpl']->menu('users');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

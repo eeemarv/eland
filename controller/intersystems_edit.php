@@ -378,6 +378,6 @@ class intersystems_edit
         $app['tpl']->add($out);
         $app['tpl']->menu('intersystems');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

@@ -125,6 +125,6 @@ class news_del
         $app['tpl']->add($out);
         $app['tpl']->menu('news');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

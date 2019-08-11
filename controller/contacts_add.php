@@ -306,6 +306,6 @@ class contacts_add
         $app['tpl']->add($out);
         $app['tpl']->menu('contacts');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

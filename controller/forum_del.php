@@ -128,6 +128,6 @@ class forum_del
         $app['tpl']->add($out);
         $app['tpl']->menu('forum');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

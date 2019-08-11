@@ -83,7 +83,7 @@ class news
         $app['tpl']->add($out);
         $app['tpl']->menu('news');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     public function extended(Request $request, app $app):Response
@@ -236,7 +236,7 @@ class news
         $app['tpl']->add($out);
         $app['tpl']->menu('news');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     private function get_data(app $app):array
@@ -322,6 +322,6 @@ class news
         $app['tpl']->add($out);
         $app['tpl']->menu('news');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

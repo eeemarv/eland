@@ -204,7 +204,7 @@ class intersystems
         $app['tpl']->add($out);
         $app['tpl']->menu('intersystems');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     public static function get_schemas_groups(app $app):string

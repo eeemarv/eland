@@ -454,6 +454,6 @@ class status
         $app['tpl']->add($out);
         $app['tpl']->menu('status');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

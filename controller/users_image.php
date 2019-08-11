@@ -590,6 +590,6 @@ class users_image
         $app['tpl']->add($out);
         $app['tpl']->menu('users');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

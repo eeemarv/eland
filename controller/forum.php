@@ -101,7 +101,7 @@ class forum
             $app['tpl']->add($out);
             $app['tpl']->menu('forum');
 
-            return $app['tpl']->get($request);
+            return $app['tpl']->get();
         }
 
         $out .= '<div class="panel panel-default printview">';
@@ -168,6 +168,6 @@ class forum
         $app['tpl']->add($out);
         $app['tpl']->menu('forum');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

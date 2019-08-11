@@ -10,7 +10,7 @@ class messages
 {
     static public function fetch(Request $request, app $app):array
     {
-
+        return [];
     }
 
     public function list(Request $request, app $app):Response
@@ -908,7 +908,7 @@ class messages
         $app['tpl']->add($out);
         $app['tpl']->menu('messages');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     static public function btn_extend(

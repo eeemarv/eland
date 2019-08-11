@@ -184,7 +184,8 @@ class contact
         $out .= 'vanuit de login-pagina!</i></p>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('contact');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

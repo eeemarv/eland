@@ -346,6 +346,6 @@ class logs
         $app['tpl']->add($out);
         $app['tpl']->menu('logs');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

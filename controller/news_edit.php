@@ -193,6 +193,6 @@ class news_edit
         $app['tpl']->add($out);
         $app['tpl']->menu('news');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

@@ -613,7 +613,7 @@ class users_show
         $app['tpl']->add($out);
         $app['tpl']->menu('users');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     private function get_dd(string $str):string

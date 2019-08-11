@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class apikeys
 {
-    public function list(Request $request, app $app):Response
+    public function list(app $app):Response
     {
         $apikeys = $app['db']->fetchAll('select *
             from ' . $app['tschema'] . '.apikeys');
@@ -57,8 +57,9 @@ class apikeys
         $out .= '</div></div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('apikeys');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     public function add(Request $request, app $app):Response
@@ -140,7 +141,7 @@ class apikeys
         $app['tpl']->add($out);
         $app['tpl']->menu('apikeys');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     private function get_apikey_explain():string
@@ -213,6 +214,6 @@ class apikeys
         $app['tpl']->add($out);
         $app['tpl']->menu('apikeys');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

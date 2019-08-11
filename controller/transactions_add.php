@@ -1273,6 +1273,6 @@ class transactions_add
         $app['tpl']->add($out);
         $app['tpl']->menu('transactions');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

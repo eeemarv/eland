@@ -195,6 +195,6 @@ class register
         $app['tpl']->add($out);
         $app['tpl']->menu('register');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

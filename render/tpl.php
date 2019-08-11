@@ -2,9 +2,7 @@
 
 namespace render;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use cnst\pages as cnst_pages;
 use service\alert;
 use service\assets;
@@ -133,7 +131,7 @@ class tpl
 		$this->menu = $menu;
 	}
 
-	public function get(Request $request):Response
+	public function get():Response
 	{
 		if ($css = $this->config->get('css', $this->tschema))
 		{
@@ -213,7 +211,7 @@ class tpl
 			{
 				$route = $this->config->get('default_landing_page', $this->tschema);
 				$route = self::LINK_ROUTE[$route];
-				$homepage_url = $this->link->path($route, $this->pp_ary);
+//				$homepage_url = $this->link->path($route, $this->pp_ary);
 			}
 		}
 
@@ -425,7 +423,7 @@ class tpl
 
 				if (!$this->intersystem_en)
 				{
-					unset($admin_menu['intersystem'], $admin_menu['apikeys']);
+					unset($admin_menu['intersystems'], $admin_menu['apikeys']);
 				}
 
 				$out .= '<li class="dropdown">';

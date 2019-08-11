@@ -724,7 +724,7 @@ class config
         $app['tpl']->add($out);
         $app['tpl']->menu('config');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 
     private function get_tag_ary(string $tag_name, string $line):array

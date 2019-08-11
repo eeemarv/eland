@@ -281,6 +281,6 @@ class users_map
         $app['tpl']->add($out);
         $app['tpl']->menu('users');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

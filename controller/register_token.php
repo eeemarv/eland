@@ -38,7 +38,7 @@ class register_token
 
             $app['tpl']->add($out);
 
-            return $app['tpl']->get($request);
+            return $app['tpl']->get();
         }
 
         $app['data_token']->del($token, 'register', $app['tschema']);
@@ -199,6 +199,6 @@ class register_token
         $app['tpl']->add($registration_success_text ?: '');
         $app['tpl']->menu('register');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }

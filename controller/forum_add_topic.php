@@ -130,6 +130,6 @@ class forum_add_topic
         $app['tpl']->add($out);
         $app['tpl']->menu('forum');
 
-        return $app['tpl']->get($request);
+        return $app['tpl']->get();
     }
 }
