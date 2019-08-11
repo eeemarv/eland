@@ -3,7 +3,6 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class plot_user_transactions
@@ -25,7 +24,7 @@ class plot_user_transactions
 
         foreach ($groups as $g)
         {
-            $g['domain'] = strtolower(parse_url($g['url'], PHP_URL_HOST));
+            $g['domain'] = strtolower(parse_url($g['url'], PHP_URL_HOST) ?? '');
             $_groups[$g['c']] = $g;
         }
 

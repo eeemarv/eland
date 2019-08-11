@@ -16,6 +16,11 @@ class transactions
         $sort = $request->query->get('s', []);
         $inline_en = $request->query->get('inline', false) ? true : false;
 
+        if (isset($filter['uid']))
+        {
+            $filter['uid'] = (int) $filter['uid'];
+        }
+
         $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 
         $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['tschema']),
@@ -24,7 +29,7 @@ class transactions
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
             && isset($filter['uid'])
-            && $app['s_id'] == $filter['uid'];
+            && $app['s_id'] === $filter['uid'];
 
         $params_sql = $where_sql = $where_code_sql = [];
 
@@ -602,7 +607,7 @@ class transactions
                 $out .= '<td>';
                 $out .= '<span class="text-';
 
-                if ($t['id_from'] == $filter['uid'])
+                if ($t['id_from'] === $filter['uid'])
                 {
                     $out .= 'danger">-';
                 }
@@ -620,7 +625,7 @@ class transactions
 
                 $out .= '<td>';
 
-                if ($t['id_from'] == $filter['uid'])
+                if ($t['id_from'] === $filter['uid'])
                 {
                     if ($t['real_to'])
                     {

@@ -13,8 +13,8 @@ class transactions_add
     {
         $errors = [];
 
-        $mid = $request->query->get('mid', 0);
-        $tuid = $request->query->get('tuid', 0);
+        $mid = (int) $request->query->get('mid', 0);
+        $tuid = (int) $request->query->get('tuid', 0);
         $tus = $request->query->get('tus', '');
 
         $currency = $app['config']->get('currency', $app['tschema']);
