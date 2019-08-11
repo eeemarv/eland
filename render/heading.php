@@ -13,9 +13,9 @@ class heading
 		'<div class="pull-right">',
 		'&nbsp;<button class="btn btn-default hidden-xs" ',
 		'title="Filters" ',
-		'data-toggle="collapse" data-target="#filter"',
-		'<span class="hidden-xs hidden-sm"> ',
-		'Filters</span></button>',
+		'data-toggle="collapse" data-target="#filter">',
+		'<i class="fa fa-caret-down"></i>&nbsp;',
+		'Filters</button>',
 		'</div>',
 	];
 
