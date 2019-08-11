@@ -1,20 +1,2 @@
 User-agent: *
-Disallow: /users
-Disallow: /messages
-Disallow: /transactions
-Disallow: /contacts
-Disallow: /apikeys
-Disallow: /intersystem
-Disallow: /mass_transaction
-Disallow: /news
-Disallow: /docs
-Disallow: /forum
-Disallow: /support
-Disallow: /logout
-Disallow: /autominlimit
-Disallow: /status
-Disallow: /categories
-Disallow: /type_contact
-Disallow: /config
-Disallow: /export
-Disallow: /logs
+Disallow:
