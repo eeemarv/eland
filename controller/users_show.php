@@ -6,6 +6,7 @@ use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\status as cnst_status;
+use cnst\role as cnst_role;
 
 class users_show
 {
@@ -16,6 +17,8 @@ class users_show
 
     public function all_status(Request $request, app $app, string $status, int $id):Response
     {
+        $tdays = $request->query->get('tdays', 365);
+
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
             && $app['s_id'] == $id
@@ -147,7 +150,7 @@ class users_show
             || (!$s_owner && $user['status'] !== 7
                 && !($app['s_guest'] && $app['s_system_self'])))
         {
-            $tus = ['add' => 1, 'tuid' => $id];
+            $tus = ['tuid' => $id];
 
             if (!$app['s_system_self'])
             {
@@ -247,11 +250,11 @@ class users_show
 
         if ($app['s_admin'] || $s_owner)
         {
-            $attr = ['id'	=> 'btn_remove'];
+            $btn_del_attr = ['id'	=> 'btn_remove'];
 
             if (!$user['PictureFile'])
             {
-                $attr['style'] = 'display:none;';
+                $btn_del_attr['style'] = 'display:none;';
             }
 
             $out .= '<div class="panel-footer">';
@@ -260,8 +263,15 @@ class users_show
             $out .= '<input id="fileupload" type="file" name="image" ';
             $out .= 'data-url="';
 
-            $out .= $app['link']->context_path('users', $app['pp_ary'],
-                ['img' => 1, 'id' => $id]);
+            if ($app['s_admin'])
+            {
+                $out .= $app['link']->context_path('users_image_post_admin', $app['pp_ary'],
+                    ['id' => $id]);
+            }
+            else
+            {
+                $out .= $app['link']->context_path('users_image_post', $app['pp_ary'], []);
+            }
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
@@ -270,11 +280,20 @@ class users_show
             $out .= 'data-image-crop="true" ';
             $out .= 'data-image-max-height="400"></span>&nbsp;';
 
-            $out .= $app['link']->link_fa('users', $app['pp_ary'],
-                ['img_del' => 1, 'id' => $id],
-                'Foto verwijderen',
-                array_merge($attr, ['class' => 'btn btn-danger']),
-                'times');
+            if ($app['s_admin'])
+            {
+                $out .= $app['link']->link_fa('users_image_del_admin', $app['pp_ary'],
+                    ['id' => $id], 'Foto verwijderen',
+                    array_merge($btn_del_attr, ['class' => 'btn btn-danger']),
+                    'times');
+            }
+            else
+            {
+                $out .= $app['link']->link_fa('users_image_del', $app['pp_ary'],
+                    [], 'Foto verwijderen',
+                    array_merge($btn_del_attr, ['class' => 'btn btn-danger']),
+                    'times');
+            }
 
             $out .= '<p class="text-warning">';
             $out .= 'Je foto moet in het jpg/jpeg formaat zijn. ';
@@ -300,7 +319,7 @@ class users_show
             || $s_owner
             || $app['item_access']->is_visible_xdb($fullname_access))
         {
-            $out .= get_dd($user['fullname'] ?? '');
+            $out .= $this->get_dd($user['fullname'] ?? '');
         }
         else
         {
@@ -323,7 +342,7 @@ class users_show
         $out .= '<dt>';
         $out .= 'Postcode';
         $out .= '</dt>';
-        $out .= get_dd($user['postcode'] ?? '');
+        $out .= $this->get_dd($user['postcode'] ?? '');
 
         if ($app['s_admin'] || $s_owner)
         {
@@ -343,12 +362,12 @@ class users_show
         $out .= '<dt>';
         $out .= 'Hobbies / Interesses';
         $out .= '</dt>';
-        $out .= get_dd($user['hobbies'] ?? '');
+        $out .= $this->get_dd($user['hobbies'] ?? '');
 
         $out .= '<dt>';
         $out .= 'Commentaar';
         $out .= '</dt>';
-        $out .= get_dd($user['comments'] ?? '');
+        $out .= $this->get_dd($user['comments'] ?? '');
 
         if ($app['s_admin'])
         {
@@ -358,7 +377,7 @@ class users_show
 
             if (isset($user['cdate']))
             {
-                $out .= get_dd($app['date_format']->get($user['cdate'], 'min', $app['tschema']));
+                $out .= $this->get_dd($app['date_format']->get($user['cdate'], 'min', $app['tschema']));
             }
             else
             {
@@ -371,7 +390,7 @@ class users_show
 
             if (isset($user['adate']))
             {
-                $out .= get_dd($app['date_format']->get($user['adate'], 'min', $app['tschema']));
+                $out .= $this->get_dd($app['date_format']->get($user['adate'], 'min', $app['tschema']));
             }
             else
             {
@@ -384,7 +403,7 @@ class users_show
 
             if (isset($user['lastlogin']))
             {
-                $out .= get_dd($app['date_format']->get($user['lastlogin'], 'min', $app['tschema']));
+                $out .= $this->get_dd($app['date_format']->get($user['lastlogin'], 'min', $app['tschema']));
             }
             else
             {
@@ -394,17 +413,17 @@ class users_show
             $out .= '<dt>';
             $out .= 'Rechten / rol';
             $out .= '</dt>';
-            $out .= get_dd(cnst_role::LABEL_ARY[$user['accountrole']]);
+            $out .= $this->get_dd(cnst_role::LABEL_ARY[$user['accountrole']]);
 
             $out .= '<dt>';
             $out .= 'Status';
             $out .= '</dt>';
-            $out .= get_dd(cnst_status::LABEL_ARY[$user['status']]);
+            $out .= $this->get_dd(cnst_status::LABEL_ARY[$user['status']]);
 
             $out .= '<dt>';
             $out .= 'Commentaar van de admin';
             $out .= '</dt>';
-            $out .= get_dd($user['admincomment'] ?? '');
+            $out .= $this->get_dd($user['admincomment'] ?? '');
         }
 
         $out .= '<dt>Saldo</dt>';
@@ -450,10 +469,8 @@ class users_show
 
         $out .= '<div id="contacts" ';
         $out .= 'data-url="';
-        $out .= $app->path('contacts', array_merge(['pp_ary'], [
-            'inline'	=> '1',
-            'uid'		=> $message['id_user'],
-        ]));
+        $out .= $app['link']->context_path('users_contacts_inline',
+            $app['pp_ary'], ['id' => $id]);
         $out .= '"></div>';
 
         // response form
@@ -562,34 +579,48 @@ class users_show
         $out .= '</div>';
         $out .= '</div>';
 
+        $out .= '<div class="row">';
+        $out .= '<div class="col-md-6">';
+
+        $out .= '<div class="panel panel-default">';
+        $out .= '<div class="panel-body">';
+
+        $account_str = $app['account']->str($id, $app['tschema']);
+
         if ($user['status'] == 1 || $user['status'] == 2)
         {
-            $out .= '<div id="messages" ';
-            $out .= 'data-url="';
-            $out .= $app->path('messages', array_merge($app['pp_ary'], [
-                'inline'	=> '1',
-                'f'			=> [
-                    'uid'	=> $id,
-                ],
-            ]));
-            $out .= '" class="print-hide"></div>';
+            // messages
         }
 
-        $out .= '<div id="transactions" ';
-        $out .= 'data-url="';
+        $out .= $app['link']->link_fa($app['r_messages'],
+            $app['pp_ary'],
+            ['f' => ['uid' => $id]],
+            'Vraag en aanbod van ' . $account_str,
+            ['class'	=> 'btn btn-default btn-lg btn-block'],
+            'exchange');
 
-        $out .= $app->path('transactions', array_merge($app['pp_ary'], [
-            'inline'	=> '1',
-            'f'			=> [
-                'uid'	=> $id,
-            ],
-        ]));
+        $out .= '</li><li>';
 
-        $out .= '" class="print-hide"></div>';
+        $out .= $app['link']->link_fa('transactions',
+            $app['pp_ary'],
+            ['f' => ['uid' => $id]],
+            'Transacties van ' . $account_str,
+            ['class'	=> 'btn btn-default btn-lg btn-block'],
+            'exchange');
+
+        $out .= '</div></div></div></div>';
 
         $app['tpl']->add($out);
         $app['tpl']->menu('users');
 
         return $app['tpl']->get($request);
+    }
+
+    private function get_dd(string $str):string
+    {
+        $out =  '<dd>';
+        $out .=  $str ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
+        $out .=  '</dd>';
+        return $out;
     }
 }

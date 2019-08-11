@@ -104,7 +104,7 @@ class categories_add
         $out .= '<label for="id_parent" class="control-label">';
         $out .= 'Hoofdcategorie of deelcategorie van</label>';
         $out .= '<select name="id_parent" id="id_parent" class="form-control">';
-        $out .= $app['select']->get_options($parent_cats, $id_parent ?? 0);
+        $out .= $app['select']->get_options($parent_cats, (string) ($id_parent ?? 0));
         $out .= '</select>';
         $out .= '</div>';
 

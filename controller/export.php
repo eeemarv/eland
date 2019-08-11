@@ -305,6 +305,7 @@ class export
         $out .= '</div></div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('export');
 
         return $app['tpl']->get($request);
     }

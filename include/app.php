@@ -279,6 +279,21 @@ $c_system_guest->get('/messages/extended', 'controller\\messages::extended')
 $c_system_guest->get('/messages', 'controller\\messages::list')
 	->bind('messages_list');
 
+$c_system_guest->get('/users/contacts/{id}', 'controller\\users_contacts_inline::get')
+	->bind('users_contacts_inline');
+
+$c_system_user->match('/users/image/del/{id}', 'controller\\users_image::del_admin')
+	->bind('users_image_del_admin');
+
+$c_system_user->match('/users/image/del', 'controller\\users_image::del')
+	->bind('users_image_del');
+
+$c_system_admin->post('/users/image/{id}', 'controller\\users_image::post_admin')
+	->bind('users_image_post_admin');
+
+$c_system_user->post('/users/image', 'controller\\users_image::post')
+	->bind('users_image_post');
+
 $c_system_admin->match('/users/password/{id}', 'controller\\users_password::form_admin')
 	->bind('users_password_admin');
 

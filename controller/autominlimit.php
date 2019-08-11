@@ -160,6 +160,7 @@ class autominlimit
         $out .= '</div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('autominlimit');
 
         return $app['tpl']->get($request);
     }

@@ -344,6 +344,7 @@ class logs
         $out .= $app['pagination']->get();
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('logs');
 
         return $app['tpl']->get($request);
     }

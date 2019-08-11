@@ -135,15 +135,6 @@ class tpl
 
 	public function get(Request $request):Response
 	{
-		if (isset($this->menu))
-		{
-			$menu_route = $this->menu;
-		}
-		else
-		{
-			$menu_route = $request->attributes->get('_route');
-		}
-
 		if ($css = $this->config->get('css', $this->tschema))
 		{
 			$this->assets->add_external_css([$css]);
@@ -284,7 +275,9 @@ class tpl
 
 				$out .= '>';
 
-				$out .= $this->link->link_no_attr($menu_route, [
+				$route = $this->get_route_from_menu($this->menu);
+
+				$out .= $this->link->link_no_attr($route, [
 					'system' 		=> $this->systems->get_system($login_schema),
 					'role_short'	=> $login_id === 'elas'
 						? 'g'
@@ -316,9 +309,11 @@ class tpl
 
 						$out .= '>';
 
-						$route = isset(cnst_pages::INTERSYSTEM_LANDING[$menu_route])
-							? $menu_route
+						$menu = isset(cnst_pages::INTERSYSTEM_LANDING[$this->menu])
+							? $this->menu
 							: 'messages';
+
+						$route = $this->get_route_from_menu($menu);
 
 						$out .= $this->link->link_no_attr($route, $this->pp_ary,
 							['welcome' => 1],
@@ -414,7 +409,7 @@ class tpl
 
 			if ($this->s_admin)
 			{
-				$menu = [
+				$admin_menu = [
 					'status'			=> ['exclamation-triangle', 'Status'],
 					'categories'	 	=> ['clone', 'Categorieën'],
 					'contact_types'		=> ['circle-o-notch', 'Contact Types'],
@@ -430,7 +425,7 @@ class tpl
 
 				if (!$this->intersystem_en)
 				{
-					unset($menu['intersystem'], $menu['apikeys']);
+					unset($admin_menu['intersystem'], $admin_menu['apikeys']);
 				}
 
 				$out .= '<li class="dropdown">';
@@ -441,9 +436,9 @@ class tpl
 				$out .= '<span class="caret"></span></a>';
 				$out .= '<ul class="dropdown-menu" role="menu">';
 
-				foreach ($menu as $route => $item)
+				foreach ($admin_menu as $route => $item)
 				{
-					$active = $menu_route === $route ? ' class="active"' : '';
+					$active = $this->menu === $route ? ' class="active"' : '';
 
 					$out .= '<li' . $active . '>';
 
@@ -546,7 +541,7 @@ class tpl
 			}
 
 			$out .= '<li';
-			$out .= $menu_route == $route ? ' class="active"' : '';
+			$out .= $this->menu === $route ? ' class="active"' : '';
 			$out .= '>';
 
 			if (isset($item['var_route']))
@@ -629,5 +624,16 @@ class tpl
 		$out .= '</html>';
 
 		return new Response($out);
+	}
+
+	public function get_route_from_menu(string $menu):string
+	{
+		if (isset(cnst_pages::SIDE_MENU[$menu]['var_route']))
+		{
+			$var_route = cnst_pages::SIDE_MENU[$menu]['var_route'];
+			return $this->{$var_route};
+		}
+
+		return $menu;
 	}
 }

@@ -193,6 +193,7 @@ class register
         $out .= $bottom_text ?: '';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('register');
 
         return $app['tpl']->get($request);
     }

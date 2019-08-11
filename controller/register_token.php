@@ -197,6 +197,7 @@ class register_token
         $registration_success_text = $app['config']->get('registration_success_text', $app['tschema']);
 
         $app['tpl']->add($registration_success_text ?: '');
+        $app['tpl']->menu('register');
 
         return $app['tpl']->get($request);
     }

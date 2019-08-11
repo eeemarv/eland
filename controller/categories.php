@@ -150,6 +150,7 @@ class categories
         $out .= '</p>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('categories');
 
         return $app['tpl']->get($request);
     }

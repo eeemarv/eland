@@ -168,6 +168,7 @@ class support
         $out .= '</div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('support');
 
         return $app['tpl']->get($request);
     }

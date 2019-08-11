@@ -92,6 +92,7 @@ class password_reset_token
         $out .= '</div>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('login');
 
         return $app['tpl']->get($request);
     }

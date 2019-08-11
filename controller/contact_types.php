@@ -127,6 +127,7 @@ class contact_types
         $out .= 'bestaan en beschermde contact types (*).</p>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('contact_types');
 
         return $app['tpl']->get($request);
     }

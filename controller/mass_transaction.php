@@ -925,6 +925,7 @@ class mass_transaction
         $out .= '</form>';
 
         $app['tpl']->add($out);
+        $app['tpl']->menu('mass_transaction');
 
         return $app['tpl']->get($request);
     }
