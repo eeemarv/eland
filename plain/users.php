@@ -2740,7 +2740,11 @@ if ($id)
 		['link' => $link], 'Overzicht', 'users');
 
 	$status = $user['status'];
-	$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
+
+	if (isset($user['adate']))
+	{
+		$status = ($app['new_user_treshold'] < strtotime($user['adate']) && $status == 1) ? 3 : $status;
+	}
 
 	$h_status_ary = cnst_status::LABEL_ARY;
 	$h_status_ary[3] = 'Instapper';
@@ -4323,7 +4327,17 @@ if ($v_list)
 
 		$id = $u['id'];
 
-		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
+		if (isset($u['adate'])
+			&& $u['status'] === 1
+			&& $app['new_user_treshold'] < strtotime($u['adate'])
+		)
+		{
+			$row_stat = 3;
+		}
+		else
+		{
+			$row_stat = $u['status'];
+		}
 
 		$first = true;
 
@@ -4750,7 +4764,17 @@ else if ($v_tiles)
 
 	foreach ($users as $u)
 	{
-		$row_stat = ($u['status'] == 1 && $app['new_user_treshold'] < strtotime($u['adate'])) ? 3 : $u['status'];
+		if (isset($u['adate'])
+			&& $u['status'] === 1
+			&& $app['new_user_treshold'] < strtotime($u['adate'])
+		)
+		{
+			$row_stat = 3;
+		}
+		else
+		{
+			$row_stat = $u['status'];
+		}
 
 		$url = $app['link']->context_path('users', $app['pp_ary'],
 			['id' => $u['id'], 'link' => $status]);

@@ -171,7 +171,11 @@ class users_show
             [], 'Overzicht', 'users');
 
         $status_id = $user['status'];
-        $status_id = ($app['new_user_treshold'] < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
+
+        if (isset($user['adate']))
+        {
+            $status_id = ($app['new_user_treshold'] < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
+        }
 
         $h_status_ary = cnst_status::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
