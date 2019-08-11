@@ -514,9 +514,11 @@ class transactions_add
                     $errors[] = 'Het bestemmings Account ("Aan Account Code") in het andere Systeem is niet actief.';
                 }
 
+                $legacy_eland_origin = $app['systems']->get_legacy_eland_origin($app['tschema']);
+
                 $remote_group = $app['db']->fetchAssoc('select *
                     from ' . $remote_schema . '.letsgroups
-                    where url = ?', [$app['base_url']]);
+                    where url = ?', [$legacy_eland_origin]);
 
                 if (!$remote_group && !count($errors))
                 {
@@ -567,7 +569,8 @@ class transactions_add
                 {
                     $errors[] = 'De Currency Ratio van het andere Systeem is niet correct ingesteld. ' . $contact_admin;
                 }
-                $remote_amount = round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
+
+                $remote_amount = (int) round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
 
                 if (($remote_amount < 1) && !count($errors))
                 {
@@ -807,7 +810,8 @@ class transactions_add
                             $transaction['description'] =  substr($row['content'], 0, 60);
                             $amount = $row['amount'];
                             $amount = ($app['config']->get('currencyratio', $app['tschema']) * $amount) / $app['config']->get('currencyratio', $tus);
-                            $transaction['amount'] = round($amount);
+                            $amount = (int) round($amount);
+                            $transaction['amount'] = $amount;
                         }
                     }
                     else if ($tuid)
@@ -897,7 +901,7 @@ class transactions_add
 
             foreach ($app['intersystems']->get_eland($app['tschema']) as $remote_eland_schema => $host)
             {
-                $eland_url = $app['protocol'] . $host;
+                $eland_url = $app['systems']->get_legacy_eland_origin($remote_eland_schema);
                 $eland_urls[] = $eland_url;
                 $map_eland_schema_url[$eland_url] = $remote_eland_schema;
             }
