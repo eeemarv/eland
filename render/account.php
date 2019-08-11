@@ -93,7 +93,7 @@ class account
 			'system'		=> $this->systems->get_system($schema),
 		];
 
-		return $this->link->link_no_attr($this->r_users_show, $pp_ary,
+		return $this->link->link_no_attr('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
 	}
 }
