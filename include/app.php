@@ -282,17 +282,17 @@ $c_system_guest->get('/messages', 'controller\\messages::list')
 $c_system_guest->get('/users/contacts/{id}', 'controller\\users_contacts_inline::get')
 	->bind('users_contacts_inline');
 
-$c_system_user->match('/users/image/del/{id}', 'controller\\users_image::del_admin')
+$c_system_user->match('/users/image/del/{id}', 'controller\\users_image_del::form_admin')
 	->bind('users_image_del_admin');
 
-$c_system_user->match('/users/image/del', 'controller\\users_image::del')
+$c_system_user->match('/users/image/del', 'controller\\users_image_del::form_self')
 	->bind('users_image_del');
 
-$c_system_admin->post('/users/image/{id}', 'controller\\users_image::post_admin')
-	->bind('users_image_post_admin');
+$c_system_admin->post('/users/image/{id}', 'controller\\users_image_upload::upload_admin')
+	->bind('users_image_upload_admin');
 
-$c_system_user->post('/users/image', 'controller\\users_image::post')
-	->bind('users_image_post');
+$c_system_user->post('/users/image', 'controller\\users_image_upload::upload_self')
+	->bind('users_image_upload');
 
 $c_system_admin->match('/users/password/{id}', 'controller\\users_password::form_admin')
 	->bind('users_password_admin');

@@ -269,12 +269,12 @@ class users_show
 
             if ($app['s_admin'])
             {
-                $out .= $app['link']->context_path('users_image_post_admin', $app['pp_ary'],
+                $out .= $app['link']->context_path('users_image_upload_admin', $app['pp_ary'],
                     ['id' => $id]);
             }
             else
             {
-                $out .= $app['link']->context_path('users_image_post', $app['pp_ary'], []);
+                $out .= $app['link']->context_path('users_image_upload', $app['pp_ary'], []);
             }
 
             $out .= '" ';
