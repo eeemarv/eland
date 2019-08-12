@@ -434,7 +434,7 @@ class users_show
         $out .= '<dd>';
         $out .= '<span class="label label-info">';
         $out .= $user['saldo'];
-        echo'</span>&nbsp;';
+        $out .= '</span>&nbsp;';
         $out .= $app['config']->get('currency', $app['tschema']);
         $out .= '</dd>';
 
@@ -566,16 +566,18 @@ class users_show
 
         $out .= 'data-transactions-show="';
         $out .= htmlspecialchars($app['link']->context_path('transactions_show',
-            $app['pp_ary'], ['id' => 1]));
+            $app['pp_ary'], ['id' => $id]));
         $out .= '" ';
 
         $out .= 'data-users-show="';
         $out .= htmlspecialchars($app['link']->context_path($app['r_users_show'],
-            $app['pp_ary'], ['id' => 1]));
+            $app['pp_ary'], ['id' => $id]));
         $out .= '" ';
 
-        $out .= '"></div>';
+        $out .= '">';
         $out .= '</div>';
+        $out .= '</div>';
+
         $out .= '<div class="col-md-6">';
         $out .= '<div id="donutdiv" data-height="480px" ';
         $out .= 'data-width="960px"></div>';
@@ -603,7 +605,6 @@ class users_show
             ['class'	=> 'btn btn-default btn-lg btn-block'],
             'exchange');
 
-        $out .= '</li><li>';
 
         $out .= $app['link']->link_fa('transactions',
             $app['pp_ary'],
@@ -612,7 +613,9 @@ class users_show
             ['class'	=> 'btn btn-default btn-lg btn-block'],
             'exchange');
 
-        $out .= '</div></div></div></div>';
+        $out .= '</div>';
+        $out .= '</div>';
+        $out .= '</div>';
 
         $app['tpl']->add($out);
         $app['tpl']->menu('users');
