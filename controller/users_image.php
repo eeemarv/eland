@@ -11,42 +11,48 @@ use Imagine\Image\ImageInterface;
 
 class users_image
 {
-    public function post(Request $request, app $app, string $status):Response
+    public function post(Request $request, app $app):Response
     {
         if ($app['s_id'] < 1)
         {
             return $app->json(['error' => 'Je hebt onvoldoende rechten voor deze actie.']);
         }
 
-        return $this->post_admin($request, $app, $status, $app['s_id']);
+        return $this->post_admin($request, $app, $app['s_id']);
     }
 
-    public function post_admin(Request $request, app $app, string $status, int $id):Response
+    public function post_admin(Request $request, app $app, int $id):Response
     {
-        $image = $_FILES['image'] ?: null;
+        $uploaded_file = $request->files->get('image');
 
-        if (!$image)
+        if (!$uploaded_file)
         {
             return $app->json(['error' => 'Afbeeldingsbestand ontbreekt.']);
         }
 
-        $size = $image['size'];
-        $tmp_name = $image['tmp_name'];
-        $type = $image['type'];
+        if (!$uploaded_file->isValid())
+        {
+            return $app->json(['error' => 'Fout bij het opladen.']);
+        }
 
-        if ($size > 400 * 1024)
+        $size = $uploaded_file->getSize();
+
+        if ($size > 400 * 1024
+            || $size > $uploaded_file->getMaxFilesize())
         {
             return $app->json(['error' => 'Het bestand is te groot.']);
         }
 
-        if ($type != 'image/jpeg')
+        if ($uploaded_file->getMimeType() !== 'image/jpeg')
         {
             return $app->json(['error' => 'Ongeldig bestandstype.']);
         }
 
         //
 
-        $exif = exif_read_data($tmp_name);
+        $image_tmp_path = $uploaded_file->getRealPath();
+
+        $exif = exif_read_data($image_tmp_path);
 
         $orientation = $exif['COMPUTED']['Orientation'] ?? false;
 
@@ -54,7 +60,7 @@ class users_image
 
         $imagine = new Imagine();
 
-        $image = $imagine->open($tmp_name);
+        $image = $imagine->open($image_tmp_path);
 
         switch ($orientation)
         {
@@ -106,7 +112,8 @@ class users_image
             $response = ['success' => 1, 'filename' => $filename];
         }
 
-        unlink($tmp_name);
+//        unlink($tmp_name);
+        unlink($image_tmp_path);
 
         return $app->json($response);
     }
