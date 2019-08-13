@@ -171,10 +171,10 @@ $c_system_guest->get('/logout', 'controller\\logout::get')
 $c_system_admin->get('/status', 'controller\\status::get')
 	->bind('status');
 
-$c_system_admin->match('/categories/del/{id}', 'controller\\categories_del::match')
+$c_system_admin->match('/categories/{id}/del', 'controller\\categories_del::match')
 	->bind('categories_del');
 
-$c_system_admin->match('/categories/edit/{id}', 'controller\\categories_edit::match')
+$c_system_admin->match('/categories/{id}/edit', 'controller\\categories_edit::match')
 	->bind('categories_edit');
 
 $c_system_admin->match('/categories/add', 'controller\\categories_add::match')
@@ -183,10 +183,10 @@ $c_system_admin->match('/categories/add', 'controller\\categories_add::match')
 $c_system_admin->get('/categories', 'controller\\categories::get')
 	->bind('categories');
 
-$c_system_admin->match('/contact-types/edit/{id}', 'controller\\contact_types_edit::match')
+$c_system_admin->match('/contact-types/{id}/edit', 'controller\\contact_types_edit::match')
 	->bind('contact_types_edit');
 
-$c_system_admin->match('/contact-types/del/{id}', 'controller\\contact_types_del::match')
+$c_system_admin->match('/contact-types/{id}/del', 'controller\\contact_types_del::match')
 	->bind('contact_types_del');
 
 $c_system_admin->match('/contact-types/add', 'controller\\contact_types_add::match')
@@ -213,12 +213,12 @@ $c_system_admin->match('/contacts/add', 'controller\\contacts_add::match')
 $c_system_admin->get('/contacts', 'controller\\contacts::get')
 	->bind('contacts');
 
-$c_system_user->match('/users/{user_id}/contacts/edit/{contact_id}', 'controller\\contacts_edit::users')
+$c_system_user->match('/users/{user_id}/contacts/{contact_id}/edit', 'controller\\contacts_edit::users')
 	->assert('user_id', cnst_assert::NUMBER)
 	->assert('contact_id', cnst_assert::NUMBER)
 	->bind('users_contacts_edit');
 
-$c_system_user->match('/users/{user_id}/contacts/del/{contact_id}', 'controller\\contacts_del::users')
+$c_system_user->match('/users/{user_id}/contacts/{contact_id}/del', 'controller\\contacts_del::users')
 	->assert('user_id', cnst_assert::NUMBER)
 	->assert('contact_id', cnst_assert::NUMBER)
 	->bind('users_contacts_del');
@@ -232,10 +232,10 @@ $c_system_admin->match('/config/{tab}', 'controller\\config::match')
 	->value('tab', 'system-name')
 	->bind('config');
 
-$c_system_admin->match('/intersystems/edit/{id}', 'controller\\intersystems_edit::edit')
+$c_system_admin->match('/intersystems/{id}/edit', 'controller\\intersystems_edit::edit')
 	->bind('intersystems_edit');
 
-$c_system_admin->match('/intersystems/del/{id}', 'controller\\intersystems_del::match')
+$c_system_admin->match('/intersystems/{id}/del', 'controller\\intersystems_del::match')
 	->bind('intersystems_del');
 
 $c_system_admin->match('/intersystems/add', 'controller\\intersystems_edit::add')
@@ -247,7 +247,7 @@ $c_system_admin->get('/intersystems/{id}', 'controller\\intersystems_show::get')
 $c_system_admin->get('/intersystems', 'controller\\intersystems::get')
 	->bind('intersystems');
 
-$c_system_admin->match('/apikeys/del/{id}', 'controller\\apikeys::del')
+$c_system_admin->match('/apikeys/{id}/del', 'controller\\apikeys::del')
 	->bind('apikeys_del');
 
 $c_system_admin->match('/apikeys/add', 'controller\\apikeys::add')
@@ -274,13 +274,16 @@ $c_system_user->match('/support', 'controller\\support::form')
 $c_system_anon->get('/', 'controller\\home_system::get')
 	->bind('home_system');
 
-$c_system_user->get('/messages/extend/{id}/{days}',
+$c_system_user->get('/messages/{id}/extend/{days}',
 		'controller\\messages_extend::get')
 	->assert('id', cnst_assert::NUMBER)
 	->assert('days', cnst_assert::NUMBER)
 	->bind('messages_extend');
 
-$c_system_user->match('/messages/edit/{id}', 'controller\\messages_edit::match')
+$c_system_user->match('/messages/{id}/del', 'controller\\messages_del::match')
+	->bind('messages_del');
+
+$c_system_user->match('/messages/{id}/edit', 'controller\\messages_edit::match')
 	->bind('messages_edit');
 
 $c_system_user->match('/messages/add', 'controller\\messages_add::match')
@@ -289,29 +292,25 @@ $c_system_user->match('/messages/add', 'controller\\messages_add::match')
 $c_system_guest->get('/messages/{id}', 'controller\\messages_show::get')
 	->bind('messages_show');
 
-$c_system_guest->match('/messages/user-inline/{user_id}', 'controller\\messages::user_inline')
-	->assert('user_id', cnst_assert::NUMBER)
-	->bind('messages_user_inline');
-
 $c_system_guest->get('/messages/extended', 'controller\\messages::extended')
 	->bind('messages_extended');
 
 $c_system_guest->get('/messages', 'controller\\messages::list')
 	->bind('messages_list');
 
-$c_system_user->match('/users/image/del/{id}', 'controller\\users_image_del::form_admin')
+$c_system_user->match('/users/{id}/image/del', 'controller\\users_image_del::form_admin')
 	->bind('users_image_del_admin');
 
 $c_system_user->match('/users/image/del', 'controller\\users_image_del::form_self')
 	->bind('users_image_del');
 
-$c_system_admin->post('/users/image/{id}', 'controller\\users_image_upload::upload_admin')
+$c_system_admin->post('/users/{id}/image/upload', 'controller\\users_image_upload::upload_admin')
 	->bind('users_image_upload_admin');
 
-$c_system_user->post('/users/image', 'controller\\users_image_upload::upload_self')
+$c_system_user->post('/users/image/upload', 'controller\\users_image_upload::upload_self')
 	->bind('users_image_upload');
 
-$c_system_admin->match('/users/password/{id}', 'controller\\users_password::form_admin')
+$c_system_admin->match('/users/{id}/password', 'controller\\users_password::form_admin')
 	->bind('users_password_admin');
 
 $c_system_user->match('/users/password', 'controller\\users_password::form_self')
@@ -330,10 +329,10 @@ $c_system_guest->match('/users/{id}/{status}', 'controller\\users_show::active_s
 $c_system_guest->get('/users/map', 'controller\\users_map::get')
 	->bind('users_map');
 
-$c_system_admin->match('/users/edit/{id}', 'controller\\users_edit_admin::match_admin')
+$c_system_admin->match('/users/{id}/edit', 'controller\\users_edit_admin::match_admin')
 	->bind('users_edit_admin');
 
-$c_system_user->match('/users/edit/{id}', 'controller\\users_edit::match')
+$c_system_user->match('/users/edit', 'controller\\users_edit::match')
 	->bind('users_edit');
 
 $c_system_admin->match('/users/add', 'controller\\users_add::match')
@@ -359,26 +358,22 @@ $c_system_guest->get('/users/{status}', 'controller\\users_list::get')
 	->value('status', 'active')
 	->bind('users_list');
 
-$c_system_admin->match('/transactions/edit/{id}', 'controller\\transactions_edit::match')
+$c_system_admin->match('/transactions/{id}/edit', 'controller\\transactions_edit::match')
 	->bind('transactions_edit');
 
-$c_system_user->match('/transactions/add', 'controller\\transactions_add::match')
+$c_system_user->match('/transactions/{id}/add', 'controller\\transactions_add::match')
 	->bind('transactions_add');
 
 $c_system_guest->get('/transactions/{id}', 'controller\\transactions_show::get')
 	->bind('transactions_show');
 
-$c_system_guest->get('/transactions/user-inline/{user_id}', 'controller\\transactions::user_inline')
-	->assert('user_id', cnst_assert::NUMBER)
-	->bind('transactions_user_inline');
-
 $c_system_guest->get('/transactions', 'controller\\transactions::get')
 	->bind('transactions');
 
-$c_system_admin->match('/news/del/{id}', 'controller\\news_del::match')
+$c_system_admin->match('/news/{id}/del', 'controller\\news_del::match')
 	->bind('news_del');
 
-$c_system_admin->match('/news/edit/{id}', 'controller\\news_edit::match')
+$c_system_admin->match('/news/{id}/edit', 'controller\\news_edit::match')
 	->bind('news_edit');
 
 $c_system_guest->match('/news/{id}', 'controller\\news_show::get')
@@ -387,7 +382,7 @@ $c_system_guest->match('/news/{id}', 'controller\\news_show::get')
 $c_system_user->match('/news/add', 'controller\\news_add::match')
 	->bind('news_add');
 
-$c_system_admin->get('/news/approve/{id}', 'controller\\news_approve::get')
+$c_system_admin->get('/news/{id}/approve', 'controller\\news_approve::get')
 	->bind('news_approve');
 
 $c_system_guest->get('/news/extended', 'controller\\news::extended')
@@ -396,11 +391,11 @@ $c_system_guest->get('/news/extended', 'controller\\news::extended')
 $c_system_guest->get('/news', 'controller\\news::list')
 	->bind('news_list');
 
-$c_system_admin->match('/docs/edit/{doc_id}', 'controller\\docs_edit::match')
+$c_system_admin->match('/docs/{doc_id}/edit', 'controller\\docs_edit::match')
 	->assert('doc_id', cnst_assert::DOC_ID)
 	->bind('docs_edit');
 
-$c_system_admin->match('/docs/del/{doc_id}', 'controller\\docs_del::match')
+$c_system_admin->match('/docs/{doc_id}/del', 'controller\\docs_del::match')
 	->assert('doc_id', cnst_assert::DOC_ID)
 	->bind('docs_del');
 
@@ -409,7 +404,7 @@ $c_system_admin->match('/docs/add/{map_id}', 'controller\\docs_add::match')
 	->value('map_id', '')
 	->bind('docs_add');
 
-$c_system_admin->match('/docs/map-edit/{map_id}', 'controller\\docs_map_edit::match')
+$c_system_admin->match('/docs/map/{map_id}/edit', 'controller\\docs_map_edit::match')
 	->assert('map_id', cnst_assert::DOC_MAP_ID)
 	->bind('docs_map_edit');
 
@@ -420,11 +415,11 @@ $c_system_guest->get('/docs/map/{map_id}', 'controller\\docs_map::get')
 $c_system_guest->get('/docs', 'controller\\docs::get')
 	->bind('docs');
 
-$c_system_user->match('/forum/edit/{forum_id}', 'controller\\forum_edit::match')
+$c_system_user->match('/forum/{forum_id}/edit', 'controller\\forum_edit::match')
 	->assert('forum_id', cnst_assert::FORUM_ID)
 	->bind('forum_edit');
 
-$c_system_user->match('/forum/del/{forum_id}', 'controller\\forum_del::match')
+$c_system_user->match('/forum/{forum_id}/del', 'controller\\forum_del::match')
 	->assert('forum_id', cnst_assert::FORUM_ID)
 	->bind('forum_del');
 
