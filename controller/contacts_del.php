@@ -8,7 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class contacts_del
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function users(Request $request, app $app, int $user_id, int $contact_id):Response
+    {
+        return $this->admin($request, $app, $contact_id);
+    }
+
+    public function admin(Request $request, app $app, int $id):Response
     {
         if (!($user_id = $app['db']->fetchColumn('select c.id_user
             from ' . $app['tschema'] . '.contact c

@@ -10,7 +10,12 @@ use cnst\access as cnst_access;
 
 class contacts_add
 {
-    public function match(Request $request, app $app):Response
+    public function users(Request $request, app $app, int $user_id):Response
+    {
+        return $this->match_admin($request, $app, 'users');
+    }
+
+    public function admin(Request $request, app $app):Response
     {
         if($request->isMethod('POST'))
         {
@@ -84,7 +89,7 @@ class contacts_add
 
             if(!$abbrev_type)
             {
-                $errors[] = 'Contacttype bestaat niet!';
+                $errors[] = 'Ongeldig contact type!';
             }
 
             $mail_type_id = $app['db']->fetchColumn('select id
@@ -291,6 +296,7 @@ class contacts_add
         $out .= $app['item_access']->get_radio_buttons('access', $access, 'contacts_add');
 
         $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+
         $out .= '&nbsp;';
 
         $out .= '<input type="submit" value="Opslaan" ';

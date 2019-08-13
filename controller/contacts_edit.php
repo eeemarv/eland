@@ -35,7 +35,31 @@ class contacts_edit
         ],
     ];
 
-    public function match(Request $request, app $app, int $id):Response
+    public function users(Request $request, app $app, int $user_id, int $contact_id):Response
+    {
+        $contact = $app['db']->fetchAssoc('select *
+            from ' . $app['tschema'] . '.contact
+            where id = ?', [$contact_id]);
+
+        if (!$contact)
+        {
+            // throw 404
+        }
+
+        if (!$app['s_admin'] && $user_id !== $app['s_id'])
+        {
+            // throw no access; 403?
+        }
+
+        if ($user_id !== $contact['id_user'])
+        {
+            // Bad request 400
+        }
+
+        return $this->admin($request, $app, $contact_id);
+    }
+
+    public function admin(Request $request, app $app, int $id):Response
     {
         if (!($user_id = $app['db']->fetchColumn('select id_user
             from ' . $app['tschema'] . '.contact

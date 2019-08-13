@@ -6,6 +6,7 @@ class assert
 {
     const ADMIN = 'a';
     const CONFIG_TAB = 'system-name|currency|mail-addr|balance|periodic-mail|contact|register|messages|users|news|forum|system';
+    const CONTACTS_CONTEXT = 'contacts|users';
     const ELAS_TOKEN = 'elasv2[0-9a-f]+';
     const FORUM_ID = '[0-9a-f]{24}';
     const GUEST = '[gua]';

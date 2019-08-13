@@ -187,8 +187,20 @@ if ($app['debug'])
 
 $app->register(new Provider\HttpFragmentServiceProvider());
 $app->register(new Provider\ServiceControllerServiceProvider());
-
 $app->register(new ConsoleServiceProvider());
+
+$app->error(function (\Exception $e, Request $request, $code) use ($app) {
+	if ($app['debug'])
+	{
+        return;
+	}
+
+	// to do
+	$app['heading']->add((string) $code);
+	$app['tpl']->add($e->getMessage());
+	$app['tpl']->menu('error');
+	$app['tpl']->get();
+});
 
 /**
  *

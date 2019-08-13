@@ -54,10 +54,9 @@ class users_show
 
         if ($app['s_admin'] || $s_owner)
         {
-            $app['btn_top']->add('contacts', $app['pp_ary'],
-                ['add' => 1, 'uid' => $id], 'Contact toevoegen');
+            $app['btn_top']->add('users_contacts_add', $app['pp_ary'],
+                ['user_id'  => $id], 'Contact toevoegen');
         }
-
 
 // end contacts
 
@@ -607,8 +606,8 @@ class users_show
                 }
                 else if ($s_owner || $app['s_admin'])
                 {
-                    $tr_c = $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
-                        ['id' => $c['id'], 'uid' => $id], $c['value']);
+                    $tr_c = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
+                        ['contact_id' => $c['id'], 'user_id' => $id], $c['value']);
 
                     if ($c['abbrev'] == 'adr')
                     {
@@ -626,8 +625,8 @@ class users_show
 
                     if (isset($c['comments']))
                     {
-                        $tr[] = $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
-                            ['id' => $c['id'], 'uid' => $id], $c['comments']);
+                        $tr[] = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
+                            ['contact_id' => $c['id'], 'user_id' => $id], $c['comments']);
                     }
                     else
                     {
@@ -673,8 +672,8 @@ class users_show
                 {
                     $tr[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
-                    $tr[] = $app['link']->link_fa('contacts_del', $app['pp_ary'],
-                        ['id' => $c['id'], 'uid' => $id], 'Verwijderen',
+                    $tr[] = $app['link']->link_fa('users_contacts_del', $app['pp_ary'],
+                        ['contact_id' => $c['id'], 'user_id' => $id], 'Verwijderen',
                         ['class' => 'btn btn-danger'], 'times');
                 }
 

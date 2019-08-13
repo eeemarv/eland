@@ -196,16 +196,36 @@ $c_system_admin->get('/contact-types', 'controller\\contact_types::get')
 	->bind('contact_types');
 
 $c_system_admin->match('/contacts/edit/{id}', 'controller\\contacts_edit::match')
-	->bind('contacts_edit');
+	->value('context', 'contacts')
+	->assert('context', cnst_assert::CONTACTS_CONTEXT)
+	->bind('contacts_edit_admin');
 
 $c_system_admin->match('/contacts/del/{id}', 'controller\\contacts_del::match')
-	->bind('contacts_del');
+	->value('context', 'contacts')
+	->assert('context', cnst_assert::CONTACTS_CONTEXT)
+	->bind('contacts_del_admin');
 
 $c_system_admin->match('/contacts/add', 'controller\\contacts_add::match')
-	->bind('contacts_add');
+	->value('context', 'contacts')
+	->assert('context', cnst_assert::CONTACTS_CONTEXT)
+	->bind('contacts_add_admin');
 
 $c_system_admin->get('/contacts', 'controller\\contacts::get')
 	->bind('contacts');
+
+$c_system_user->match('/users/{user_id}/contacts/edit/{contact_id}', 'controller\\contacts_edit::users')
+	->assert('user_id', cnst_assert::NUMBER)
+	->assert('contact_id', cnst_assert::NUMBER)
+	->bind('users_contacts_edit');
+
+$c_system_user->match('/users/{user_id}/contacts/del/{contact_id}', 'controller\\contacts_del::users')
+	->assert('user_id', cnst_assert::NUMBER)
+	->assert('contact_id', cnst_assert::NUMBER)
+	->bind('users_contacts_del');
+
+$c_system_user->match('/users/{user_id}/contacts/add', 'controller\\contacts_add::users')
+	->assert('user_id', cnst_assert::NUMBER)
+	->bind('users_contacts_add');
 
 $c_system_admin->match('/config/{tab}', 'controller\\config::match')
 	->assert('tab', cnst_assert::CONFIG_TAB)
@@ -278,9 +298,6 @@ $c_system_guest->get('/messages/extended', 'controller\\messages::extended')
 
 $c_system_guest->get('/messages', 'controller\\messages::list')
 	->bind('messages_list');
-
-$c_system_guest->get('/users/contacts/{id}', 'controller\\users_contacts_inline::get')
-	->bind('users_contacts_inline');
 
 $c_system_user->match('/users/image/del/{id}', 'controller\\users_image_del::form_admin')
 	->bind('users_image_del_admin');
