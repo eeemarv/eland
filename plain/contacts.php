@@ -739,7 +739,7 @@ if ($uid)
 
 				if (!$app['s_elas_guest'] && !$app['s_master'])
 				{
-					$out_c .= $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+					$out_c .= $app['distance']->set_from_geo($app['s_id'], $app['s_schema'])
 						->calc()
 						->format_parenthesis();
 				}
@@ -781,7 +781,7 @@ if ($uid)
 
 				if (!$app['s_elas_guest'] && !$app['s_master'])
 				{
-					$out_c .= $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+					$out_c .= $app['distance']->set_from_geo($app['s_id'], $app['s_schema'])
 						->calc()
 						->format_parenthesis();
 				}

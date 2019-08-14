@@ -615,7 +615,7 @@ class users_contacts
 
                         if (!$app['s_elas_guest'] && !$app['s_master'])
                         {
-                            $tr_c .= $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+                            $tr_c .= $app['distance']->set_from_geo($app['s_id'], $app['s_schema'])
                                 ->calc()
                                 ->format_parenthesis();
                         }
@@ -657,7 +657,7 @@ class users_contacts
 
                         if (!$app['s_elas_guest'] && !$app['s_master'])
                         {
-                            $tr_c .= $app['distance']->set_from_geo('', $app['s_id'], $app['s_schema'])
+                            $tr_c .= $app['distance']->set_from_geo($app['s_id'], $app['s_schema'])
                                 ->calc()
                                 ->format_parenthesis();
                         }

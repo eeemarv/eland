@@ -26,7 +26,6 @@ class distance
 	}
 
 	public function set_from_geo(
-		string $adr,
 		int $s_id,
 		string $s_schema):self
 	{
@@ -38,10 +37,10 @@ class distance
 		if ($s_id && $s_schema)
 		{
 			$adr = $this->db->fetchColumn('select c.value
-					from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
-					where c.id_user = ?
-						and c.id_type_contact = tc.id
-						and tc.abbrev = \'adr\'', [$s_id]);
+				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
+				where c.id_user = ?
+					and c.id_type_contact = tc.id
+					and tc.abbrev = \'adr\'', [$s_id]);
 		}
 
 		if (!$adr)
@@ -67,7 +66,7 @@ class distance
 		return $this;
 	}
 
-	public function set_to_geo(string $adr = ''):self
+	public function set_to_geo(string $adr):self
 	{
 		$adr = trim($adr);
 
