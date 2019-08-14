@@ -217,7 +217,7 @@ class contacts
 
         $app['btn_nav']->csv();
 
-        $app['btn_top']->add('contacts_add', $app['pp_ary'],
+        $app['btn_top']->add('contacts_add_admin', $app['pp_ary'],
             [], 'Contact toevoegen');
 
         $filtered = !isset($filter['uid']) && (
@@ -455,7 +455,7 @@ class contacts
 
             if (isset($c['value']))
             {
-                $td[] = $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
+                $td[] = $app['link']->link_no_attr('contacts_edit_admin', $app['pp_ary'],
                     ['id' => $c['id']], $c['value']);
             }
             else
@@ -467,7 +467,7 @@ class contacts
 
             if (isset($c['comments']))
             {
-                $td[] = $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
+                $td[] = $app['link']->link_no_attr('contacts_edit_admin', $app['pp_ary'],
                     ['id' => $c['id']], $c['comments']);
             }
             else
@@ -477,7 +477,7 @@ class contacts
 
             $td[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
-            $td[] = $app['link']->link_fa('contacts_del', $app['pp_ary'],
+            $td[] = $app['link']->link_fa('contacts_del_admin', $app['pp_ary'],
                 ['id' => $c['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'],
                 'times');

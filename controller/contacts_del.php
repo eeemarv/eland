@@ -3,71 +3,83 @@
 namespace controller;
 
 use util\app;
+use controller\contacts_edit;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class contacts_del
 {
-    public function users(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function contacts_del_users(Request $request, app $app, int $user_id, int $contact_id):Response
     {
+        $contact = contacts_edit::get_contact_for_users_route(
+            $contact_id, $user_id, $app['s_id'],
+            $app['s_admin'], $app['db'], $app['tschema']);
+
         return $this->admin($request, $app, $contact_id);
     }
 
-    public function admin(Request $request, app $app, int $id):Response
+    public function contacts_del_admin(Request $request, app $app, int $id):Response
     {
-        if (!($user_id = $app['db']->fetchColumn('select c.id_user
-            from ' . $app['tschema'] . '.contact c
-            where c.id = ?', [$id])))
+        $contact = contacts_edit::get_contact_for_admin_route(
+            $id, $app['db'], $app['tschema']);
+
+        $abbrev = $app['db']->fetchColumn('select tc.abbrev
+            from ' . $app['tschema'] . '.type_contact tc
+            where tc.id = ?', [$contact['id_type_contact']]);
+
+        $user_id = $contact['id_user'];
+
+        $user = $app['user_cache']->get($user_id, $app['tschema']);
+
+        if ($request->isMethod('GET'))
         {
-            $app['alert']->error('Het contact bestaat niet.');
-            $app['link']->redirect('contacts', $app['pp_ary'], []);
-        }
-
-        $contact = $app['db']->fetchAssoc('select c.*, tc.abbrev
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc
-            where c.id = ?
-                and tc.id = c.id_type_contact', [$id]);
-
-        $owner_id = $contact['id_user'];
-
-        $owner = $app['user_cache']->get($owner_id, $app['tschema']);
-
-        if ($contact['abbrev'] == 'mail'
-            && ($owner['status'] == 1 || $owner['status'] == 2))
-        {
-            if ($app['db']->fetchColumn('select count(c.*)
-                from ' . $app['tschema'] . '.contact c, ' .
-                    $app['tschema'] . '.type_contact tc
-                where c.id_type_contact = tc.id
-                    and c.id_user = ?
-                    and tc.abbrev = \'mail\'', [$user_id]) == 1)
+            if ($abbrev === 'mail'
+                && ($user['status'] === 1 || $user['status'] === 2))
             {
-                $app['alert']->warning(
-                    'Waarschuwing: dit is het enige E-mail adres
-                    van een actieve gebruiker');
+                $count_mail = $app['db']->fetchColumn('select count(c.*)
+                    from ' . $app['tschema'] . '.contact c
+                    where c.id_type_contact = ?
+                        and c.id_user = ?', [
+                            $contact['id_type_contact'],
+                            $user_id]);
+
+                if ($count_mail === 1)
+                {
+                    if ($app['s_admin'])
+                    {
+                        $app['alert']->warning(
+                            'Waarschuwing: dit is het enige E-mail adres
+                            van een actieve gebruiker');
+                    }
+                    else
+                    {
+                        $app['alert']->warning(
+                            'Waarschuwing: dit is je enige E-mail adres.');
+                    }
+                }
             }
         }
+
 
         if ($request->isMethod('POST'))
         {
             if ($error_token = $app['form_token']->get_error())
             {
                 $app['alert']->error($error_token);
-                $app['link']->redirect('contacts_del', $app['pp_ary'],
-                    ['id' => $id]);
-            }
-
-            if ($app['db']->delete($app['tschema'] . '.contact', ['id' => $id]))
-            {
-                $app['alert']->success('Contact verwijderd.');
             }
             else
             {
-                $app['alert']->error('Fout bij verwijderen van het contact.');
-            }
+                if ($app['db']->delete($app['tschema'] . '.contact', ['id' => $id]))
+                {
+                    $app['alert']->success('Contact verwijderd.');
+                }
+                else
+                {
+                    $app['alert']->error('Fout bij verwijderen van het contact.');
+                }
 
-            $app['link']->redirect('contacts', $app['pp_ary'], []);
+                $app['link']->redirect('contacts', $app['pp_ary'], []);
+            }
         }
 
         $contact = $app['db']->fetchAssoc('select tc.abbrev,
@@ -93,7 +105,7 @@ class contacts_del
 
         $out .= '<dt>Type</dt>';
         $out .= '<dd>';
-        $out .= $contact['abbrev'];
+        $out .= $abbrev;
         $out .= '</dd>';
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';

@@ -5,6 +5,10 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Doctrine\DBAL\Connection as db;
 use cnst\access as cnst_access;
 
 class contacts_edit
@@ -35,40 +39,21 @@ class contacts_edit
         ],
     ];
 
-    public function users(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function contacts_edit_users(Request $request, app $app, int $user_id, int $contact_id):Response
     {
-        $contact = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.contact
-            where id = ?', [$contact_id]);
+        $contact = self::get_contact_for_users_route(
+            $contact_id, $user_id, $app['s_id'],
+            $app['s_admin'], $app['db'], $app['tschema']);
 
-        if (!$contact)
-        {
-            // throw 404
-        }
-
-        if (!$app['s_admin'] && $user_id !== $app['s_id'])
-        {
-            // throw no access; 403?
-        }
-
-        if ($user_id !== $contact['id_user'])
-        {
-            // Bad request 400
-        }
-
-        return $this->admin($request, $app, $contact_id);
+        return $this->contacts_edit_admin($request, $app, $contact_id);
     }
 
-    public function admin(Request $request, app $app, int $id):Response
+    public function contacts_edit_admin(Request $request, app $app, int $id):Response
     {
-        if (!($user_id = $app['db']->fetchColumn('select id_user
-            from ' . $app['tschema'] . '.contact
-            where id = ?', [$id])))
-        {
-            $app['alert']->error('Dit contact heeft geen eigenaar
-                of bestaat niet.');
-            $app['link']->redirect('contacts', $app['pp_ary'], []);
-        }
+        $contact = self::get_contact_for_admin_route(
+            $id, $app['db'], $app['tschema']);
+
+        $user_id = $contact['id_user'];
 
         if($request->isMethod('POST'))
         {
@@ -91,34 +76,31 @@ class contacts_edit
                 $flag_public = 2;
             }
 
-            $contact = [
-                'id_type_contact'		=> $request->request->get('id_type_contact'),
-                'value'					=> $request->request->get('value'),
-                'comments' 				=> $request->request->get('comments'),
-                'flag_public'			=> $flag_public,
-            ];
+            $id_type_contact = (int) $request->request->get('id_type_contact', '');
+            $value = $request->request->get('value', '');
+            $comments = $request->request->get('comments', '');
 
             $abbrev_type = $app['db']->fetchColumn('select abbrev
                 from ' . $app['tschema'] . '.type_contact
-                where id = ?', [$contact['id_type_contact']]);
+                where id = ?', [$id_type_contact]);
 
             if ($abbrev_type === 'mail'
-                && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
+                && !filter_var($value, FILTER_VALIDATE_EMAIL))
             {
                 $errors[] = 'Geen geldig E-mail adres';
             }
 
-            if (!$contact['value'])
+            if (!$value)
             {
                 $errors[] = 'Vul waarde in!';
             }
 
-            if (strlen($contact['value']) > 130)
+            if (strlen($value) > 130)
             {
                 $errors[] = 'De waarde mag maximaal 130 tekens lang zijn.';
             }
 
-            if (strlen($contact['comments']) > 50)
+            if (strlen($comments) > 50)
             {
                 $errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
             }
@@ -144,15 +126,17 @@ class contacts_edit
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
 
-            if ($id == $mail_id && $count_mail == 1 && $contact['id_type_contact'] != $mail_type_id)
+            if ($id === $mail_id
+                && $count_mail === 1
+                && $id_type_contact !== $mail_type_id)
             {
                 $app['alert']->warning('Waarschuwing: de gebruiker heeft
                     geen E-mail adres.');
             }
 
-            if ($contact['id_type_contact'] == $mail_type_id)
+            if ($id_type_contact === $mail_type_id)
             {
-                $mailadr = $contact['value'];
+                $mailadr = $value;
 
                 $mail_count = $app['db']->fetchColumn('select count(c.*)
                     from ' . $app['tschema'] . '.contact c, ' .
@@ -175,7 +159,7 @@ class contacts_edit
                     $warning .= $app['link']->link_no_attr('status',
                         $app['pp_ary'], [], 'Status');
 
-                    if ($mail_count == 1)
+                    if ($mail_count === 1)
                     {
                         $warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
                         $warning_2 .= ' bestaat al onder de actieve gebruikers.';
@@ -196,19 +180,26 @@ class contacts_edit
                 }
             }
 
+            $update_ary = [
+                'id_type_contact'   => $id_type_contact,
+                'value'             => $value,
+                'comments'          => $comments,
+                'flag_public'       => $flag_public,
+            ];
+
             if(!count($errors))
             {
                 if ($abbrev_type === 'adr')
                 {
                     $app['queue.geocode']->cond_queue([
-                        'adr'		=> $contact['value'],
-                        'uid'		=> $contact['id_user'],
+                        'adr'		=> $value,
+                        'uid'		=> $user_id,
                         'schema'	=> $app['tschema'],
                     ], 0);
                 }
 
                 if ($app['db']->update($app['tschema'] . '.contact',
-                    $contact, ['id' => $id]))
+                    $update_ary, ['id' => $id]))
                 {
                     $app['alert']->success('Contact aangepast.');
                     $app['link']->redirect('contacts', $app['pp_ary'], []);
@@ -222,17 +213,13 @@ class contacts_edit
             {
                 $app['alert']->error($errors);
             }
-        }
-        else
-        {
-            $contact = $app['db']->fetchAssoc('select *
-                from ' . $app['tschema'] . '.contact
-                where id = ?', [$id]);
 
-            $access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
+            $contact = $update_ary;
         }
 
-        $tc = [];
+        $access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
+
+        $type_contact_ary = [];
 
         $rs = $app['db']->prepare('select id, name, abbrev
             from ' . $app['tschema'] . '.type_contact');
@@ -241,7 +228,7 @@ class contacts_edit
 
         while ($row = $rs->fetch())
         {
-            $tc[$row['id']] = $row;
+            $type_contact_ary[$row['id']] = $row;
 
             if (isset($contact['id_type_contact']))
             {
@@ -253,7 +240,7 @@ class contacts_edit
 
         $app['assets']->add(['contacts_edit.js']);
 
-        $abbrev = $tc[$contact['id_type_contact']]['abbrev'];
+        $abbrev = $type_contact_ary[$contact['id_type_contact']]['abbrev'];
 
         $app['heading']->add('Contact aanpassen');
         $app['heading']->add(' voor ');
@@ -269,15 +256,15 @@ class contacts_edit
         $out .= '<select name="id_type_contact" id="id_type_contact" ';
         $out .= 'class="form-control" required>';
 
-        foreach ($tc as $id => $type)
+        foreach ($type_contact_ary as $tc_id => $type)
         {
             $out .= '<option value="';
-            $out .= $id;
+            $out .= $tc_id;
             $out .= '" ';
             $out .= 'data-abbrev="';
             $out .= $type['abbrev'];
             $out .= '" ';
-            $out .= $id == $contact['id_type_contact'] ? ' selected="selected"' : '';
+            $out .= $tc_id == $contact['id_type_contact'] ? ' selected="selected"' : '';
             $out .= '>';
             $out .= $type['name'];
             $out .= '</option>';
@@ -342,5 +329,58 @@ class contacts_edit
         $app['tpl']->menu('contacts');
 
         return $app['tpl']->get();
+    }
+
+    public static function get_contact_for_users_route(
+        int $contact_id,
+        int $user_id,
+        int $s_id,
+        bool $s_admin,
+        db $db,
+        string $tschema
+    ):array
+    {
+        $contact = $db->fetchAssoc('select *
+            from ' . $tschema . '.contact
+            where id = ?', [$contact_id]);
+
+        if (!$contact)
+        {
+            throw new NotFoundHttpException(
+                sprintf('Het contact met id %1$d bestaat niet', $contact_id));
+        }
+
+        if (!$s_admin && $user_id !== $s_id)
+        {
+            throw new AccessDeniedHttpException(
+                sprintf('Je hebt geen toegang tot deze actie.'));
+        }
+
+        if ($user_id !== $contact['id_user'])
+        {
+            throw new BadRequestHttpException(
+                sprintf('Het contact met id %1$d is niet van gebruiker met id %2$d', $contact_id, $user_id));
+        }
+
+        return $contact;
+    }
+
+    public static function get_contact_for_admin_route(
+        int $contact_id,
+        db $db,
+        string $tschema
+    ):array
+    {
+        $contact = $db->fetchAssoc('select *
+            from ' . $tschema . '.contact
+            where id = ?', [$contact_id]);
+
+        if (!$contact)
+        {
+            throw new NotFoundHttpException(
+                sprintf('Het contact met id %1$d bestaat niet.', $contact_id));
+        }
+
+        return $contact;
     }
 }

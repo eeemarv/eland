@@ -10,12 +10,12 @@ use cnst\access as cnst_access;
 
 class contacts_add
 {
-    public function users(Request $request, app $app, int $user_id):Response
+    public function contacts_add_users(Request $request, app $app, int $user_id):Response
     {
-        return $this->match_admin($request, $app, 'users');
+        return $this->contacts_add_admin($request, $app, 'users');
     }
 
-    public function admin(Request $request, app $app):Response
+    public function contacts_add_admin(Request $request, app $app):Response
     {
         if($request->isMethod('POST'))
         {
