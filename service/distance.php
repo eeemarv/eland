@@ -26,9 +26,9 @@ class distance
 	}
 
 	public function set_from_geo(
-		string $adr = '',
-		string $s_id = '',
-		string $s_schema = ''):self
+		string $adr,
+		int $s_id,
+		string $s_schema):self
 	{
 		if ($this->geo)
 		{

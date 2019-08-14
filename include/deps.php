@@ -75,37 +75,6 @@ $app->extend('twig', function($twig, $app) {
 				$app['s3_url']
 			);
 		},
-/*
-		twig\distance::class => function() use ($app){
-			return new twig\distance(
-				$app['db'],
-				$app['cache']
-			);
-		},
-
-		twig\mail_date::class => function() use ($app){
-			return new twig\mail_date($app['date_format_cache']);
-		},
-		twig\web_date::class => function() use ($app){
-			return new twig\web_date(
-				$app['date_format_cache'],
-				$app['request_stack']
-			);
-		},
-		twig\web_user::class => function () use ($app){
-			return new twig\web_user(
-				$app['user_simple_cache'],
-				$app['request_stack'],
-				$app['url_generator']
-			);
-		},
-		twig\view::class => function () use ($app){
-			return new twig\view($app['view']);
-		},
-		twig\datepicker::class => function() use ($app){
-			return new twig\datepicker($app['web_date'], $app['translator']);
-		},
-*/
 	]));
 
 	return $twig;
