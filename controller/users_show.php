@@ -12,7 +12,7 @@ class users_show
 {
     public function users_show(Request $request, app $app, string $status, int $id):Response
     {
-        return $this->status($request, $app, $status, $id);
+        return $this->users_show_admin($request, $app, $status, $id);
     }
 
     public function users_show_admin(Request $request, app $app, string $status, int $id):Response

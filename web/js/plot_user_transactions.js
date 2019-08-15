@@ -99,10 +99,7 @@ $(document).ready(function(){
 			var d = new Date(tDate);
 			var plus = (amount > 0) ? '+' : '';
 			var str = '<tr><td>'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'</td></tr>';
-			str += '<tr><td>'+plus+amount+' '+data.currency+'</td></tr>';
-			str += '<tr><td>'+t.desc+'</td></tr>';
-			str += '<tr><td>'+u.c+' '+u.n+'</td></tr>';
-			str += (u.g) ? '<tr><td>'+groups.findById(u.g).n+'</td></tr>' : '';
+			str += '<tr><td><strong>'+plus+amount+' '+data.currency+'</strong></td></tr>';
 			graph.push([tDate, balance, str]);
 			graphTrans.push(t.id);
 			prevDate++;
