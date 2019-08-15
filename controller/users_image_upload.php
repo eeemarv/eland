@@ -11,17 +11,17 @@ use Imagine\Image\ImageInterface;
 
 class users_image_upload
 {
-    public function upload_self(Request $request, app $app):Response
+    public function users_image_upload(Request $request, app $app):Response
     {
         if ($app['s_id'] < 1)
         {
             return $app->json(['error' => 'Je hebt onvoldoende rechten voor deze actie.']);
         }
 
-        return $this->upload_admin($request, $app, $app['s_id']);
+        return $this->users_image_upload_admin($request, $app, $app['s_id']);
     }
 
-    public function upload_admin(Request $request, app $app, int $id):Response
+    public function users_image_upload_admin(Request $request, app $app, int $id):Response
     {
         $uploaded_file = $request->files->get('image');
 

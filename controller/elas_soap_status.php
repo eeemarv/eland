@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class elas_soap_status
 {
-    public function get(app $app, int $group_id):Response
+    public function elas_soap_status(app $app, int $group_id):Response
     {
         $response = new Response();
         $response->headers->set('Content-Type', 'text/plain');

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class categories_edit
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function categories_edit(Request $request, app $app, int $id):Response
     {
         $cats = [];
 

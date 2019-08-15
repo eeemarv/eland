@@ -9,7 +9,7 @@ use cnst\access as cnst_access;
 
 class docs_edit
 {
-    public function match(Request $request, app $app, string $doc_id):Response
+    public function docs_edit(Request $request, app $app, string $doc_id):Response
     {
         $row = $app['xdb']->get('doc', $doc_id, $app['tschema']);
 

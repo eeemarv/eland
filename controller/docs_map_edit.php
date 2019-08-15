@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class docs_map_edit
 {
-    public function match(Request $request, app $app, string $map_id):Response
+    public function docs_map_edit(Request $request, app $app, string $map_id):Response
     {
         $row = $app['xdb']->get('doc', $map_id, $app['tschema']);
 

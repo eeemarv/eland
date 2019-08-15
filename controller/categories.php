@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class categories
 {
-    public function get(Request $request, app $app):Response
+    public function categories(app $app):Response
     {
         $cats = $app['db']->fetchAll('select *
             from ' . $app['tschema'] . '.categories

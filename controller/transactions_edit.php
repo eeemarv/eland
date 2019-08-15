@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class transactions_edit
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function transactions_edit(Request $request, app $app, int $id):Response
     {
         $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class logs
 {
-    public function get(Request $request, app $app):Response
+    public function logs(Request $request, app $app):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);

@@ -9,7 +9,7 @@ use controller\contact_types;
 
 class contact_types_del
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function contact_types_del(Request $request, app $app, int $id):Response
     {
         $ct = $app['db']->fetchAssoc('select *
             from ' . $app['tschema'] . '.type_contact

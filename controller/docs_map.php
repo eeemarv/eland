@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class docs_map
 {
-    public function get(Request $request, app $app, string $map_id):Response
+    public function docs_map(Request $request, app $app, string $map_id):Response
     {
         $q = $request->query->get('q', '');
 

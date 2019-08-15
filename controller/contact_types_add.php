@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class contact_types_add
 {
-    public function match(Request $request, app $app):Response
+    public function contact_types_add(Request $request, app $app):Response
     {
         if ($request->isMethod('POST'))
         {

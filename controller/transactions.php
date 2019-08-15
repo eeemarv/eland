@@ -9,7 +9,7 @@ use service\config;
 
 class transactions
 {
-    public function get(Request $request, app $app):Response
+    public function transactions(Request $request, app $app):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);

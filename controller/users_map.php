@@ -6,19 +6,15 @@ use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\users_list;
-use render\btn_nav;
-use render\heading;
-use cnst\status as cnst_status;
-use cnst\role as cnst_role;
 
 class users_map
 {
-    public function admin(Request $request, app $app, string $status):Response
+    public function users_map_admin(Request $request, app $app, string $status):Response
     {
-        return $this->get($request, $app, $status);
+        return $this->users_map($request, $app, $status);
     }
 
-    public function get(Request $request, app $app):Response
+    public function users_map(Request $request, app $app, string $status):Response
     {
         $status = 'active';
         $ref_geo = [];

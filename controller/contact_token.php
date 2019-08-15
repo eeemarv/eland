@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class contact_token
 {
-    public function get(app $app, string $token):Response
+    public function contact_token(app $app, string $token):Response
     {
         if (!$app['config']->get('contact_form_en', $app['tschema']))
         {

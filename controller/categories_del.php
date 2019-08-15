@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class categories_del
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function categories_del(Request $request, app $app, int $id):Response
     {
         if($request->isMethod('POST'))
         {

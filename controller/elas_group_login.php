@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class elas_group_login
 {
-    public function get(app $app, int $group_id):Response
+    public function elas_group_login(app $app, int $group_id):Response
     {
         if (!$app['s_schema'] || $app['s_elas_guest'])
         {

@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_doc_map_names
 {
-    public function get(app $app):Response
+    public function typeahead_doc_map_names(app $app):Response
     {
         $map_names = [];
 

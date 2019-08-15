@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class news_show
 {
-    public function get(Request $request, app $app, int $id):Response
+    public function news_show(app $app, int $id):Response
     {
         $show_visibility = ($app['s_user']
                 && $app['intersystem_en'])

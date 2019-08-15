@@ -10,12 +10,12 @@ use cnst\role as cnst_role;
 
 class users_show
 {
-    public function active_status(Request $request, app $app, string $status, int $id):Response
+    public function users_show(Request $request, app $app, string $status, int $id):Response
     {
         return $this->status($request, $app, $status, $id);
     }
 
-    public function all_status(Request $request, app $app, string $status, int $id):Response
+    public function users_show_admin(Request $request, app $app, string $status, int $id):Response
     {
         $tdays = $request->query->get('tdays', 365);
 

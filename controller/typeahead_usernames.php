@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_usernames
 {
-    public function get(app $app):Response
+    public function typeahead_usernames(app $app):Response
     {
         $usernames = [];
 

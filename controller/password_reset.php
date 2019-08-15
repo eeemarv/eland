@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class password_reset
 {
-    public function form(Request $request, app $app):Response
+    public function password_reset(Request $request, app $app):Response
     {
         if ($request->isMethod('POST'))
         {

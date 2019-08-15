@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class login_elas_token
 {
-    public function get(app $app, string $elas_token):Response
+    public function login_elas_token(app $app, string $elas_token):Response
     {
         if($apikey = $app['predis']->get($app['tschema'] . '_token_' . $elas_token))
         {

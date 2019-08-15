@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class register
 {
-    public function form(Request $request, app $app):Response
+    public function register(Request $request, app $app):Response
     {
         if (!$app['config']->get('registration_en', $app['tschema']))
         {

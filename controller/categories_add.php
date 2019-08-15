@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class categories_add
 {
-    public function match(Request $request, app $app):Response
+    public function categories_add(Request $request, app $app):Response
     {
         $cat = [];
 

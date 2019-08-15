@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class support
 {
-    public function form(Request $request, app $app):Response
+    public function support(Request $request, app $app):Response
     {
         if ($app['s_master'])
         {

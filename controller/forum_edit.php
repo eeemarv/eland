@@ -9,7 +9,7 @@ use cnst\access as cnst_access;
 
 class forum_edit
 {
-    public function match(Request $request, app $app, string $forum_id):Response
+    public function forum_edit(Request $request, app $app, string $forum_id):Response
     {
         if (!$app['config']->get('forum_en', $app['tschema']))
         {

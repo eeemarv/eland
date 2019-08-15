@@ -9,7 +9,7 @@ use cnst\config as cnst_config;
 
 class config
 {
-    public function match(Request $request, app $app, string $tab):Response
+    public function config(Request $request, app $app, string $tab):Response
     {
         $pane = cnst_config::TAB_PANES[$tab];
 

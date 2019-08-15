@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class news_approve
 {
-    public function get(Request $request, app $app, int $id):Response
+    public function news_approve(app $app, int $id):Response
     {
         $data = [
             'approved'  => 't',

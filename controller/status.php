@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class status
 {
-    public function get(Request $request, app $app):Response
+    public function status(app $app):Response
     {
         $status_msgs = false;
 

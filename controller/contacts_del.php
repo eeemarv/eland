@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class contacts_del
 {
-    public function contacts_del_users(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function users_contacts_del(Request $request, app $app, int $user_id, int $contact_id):Response
     {
         $contact = contacts_edit::get_contact_for_users_route(
             $contact_id, $user_id, $app['s_id'],

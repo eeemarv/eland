@@ -9,7 +9,7 @@ use cnst\role as cnst_role;
 
 class login
 {
-    public function form(Request $request, app $app):Response
+    public function login(Request $request, app $app):Response
     {
         $location = $_GET['location'] ?? false;
 

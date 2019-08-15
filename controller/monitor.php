@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class monitor
 {
-    public function get(app $app):Response
+    public function monitor(app $app):Response
     {
         return $app['legacy_route']->render('monitor');
     }

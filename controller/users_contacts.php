@@ -10,12 +10,12 @@ use cnst\role as cnst_role;
 
 class users_contacts
 {
-    public function edit(Request $request, app $app, int $id):Response
+    public function users_contacts(Request $request, app $app, int $id):Response
     {
         return $this->status($request, $app, $id);
     }
 
-    public function edit_admin(Request $request, app $app, string $status, int $id):Response
+    public function users_contacts_admin(Request $request, app $app, string $status, int $id):Response
     {
         $tdays = $request->query->get('tdays', 365);
 

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class docs
 {
-    public function get(Request $request, app $app):Response
+    public function docs(Request $request, app $app):Response
     {
         $q = $request->query->get('q', '');
 

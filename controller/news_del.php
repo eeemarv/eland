@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class news_del
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function news_del(Request $request, app $app, int $id):Response
     {
-        if ($app['request']->isMethod('POST'))
+        if ($request->isMethod('POST'))
         {
             if ($error_token = $app['form_token']->get_error())
             {

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class home_system
 {
-    public function get(app $app):Response
+    public function home_system(app $app):Response
     {
         return $app['legacy_route']->render('home_system');
     }

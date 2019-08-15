@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class register_token
 {
-    public function get(Request $request, app $app, string $token):Response
+    public function register_token(app $app, string $token):Response
     {
         if (!$app['config']->get('registration_en', $app['tschema']))
         {

@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class password_reset_token
 {
-    public function form(Request $request, app $app, string $token):Response
+    public function password_reset_token(Request $request, app $app, string $token):Response
     {
         $data = $app['data_token']->retrieve($token, 'password_reset', $app['tschema']);
 

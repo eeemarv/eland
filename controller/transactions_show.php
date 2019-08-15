@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class transactions_show
 {
-    public function get(Request $request, app $app, int $id):Response
+    public function transactions_show(app $app, int $id):Response
     {
         $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
 

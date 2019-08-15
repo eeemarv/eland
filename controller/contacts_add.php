@@ -10,7 +10,7 @@ use cnst\access as cnst_access;
 
 class contacts_add
 {
-    public function contacts_add_users(Request $request, app $app, int $user_id):Response
+    public function users_contacts_add(Request $request, app $app, int $user_id):Response
     {
         return $this->contacts_add_admin($request, $app, 'users');
     }

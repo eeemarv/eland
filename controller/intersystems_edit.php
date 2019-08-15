@@ -10,7 +10,7 @@ use render\select;
 
 class intersystems_edit
 {
-    public function add(Request $request, app $app):Response
+    public function intersystems_edit(Request $request, app $app):Response
     {
         if ($request->isMethod('POST'))
         {

@@ -9,7 +9,7 @@ use cnst\access as cnst_access;
 
 class docs_add
 {
-    public function match(Request $request, app $app, string $map_id):Response
+    public function docs_add(Request $request, app $app, string $map_id):Response
     {
         if ($request->isMethod('POST'))
         {

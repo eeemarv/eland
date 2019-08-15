@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_elas_intersystem_accounts
 {
-    public function get(app $app, int $group_id):Response
+    public function typeahead_elas_intersystem_accounts(app $app, int $group_id):Response
     {
         $group = $app['db']->fetchAssoc('select *
             from ' . $app['tschema'] . '.letsgroups

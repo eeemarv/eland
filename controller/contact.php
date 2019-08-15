@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class contact
 {
-    public function form(Request $request, app $app):Response
+    public function contact(Request $request, app $app):Response
     {
         if (!$app['config']->get('contact_form_en', $app['tschema']))
         {

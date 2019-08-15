@@ -9,7 +9,7 @@ use cnst\access as cnst_access;
 
 class news_edit
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function news_edit(Request $request, app $app, int $id):Response
     {
         $news = [];
 

@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_postcodes
 {
-    public function get(app $app):Response
+    public function typeahead_postcodes(app $app):Response
     {
         $postcodes = [];
 

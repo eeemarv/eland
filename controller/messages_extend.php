@@ -8,7 +8,7 @@ use cnst\msg_type;
 
 class messages_extend
 {
-    public function get(app $app, int $id, int $days):Response
+    public function messages_extend(app $app, int $id, int $days):Response
     {
         $message = $app['db']->fetchAssoc('select m.*
             from ' . $app['tschema'] . '.messages m

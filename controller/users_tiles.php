@@ -10,12 +10,12 @@ use cnst\status as cnst_status;
 
 class users_tiles
 {
-    public function admin(Request $request, app $app, string $status):Response
+    public function users_tiles_admin(Request $request, app $app, string $status):Response
     {
         return $this->get($request, $app, $status);
     }
 
-    public function get(Request $request, app $app, string $status):Response
+    public function users_tiles(Request $request, app $app, string $status):Response
     {
         $q = $request->get('q', '');
         $users_route = $app['s_admin'] ? 'users_tiles_admin' : 'users_tiles';

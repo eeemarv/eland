@@ -8,12 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class users_password
 {
-    public function form_self(Request $request, app $app):Response
+    public function users_password(Request $request, app $app):Response
     {
         return $this->form_admin($request, $app, $app['s_id']);
     }
 
-    public function form_admin(Request $request, app $app, int $id):Response
+    public function users_password_admin(Request $request, app $app, int $id):Response
     {
         $password = trim($request->request->get('password', ''));
         $notify = $request->request->get('notify', '');

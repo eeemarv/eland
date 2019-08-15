@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class logout
 {
-    public function get(app $app):Response
+    public function logout(app $app):Response
     {
         foreach($app['s_logins'] as $sch => $uid)
         {

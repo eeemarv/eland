@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class docs_del
 {
-    public function match(Request $request, app $app, string $doc_id):Response
+    public function docs_del(Request $request, app $app, string $doc_id):Response
     {
         $row = $app['xdb']->get('doc', $doc_id, $app['tschema']);
 

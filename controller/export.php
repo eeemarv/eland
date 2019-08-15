@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class export
 {
-    public function get(Request $request, app $app):Response
+    public function export(Request $request, app $app):Response
     {
         set_time_limit(60);
 

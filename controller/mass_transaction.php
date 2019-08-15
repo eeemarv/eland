@@ -65,7 +65,7 @@ class mass_transaction
         123 => 'without-new-and-leaving',
     ];
 
-    public function form(Request $request, app $app):Response
+    public function mass_transaction(Request $request, app $app):Response
     {
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '096024');

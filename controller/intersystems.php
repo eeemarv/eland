@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class intersystems
 {
-    public function get(Request $request, app $app):Response
+    public function intersystems(app $app):Response
     {
         $groups = $app['db']->fetchAll('select *
             from ' . $app['tschema'] . '.letsgroups');

@@ -3,13 +3,12 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\intersystems;
 
 class intersystems_show
 {
-    public function get(Request $request, app $app, int $id):Response
+    public function intersystems_show(app $app, int $id):Response
     {
         $group = $app['db']->fetchAssoc('select *
             from ' . $app['tschema'] . '.letsgroups

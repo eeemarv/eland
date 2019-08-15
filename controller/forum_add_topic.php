@@ -9,7 +9,7 @@ use cnst\access as cnst_access;
 
 class forum_add_topic
 {
-    public function match(Request $request, app $app):Response
+    public function forum_add_topic(Request $request, app $app):Response
     {
         if (!$app['config']->get('forum_en', $app['tschema']))
         {

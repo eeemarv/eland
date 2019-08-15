@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_account_codes
 {
-    public function get(app $app):Response
+    public function typeahead_account_codes(app $app):Response
     {
         $account_codes = [];
 

@@ -7,12 +7,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class transactions_sum
 {
-    public function in(app $app, int $days):Response
+    public function transactions_sum_in(app $app, int $days):Response
     {
         return $this->calc($app, $days, true);
     }
 
-    public function out(app $app, int $days):Response
+    public function transactions_sum_out(app $app, int $days):Response
     {
         return $this->calc($app, $days, false);
     }

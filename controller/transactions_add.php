@@ -9,7 +9,7 @@ use controller\transactions;
 
 class transactions_add
 {
-    public function match(Request $request, app $app):Response
+    public function transactions_add(Request $request, app $app):Response
     {
         $errors = [];
 

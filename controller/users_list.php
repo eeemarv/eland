@@ -17,12 +17,12 @@ class users_list
 {
     const USER_SELECT_CHECKBOX = '<label for="su_%1$s">&nbsp;<input type="checkbox" name="su[%1$s]" id="su_%1$s" value="1"%2$s>&nbsp;&nbsp;';
 
-    public function admin(Request $request, app $app, string $status):Response
+    public function users_list_admin(Request $request, app $app, string $status):Response
     {
-        return $this->get($request, $app, $status);
+        return $this->users_list($request, $app, $status);
     }
 
-    public function get(Request $request, app $app, string $status):Response
+    public function users_list(Request $request, app $app, string $status):Response
     {
         $q = $request->get('q', '');
 

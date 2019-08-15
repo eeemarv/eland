@@ -3,14 +3,13 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class contact_types
 {
     const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];
 
-    public function get(Request $request, app $app):Response
+    public function contact_types(app $app):Response
     {
         $types = $app['db']->fetchAll('select *
             from ' . $app['tschema'] . '.type_contact tc');

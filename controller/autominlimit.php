@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class autominlimit
 {
-    public function form(Request $request, app $app):Response
+    public function autominlimit(Request $request, app $app):Response
     {
         if ($request->isMethod('POST'))
         {

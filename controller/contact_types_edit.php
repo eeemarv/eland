@@ -9,7 +9,7 @@ use controller\contact_types;
 
 class contact_types_edit
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function contact_types_edit(Request $request, app $app, int $id):Response
     {
         $tc_prefetch = $app['db']->fetchAssoc('select *
             from ' . $app['tschema'] . '.type_contact

@@ -39,7 +39,7 @@ class contacts_edit
         ],
     ];
 
-    public function contacts_edit_users(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function users_contacts_edit(Request $request, app $app, int $user_id, int $contact_id):Response
     {
         $contact = self::get_contact_for_users_route(
             $contact_id, $user_id, $app['s_id'],
@@ -229,13 +229,6 @@ class contacts_edit
         while ($row = $rs->fetch())
         {
             $type_contact_ary[$row['id']] = $row;
-
-            if (isset($contact['id_type_contact']))
-            {
-                continue;
-            }
-
-            $contact['id_type_contact'] = $row['id'];
         }
 
         $app['assets']->add(['contacts_edit.js']);

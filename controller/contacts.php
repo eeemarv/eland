@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class contacts
 {
-    public function get(Request $request, app $app):Response
+    public function contacts(Request $request, app $app):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);

@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_accounts
 {
-    public function get(app $app, string $status):Response
+    public function typeahead_accounts(app $app, string $status):Response
     {
         if ($app['s_guest'] && $status !== 'active')
         {

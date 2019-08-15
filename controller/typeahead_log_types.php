@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_log_types
 {
-    public function get(app $app):Response
+    public function typeahead_log_types(app $app):Response
     {
         $log_types = [];
 

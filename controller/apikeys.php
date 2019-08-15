@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class apikeys
 {
-    public function list(app $app):Response
+    public function apikeys(app $app):Response
     {
         $apikeys = $app['db']->fetchAll('select *
             from ' . $app['tschema'] . '.apikeys');
@@ -62,7 +62,7 @@ class apikeys
         return $app['tpl']->get();
     }
 
-    public function add(Request $request, app $app):Response
+    public function apikeys_add(Request $request, app $app):Response
     {
         if ($request->isMethod('POST'))
         {

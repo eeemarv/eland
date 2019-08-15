@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class users_image_del
 {
-    public function form_self(Request $request, app $app):Response
+    public function users_image_del(Request $request, app $app):Response
     {
         if ($app['s_id'] < 1)
         {
@@ -16,10 +16,10 @@ class users_image_del
             $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
         }
 
-        return $this->form_admin($request, $app, $app['s_id']);
+        return $this->users_image_del_admin($request, $app, $app['s_id']);
     }
 
-    public function form_admin(Request $request, app $app, int $id):Response
+    public function users_image_del_admin(Request $request, app $app, int $id):Response
     {
         $user = $app['user_cache']->get($id, $app['tschema']);
 

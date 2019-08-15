@@ -5,11 +5,10 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
 
 class forum_del
 {
-    public function match(Request $request, app $app, string $forum_id):Response
+    public function forum_del(Request $request, app $app, string $forum_id):Response
     {
         if (!$app['config']->get('forum_en', $app['tschema']))
         {

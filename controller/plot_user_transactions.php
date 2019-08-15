@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class plot_user_transactions
 {
-    public function get(app $app, int $user_id, int $days):Response
+    public function plot_user_transactions(app $app, int $user_id, int $days):Response
     {
         $user = $app['user_cache']->get($user_id, $app['tschema']);
 

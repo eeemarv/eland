@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class intersystems_del
 {
-    public function match(Request $request, app $app, int $id):Response
+    public function intersystems_del(Request $request, app $app, int $id):Response
     {
         $group = $app['db']->fetchAssoc('select *
             from ' . $app['tschema'] . '.letsgroups

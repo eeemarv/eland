@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class forum_topic
 {
-    public function match(Request $request, app $app, string $topic_id):Response
+    public function forum_topic(Request $request, app $app, string $topic_id):Response
     {
         if (!$app['config']->get('forum_en', $app['tschema']))
         {

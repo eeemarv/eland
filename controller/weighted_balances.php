@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class weighted_balances
 {
-    public function get(app $app, int $days):Response
+    public function weighted_balances(app $app, int $days):Response
     {
         $end_unix = time();
         $begin_unix = $end_unix - ($days * 86400);

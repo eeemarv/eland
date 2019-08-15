@@ -13,7 +13,7 @@ class messages
         return [];
     }
 
-    public function list(Request $request, app $app):Response
+    public function messages_list(Request $request, app $app):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);

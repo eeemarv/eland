@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_eland_intersystem_accounts
 {
-    public function get(app $app, string $remote_schema):Response
+    public function typeahead_eland_intersystem_accounts(app $app, string $remote_schema):Response
     {
         $eland_intersystems = $app['intersystems']->get_eland($app['tschema']);
 

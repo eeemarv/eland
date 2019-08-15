@@ -3,12 +3,11 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class news
 {
-    public function list(Request $request, app $app):Response
+    public function news_list(app $app):Response
     {
         $news = $this->get_data($app);
 
@@ -25,7 +24,7 @@ class news
 
         if (!count($news))
         {
-            return $this->no_news($request, $app);
+            return $this->no_news($app['tpl']);
         }
 
         $out = '<div class="panel panel-warning printview">';
@@ -86,7 +85,7 @@ class news
         return $app['tpl']->get();
     }
 
-    public function extended(Request $request, app $app):Response
+    public function news_extended(app $app):Response
     {
         $news = $this->get_data($app);
 
@@ -98,7 +97,7 @@ class news
 
         if (!count($news))
         {
-            return $this->no_news($request, $app);
+            return $this->no_news($app['tpl']);
         }
 
         $out = '';
@@ -312,16 +311,16 @@ class news
             [], 'Lijst met omschrijvingen', 'th-list', !$is_list);
     }
 
-    private function no_news(Request $request, app $app):Response
+    private function no_news(tpl $tpl):Response
     {
         $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
         $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
         $out .= '</div></div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('news');
+        $tpl->add($out);
+        $tpl->menu('news');
 
-        return $app['tpl']->get();
+        return $tpl->get();
     }
 }
