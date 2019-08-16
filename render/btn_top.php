@@ -43,7 +43,7 @@ class btn_top
 			'Verwijderen', [
 				'class' => 'btn btn-danger',
 				'title'	=> $title,
-			], 'times', true);
+			], 'times');
 	}
 
 	public function add(
@@ -56,7 +56,7 @@ class btn_top
 			'Toevoegen', [
 				'class'	=> 'btn btn-success',
 				'title'	=> $title,
-			], 'plus', true);
+			], 'plus');
 	}
 
 	public function edit(
@@ -69,7 +69,7 @@ class btn_top
 			'Aanpassen', [
 				'class'	=> 'btn btn-primary',
 				'title'	=> $title,
-			], 'pencil', true);
+			], 'pencil');
 	}
 
 	public function approve(
@@ -82,7 +82,7 @@ class btn_top
 			'Goedkeuren', [
 				'class'	=> 'btn btn-warning',
 				'title'	=> $title,
-			], 'check', true);
+			], 'check');
 	}
 
 	public function add_trans(
@@ -95,7 +95,7 @@ class btn_top
 			'Transactie', [
 				'class'	=> 'btn btn-warning',
 				'title'	=> $title,
-			], 'exchange', true);
+			], 'exchange');
 	}
 
 	public function edit_pw(
@@ -108,7 +108,7 @@ class btn_top
 			'Paswoord', [
 				'class'	=> 'btn btn-info',
 				'title'	=> $title,
-			], 'key', true);
+			], 'key');
 	}
 
 	public function local(string $link, string $title, string $fa):void

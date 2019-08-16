@@ -81,14 +81,18 @@ $c_locale->assert('_locale', cnst_assert::LOCALE)
 
 $c_system_anon->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
+	->assert('token', cnst_assert::TOKEN)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
 	->before($fn_before_system);
 
 $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::GUEST)
+	->assert('role_short', cnst_assert::ADMIN)
 	->assert('id', cnst_assert::NUMBER)
+	->assert('user_id', cnst_assert::NUMBER)
+	->assert('contact_id', cnst_assert::NUMBER)
+	->assert('days', cnst_assert::NUMBER)
 	->assert('view', cnst_assert::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
@@ -98,8 +102,11 @@ $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 
 $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::USER)
+	->assert('role_short', cnst_assert::ADMIN)
 	->assert('id', cnst_assert::NUMBER)
+	->assert('user_id', cnst_assert::NUMBER)
+	->assert('contact_id', cnst_assert::NUMBER)
+	->assert('days', cnst_assert::NUMBER)
 	->assert('view', cnst_assert::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
@@ -112,6 +119,9 @@ $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
 	->assert('role_short', cnst_assert::ADMIN)
 	->assert('id', cnst_assert::NUMBER)
+	->assert('user_id', cnst_assert::NUMBER)
+	->assert('contact_id', cnst_assert::NUMBER)
+	->assert('days', cnst_assert::NUMBER)
 	->assert('view', cnst_assert::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
@@ -151,7 +161,6 @@ $c_system_anon->match('/contact',
 
 $c_system_anon->get('/contact/{token}',
 		'controller\\contact_token::contact_token')
-	->assert('token', cnst_assert::TOKEN)
 	->bind('contact_token');
 
 $c_system_anon->match('/register',
@@ -160,7 +169,6 @@ $c_system_anon->match('/register',
 
 $c_system_anon->get('/register/{token}',
 		'controller\\register_token::register_token')
-	->assert('token', cnst_assert::TOKEN)
 	->bind('register_token');
 
 $c_system_anon->match('/password-reset',
@@ -169,7 +177,6 @@ $c_system_anon->match('/password-reset',
 
 $c_system_anon->match('/password-reset/{token}',
 		'controller\\password_reset_token::password_reset_token')
-	->assert('token', cnst_assert::TOKEN)
 	->bind('password_reset_token');
 
 $c_system_guest->get('/logout',
@@ -212,43 +219,44 @@ $c_system_admin->get('/contact-types',
 		'controller\\contact_types::contact_types')
 	->bind('contact_types');
 
-$c_system_admin->match('/contacts/edit/{id}',
+$c_system_admin->match('/contacts/{id}/edit',
 		'controller\\contacts_edit::contacts_edit_admin')
-	->value('context', 'contacts')
-	->assert('context', cnst_assert::CONTACTS_CONTEXT)
 	->bind('contacts_edit_admin');
 
-$c_system_admin->match('/contacts/del/{id}',
+$c_system_admin->match('/contacts/{id}/del',
 		'controller\\contacts_del::contacts_del_admin')
-	->value('context', 'contacts')
-	->assert('context', cnst_assert::CONTACTS_CONTEXT)
 	->bind('contacts_del_admin');
 
 $c_system_admin->match('/contacts/add',
 		'controller\\contacts_add::contacts_add_admin')
-	->value('context', 'contacts')
-	->assert('context', cnst_assert::CONTACTS_CONTEXT)
 	->bind('contacts_add_admin');
 
 $c_system_admin->get('/contacts',
 		'controller\\contacts::contacts')
 	->bind('contacts');
 
-$c_system_user->match('/users/{user_id}/contacts/{contact_id}/edit',
+$c_system_admin->match('/users/{user_id}/contacts/{contact_id}/edit',
 		'controller\\contacts_edit::users_contacts_edit')
-	->assert('user_id', cnst_assert::NUMBER)
-	->assert('contact_id', cnst_assert::NUMBER)
+	->bind('users_contacts_edit_admin');
+
+$c_system_user->match('/users/contacts/{contact_id}/edit',
+		'controller\\contacts_edit::users_contacts_edit')
 	->bind('users_contacts_edit');
 
-$c_system_user->match('/users/{user_id}/contacts/{contact_id}/del',
+$c_system_admin->match('/users/{user_id}/contacts/{contact_id}/del',
+		'controller\\contacts_del::users_contacts_del_admin')
+	->bind('users_contacts_del_admin');
+
+$c_system_user->match('/users/contacts/{contact_id}/del',
 		'controller\\contacts_del::users_contacts_del')
-	->assert('user_id', cnst_assert::NUMBER)
-	->assert('contact_id', cnst_assert::NUMBER)
 	->bind('users_contacts_del');
 
 $c_system_user->match('/users/{user_id}/contacts/add',
 		'controller\\contacts_add::users_contacts_add')
-	->assert('user_id', cnst_assert::NUMBER)
+	->bind('users_contacts_add_admin');
+
+$c_system_user->match('/users/contacts/add',
+	'controller\\contacts_add::users_contacts_add')
 	->bind('users_contacts_add');
 
 $c_system_admin->match('/config/{tab}',
@@ -315,8 +323,6 @@ $c_system_anon->get('/',
 
 $c_system_user->get('/messages/{id}/extend/{days}',
 		'controller\\messages_extend::messages_extend')
-	->assert('id', cnst_assert::NUMBER)
-	->assert('days', cnst_assert::NUMBER)
 	->bind('messages_extend');
 
 $c_system_user->match('/messages/{id}/del',
@@ -563,23 +569,18 @@ $c_system_admin->get('/elas-soap-status/{group_id}',
 
 $c_system_guest->get('/plot-user-transactions/{user_id}/{days}',
 		'controller\\plot_user_transactions::plot_user_transactions')
-	->assert('user_id', cnst_assert::NUMBER)
-	->assert('days', cnst_assert::NUMBER)
 	->bind('plot_user_transactions');
 
 $c_system_admin->get('/transactions-sum-in/{days}',
 		'controller\\transactions_sum::transactions_sum_in')
-	->assert('days', cnst_assert::NUMBER)
 	->bind('transactions_sum_in');
 
 $c_system_admin->get('/transactions-sum-out/{days}',
 		'controller\\transactions_sum::transactions_sum_out')
-	->assert('days', cnst_assert::NUMBER)
 	->bind('transactions_sum_out');
 
 $c_system_admin->get('/weighted-balances/{days}',
 		'controller\\weighted_balances::weighted_balances')
-	->assert('days', cnst_assert::NUMBER)
 	->bind('weighted_balances');
 
 $c_system_anon->mount('/{role_short}', $c_system_admin);

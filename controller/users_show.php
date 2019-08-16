@@ -52,12 +52,6 @@ class users_show
             where c.id_type_contact = tc.id
                 and c.id_user = ?', [$id]);
 
-        if ($app['s_admin'] || $s_owner)
-        {
-            $app['btn_top']->add('users_contacts_add', $app['pp_ary'],
-                ['user_id'  => $id], 'Contact toevoegen');
-        }
-
 // end contacts
 
         $count_messages = $app['db']->fetchColumn('select count(*)
@@ -561,8 +555,25 @@ class users_show
 		$out .= '<i class="fa fa-map-marker"></i>';
 		$out .= ' Contactinfo van ';
 		$out .= $app['account']->link($id, $app['pp_ary']);
-		$out .= ' ';
-		$out .= $app['btn_top']->get();
+        $out .= ' ';
+
+        if ($app['s_admin'])
+        {
+            $out .= $app['link']->link('users_contacts_add_admin', $app['pp_ary'],
+                ['user_id' => $id], 'Toevoegen', [
+                'class'	=> 'btn btn-success',
+                'title'	=> $title,
+            ], 'plus');
+        }
+        else if ($s_owner)
+        {
+            $out .= $app['link']->link('users_contacts_add', $app['pp_ary'],
+                [], 'Toevoegen', [
+                    'class'	=> 'btn btn-success',
+                    'title'	=> $title,
+                ], 'plus');
+        }
+
 		$out .= '</h3>';
 
         if (count($contacts))
