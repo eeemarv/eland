@@ -16,7 +16,7 @@ class users_edit_admin
         return self::form($request, $app, $id, true);
     }
 
-    public function form(Request $request, app $app, int $id, bool $is_edit):Response
+    public static function form(Request $request, app $app, int $id, bool $is_edit):Response
     {
         $errors = [];
 
@@ -638,7 +638,7 @@ class users_edit_admin
             if ($is_edit)
             {
                 $user = $app['user_cache']->get($id, $app['tschema']);
-                $fullname_access = $user['fullname_access'];
+                $fullname_access = cnst_access::FROM_XDB[$user['fullname_access']];
             }
 
             if ($app['s_admin'])
@@ -738,8 +738,8 @@ class users_edit_admin
             $edit_user_cached = $app['user_cache']->get($id, $app['tschema']);
         }
 
-        array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')); });
-        array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars((string) $value['value'], ENT_QUOTES, 'UTF-8')); });
+        array_walk($user, function(&$value){ $value = trim(htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')); });
+        array_walk($contact, function(&$value){ $value['value'] = trim(htmlspecialchars((string) $value['value'], ENT_QUOTES, 'UTF-8')); });
 
         $app['assets']->add([
             'datepicker',
