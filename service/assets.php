@@ -199,7 +199,7 @@ class assets
 
 					foreach ($ary as $loc)
 					{
-						$this->include_ary[$type][] = self::PROTOCOL . $loc;
+						$this->include_ary[$type][self::PROTOCOL . $loc] = true;
 					}
 				}
 
@@ -207,7 +207,7 @@ class assets
 			}
 
 			$type = $this->get_type($asset_name);
-			$this->include_ary[$type][] = $this->get_location($asset_name, $type);
+			$this->include_ary[$type][$this->get_location($asset_name, $type)] = true;
 		}
 	}
 
@@ -226,7 +226,7 @@ class assets
 	{
 		foreach ($asset_ary as $asset_name)
 		{
-			$this->include_css_print_ary[] = $this->get_location($asset_name, 'css');
+			$this->include_css_print_ary[$this->get_location($asset_name, 'css')] = true;
 		}
 	}
 
@@ -242,7 +242,7 @@ class assets
 	{
 		$out = '';
 
-		foreach ($this->include_ary['js'] as $js)
+		foreach ($this->include_ary['js'] as $js => $dummy_bool)
 		{
 			$out .= '<script src="' . $js . '"></script>';
 		}
@@ -254,12 +254,12 @@ class assets
 	{
 		$out = '';
 
-		foreach ($this->include_ary['css'] as $css)
+		foreach ($this->include_ary['css'] as $css => $dummy_bool)
 		{
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
 		}
 
-		foreach ($this->include_css_print_ary as $css)
+		foreach ($this->include_css_print_ary as $css => $dummy_bool)
 		{
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="print">';
 		}
