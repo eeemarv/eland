@@ -79,7 +79,8 @@ class password_reset_token
         $out .= $password;
         $out .= '" required>';
         $out .= '<span class="input-group-btn">';
-        $out .= '<button class="btn btn-default" type="button" id="generate">Genereer</button>';
+        $out .= '<button class="btn btn-default" type="button" ';
+        $out .= 'data-generate-password>Genereer</button>';
         $out .= '</span>';
         $out .= '</div>';
         $out .= '</div>';

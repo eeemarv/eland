@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-	var $btn = $('#generate');
+	var $btn = $('button[data-generate-password]');
 	var $input = $btn.parent().prev('input');
 
 	var rnd = {
@@ -186,4 +186,8 @@ $(document).ready(function(){
 
 		e.preventDefault();
 	});
+
+	if ($btn.data('generate-password') === 'onload'){
+		$btn.click();
+	}
 });

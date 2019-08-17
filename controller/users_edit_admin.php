@@ -744,7 +744,6 @@ class users_edit_admin
         $app['assets']->add([
             'datepicker',
             'generate_password.js',
-            'generate_password_onload.js',
             'user_edit.js',
         ]);
 
@@ -1024,7 +1023,9 @@ class users_edit_admin
                 $out .= '" required>';
                 $out .= '<span class="input-group-btn">';
                 $out .= '<button class="btn btn-default" ';
-                $out .= 'type="button" id="generate">';
+                $out .= 'type="button" ';
+                $out .= 'data-generate-password="onload" ';
+                $out .= '>';
                 $out .= 'Genereer</button>';
                 $out .= '</span>';
                 $out .= '</div>';

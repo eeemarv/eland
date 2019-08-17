@@ -132,7 +132,7 @@ class users_password
         $out .= '" required>';
         $out .= '<span class="input-group-btn">';
         $out .= '<button class="btn btn-default" type="button" ';
-        $out .= 'id="generate">Genereer</button>';
+        $out .= 'data-generate-password>Genereer</button>';
         $out .= '</span>';
         $out .= '</div>';
         $out .= '</div>';
