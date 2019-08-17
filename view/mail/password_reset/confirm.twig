@@ -10,7 +10,7 @@
 <p>
     {{- 'password_reset_confirm.html_msg'|trans({
         '%link_open%': context_url_open(
-            'password_reset_token', pp_ary, {'token': token, 'et': et}),
+            'password_reset_token', mpp_anon_ary(schema), {'token': token}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -23,7 +23,7 @@
 <p>
     {{- 'password_reset_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': context_url_open('home_system', pp_ary, {'et': et}),
+        '%link_open%': context_url_open('home_system', mpp_anon_ary(schema), {}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
