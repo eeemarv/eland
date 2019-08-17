@@ -147,23 +147,11 @@ class item_access
 
 	public function get_label_xdb(string $access_xdb):string
 	{
-/*
-		if (!isset(cnst_access::FROM_XDB[$access_xdb]))
-		{
-			return '';
-		}
-*/
 		return $this->get_label(cnst_access::FROM_XDB[$access_xdb]);
 	}
 
 	public function get_label_flag_public(int $flag_public):string
 	{
-/*
-		if (!isset(cnst_access::FROM_FLAG_PUBLIC[$flag_public]))
-		{
-			return '';
-		}
-*/
 		return $this->get_label(cnst_access::FROM_FLAG_PUBLIC[$flag_public]);
 	}
 

@@ -469,6 +469,13 @@ $app['typeahead'] = function($app){
 	);
 };
 
+$app['thumbprint_accounts'] = function($app){
+	return new service\thumbprint_accounts(
+		$app['typeahead'],
+		$app['intersystems']
+	);
+};
+
 $app['log_db'] = function($app){
 	return new service\log_db(
 		$app['db'],

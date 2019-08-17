@@ -5,53 +5,24 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use cnst\access as cnst_access;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
 
 class users_edit_admin
 {
-    public function users_show(Request $request, app $app, string $status, int $id):Response
-    {
-        return $this->users_show_admin($request, $app, $status, $id);
-    }
-
     public function users_edit_admin(Request $request, app $app, int $id):Response
     {
-
-
-
-
-
-        $app['tpl']->add($out);
-        $app['tpl']->menu('users');
-
-        return $app['tpl']->get();
+        return self::form($request, $app, $id, true);
     }
 
-    public function get_form():string
+    public function form(Request $request, app $app, int $id, bool $is_edit):Response
     {
-// add - edit block
-        if ($add && !$app['s_admin'])
-        {
-            $app['alert']->error('Je hebt geen rechten om
-                een gebruiker toe te voegen.');
+        $errors = [];
 
-            $app['link']->redirect('users', $app['pp_ary'], []);
-        }
-
-        $s_owner =  !$app['s_guest']
-            && $app['s_system_self']
-            && $edit
+        $s_owner = $is_edit
             && $app['s_id']
-            && $edit == $app['s_id'];
-
-        if ($edit && !$app['s_admin'] && !$s_owner)
-        {
-            $app['alert']->error('Je hebt geen rechten om
-                deze gebruiker aan te passen.');
-
-            $app['link']->redirect('users', $app['pp_ary'], ['id' => $edit]);
-        }
+            && $id === $app['s_id'];
 
         if ($app['s_admin'])
         {
@@ -67,51 +38,51 @@ class users_edit_admin
             $username_edit = $fullname_edit = false;
         }
 
-        if ($app['request']->isMethod('POST'))
+        if ($request->isMethod('POST'))
         {
             $user = [
-                'postcode'		=> trim($_POST['postcode']),
-                'birthday'		=> trim($_POST['birthday']) ?: null,
-                'hobbies'		=> trim($_POST['hobbies']),
-                'comments'		=> trim($_POST['comments']),
-                'cron_saldo'	=> isset($_POST['cron_saldo']) ? 1 : 0,
+                'postcode'		=> trim($request->request->get('postcode', '')),
+                'birthday'		=> trim($request->request->get('birthday', '')) ?: null,
+                'hobbies'		=> trim($request->request->get('hobbies', '')),
+                'comments'		=> trim($request->request->get('comments', '')),
+                'cron_saldo'	=> $request->request->get('cron_saldo') ? 1 : 0,
                 'lang'			=> 'nl'
             ];
 
             if ($app['s_admin'])
             {
                 // hack eLAS compatibility (in eLAND limits can be null)
-                $minlimit = trim($_POST['minlimit']);
-                $maxlimit = trim($_POST['maxlimit']);
+                $minlimit = trim($request->request->get('minlimit', ''));
+                $maxlimit = trim($request->request->get('maxlimit', ''));
 
                 $minlimit = $minlimit === '' ? -999999999 : $minlimit;
                 $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
                 $user += [
-                    'letscode'		=> trim($_POST['letscode']),
-                    'accountrole'	=> $_POST['accountrole'],
-                    'status'		=> $_POST['status'],
-                    'admincomment'	=> trim($_POST['admincomment']),
+                    'letscode'		=> trim($request->request->get('letscode', '')),
+                    'accountrole'	=> $request->request->get('accountrole', ''),
+                    'status'		=> $request->request->get('status', ''),
+                    'admincomment'	=> trim($request->request->get('admincomment', '')),
                     'minlimit'		=> $minlimit,
                     'maxlimit'		=> $maxlimit,
-                    'presharedkey'	=> trim($_POST['presharedkey']),
+                    'presharedkey'	=> trim($request->request->get('presharedkey', '')),
                 ];
 
-                $contact = $_POST['contact'];
-                $notify = $_POST['notify'];
-                $password = trim($_POST['password']);
+                $contact = $request->request->get('contact', []);
+                $notify = $request->request->get('notify');
+                $password = trim($request->request->get('password', ''));
 
                 $mail_unique_check_sql = 'select count(c.value)
-                        from ' . $app['tschema'] . '.contact c, ' .
-                            $app['tschema'] . '.type_contact tc, ' .
-                            $app['tschema'] . '.users u
-                        where c.id_type_contact = tc.id
-                            and tc.abbrev = \'mail\'
-                            and c.value = ?
-                            and c.id_user = u.id
-                            and u.status in (1, 2)';
+                    from ' . $app['tschema'] . '.contact c, ' .
+                        $app['tschema'] . '.type_contact tc, ' .
+                        $app['tschema'] . '.users u
+                    where c.id_type_contact = tc.id
+                        and tc.abbrev = \'mail\'
+                        and c.value = ?
+                        and c.id_user = u.id
+                        and u.status in (1, 2)';
 
-                if ($edit)
+                if ($is_edit)
                 {
                     $mail_unique_check_sql .= ' and u.id <> ?';
                 }
@@ -122,14 +93,14 @@ class users_edit_admin
 
                 foreach ($contact as $key => $c)
                 {
-                    $access_contact = $app['request']->request->get('contact_access_' . $key);
+                    $access_contact = $request->request->get('contact_access_' . $key);
 
                     if ($c['value'] && !$access_contact)
                     {
                         $errors[] = 'Vul een zichtbaarheid in.';
                     }
 
-                    $contact[$key]['flag_public'] = $app['item_access']->get_flag_public($access_contact);
+                    $contact[$key]['flag_public'] = cnst_access::TO_FLAG_PUBLIC[$access_contact];
                 }
 
                 foreach ($contact as $key => $c)
@@ -147,9 +118,9 @@ class users_edit_admin
 
                             $st->bindValue(1, $mailadr);
 
-                            if ($edit)
+                            if ($is_edit)
                             {
-                                $st->bindValue(2, $edit);
+                                $st->bindValue(2, $id);
                             }
 
                             $st->execute();
@@ -202,15 +173,15 @@ class users_edit_admin
 
             if ($username_edit)
             {
-                $user['login'] = $user['name'] = trim($_POST['name']);
+                $user['login'] = $user['name'] = trim($request->request->get('name', ''));
             }
 
             if ($fullname_edit)
             {
-                $user['fullname'] = trim($_POST['fullname']);
+                $user['fullname'] = trim($request->request->get('fullname', ''));
             }
 
-            $fullname_access = $app['request']->request->get('fullname_access', '');
+            $fullname_access = $request->request->get('fullname_access', '');
 
             $name_sql = 'select name
                 from ' . $app['tschema'] . '.users
@@ -222,16 +193,16 @@ class users_edit_admin
                 where fullname = ?';
             $fullname_sql_params = [$user['fullname']];
 
-            if ($edit)
+            if ($is_edit)
             {
                 $letscode_sql .= ' and id <> ?';
-                $letscode_sql_params[] = $edit;
+                $letscode_sql_params[] = $id;
                 $name_sql .= 'and id <> ?';
-                $name_sql_params[] = $edit;
+                $name_sql_params[] = $id;
                 $fullname_sql .= 'and id <> ?';
-                $fullname_sql_params[] = $edit;
+                $fullname_sql_params[] = $id;
 
-                $user_prefetch = $app['user_cache']->get($edit, $app['tschema']);
+                $user_prefetch = $app['user_cache']->get($id, $app['tschema']);
             }
 
             if (!$fullname_access)
@@ -373,7 +344,7 @@ class users_edit_admin
                     $contact_types[$row['abbrev']] = $row['id'];
                 }
 
-                if ($add)
+                if (!$is_edit)
                 {
                     $user['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 
@@ -467,12 +438,12 @@ class users_edit_admin
 
                         if ($user['status'] == 2 | $user['status'] == 1)
                         {
-                            delete_thumbprint('active');
+                            $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['tschema']);
                         }
 
                         if ($user['status'] == 7)
                         {
-                            delete_thumbprint('extern');
+                            $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['tschema']);
                         }
 
                         $app['intersystems']->clear_cache($app['s_schema']);
@@ -484,9 +455,9 @@ class users_edit_admin
                         $app['alert']->error('Gebruiker niet opgeslagen.');
                     }
                 }
-                else if ($edit)
+                else if ($is_edit)
                 {
-                    $user_stored = $app['user_cache']->get($edit, $app['tschema']);
+                    $user_stored = $app['user_cache']->get($id, $app['tschema']);
 
                     $user['mdate'] = gmdate('Y-m-d H:i:s');
 
@@ -500,17 +471,17 @@ class users_edit_admin
                         }
                     }
 
-                    if($app['db']->update($app['tschema'] . '.users', $user, ['id' => $edit]))
+                    if ($app['db']->update($app['tschema'] . '.users', $user, ['id' => $id]))
                     {
 
-                        $fullname_access_role = $app['item_access']->get_xdb($fullname_access);
+                        $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
 
-                        $app['xdb']->set('user_fullname_access', $edit, [
+                        $app['xdb']->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
                         ], $app['tschema']);
 
-                        $app['user_cache']->clear($edit, $app['tschema']);
-                        $user = $app['user_cache']->get($edit, $app['tschema']);
+                        $app['user_cache']->clear($id, $app['tschema']);
+                        $user = $app['user_cache']->get($id, $app['tschema']);
 
                         $app['alert']->success('Gebruiker aangepast.');
 
@@ -524,7 +495,7 @@ class users_edit_admin
                                     $app['tschema'] . '.contact c
                                 WHERE tc.id = c.id_type_contact
                                     AND c.id_user = ?');
-                            $rs->bindValue(1, $edit);
+                            $rs->bindValue(1, $id);
 
                             $rs->execute();
 
@@ -542,7 +513,7 @@ class users_edit_admin
                                     if ($stored_contact)
                                     {
                                         $app['db']->delete($app['tschema'] . '.contact',
-                                            ['id_user' => $edit, 'id' => $value['id']]);
+                                            ['id_user' => $id, 'id' => $value['id']]);
                                     }
                                     continue;
                                 }
@@ -558,7 +529,7 @@ class users_edit_admin
                                 {
                                     $app['queue.geocode']->cond_queue([
                                         'adr'		=> $value['value'],
-                                        'uid'		=> $edit,
+                                        'uid'		=> $id,
                                         'schema'	=> $app['tschema'],
                                     ], 0);
                                 }
@@ -569,8 +540,9 @@ class users_edit_admin
                                         'id_type_contact'	=> $contact_types[$value['abbrev']],
                                         'value'				=> trim($value['value']),
                                         'flag_public'		=> $value['flag_public'],
-                                        'id_user'			=> $edit,
+                                        'id_user'			=> $id,
                                     ];
+
                                     $app['db']->insert($app['tschema'] . '.contact', $insert);
                                     continue;
                                 }
@@ -582,7 +554,7 @@ class users_edit_admin
 
                                 $app['db']->update($app['tschema'] . '.contact',
                                     $contact_update,
-                                    ['id' => $value['id'], 'id_user' => $edit]);
+                                    ['id' => $value['id'], 'id_user' => $id]);
                             }
 
                             if ($user['status'] == 1 && !$user_prefetch['adate'])
@@ -593,7 +565,7 @@ class users_edit_admin
                                     {
                                         if ($mailadr)
                                         {
-                                            send_activation_mail_user($edit, $password);
+                                            send_activation_mail_user($id, $password);
                                             $app['alert']->success('E-mail met paswoord
                                                 naar de gebruiker verstuurd.');
                                         }
@@ -605,7 +577,7 @@ class users_edit_admin
                                                 gebruiker ingesteld.');
                                         }
 
-                                        send_activation_mail_admin($edit);
+                                        send_activation_mail_admin($id);
                                     }
                                     else
                                     {
@@ -625,19 +597,20 @@ class users_edit_admin
                                 || $user_stored['status'] == 1
                                 || $user_stored['status'] == 2)
                             {
-                                delete_thumbprint('active');
+                                $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['tschema']);
                             }
 
                             if ($user['status'] == 7
                                 || $user_stored['status'] == 7)
                             {
-                                delete_thumbprint('extern');
+                                $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['tschema']);
                             }
 
                             $app['intersystems']->clear_cache($app['s_schema']);
                         }
 
-                        $app['link']->redirect('users', $app['pp_ary'], ['id' => $edit]);
+                        $app['link']->redirect($app['r_users_show'], $app['pp_ary'],
+                            ['id' => $id]);
                     }
                     else
                     {
@@ -649,7 +622,7 @@ class users_edit_admin
             {
                 $app['alert']->error($errors);
 
-                if ($edit)
+                if ($is_edit)
                 {
                     $user['adate'] = $user_prefetch['adate'];
                 }
@@ -660,9 +633,9 @@ class users_edit_admin
         }
         else
         {
-            if ($edit)
+            if ($is_edit)
             {
-                $user = $app['user_cache']->get($edit, $app['tschema']);
+                $user = $app['user_cache']->get($id, $app['tschema']);
                 $fullname_access = $user['fullname_access'];
             }
 
@@ -674,7 +647,7 @@ class users_edit_admin
                     where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
             }
 
-            if ($edit && $app['s_admin'])
+            if ($is_edit && $app['s_admin'])
             {
                 $contact_keys = [];
 
@@ -689,7 +662,7 @@ class users_edit_admin
                     where tc.id = c.id_type_contact
                         and c.id_user = ?');
 
-                $st->bindValue(1, $edit);
+                $st->bindValue(1, $id);
                 $st->execute();
 
                 while ($row = $st->fetch())
@@ -758,13 +731,13 @@ class users_edit_admin
             }
         }
 
-        if ($edit)
+        if ($is_edit)
         {
-            $edit_user_cached = $app['user_cache']->get($edit, $app['tschema']);
+            $edit_user_cached = $app['user_cache']->get($id, $app['tschema']);
         }
 
-        array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')); });
-        array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars($value['value'], ENT_QUOTES, 'UTF-8')); });
+        array_walk($user, function(&$value, $key){ $value = trim(htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')); });
+        array_walk($contact, function(&$value, $key){ $value['value'] = trim(htmlspecialchars((string) $value['value'], ENT_QUOTES, 'UTF-8')); });
 
         $app['assets']->add([
             'datepicker',
@@ -773,7 +746,7 @@ class users_edit_admin
             'user_edit.js',
         ]);
 
-        if ($s_owner && !$app['s_admin'] && $edit)
+        if ($s_owner && !$app['s_admin'] && $is_edit)
         {
             $app['heading']->add('Je profiel aanpassen');
         }
@@ -781,10 +754,10 @@ class users_edit_admin
         {
             $app['heading']->add('Gebruiker ');
 
-            if ($edit)
+            if ($is_edit)
             {
                 $app['heading']->add('aanpassen: ');
-                $app['heading']->add($app['account']->link($edit, $app['pp_ary']));
+                $app['heading']->add($app['account']->link($id, $app['pp_ary']));
             }
             else
             {
@@ -794,30 +767,28 @@ class users_edit_admin
 
         $app['heading']->fa('user');
 
-        include __DIR__ . '/include/header.php';
+        $out = '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
 
-        echo '<div class="panel panel-info">';
-        echo '<div class="panel-heading">';
-
-        echo '<form method="post">';
+        $out .= '<form method="post">';
 
         if ($app['s_admin'])
         {
-            echo '<div class="form-group">';
-            echo '<label for="letscode" class="control-label">';
-            echo 'Account Code';
-            echo '</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-user"></span></span>';
-            echo '<input type="text" class="form-control" ';
-            echo 'id="letscode" name="letscode" ';
-            echo 'value="';
-            echo $user['letscode'] ?? '';
-            echo '" required maxlength="20" ';
-            echo 'data-typeahead="';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="letscode" class="control-label">';
+            $out .= 'Account Code';
+            $out .= '</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="letscode" name="letscode" ';
+            $out .= 'value="';
+            $out .= $user['letscode'] ?? '';
+            $out .= '" required maxlength="20" ';
+            $out .= 'data-typeahead="';
 
-            echo $app['typeahead']->ini($app['pp_ary'])
+            $out .= $app['typeahead']->ini($app['pp_ary'])
                 ->add('account_codes', [])
                 ->str([
                     'render'	=> [
@@ -826,35 +797,35 @@ class users_edit_admin
                     ]
                 ]);
 
-            echo '">';
-            echo '</div>';
-            echo '<span class="help-block hidden exists_query_results">';
-            echo 'Reeds gebruikt: ';
-            echo '<span class="query_results">';
-            echo '</span>';
-            echo '</span>';
-            echo '<span class="help-block hidden exists_msg">';
-            echo 'Deze Account Code bestaat al!';
-            echo '</span>';
-            echo '</div>';
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '<span class="help-block hidden exists_query_results">';
+            $out .= 'Reeds gebruikt: ';
+            $out .= '<span class="query_results">';
+            $out .= '</span>';
+            $out .= '</span>';
+            $out .= '<span class="help-block hidden exists_msg">';
+            $out .= 'Deze Account Code bestaat al!';
+            $out .= '</span>';
+            $out .= '</div>';
         }
 
         if ($username_edit)
         {
-            echo '<div class="form-group">';
-            echo '<label for="name" class="control-label">';
-            echo 'Gebruikersnaam</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-user"></span></span>';
-            echo '<input type="text" class="form-control" ';
-            echo 'id="name" name="name" ';
-            echo 'value="';
-            echo $user['name'] ?? '';
-            echo '" required maxlength="50" ';
-            echo 'data-typeahead="';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="name" class="control-label">';
+            $out .= 'Gebruikersnaam</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="name" name="name" ';
+            $out .= 'value="';
+            $out .= $user['name'] ?? '';
+            $out .= '" required maxlength="50" ';
+            $out .= 'data-typeahead="';
 
-            echo $app['typeahead']->ini($app['pp_ary'])
+            $out .= $app['typeahead']->ini($app['pp_ary'])
                 ->add('usernames', [])
                 ->str([
                     'render'	=> [
@@ -863,364 +834,364 @@ class users_edit_admin
                     ]
                 ]);
 
-            echo '">';
-            echo '</div>';
-            echo '<span class="help-block hidden exists_query_results">';
-            echo 'Reeds gebruikt: ';
-            echo '<span class="query_results">';
-            echo '</span>';
-            echo '</span>';
-            echo '<span id="username_exists" ';
-            echo 'class="help-block hidden exists_msg">';
-            echo 'Deze Gebruikersnaam bestaat reeds!</span>';
-            echo '</div>';
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '<span class="help-block hidden exists_query_results">';
+            $out .= 'Reeds gebruikt: ';
+            $out .= '<span class="query_results">';
+            $out .= '</span>';
+            $out .= '</span>';
+            $out .= '<span id="username_exists" ';
+            $out .= 'class="help-block hidden exists_msg">';
+            $out .= 'Deze Gebruikersnaam bestaat reeds!</span>';
+            $out .= '</div>';
         }
 
         if ($fullname_edit)
         {
-            echo '<div class="form-group">';
-            echo '<label for="fullname" class="control-label">';
-            echo 'Volledige Naam</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-user"></span></span>';
-            echo '<input type="text" class="form-control" ';
-            echo 'id="fullname" name="fullname" ';
-            echo 'value="';
-            echo $user['fullname'] ?? '';
-            echo '" maxlength="100">';
-            echo '</div>';
-            echo '<p>';
-            echo 'Voornaam en Achternaam';
-            echo '</p>';
-            echo '</div>';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="fullname" class="control-label">';
+            $out .= 'Volledige Naam</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="fullname" name="fullname" ';
+            $out .= 'value="';
+            $out .= $user['fullname'] ?? '';
+            $out .= '" maxlength="100">';
+            $out .= '</div>';
+            $out .= '<p>';
+            $out .= 'Voornaam en Achternaam';
+            $out .= '</p>';
+            $out .= '</div>';
         }
 
         if (!isset($fullname_access))
         {
-            $fullname_access = $add && !$intersystem_code ? '' : 'admin';
+            $fullname_access = !$is_edit && !$intersystem_code ? '' : 'admin';
         }
 
-        echo $app['item_access']->get_radio_buttons(
-            'users_fullname',
+        $out .= $app['item_access']->get_radio_buttons(
+            'fullname_access',
             $fullname_access,
             'fullname_access',
             false,
             'Zichtbaarheid Volledige Naam'
         );
 
-        echo '<div class="form-group">';
-        echo '<label for="postcode" class="control-label">';
-        echo 'Postcode</label>';
-        echo '<div class="input-group">';
-        echo '<span class="input-group-addon">';
-        echo '<span class="fa fa-map-marker"></span></span>';
-        echo '<input type="text" class="form-control" ';
-        echo 'id="postcode" name="postcode" ';
-        echo 'value="';
-        echo $user['postcode'] ?? '';
-        echo '" ';
-        echo 'required maxlength="6" ';
-        echo 'data-typeahead="';
+        $out .= '<div class="form-group">';
+        $out .= '<label for="postcode" class="control-label">';
+        $out .= 'Postcode</label>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="fa fa-map-marker"></span></span>';
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'id="postcode" name="postcode" ';
+        $out .= 'value="';
+        $out .= $user['postcode'] ?? '';
+        $out .= '" ';
+        $out .= 'required maxlength="6" ';
+        $out .= 'data-typeahead="';
 
-        echo $app['typeahead']->ini($app['pp_ary'])
+        $out .= $app['typeahead']->ini($app['pp_ary'])
             ->add('postcodes', [])
             ->str();
 
-        echo '">';
-        echo '</div>';
-        echo '</div>';
+        $out .= '">';
+        $out .= '</div>';
+        $out .= '</div>';
 
-        echo '<div class="form-group">';
-        echo '<label for="birthday" class="control-label">';
-        echo 'Geboortedatum</label>';
-        echo '<div class="input-group">';
-        echo '<span class="input-group-addon">';
-        echo '<span class="fa fa-calendar"></span></span>';
-        echo '<input type="text" class="form-control" ';
-        echo 'id="birthday" name="birthday" ';
-        echo 'value="';
+        $out .= '<div class="form-group">';
+        $out .= '<label for="birthday" class="control-label">';
+        $out .= 'Geboortedatum</label>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="fa fa-calendar"></span></span>';
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'id="birthday" name="birthday" ';
+        $out .= 'value="';
 
         if (isset($user['birthday']) && !empty($user['birtday']))
         {
-            echo $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
+            $out .= $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
         }
 
-        echo '" ';
-        echo 'data-provide="datepicker" ';
-        echo 'data-date-format="';
-        echo $app['date_format']->datepicker_format($app['tschema']);
-        echo '" ';
-        echo 'data-date-default-view="2" ';
-        echo 'data-date-end-date="';
-        echo $app['date_format']->get('', 'day', $app['tschema']);
-        echo '" ';
-        echo 'data-date-language="nl" ';
-        echo 'data-date-start-view="2" ';
-        echo 'data-date-today-highlight="true" ';
-        echo 'data-date-autoclose="true" ';
-        echo 'data-date-immediate-updates="true" ';
-        echo 'data-date-orientation="bottom" ';
-        echo 'placeholder="';
-        echo $app['date_format']->datepicker_placeholder($app['tschema']);
-        echo '">';
-        echo '</div>';
-        echo '</div>';
+        $out .= '" ';
+        $out .= 'data-provide="datepicker" ';
+        $out .= 'data-date-format="';
+        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= '" ';
+        $out .= 'data-date-default-view="2" ';
+        $out .= 'data-date-end-date="';
+        $out .= $app['date_format']->get('', 'day', $app['tschema']);
+        $out .= '" ';
+        $out .= 'data-date-language="nl" ';
+        $out .= 'data-date-start-view="2" ';
+        $out .= 'data-date-today-highlight="true" ';
+        $out .= 'data-date-autoclose="true" ';
+        $out .= 'data-date-immediate-updates="true" ';
+        $out .= 'data-date-orientation="bottom" ';
+        $out .= 'placeholder="';
+        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= '">';
+        $out .= '</div>';
+        $out .= '</div>';
 
-        echo '<div class="form-group">';
-        echo '<label for="hobbies" class="control-label">';
-        echo 'Hobbies, interesses</label>';
-        echo '<textarea name="hobbies" id="hobbies" ';
-        echo 'class="form-control" maxlength="500">';
-        echo $user['hobbies'] ?? '';
-        echo '</textarea>';
-        echo '</div>';
+        $out .= '<div class="form-group">';
+        $out .= '<label for="hobbies" class="control-label">';
+        $out .= 'Hobbies, interesses</label>';
+        $out .= '<textarea name="hobbies" id="hobbies" ';
+        $out .= 'class="form-control" maxlength="500">';
+        $out .= $user['hobbies'] ?? '';
+        $out .= '</textarea>';
+        $out .= '</div>';
 
-        echo '<div class="form-group">';
-        echo '<label for="comments" class="control-label">Commentaar</label>';
-        echo '<div class="input-group">';
-        echo '<span class="input-group-addon">';
-        echo '<span class="fa fa-comment-o"></span></span>';
-        echo '<input type="text" class="form-control" ';
-        echo 'id="comments" name="comments" ';
-        echo 'value="';
-        echo $user['comments'] ?? '';
-        echo '">';
-        echo '</div>';
-        echo '</div>';
+        $out .= '<div class="form-group">';
+        $out .= '<label for="comments" class="control-label">Commentaar</label>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="fa fa-comment-o"></span></span>';
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'id="comments" name="comments" ';
+        $out .= 'value="';
+        $out .= $user['comments'] ?? '';
+        $out .= '">';
+        $out .= '</div>';
+        $out .= '</div>';
 
         if ($app['s_admin'])
         {
-            echo '<div class="form-group">';
-            echo '<label for="accountrole" class="control-label">';
-            echo 'Rechten / Rol</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-hand-paper-o"></span></span>';
-            echo '<select id="accountrole" name="accountrole" ';
-            echo 'class="form-control">';
-            echo $app['select']->get_options(cnst_role::LABEL_ARY, $user['accountrole']);
-            echo '</select>';
-            echo '</div>';
-            echo '</div>';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="accountrole" class="control-label">';
+            $out .= 'Rechten / Rol</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-hand-paper-o"></span></span>';
+            $out .= '<select id="accountrole" name="accountrole" ';
+            $out .= 'class="form-control">';
+            $out .= $app['select']->get_options(cnst_role::LABEL_ARY, $user['accountrole']);
+            $out .= '</select>';
+            $out .= '</div>';
+            $out .= '</div>';
 
-            echo '<div class="pan-sub" id="presharedkey_panel">';
-            echo '<div class="form-group" id="presharedkey_formgroup">';
-            echo '<label for="presharedkey" class="control-label">';
-            echo 'Preshared Key</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-key"></span></span>';
-            echo '<input type="text" class="form-control" ';
-            echo 'id="presharedkey" name="presharedkey" ';
-            echo 'value="';
-            echo $user['presharedkey'] ?? '';
-            echo '" maxlength="80">';
-            echo '</div>';
-            echo '<p>Vul dit enkel in voor een interSysteem Account ';
-            echo 'van een Systeem op een eLAS-server.</p>';
-            echo '</div>';
-            echo '</div>';
+            $out .= '<div class="pan-sub" id="presharedkey_panel">';
+            $out .= '<div class="form-group" id="presharedkey_formgroup">';
+            $out .= '<label for="presharedkey" class="control-label">';
+            $out .= 'Preshared Key</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-key"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="presharedkey" name="presharedkey" ';
+            $out .= 'value="';
+            $out .= $user['presharedkey'] ?? '';
+            $out .= '" maxlength="80">';
+            $out .= '</div>';
+            $out .= '<p>Vul dit enkel in voor een interSysteem Account ';
+            $out .= 'van een Systeem op een eLAS-server.</p>';
+            $out .= '</div>';
+            $out .= '</div>';
 
-            echo '<div class="form-group">';
-            echo '<label for="status" class="control-label">';
-            echo 'Status</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-star-o"></span></span>';
-            echo '<select id="status" name="status" class="form-control">';
-            echo $app['select']->get_options(cnst_status::LABEL_ARY, $user['status']);
-            echo '</select>';
-            echo '</div>';
-            echo '</div>';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="status" class="control-label">';
+            $out .= 'Status</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-star-o"></span></span>';
+            $out .= '<select id="status" name="status" class="form-control">';
+            $out .= $app['select']->get_options(cnst_status::LABEL_ARY, $user['status']);
+            $out .= '</select>';
+            $out .= '</div>';
+            $out .= '</div>';
 
             if (empty($user['adate']) && $app['s_admin'])
             {
-                echo '<div id="activate" class="bg-success pan-sub">';
+                $out .= '<div id="activate" class="bg-success pan-sub">';
 
-                echo '<div class="form-group">';
-                echo '<label for="password" class="control-label">';
-                echo 'Paswoord</label>';
-                echo '<div class="input-group">';
-                echo '<span class="input-group-addon">';
-                echo '<span class="fa fa-key"></span></span>';
-                echo '<input type="text" class="form-control" ';
-                echo 'id="password" name="password" ';
-                echo 'value="';
-                echo $password ?? '';
-                echo '" required>';
-                echo '<span class="input-group-btn">';
-                echo '<button class="btn btn-default" ';
-                echo 'type="button" id="generate">';
-                echo 'Genereer</button>';
-                echo '</span>';
-                echo '</div>';
-                echo '</div>';
+                $out .= '<div class="form-group">';
+                $out .= '<label for="password" class="control-label">';
+                $out .= 'Paswoord</label>';
+                $out .= '<div class="input-group">';
+                $out .= '<span class="input-group-addon">';
+                $out .= '<span class="fa fa-key"></span></span>';
+                $out .= '<input type="text" class="form-control" ';
+                $out .= 'id="password" name="password" ';
+                $out .= 'value="';
+                $out .= $password ?? '';
+                $out .= '" required>';
+                $out .= '<span class="input-group-btn">';
+                $out .= '<button class="btn btn-default" ';
+                $out .= 'type="button" id="generate">';
+                $out .= 'Genereer</button>';
+                $out .= '</span>';
+                $out .= '</div>';
+                $out .= '</div>';
 
-                echo '<div class="form-group">';
-                echo '<label for="notify" class="control-label">';
-                echo '<input type="checkbox" name="notify" id="notify"';
-                echo ' checked="checked"';
-                echo '> ';
-                echo 'Verstuur een E-mail met het ';
-                echo 'paswoord naar de gebruiker. ';
-                echo 'Dit kan enkel wanneer het account ';
-                echo 'de status actief heeft en ';
-                echo 'een E-mail adres is ingesteld.';
-                echo '</label>';
-                echo '</div>';
+                $out .= '<div class="form-group">';
+                $out .= '<label for="notify" class="control-label">';
+                $out .= '<input type="checkbox" name="notify" id="notify"';
+                $out .= ' checked="checked"';
+                $out .= '> ';
+                $out .= 'Verstuur een E-mail met het ';
+                $out .= 'paswoord naar de gebruiker. ';
+                $out .= 'Dit kan enkel wanneer het account ';
+                $out .= 'de status actief heeft en ';
+                $out .= 'een E-mail adres is ingesteld.';
+                $out .= '</label>';
+                $out .= '</div>';
 
-                echo '</div>';
+                $out .= '</div>';
             }
 
-            echo '<div class="form-group">';
-            echo '<label for="admincomment" class="control-label">';
-            echo 'Commentaar van de admin</label>';
-            echo '<textarea name="admincomment" id="admincomment" ';
-            echo 'class="form-control" maxlength="200">';
-            echo $user['admincomment'] ?? '';
-            echo '</textarea>';
-            echo '</div>';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="admincomment" class="control-label">';
+            $out .= 'Commentaar van de admin</label>';
+            $out .= '<textarea name="admincomment" id="admincomment" ';
+            $out .= 'class="form-control" maxlength="200">';
+            $out .= $user['admincomment'] ?? '';
+            $out .= '</textarea>';
+            $out .= '</div>';
 
-            echo '<div class="pan-sub">';
+            $out .= '<div class="pan-sub">';
 
-            echo '<h2>Limieten&nbsp;';
+            $out .= '<h2>Limieten&nbsp;';
 
             if ($user['minlimit'] === '' && $user['maxlimit'] === '')
             {
-                echo '<button class="btn btn-default" ';
-                echo 'title="Limieten instellen" data-toggle="collapse" ';
-                echo 'data-target="#limits_pan" type="button">';
-                echo 'Instellen</button>';
+                $out .= '<button class="btn btn-default" ';
+                $out .= 'title="Limieten instellen" data-toggle="collapse" ';
+                $out .= 'data-target="#limits_pan" type="button">';
+                $out .= 'Instellen</button>';
             }
 
-            echo '</h2>';
+            $out .= '</h2>';
 
-            echo '<div id="limits_pan"';
+            $out .= '<div id="limits_pan"';
 
             if ($user['minlimit'] === '' && $user['maxlimit'] === '')
             {
-                echo ' class="collapse"';
+                $out .= ' class="collapse"';
             }
 
-            echo '>';
+            $out .= '>';
 
-            echo '<div class="form-group">';
-            echo '<label for="minlimit" class="control-label">';
-            echo 'Minimum Account Limiet</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-arrow-down"></span> ';
-            echo $app['config']->get('currency', $app['tschema']);
-            echo '</span>';
-            echo '<input type="number" class="form-control" ';
-            echo 'id="minlimit" name="minlimit" ';
-            echo 'value="';
-            echo $user['minlimit'] ?? '';
-            echo '">';
-            echo '</div>';
-            echo '<p>Vul enkel in wanneer je een individueel ';
-            echo 'afwijkende minimum limiet wil instellen ';
-            echo 'voor dit account. Als dit veld leeg is, ';
-            echo 'dan is de algemeen geldende ';
-            echo $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= '<div class="form-group">';
+            $out .= '<label for="minlimit" class="control-label">';
+            $out .= 'Minimum Account Limiet</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-arrow-down"></span> ';
+            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= '</span>';
+            $out .= '<input type="number" class="form-control" ';
+            $out .= 'id="minlimit" name="minlimit" ';
+            $out .= 'value="';
+            $out .= $user['minlimit'] ?? '';
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '<p>Vul enkel in wanneer je een individueel ';
+            $out .= 'afwijkende minimum limiet wil instellen ';
+            $out .= 'voor dit account. Als dit veld leeg is, ';
+            $out .= 'dan is de algemeen geldende ';
+            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'], 'Minimum Systeemslimiet');
-            echo ' ';
-            echo 'van toepassing. ';
+            $out .= ' ';
+            $out .= 'van toepassing. ';
 
             if ($app['config']->get('minlimit', $app['tschema']) === '')
             {
-                echo 'Er is momenteel <strong>geen</strong> algemeen ';
-                echo 'geledende Minimum Systeemslimiet ingesteld. ';
+                $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
+                $out .= 'geledende Minimum Systeemslimiet ingesteld. ';
             }
             else
             {
-                echo 'De algemeen geldende ';
-                echo 'Minimum Systeemslimiet bedraagt <strong>';
-                echo $app['config']->get('minlimit', $app['tschema']);
-                echo ' ';
-                echo $app['config']->get('currency', $app['tschema']);
-                echo '</strong>. ';
+                $out .= 'De algemeen geldende ';
+                $out .= 'Minimum Systeemslimiet bedraagt <strong>';
+                $out .= $app['config']->get('minlimit', $app['tschema']);
+                $out .= ' ';
+                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= '</strong>. ';
             }
 
-            echo 'Dit veld wordt bij aanmaak van een ';
-            echo 'gebruiker vooraf ingevuld met de "';
-            echo $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= 'Dit veld wordt bij aanmaak van een ';
+            $out .= 'gebruiker vooraf ingevuld met de "';
+            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'],
                 'Preset Individuele Minimum Account Limiet');
-            echo '" ';
-            echo 'die gedefiniëerd is in de instellingen.';
+            $out .= '" ';
+            $out .= 'die gedefiniëerd is in de instellingen.';
 
             if ($app['config']->get('preset_minlimit', $app['tschema']) !== '')
             {
-                echo ' De Preset bedraagt momenteel <strong>';
-                echo $app['config']->get('preset_minlimit', $app['tschema']);
-                echo '</strong>.';
+                $out .= ' De Preset bedraagt momenteel <strong>';
+                $out .= $app['config']->get('preset_minlimit', $app['tschema']);
+                $out .= '</strong>.';
             }
 
-            echo '</p>';
-            echo '</div>';
+            $out .= '</p>';
+            $out .= '</div>';
 
-            echo '<div class="form-group">';
-            echo '<label for="maxlimit" class="control-label">';
-            echo 'Maximum Account Limiet</label>';
-            echo '<div class="input-group">';
-            echo '<span class="input-group-addon">';
-            echo '<span class="fa fa-arrow-up"></span> ';
-            echo $app['config']->get('currency', $app['tschema']);
-            echo '</span>';
-            echo '<input type="number" class="form-control" ';
-            echo 'id="maxlimit" name="maxlimit" ';
-            echo 'value="';
-            echo $user['maxlimit'] ?? '';
-            echo '">';
-            echo '</div>';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="maxlimit" class="control-label">';
+            $out .= 'Maximum Account Limiet</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-arrow-up"></span> ';
+            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= '</span>';
+            $out .= '<input type="number" class="form-control" ';
+            $out .= 'id="maxlimit" name="maxlimit" ';
+            $out .= 'value="';
+            $out .= $user['maxlimit'] ?? '';
+            $out .= '">';
+            $out .= '</div>';
 
-            echo '<p>Vul enkel in wanneer je een individueel ';
-            echo 'afwijkende maximum limiet wil instellen ';
-            echo 'voor dit account. Als dit veld leeg is, ';
-            echo 'dan is de algemeen geldende ';
-            echo $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= '<p>Vul enkel in wanneer je een individueel ';
+            $out .= 'afwijkende maximum limiet wil instellen ';
+            $out .= 'voor dit account. Als dit veld leeg is, ';
+            $out .= 'dan is de algemeen geldende ';
+            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'],
                 'Maximum Systeemslimiet');
-            echo ' ';
-            echo 'van toepassing. ';
+            $out .= ' ';
+            $out .= 'van toepassing. ';
 
             if ($app['config']->get('maxlimit', $app['tschema']) === '')
             {
-                echo 'Er is momenteel <strong>geen</strong> algemeen ';
-                echo 'geledende Maximum Systeemslimiet ingesteld. ';
+                $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
+                $out .= 'geledende Maximum Systeemslimiet ingesteld. ';
             }
             else
             {
-                echo 'De algemeen geldende Maximum ';
-                echo 'Systeemslimiet bedraagt <strong>';
-                echo $app['config']->get('maxlimit', $app['tschema']);
-                echo ' ';
-                echo $app['config']->get('currency', $app['tschema']);
-                echo '</strong>. ';
+                $out .= 'De algemeen geldende Maximum ';
+                $out .= 'Systeemslimiet bedraagt <strong>';
+                $out .= $app['config']->get('maxlimit', $app['tschema']);
+                $out .= ' ';
+                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= '</strong>. ';
             }
 
-            echo 'Dit veld wordt bij aanmaak van een gebruiker ';
-            echo 'vooraf ingevuld wanneer "';
-            echo $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= 'Dit veld wordt bij aanmaak van een gebruiker ';
+            $out .= 'vooraf ingevuld wanneer "';
+            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'],
                 'Preset Individuele Maximum Account Limiet');
-            echo '" ';
-            echo 'is ingevuld in de instellingen.';
+            $out .= '" ';
+            $out .= 'is ingevuld in de instellingen.';
 
             if ($app['config']->get('preset_maxlimit', $app['tschema']) !== '')
             {
-                echo ' De Preset bedraagt momenteel <strong>';
-                echo $app['config']->get('preset_maxlimit', $app['tschema']);
-                echo '</strong>.';
+                $out .= ' De Preset bedraagt momenteel <strong>';
+                $out .= $app['config']->get('preset_maxlimit', $app['tschema']);
+                $out .= '</strong>.';
             }
 
-            echo '</p>';
+            $out .= '</p>';
 
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
 
             $contacts_format = [
                 'adr'	=> [
@@ -1249,94 +1220,104 @@ class users_edit_admin
                 ],
             ];
 
-            echo '<div class="bg-warning pan-sub">';
-            echo '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
+            $out .= '<div class="bg-warning pan-sub">';
+            $out .= '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
-            echo '<p>Meer contacten kunnen toegevoegd worden ';
-            echo 'vanuit de profielpagina met de knop ';
-            echo 'Toevoegen bij de contactinfo ';
-            echo $add ? 'nadat de gebruiker gecreëerd is' : '';
-            echo '.</p>';
+            $out .= '<p>Meer contacten kunnen toegevoegd worden ';
+            $out .= 'vanuit de profielpagina met de knop ';
+            $out .= 'Toevoegen bij de contactinfo ';
+            $out .= $is_edit ? '' : 'nadat de gebruiker gecreëerd is';
+            $out .= '.</p>';
 
             foreach ($contact as $key => $c)
             {
                 $name = 'contact[' . $key . '][value]';
 
-                echo '<div class="pan-sab">';
+                $out .= '<div class="pan-sab">';
 
-                echo '<div class="form-group">';
-                echo '<label for="';
-                echo $name;
-                echo '" class="control-label">';
-                echo $contacts_format[$c['abbrev']]['lbl'] ?? $c['abbrev'];
-                echo '</label>';
-                echo '<div class="input-group">';
-                echo '<span class="input-group-addon">';
-                echo '<i class="fa fa-';
-                echo $contacts_format[$c['abbrev']]['fa'] ?? 'question-mark';
-                echo '"></i>';
-                echo '</span>';
-                echo '<input class="form-control" id="';
-                echo $name;
-                echo '" name="';
-                echo $name;
-                echo '" ';
-                echo 'value="';
-                echo $c['value'] ?? '';
-                echo '" type="';
-                echo $contacts_format[$c['abbrev']]['type'] ?? 'text';
-                echo '" ';
-                echo isset($contacts_format[$c['abbrev']]['disabled']) ? 'disabled ' : '';
-                echo 'data-access="contact_access_' . $key . '">';
-                echo '</div>';
-                echo '<p>';
-                echo $contacts_format[$c['abbrev']]['explain'] ?? '';
-                echo '</p>';
-                echo '</div>';
+                $out .= '<div class="form-group">';
+                $out .= '<label for="';
+                $out .= $name;
+                $out .= '" class="control-label">';
+                $out .= $contacts_format[$c['abbrev']]['lbl'] ?? $c['abbrev'];
+                $out .= '</label>';
+                $out .= '<div class="input-group">';
+                $out .= '<span class="input-group-addon">';
+                $out .= '<i class="fa fa-';
+                $out .= $contacts_format[$c['abbrev']]['fa'] ?? 'question-mark';
+                $out .= '"></i>';
+                $out .= '</span>';
+                $out .= '<input class="form-control" id="';
+                $out .= $name;
+                $out .= '" name="';
+                $out .= $name;
+                $out .= '" ';
+                $out .= 'value="';
+                $out .= $c['value'] ?? '';
+                $out .= '" type="';
+                $out .= $contacts_format[$c['abbrev']]['type'] ?? 'text';
+                $out .= '" ';
+                $out .= isset($contacts_format[$c['abbrev']]['disabled']) ? 'disabled ' : '';
+                $out .= 'data-access="contact_access_' . $key . '">';
+                $out .= '</div>';
+                $out .= '<p>';
+                $out .= $contacts_format[$c['abbrev']]['explain'] ?? '';
+                $out .= '</p>';
+                $out .= '</div>';
 
-                echo $app['item_access']->get_radio_buttons(
+                $out .= $app['item_access']->get_radio_buttons(
                     $c['abbrev'],
                     $app['item_access']->get_value_from_flag_public($c['flag_public']),
                     'contact_access_' . $key
                 );
 
-                echo '<input type="hidden" ';
-                echo 'name="contact['. $key . '][id]" value="' . $c['id'] . '">';
-                echo '<input type="hidden" ';
-                echo 'name="contact['. $key . '][name]" value="' . $c['name'] . '">';
-                echo '<input type="hidden" ';
-                echo 'name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
+                $out .= '<input type="hidden" ';
+                $out .= 'name="contact['. $key . '][id]" value="' . $c['id'] . '">';
+                $out .= '<input type="hidden" ';
+                $out .= 'name="contact['. $key . '][name]" value="' . $c['name'] . '">';
+                $out .= '<input type="hidden" ';
+                $out .= 'name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
 
-                echo '</div>';
+                $out .= '</div>';
             }
 
-            echo '</div>';
+            $out .= '</div>';
         }
 
-        echo '<div class="form-group">';
-        echo '<label for="cron_saldo" class="control-label">';
-        echo '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
-        echo $user['cron_saldo'] ? ' checked="checked"' : '';
-        echo '>	';
-        echo 'Periodieke Overzichts E-mail';
-        echo '</label>';
-        echo '</div>';
+        $out .= '<div class="form-group">';
+        $out .= '<label for="cron_saldo" class="control-label">';
+        $out .= '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
+        $out .= $user['cron_saldo'] ? ' checked="checked"' : '';
+        $out .= '>	';
+        $out .= 'Periodieke Overzichts E-mail';
+        $out .= '</label>';
+        $out .= '</div>';
 
-        $btn = $edit ? 'primary' : 'success';
+        if ($is_edit)
+        {
+            $out .= $app['link']->btn_cancel($app['r_users_show'], $app['pp_ary'],
+                ['id' => $id]);
+        }
+        else
+        {
+            $out .= $app['link']->btn_cancel($app['r_users'], $app['pp_ary'], []);
+        }
 
-        echo $app['link']->btn_cancel('users', $app['pp_ary'],
-            $edit ? ['id' => $edit] : ['status' => 'active']);
+        $out .= '&nbsp;';
+        $out .= '<input type="submit" name="zend" ';
+        $out .= 'value="Opslaan" class="btn btn-';
+        $out .= $is_edit ? 'primary' : 'success';
+        $out .= '">';
+        $out .= $app['form_token']->get_hidden_input();
 
-        echo '&nbsp;';
-        echo '<input type="submit" name="zend" ';
-        echo 'value="Opslaan" class="btn btn-';
-        echo $btn . '">';
-        echo $app['form_token']->get_hidden_input();
+        $out .= '</form>';
 
-        echo '</form>';
+        $out .= '</div>';
+        $out .= '</div>';
 
-        echo '</div>';
-        echo '</div>';
+        $app['tpl']->add($out);
+        $app['tpl']->menu('users');
 
+        return $app['tpl']->get();
     }
 }
