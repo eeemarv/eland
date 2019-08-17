@@ -20,6 +20,8 @@ class users_edit_admin
     {
         $errors = [];
 
+        $intersystem_code = $request->query->get('intersystem_code', '');
+
         $s_owner = $is_edit
             && $app['s_id']
             && $id === $app['s_id'];
