@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
+use controller\users_list;
 
 class users_show
 {
@@ -33,6 +34,8 @@ class users_show
             $app['alert']->error('Je hebt geen toegang tot deze gebruiker.');
             $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
         }
+
+        $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
         $mail_to = $app['mail_addr_user']->get($id, $app['tschema']);
         $mail_from = $app['s_schema']
@@ -65,15 +68,15 @@ class users_show
 
         $sql_bind = [$user['letscode']];
 
-        if ($status && isset($st[$status]))
+        if ($status && isset($status_def_ary[$status]))
         {
-            $and_status = isset($st[$status]['sql'])
-                ? ' and ' . $st[$status]['sql']
+            $and_status = isset($status_def_ary[$status]['sql'])
+                ? ' and ' . $status_def_ary[$status]['sql']
                 : '';
 
-            if (isset($st[$status]['sql_bind']))
+            if (isset($status_def_ary[$status]['sql_bind']))
             {
-                $sql_bind[] = $st[$status]['sql_bind'];
+                $sql_bind[] = $status_def_ary[$status]['sql_bind'];
             }
         }
         else

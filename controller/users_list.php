@@ -26,15 +26,15 @@ class users_list
     {
         $q = $request->get('q', '');
 
-        $st = self::get_st($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
         $users_route = $app['s_admin'] ? 'users_list_admin' : 'users_list';
 
         $sql_bind = [];
 
-        if (isset($st[$status]['sql_bind']))
+        if (isset($status_def_ary[$status]['sql_bind']))
         {
-            $sql_bind[] = $st[$status]['sql_bind'];
+            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
         }
 
         $params = ['status'	=> $status];
@@ -184,7 +184,7 @@ class users_list
 
         $users = $app['db']->fetchAll('select u.*
             from ' . $app['tschema'] . '.users u
-            where ' . $st[$status]['sql'] . '
+            where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
     // hack eLAS compatibility (in eLAND limits can be null)
@@ -277,7 +277,7 @@ class users_list
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.id_user = u.id
-                    and ' . $st[$status]['sql'], $sql_bind);
+                    and ' . $status_def_ary[$status]['sql'], $sql_bind);
 
             $contacts = [];
 
@@ -325,7 +325,7 @@ class users_list
                         $app['tschema'] . '.users u
                     where msg_type = 1
                         and m.id_user = u.id
-                        and ' . $st[$status]['sql'] . '
+                        and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);
 
                 foreach ($ary as $a)
@@ -341,7 +341,7 @@ class users_list
                         $app['tschema'] . '.users u
                     where msg_type = 0
                         and m.id_user = u.id
-                        and ' . $st[$status]['sql'] . '
+                        and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);
 
                 foreach ($ary as $a)
@@ -356,7 +356,7 @@ class users_list
                     from ' . $app['tschema'] . '.messages m, ' .
                         $app['tschema'] . '.users u
                     where m.id_user = u.id
-                        and ' . $st[$status]['sql'] . '
+                        and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);
 
                 foreach ($ary as $a)
@@ -857,7 +857,7 @@ class users_list
                         if ($can_link)
                         {
                             $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
-                                ['id' => $u['id']], $u[$key] ?: '**leeg**');
+                                ['id' => $u['id'], 'status' => $status], $u[$key] ?: '**leeg**');
                         }
                         else
                         {
@@ -884,7 +884,7 @@ class users_list
                             if ($can_link)
                             {
                                 $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
-                                    ['id' => $u['id']], $u['fullname']);
+                                    ['id' => $u['id'], 'status' => $status], $u['fullname']);
                             }
                             else
                             {
@@ -1283,9 +1283,12 @@ class users_list
         $heading->fa('users');
     }
 
-    static public function get_st(bool $s_admin, int $new_user_treshold):array
+    static public function get_status_def_ary(
+        bool $s_admin,
+        int $new_user_treshold
+    ):array
     {
-        $st = [
+        $status_def_ary = [
             'active'	=> [
                 'lbl'	=> $s_admin ? 'Actief' : 'Alle',
                 'sql'	=> 'u.status in (1, 2)',
@@ -1308,7 +1311,7 @@ class users_list
 
         if ($s_admin)
         {
-            $st = $st + [
+            $status_def_ary = $status_def_ary + [
                 'inactive'	=> [
                     'lbl'	=> 'Inactief',
                     'sql'	=> 'u.status = 0',
@@ -1340,7 +1343,7 @@ class users_list
             ];
         }
 
-        return $st;
+        return $status_def_ary;
     }
 
     static public function get_filter_and_tab_selector(
@@ -1396,7 +1399,7 @@ class users_list
 
         $nav_params = $params;
 
-        foreach (self::get_st($s_admin, $new_user_treshold) as $k => $tab)
+        foreach (self::get_status_def_ary($s_admin, $new_user_treshold) as $k => $tab)
         {
             $nav_params['status'] = $k;
 
