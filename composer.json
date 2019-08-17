@@ -46,7 +46,8 @@
 		"vlucas/phpdotenv": "^3.3",
 		"silex/web-profiler": "^2.0",
 		"symfony/contracts": "^1.1",
-		"gregwar/captcha": "^1.1"
+		"gregwar/captcha": "^1.1",
+		"symfony/var-dumper": "^4.3"
 	},
 
     "minimum-stability": "stable",
@@ -70,5 +71,7 @@
 		"auto-scripts": {
 
 		}
+	},
+	"require-dev": {
 	}
 }

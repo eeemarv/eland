@@ -34,7 +34,7 @@ class users_show
             $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
         }
 
-        $mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
+        $mail_to = $app['mail_addr_user']->get($id, $app['tschema']);
         $mail_from = $app['s_schema']
             && !$app['s_master']
             && !$app['s_elas_guest']
@@ -151,7 +151,7 @@ class users_show
 
         if ($app['s_admin'] && !$count_transactions && !$s_owner)
         {
-            $app['btn_top']->del('users_del', $app['pp_ary'],
+            $app['btn_top']->del('users_del_admin', $app['pp_ary'],
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
@@ -173,8 +173,11 @@ class users_show
         $pp_status_ary = $app['pp_ary'];
         $pp_status_ary['status'] = $status;
 
+        $prev_ary = $prev ? ['id' => $prev] : [];
+        $next_ary = $next ? ['id' => $next] : [];
+
         $app['btn_nav']->nav($app['r_users_show'], $pp_status_ary,
-            ['id' => $prev], ['id' => $next], false);
+            $prev_ary, $next_ary, false);
 
         $app['btn_nav']->nav_list($app['r_users'], $pp_status_ary,
             [], 'Overzicht', 'users');

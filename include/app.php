@@ -88,7 +88,7 @@ $c_system_anon->assert('_locale', cnst_assert::LOCALE)
 
 $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::ADMIN)
+	->assert('role_short', cnst_assert::GUEST)
 	->assert('id', cnst_assert::NUMBER)
 	->assert('user_id', cnst_assert::NUMBER)
 	->assert('contact_id', cnst_assert::NUMBER)
@@ -102,7 +102,7 @@ $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 
 $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::ADMIN)
+	->assert('role_short', cnst_assert::USER)
 	->assert('id', cnst_assert::NUMBER)
 	->assert('user_id', cnst_assert::NUMBER)
 	->assert('contact_id', cnst_assert::NUMBER)
@@ -373,21 +373,25 @@ $c_system_user->match('/users/password',
 		'controller\\users_password::users_password')
 	->bind('users_password');
 
-$c_system_admin->match('/users/{id}/{status}',
-		'controller\\users_show::users_show')
-	->assert('status', cnst_assert::USER_STATUS)
-	->value('status', 'active')
-	->bind('users_show_admin');
-
 $c_system_guest->match('/users/{id}/{status}',
 		'controller\\users_show::users_show')
 	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
 	->value('status', 'active')
 	->bind('users_show');
 
+$c_system_admin->match('/users/{id}/{status}',
+		'controller\\users_show::users_show_admin')
+	->assert('status', cnst_assert::USER_STATUS)
+	->value('status', 'active')
+	->bind('users_show_admin');
+
 $c_system_guest->get('/users/map',
 		'controller\\users_map::users_map')
 	->bind('users_map');
+
+$c_system_admin->match('/users/{id}/del',
+		'controller\\users_del_admin::users_del_admin')
+	->bind('users_del_admin');
 
 $c_system_admin->match('/users/{id}/edit',
 		'controller\\users_edit_admin::users_edit_admin')
