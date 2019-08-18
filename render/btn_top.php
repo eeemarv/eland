@@ -16,13 +16,6 @@ class btn_top
 		$this->link = $link;
 	}
 
-	public function btn_cancel(string $route, array $context_params, array $params):string
-	{
-		return $this->link->link($route, $context_params, $params,
-			'Annuleren', ['class'	=> 'btn btn-default'],
-			'undo');
-	}
-
 	public function get():string
 	{
 		return implode('', $this->out);
@@ -39,7 +32,8 @@ class btn_top
 		array $params,
 		string $title = 'Verwijderen'):void
 	{
-		$this->out[] = $this->link->link($route, $context_params, $params,
+		$this->out[] = $this->link->link_fa_collapse($route,
+			$context_params, $params,
 			'Verwijderen', [
 				'class' => 'btn btn-danger',
 				'title'	=> $title,
@@ -52,7 +46,8 @@ class btn_top
 		array $params,
 		string $title = 'Toevoegen'):void
 	{
-		$this->out[] = $this->link->link($route, $context_params, $params,
+		$this->out[] = $this->link->link_fa_collapse($route,
+			$context_params, $params,
 			'Toevoegen', [
 				'class'	=> 'btn btn-success',
 				'title'	=> $title,
@@ -65,7 +60,8 @@ class btn_top
 		array $params,
 		string $title = 'Aanpassen'):void
 	{
-		$this->out[] = $this->link->link($route, $context_params, $params,
+		$this->out[] = $this->link->link_fa_collapse($route,
+			$context_params, $params,
 			'Aanpassen', [
 				'class'	=> 'btn btn-primary',
 				'title'	=> $title,
@@ -78,7 +74,8 @@ class btn_top
 		array $params,
 		string $title = 'Goedkeuren'):void
 	{
-		$this->out[] = $this->link->link($route, $context_params, $params,
+		$this->out[] = $this->link->link_fa_collapse($route,
+			$context_params, $params,
 			'Goedkeuren', [
 				'class'	=> 'btn btn-warning',
 				'title'	=> $title,
@@ -91,7 +88,8 @@ class btn_top
 		array $params,
 		string $title = 'Transactie'):void
 	{
-		$this->out[] = $this->link->link($route, $context_params, $params,
+		$this->out[] = $this->link->link_fa_collapse($route,
+			$context_params, $params,
 			'Transactie', [
 				'class'	=> 'btn btn-warning',
 				'title'	=> $title,
@@ -104,7 +102,8 @@ class btn_top
 		array $params,
 		string $title = 'Paswoord'):void
 	{
-		$this->out[] = $this->link->link($route, $context_params, $params,
+		$this->out[] = $this->link->link_fa_collapse($route,
+			$context_params, $params,
 			'Paswoord', [
 				'class'	=> 'btn btn-info',
 				'title'	=> $title,
