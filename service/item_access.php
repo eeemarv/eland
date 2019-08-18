@@ -132,7 +132,7 @@ class item_access
 
 	public function get_label(
 		string $access
-	)
+	):string
 	{
 		$access = $access === 'guest' && !$this->intersystem_en ? 'user' : $access;
 
@@ -171,7 +171,7 @@ class item_access
 		string $cache_id = '',
 		bool $omit_admin = false,
 		string $label = 'Zichtbaarheid'
-	)
+	):string
 	{
 		$ary = cnst_access::ARY;
 
@@ -211,7 +211,7 @@ class item_access
 			$out .= $this->tschema . '_' . $cache_id . '"';
 		}
 
-		$out .= ' id="' . $name . '">';
+		$out .= '>';
 
 		foreach ($ary as $key)
 		{

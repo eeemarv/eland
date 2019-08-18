@@ -375,6 +375,7 @@ class users_show
             $out .= '<dt>';
             $out .= 'Geboortedatum';
             $out .= '</dt>';
+
             if (isset($user['birthday']))
             {
                 $out .= $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
@@ -708,33 +709,30 @@ class users_show
 
             $out .= '</tbody>';
             $out .= '</table>';
+
+            if ($app['distance']->has_to_data())
+            {
+                $out .= '<div class="panel-footer">';
+                $out .= '<div class="user_map" id="map" data-markers="';
+                $out .= $app['distance']->get_to_data();
+                $out .= '" ';
+                $out .= 'data-token="';
+                $out .= $app['mapbox_token'];
+                $out .= '"></div>';
+                $out .= '</div>';
+            }
         }
         else
         {
-            $out .= '<br>';
             $out .= '<div class="panel panel-danger">';
             $out .= '<div class="panel-body">';
             $out .= '<p>Er is geen contactinfo voor ';
             $out .= $app['account']->str($id, $app['tschema']);
             $out .= '.</p>';
-            $out .= '</div></div>';
-        }
-
-        if ($app['distance']->has_to_data())
-        {
-            $out .= '<div class="panel-footer">';
-            $out .= '<div class="user_map" id="map" data-markers="';
-            $out .= $app['distance']->get_to_data();
-            $out .= '" ';
-            $out .= 'data-token="';
-            $out .= $app['mapbox_token'];
-            $out .= '"></div>';
-            $out .= '</div>';
         }
 
         $out .= '</div></div>';
-
-        $out .= '</div>';
+        $out .= '</div></div>';
 
         //
 

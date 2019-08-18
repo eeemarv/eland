@@ -117,6 +117,6 @@ class password_strength
 			$strength = 100;
 		}
 
-		return $strength;
+		return (int) $strength;
 	}
 }

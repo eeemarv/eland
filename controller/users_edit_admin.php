@@ -9,6 +9,9 @@ use cnst\access as cnst_access;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
 use cnst\contact_input as cnst_contact_input;
+use queue\mail as queue_mail;
+use service\mail_addr_system;
+use service\mail_addr_user;
 
 class users_edit_admin
 {
@@ -96,14 +99,13 @@ class users_edit_admin
 
                 foreach ($contact as $key => $c)
                 {
-                    $access_contact = $request->request->get('contact_access_' . $key);
-
-                    if ($c['value'] && !$access_contact)
+                    if ($c['value'] && !$c['access'])
                     {
                         $errors[] = 'Vul een zichtbaarheid in.';
+                        continue;
                     }
 
-                    $contact[$key]['flag_public'] = cnst_access::TO_FLAG_PUBLIC[$access_contact];
+                    $contact[$key]['flag_public'] = cnst_access::TO_FLAG_PUBLIC[$c['access']];
                 }
 
                 foreach ($contact as $key => $c)
@@ -365,11 +367,11 @@ class users_edit_admin
 
                     if ($app['db']->insert($app['tschema'] . '.users', $user))
                     {
-                        $id = $app['db']->lastInsertId($app['tschema'] . '.users_id_seq');
+                        $id = (int) app['db']->lastInsertId($app['tschema'] . '.users_id_seq');
 
-                        $fullname_access_role = $app['item_access']->get_xdb($fullname_access);
+                        $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
 
-                        $app['xdb']->set('user_fullname_access', $id, [
+                        $app['xdb']->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
                         ], $app['tschema']);
 
@@ -378,26 +380,26 @@ class users_edit_admin
                         $app['user_cache']->clear($id, $app['tschema']);
                         $user = $app['user_cache']->get($id, $app['tschema']);
 
-                        foreach ($contact as $value)
+                        foreach ($contact as $contact_ary)
                         {
-                            if (!$value['value'])
+                            if (!$contact_ary['value'])
                             {
                                 continue;
                             }
 
-                            if ($value['abbrev'] === 'adr')
+                            if ($contact_ary['abbrev'] === 'adr')
                             {
                                 $app['queue.geocode']->cond_queue([
-                                    'adr'		=> $value['value'],
+                                    'adr'		=> $contact_ary['value'],
                                     'uid'		=> $id,
                                     'schema'	=> $app['tschema'],
                                 ], 0);
                             }
 
                             $insert = [
-                                'value'				=> trim($value['value']),
-                                'flag_public'		=> $value['flag_public'],
-                                'id_type_contact'	=> $contact_types[$value['abbrev']],
+                                'value'				=> trim($contact_ary['value']),
+                                'flag_public'		=> $contact_ary['flag_public'],
+                                'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
                                 'id_user'			=> $id,
                             ];
 
@@ -412,7 +414,6 @@ class users_edit_admin
                                 {
                                     if ($mailadr)
                                     {
-                                        send_activation_mail_user($id, $password);
                                         $app['alert']->success('Een E-mail met paswoord is
                                             naar de gebruiker verstuurd.');
                                     }
@@ -423,8 +424,10 @@ class users_edit_admin
                                             adres ingesteld voor deze gebruiker.');
                                     }
 
-                                    send_activation_mail_admin($id);
-
+                                    self::send_activation_mail($app['queue.mail'],
+                                        $app['mail_addr_system'], $app['mail_addr_user'],
+                                        $mailadr ? true : false, $password,
+                                        $id, $app['tschema']);
                                 }
                                 else
                                 {
@@ -507,31 +510,31 @@ class users_edit_admin
                                 $stored_contacts[$row['id']] = $row;
                             }
 
-                            foreach ($contact as $value)
+                            foreach ($contact as $contact_ary)
                             {
-                                $stored_contact = $stored_contacts[$value['id']];
+                                $stored_contact = $stored_contacts[$contact_ary['id']];
 
-                                if (!$value['value'])
+                                if (!$contact_ary['value'])
                                 {
                                     if ($stored_contact)
                                     {
                                         $app['db']->delete($app['tschema'] . '.contact',
-                                            ['id_user' => $id, 'id' => $value['id']]);
+                                            ['id_user' => $id, 'id' => $contact_ary['id']]);
                                     }
                                     continue;
                                 }
 
-                                if ($stored_contact['abbrev'] == $value['abbrev']
-                                    && $stored_contact['value'] == $value['value']
-                                    && $stored_contact['flag_public'] == $value['flag_public'])
+                                if ($stored_contact['abbrev'] == $contact_ary['abbrev']
+                                    && $stored_contact['value'] == $contact_ary['value']
+                                    && $stored_contact['flag_public'] == $contact_ary['flag_public'])
                                 {
                                     continue;
                                 }
 
-                                if ($value['abbrev'] === 'adr')
+                                if ($contact_ary['abbrev'] === 'adr')
                                 {
                                     $app['queue.geocode']->cond_queue([
-                                        'adr'		=> $value['value'],
+                                        'adr'		=> $contact_ary['value'],
                                         'uid'		=> $id,
                                         'schema'	=> $app['tschema'],
                                     ], 0);
@@ -540,9 +543,9 @@ class users_edit_admin
                                 if (!isset($stored_contact))
                                 {
                                     $insert = [
-                                        'id_type_contact'	=> $contact_types[$value['abbrev']],
-                                        'value'				=> trim($value['value']),
-                                        'flag_public'		=> $value['flag_public'],
+                                        'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
+                                        'value'				=> trim($contact_ary['value']),
+                                        'flag_public'		=> $contact_ary['flag_public'],
                                         'id_user'			=> $id,
                                     ];
 
@@ -550,14 +553,14 @@ class users_edit_admin
                                     continue;
                                 }
 
-                                $contact_update = $value;
+                                $contact_update = $contact_ary;
 
                                 unset($contact_update['id'], $contact_update['abbrev'],
-                                    $contact_update['name'], $contact_update['main_mail']);
+                                    $contact_update['access']);
 
                                 $app['db']->update($app['tschema'] . '.contact',
                                     $contact_update,
-                                    ['id' => $value['id'], 'id_user' => $id]);
+                                    ['id' => $contact_ary['id'], 'id_user' => $id]);
                             }
 
                             if ($user['status'] == 1 && !$user_prefetch['adate'])
@@ -568,7 +571,6 @@ class users_edit_admin
                                     {
                                         if ($mailadr)
                                         {
-                                            send_activation_mail_user($id, $password);
                                             $app['alert']->success('E-mail met paswoord
                                                 naar de gebruiker verstuurd.');
                                         }
@@ -580,7 +582,10 @@ class users_edit_admin
                                                 gebruiker ingesteld.');
                                         }
 
-                                        send_activation_mail_admin($id);
+                                        self::send_activation_mail($app['queue.mail'],
+                                            $app['mail_addr_system'], $app['mail_addr_user'],
+                                            $mailadr ? true : false, $password,
+                                            $id, $app['tschema']);
                                     }
                                     else
                                     {
@@ -1209,6 +1214,8 @@ class users_edit_admin
             foreach ($contact as $key => $c)
             {
                 $name = 'contact[' . $key . '][value]';
+                $abbrev = $c['abbrev'];
+                $access_name = 'contact[' . $key . '][access]';
 
                 $out .= '<div class="pan-sab">';
 
@@ -1216,12 +1223,12 @@ class users_edit_admin
                 $out .= '<label for="';
                 $out .= $name;
                 $out .= '" class="control-label">';
-                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['lbl'] ?? $c['abbrev'];
+                $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['lbl'] ?? $c['abbrev'];
                 $out .= '</label>';
                 $out .= '<div class="input-group">';
                 $out .= '<span class="input-group-addon">';
                 $out .= '<i class="fa fa-';
-                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['fa'] ?? 'question-mark';
+                $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['fa'] ?? 'question-mark';
                 $out .= '"></i>';
                 $out .= '</span>';
                 $out .= '<input class="form-control" id="';
@@ -1232,26 +1239,31 @@ class users_edit_admin
                 $out .= 'value="';
                 $out .= $c['value'] ?? '';
                 $out .= '" type="';
-                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['type'] ?? 'text';
+                $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['type'] ?? 'text';
                 $out .= '" ';
                 $out .= isset(cnst_contact_input::FORMAT_ARY[$c['abbrev']]['disabled']) ? 'disabled ' : '';
-                $out .= 'data-access="contact_access_' . $key . '">';
+                $out .= 'data-access="';
+                $out .= $access_name;
+                $out .= '">';
                 $out .= '</div>';
-                $out .= '<p>';
-                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['explain'] ?? '';
-                $out .= '</p>';
+
+                if (isset(cnst_contact_input::FORMAT_ARY[$abbrev]['explain']))
+                {
+                    $out .= '<p>';
+                    $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['explain'];
+                    $out .= '</p>';
+                }
+
                 $out .= '</div>';
 
                 $out .= $app['item_access']->get_radio_buttons(
-                    $c['abbrev'],
+                    $access_name,
                     $app['item_access']->get_value_from_flag_public($c['flag_public']),
-                    'contact_access_' . $key
+                    $abbrev
                 );
 
                 $out .= '<input type="hidden" ';
                 $out .= 'name="contact['. $key . '][id]" value="' . $c['id'] . '">';
-                $out .= '<input type="hidden" ';
-                $out .= 'name="contact['. $key . '][name]" value="' . $c['name'] . '">';
                 $out .= '<input type="hidden" ';
                 $out .= 'name="contact['. $key . '][abbrev]" value="' . $c['abbrev'] . '">';
 
@@ -1296,5 +1308,42 @@ class users_edit_admin
         $app['tpl']->menu('users');
 
         return $app['tpl']->get();
+    }
+
+    private static function send_activation_mail(
+        queue_mail $queue_mail,
+        mail_addr_system $mail_addr_system,
+        mail_addr_user $mail_addr_user,
+        bool $to_user_en,
+        string $password,
+        int $user_id,
+        string $tschema
+    ):void
+    {
+        $queue_mail->queue([
+            'schema'	=> $tschema,
+            'to' 		=> $mail_addr_system->get_admin($tschema),
+            'template'	=> 'account_activation/admin',
+            'vars'		=> [
+                'user_id'		=> $user_id,
+                'user_email'	=> $mail_addr_user->get($user_id, $tschema),
+            ],
+        ], 5000);
+
+        if (!$to_user_en)
+        {
+            return;
+        }
+
+        $queue_mail->queue([
+            'schema'	=> $tschema,
+            'to' 		=> $mail_addr_user->get($user_id, $tschema),
+            'reply_to' 	=> $mail_addr_system->get_support($tschema),
+            'template'	=> 'account_activation/user',
+            'vars'		=> [
+                'user_id'	=> $user_id,
+                'password'	=> $password,
+            ],
+        ], 5100);
     }
 }

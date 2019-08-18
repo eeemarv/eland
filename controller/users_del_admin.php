@@ -62,19 +62,6 @@ class users_del_admin
 
                 $status = cnst_status::THUMBPINT_ARY[$user['status']];
 
-                if ($status === 'active')
-                {
-                    if ($user['status'] === 2)
-                    {
-                        $status = 'leaving';
-                    }
-                    else if (isset($user['adate'])
-                        && $app['new_user_treshold'] < strtotime($user['adate']))
-                    {
-                        $status = 'new';
-                    }
-                }
-
                 $app['link']->redirect($app['r_users'], $app['pp_ary'],
                     ['status' => $status]);
             }

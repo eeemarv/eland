@@ -17,7 +17,7 @@ $(document).ready(function(){
 	$contact_input.keyup(access_required);
 
 	function access_required(){
-		var $access = $('div#' + $(this).data('access') + ' input');
+		var $access = $('input[name="' + $(this).data('access') + '"]');
 
 		if ($(this).val() == ''){
 			$access.prop('required', false);
