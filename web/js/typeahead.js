@@ -26,9 +26,9 @@ $(document).ready(function(){
 
 			var rec = data.fetch[i];
 
-			if (data.hasOwnProperty('exists')){
+			if (data.hasOwnProperty('render')){
 
-				if (!data.exists.hasOwnProperty('check')){
+				if (!data.render.hasOwnProperty('check')){
 					continue;
 				}
 
@@ -37,8 +37,8 @@ $(document).ready(function(){
 				var $exists_query_results = $input_container.find('span.exists_query_results');
 				var $query_results = $exists_query_results.find('span.query_results');
 
-				if (data.exists.hasOwnProperty('omit')){
-					var exists_omit = data.exists.omit.toLowerCase();
+				if (data.render.hasOwnProperty('omit')){
+					var exists_omit = data.render.omit.toLowerCase();
 				} else {
 					exists_omit = '';
 				}
@@ -82,9 +82,9 @@ $(document).ready(function(){
 							$exists_query_results.show();
 
 							$query_results.text(results_ary
-								.slice(0, data.exists.check)
+								.slice(0, data.render.check)
 								.join(', ') +
-								(results_ary.length > data.exists.check ?
+								(results_ary.length > data.render.check ?
 									', ...' : '')
 							);
 						} else {
