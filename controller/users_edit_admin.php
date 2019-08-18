@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use cnst\access as cnst_access;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
+use cnst\contact_input as cnst_contact_input;
 
 class users_edit_admin
 {
@@ -1196,33 +1197,6 @@ class users_edit_admin
             $out .= '</div>';
             $out .= '</div>';
 
-            $contacts_format = [
-                'adr'	=> [
-                    'fa'		=> 'map-marker',
-                    'lbl'		=> 'Adres',
-                    'explain'	=> 'Voorbeeldstraat 23, 4520 Voorbeeldgemeente',
-                ],
-                'gsm'	=> [
-                    'fa'		=> 'mobile',
-                    'lbl'		=> 'GSM',
-                ],
-                'tel'	=> [
-                    'fa'		=> 'phone',
-                    'lbl'		=> 'Telefoon',
-                ],
-                'mail'	=> [
-                    'fa'		=> 'envelope-o',
-                    'lbl'		=> 'E-mail',
-                    'type'		=> 'email',
-                    'disabled'	=> true,     // Prevent browser fill-in, removed by js.
-                ],
-                'web'	=> [
-                    'fa'		=> 'link',
-                    'lbl'		=> 'Website',
-                    'type'		=> 'url',
-                ],
-            ];
-
             $out .= '<div class="bg-warning pan-sub">';
             $out .= '<h2><i class="fa fa-map-marker"></i> Contacten</h2>';
 
@@ -1242,12 +1216,12 @@ class users_edit_admin
                 $out .= '<label for="';
                 $out .= $name;
                 $out .= '" class="control-label">';
-                $out .= $contacts_format[$c['abbrev']]['lbl'] ?? $c['abbrev'];
+                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['lbl'] ?? $c['abbrev'];
                 $out .= '</label>';
                 $out .= '<div class="input-group">';
                 $out .= '<span class="input-group-addon">';
                 $out .= '<i class="fa fa-';
-                $out .= $contacts_format[$c['abbrev']]['fa'] ?? 'question-mark';
+                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['fa'] ?? 'question-mark';
                 $out .= '"></i>';
                 $out .= '</span>';
                 $out .= '<input class="form-control" id="';
@@ -1258,13 +1232,13 @@ class users_edit_admin
                 $out .= 'value="';
                 $out .= $c['value'] ?? '';
                 $out .= '" type="';
-                $out .= $contacts_format[$c['abbrev']]['type'] ?? 'text';
+                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['type'] ?? 'text';
                 $out .= '" ';
-                $out .= isset($contacts_format[$c['abbrev']]['disabled']) ? 'disabled ' : '';
+                $out .= isset(cnst_contact_input::FORMAT_ARY[$c['abbrev']]['disabled']) ? 'disabled ' : '';
                 $out .= 'data-access="contact_access_' . $key . '">';
                 $out .= '</div>';
                 $out .= '<p>';
-                $out .= $contacts_format[$c['abbrev']]['explain'] ?? '';
+                $out .= cnst_contact_input::FORMAT_ARY[$c['abbrev']]['explain'] ?? '';
                 $out .= '</p>';
                 $out .= '</div>';
 

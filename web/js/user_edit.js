@@ -1,7 +1,6 @@
 $(document).ready(function(){
 	var $status = $('#status');
 	var $accountrole = $('#accountrole');
-	var $mail = $('input[type="email"]');
 	var $activate = $('div#activate');
 	var $contact_input = $('input[data-access]');
 	var $presharedkey_panel = $('#presharedkey_panel');
@@ -21,7 +20,6 @@ $(document).ready(function(){
 		var $access = $('div#' + $(this).data('access') + ' input');
 
 		if ($(this).val() == ''){
-
 			$access.prop('required', false);
 		} else {
 
