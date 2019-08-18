@@ -5,6 +5,8 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
 use controller\users_list;
@@ -18,7 +20,7 @@ class users_show
 
     public function users_show_admin(Request $request, app $app, string $status, int $id):Response
     {
-        $tdays = $request->query->get('tdays', 365);
+        $tdays = $request->query->get('tdays', '365');
 
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
@@ -29,10 +31,15 @@ class users_show
 
         $user = $app['user_cache']->get($id, $app['tschema']);
 
+        if (!$user)
+        {
+            throw new NotFoundHttpException(
+                sprintf('De gebruiker met id %1$d bestaat niet', $id));
+        }
+
         if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
         {
-            $app['alert']->error('Je hebt geen toegang tot deze gebruiker.');
-            $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
+            throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
         }
 
         $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
