@@ -51,7 +51,7 @@ class contacts_add
             else
             {
                 $errors[] = 'Vul een zichtbaarheid in!';
-                $flag_public = 2;
+                $flag_public = cnst_access::TO_FLAG_PUBLIC['admin'];
             }
 
             $contact = [

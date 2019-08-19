@@ -73,7 +73,7 @@ class contacts_edit
             else
             {
                 $errors[] = 'Vul een zichtbaarheid in!';
-                $flag_public = 2;
+                $flag_public = cnst_access::TO_FLAG_PUBLIC['admin'];
             }
 
             $id_type_contact = (int) $request->request->get('id_type_contact', '');

@@ -4,6 +4,7 @@ namespace controller;
 
 use util\app;
 use Symfony\Component\HttpFoundation\Response;
+use cnst\access as cnst_access;
 
 class register_token
 {
@@ -114,7 +115,7 @@ class register_token
 
             $mail = [
                 'id_user'			=> $user_id,
-                'flag_public'		=> 0,
+                'flag_public'		=> cnst_access::TO_FLAG_PUBLIC['admin'],
                 'value'				=> $data['email'],
                 'id_type_contact'	=> $tc['mail'],
             ];
@@ -127,7 +128,7 @@ class register_token
                 {
                     $gsm = [
                         'id_user'			=> $user_id,
-                        'flag_public'		=> 0,
+                        'flag_public'		=> cnst_access::TO_FLAG_PUBLIC['admin'],
                         'value'				=> $data['gsm'],
                         'id_type_contact'	=> $tc['gsm'],
                     ];
@@ -139,7 +140,7 @@ class register_token
                 {
                     $tel = [
                         'id_user'			=> $user_id,
-                        'flag_public'		=> 0,
+                        'flag_public'		=> cnst_access::TO_FLAG_PUBLIC['admin'],
                         'value'				=> $data['tel'],
                         'id_type_contact'	=> $tc['tel'],
                     ];
@@ -149,7 +150,7 @@ class register_token
             }
             $app['db']->commit();
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
             $app['db']->rollback();
             throw $e;
