@@ -385,8 +385,10 @@ $c_system_admin->match('/users/{id}/{status}',
 	->value('status', 'active')
 	->bind('users_show_admin');
 
-$c_system_guest->get('/users/map',
+$c_system_guest->get('/users/map/{status}',
 		'controller\\users_map::users_map')
+	->assert('status', cnst_assert::USER_STATUS)
+	->value('status', 'active')
 	->bind('users_map');
 
 $c_system_admin->match('/users/{id}/del',

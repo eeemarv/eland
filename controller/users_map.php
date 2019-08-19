@@ -16,7 +16,6 @@ class users_map
 
     public function users_map(Request $request, app $app, string $status):Response
     {
-        $status = 'active';
         $ref_geo = [];
         $params = ['status' => $status];
 
