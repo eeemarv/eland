@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use cnst\status as cnst_status;
+use cnst\access as cnst_access;
 use cnst\role as cnst_role;
 use controller\users_list;
 
@@ -21,6 +22,10 @@ class users_show
     public function users_show_admin(Request $request, app $app, string $status, int $id):Response
     {
         $tdays = $request->query->get('tdays', '365');
+
+        $user_mail_content = $request->request->get('user_mail_content', '');
+        $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
+        $user_mail_submit = $request->request->get('user_mail_submit', '') ? true : false;
 
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
@@ -53,16 +58,104 @@ class users_show
 
         // process mail form
 
+        if ($request->isMethod('POST') && $user_mail_submit)
+        {
+            $errors = [];
 
-        // Contacts
+            if ($app['s_master'])
+            {
+                throw new AccessDeniedHttpException('Het master account kan
+                    geen E-mail berichten versturen.');
+            }
+
+            if (!$app['s_schema'])
+            {
+                throw new AccessDeniedHttpException('Je hebt onvoldoende
+                    rechten om een E-mail bericht te versturen.');
+            }
+
+            if ($error_token = $app['form_token']->get_error())
+            {
+                $errors[] = $error_token;
+            }
+
+            if (!$user_mail_content)
+            {
+                $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
+            }
+
+            $reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+
+            if (!count($reply_ary))
+            {
+                $errors[] = 'Fout: Je kan geen berichten naar andere gebruikers
+                    verzenden als er geen E-mail adres is ingesteld voor je eigen account.';
+            }
+
+            if (count($errors))
+            {
+                $app['alert']->error($errors);
+                $app['link']->redirect($app['r_users_show'], $app['pp_ary'],
+                    ['id' => $id]);
+            }
+
+            $from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+                from ' . $app['s_schema'] . '.contact c, ' .
+                    $app['s_schema'] . '.type_contact tc
+                where c.flag_public >= ?
+                    and c.id_user = ?
+                    and c.id_type_contact = tc.id',
+                    [cnst_access::TO_FLAG_PUBLIC[$user['accountrole']], $app['s_id']]);
+
+            $from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+
+            $vars = [
+                'from_contacts'     => $from_contacts,
+                'from_user'			=> $from_user,
+                'from_schema'		=> $app['s_schema'],
+                'to_user'			=> $user,
+                'to_schema'			=> $app['tschema'],
+                'is_same_system'	=> $app['s_system_self'],
+                'msg_content'		=> $user_mail_content,
+            ];
+
+            $mail_template = $app['s_system_self']
+                ? 'user_msg/msg'
+                : 'user_msg/msg_intersystem';
+
+            $app['queue.mail']->queue([
+                'schema'	=> $app['tschema'],
+                'to'		=> $app['mail_addr_user']->get($id, $app['tschema']),
+                'reply_to'	=> $reply_ary,
+                'template'	=> $mail_template,
+                'vars'		=> $vars,
+            ], 8000);
+
+            if ($user_mail_cc)
+            {
+                $mail_template = $app['s_system_self']
+                    ? 'user_msg/copy'
+                    : 'user_msg/copy_intersystem';
+
+                $app['queue.mail']->queue([
+                    'schema'	=> $app['tschema'],
+                    'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+                    'template' 	=> $mail_template,
+                    'vars'		=> $vars,
+                ], 8000);
+            }
+
+            $app['alert']->success('E-mail bericht verzonden.');
+
+            $app['link']->redirect($app['r_users_show'], $app['pp_ary'],
+                ['id' => $id]);
+        }
 
         $contacts = $app['db']->fetchAll('select c.*, tc.abbrev
             from ' . $app['tschema'] . '.contact c, ' .
                 $app['tschema'] . '.type_contact tc
             where c.id_type_contact = tc.id
                 and c.id_user = ?', [$id]);
-
-// end contacts
 
         $count_messages = $app['db']->fetchColumn('select count(*)
             from ' . $app['tschema'] . '.messages
@@ -496,6 +589,8 @@ class users_show
 
         // response form
 
+        $user_mail_disabled = true;
+
         if ($app['s_elas_guest'])
         {
             $placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
@@ -515,12 +610,8 @@ class users_show
         else
         {
             $placeholder = '';
+            $user_mail_disabled = false;
         }
-
-        $disabled = !$app['s_schema']
-            || !count($mail_to)
-            || !count($mail_from)
-            || $s_owner;
 
         $out .= '<h3><i class="fa fa-envelop-o"></i> ';
         $out .= 'Stuur een bericht naar ';
@@ -535,9 +626,9 @@ class users_show
         $out .= '<textarea name="user_mail_content" rows="6" placeholder="';
         $out .= $placeholder . '" ';
         $out .= 'class="form-control" required';
-        $out .= $disabled ? ' disabled' : '';
+        $out .= $user_mail_disabled ? ' disabled' : '';
         $out .= '>';
-        $out .= $user_mail_content ?? '';
+        $out .= $user_mail_content;
         $out .= '</textarea>';
         $out .= '</div>';
 
@@ -550,9 +641,10 @@ class users_show
         $out .= '</label>';
         $out .= '</div>';
 
+        $out .= $app['form_token']->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';
         $out .= 'value="Versturen" class="btn btn-default"';
-        $out .= $disabled ? ' disabled' : '';
+        $out .= $user_mail_disabled ? ' disabled' : '';
         $out .= '>';
 
         $out .= '</form>';

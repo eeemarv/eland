@@ -7,7 +7,7 @@
     {%- block html_reply -%}&nbsp;
         {{- 'reply.user'|trans({
             '%from_account%': account(from_user.id, from_schema),
-            '%link_open%': context_url_open('users_show', mpp_user_ary, {'id': from_user.id}),
+            '%link_open%': context_url_open('users_show', mpp_ary(to_user.id, to_schema), {'id': from_user.id}),
             '%link_close%': '</a>'
         })|raw -}}
     {%- endblock html_reply -%}

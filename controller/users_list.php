@@ -25,6 +25,7 @@ class users_list
     public function users_list(Request $request, app $app, string $status):Response
     {
         $q = $request->get('q', '');
+        $show_columns = $request->query->get('sh', []);
 
         $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
@@ -126,10 +127,8 @@ class users_list
         $session_users_columns_key .= $app['pp_role'];
         $session_users_columns_key .= $app['s_elas_guest'] ? '_elas' : '';
 
-        if (isset($_GET['sh']))
+        if (count($show_columns))
         {
-            $show_columns = $_GET['sh'] ?? [];
-
             $show_columns = array_intersect_key_recursive($show_columns, $columns);
 
             $app['session']->set($session_users_columns_key, $show_columns);

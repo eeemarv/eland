@@ -143,6 +143,7 @@ class register_token
                         'value'				=> $data['tel'],
                         'id_type_contact'	=> $tc['tel'],
                     ];
+
                     $app['db']->insert($app['tschema'] . '.contact', $tel);
                 }
             }
