@@ -72,6 +72,11 @@ if ($submit)
 		$errors[] = 'Login gefaald. Vul Login en Paswoord in.';
 	}
 
+	if ($error_token = $app['form_token']->get_error())
+	{
+		$errors[] = $error_token;
+	}
+
 	$master_password = getenv('MASTER_PASSWORD');
 
 	if ($login == 'master'
@@ -341,6 +346,8 @@ if(empty($token))
 
 	echo '<input type="submit" class="btn btn-default" ';
 	echo 'value="Inloggen" name="zend">';
+
+	echo $app['form_token']->get_hidden_input();
 
 	echo '</form>';
 
