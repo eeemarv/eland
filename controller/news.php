@@ -213,16 +213,16 @@ class news
                 {
                     $out .=  $app['link']->link_fa('news_approve', $app['pp_ary'],
                         ['id' => $n['id']], 'Goedkeuren en publiceren',
-                        ['class' => 'btn btn-warning btn-xs'], 'check');
+                        ['class' => 'btn btn-warning'], 'check');
                 }
 
                 $out .=  $app['link']->link_fa('news_edit', $app['pp_ary'],
                     ['id' => $n['id']], 'Aanpassen',
-                    ['class' => 'btn btn-primary btn-xs'], 'pencil');
+                    ['class' => 'btn btn-primary'], 'pencil');
 
                 $out .=  $app['link']->link_fa('news_del', $app['pp_ary'],
                     ['id' => $n['id']], 'Verwijderen',
-                    ['class' => 'btn btn-danger btn-xs'], 'times');
+                    ['class' => 'btn btn-danger'], 'times');
 
                 $out .=  '</span>';
             }
