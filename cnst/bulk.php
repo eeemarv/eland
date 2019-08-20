@@ -73,4 +73,37 @@ class bulk
             'type'	=> 'checkbox',
         ],
     ];
+
+    const TPL_INPUT =  <<<'TPL'
+    <div class="form-group">
+    <label for="%name%" class="control-label">%label%</label>
+    <div class="input-group">
+    <span class="input-group-addon">
+    <span class="fa fa-%fa%"></span></span>
+    <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
+    </div>
+    </div>
+    TPL;
+
+    const TPL_CHECKBOX = <<<'TPL'
+    <div class="form-group">
+    <label for="%name%" class="control-label">
+    <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
+    &nbsp;%label%</label></div>
+    TPL;
+
+    const TPL_SELECT = <<<'TPL'
+    <div class="form-group">
+    <label for="%name%" class="control-label">
+    %label%</label>
+    <div class="input-group">
+    <span class="input-group-addon">
+    <span class="fa fa-%fa%"></span></span>
+    <select name="%name%" id="%name%"
+    class="form-control"%attr%>
+    %options%
+    </select>
+    </div>
+    </div>
+    TPL;
 }

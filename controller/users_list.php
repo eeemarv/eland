@@ -26,13 +26,14 @@ class users_list
     {
         $q = $request->get('q', '');
         $show_columns = $request->query->get('sh', []);
+
         $selected_users = $request->request->get('su', []);
         $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
         $bulk_mail_content = $request->request->get('bulk_mail_content', '');
         $bulk_mail_cc = $request->request->get('bulk_mail_cc', '') ? true : false;
-
-        error_log(json_encode($selected_users));
-        error_log('users_list_admin');
+        $bulk_field = $request->request->get('bulk_field', []);
+        $bulk_verify = $request->request->get('bulk_verify', []);
+        $bulk_submit = $request->request->get('bulk_submit', []);
 
         $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
@@ -1075,34 +1076,6 @@ class users_list
 
         if ($app['s_admin'] & isset($show_columns['u']))
         {
-            $bulk_mail_cc = $app['request']->isMethod('POST') ? $bulk_mail_cc : true;
-
-            $inp =  '<div class="form-group">';
-            $inp .=  '<label for="%5$s" class="control-label">%2$s</label>';
-            $inp .= '<div class="input-group">';
-            $inp .= '<span class="input-group-addon">';
-            $inp .= '<span class="fa fa-%6$s"></span></span>';
-            $inp .=  '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
-            $inp .=  '</div>';
-            $inp .=  '</div>';
-
-            $checkbox = '<div class="form-group">';
-            $checkbox .= '<label for="%5$s" class="control-label">';
-            $checkbox .= '<input type="%3$s" id="%5$s" name="%1$s" %4$s>';
-            $checkbox .= ' %2$s</label></div>';
-
-            $acc_sel = '<div class="form-group">';
-            $acc_sel .= '<label for="%1$s" class="control-label">';
-            $acc_sel .= '%2$s</label>';
-            $acc_sel .= '<div class="input-group">';
-            $acc_sel .= '<span class="input-group-addon">';
-            $acc_sel .= '<span class="fa fa-%4$s"></span></span>';
-            $acc_sel .= '<select name="%1$s" id="%1$s" class="form-control">';
-            $acc_sel .= '%3$s';
-            $acc_sel .= '</select>';
-            $acc_sel .= '</div>';
-            $acc_sel .= '</div>';
-
             $out .= '<div class="panel panel-default">';
             $out .= '<div class="panel-heading">';
 
@@ -1159,7 +1132,7 @@ class users_list
             $out .= '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
             $out .= 'placeholder="Onderwerp" ';
             $out .= 'value="';
-            $out .= $bulk_mail_subject ?? '';
+            $out .= $bulk_mail_subject;
             $out .= '" required>';
             $out .= '</div>';
 
@@ -1171,7 +1144,7 @@ class users_list
             $out .= implode(',', array_keys(cnst_bulk::USER_TPL_VARS));
             $out .= '" ';
             $out .= 'required>';
-            $out .= $bulk_mail_content ?? '';
+            $out .= $bulk_mail_content;
             $out .= '</textarea>';
             $out .= '</div>';
 
@@ -1186,16 +1159,18 @@ class users_list
             $out .= '</div>';
 
             $out .= '<div class="form-group">';
-            $out .= '<label for="verify_mail" class="control-label">';
-            $out .= '<input type="checkbox" name="verify_mail" ';
-            $out .= 'id="verify_mail" ';
+            $out .= '<label for="bulk_verify[mail]" class="control-label">';
+            $out .= '<input type="checkbox" name="bulk_verify[mail]" ';
+            $out .= 'id="bulk_verify[mail]" ';
             $out .= 'value="1" required> ';
             $out .= 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.';
             $out .= '</label>';
             $out .= '</div>';
 
-            $out .= '<input type="submit" value="Zend test E-mail naar mijzelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
-            $out .= '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
+            $out .= '<input type="submit" value="Zend test E-mail naar mijzelf" ';
+            $out .= 'name="bulk_submit[mail_test]" class="btn btn-default">&nbsp;';
+            $out .= '<input type="submit" value="Verzend" name="bulk_submit[mail]" ';
+            $out .= 'class="btn btn-default">';
 
             $out .= $app['form_token']->get_hidden_input();
             $out .= '</form>';
@@ -1206,45 +1181,59 @@ class users_list
                 $out .= '<div role="tabpanel" class="tab-pane" id="';
                 $out .= $k;
                 $out .= '_tab"';
-                $out .= isset($t['item_access']) ? ' data-access-control="true"' : '';
                 $out .= '>';
                 $out .= '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
 
                 $out .= '<form method="post">';
 
-                if (isset($t['options']))
-                {
-                    $options = $t['options'];
-                    $out .= sprintf($acc_sel,
-                        $k,
-                        $t['lbl'],
-                        $app['select']->get_options($options, ''),
-                        $t['fa']);
-                }
-                else if (isset($t['type']) && $t['type'] == 'checkbox')
-                {
-                    $out .= sprintf($checkbox, $k, $t['lbl'], $t['type'], 'value="1"', $k);
-                }
-                else if (isset($t['item_access']))
+                $bulk_field_name = 'bulk_field[' . $k . ']';
+
+                if (isset($t['item_access']))
                 {
                     $out .= $app['item_access']->get_radio_buttons('access');
                 }
                 else
                 {
-                    $out .= sprintf($inp, $k, $t['lbl'], $t['type'], 'class="form-control"', $k, $t['fa']);
+                    $options = '';
+
+                    if (isset($t['options']))
+                    {
+                        $tpl = cnst_bulk::TPL_SELECT;
+                        $options = $app['select']->get_options($t['options'], '');
+                    }
+                    else if (isset($t['type'])
+                        && $t['type'] === 'checkbox')
+                    {
+                        $tpl = cnst_bulk::TPL_CHECKBOX;
+                    }
+                    else
+                    {
+                        $tpl = cnst_bulk::TPL_INPUT;
+                    }
+
+                    $out .= strtr($tpl, [
+                        '%name%'        => $bulk_field_name,
+                        '%label%'       => $t['lbl'],
+                        '%type%'        => $t['type'] ?? '',
+                        '%options%'     => $options,
+                        '%required%'    => $t['required'] ? ' required' : '',
+                        '%fa%'          => $t['fa'] ?? '',
+                        '%attr%'        => $t['attr'] ?? '',
+                    ]);
                 }
 
+                $bulk_verify_name = 'bulk_verify[' . $k  . ']';
                 $out .= '<div class="form-group">';
-                $out .= '<label for="verify_' . $k . '" class="control-label">';
-                $out .= '<input type="checkbox" name="verify_' . $k . '" ';
-                $out .= 'id="verify_' . $k . '" ';
+                $out .= '<label for="' . $bulk_verify_name . '" class="control-label">';
+                $out .= '<input type="checkbox" name="' . $bulk_verify_name . '" ';
+                $out .= 'id="' . $bulk_verify_name . '" ';
                 $out .= 'value="1" required> ';
                 $out .= 'Ik heb nagekeken dat de juiste gebruikers geselecteerd zijn en veld en ingevulde waarde nagekeken.';
                 $out .= '</label>';
                 $out .= '</div>';
 
-                $out .= '<input type="hidden" value="' . $k . '" name="bulk_field">';
-                $out .= '<input type="submit" value="Veld aanpassen" name="' . $k . '_bulk_submit" class="btn btn-primary">';
+                $out .= '<input type="submit" value="Veld aanpassen" ';
+                $out .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary">';
                 $out .= $app['form_token']->get_hidden_input();
                 $out .= '</form>';
 
