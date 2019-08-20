@@ -87,8 +87,12 @@ class users_map
                     if ($geo)
                     {
                         $data_users[$user['id']] = [
+                            'link'      => $app['link']->context_url(
+                                $app['r_users_show'],
+                                $app['pp_ary'],
+                                ['id' => $user['id']]),
                             'name'		=> $user['name'],
-                            'letscode'	=> $user['letscode'],
+                            'code'	    => $user['letscode'],
                             'lat'		=> $geo['lat'],
                             'lng'		=> $geo['lng'],
                         ];
@@ -126,8 +130,6 @@ class users_map
             $ref_geo['lng'] = $lng_add / $shown_count;
         }
 
-        $data_users = json_encode($data_users);
-
         $app['assets']->add(['leaflet', 'users_map.js']);
 
         if ($app['s_admin'])
@@ -139,22 +141,18 @@ class users_map
         users_list::btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'users_map');
         users_list::heading($app['heading']);
 
+        $data_map = json_encode([
+            'users' => $data_users,
+            'lat'   => $ref_geo['lat'] ?? '',
+            'lng'   => $ref_geo['lng'] ?? '',
+            'token' => $app['mapbox_token'],
+        ]);
+
         $out = '<div class="row">';
         $out .= '<div class="col-md-12">';
         $out .= '<div class="users_map" id="map" ';
-        $out .= 'data-users="';
-        $out .= htmlspecialchars($data_users);
-        $out .= '" ';
-        $out .= 'data-lat="';
-        $out .= $ref_geo['lat'] ?? '';
-        $out .= '" ';
-        $out .= 'data-lng="';
-        $out .= $ref_geo['lng'] ?? '';
-        $out .= '" ';
-        $out .= 'data-token="';
-        $out .= $app['mapbox_token'];
-        $out .= '" ';
-        $out .= 'data-session-param="';
+        $out .= 'data-map="';
+        $out .= htmlspecialchars($data_map);
         $out .= '"></div>';
         $out .= '</div>';
         $out .= '</div>';

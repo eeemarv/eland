@@ -4,8 +4,8 @@ $(document).ready(function(){
 	var $donut = $('#donutdiv');
 
 	var path_plot_users_transactions = $chart.data('plot-user-transactions');
-	var path_transactions_show = $chart.data('transactions-show').replace('/1', '/');
-	var path_users_show = $chart.data('users-show').replace('/1', '/');
+	var path_transactions_show = $chart.data('transactions-show').replace('/999999999', '/');
+	var path_users_show = $chart.data('users-show').replace('/999999999', '/');
 
 	$.get(path_plot_users_transactions)
 	.done( function(data){
