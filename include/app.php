@@ -413,7 +413,7 @@ $c_system_admin->get('/users/tiles/{status}',
 	->value('status', 'active')
 	->bind('users_tiles_admin');
 
-$c_system_admin->get('/users/{status}',
+$c_system_admin->match('/users/{status}',
 		'controller\\users_list::users_list_admin')
 	->assert('status', cnst_assert::USER_STATUS)
 	->value('status', 'active')

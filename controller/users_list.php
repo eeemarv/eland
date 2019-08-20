@@ -26,11 +26,15 @@ class users_list
     {
         $q = $request->get('q', '');
         $show_columns = $request->query->get('sh', []);
-        $selected_users = $request->request->get('sel', []);
+        $selected_users = $request->request->get('su', []);
+        $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
+        $bulk_mail_content = $request->request->get('bulk_mail_content', '');
+        $bulk_mail_cc = $request->request->get('bulk_mail_cc', '') ? true : false;
+
+        error_log(json_encode($selected_users));
+        error_log('users_list_admin');
 
         $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
-
-        $users_route = $app['s_admin'] ? 'users_list_admin' : 'users_list';
 
         $sql_bind = [];
 
@@ -675,7 +679,7 @@ class users_list
         $f_col .= '</div>';
 
         $out = self::get_filter_and_tab_selector(
-            $users_route, $app['pp_ary'], $params, $app['link'],
+            $app['r_users'], $app['pp_ary'], $params, $app['link'],
             $app['s_admin'], $f_col, $q, $app['new_user_treshold']
         );
 
@@ -1099,15 +1103,21 @@ class users_list
             $acc_sel .= '</div>';
             $acc_sel .= '</div>';
 
-            $out .= '<div class="panel panel-default" id="actions">';
+            $out .= '<div class="panel panel-default">';
             $out .= '<div class="panel-heading">';
 
-            $out .= '<span class="btn btn-default" id="invert_selection">';
-            $out .= 'Selectie omkeren</span>&nbsp;';
-            $out .= '<span class="btn btn-default" id="select_all">';
-            $out .= 'Selecteer alle</span>&nbsp;';
-            $out .= '<span class="btn btn-default" id="deselect_all">';
-            $out .= 'De-selecteer alle</span>';
+            $out .= '<input type="button" ';
+            $out .= 'class="btn btn-default" ';
+            $out .= 'data-table-sel="invert" ';
+            $out .= 'value="Selectie omkeren">&nbsp;';
+            $out .= '<input type="button" ';
+            $out .= 'class="btn btn-default" ';
+            $out .= 'data-table-sel="all" ';
+            $out .= 'value="Selecteer alle">&nbsp;';
+            $out .= '<input type="button" ';
+            $out .= 'class="btn btn-default" ';
+            $out .= 'data-table-sel="none" ';
+            $out .= 'value="De-selecteer alle">';
 
             $out .= '</div>';
             $out .= '</div>';
@@ -1184,7 +1194,7 @@ class users_list
             $out .= '</label>';
             $out .= '</div>';
 
-            $out .= '<input type="submit" value="Zend test E-mail naar jezelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
+            $out .= '<input type="submit" value="Zend test E-mail naar mijzelf" name="bulk_mail_test" class="btn btn-default">&nbsp;';
             $out .= '<input type="submit" value="Verzend" name="bulk_mail_submit" class="btn btn-default">';
 
             $out .= $app['form_token']->get_hidden_input();
@@ -1347,7 +1357,7 @@ class users_list
     }
 
     static public function get_filter_and_tab_selector(
-        string $users_route,
+        string $r_users,
         array $pp_ary,
         array $params,
         link $link,
@@ -1409,7 +1419,7 @@ class users_list
 
             $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
 
-            $out .= $link->link($users_route, $pp_ary,
+            $out .= $link->link($r_users, $pp_ary,
                 $nav_params, $tab['lbl'], $class_ary);
 
             $out .= '</li>';
