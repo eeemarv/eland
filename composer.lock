@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "36af49b7632a2ec22312b1c341c153e1",
+    "content-hash": "24dcd0d5b19e0997a283613230102278",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.109.4",
+            "version": "3.109.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c3c6772a7e975d763a232af118da3eaef8bf96b9"
+                "reference": "e8d3416f9b1e21029fc0eb63df075e325c690187"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c3c6772a7e975d763a232af118da3eaef8bf96b9",
-                "reference": "c3c6772a7e975d763a232af118da3eaef8bf96b9",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/e8d3416f9b1e21029fc0eb63df075e325c690187",
+                "reference": "e8d3416f9b1e21029fc0eb63df075e325c690187",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-08-14T18:14:46+00:00"
+            "time": "2019-08-19T18:08:45+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -5370,7 +5370,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7",
+        "php": "^7.3",
         "ext-imagick": "*",
         "ext-exif": "*",
         "ext-gd": "*",

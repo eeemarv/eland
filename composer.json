@@ -5,7 +5,7 @@
 	"description": "web app for community currency.",
 
     "require": {
-		"php": "^7",
+		"php": "^7.3",
 		"aws/aws-sdk-php": "^3",
 		"swiftmailer/swiftmailer": "~6",
 		"monolog/monolog": "^1",
