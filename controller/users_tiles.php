@@ -12,7 +12,7 @@ class users_tiles
 {
     public function users_tiles_admin(Request $request, app $app, string $status):Response
     {
-        return $this->get($request, $app, $status);
+        return $this->users_tiles($request, $app, $status);
     }
 
     public function users_tiles(Request $request, app $app, string $status):Response
@@ -20,20 +20,20 @@ class users_tiles
         $q = $request->get('q', '');
         $users_route = $app['s_admin'] ? 'users_tiles_admin' : 'users_tiles';
 
-        $st = users_list::get_st($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
         $params = ['status'	=> $status];
 
         $sql_bind = [];
 
-        if (isset($st[$status]['sql_bind']))
+        if (isset($status_def_ary[$status]['sql_bind']))
         {
-            $sql_bind[] = $st[$status]['sql_bind'];
+            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
         }
 
         $users = $app['db']->fetchAll('select u.*
             from ' . $app['tschema'] . '.users u
-            where ' . $st[$status]['sql'] . '
+            where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
         $app['assets']->add(['isotope', 'users_tiles.js']);

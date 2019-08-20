@@ -19,18 +19,18 @@ class users_map
         $ref_geo = [];
         $params = ['status' => $status];
 
-        $st = users_list::get_st($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
         $sql_bind = [];
 
-        if (isset($st[$status]['sql_bind']))
+        if (isset($status_def_ary[$status]['sql_bind']))
         {
-            $sql_bind[] = $st[$status]['sql_bind'];
+            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
         }
 
         $users = $app['db']->fetchAll('select u.*
             from ' . $app['tschema'] . '.users u
-            where ' . $st[$status]['sql'] . '
+            where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
         $adr_ary = [];
