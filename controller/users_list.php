@@ -26,6 +26,7 @@ class users_list
     {
         $q = $request->get('q', '');
         $show_columns = $request->query->get('sh', []);
+        $selected_users = $request->request->get('sel', []);
 
         $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 

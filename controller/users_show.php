@@ -221,7 +221,7 @@ class users_show
         $app['assets']->add([
             'leaflet',
             'jqplot',
-            'user.js',
+            'users_show.js',
             'plot_user_transactions.js',
         ]);
 
