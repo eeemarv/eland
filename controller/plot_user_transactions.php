@@ -16,16 +16,34 @@ class plot_user_transactions
             $app->abort(404, 'User not found');
         }
 
-        $groups = $_groups = $transactions = $users = $_users  = [];
+        $intersystem_names = $transactions = [];
 
-        $groups = $app['db']->fetchAll('select id,
-                groupname as n, localletscode as c, url
+        $st = $app['db']->prepare('select url, apimethod,
+            localletscode as code, groupname as name
             from ' . $app['tschema'] . '.letsgroups');
 
-        foreach ($groups as $g)
+        $st->execute();
+
+        while ($row = $st->fetch())
         {
-            $g['domain'] = strtolower(parse_url($g['url'], PHP_URL_HOST) ?? '');
-            $_groups[$g['c']] = $g;
+            if ($row['apimethod'] === 'internal')
+            {
+                continue;
+            }
+
+            $sys_schema = $app['systems']->get_schema_from_legacy_eland_origin($row['url']);
+            $code = (string) $row['code'];
+
+            if ($sys_schema)
+            {
+                $name = $app['config']->get('systemname', $sys_schema);
+            }
+            else
+            {
+                $name = $row['name'];
+            }
+
+            $intersystem_names[$code] = $name;
         }
 
         $balance = (int) $user['saldo'];
@@ -35,7 +53,8 @@ class plot_user_transactions
 
         $query = 'select t.id, t.amount, t.id_from, t.id_to,
                 t.real_from, t.real_to, t.date, t.description,
-                u.id as user_id, u.name, u.letscode, u.accountrole, u.status
+                u.id as user_id, u.name, u.letscode as code,
+                u.accountrole as role, u.status
             from ' . $app['tschema'] . '.transactions t, ' .
                 $app['tschema'] . '.users u
             where (t.id_to = ? or t.id_from = ?)
@@ -43,86 +62,88 @@ class plot_user_transactions
                 and u.id <> ?
                 and t.date >= ?
                 and t.date <= ?
-            order by t.date DESC';
+            order by t.date desc';
 
-        $trans = $app['db']->fetchAll($query,
+        $fetched_transactions = $app['db']->fetchAll($query,
             [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
         $begin_date = strtotime($begin_date);
         $end_date = strtotime($end_date);
 
-        foreach ($trans as $t)
+        foreach ($fetched_transactions as $t)
         {
             $date = strtotime($t['date']);
             $out = $t['id_from'] == $user_id ? true : false;
             $mul = $out ? 1 : -1;
-            $balance += $t['amount'] * $mul;
+            $amount = ((int) $t['amount']) * $mul;
+            $balance += $amount;
 
-            $name = $t['name'];
+            $name = strip_tags((string) $t['name']);
+            $code = strip_tags((string) $t['code']);
             $real = $t['real_from'] ?? $t['real_to'] ?? null;
+
+            unset($intersystem_name, $user_link, $user_label);
 
             if (isset($real))
             {
-                $group = $_groups[$t['letscode']] ?? [];
+                $intersystem_name = $intersystem_names[$code] ?? $name;
 
-                if (isset($group['domain']) && $sch = $app['systems']->get_schema($group['domain']))
+                if ($app['s_admin'])
                 {
-                    [$code, $name] = explode(' ', $real);
+                    $user_link = $app['link']->context_path($app['r_users_show'],
+                        $app['pp_ary'], ['id' => $t['user_id']]);
+                }
+
+                if (strpos($real, '(') !== false
+                    && strpos($real, ')') !== false)
+                {
+                    [$real_name, $real_code] = explode('(', $real);
+                    $real_name = trim($real_name ?? '');
+                    $real_code = trim($real_code ?? '', ' ()\t\n\r\0\x0B');
+                    $user_label = $real_code . ' ' . $real_name;
                 }
                 else
                 {
-                    [$name, $code] = explode('(', $real);
-                    $name = trim($name ?? '');
+                    $user_label = $real;
                 }
-
-                $code = $t['letscode'] . '.' . trim($code ?? '', ' ()\t\n\r\0\x0B');
             }
             else
             {
-                $code = $t['letscode'];
+                $user_label = $code . ' ' . $name;
+
+                if ($app['s_admin']
+                    || ($t['status'] === 1 || $t['status'] === 2))
+                {
+                    $user_link = $app['link']->context_path($app['r_users_show'],
+                        $app['pp_ary'], ['id' => $t['user_id']]);
+                }
             }
 
+            $user_label = strip_tags($code) . ' ' . strip_tags($name);
+
             $transactions[] = [
-                'a' 		=> (int) $t['amount'],
-                'date' 		=> $date,
-                'c' 		=> strip_tags($code),
-                'desc'		=> strip_tags($t['description']),
-                'out'		=> $out,
-                'id' 		=> $t['id'],
+                'amount' 	    => $amount,
+                'date' 		    => $date,
+                'link' 		    => $app['link']->context_path('transactions_show',
+                    $app['pp_ary'], ['id' => $t['id']]),
+                'user'          => [
+                    'label'             => $user_label,
+                    'link'              => $user_link,
+                    'intersystem_name'  => $intersystem_name,
+                ],
             ];
-
-            $_users[(string) $code] = [
-                'n' 		=> strip_tags($name),
-                'l' 		=> ($real || $t['status'] == 0) ? 0 : 1,
-                's'			=> $t['status'],
-                'id' 		=> $t['user_id'],
-                'g'			=> (isset($group['id'])) ? $group['id'] : 0,
-            ];
-
-            unset($group);
         }
-
-        foreach ($_users as $code => $ary)
-        {
-            $users[] = array_merge($ary, [
-                'c' 		=> (string) $code,
-            ]);
-        }
-
-        unset($_users, $_groups);
 
         $transactions = array_reverse($transactions);
 
         return $app->json([
             'user_id' 		=> $user_id,
-            'ticks' 		=> $days == 365 ? 12 : 4,
+            'ticks' 		=> $days === 365 ? 12 : 4,
             'currency' 		=> $app['config']->get('currency', $app['tschema']),
             'transactions' 	=> $transactions,
-            'users' 		=> $users,
             'beginBalance' 	=> $balance,
             'begin' 		=> $begin_date,
             'end' 			=> $end_date,
-            'groups'		=> $groups,
         ]);
     }
 }

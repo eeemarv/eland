@@ -4,123 +4,79 @@ $(document).ready(function(){
 	var $donut = $('#donutdiv');
 
 	var path_plot_users_transactions = $chart.data('plot-user-transactions');
-	var path_transactions_show = $chart.data('transactions-show').replace('/999999999', '/');
-	var path_users_show = $chart.data('users-show').replace('/999999999', '/');
 
 	$.get(path_plot_users_transactions)
-	.done( function(data){
+	.done(function(data){
 
 		var transactions = data.transactions;
-		var users = data.users;
-		var groups = data.groups;
 
-		var graph = new Array();
-		var graphTrans = new Array();
+		var graph = [];
+		var graph_transaction_index_ary = [];
 
-		var donut = new Array();
-		var donutData = new Array();
+		var donut = [];
 
-		users.getIndex = function(userCode){
-			for (var i = 0; i < this.length; i++){
-				if (userCode == this[i].c){
-					return i;
-				}
+		donut.add = function(user){
+
+			var extra_class = '';
+
+			if (user.intersystem_name){
+				var render_intersystem = '<tr><td>';
+				render_intersystem += user.intersystem_name;
+				render_intersystem += '</td></tr>';
+
+				extra_class = ' jqplot-intersystem';
 			}
-			return null;
-		}
-
-		groups.findById = function(id){
-			for (var i = 0; i < this.length; i++){
-				if (id == this[i].id){
-					return this[i];
-				}
+			else
+			{
+				render_system = '';
 			}
-			return null;
-		}
-
-		donut.add = function(transaction, users){
-
-			var user = users[transaction.userIndex];
 
 			for (i = 0; i < this.length; i++){
-				if (user.c == this[i][0]){
+				if (user.label === this[i][0]
+					&& render_intersystem === this[i][2]){
 					this[i][1]++;
+					this[i][5] = 's';
 					return i;
 				}
 			}
 
-			this.push([user.c, 1, user.n, '']);
+			this.push([user.label, 1, render_intersystem, extra_class, user.link, '']);
 			return this.length - 1;
-		}
-
-		donutData.add = function(transaction, sliceIndex){
-			var slice = {
-				in:0,
-				out:0,
-				amountIn: 0,
-				amountOut: 0,
-				userIndex: null,
-			};
-
-			if (sliceIndex == this.length){
-				this.push(slice);
-			}
-			this[sliceIndex].in += (transaction.out) ? 0 : 1;
-			this[sliceIndex].out += (transaction.out) ? 1 : 0;
-			this[sliceIndex].amountIn += (transaction.out) ? 0 : transaction.a;
-			this[sliceIndex].amountOut += (transaction.out) ? transaction.a : 0;
-			this[sliceIndex].userIndex = transaction.userIndex;
 		}
 
 		var balance = Number(data.beginBalance);
 		var beginDate = Number(data.begin) * 1000;
 		var prevDate = beginDate;
 		graph.push([beginDate, balance, '']);
-		graphTrans.push(0);
+		graph_transaction_index_ary.push(0);
 
 		for (var i2 = 0; i2 < transactions.length; i2++){
 			var t = transactions[i2];
 			var tDate = Number(t.date * 1000);
-			var amount = Number(t.a);
-
-			t.userIndex = users.getIndex(t.c);
-			var u = users[t.userIndex];
-
-			amount = (t.out) ? amount * -1 : amount;
+			var amount = Number(t.amount);
 
 			if (tDate > prevDate){
 				graph.push([tDate, balance, '']);
-				graphTrans.push(0);
+				graph_transaction_index_ary.push(0);
 				prevDate = tDate;
 			}
 
-			balance += Number(amount);
+			balance += amount;
 			tDate = prevDate + 1;
 			var d = new Date(tDate);
-			var plus = (amount > 0) ? '+' : '';
+			var plus_sign = amount > 0 ? '+' : '';
 			var str = '<tr><td>'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'</td></tr>';
-			str += '<tr><td><strong>'+plus+amount+' '+data.currency+'</strong></td></tr>';
+			str += '<tr><td><strong>'+plus_sign+amount+' '+data.currency+'</strong></td></tr>';
 			graph.push([tDate, balance, str]);
-			graphTrans.push(t.id);
+			graph_transaction_index_ary.push(i2);
 			prevDate++;
 
-			sliceIndex = donut.add(t, users);
-			donutData.add(t, sliceIndex);
+			donut.add(t.user);
 		}
-
-		$.each(donut, function(index, de){
-			var ddi = donutData[index];
-			var ui = ddi.userIndex;
-
-			var ddd = (users[ui].g) ? '<tr><td>'+ groups.findById(users[ui].g).n +'</td></td>' : '';
-			ddd += (ddi.out) ? '<tr><td><strong>-</strong> '+ddi.out+' transacties, <strong>-</strong> '+ddi.amountOut+' '+data.currency+'</td></tr>' : '';
-			ddd += (ddi.in) ? '<tr><td><strong>+</strong> '+ddi.in+' transacties, <strong>+</strong> '+ddi.amountIn+' '+data.currency+'</td></tr>' : '';
-			de[3] = ddd;
-		});
 
 		var endDate = Number(data.end) * 1000;
 		graph.push([endDate, balance, '']);
-		graphTrans.push(0);
+		graph_transaction_index_ary.push(0);
 		graph = [[[beginDate, 0], [endDate, 0]], graph];
 
 		var chart_c = $.jqplot('chartdiv', graph, {
@@ -183,20 +139,21 @@ $(document).ready(function(){
 		$chart.on('jqplotDataClick',
 			function (ev, seriesIndex, pointIndex, data) {
 
-			if (seriesIndex != 1){
+			if (seriesIndex !== 1){
 				return;
 			}
 
-			var tid = graphTrans[pointIndex];
+			var transaction_index = graph_transaction_index_ary[pointIndex];
 
-			if (tid){
-				window.location.href = path_transactions_show + tid;
+			if (transaction_index
+				&& transactions[transaction_index].link){
+				window.location.href = transactions[transaction_index].link;
 			}
 		});
 
 		$chart.on('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, ev) {
 
-			if (!graphTrans[pointIndex] || seriesIndex != 1){
+			if (!graph_transaction_index_ary[pointIndex] || seriesIndex !== 1){
 				$('.jqplot-event-canvas').css('cursor', 'crosshair');
 				return;
 			}
@@ -225,28 +182,16 @@ $(document).ready(function(){
 				tooltipFade: true,
 				show: true,
 				yvalues: 4,
-				formatString: '<table class="jqplot-highlighter"><tr><td>%1$s %3$s</td></tr>%4$s</table>',
+				formatString: '<table class="jqplot-highlighter%4$s">%3$s<tr><td>%1$s</td></tr><tr><td>%2$s&nbsp;transactie%6$s</td></tr></table>',
 				tooltipLocation: 'sw',
 				useAxesFormatters: false
 			}
 		});
 
-		$donut.on('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, ev) {
-			var dd = donutData[pointIndex];
-			var user = users[dd.userIndex];
+		$donut.on('jqplotDataMouseOver jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
+			var user_link = donut[pointIndex][4];
 
-			if (user.l){
-				$('.jqplot-event-canvas').css('cursor', 'pointer');
-			} else {
-				$('.jqplot-event-canvas').css('cursor', 'default');
-			}
-		});
-
-		$donut.on('jqplotDataHighlight', function(ev, seriesIndex, pointIndex, evdata){
-			var dd = donutData[pointIndex];
-			var user = users[dd.userIndex];
-
-			if (user.l){
+			if (user_link){
 				$('.jqplot-event-canvas').css('cursor', 'pointer');
 			} else {
 				$('.jqplot-event-canvas').css('cursor', 'default');
@@ -259,19 +204,19 @@ $(document).ready(function(){
 
 		$donut.on('jqplotDataClick', function(ev, seriesIndex, pointIndex, evdata){
 
-			var user = users[donutData[pointIndex].userIndex];
+			var user_link = donut[pointIndex][4];
 
-			if (user.l){
-				window.location.href = path_users_show + user.id;
+			if (user_link){
+				window.location.href = user_link;
 			}
 		});
 
-		$chart.on('resize', function(event, ui) {
-			chart_c.replot( { resetAxes: true } );
+		$chart.on('resize', function(event, ui){
+			chart_c.replot({resetAxes: true});
 		});
 
-		$donut.on('resize', function(event, ui) {
-			donut_c.replot( { resetAxes: true } );
+		$donut.on('resize', function(event, ui){
+			donut_c.replot({resetAxes: true});
 		});
 	});
 });

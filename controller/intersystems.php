@@ -9,12 +9,12 @@ class intersystems
 {
     public function intersystems(app $app):Response
     {
-        $groups = $app['db']->fetchAll('select *
+        $intersystems = $app['db']->fetchAll('select *
             from ' . $app['tschema'] . '.letsgroups');
 
         $letscodes = [];
 
-        foreach ($groups as $key => $sys)
+        foreach ($intersystems as $key => $sys)
         {
             $sys_host = strtolower(parse_url($sys['url'], PHP_URL_HOST) ?? '');
 

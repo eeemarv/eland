@@ -660,13 +660,18 @@ table.jqplot-cursor-tooltip {
 
 .jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
     border: 1px solid #ddd;
-    font-size: 0.75em;
+    font-size: 1.25em;
     white-space: nowrap;
     background: rgba(240,240,240,0.9);
     padding: 3px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+}
+
+/** **/
+.jqplot-highlighter-tooltip-intersystem {
+  background: rgba(255, 235, 50, 0.9);
 }
 
 .jqplot-point-label {
