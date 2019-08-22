@@ -2564,6 +2564,12 @@ if ($id)
 
 	$user = $app['user_cache']->get($id, $app['tschema']);
 
+	if (!$user)
+	{
+		$app['alert']->error('Er bestaat geen gebruiker met id ' . $id . '.');
+		cancel();
+	}
+
 	if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen toegang tot deze gebruiker.');
