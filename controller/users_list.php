@@ -8,10 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 use render\btn_nav;
 use render\link;
 use render\heading;
+use cnst\access as cnst_access;
 use cnst\status as cnst_status;
 use cnst\role as cnst_role;
 use cnst\bulk as cnst_bulk;
-use service\item_access;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class users_list
 {
@@ -34,6 +35,397 @@ class users_list
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
         $bulk_submit = $request->request->get('bulk_submit', []);
+
+        /**
+         * Begin bulk POST
+         */
+
+        if ($app['s_admin']
+            && $request->isMethod('POST')
+            && count($bulk_submit) === 1)
+        {
+            $errors = [];
+
+            if (count($bulk_field) > 1)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Request voor meer dan één veld.');
+            }
+
+            if (count($bulk_verify) > 1)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
+            }
+
+            if ($error_token = $app['form_token']->get_error())
+            {
+                $errors[] = $error_token;
+            }
+
+            if (count($bulk_verify) !== 1)
+            {
+                $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
+            }
+
+            $bulk_submit_action = array_key_first($bulk_submit);
+            $bulk_verify_action = array_key_first($bulk_verify);
+            $bulk_field_action = array_key_first($bulk_field);
+
+            if (isset($bulk_verify_action)
+                && !($bulk_verify_action === 'mail' && $bulk_submit_action === 'mail_test')
+                && $bulk_verify_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Actie nazichtvakje klopt niet.');
+            }
+
+            if (isset($bulk_field_action)
+                && $bulk_field_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Actie waardeveld klopt niet.');
+            }
+
+            if (!in_array($bulk_submit_action, ['cron_saldo', 'mail', 'mail_test'])
+                && !isset($bulk_field_action))
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Waarde veld ontbreekt.');
+            }
+
+            if (in_array($bulk_submit_action, ['cron_saldo', 'mail', 'mail_test']))
+            {
+                $bulk_field_value = isset($bulk_field[$bulk_submit_action]);
+            }
+            else
+            {
+                $bulk_field_value = $bulk_field[$bulk_field_action];
+            }
+
+            if (in_array($bulk_submit_action, ['mail', 'mail_test']))
+            {
+                if (!$app['config']->get('mailenabled', $app['tschema']))
+                {
+                    $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
+                }
+
+                if ($app['s_master'])
+                {
+                    $errors[] = 'Het master account kan geen E-mail berichten verzenden.';
+                }
+
+                if (!$bulk_mail_subject)
+                {
+                    $errors[] = 'Vul een onderwerp in voor je E-mail.';
+                }
+
+                if (!$bulk_mail_content)
+                {
+                    $errors[] = 'Het E-mail bericht is leeg.';
+                }
+            }
+            else if (strpos($bulk_submit_action, '_access') !== false)
+            {
+                if (!$bulk_field_value)
+                {
+                    $errors[] = 'Vul een zichtbaarheid in.';
+                }
+            }
+
+            if (!count($selected_users) && $bulk_submit_action !== 'mail_test')
+            {
+                $errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
+            }
+
+            if (count($errors))
+            {
+                $app['alert']->error($errors);
+            }
+            else
+            {
+                $user_ids = array_keys($selected_users);
+
+                $users_log = '';
+
+                $rows = $app['db']->executeQuery('select letscode, name, id
+                    from ' . $app['tschema'] . '.users
+                    where id in (?)',
+                    [$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+                foreach ($rows as $row)
+                {
+                    $users_log .= ', ';
+                    $users_log .= $app['account']->str_id($row['id'], $app['tschema'], false, true);
+                }
+
+                $users_log = ltrim($users_log, ', ');
+            }
+
+            $redirect = false;
+
+            if (!count($errors) && $bulk_submit_action === 'fullname_access')
+            {
+                $bulk_fullname_access_xdb = cnst_access::TO_XDB[$bulk_field_value];
+
+                foreach ($user_ids as $user_id)
+                {
+                    $app['xdb']->set('user_fullname_access', $user_id, [
+                        'fullname_access' => $bulk_fullname_access_xdb,
+                    ], $app['tschema']);
+                    $app['predis']->del($app['tschema'] . '_user_' . $user_id);
+                }
+
+                $app['monolog']->info('bulk: Set fullname_access to ' .
+                    $bulk_field_value . ' for users ' .
+                    $users_log, ['schema' => $app['tschema']]);
+
+                $app['alert']->success('De zichtbaarheid van de
+                    volledige naam werd aangepast.');
+
+                $redirect = true;
+
+                $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
+            }
+            else if (!count($errors)
+                && cnst_bulk::USER_TABS[$bulk_submit_action]['item_access'])
+            {
+                [$abbrev] = explode('_', $bulk_field);
+
+                $id_type_contact = $app['db']->fetchColumn('select id
+                    from ' . $app['tschema'] . '.type_contact
+                    where abbrev = ?', [$abbrev]);
+
+                $flag_public = cnst_access::TO_FLAG_PUBLIC[$bulk_field_value];
+
+                $app['db']->executeUpdate('update ' . $app['tschema'] . '.contact
+                set flag_public = ?
+                where id_user in (?) and id_type_contact = ?',
+                    [$flag_public, $user_ids, $id_type_contact],
+                    [\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
+
+                $app['monolog']->info('bulk: Set ' . $bulk_field_action .
+                    ' to ' . $bulk_field_value .
+                    ' for users ' . $users_log,
+                    ['schema' => $app['tschema']]);
+                $app['alert']->success('Het veld werd aangepast.');
+
+                $redirect = true;
+            }
+            else if (!count($errors)
+                && $bulk_submit_action === 'cron_saldo')
+            {
+                $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                    set cron_saldo = ?
+                    where id in (?)',
+                    [$bulk_field_value, $user_ids],
+                    [\PDO::PARAM_BOOL, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+                foreach ($user_ids as $user_id)
+                {
+                    $app['predis']->del($app['tschema'] . '_user_' . $user_id);
+                }
+
+                $log_value = $bulk_field_value ? 'on' : 'off';
+
+                $app['monolog']->info('bulk: Set periodic mail to ' .
+                    $log_value . ' for users ' .
+                    $users_log,
+                    ['schema' => $app['tschema']]);
+
+                $app['intersystems']->clear_cache($app['s_schema']);
+
+                $app['alert']->success('Het veld werd aangepast.');
+
+                $redirect = true;
+            }
+            else if (!count($errors)
+                && cnst_bulk::USER_TABS[$bulk_submit_action])
+            {
+                $store_value = $bulk_field_value;
+
+                if ($bulk_submit_action === 'minlimit')
+                {
+                    $store_value = $store_value === '' ? -999999999 : $store_value;
+                }
+
+                if ($bulk_submit_action == 'maxlimit')
+                {
+                    $store_value = $store_value === '' ? 999999999 : $store_value;
+                }
+
+                $field_type = cnst_bulk::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
+
+                $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                    set ' . $bulk_submit_action . ' = ? where id in (?)',
+                    [$store_value, $user_ids],
+                    [$field_type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+                foreach ($user_ids as $user_id)
+                {
+                    $app['predis']->del($app['tschema'] . '_user_' . $user_id);
+                }
+
+                if ($bulk_field == 'status')
+                {
+                    delete_thumbprint('active');
+                    delete_thumbprint('extern');
+                }
+
+                $app['monolog']->info('bulk: Set ' . $bulk_submit_action .
+                    ' to ' . $store_value .
+                    ' for users ' . $users_log,
+                    ['schema' => $app['tschema']]);
+
+                $app['intersystems']->clear_cache($app['tschema']);
+
+                $app['alert']->success('Het veld werd aangepast.');
+
+                $redirect = true;
+            }
+            else if (!count($errors)
+                && in_array($bulk_submit_action, ['mail', 'mail_test']))
+
+            {
+                if ($bulk_submit_action === 'mail_test')
+                {
+                    $sel_ary = [$app['s_id'] => true];
+                    $user_ids = [$app['s_id']];
+                }
+                else
+                {
+                    $sel_ary = $selected_users;
+                }
+
+                $alert_users_sent_ary = $mail_users_sent_ary = [];
+
+                $config_htmlpurifier = \HTMLPurifier_Config::createDefault();
+                $config_htmlpurifier->set('Cache.DefinitionImpl', null);
+                $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
+                $bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
+
+                $sel_users = $app['db']->executeQuery('select u.*, c.value as mail
+                    from ' . $app['tschema'] . '.users u, ' .
+                        $app['tschema'] . '.contact c, ' .
+                        $app['tschema'] . '.type_contact tc
+                    where u.id in (?)
+                        and u.id = c.id_user
+                        and c.id_type_contact = tc.id
+                        and tc.abbrev = \'mail\'',
+                        [$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+                foreach ($sel_users as $sel_user)
+                {
+                    if (!isset($sel_ary[$sel_user['id']]))
+                    {
+                        // avoid duplicate send when multiple mail addresses for one user.
+                        continue;
+                    }
+
+                    unset($sel_ary[$sel_user['id']]);
+
+                    $vars = [
+                        'subject'	=> $bulk_mail_subject,
+                    ];
+
+                    foreach (cnst_bulk::USER_TPL_VARS as $key => $val)
+                    {
+                        $vars[$key] = $sel_user[$val];
+                    }
+
+                    $app['queue.mail']->queue([
+                        'schema'			=> $app['tschema'],
+                        'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['tschema']),
+                        'pre_html_template' => $bulk_mail_content,
+                        'reply_to' 			=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+                        'vars'				=> $vars,
+                        'template'			=> 'skeleton',
+                    ], random_int(1000, 4000));
+
+                    $alert_users_sent_ary[] = $app['account']->link($sel_user['id'], $app['pp_ary']);
+                    $mail_users_sent_ary[] = $app['account']->link_url($sel_user['id'], $app['pp_ary']);
+                }
+
+                if (count($alert_users_sent_ary))
+                {
+                    $msg_users_sent = 'E-mail verzonden naar ';
+                    $msg_users_sent .= count($alert_users_sent_ary);
+                    $msg_users_sent .= ' ';
+                    $msg_users_sent .= count($alert_users_sent_ary) > 1 ? 'accounts' : 'account';
+                    $msg_users_sent .= ':';
+                    $alert_users_sent = $msg_users_sent . '<br>';
+                    $alert_users_sent .= implode('<br>', $alert_users_sent_ary);
+
+                    $app['alert']->success($alert_users_sent);
+                }
+                else
+                {
+                    $app['alert']->warning('Geen E-mails verzonden.');
+                }
+
+                if (count($sel_ary))
+                {
+                    $msg_missing_users = 'Naar volgende gebruikers werd geen
+                        E-mail verzonden wegens ontbreken van E-mail adres:';
+
+                    $alert_missing_users = $msg_missing_users . '<br>';
+                    $mail_missing_users = $msg_missing_users . '<br />';
+
+                    foreach ($sel_ary as $warning_user_id => $dummy)
+                    {
+                        $alert_missing_users .= $app['account']->link($warning_user_id, $app['pp_ary']);
+                        $alert_missing_users .= '<br>';
+
+                        $mail_missing_users .= $app['account']->link_url($warning_user_id, $app['pp_ary']);
+                        $mail_missing_users .= '<br />';
+                    }
+
+                    $app['alert']->warning($alert_missing_users);
+                }
+
+                if ($bulk_mail_cc)
+                {
+                    $vars = [
+                        'subject'	=> 'Kopie: ' . $bulk_mail_subject,
+                    ];
+
+                    foreach (cnst_bulk::USER_TPL_VARS as $key => $trans)
+                    {
+                        $vars[$key] = '{{ ' . $key . ' }}';
+                    }
+
+                    $mail_users_info = $msg_users_sent . '<br />';
+                    $mail_users_info .= implode('<br />', $alert_users_sent_ary);
+                    $mail_users_info .= '<br /><br />';
+
+                    if (isset($mail_missing_users))
+                    {
+                        $mail_users_info .= $mail_missing_users;
+                        $mail_users_info .= '<br/>';
+                    }
+
+                    $mail_users_info .= '<hr /><br />';
+
+                    $app['queue.mail']->queue([
+                        'schema'			=> $app['tschema'],
+                        'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+                        'template'			=> 'skeleton',
+                        'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
+                        'vars'				=> $vars,
+                    ], 8000);
+
+                    $app['monolog']->debug('#bulk mail:: ' .
+                        $mail_users_info . $bulk_mail_content,
+                        ['schema' => $app['tschema']]);
+
+                    $app['link']->redirect('users', $app['pp_ary'], []);
+                }
+            }
+
+            if ($redirect)
+            {
+                $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
+            }
+        }
+
+        /**
+         * End bulk POST
+         */
 
         $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
 
@@ -1190,7 +1582,7 @@ class users_list
 
                 if (isset($t['item_access']))
                 {
-                    $out .= $app['item_access']->get_radio_buttons('access');
+                    $out .= $app['item_access']->get_radio_buttons($bulk_field_name);
                 }
                 else
                 {

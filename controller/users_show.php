@@ -846,20 +846,6 @@ class users_show
         $out .= htmlspecialchars($app['link']->context_path('plot_user_transactions',
             $app['pp_ary'], ['user_id' => $id, 'days' => $tdays]));
 
- /**
-        $out .= '" ';
-
-        $out .= 'data-transactions-show="';
-        $out .= htmlspecialchars($app['link']->context_path('transactions_show',
-            $app['pp_ary'], ['id' => 999999999]));
-        $out .= '" ';
-
-        $out .= 'data-users-show="';
-        $out .= htmlspecialchars($app['link']->context_path($app['r_users_show'],
-            $app['pp_ary'], ['id' => 999999999]));
-        $out .= '" ';
-**/
-
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';

@@ -69,8 +69,8 @@ class bulk
             'fa'		=> 'arrow-up',
         ],
         'cron_saldo'		=> [
-            'lbl'	=> 'Periodieke Overzichts E-mail (aan/uit)',
-            'type'	=> 'checkbox',
+            'lbl'	    => 'Periodieke Overzichts E-mail (aan/uit)',
+            'type'	    => 'checkbox',
         ],
     ];
 

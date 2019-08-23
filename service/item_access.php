@@ -219,6 +219,7 @@ class item_access
 			$out .= '<input type="radio" name="' . $name . '"';
 			$out .= $key === $selected ? ' checked="checked"' : '';
 			$out .= ' value="' . $key . '" ';
+			$out .= 'id="' . $name . '" ';
 			$out .= 'required> ';
 			$out .= $this->get_label($key);
 			$out .= '</label>';
