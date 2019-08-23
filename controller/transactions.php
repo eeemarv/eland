@@ -14,7 +14,6 @@ class transactions
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
-        $inline_en = $request->query->get('inline', false) ? true : false;
 
         if (isset($filter['uid']))
         {
@@ -211,7 +210,7 @@ class transactions
         $amount_sum = $row['sum'];
 
         $app['pagination']->init('transactions', $app['pp_ary'],
-            $row_count, $params, $inline_en);
+            $row_count, $params);
 
         $asc_preset_ary = [
             'asc'	=> 0,
@@ -257,7 +256,7 @@ class transactions
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        if (!$inline_en && ($app['s_admin'] || $app['s_user']))
+        if ($app['s_admin'] || $app['s_user'])
         {
             if (isset($filter['uid']))
             {
@@ -300,7 +299,7 @@ class transactions
 
         if (isset($filter['uid']))
         {
-            if ($s_owner && !$inline_en)
+            if ($s_owner)
             {
                 $app['heading']->add('Mijn transacties');
             }
@@ -328,205 +327,195 @@ class transactions
 
         $out = '';
 
-        if (!$inline_en)
+        $app['heading']->btn_filter();
+
+        $app['assets']->add(['datepicker']);
+
+        $out .= '<div class="panel panel-info';
+        $out .= $filtered ? '' : ' collapse';
+        $out .= '" id="filter">';
+        $out .= '<div class="panel-heading">';
+
+        $out .= '<form method="get" class="form-horizontal">';
+
+        $out .= '<div class="row">';
+
+        $out .= '<div class="col-sm-12">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" id="q" value="';
+        $out .= $filter['q'] ?? '';
+        $out .= '" name="f[q]" placeholder="Zoekterm">';
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '</div>';
+
+        $out .= '<div class="row">';
+
+        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
+        $out .= '<span class="fa fa-user"></span></span>';
+
+        $app['typeahead']->ini($app['pp_ary'])
+            ->add('accounts', ['status' => 'active']);
+
+        if (!$app['s_guest'])
         {
-            $app['heading']->btn_filter();
-
-            $app['assets']->add(['datepicker']);
-
-            $out .= '<div class="panel panel-info';
-            $out .= $filtered ? '' : ' collapse';
-            $out .= '" id="filter">';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<form method="get" class="form-horizontal">';
-
-            $out .= '<div class="row">';
-
-            $out .= '<div class="col-sm-12">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<i class="fa fa-search"></i>';
-            $out .= '</span>';
-            $out .= '<input type="text" class="form-control" id="q" value="';
-            $out .= $filter['q'] ?? '';
-            $out .= '" name="f[q]" placeholder="Zoekterm">';
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '</div>';
-
-            $out .= '<div class="row">';
-
-            $out .= '<div class="col-sm-5">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-            $out .= '<span class="fa fa-user"></span></span>';
-
-            $app['typeahead']->ini($app['pp_ary'])
-                ->add('accounts', ['status' => 'active']);
-
-            if (!$app['s_guest'])
-            {
-                $app['typeahead']->add('accounts', ['status' => 'extern']);
-            }
-
-            if ($app['s_admin'])
-            {
-                $app['typeahead']->add('accounts', ['status' => 'inactive']);
-                $app['typeahead']->add('accounts', ['status' => 'ip']);
-                $app['typeahead']->add('accounts', ['status' => 'im']);
-            }
-
-            $out .= '<input type="text" class="form-control" ';
-            $out .= 'aria-describedby="fcode_addon" ';
-
-            $out .= 'data-typeahead="';
-
-            $out .= $app['typeahead']->str([
-                'filter'		=> 'accounts',
-                'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
-            ]);
-
-            $out .= '" ';
-
-            $out .= 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
-            $out .= 'value="';
-            $out .= $fcode ?? '';
-            $out .= '">';
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $andor_options = [
-                'and'	=> 'EN',
-                'or'	=> 'OF',
-                'nor'	=> 'NOCH',
-            ];
-
-            $out .= '<div class="col-sm-2">';
-            $out .= '<select class="form-control margin-bottom" name="f[andor]">';
-            $out .= $app['select']->get_options($andor_options, $filter['andor'] ?? 'and');
-            $out .= '</select>';
-            $out .= '</div>';
-
-            $out .= '<div class="col-sm-5">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon" id="tcode_addon">Naar ';
-            $out .= '<span class="fa fa-user"></span></span>';
-            $out .= '<input type="text" class="form-control margin-bottom" ';
-            $out .= 'data-typeahead-source="fcode" ';
-            $out .= 'placeholder="Account Code" ';
-            $out .= 'aria-describedby="tcode_addon" ';
-            $out .= 'name="f[tcode]" value="';
-            $out .= $tcode ?? '';
-            $out .= '">';
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '</div>';
-
-            $out .= '<div class="row">';
-
-            $out .= '<div class="col-sm-5">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-            $out .= '<span class="fa fa-calendar"></span></span>';
-            $out .= '<input type="text" class="form-control margin-bottom" ';
-            $out .= 'aria-describedby="fdate_addon" ';
-
-            $out .= 'id="fdate" name="f[fdate]" ';
-            $out .= 'value="';
-            $out .= $fdate ?? '';
-            $out .= '" ';
-            $out .= 'data-provide="datepicker" ';
-            $out .= 'data-date-format="';
-            $out .= $app['date_format']->datepicker_format($app['tschema']);
-            $out .= '" ';
-            $out .= 'data-date-default-view-date="-1y" ';
-            $out .= 'data-date-end-date="0d" ';
-            $out .= 'data-date-language="nl" ';
-            $out .= 'data-date-today-highlight="true" ';
-            $out .= 'data-date-autoclose="true" ';
-            $out .= 'data-date-immediate-updates="true" ';
-            $out .= 'data-date-orientation="bottom" ';
-            $out .= 'placeholder="';
-            $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
-            $out .= '">';
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '<div class="col-sm-5">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-            $out .= '<span class="fa fa-calendar"></span></span>';
-            $out .= '<input type="text" class="form-control margin-bottom" ';
-            $out .= 'aria-describedby="tdate_addon" ';
-
-            $out .= 'id="tdate" name="f[tdate]" ';
-            $out .= 'value="';
-            $out .= $tdate ?? '';
-            $out .= '" ';
-            $out .= 'data-provide="datepicker" ';
-            $out .= 'data-date-format="';
-            $out .= $app['date_format']->datepicker_format($app['tschema']);
-            $out .= '" ';
-            $out .= 'data-date-end-date="0d" ';
-            $out .= 'data-date-language="nl" ';
-            $out .= 'data-date-today-highlight="true" ';
-            $out .= 'data-date-autoclose="true" ';
-            $out .= 'data-date-immediate-updates="true" ';
-            $out .= 'data-date-orientation="bottom" ';
-            $out .= 'placeholder="';
-            $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
-            $out .= '">';
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '<div class="col-sm-2">';
-            $out .= '<input type="submit" value="Toon" ';
-            $out .= 'class="btn btn-default btn-block">';
-            $out .= '</div>';
-
-            $out .= '</div>';
-
-            $params_form = $params;
-            unset($params_form['f']);
-            unset($params_form['uid']);
-            unset($params_form['p']['start']);
-
-            $params_form = http_build_query($params_form, 'prefix', '&');
-            $params_form = urldecode($params_form);
-            $params_form = explode('&', $params_form);
-
-            foreach ($params_form as $param)
-            {
-                [$name, $value] = explode('=', $param);
-
-                if (!isset($value) || $value === '')
-                {
-                    continue;
-                }
-
-                $out .= '<input name="' . $name . '" ';
-                $out .= 'value="' . $value . '" type="hidden">';
-            }
-
-            $out .= '</form>';
-
-            $out .= '</div>';
-            $out .= '</div>';
+            $app['typeahead']->add('accounts', ['status' => 'extern']);
         }
-        else
+
+        if ($app['s_admin'])
         {
-            $out .= '<div class="row">';
-            $out .= '<div class="col-md-12">';
-
-            $app['heading']->add_inline_btn($app['btn_top']->get());
-            $out .= $app['heading']->get_h3();
+            $app['typeahead']->add('accounts', ['status' => 'inactive']);
+            $app['typeahead']->add('accounts', ['status' => 'ip']);
+            $app['typeahead']->add('accounts', ['status' => 'im']);
         }
+
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'aria-describedby="fcode_addon" ';
+
+        $out .= 'data-typeahead="';
+
+        $out .= $app['typeahead']->str([
+            'filter'		=> 'accounts',
+            'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+        ]);
+
+        $out .= '" ';
+
+        $out .= 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
+        $out .= 'value="';
+        $out .= $fcode ?? '';
+        $out .= '">';
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $andor_options = [
+            'and'	=> 'EN',
+            'or'	=> 'OF',
+            'nor'	=> 'NOCH',
+        ];
+
+        $out .= '<div class="col-sm-2">';
+        $out .= '<select class="form-control margin-bottom" name="f[andor]">';
+        $out .= $app['select']->get_options($andor_options, $filter['andor'] ?? 'and');
+        $out .= '</select>';
+        $out .= '</div>';
+
+        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon" id="tcode_addon">Naar ';
+        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= 'data-typeahead-source="fcode" ';
+        $out .= 'placeholder="Account Code" ';
+        $out .= 'aria-describedby="tcode_addon" ';
+        $out .= 'name="f[tcode]" value="';
+        $out .= $tcode ?? '';
+        $out .= '">';
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '</div>';
+
+        $out .= '<div class="row">';
+
+        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
+        $out .= '<span class="fa fa-calendar"></span></span>';
+        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= 'aria-describedby="fdate_addon" ';
+
+        $out .= 'id="fdate" name="f[fdate]" ';
+        $out .= 'value="';
+        $out .= $fdate ?? '';
+        $out .= '" ';
+        $out .= 'data-provide="datepicker" ';
+        $out .= 'data-date-format="';
+        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= '" ';
+        $out .= 'data-date-default-view-date="-1y" ';
+        $out .= 'data-date-end-date="0d" ';
+        $out .= 'data-date-language="nl" ';
+        $out .= 'data-date-today-highlight="true" ';
+        $out .= 'data-date-autoclose="true" ';
+        $out .= 'data-date-immediate-updates="true" ';
+        $out .= 'data-date-orientation="bottom" ';
+        $out .= 'placeholder="';
+        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= '">';
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
+        $out .= '<span class="fa fa-calendar"></span></span>';
+        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= 'aria-describedby="tdate_addon" ';
+
+        $out .= 'id="tdate" name="f[tdate]" ';
+        $out .= 'value="';
+        $out .= $tdate ?? '';
+        $out .= '" ';
+        $out .= 'data-provide="datepicker" ';
+        $out .= 'data-date-format="';
+        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= '" ';
+        $out .= 'data-date-end-date="0d" ';
+        $out .= 'data-date-language="nl" ';
+        $out .= 'data-date-today-highlight="true" ';
+        $out .= 'data-date-autoclose="true" ';
+        $out .= 'data-date-immediate-updates="true" ';
+        $out .= 'data-date-orientation="bottom" ';
+        $out .= 'placeholder="';
+        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= '">';
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '<div class="col-sm-2">';
+        $out .= '<input type="submit" value="Toon" ';
+        $out .= 'class="btn btn-default btn-block">';
+        $out .= '</div>';
+
+        $out .= '</div>';
+
+        $params_form = $params;
+        unset($params_form['f']);
+        unset($params_form['uid']);
+        unset($params_form['p']['start']);
+
+        $params_form = http_build_query($params_form, 'prefix', '&');
+        $params_form = urldecode($params_form);
+        $params_form = explode('&', $params_form);
+
+        foreach ($params_form as $param)
+        {
+            [$name, $value] = explode('=', $param);
+
+            if (!isset($value) || $value === '')
+            {
+                continue;
+            }
+
+            $out .= '<input name="' . $name . '" ';
+            $out .= 'value="' . $value . '" type="hidden">';
+        }
+
+        $out .= '</form>';
+
+        $out .= '</div>';
+        $out .= '</div>';
+
 
         $out .= $app['pagination']->get();
 
@@ -799,25 +788,16 @@ class transactions
 
         $out .= $app['pagination']->get();
 
-        if ($inline_en)
-        {
-            $out .= '</div></div>';
-
-            return new Response($out);
-        }
-        else
-        {
-            $out .= '<ul>';
-            $out .= '<li>';
-            $out .= 'Totaal: ';
-            $out .= '<strong>';
-            $out .= $amount_sum;
-            $out .= '</strong> ';
-            $out .= $app['config']->get('currency', $app['tschema']);
-            $out .= '</li>';
-            $out .= self::get_valuation($app['config'], $app['tschema']);
-            $out .= '</ul>';
-        }
+        $out .= '<ul>';
+        $out .= '<li>';
+        $out .= 'Totaal: ';
+        $out .= '<strong>';
+        $out .= $amount_sum;
+        $out .= '</strong> ';
+        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= '</li>';
+        $out .= self::get_valuation($app['config'], $app['tschema']);
+        $out .= '</ul>';
 
         $app['tpl']->add($out);
         $app['tpl']->menu('transactions');

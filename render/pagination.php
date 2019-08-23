@@ -21,7 +21,6 @@ class pagination
 	protected $row_count = 0;
 	protected $page_num = 0;
 	protected $params = [];
-	protected $inline = false;
 	protected $out;
 
 	protected $limit_options = [
@@ -47,8 +46,7 @@ class pagination
 		string $route,
 		array $pp_ary,
 		int $row_count,
-		array $params = [],
-		bool $inline = false
+		array $params = []
 	):void
 	{
 		$this->limit = (int) $params['p']['limit'] ?? 25;
@@ -57,7 +55,6 @@ class pagination
 		$this->route = $route;
 		$this->pp_ary = $pp_ary;
 		$this->params = $params;
-		$this->inline = $inline;
 
 		$this->page_num = (int) ceil($this->row_count / $this->limit);
 		$this->page = (int) floor($this->start / $this->limit);
@@ -113,43 +110,41 @@ class pagination
 		$this->out .= $this->page_num;
 		$this->out .= '</div>';
 
-		if (!$this->inline)
-		{
-			$this->out .= '<div>';
-			$this->out .= '<form action="';
-			$this->out .= $this->link->path($this->route, $this->pp_ary);
-			$this->out .= '">';
+		$this->out .= '<div>';
+		$this->out .= '<form action="';
+		$this->out .= $this->link->path($this->route, $this->pp_ary);
+		$this->out .= '">';
 
-			$this->out .= 'Per pagina: ';
-			$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
-			$this->out .= $this->select->get_options($this->limit_options, (string) $this->limit);
-			$this->out .= '</select>';
+		$this->out .= 'Per pagina: ';
+		$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
+		$this->out .= $this->select->get_options($this->limit_options, (string) $this->limit);
+		$this->out .= '</select>';
 
-			$action_params = $this->params;
-			unset($action_params['p']['limit']);
-			$action_params['p']['start'] = 0;
+		$action_params = $this->params;
+		unset($action_params['p']['limit']);
+		$action_params['p']['start'] = 0;
 //			$action_params = array_merge($action_params,  get_session_query_param());
 
-			$action_params = http_build_query($action_params, 'prefix', '&');
-			$action_params = urldecode($action_params);
-			$action_params = explode('&', $action_params);
+		$action_params = http_build_query($action_params, 'prefix', '&');
+		$action_params = urldecode($action_params);
+		$action_params = explode('&', $action_params);
 
-			foreach ($action_params as $param)
+		foreach ($action_params as $param)
+		{
+			[$name, $value] = explode('=', $param);
+
+			if (!isset($value) || $value === '')
 			{
-				[$name, $value] = explode('=', $param);
-
-				if (!isset($value) || $value === '')
-				{
-					continue;
-				}
-
-				$this->out .= '<input name="' . $name . '" ';
-				$this->out .= 'value="' . $value . '" type="hidden">';
+				continue;
 			}
 
-			$this->out .= '</form>';
-			$this->out .= '</div>';
+			$this->out .= '<input name="' . $name . '" ';
+			$this->out .= 'value="' . $value . '" type="hidden">';
 		}
+
+		$this->out .= '</form>';
+		$this->out .= '</div>';
+
 		$this->out .= '</div>';
 		$this->out .= '</div></div>';
 
