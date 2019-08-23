@@ -104,8 +104,8 @@ class assets
 		],
 		'summernote' => [
 			'js'	=> [
-				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.min.js',
-				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/lang/summernote-nl-NL.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/summernote.min.js',
+				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.10/lang/summernote-nl-NL.min.js',
 			],
 			'css'	=> [
 				'cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.css',
