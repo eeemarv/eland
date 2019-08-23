@@ -88,7 +88,7 @@ class bulk
     const TPL_CHECKBOX = <<<'TPL'
     <div class="form-group">
     <label for="%name%" class="control-label">
-    <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
+    <input type="%type%" id="%name%" name="%name%" %attr%>
     &nbsp;%label%</label></div>
     TPL;
 

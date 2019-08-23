@@ -5,6 +5,7 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use service\item_access;
 use render\btn_nav;
 use render\link;
 use render\heading;
@@ -165,7 +166,7 @@ class users_list
 
                 foreach ($user_ids as $user_id)
                 {
-                    $app['xdb']->set('user_fullname_access', $user_id, [
+                    $app['xdb']->set('user_fullname_access', (string) $user_id, [
                         'fullname_access' => $bulk_fullname_access_xdb,
                     ], $app['tschema']);
                     $app['predis']->del($app['tschema'] . '_user_' . $user_id);
@@ -179,13 +180,11 @@ class users_list
                     volledige naam werd aangepast.');
 
                 $redirect = true;
-
-                $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
             }
             else if (!count($errors)
                 && cnst_bulk::USER_TABS[$bulk_submit_action]['item_access'])
             {
-                [$abbrev] = explode('_', $bulk_field);
+                [$abbrev] = explode('_', $bulk_field_action);
 
                 $id_type_contact = $app['db']->fetchColumn('select id
                     from ' . $app['tschema'] . '.type_contact
@@ -194,10 +193,10 @@ class users_list
                 $flag_public = cnst_access::TO_FLAG_PUBLIC[$bulk_field_value];
 
                 $app['db']->executeUpdate('update ' . $app['tschema'] . '.contact
-                set flag_public = ?
-                where id_user in (?) and id_type_contact = ?',
-                    [$flag_public, $user_ids, $id_type_contact],
-                    [\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
+                    set flag_public = ?
+                    where id_user in (?) and id_type_contact = ?',
+                        [$flag_public, $user_ids, $id_type_contact],
+                        [\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
                 $app['monolog']->info('bulk: Set ' . $bulk_field_action .
                     ' to ' . $bulk_field_value .
@@ -263,8 +262,8 @@ class users_list
 
                 if ($bulk_field == 'status')
                 {
-                    delete_thumbprint('active');
-                    delete_thumbprint('extern');
+                    $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['tschema']);
+                    $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['tschema']);
                 }
 
                 $app['monolog']->info('bulk: Set ' . $bulk_submit_action .
@@ -412,8 +411,11 @@ class users_list
                     $app['monolog']->debug('#bulk mail:: ' .
                         $mail_users_info . $bulk_mail_content,
                         ['schema' => $app['tschema']]);
+                }
 
-                    $app['link']->redirect('users', $app['pp_ary'], []);
+                if ($bulk_submit_action === 'mail')
+                {
+                    $redirect = true;
                 }
             }
 
