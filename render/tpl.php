@@ -593,6 +593,7 @@ class tpl
 		$out .= '</div>';
 
 		$out .= $this->heading->get_h1();
+		$out .= $this->heading->get_sub();
 
 		$out .= $this->content;
 

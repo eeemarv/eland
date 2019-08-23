@@ -831,7 +831,7 @@ class users_show
         $out .= '<div class="row">';
         $out .= '<div class="col-md-12">';
 
-        $out .= '<h3>Saldo: <span class="label label-info">';
+        $out .= '<h3>Huidig saldo: <span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span> ';
         $out .= $app['config']->get('currency', $app['tschema']);

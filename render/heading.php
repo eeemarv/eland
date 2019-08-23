@@ -5,6 +5,7 @@ namespace render;
 class heading
 {
 	protected $str = '';
+	protected $str_sub = '';
 	protected $fa;
 	protected $btn_filter = false;
 	protected $filtered = false;
@@ -39,6 +40,11 @@ class heading
 		return '<h3>' . $this->get() . '</h3>';
 	}
 
+	public function get_sub():string
+	{
+		return $this->str_sub ? '<h2>' . $this->str_sub . '</h2>' : '';
+	}
+
 	public function add_inline_btn(string $str):void
 	{
 		$this->str .= '<span class="inline-buttons">';
@@ -51,11 +57,14 @@ class heading
 		$this->fa = $fa;
 	}
 
-    public function add(
-		string $str
-	):void
+    public function add(string $str):void
     {
 		$this->str .= $str;
+	}
+
+    public function add_sub(string $str_sub):void
+    {
+		$this->str_sub .= $str_sub;
 	}
 
 	public function add_filtered(bool $filtered):void
