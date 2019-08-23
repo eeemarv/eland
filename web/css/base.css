@@ -658,20 +658,26 @@ table.jqplot-cursor-tooltip {
     padding: 1px;
 }
 
+/*
 .jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
-    border: 1px solid #ddd;
-    font-size: 1.25em;
-    white-space: nowrap;
-    background: rgba(240,240,240,0.9);
-    padding: 3px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+
 }
+*/
 
 /** **/
-.jqplot-highlighter-tooltip-intersystem {
-  background: rgba(255, 235, 50, 0.9);
+.jqplot-highlighter {
+  border: 1px solid #ddd;
+  font-size: 1.25em;
+  white-space: nowrap;
+  background: rgba(240,240,240,0.9);
+  padding: .5em;
+  border-radius: .5em;
+}
+
+.jqplot-intersystem {
+  border: 1px solid #dda;
+  background: rgba(255, 245, 195, 0.9);
+  color: rgb(131, 111, 0);
 }
 
 .jqplot-point-label {
@@ -690,12 +696,10 @@ div.jqplot-cursor-legend-swatch {
 }
 
 .jqplot-error {
-/*   Styles added to the plot target container when there is an error go here.*/
     text-align: center;
 }
 
 .jqplot-error-message {
-/*    Styling of the custom error message div goes here.*/
     position: relative;
     top: 46%;
     display: inline-block;

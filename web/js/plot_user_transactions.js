@@ -3,6 +3,8 @@ $(document).ready(function(){
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');
 
+	var $ecanvas = $('.jqplot-event-canvas');
+
 	var path_plot_users_transactions = $chart.data('plot-user-transactions');
 
 	$.get(path_plot_users_transactions)
@@ -11,73 +13,75 @@ $(document).ready(function(){
 		var transactions = data.transactions;
 
 		var graph = [];
-		var graph_transaction_index_ary = [];
-
 		var donut = [];
 
 		donut.add = function(user){
 
-			var extra_class = '';
+			var intersystem_en = user.hasOwnProperty('intersystem_name');
+			var link = user.hasOwnProperty('link') ? user.link : '';
 
-			if (user.intersystem_name){
-				var render_intersystem = '<tr><td>';
-				render_intersystem += user.intersystem_name;
-				render_intersystem += '</td></tr>';
+			var str = '';
 
-				extra_class = ' jqplot-intersystem';
+			if (intersystem_en){
+				str += ' jqplot-intersystem"><table><tr><td>';
+				str += user.intersystem_name;
+				str += '</td></tr>';
+			} else {
+				str += '"><table>';
 			}
-			else
-			{
-				render_system = '';
-			}
+
+			str += '<tr><td>';
+			str += user.label;
 
 			for (i = 0; i < this.length; i++){
-				if (user.label === this[i][0]
-					&& render_intersystem === this[i][2]){
+				if (str === this[i][2]){
 					this[i][1]++;
-					this[i][5] = 's';
+					this[i][3] = this[i][1].toString() + ' transacties';
 					return i;
 				}
 			}
 
-			this.push([user.label, 1, render_intersystem, extra_class, user.link, '']);
+			this.push([user.label, 1, str, '1 transactie', link]);
 			return this.length - 1;
 		}
 
-		var balance = Number(data.beginBalance);
-		var beginDate = Number(data.begin) * 1000;
-		var prevDate = beginDate;
-		graph.push([beginDate, balance, '']);
-		graph_transaction_index_ary.push(0);
+		var balance = Number(data.begin_balance);
+		var beginTime = Number(data.begin_unix) * 1000;
+		var prevTime = beginTime;
+		graph.push([beginTime, balance, '', '']);
 
 		for (var i2 = 0; i2 < transactions.length; i2++){
 			var t = transactions[i2];
-			var tDate = Number(t.date * 1000);
+			var tTime = Number(t.time * 1000);
 			var amount = Number(t.amount);
 
-			if (tDate > prevDate){
-				graph.push([tDate, balance, '']);
-				graph_transaction_index_ary.push(0);
-				prevDate = tDate;
+			if (tTime > prevTime){
+				graph.push([tTime, balance, '', '']);
+				prevTime = tTime;
 			}
 
 			balance += amount;
-			tDate = prevDate + 1;
-			var d = new Date(tDate);
+			tTime = prevTime + 1;
 			var plus_sign = amount > 0 ? '+' : '';
-			var str = '<tr><td>'+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'</td></tr>';
+			var str = '<div class="jqplot-highlighter';
+			if (t.user.hasOwnProperty('intersystem_name')){
+				str += ' jqplot-intersystem';
+			}
+			str += '"><table>';
 			str += '<tr><td><strong>'+plus_sign+amount+' '+data.currency+'</strong></td></tr>';
-			graph.push([tDate, balance, str]);
-			graph_transaction_index_ary.push(i2);
-			prevDate++;
+			str += '<tr><td>'+t.fdate+'</td></tr>';
+			str += '<tr><td>'+balance+' '+data.currency+'</td></tr>';
+			str += '</table></div>';
+
+			graph.push([tTime, balance, str, t.link]);
+			prevTime++;
 
 			donut.add(t.user);
 		}
 
-		var endDate = Number(data.end) * 1000;
-		graph.push([endDate, balance, '']);
-		graph_transaction_index_ary.push(0);
-		graph = [[[beginDate, 0], [endDate, 0]], graph];
+		var endTime = Number(data.end_unix) * 1000;
+		graph.push([endTime, balance, '', '']);
+		graph = [[[beginTime, 0], [endTime, 0]], graph];
 
 		var chart_c = $.jqplot('chartdiv', graph, {
 			grid: {shadow: false},
@@ -107,7 +111,7 @@ $(document).ready(function(){
 			fillBetween: {
 				series1: 0,
 				series2: 1,
-				color: 'rgba(0, 0, 255, 0.1)',
+				color: 'rgba(0, 0, 0, 0.1)',
 				baseSeries: 0,
 				fill: true
 			},
@@ -118,6 +122,7 @@ $(document).ready(function(){
 			},
 			series: [
 				{
+					color: 'rgba(0, 0, 0, 0)'
 				},
 				{
 					color: 'rgb(0, 0, 0)',
@@ -127,7 +132,7 @@ $(document).ready(function(){
 						tooltipLocation: 'sw',
 						useAxesFormatters: false,
 						yvalues: 3,
-						formatString:'<table class="jqplot-highlighter"><tr><td>%2$s '+data.currency+'</td></tr>%3$s</table>',
+						formatString:'%3$s',
 					}
 				},
 			],
@@ -143,17 +148,16 @@ $(document).ready(function(){
 				return;
 			}
 
-			var transaction_index = graph_transaction_index_ary[pointIndex];
+			console.log(pointIndex);
 
-			if (transaction_index
-				&& transactions[transaction_index].link){
-				window.location.href = transactions[transaction_index].link;
+			if (graph[1][pointIndex][3] !== ''){
+				window.location.href = graph[1][pointIndex][3];
 			}
 		});
 
 		$chart.on('jqplotDataMouseOver', function (ev, seriesIndex, pointIndex, ev) {
 
-			if (!graph_transaction_index_ary[pointIndex] || seriesIndex !== 1){
+			if (graph[1][pointIndex][3] === '' || seriesIndex !== 1){
 				$('.jqplot-event-canvas').css('cursor', 'crosshair');
 				return;
 			}
@@ -182,7 +186,7 @@ $(document).ready(function(){
 				tooltipFade: true,
 				show: true,
 				yvalues: 4,
-				formatString: '<table class="jqplot-highlighter%4$s">%3$s<tr><td>%1$s</td></tr><tr><td>%2$s&nbsp;transactie%6$s</td></tr></table>',
+				formatString: '<div class="jqplot-highlighter%3$s</td></tr><tr><td>%4$s</td></tr></table></div>',
 				tooltipLocation: 'sw',
 				useAxesFormatters: false
 			}

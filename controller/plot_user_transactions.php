@@ -48,11 +48,25 @@ class plot_user_transactions
 
         $balance = (int) $user['saldo'];
 
-        $begin_date = date('Y-m-d H:i:s', time() - (86400 * $days));
-        $end_date = date('Y-m-d H:i:s');
+        $begin_unix = time() - (86400 * $days);
+        $end_unix = time();
+
+        $begin_date = gmdate('Y-m-d H:i:s', $begin_unix);
+        $end_date = gmdate('Y-m-d H:i:s', $end_unix);
+
+        $add = $app['db']->fetchColumn('select sum(amount)
+            from ' . $app['tschema'] . '.transactions
+            where id_to = ?
+                and cdate <= ?', [$user_id, $begin_date]);
+        $substract = $app['db']->fetchColumn('select sum(amount)
+            from ' . $app['tschema'] . '.transactions
+            where id_from = ?
+                and cdate <= ?', [$user_id, $begin_date]);
+
+        $begin_balance = $add - $substract;
 
         $query = 'select t.id, t.amount, t.id_from, t.id_to,
-                t.real_from, t.real_to, t.date, t.description,
+                t.real_from, t.real_to, t.cdate, t.description,
                 u.id as user_id, u.name, u.letscode as code,
                 u.accountrole as role, u.status
             from ' . $app['tschema'] . '.transactions t, ' .
@@ -60,23 +74,19 @@ class plot_user_transactions
             where (t.id_to = ? or t.id_from = ?)
                 and (u.id = t.id_to or u.id = t.id_from)
                 and u.id <> ?
-                and t.date >= ?
-                and t.date <= ?
-            order by t.date desc';
+                and t.cdate >= ?
+                and t.cdate <= ?
+            order by t.cdate asc';
 
         $fetched_transactions = $app['db']->fetchAll($query,
             [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
-        $begin_date = strtotime($begin_date);
-        $end_date = strtotime($end_date);
-
         foreach ($fetched_transactions as $t)
         {
-            $date = strtotime($t['date']);
-            $out = $t['id_from'] == $user_id ? true : false;
-            $mul = $out ? 1 : -1;
+            $time = strtotime($t['cdate'] . ' UTC');
+            $out = $t['id_from'] === $user_id;
+            $mul = $out ? -1 : 1;
             $amount = ((int) $t['amount']) * $mul;
-            $balance += $amount;
 
             $name = strip_tags((string) $t['name']);
             $code = strip_tags((string) $t['code']);
@@ -121,29 +131,38 @@ class plot_user_transactions
 
             $user_label = strip_tags($code) . ' ' . strip_tags($name);
 
+            $tr_user = [
+                'label'     => $user_label,
+            ];
+
+            if (isset($user_link))
+            {
+                $tr_user['link'] = $user_link;
+            }
+
+            if (isset($intersystem_name))
+            {
+                $tr_user['intersystem_name'] = $intersystem_name;
+            }
+
             $transactions[] = [
-                'amount' 	    => $amount,
-                'date' 		    => $date,
-                'link' 		    => $app['link']->context_path('transactions_show',
+                'amount' 	        => $amount,
+                'time'              => $time,
+                'fdate'             => $app['date_format']->get_from_unix($time, 'day', $app['tschema']),
+                'link' 		        => $app['link']->context_path('transactions_show',
                     $app['pp_ary'], ['id' => $t['id']]),
-                'user'          => [
-                    'label'             => $user_label,
-                    'link'              => $user_link,
-                    'intersystem_name'  => $intersystem_name,
-                ],
+                'user'              => $tr_user,
             ];
         }
-
-        $transactions = array_reverse($transactions);
 
         return $app->json([
             'user_id' 		=> $user_id,
             'ticks' 		=> $days === 365 ? 12 : 4,
             'currency' 		=> $app['config']->get('currency', $app['tschema']),
             'transactions' 	=> $transactions,
-            'beginBalance' 	=> $balance,
-            'begin' 		=> $begin_date,
-            'end' 			=> $end_date,
+            'begin_balance' => $begin_balance,
+            'begin_unix' 	=> $begin_unix,
+            'end_unix' 		=> $end_unix,
         ]);
     }
 }
