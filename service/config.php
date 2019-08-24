@@ -5,7 +5,7 @@ namespace service;
 use service\xdb;
 use cnst\config as cnst_config;
 use Doctrine\DBAL\Connection as db;
-use Predis\Client as predis;
+use Predis\Client as Predis;
 
 class config
 {
@@ -17,7 +17,7 @@ class config
 	public function __construct(
 		db $db,
 		xdb $xdb,
-		predis $predis
+		Predis $predis
 	)
 	{
 		$this->predis = $predis;

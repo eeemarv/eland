@@ -3,12 +3,12 @@
 namespace service;
 
 use service\cache;
-use Predis\Client as Redis;
+use Predis\Client as Predis;
 
 class schedule
 {
 	protected $cache;
-	protected $redis;
+	protected $predis;
 
 	protected $tasks;
 	protected $time;
@@ -16,10 +16,10 @@ class schedule
 	protected $interval;
 	protected $id;
 
-	public function __construct(cache $cache, Redis $redis)
+	public function __construct(cache $cache, Predis $predis)
 	{
 		$this->cache = $cache;
-		$this->redis = $redis;
+		$this->predis = $predis;
 
 		$this->tasks = $this->cache->get('tasks');
 	}

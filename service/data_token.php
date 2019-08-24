@@ -2,20 +2,20 @@
 
 namespace service;
 
-use Predis\Client as Redis;
+use Predis\Client as Predis;
 use service\token as token_gen;
 
 class data_token
 {
-	protected $redis;
+	protected $predis;
 	protected $token_gen;
 	protected $token;
 
 	const KEY = 'data_token_%token%_%name%_%schema%';
 
-	public function __construct(Redis $redis, token_gen $token_gen)
+	public function __construct(Predis $predis, token_gen $token_gen)
 	{
-		$this->redis = $redis;
+		$this->predis = $predis;
 		$this->token_gen = $token_gen;
 	}
 
@@ -32,8 +32,8 @@ class data_token
 	{
 		$token = $this->token_gen->gen();
 		$key = $this->get_redis_key($token, $name, $schema);
-		$this->redis->set($key, serialize($data));
-		$this->redis->expire($key, $ttl);
+		$this->predis->set($key, serialize($data));
+		$this->predis->expire($key, $ttl);
 
 		return $token;
 	}
@@ -41,7 +41,7 @@ class data_token
 	public function retrieve(string $token, string $name, string $schema):array
 	{
 		$key = $this->get_redis_key($token, $name, $schema);
-		$data = $this->redis->get($key);
+		$data = $this->predis->get($key);
 
 		if (!$data)
 		{
@@ -54,6 +54,6 @@ class data_token
 	public function del(string $token, string $name, string $schema):void
 	{
 		$key = $this->get_redis_key($token, $name, $schema);
-		$this->redis->del($key);
+		$this->predis->del($key);
 	}
 }

@@ -3,7 +3,7 @@
 namespace service;
 
 use Doctrine\DBAL\Connection as db;
-use Predis\Client as Redis;
+use Predis\Client as Predis;
 use Monolog\Logger;
 
 /*
@@ -21,44 +21,32 @@ Indexes:
 class cache
 {
 	protected $db;
-	protected $redis;
+	protected $predis;
 	protected $monolog;
 
-	public function __construct(db $db, Redis $redis, Logger $monolog)
+	const PREFIX = 'cache_';
+
+	public function __construct(db $db, Predis $predis, Logger $monolog)
 	{
 		$this->db = $db;
-		$this->redis = $redis;
+		$this->predis = $predis;
 		$this->monolog = $monolog;
 	}
 
-	/*
-	 *
-	 */
-
-	public function set(string $id, array $data = [], int $expires = 0)
+	public function set(string $id, array $data = [], int $expires = 0):void
 	{
-		$id = trim($id);
 		$data = json_encode($data);
 
 		if (!strlen($id))
 		{
-			$error = 'Cache: no id set for data ' . $data;
-			$this->monolog->error($error);
-			return $error;
+			throw new \LogicException('Cache: no id set for data ' . $data);
 		}
 
-		if (!ctype_digit((string) $expires))
-		{
-			$error = 'Cache: ' . $id . ' -> error Expires is no number: ' . $expires . ', data: ' . $data;
-			$this->monolog->error($error);
-			return $error;
-		}
+		$this->predis->set(self::PREFIX . $id, $data);
 
-		$this->redis->set('cache_' . $id, $data);
-
-		if ($expires)
+		if ($expires > 0)
 		{
-			$this->redis->expire('cache_' . $id, $expires);
+			$this->predis->expire(self::PREFIX . $id, $expires);
 		}
 
 		$insert = [
@@ -66,64 +54,52 @@ class cache
 			'data'			=> $data,
 		];
 
-		if ($expires && $expires !== 0)
+		if ($expires > 0)
 		{
 			$insert['expires'] = gmdate('Y-m-d H:i:s', time() + $expires);
 		}
 
-		try
-		{
-			$this->db->beginTransaction();
+		$this->db->beginTransaction();
 
-			if ($this->db->fetchColumn('select id
-				from xdb.cache
-				where id = ?', [$id]))
-			{
-				$this->db->update('xdb.cache',
-					['data' => $data],
-					['id' => $id]);
-			}
-			else
-			{
-				$this->db->insert('xdb.cache', $insert);
-			}
-
-			$this->db->commit();
-		}
-		catch(Exception $e)
+		if ($this->db->fetchColumn('select id
+			from xdb.cache
+			where id = ?', [$id]))
 		{
-			$this->db->rollback();
-			$this->redis->del($id);
-			echo 'Database transactie niet gelukt (cache).';
-			$this->monolog->debug('Database transactie niet gelukt (queue). ' . $data . ' -- ' . $e->getMessage());
-			throw $e;
-			exit;
+			$this->db->update('xdb.cache',
+				['data' => $data],
+				['id' => $id]);
 		}
+		else
+		{
+			$this->db->insert('xdb.cache', $insert);
+		}
+
+		$this->db->commit();
 	}
 
-	/*
+	/**
 	 *
 	 */
-
-	public function get(string $id, bool $decoded = true)
+	public function get(string $id):array
 	{
-		if (!$id)
+		return json_decode($this->get_raw($id), true);
+	}
+
+	/**
+	 *
+	 */
+	public function get_raw(string $id):string
+	{
+		if (!strlen($id))
 		{
-			return $decoded ? [] : '';
+			throw new \LogicException('No id for cache get()');
 		}
 
-		$id = trim($id);
+		$data = $this->predis->get(self::PREFIX . $id);
 
-		$data = $this->redis->get('cache_' . $id);
-
-		if ($data)
+		if (isset($data))
 		{
-			if (!$decoded)
-			{
-				return $data;
-			}
-
-			return json_decode($data, true);
+			return $data;
 		}
 
 		$row = $this->db->fetchAssoc('select data, expires
@@ -134,38 +110,33 @@ class cache
 
 		if ($row)
 		{
-			$this->redis->set('cache_' . $id, $row['data']);
+			$data = $row['data'];
+
+			$this->predis->set(self::PREFIX . $id, $data);
 
 			if (isset($data['expires']))
 			{
-				$this->redis->expireat('cache_' . $id, $data['expires']);
+				$expireat = strtotime($data['expires'] . ' UTC');
+				$this->predis->expireat(self::PREFIX . $id, $expireat);
 			}
 
-			if (!$decoded)
-			{
-				return $row['data'];
-			}
-
-			return json_decode($row['data'], true);
+			return $data;
 		}
 
-		return $decoded ? [] : '';
+		return '{}';
 	}
 
 	/**
 	 *
 	 */
-
-	public function exists(string $id)
+	public function exists(string $id):bool
 	{
-		$id = trim($id);
-
-		if (!$id)
+		if (!strlen($id))
 		{
-			return false;
+			throw new \LogicException('No id set for cache::exists()');
 		}
 
-		if ($this->redis->exists('cache_' . $id))
+		if ($this->predis->exists(self::PREFIX . $id))
 		{
 			return true;
 		}
@@ -187,55 +158,42 @@ class cache
 	/**
 	 *
 	 */
-
-	public function expire(string $id, int $time)
+	public function expire(string $id, int $time):void
 	{
-		$id = trim($id);
-
-		if (!$id)
+		if (!strlen($id))
 		{
-			return;
+			throw new \LogicException('No id set for cache::expire()');
 		}
 
-		$this->redis->expire('cache_' . $id, $time);
+		$this->predis->expire(self::PREFIX . $id, $time);
 
 		$time = gmdate('Y-m-d H:i:s', $time);
 
 		$this->db->update('xdb.cache', ['expires' => $time], ['id' => $id]);
-
-		return;
 	}
 
 	/**
 	 *
 	 */
-
-	public function del(string $id)
+	public function del(string $id):void
 	{
-		$id = trim($id);
-
-		if (!$id)
+		if (!strlen($id))
 		{
-			return;
+			throw new \LogicException('No id set for cache::del()');
 		}
 
-		$this->redis->del('cache_' . $id);
+		$this->predis->del(self::PREFIX . $id);
 
 		$this->db->delete('xdb.cache', ['id' => $id]);
-
-		return;
 	}
 
 	/**
 	 *
 	 */
-
-	public function cleanup()
+	public function cleanup():void
 	{
 		$this->db->executeQuery('delete from xdb.cache
 			where expires < timezone(\'utc\'::text, now())
 				and expires is not null');
-
-		return;
 	}
 }

@@ -3,28 +3,27 @@
 namespace service;
 
 use Doctrine\DBAL\Connection as db;
-use Predis\Client as Redis;
+use Predis\Client as Predis;
 
 class log_db
 {
 	protected $db;
-	protected $redis;
+	protected $predis;
 
-	public function __construct(db $db, Redis $redis)
+	public function __construct(db $db, Predis $predis)
 	{
 		$this->db = $db;
-		$this->redis = $redis;
+		$this->predis = $predis;
 	}
 
-	/*
-	*
-	*/
-
+	/**
+	 *
+	 */
 	public function update(int $count = 500):void
 	{
 		for ($i = 0; $i < $count; $i++)
 		{
-			$log_json = $this->redis->lpop('monolog_logs');
+			$log_json = $this->predis->lpop('monolog_logs');
 
 			if (!isset($log_json))
 			{
