@@ -278,7 +278,7 @@ $c_system_admin->match('/intersystems/add',
 	->bind('intersystems_add');
 
 $c_system_admin->get('/intersystems/{id}',
-		'controller\\intersystems_show::intersytems_show')
+		'controller\\intersystems_show::intersystems_show')
 	->bind('intersystems_show');
 
 $c_system_admin->get('/intersystems',

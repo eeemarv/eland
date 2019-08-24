@@ -322,7 +322,7 @@ class users_show
             else if ($intersystem_id)
             {
                 $app['heading']->add(' ');
-                $app['heading']->add($app['link']->link_fa('intersystem', $app['pp_ary'],
+                $app['heading']->add($app['link']->link_fa('intersystems_show', $app['pp_ary'],
                     ['id' => $intersystem_id], 'Gekoppeld interSysteem',
                     ['class' => 'btn btn-default'], 'share-alt'));
             }
@@ -529,6 +529,8 @@ class users_show
             {
                 $out .= '<dd><i class="fa fa-times"></i></dd>';
             }
+
+            error_log($user['accountrole']);
 
             $out .= '<dt>';
             $out .= 'Rechten / rol';

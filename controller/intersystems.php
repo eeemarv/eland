@@ -24,22 +24,22 @@ class intersystems
 
             if ($sys_schema)
             {
-                $groups[$key]['eland'] = true;
-                $groups[$key]['schema'] = $sys_schema;
+                $intersystems[$key]['eland'] = true;
+                $intersystems[$key]['schema'] = $sys_schema;
 
-                $groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
+                $intersystems[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
                     from ' . $sys_schema . '.users
                     where status in (1, 2)');
             }
             else if ($sys['apimethod'] == 'internal')
             {
-                $groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
+                $intersystems[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
                     from ' . $app['tschema'] . '.users
                     where status in (1, 2)');
             }
             else
             {
-                $groups[$key]['user_count'] = $app['predis']->get($sys_host . '_active_user_count');
+                $intersystems[$key]['user_count'] = $app['predis']->get($sys_host . '_active_user_count');
             }
         }
 
@@ -75,7 +75,7 @@ class intersystems
         $out .= 'Wanneer je deze pagina kan zien is dit reeds het geval.';
         $out .= '</p>';
 
-        if (count($groups))
+        if (count($intersystems))
         {
             $out .= '<div class="panel panel-primary printview">';
 
@@ -92,19 +92,19 @@ class intersystems
 
             $out .= '<tbody>';
 
-            foreach($groups as $g)
+            foreach($intersystems as $sys)
             {
                 $out .= '<tr>';
                 $out .= '<td>';
 
-                if ($g['apimethod'] == 'elassoap')
+                if ($sys['apimethod'] === 'elassoap')
                 {
-                    $user = $users_letscode[$g['localletscode']] ?? [];
+                    $user = $users_letscode[$sys['localletscode']] ?? [];
 
                     if ($user)
                     {
                         $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
-                            ['id' => $user['id']], $g['localletscode'],
+                            ['id' => $user['id']], $sys['localletscode'],
                             [
                                 'class'	=> 'btn btn-default',
                                 'title'	=> 'Ga naar het interSysteem account',
@@ -116,7 +116,7 @@ class intersystems
                             $out .= $app['link']->link_fa($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $user['id']], 'Status!',
                                 [
-                                    'class'	=> 'btn btn-danger btn-xs',
+                                    'class'	=> 'btn btn-danger',
                                     'title'	=> 'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
                                 ],
                                 'exclamation-triangle');
@@ -127,7 +127,7 @@ class intersystems
                             $out .= $app['link']->link_fa($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $user['id']], 'Rol!',
                                 [
-                                    'class'	=> 'btn btn-danger btn-xs',
+                                    'class'	=> 'btn btn-danger',
                                     'title'	=> 'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
                                 ],
                                 'fa-exclamation-triangle');
@@ -135,9 +135,9 @@ class intersystems
                     }
                     else
                     {
-                        $out .= $g['localletscode'];
+                        $out .= $sys['localletscode'];
 
-                        if ($g['apimethod'] != 'internal' && !$user)
+                        if ($sys['apimethod'] !== 'internal' && !$user)
                         {
                             $out .= ' <span class="label label-danger" title="Er is geen account gevonden met deze code">';
                             $out .= '<i class="fa fa-exclamation-triangle"></i> Account</span>';
@@ -149,14 +149,14 @@ class intersystems
                 $out .= '<td>';
 
                 $out .= $app['link']->link_no_attr('intersystems_show', $app['pp_ary'],
-                    ['id' => $g['id']], $g['groupname']);
+                    ['id' => $sys['id']], $sys['groupname']);
 
-                if (isset($g['eland']))
+                if (isset($sys['eland']))
                 {
-                    $out .= ' <span class="label label-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
+                    $out .= ' <span class="btn btn-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
                     $out .= 'eLAND</span>';
 
-                    if (!$app['config']->get('template_lets', $g['schema']))
+                    if (!$app['config']->get('template_lets', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdsbank.">';
@@ -164,7 +164,7 @@ class intersystems
                         $out .= 'geen Tijdsbank</span>';
                     }
 
-                    if (!$app['config']->get('interlets_en', $g['schema']))
+                    if (!$app['config']->get('interlets_en', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="InterSysteem-mogelijkheid is niet ';
@@ -177,11 +177,11 @@ class intersystems
                 $out .= '</td>';
 
                 $out .= '<td>';
-                $out .= $g['user_count'];
+                $out .= $sys['user_count'];
                 $out .= '</td>';
 
                 $out .= '<td>';
-                $out .= $g['apimethod'];
+                $out .= $sys['apimethod'];
                 $out .= '</td>';
                 $out .= '</tr>';
             }
@@ -254,7 +254,7 @@ class intersystems
         $out .= 'het andere Systeem op dezelfde wijze een interSysteem en Account aanmaakt ';
         $out .= 'is de InterSysteem-verbinding compleet. ';
         $out .= 'In alle vier kolommen (lok.interSysteem, lok.Account, rem.interSysteem, rem.Account) zie je dan het ';
-        $out .= '<span class="btn btn-success btn-xs">OK</span>-teken.</li>';
+        $out .= '<span class="btn btn-success">OK</span>-teken.</li>';
         $out .= '</ul>';
 
         $url_ary = [];
@@ -407,7 +407,7 @@ class intersystems
 
                     $out .= $app['link']->link('intersystems_show', $app['pp_ary'],
                         ['id' => $loc_group['id']], 'OK',
-                        ['class'	=> 'btn btn-success btn-xs']);
+                        ['class'	=> 'btn btn-success']);
                 }
                 else
                 {
@@ -438,7 +438,7 @@ class intersystems
                             $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $loc_acc['id']], 'rol',
                                 [
-                                    'class'	=> 'btn btn-warning btn-xs',
+                                    'class'	=> 'btn btn-warning',
                                     'title'	=> 'De rol van het account moet van het type interSysteem zijn.',
                                 ]);
                         }
@@ -447,7 +447,7 @@ class intersystems
                             $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $loc_acc['id']], 'status',
                                 [
-                                    'class'	=> 'btn btn-warning btn-xs',
+                                    'class'	=> 'btn btn-warning',
                                     'title'	=> 'De status van het account moet actief, uitstapper of extern zijn.',
                                 ]);
                         }
@@ -455,7 +455,7 @@ class intersystems
                         {
                             $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
                                 ['id' => $loc_acc['id']], 'OK',
-                                ['class' => 'btn btn-success btn-xs']);
+                                ['class' => 'btn btn-success']);
                         }
                     }
                     else
@@ -479,7 +479,7 @@ class intersystems
 
                 if (isset($rem_group_ary[$rem_origin]))
                 {
-                    $out .= '<span class="btn btn-success btn-xs">OK</span>';
+                    $out .= '<span class="btn btn-success">OK</span>';
                 }
                 else
                 {
@@ -495,17 +495,17 @@ class intersystems
 
                     if ($rem_acc['accountrole'] != 'interlets')
                     {
-                        $out .= '<span class="btn btn-warning btn-xs" title="De rol van het Account ';
+                        $out .= '<span class="btn btn-warning" title="De rol van het Account ';
                         $out .= 'moet van het type interSysteem zijn.">rol</span>';
                     }
                     else if (!in_array($rem_acc['status'], [1, 2, 7]))
                     {
-                        $out .= '<span class="btn btn-warning btn-xs" title="De status van het Account ';
+                        $out .= '<span class="btn btn-warning" title="De status van het Account ';
                         $out .= 'moet actief, uitstapper of extern zijn.">rol</span>';
                     }
                     else
                     {
-                        $out .= '<span class="btn btn-success btn-xs">OK</span>';
+                        $out .= '<span class="btn btn-success">OK</span>';
                     }
                 }
                 else
