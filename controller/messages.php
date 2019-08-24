@@ -18,7 +18,6 @@ class messages
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
-        $inline_en = $request->query->get('inline', false) ? true : false;
 
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
@@ -27,10 +26,9 @@ class messages
             && $app['s_id'];
 
         $view = 'list';
-        $inline_en = $app['request']->query->get('inline') ? true : false;
 
-        $v_list = $view === 'list' || $inline_en;
-        $v_extended = $view === 'extended' && !$inline_en;
+        $v_list = $view === 'list';
+        $v_extended = $view === 'extended';
 
         $params = [
             's'	=> [
@@ -244,7 +242,7 @@ class messages
         }
 
         $app['pagination']->init($app['r_messages'], $app['pp_ary'],
-            $row_count, $params, $inline_en);
+            $row_count, $params);
 
         $asc_preset_ary = [
             'asc'	=> 0,
@@ -345,8 +343,7 @@ class messages
 
         if ($app['s_admin'] || $app['s_user'])
         {
-            if (!$inline_en
-                && ($s_owner || !isset($filter['uid'])))
+            if ($s_owner || !isset($filter['uid']))
             {
                 $app['btn_top']->add('messages_add', $app['pp_ary'],
                     [], 'Vraag of aanbod toevoegen');
@@ -379,7 +376,7 @@ class messages
 
         if (isset($filter['uid']))
         {
-            if ($s_owner && !$inline_en)
+            if ($s_owner)
             {
                 $app['heading']->add('Mijn vraag en aanbod');
             }
@@ -406,182 +403,170 @@ class messages
         $app['heading']->add_filtered($filtered);
         $app['heading']->fa('newspaper-o');
 
-        if (!$inline_en)
+        $app['btn_nav']->view('messages_list', $app['pp_ary'],
+            $params, 'Lijst', 'align-justify', true);
+
+        $app['btn_nav']->view('messages_extended', $app['pp_ary'],
+            $params, 'Lijst met omschrijvingen', 'th-list', false);
+
+        $app['assets']->add(['msgs.js', 'table_sel.js']);
+
+        $out = '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
+
+        $out .= '<form method="get" class="form-horizontal">';
+
+        $out .= '<div class="row">';
+
+        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" id="q" value="';
+        $out .= $filter['q'] ?? '';
+        $out .= '" name="f[q]" placeholder="Zoeken">';
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '<div class="col-sm-5 col-xs-10">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon">';
+        $out .= '<i class="fa fa-clone"></i>';
+        $out .= '</span>';
+        $out .= '<select class="form-control" id="cid" name="f[cid]">';
+
+        $out .= $app['select']->get_options($cats, (string) $filter['cid'] ?? '');
+
+        $out .= '</select>';
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '<div class="col-sm-2 col-xs-2">';
+        $out .= '<button class="btn btn-default btn-block" title="Meer filters" ';
+        $out .= 'type="button" ';
+        $out .= 'data-toggle="collapse" data-target="#filters">';
+        $out .= '<i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> ';
+        $out .= 'Meer</span></button>';
+        $out .= '</div>';
+
+        $out .= '</div>';
+
+        $out .= '<div id="filters"';
+        $out .= $filter_panel_open ? '' : ' class="collapse"';
+        $out .= '>';
+
+        $out .= '<div class="row">';
+
+        $offerwant_options = [
+            'want'		=> 'Vraag',
+            'offer'		=> 'Aanbod',
+        ];
+
+        $out .= '<div class="col-md-12">';
+        $out .= '<div class="input-group margin-bottom">';
+
+        $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '</div>';
+        $out .= '<div class="row">';
+
+        $valid_options = [
+            'yes'		=> 'Geldig',
+            'no'		=> 'Vervallen',
+        ];
+
+        $out .= '<div class="col-md-12">';
+        $out .= '<div class="input-group margin-bottom">';
+
+        $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '</div>';
+        $out .= '<div class="row">';
+
+        $user_status_options = [
+            'active'	=> 'Niet in- of uitstappers',
+            'new'		=> 'Instappers',
+            'leaving'	=> 'Uitstappers',
+        ];
+
+        $out .= '<div class="col-md-12">';
+        $out .= '<div class="input-group margin-bottom">';
+
+        $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '</div>';
+
+        $out .= '<div class="row">';
+
+        $out .= '<div class="col-sm-10">';
+        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
+        $out .= '<span class="fa fa-user"></span></span>';
+
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'aria-describedby="fcode_addon" ';
+        $out .= 'data-typeahead="';
+
+        $out .= $app['typeahead']->ini($app['pp_ary'])
+            ->add('accounts', ['status'	=> 'active'])
+            ->str([
+                'filter'		=> 'accounts',
+                'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+            ]);
+
+        $out .= '" ';
+        $out .= 'name="f[fcode]" id="fcode" placeholder="Account" ';
+        $out .= 'value="';
+        $out .= $filter['fcode'] ?? '';
+        $out .= '">';
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= '<div class="col-sm-2">';
+        $out .= '<input type="submit" id="filter_submit" ';
+        $out .= 'value="Toon" class="btn btn-default btn-block" ';
+        $out .= 'name="f[s]">';
+        $out .= '</div>';
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $params_form = $params;
+        unset($params_form['f']);
+        unset($params_form['uid']);
+        unset($params_form['p']['start']);
+
+        $params_form = http_build_query($params_form, 'prefix', '&');
+        $params_form = urldecode($params_form);
+        $params_form = explode('&', $params_form);
+
+        foreach ($params_form as $param)
         {
-            $app['btn_nav']->view('messages_list', $app['pp_ary'],
-                $params, 'Lijst', 'align-justify', true);
+            [$name, $value] = explode('=', $param);
 
-            $app['btn_nav']->view('messages_extended', $app['pp_ary'],
-                $params, 'Lijst met omschrijvingen', 'th-list', false);
-
-            $app['assets']->add(['msgs.js', 'table_sel.js']);
-
-            $out = '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<form method="get" class="form-horizontal">';
-
-            $out .= '<div class="row">';
-
-            $out .= '<div class="col-sm-5">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<i class="fa fa-search"></i>';
-            $out .= '</span>';
-            $out .= '<input type="text" class="form-control" id="q" value="';
-            $out .= $filter['q'] ?? '';
-            $out .= '" name="f[q]" placeholder="Zoeken">';
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '<div class="col-sm-5 col-xs-10">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<i class="fa fa-clone"></i>';
-            $out .= '</span>';
-            $out .= '<select class="form-control" id="cid" name="f[cid]">';
-
-            $out .= $app['select']->get_options($cats, (string) $filter['cid'] ?? '');
-
-            $out .= '</select>';
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '<div class="col-sm-2 col-xs-2">';
-            $out .= '<button class="btn btn-default btn-block" title="Meer filters" ';
-            $out .= 'type="button" ';
-            $out .= 'data-toggle="collapse" data-target="#filters">';
-            $out .= '<i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> ';
-            $out .= 'Meer</span></button>';
-            $out .= '</div>';
-
-            $out .= '</div>';
-
-            $out .= '<div id="filters"';
-            $out .= $filter_panel_open ? '' : ' class="collapse"';
-            $out .= '>';
-
-            $out .= '<div class="row">';
-
-            $offerwant_options = [
-                'want'		=> 'Vraag',
-                'offer'		=> 'Aanbod',
-            ];
-
-            $out .= '<div class="col-md-12">';
-            $out .= '<div class="input-group margin-bottom">';
-
-            $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '</div>';
-            $out .= '<div class="row">';
-
-            $valid_options = [
-                'yes'		=> 'Geldig',
-                'no'		=> 'Vervallen',
-            ];
-
-            $out .= '<div class="col-md-12">';
-            $out .= '<div class="input-group margin-bottom">';
-
-            $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '</div>';
-            $out .= '<div class="row">';
-
-            $user_status_options = [
-                'active'	=> 'Niet in- of uitstappers',
-                'new'		=> 'Instappers',
-                'leaving'	=> 'Uitstappers',
-            ];
-
-            $out .= '<div class="col-md-12">';
-            $out .= '<div class="input-group margin-bottom">';
-
-            $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '</div>';
-
-            $out .= '<div class="row">';
-
-            $out .= '<div class="col-sm-10">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-            $out .= '<span class="fa fa-user"></span></span>';
-
-            $out .= '<input type="text" class="form-control" ';
-            $out .= 'aria-describedby="fcode_addon" ';
-            $out .= 'data-typeahead="';
-
-            $out .= $app['typeahead']->ini($app['pp_ary'])
-                ->add('accounts', ['status'	=> 'active'])
-                ->str([
-                    'filter'		=> 'accounts',
-                    'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
-                ]);
-
-            $out .= '" ';
-            $out .= 'name="f[fcode]" id="fcode" placeholder="Account" ';
-            $out .= 'value="';
-            $out .= $filter['fcode'] ?? '';
-            $out .= '">';
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '<div class="col-sm-2">';
-            $out .= '<input type="submit" id="filter_submit" ';
-            $out .= 'value="Toon" class="btn btn-default btn-block" ';
-            $out .= 'name="f[s]">';
-            $out .= '</div>';
-
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $params_form = $params;
-            unset($params_form['f']);
-            unset($params_form['uid']);
-            unset($params_form['p']['start']);
-
-            $params_form = http_build_query($params_form, 'prefix', '&');
-            $params_form = urldecode($params_form);
-            $params_form = explode('&', $params_form);
-
-            foreach ($params_form as $param)
+            if (!isset($value) || $value === '')
             {
-                [$name, $value] = explode('=', $param);
-
-                if (!isset($value) || $value === '')
-                {
-                    continue;
-                }
-
-                $out .= '<input name="' . $name . '" ';
-                $out .= 'value="' . $value . '" type="hidden">';
+                continue;
             }
 
-            $out .= '</form>';
-
-            $out .= '</div>';
-            $out .= '</div>';
+            $out .= '<input name="' . $name . '" ';
+            $out .= 'value="' . $value . '" type="hidden">';
         }
 
-        if ($inline_en)
-        {
-            $out .= '<div class="row">';
-            $out .= '<div class="col-md-12">';
+        $out .= '</form>';
 
-            $app['heading']->add_inline_btn($app['btn_top']->get());
-            $out .= $app['heading']->get_h3();
-        }
+        $out .= '</div>';
+        $out .= '</div>';
 
         $out .= $app['pagination']->get();
 
@@ -594,12 +579,6 @@ class messages
             $out .= '</div></div>';
 
             $out .= $app['pagination']->get();
-
-            if (!$inline_en)
-            {
-                include __DIR__ . '/../include/footer.php';
-            }
-            exit;
         }
 
         if ($v_list)
@@ -657,7 +636,7 @@ class messages
 
                 $out .= '<td>';
 
-                if (!$inline_en && ($app['s_admin'] || $s_owner))
+                if ($app['s_admin'] || $s_owner)
                 {
                     $out .= '<label>';
                     $out .= '<input type="checkbox" name="sel[';
@@ -808,11 +787,7 @@ class messages
 
         $out .= $app['pagination']->get();
 
-        if ($inline_en)
-        {
-            $out .= '</div></div>';
-        }
-        else if ($v_list)
+        if ($v_list)
         {
             if (($app['s_admin'] || $s_owner) && count($messages))
             {
