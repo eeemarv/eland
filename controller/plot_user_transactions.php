@@ -46,24 +46,14 @@ class plot_user_transactions
             $intersystem_names[$code] = $name;
         }
 
-        $balance = (int) $user['saldo'];
+        $end_balance = (int) $user['saldo'];
+        $balance = 0;
 
         $begin_unix = time() - (86400 * $days);
         $end_unix = time();
 
         $begin_date = gmdate('Y-m-d H:i:s', $begin_unix);
         $end_date = gmdate('Y-m-d H:i:s', $end_unix);
-
-        $add = $app['db']->fetchColumn('select sum(amount)
-            from ' . $app['tschema'] . '.transactions
-            where id_to = ?
-                and cdate <= ?', [$user_id, $begin_date]);
-        $substract = $app['db']->fetchColumn('select sum(amount)
-            from ' . $app['tschema'] . '.transactions
-            where id_from = ?
-                and cdate <= ?', [$user_id, $begin_date]);
-
-        $begin_balance = $add - $substract;
 
         $query = 'select t.id, t.amount, t.id_from, t.id_to,
                 t.real_from, t.real_to, t.cdate, t.description,
@@ -87,6 +77,7 @@ class plot_user_transactions
             $out = $t['id_from'] === $user_id;
             $mul = $out ? -1 : 1;
             $amount = ((int) $t['amount']) * $mul;
+            $balance += $amount;
 
             $name = strip_tags((string) $t['name']);
             $code = strip_tags((string) $t['code']);
@@ -154,6 +145,8 @@ class plot_user_transactions
                 'user'              => $tr_user,
             ];
         }
+
+        $begin_balance = $end_balance - $balance;
 
         return $app->json([
             'user_id' 		=> $user_id,
