@@ -916,7 +916,11 @@ $app['elas_db_upgrade'] = function ($app){
 };
 
 $app['form_token'] = function ($app){
-	return new service\form_token($app['predis'], $app['token']);
+	return new service\form_token(
+		$app['request'],
+		$app['predis'],
+		$app['token']
+	);
 };
 
 $app['captcha'] = function ($app){

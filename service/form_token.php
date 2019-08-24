@@ -2,26 +2,30 @@
 
 namespace service;
 
-use Predis\Client as Redis;
+use Symfony\Component\HttpFoundation\Request;
+use Predis\Client as Predis;
 use service\token as token_gen;
 
 class form_token
 {
-	protected $redis;
+	protected $predis;
 	protected $token_gen;
 	protected $token;
 
 	const TTL = 14400; // 4 hours
+	const NAME = 'form_token';
+	const STORE_PREFIX = 'form_token_';
 
-	public function __construct(Redis $redis, token_gen $token_gen)
+	public function __construct(Request $request, Predis $predis, token_gen $token_gen)
 	{
-		$this->redis = $redis;
+		$this->request = $request;
+		$this->predis = $predis;
 		$this->token_gen = $token_gen;
 	}
 
-	public function get_posted()
+	public function get_posted():string
 	{
-		return $_POST['form_token'];
+		return $this->reqeust->request->get(self::NAME, '');
 	}
 
 	public function get():string
@@ -29,9 +33,9 @@ class form_token
 		if (!isset($this->token))
 		{
 			$this->token = $this->token_gen->gen();
-			$key = 'form_token_' . $this->token;
-			$this->redis->set($key, '1');
-			$this->redis->expire($key, self::TTL);
+			$key = self::STORE_PREFIX . $this->token;
+			$this->predis->set($key, '1');
+			$this->predis->expire($key, self::TTL);
 		}
 
 		return $this->token;
@@ -42,32 +46,56 @@ class form_token
 		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
 	}
 
-	public function get_error()
+	public function get_error():string
 	{
-		if (!isset($_POST['form_token']))
+		if ($this->get_posted() === '')
 		{
 			return 'Het formulier bevat geen form token';
 		}
 
-		$key = 'form_token_' . $this->get_posted();
+		$key = self::STORE_PREFIX . $this->get_posted();
 
-		$value = $this->redis->get($key);
+		$value = $this->predis->get($key);
 
 		if (!$value)
 		{
-			$m = 'Het formulier is verlopen';
-			return $m;
+			return 'Het formulier is verlopen';
 		}
 
 		if ($value > 1)
 		{
-			$this->redis->incr($key);
-			$m = 'Een dubbele ingave van het formulier werd voorkomen.';
-			return $m;
+			$this->predis->incr($key);
+			return 'Een dubbele ingave van het formulier werd voorkomen.';
 		}
 
-		$this->redis->incr($key);
+		$this->predis->incr($key);
 
-		return false;
+		return '';
+	}
+
+	public function get_param_ary():array
+	{
+		return [self::NAME => $this->get()];
+	}
+
+	public function get_ajax_error():string
+	{
+		$form_token = $this->get_query();
+
+		if ($form_token === '')
+		{
+			return 'Geen form token gedefiniëerd.';
+		}
+		else if (!$this->predis->get(self::NAME . $form_token))
+		{
+			return 'Formulier verlopen of ongeldig.';
+		}
+
+		return '';
+	}
+
+	public function get_query():string
+	{
+		return $this->request->query->get(self::NAME, '');
 	}
 }

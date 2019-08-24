@@ -886,26 +886,6 @@ class messages
         return $app['tpl']->get();
     }
 
-    static public function btn_extend(
-        link $link,
-        array $pp_ary,
-        int $id,
-        int $days,
-        string $label
-    ):string
-    {
-        return $link->link('messages_extend', $pp_ary,
-            [
-                'id' 		=> $id,
-                'extend' 	=> $days,
-            ],
-            $label,
-            [
-                'class' => 'btn btn-default',
-            ]
-        );
-    }
-
     static public function get_radio(
         array $radio_ary,
         string $name,

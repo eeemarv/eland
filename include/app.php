@@ -321,6 +321,14 @@ $c_system_anon->get('/',
 		'controller\\home_system::home_system')
 	->bind('home_system');
 
+$c_system_user->match('/messages/{id}/images/del',
+	'controller\\messages_images_del::messages_images_del')
+	->bind('messages_images_del');
+
+$c_system_user->post('/messages/{id}/images/upload',
+	'controller\\messages_images_upload::messages_images_upload')
+	->bind('messages_images_upload');
+
 $c_system_user->get('/messages/{id}/extend/{days}',
 		'controller\\messages_extend::messages_extend')
 	->bind('messages_extend');
