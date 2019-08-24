@@ -25,6 +25,17 @@ class access
         'guest' => 'guest',
     ];
 
+    const FROM_LOCAL = [
+        0   => 'guest',
+        1   => 'user',
+    ];
+
+    const TO_LOCAL = [
+        'guest' => 0,
+        'user'  => 1,
+        'admin' => 1,
+    ];
+
     const FROM_FLAG_PUBLIC = [
         0   => 'admin',
         1   => 'user',
