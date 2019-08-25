@@ -98,8 +98,7 @@ class geocode implements queue_interface
 
 			$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $coords);
 
-			$this->monolog->info('(cron) ' .
-				$log . ' ' . $log_user,
+			$this->monolog->info($log . ' ' . $log_user,
 				['schema' => $sch]);
 
 			return;

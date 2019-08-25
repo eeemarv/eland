@@ -28,17 +28,11 @@ class form_token
 		$this->token_gen = $token_gen;
 	}
 
-	/**
-	 *
-	 */
 	public function get_posted():string
 	{
 		return $this->request->request->get(self::NAME, '');
 	}
 
-	/**
-	 *
-	 */
 	public function get():string
 	{
 		if (!isset($this->token))
@@ -52,17 +46,11 @@ class form_token
 		return $this->token;
 	}
 
-	/**
-	 *
-	 */
 	public function get_hidden_input():string
 	{
 		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
 	}
 
-	/**
-	 *
-	 */
 	public function get_error():string
 	{
 		if ($this->get_posted() === '')
@@ -90,17 +78,11 @@ class form_token
 		return '';
 	}
 
-	/**
-	 *
-	 */
 	public function get_param_ary():array
 	{
 		return [self::NAME => $this->get()];
 	}
 
-	/**
-	 *
-	 */
 	public function get_ajax_error():string
 	{
 		$form_token = $this->get_query();
@@ -117,9 +99,6 @@ class form_token
 		return '';
 	}
 
-	/**
-	 *
-	 */
 	public function get_query():string
 	{
 		return $this->request->query->get(self::NAME, '');

@@ -59,7 +59,7 @@ class xdb
 		$this->db = $db;
 		$this->monolog = $monolog;
 
-		if (php_sapi_name() == 'cli')
+		if (php_sapi_name() === 'cli')
 		{
 			$this->ip = '';
 		}
@@ -134,35 +134,24 @@ class xdb
 			$insert['event_time'] = $event_time;
 		}
 
-		try
+		$this->db->beginTransaction();
+
+		$this->db->insert('xdb.events', $insert);
+
+		if ($agg_version == 1)
 		{
-			$this->db->beginTransaction();
-
-			$this->db->insert('xdb.events', $insert);
-
-			if ($agg_version == 1)
-			{
-				$this->db->insert('xdb.aggs', $insert);
-			}
-			else
-			{
-				unset($insert['data']);
-				$update = $insert;
-				$update['data'] = json_encode(array_merge($prev_data, $data));
-
-				$this->db->update('xdb.aggs', $update, ['agg_id' => $agg_id]);
-			}
-
-			$this->db->commit();
+			$this->db->insert('xdb.aggs', $insert);
 		}
-		catch(Exception $e)
+		else
 		{
-			$this->db->rollback();
-			$this->monolog->debug('Database transactie niet gelukt. ' .
-				$e->getMessage(), ['schema' => $agg_schema]);
-			throw $e;
-			exit;
+			unset($insert['data']);
+			$update = $insert;
+			$update['data'] = json_encode(array_merge($prev_data, $data));
+
+			$this->db->update('xdb.aggs', $update, ['agg_id' => $agg_id]);
 		}
+
+		$this->db->commit();
 	}
 
 	public function del(
@@ -179,8 +168,9 @@ class xdb
 
 		if (!$agg_version)
 		{
-			// exception
-			return;
+			$this->monolog->debug(sprintf('Id %1$s not found for xdb::del', $agg_id),
+				['schema' => $agg_schema]);
+			$agg_version = 0;
 		}
 
 		$insert = [
@@ -196,24 +186,10 @@ class xdb
 			'ip'			=> $this->ip,
 		];
 
-		try
-		{
-			$this->db->beginTransaction();
-
-			$this->db->insert('xdb.events', $insert);
-
-			$this->db->delete('xdb.aggs', ['agg_id' => $agg_id]);
-
-			$this->db->commit();
-		}
-		catch(Exception $e)
-		{
-			$this->db->rollback();
-			$this->monolog->debug('Database transactie niet gelukt. ' .
-				$e->getMessage(), ['schema' => $agg_schema]);
-			throw $e;
-			exit;
-		}
+		$this->db->beginTransaction();
+		$this->db->insert('xdb.events', $insert);
+		$this->db->delete('xdb.aggs', ['agg_id' => $agg_id]);
+		$this->db->commit();
 	}
 
 	public function get(
@@ -230,7 +206,7 @@ class xdb
 
 		if (!$row)
 		{
-			error_log('not found: ' . $agg_id);
+			error_log('Id ' . $agg_id . ' not found for xdb::get()');
 			return [];
 		}
 
