@@ -4,7 +4,7 @@
 {% block subject_line -%}
 {{- 'transaction_to_intersystem_mail_type_admin.subject'|trans({
     '%system_name%': config('systemname', schema),
-    '%remote_system_name%': to_fullname
+    '%remote_system_name%': user_fullname(to_user_id, schema)
 })|raw -}}
 {%- endblock subject_line -%}
 
@@ -12,7 +12,7 @@
 {%- include 'mail/include/no_reply_auto.html.twig' -%}
 <p><i>
 {{- 'transaction_to_intersystem_mail_type_admin.explain'|trans({
-    '%remote_system_name%': to_fullname
+    '%remote_system_name%': user_fullname(to_user_id, schema)
 }) -}}
 </p></i>
 {%- endblock html_pretext -%}
@@ -21,7 +21,7 @@
 {% include 'mail/include/no_reply_auto.text.twig' %}
 
 {{ 'transaction_to_intersystem_mail_type_admin.explain'|trans({
-    '%remote_system_name%': to_fullname
+    '%remote_system_name%': user_fullname(to_user_id, schema)
 })|raw }}
 
 {% endblock text_pretext %}

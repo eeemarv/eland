@@ -4,7 +4,7 @@
 {% block subject_line -%}
 {{- 'transaction_to_intersystem_mail_type.subject'|trans({
     '%system_name%': config('systemname', schema),
-    '%remote_system_name%': to_fullname
+    '%remote_system_name%': user_fullname(to_user_id, schema)
 })|raw -}}
 {%- endblock subject_line -%}
 

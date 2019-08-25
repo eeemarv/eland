@@ -48,13 +48,9 @@ class mail_transaction
 		$from_user_id = $transaction['id_from'];
 		$to_user_id = $transaction['id_to'];
 
-		$from_user = $this->user_cache->get($from_user_id, $schema);
-		$to_user = $this->user_cache->get($to_user_id, $schema);
-
 		$vars = [
 			'from_user_id' 	=> $from_user_id,
 			'to_user_id'	=> $to_user_id,
-			'to_fullname'	=> $to_user['fullname'],
 			'transaction'	=> $transaction,
 			'amount_time'	=> [
 				'dec_hours'	=> $dec_hours,
