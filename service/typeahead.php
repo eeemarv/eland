@@ -2,7 +2,7 @@
 
 namespace service;
 
-use Predis\Client as Redis;
+use Predis\Client as Predis;
 use Monolog\Logger;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use service\systems;
@@ -10,7 +10,7 @@ use service\assets;
 
 class typeahead
 {
-	protected $redis;
+	protected $predis;
 	protected $monolog;
 	protected $url_generator;
 	protected $systems;
@@ -21,14 +21,14 @@ class typeahead
 	protected $assets_included;
 
 	public function __construct(
-		Redis $redis,
+		Predis $predis,
 		Logger $monolog,
 		UrlGeneratorInterface $url_generator,
 		systems $systems,
 		assets $assets
 	)
 	{
-		$this->redis = $redis;
+		$this->predis = $predis;
 		$this->monolog = $monolog;
 		$this->url_generator = $url_generator;
 		$this->systems = $systems;
@@ -139,7 +139,7 @@ class typeahead
 		array $params_context
 	):string
 	{
-		$thumbprint = $this->redis->get($key);
+		$thumbprint = $this->predis->get($key);
 
 		if (!$thumbprint)
 		{
@@ -170,7 +170,7 @@ class typeahead
 		array $params_context
 	):void
 	{
-		$this->redis->del($key);
+		$this->predis->del($key);
 
 		$this->monolog->debug('typeahead delete thumbprint for '
 			. $key, $this->get_log_params($params_context));
@@ -230,9 +230,9 @@ class typeahead
 		string $new_thumbprint
 	):void
 	{
-		if ($new_thumbprint !== $this->redis->get($key))
+		if ($new_thumbprint !== $this->predis->get($key))
 		{
-			$this->redis->set($key, $new_thumbprint);
+			$this->predis->set($key, $new_thumbprint);
 
 			$log_params = [];
 
@@ -248,7 +248,7 @@ class typeahead
 			);
 		}
 
-		$this->redis->expire($key, self::TTL);
+		$this->predis->expire($key, self::TTL);
 	}
 
 	public function set_thumbprint(

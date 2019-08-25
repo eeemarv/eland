@@ -48,7 +48,7 @@ class email_validate
 	{
 		$cache_key = self::CACHE_PREFIX . $token;
 
-		$data = $this->cache->get($cache_key, true);
+		$data = $this->cache->get($cache_key);
 
 		if (!count($data))
 		{

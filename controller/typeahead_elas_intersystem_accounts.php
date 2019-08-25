@@ -25,7 +25,7 @@ class typeahead_elas_intersystem_accounts
 
         $domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-        $accounts = $app['cache']->get($domain . '_typeahead_data', false);
+        $accounts = $app['cache']->get($domain . '_typeahead_data');
 
         if (!$accounts)
         {

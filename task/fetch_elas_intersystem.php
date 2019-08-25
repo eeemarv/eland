@@ -3,7 +3,7 @@
 namespace task;
 
 use service\cache;
-use Predis\Client as redis;
+use Predis\Client as Predis;
 use service\typeahead;
 use Monolog\Logger;
 use cnst\cache_key as cnst_cache_key;
@@ -11,7 +11,7 @@ use cnst\cache_key as cnst_cache_key;
 class fetch_elas_intersystem
 {
 	protected $cache;
-	protected $redis;
+	protected $predis;
 	protected $typeahead;
 	protected $monolog;
 	protected $client;
@@ -25,17 +25,20 @@ class fetch_elas_intersystem
 
 	public function __construct(
 		cache $cache,
-		redis $redis,
+		Predis $predis,
 		typeahead $typeahead,
 		Logger $monolog
 	)
 	{
 		$this->cache = $cache;
-		$this->redis = $redis;
+		$this->predis = $predis;
 		$this->typeahead = $typeahead;
 		$this->monolog = $monolog;
 	}
 
+	/**
+	 *
+	 */
 	function process():void
 	{
 		$this->now = time();
@@ -234,7 +237,6 @@ class fetch_elas_intersystem
 	/**
 	*
 	*/
-
 	protected function update_cache():void
 	{
 		$this->cache->set(cnst_cache_key::ELAS_FETCH['last'], $this->last_fetch);
@@ -245,7 +247,6 @@ class fetch_elas_intersystem
 	/**
 	 *
 	 */
-
 	protected function fetch_msgs():void
 	{
 		$msgs = [];
@@ -403,10 +404,9 @@ class fetch_elas_intersystem
 		return;
 	}
 
-	/*
-	*
-	*/
-
+	/**
+	 *
+	 */
 	protected function fetch_users():void
 	{
 		$crawler = $this->client->request('GET',
@@ -523,8 +523,8 @@ class fetch_elas_intersystem
 		$this->last_fetch['users'][$this->domain] = $this->now_gmdate;
 
 		$redis_key = $this->domain . '_active_user_count';
-		$this->redis->set($redis_key, count($users));
-		$this->redis->expire($redis_key, 86400); // 1 day
+		$this->predis->set($redis_key, count($users));
+		$this->predis->expire($redis_key, 86400); // 1 day
 
 		error_log($this->domain . ' typeahead data fetched of ' . count($users) . ' users');
 	}

@@ -8,6 +8,7 @@ use service\token as token_gen;
 
 class form_token
 {
+	protected $request;
 	protected $predis;
 	protected $token_gen;
 	protected $token;
@@ -16,18 +17,28 @@ class form_token
 	const NAME = 'form_token';
 	const STORE_PREFIX = 'form_token_';
 
-	public function __construct(Request $request, Predis $predis, token_gen $token_gen)
+	public function __construct(
+		Request $request,
+		Predis $predis,
+		token_gen $token_gen
+	)
 	{
 		$this->request = $request;
 		$this->predis = $predis;
 		$this->token_gen = $token_gen;
 	}
 
+	/**
+	 *
+	 */
 	public function get_posted():string
 	{
-		return $this->reqeust->request->get(self::NAME, '');
+		return $this->request->request->get(self::NAME, '');
 	}
 
+	/**
+	 *
+	 */
 	public function get():string
 	{
 		if (!isset($this->token))
@@ -41,11 +52,17 @@ class form_token
 		return $this->token;
 	}
 
+	/**
+	 *
+	 */
 	public function get_hidden_input():string
 	{
 		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
 	}
 
+	/**
+	 *
+	 */
 	public function get_error():string
 	{
 		if ($this->get_posted() === '')
@@ -73,11 +90,17 @@ class form_token
 		return '';
 	}
 
+	/**
+	 *
+	 */
 	public function get_param_ary():array
 	{
 		return [self::NAME => $this->get()];
 	}
 
+	/**
+	 *
+	 */
 	public function get_ajax_error():string
 	{
 		$form_token = $this->get_query();
@@ -94,6 +117,9 @@ class form_token
 		return '';
 	}
 
+	/**
+	 *
+	 */
 	public function get_query():string
 	{
 		return $this->request->query->get(self::NAME, '');
