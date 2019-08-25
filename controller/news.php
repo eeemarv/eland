@@ -4,6 +4,7 @@ namespace controller;
 
 use util\app;
 use Symfony\Component\HttpFoundation\Response;
+use render\tpl;
 
 class news
 {
