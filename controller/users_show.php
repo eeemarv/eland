@@ -229,7 +229,7 @@ class users_show
         {
             $app['assets']->add([
                 'fileupload',
-                'user_img.js',
+                'users_show_upload_image.js',
             ]);
         }
 
@@ -357,7 +357,7 @@ class users_show
         }
 
         $out .= '" ';
-        $out .= 'data-bucket-url="' . $app['s3_url'] . '"></img>';
+        $out .= 'data-base-url="' . $app['s3_url'] . '"></img>';
 
         $out .= '<div id="no_user_img"';
         $out .= $no_user_img;

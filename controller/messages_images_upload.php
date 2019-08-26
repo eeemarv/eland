@@ -5,9 +5,6 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Doctrine\DBAL\Connection as db;
-use cnst\access as cnst_access;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use controller\messages_show;
@@ -48,6 +45,11 @@ class messages_images_upload
         $insert_in_db = $request->attributes->get('form_token') ? false : true;
 
         $return_ary = [];
+
+        if (!count($uploaded_files))
+        {
+            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
+        }
 
         if ($id)
         {

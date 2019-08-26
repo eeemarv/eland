@@ -5,13 +5,8 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Imagine\Imagick\Imagine;
-use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class users_image_upload
 {
@@ -34,89 +29,19 @@ class users_image_upload
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        if (!$uploaded_file->isValid())
-        {
-            throw new BadRequestHttpException('Ongeldig bestand.');
-        }
+        $filename = $app['image_upload']->gen_filename_for_user_image($id, $app['tschema']);
+        $app['image_upload']->upload($uploaded_file, $filename, $app['tschema']);
 
-        $size = $uploaded_file->getSize();
+        $app['db']->update($app['tschema'] . '.users', [
+            '"PictureFile"'	=> $filename
+        ],['id' => $id]);
 
-        if ($size > 400 * 1024
-            || $size > $uploaded_file->getMaxFilesize())
-        {
-            throw new HttpException(413, 'Het bestand is te groot.');
-        }
+        $app['monolog']->info('User image ' . $filename .
+            ' uploaded. User: ' . $id,
+            ['schema' => $app['tschema']]);
 
-        if ($uploaded_file->getMimeType() !== 'image/jpeg')
-        {
-            throw new UnsupportedMediaTypeHttpException('Ongeldig bestandstype.');
-        }
+        $app['user_cache']->clear($id, $app['tschema']);
 
-        $image_tmp_path = $uploaded_file->getRealPath();
-
-        $exif = exif_read_data($image_tmp_path);
-
-        $orientation = $exif['COMPUTED']['Orientation'] ?? false;
-
-        $tmpfile = tempnam(sys_get_temp_dir(), 'img');
-
-        $imagine = new Imagine();
-
-        $image = $imagine->open($image_tmp_path);
-
-        switch ($orientation)
-        {
-            case 3:
-            case 4:
-                $image->rotate(180);
-                break;
-            case 5:
-            case 6:
-                $image->rotate(-90);
-                break;
-            case 7:
-            case 8:
-                $image->rotate(90);
-                break;
-            default:
-                break;
-        }
-
-        $image->thumbnail(new Box(400, 400), ImageInterface::THUMBNAIL_INSET);
-        $image->save($tmpfile);
-
-        //
-
-        $filename = $app['tschema'] . '_u_' . $id . '_';
-        $filename .= sha1($filename . microtime()) . '.jpg';
-
-        $err = $app['s3']->img_upload($filename, $tmpfile);
-
-        if ($err)
-        {
-            $app['monolog']->error('pict: ' .  $err . ' -- ' .
-                $filename, ['schema' => $app['tschema']]);
-
-            $response = ['error' => 'Afbeelding opladen mislukt.'];
-        }
-        else
-        {
-            $app['db']->update($app['tschema'] . '.users', [
-                '"PictureFile"'	=> $filename
-            ],['id' => $id]);
-
-            $app['monolog']->info('User image ' . $filename .
-                ' uploaded. User: ' . $id,
-                ['schema' => $app['tschema']]);
-
-            $app['user_cache']->clear($id, $app['tschema']);
-
-            $response = ['success' => 1, 'filename' => $filename];
-        }
-
-//        unlink($tmp_name);
-        unlink($image_tmp_path);
-
-        return $app->json($response);
+        return $app->json([$filename]);
     }
 }

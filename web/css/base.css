@@ -461,7 +461,7 @@ li.active-group a:visited, li.active-group a:hover
 	width: 55px;
 	height: 55px;
 	cursor: pointer;
-	background: url('a03.png') no-repeat;
+	background: url('/img/a03.png') no-repeat;
 	overflow: hidden;
 }
 .jssora02l { background-position: -3px -33px; }
