@@ -173,7 +173,7 @@ class messages_show
         if ($app['s_admin'] || $s_owner)
         {
             $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success fileinput-button">';
+            $out .= '<span class="btn btn-success btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
             $out .= '<input id="fileupload" type="file" name="images[]" ';
             $out .= 'data-url="';
@@ -185,21 +185,22 @@ class messages_show
             $out .= 'data-data-type="json" data-auto-upload="true" ';
             $out .= 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
             $out .= 'data-max-file-size="999000" ';
-            $out .= 'multiple></span>&nbsp;';
+            $out .= 'multiple></span>';
+
+            $out .= '<p class="text-warning">';
+            $out .= 'Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+            $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
             $out .= $app['link']->link_fa('messages_images_del', $app['pp_ary'],
                 ['id'		=> $id],
                 'Afbeeldingen verwijderen', [
-                    'class'	=> 'btn btn-danger',
+                    'class'	=> 'btn btn-danger btn-block',
                     'id'	=> 'btn_remove',
                     'style'	=> 'display:none;',
                 ],
                 'times'
             );
 
-            $out .= '<p class="text-warning">';
-            $out .= 'Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
-            $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
             $out .= '</div>';
         }
 

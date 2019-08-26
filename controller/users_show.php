@@ -377,7 +377,7 @@ class users_show
             }
 
             $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success fileinput-button">';
+            $out .= '<span class="btn btn-success btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
             $out .= '<input id="fileupload" type="file" name="image" ';
             $out .= 'data-url="';
@@ -397,26 +397,27 @@ class users_show
             $out .= 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
             $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
             $out .= 'data-image-crop="true" ';
-            $out .= 'data-image-max-height="400"></span>&nbsp;';
+            $out .= 'data-image-max-height="400"></span>';
+
+            $out .= '<p class="text-warning">';
+            $out .= 'Je foto moet in het jpg/jpeg formaat zijn. ';
+            $out .= 'Je kan ook een foto hierheen verslepen.</p>';
 
             if ($app['s_admin'])
             {
                 $out .= $app['link']->link_fa('users_image_del_admin', $app['pp_ary'],
                     ['id' => $id], 'Foto verwijderen',
-                    array_merge($btn_del_attr, ['class' => 'btn btn-danger']),
+                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-block']),
                     'times');
             }
             else
             {
                 $out .= $app['link']->link_fa('users_image_del', $app['pp_ary'],
                     [], 'Foto verwijderen',
-                    array_merge($btn_del_attr, ['class' => 'btn btn-danger']),
+                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-block']),
                     'times');
             }
 
-            $out .= '<p class="text-warning">';
-            $out .= 'Je foto moet in het jpg/jpeg formaat zijn. ';
-            $out .= 'Je kan ook een foto hierheen verslepen.</p>';
             $out .= '</div>';
         }
 

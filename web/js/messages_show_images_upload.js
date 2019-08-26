@@ -33,7 +33,7 @@ $(document).ready(function () {
 				$("#slider1_container").remove();
 				jssor_init(data_images);
 				jssor_slider1.$GoTo(jssor_slider1.$SlidesCount() - 1);
-				$('#btn_remove').css('display', 'inline');
+				$('#btn_remove').css('display', 'inherit');
             } else {
 				alert('Fout bij het opladen van de afbeelding: ' + file.error);
             }
