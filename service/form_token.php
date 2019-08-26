@@ -83,10 +83,8 @@ class form_token
 		return [self::NAME => $this->get()];
 	}
 
-	public function get_ajax_error():string
+	public function get_ajax_error(string $form_token):string
 	{
-		$form_token = $this->get_query();
-
 		if ($form_token === '')
 		{
 			return 'Geen form token gedefiniëerd.';

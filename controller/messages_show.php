@@ -43,7 +43,9 @@ class messages_show
 
         $balance = $user['saldo'];
 
-        $images = [];
+        $data_images = [
+            'base_url'    => $app['s3_url'],
+        ];
 
         $st = $app['db']->prepare('select "PictureFile"
             from ' . $app['tschema'] . '.msgpictures
@@ -53,7 +55,7 @@ class messages_show
 
         while ($row = $st->fetch())
         {
-            $images[] = $app['s3_url'] . $row['PictureFile'];
+            $data_images['files'][] =$row['PictureFile'];
         }
 
         $and_local = $app['s_guest'] ? ' and local = \'f\' ' : '';
@@ -162,7 +164,7 @@ class messages_show
 
         $out .= '<div id="images_con" ';
         $out .= 'data-images="';
-        $out .= htmlspecialchars(json_encode($images));
+        $out .= htmlspecialchars(json_encode($data_images));
         $out .= '">';
         $out .= '</div>';
 

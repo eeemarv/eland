@@ -269,7 +269,7 @@ if ($app['request']->isMethod('POST')
 
 		if (!$form_token)
 		{
-			$ret_ary[] = ['error' => 'Geen form token gedefiniëerd.'];
+			$ret_ary[] = ['error' => 'Form token ontbreekt.'];
 		}
 		else if (!$app['predis']->get('form_token_' . $form_token))
 		{

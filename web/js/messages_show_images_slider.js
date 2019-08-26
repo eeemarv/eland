@@ -2,7 +2,7 @@ var $images_con = $('#images_con');
 
 var jssor_slider1;
 
-function jssor_init(imgs)
+function jssor_init(data_images)
 {
 	var html_sl = '<div id="slider1_container" style="position: relative; top: 0px; left: 0px; width: 800px; height: 600px;">';
 	html_sl += '<div u="slides" id="slides_cont" style="cursor: move; position: absolute; overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;" id="slides">';
@@ -20,8 +20,8 @@ function jssor_init(imgs)
 
 	var slides_cont = $('#slides_cont');
 
-	$.each(imgs, function(k, v){
-		slides_cont.append('<div><img src="' + v + '" u="image"/></div>');
+	$.each(data_images.files, function(k, v){
+		slides_cont.append('<div><img src="' + data_images.base_url + v + '" u="image"/></div>');
 	});
 
 	$("#slider1_container").css("display", "block");
@@ -65,11 +65,11 @@ function ScaleSlider() {
 
 $(document).ready(function(){
 
-	var images = $images_con.data('images');
+	var data_images = $images_con.data('images');
 
-	if (images.length){
+	if (data_images.files.length){
 
-		jssor_init(images);
+		jssor_init(data_images);
 
 		$('#btn_remove').css('display', 'inline');
 

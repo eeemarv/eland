@@ -459,6 +459,13 @@ $app['s3'] = function($app){
 	);
 };
 
+$app['image_upload'] = function($app){
+	return new service\image_upload(
+		$app['monolog'],
+		$app['s3']
+	);
+};
+
 $app['typeahead'] = function($app){
 	return new service\typeahead(
 		$app['predis'],

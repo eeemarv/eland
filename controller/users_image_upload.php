@@ -8,6 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class users_image_upload
 {
@@ -15,7 +19,7 @@ class users_image_upload
     {
         if ($app['s_id'] < 1)
         {
-            return $app->json(['error' => 'Je hebt onvoldoende rechten voor deze actie.']);
+            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
         }
 
         return $this->users_image_upload_admin($request, $app, $app['s_id']);
@@ -27,12 +31,12 @@ class users_image_upload
 
         if (!$uploaded_file)
         {
-            return $app->json(['error' => 'Afbeeldingsbestand ontbreekt.']);
+            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
         if (!$uploaded_file->isValid())
         {
-            return $app->json(['error' => 'Fout bij het opladen.']);
+            throw new BadRequestHttpException('Ongeldig bestand.');
         }
 
         $size = $uploaded_file->getSize();
@@ -40,15 +44,13 @@ class users_image_upload
         if ($size > 400 * 1024
             || $size > $uploaded_file->getMaxFilesize())
         {
-            return $app->json(['error' => 'Het bestand is te groot.']);
+            throw new HttpException(413, 'Het bestand is te groot.');
         }
 
         if ($uploaded_file->getMimeType() !== 'image/jpeg')
         {
-            return $app->json(['error' => 'Ongeldig bestandstype.']);
+            throw new UnsupportedMediaTypeHttpException('Ongeldig bestandstype.');
         }
-
-        //
 
         $image_tmp_path = $uploaded_file->getRealPath();
 
