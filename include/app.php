@@ -355,7 +355,7 @@ $c_system_user->match('/messages/add',
 		'controller\\messages_add::messages_add')
 	->bind('messages_add');
 
-$c_system_guest->get('/messages/{id}',
+$c_system_guest->match('/messages/{id}',
 		'controller\\messages_show::messages_show')
 	->bind('messages_show');
 

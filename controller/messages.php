@@ -22,7 +22,7 @@ class messages
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
             && isset($filter['uid'])
-            && $app['s_id'] == $filter['uid']
+            && $app['s_id'] === (int) $filter['uid']
             && $app['s_id'];
 
         $view = 'list';
@@ -47,7 +47,7 @@ class messages
             && $filter['uid']
             && !isset($filter['s']))
         {
-            $filter['fcode'] = $app['account']->str($filter['uid'], $app['tschema']);
+            $filter['fcode'] = $app['account']->str((int) $filter['uid'], $app['tschema']);
         }
 
         if (isset($filter['uid']))
@@ -79,7 +79,7 @@ class messages
                 $where_sql[] = 'u.id = ?';
                 $params_sql[] = $fuid;
 
-                $fcode = $app['account']->str($fuid, $app['tschema']);
+                $fcode = $app['account']->str((int) $fuid, $app['tschema']);
                 $params['f']['fcode'] = $fcode;
             }
             else
@@ -354,7 +354,7 @@ class messages
                 if ($app['s_admin'] && !$s_owner)
                 {
                     $str = 'Vraag of aanbod voor ';
-                    $str .= $app['account']->str($filter['uid'], $app['tschema']);
+                    $str .= $app['account']->str((int) $filter['uid'], $app['tschema']);
 
                     $app['btn_top']->add('messages_add', $app['pp_ary'],
                         ['uid' => $filter['uid']], $str);
@@ -387,7 +387,7 @@ class messages
                     'Vraag en aanbod'));
 
                 $app['heading']->add(' van ');
-                $app['heading']->add($app['account']->link($filter['uid'], $app['pp_ary']));
+                $app['heading']->add($app['account']->link((int) $filter['uid'], $app['pp_ary']));
             }
         }
         else
