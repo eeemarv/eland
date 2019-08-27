@@ -185,17 +185,6 @@ class messages_show
             order by id desc
             limit 1', [$id]);
 
-/*
-        $title = $message['content'];
-
-        $contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc
-            where c.id_type_contact = tc.id
-                and c.id_user = ?
-                and c.flag_public = 1', [$user['id']]);
-*/
-
         $contacts_user_show_inline = new contacts_user_show_inline();
         $contacts_response = $contacts_user_show_inline->contacts_user_show_inline($app, $user['id']);
         $contacts_content = $contacts_response->getContent();

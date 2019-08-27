@@ -24,7 +24,7 @@ class contacts_user_show_inline
 
         $app['assets']->add([
             'leaflet',
-            'users_show.js',
+            'contacts_user_map.js',
         ]);
 
 		$out = '<div class="row">';

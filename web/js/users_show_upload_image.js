@@ -25,7 +25,7 @@ $(document).ready(function () {
 			user_img.attr('src', user_img.data('base-url') + data.result[0]);
 			user_img.css('display', 'inherit');
 			no_user_img.css('display', 'none');
-			btn_remove.css('display', 'inline');
+			btn_remove.css('display', 'inherit');
 
 		}
 	}).prop('disabled', !$.support.fileInput)
