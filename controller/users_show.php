@@ -31,7 +31,7 @@ class users_show
 
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
-            && $app['s_id'] == $id
+            && $app['s_id'] === $id
             && $id;
 
         $user = $app['user_cache']->get($id, $app['tschema']);
@@ -48,13 +48,6 @@ class users_show
         }
 
         $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
-
-        $mail_to = $app['mail_addr_user']->get($id, $app['tschema']);
-        $mail_from = $app['s_schema']
-            && !$app['s_master']
-            && !$app['s_elas_guest']
-                ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
-                : [];
 
         // process mail form
 
@@ -583,70 +576,7 @@ class users_show
 
         $out .= '</div></div></div></div>';
 
-        // response form
-
-        $user_mail_disabled = true;
-
-        if ($app['s_elas_guest'])
-        {
-            $placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
-        }
-        else if ($s_owner)
-        {
-            $placeholder = 'Je kan geen E-mail berichten naar jezelf verzenden.';
-        }
-        else if (!count($mail_to))
-        {
-            $placeholder = 'Er is geen E-mail adres bekend van deze gebruiker.';
-        }
-        else if (!count($mail_from))
-        {
-            $placeholder = 'Om het E-mail formulier te gebruiken moet een E-mail adres ingesteld zijn voor je eigen Account.';
-        }
-        else
-        {
-            $placeholder = '';
-            $user_mail_disabled = false;
-        }
-
-        $out .= '<h3><i class="fa fa-envelop-o"></i> ';
-        $out .= 'Stuur een bericht naar ';
-        $out .=  $app['account']->link($id, $app['pp_ary']);
-        $out .= '</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post"">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<textarea name="user_mail_content" rows="6" placeholder="';
-        $out .= $placeholder . '" ';
-        $out .= 'class="form-control" required';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '>';
-        $out .= $user_mail_content;
-        $out .= '</textarea>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="user_mail_cc" class="control-label">';
-        $out .= '<input type="checkbox" name="user_mail_cc" ';
-        $out .= 'id="user_mail_cc" value="1"';
-        $out .= $user_mail_cc ? ' checked="checked"' : '';
-        $out .= '> Stuur een kopie naar mijzelf';
-        $out .= '</label>';
-        $out .= '</div>';
-
-        $out .= $app['form_token']->get_hidden_input();
-        $out .= '<input type="submit" name="user_mail_submit" ';
-        $out .= 'value="Versturen" class="btn btn-default"';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '>';
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
+        $out .= self::get_mail_form($app, $id, $user_mail_content, $user_mail_cc);
 
         $out .= $contacts_content;
 
@@ -772,5 +702,96 @@ class users_show
         }
 
         return $errors;
+    }
+
+    public static function get_mail_form(
+        app $app,
+        int $user_id,
+        string $user_mail_content,
+        bool $user_mail_cc
+    ):string
+    {
+        $s_owner = !$app['s_guest']
+            && $app['s_system_self']
+            && $app['s_id'] === $user_id
+            && $user_id;
+
+        $mail_from = $app['s_schema']
+            && !$app['s_master']
+            && !$app['s_elas_guest']
+                ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+                : [];
+
+        $mail_to = $app['mail_addr_user']->get($user_id, $app['tschema']);
+
+        $user_mail_disabled = true;
+
+        if ($app['s_elas_guest'])
+        {
+            $placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
+        }
+        else if ($app['s_master'])
+        {
+            $placeholder = 'Het master account kan geen berichten versturen.';
+        }
+        else if ($s_owner)
+        {
+            $placeholder = 'Je kan geen E-mail berichten naar jezelf verzenden.';
+        }
+        else if (!count($mail_to))
+        {
+            $placeholder = 'Er is geen E-mail adres bekend van deze gebruiker.';
+        }
+        else if (!count($mail_from))
+        {
+            $placeholder = 'Om het E-mail formulier te gebruiken moet een E-mail adres ingesteld zijn voor je eigen Account.';
+        }
+        else
+        {
+            $placeholder = '';
+            $user_mail_disabled = false;
+        }
+
+        $out = '<h3><i class="fa fa-envelop-o"></i> ';
+        $out .= 'Stuur een bericht naar ';
+        $out .=  $app['account']->link($user_id, $app['pp_ary']);
+        $out .= '</h3>';
+        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
+
+        $out .= '<form method="post"">';
+
+        $out .= '<div class="form-group">';
+        $out .= '<textarea name="user_mail_content" rows="6" placeholder="';
+        $out .= $placeholder . '" ';
+        $out .= 'class="form-control" required';
+        $out .= $user_mail_disabled ? ' disabled' : '';
+        $out .= '>';
+        $out .= $user_mail_content;
+        $out .= '</textarea>';
+        $out .= '</div>';
+
+        $out .= '<div class="form-group">';
+        $out .= '<label for="user_mail_cc" class="control-label">';
+        $out .= '<input type="checkbox" name="user_mail_cc" ';
+        $out .= 'id="user_mail_cc" value="1"';
+        $out .= $user_mail_cc ? ' checked="checked"' : '';
+        $out .= $user_mail_disabled ? ' disabled' : '';
+        $out .= '> Stuur een kopie naar mijzelf';
+        $out .= '</label>';
+        $out .= '</div>';
+
+        $out .= $app['form_token']->get_hidden_input();
+        $out .= '<input type="submit" name="user_mail_submit" ';
+        $out .= 'value="Versturen" class="btn btn-default"';
+        $out .= $user_mail_disabled ? ' disabled' : '';
+        $out .= '>';
+
+        $out .= '</form>';
+
+        $out .= '</div>';
+        $out .= '</div>';
+
+        return $out;
     }
 }

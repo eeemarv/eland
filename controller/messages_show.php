@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection as db;
 use render\link;
 use cnst\access as cnst_access;
 use controller\contacts_user_show_inline;
+use controller\users_show;
 
 class messages_show
 {
@@ -40,14 +41,6 @@ class messages_show
         $cc = $request->isMethod('POST') ? $cc : 1;
 
         $user = $app['user_cache']->get($message['id_user'], $app['tschema']);
-
-        $mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
-
-        $mail_from = $app['s_schema']
-            && !$app['s_master']
-            && !$app['s_elas_guest']
-                ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
-                : [];
 
         // process mail form
 
@@ -412,79 +405,7 @@ class messages_show
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div id="contacts" ';
-        $out .= 'data-url="';
-/*
-        $out .= $app->path('contacts', array_merge(['pp_ary'], [
-                'inline'	=> '1',
-                'uid'		=> $message['id_user'],
-            ]));
-*/
-        $out .= '"></div>';
-
-    // response form
-
-        if ($app['s_elas_guest'])
-        {
-            $user_mail_placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
-        }
-        else if ($s_owner)
-        {
-            $user_mail_placeholder = 'Je kan geen reacties op je eigen berichten sturen.';
-        }
-        else if (!count($mail_to))
-        {
-            $user_mail_placeholder = 'Er is geen E-mail adres bekend van deze gebruiker.';
-        }
-        else if (!count($mail_from))
-        {
-            $user_mail_placeholder = 'Om het E-mail formulier te gebruiken moet een E-mail adres ingesteld zijn voor je eigen Account.';
-        }
-        else
-        {
-            $user_mail_placeholder = '';
-        }
-
-        $user_mail_disabled = strlen($user_mail_placeholder) ? true : false;
-
-        $out .= '<h3><i class="fa fa-envelop-o"></i> Stuur een reactie naar ';
-        $out .=  $app['account']->link($message['id_user'], $app['pp_ary']);
-        $out .= '</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<textarea name="user_mail_content" rows="6" placeholder="';
-        $out .= $user_mail_placeholder;
-        $out .= '" ';
-        $out .= 'class="form-control" required';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '>';
-        $out .= $user_mail_content;
-        $out .= '</textarea>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label class="control-label" for="user_mail_cc">';
-        $out .= '<input type="checkbox" name="user_mail_cc" ';
-        $out .= 'id="user_mail_cc" value="1"';
-        $out .= $user_mail_cc ? ' checked="checked"' : '';
-        $out .= '> Stuur een kopie naar mijzelf';
-        $out .= '</label>';
-        $out .= '</div>';
-
-        $out .= '<input type="submit" name="user_mail_submit" ';
-        $out .= 'value="Versturen" class="btn btn-default"';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '>';
-        $out .= $app['form_token']->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-//        $out .= '</div>';
+        $out .= users_show::get_mail_form($app, $message['id_user'], $user_mail_content, $user_mail_cc);
 
         $out .= $contacts_content;
 

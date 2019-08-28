@@ -360,11 +360,11 @@ $c_system_guest->match('/messages/{id}',
 	->bind('messages_show');
 
 $c_system_guest->get('/messages/extended',
-		'controller\\messages::messages_extended')
+		'controller\\messages_extended::messages_extended')
 	->bind('messages_extended');
 
 $c_system_guest->get('/messages',
-		'controller\\messages::messages_list')
+		'controller\\messages_list::messages_list')
 	->bind('messages_list');
 
 $c_system_user->match('/users/{id}/image/del',

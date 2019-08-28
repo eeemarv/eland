@@ -5,15 +5,11 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use controller\messages_list;
 
-class messages
+class messages_extended
 {
-    static public function fetch(Request $request, app $app):array
-    {
-        return [];
-    }
-
-    public function messages_list(Request $request, app $app):Response
+    public function messages_extended(Request $request, app $app):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -25,7 +21,7 @@ class messages
             && $app['s_id'] === (int) $filter['uid']
             && $app['s_id'];
 
-        $view = 'list';
+        $view = 'extended';
 
         $v_list = $view === 'list';
         $v_extended = $view === 'extended';
@@ -244,66 +240,6 @@ class messages
         $app['pagination']->init($app['r_messages'], $app['pp_ary'],
             $row_count, $params);
 
-        $asc_preset_ary = [
-            'asc'	=> 0,
-            'fa' 	=> 'sort',
-        ];
-
-        $tableheader_ary = [
-            'm.msg_type' => array_merge($asc_preset_ary, [
-                'lbl' => 'V/A']),
-            'm.content' => array_merge($asc_preset_ary, [
-                'lbl' => 'Wat']),
-        ];
-
-        if (!isset($filter['uid']))
-        {
-            $tableheader_ary += [
-                'u.name'	=> array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Wie',
-                    'data_hide' => 'phone,tablet',
-                ]),
-                'u.postcode'	=> array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Postcode',
-                    'data_hide'	=> 'phone,tablet',
-                ]),
-            ];
-        }
-
-        if (!($filter['cid'] ?? false))
-        {
-            $tableheader_ary += [
-                'm.id_category' => array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Categorie',
-                    'data_hide'	=> 'phone, tablet',
-                ]),
-            ];
-        }
-
-        $tableheader_ary += [
-            'm.validity' => array_merge($asc_preset_ary, [
-                'lbl' 	=> 'Geldig tot',
-                'data_hide'	=> 'phone, tablet',
-            ]),
-        ];
-
-        if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
-        {
-            $tableheader_ary += [
-                'm.local' => array_merge($asc_preset_ary, [
-                    'lbl' 	=> 'Zichtbaarheid',
-                    'data_hide'	=> 'phone, tablet',
-                ]),
-            ];
-        }
-
-        $tableheader_ary[$params['s']['orderby']]['asc']
-            = $params['s']['asc'] ? 0 : 1;
-        $tableheader_ary[$params['s']['orderby']]['fa']
-            = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
-
-        unset($tableheader_ary['m.cdate']);
-
         $cats = ['' => '-- alle categorieën --'];
 
         $categories = $cat_params  = [];
@@ -466,7 +402,7 @@ class messages
         $out .= '<div class="col-md-12">';
         $out .= '<div class="input-group margin-bottom">';
 
-        $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
+        $out .= messages_list::get_checkbox_filter($offerwant_options, 'type', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
@@ -482,7 +418,7 @@ class messages
         $out .= '<div class="col-md-12">';
         $out .= '<div class="input-group margin-bottom">';
 
-        $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
+        $out .= messages_list::get_checkbox_filter($valid_options, 'valid', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
@@ -499,7 +435,7 @@ class messages
         $out .= '<div class="col-md-12">';
         $out .= '<div class="input-group margin-bottom">';
 
-        $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
+        $out .= messages_list::get_checkbox_filter($user_status_options, 'ustatus', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
@@ -572,366 +508,96 @@ class messages
 
         if (!count($messages))
         {
-            $out .= '<br>';
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-body">';
-            $out .= '<p>Er zijn geen resultaten.</p>';
-            $out .= '</div></div>';
-
-            $out .= $app['pagination']->get();
+            return messages_list::no_messages($app['pagination'], $app['tpl'], $out);
         }
 
-        if ($v_list)
+        $time = time();
+
+        foreach ($messages as $msg)
         {
+            $type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
+
+            $sf_owner = $app['s_system_self']
+                && $msg['id_user'] === $app['s_id'];
+
+            $exp = strtotime($msg['validity']) < $time;
+
             $out .= '<div class="panel panel-info printview">';
+            $out .= '<div class="panel-body';
+            $out .= ($exp) ? ' bg-danger' : '';
+            $out .= '">';
 
-            $out .= '<div class="table-responsive">';
-            $out .= '<table class="table table-striped ';
-            $out .= 'table-bordered table-hover footable csv" ';
-            $out .= 'id="msgs" data-sort="false">';
+            $out .= '<div class="media">';
 
-            $out .= '<thead>';
-            $out .= '<tr>';
-
-            $th_params = $params;
-
-            foreach ($tableheader_ary as $key_orderby => $data)
+            if (isset($imgs[$msg['id']]))
             {
-                $out .= '<th';
+                $out .= '<div class="media-left">';
+                $out .= '<a href="';
 
-                if (isset($data['data_hide']))
-                {
-                    $out .= ' data-hide="' . $data['data_hide'] . '"';
-                }
+                $out .= $app['link']->context_path('messages_show', $app['pp_ary'],
+                    ['id' => $msg['id']]);
 
-                $out .= '>';
-
-                if (isset($data['no_sort']))
-                {
-                    $out .= $data['lbl'];
-                }
-                else
-                {
-                    $th_params['s'] = [
-                        'orderby'	=> $key_orderby,
-                        'asc' 		=> $data['asc'],
-                    ];
-
-                    $out .= $app['link']->link_fa($app['r_messages'], $app['pp_ary'],
-                        $th_params, $data['lbl'], [], $data['fa']);
-                }
-                $out .= '</th>';
-            }
-
-            $out .= '</tr>';
-            $out .= '</thead>';
-
-            $out .= '<tbody>';
-
-            foreach($messages as $msg)
-            {
-                $out .= '<tr';
-                $out .= strtotime($msg['validity']) < time() ? ' class="danger"' : '';
-                $out .= '>';
-
-                $out .= '<td>';
-
-                if ($app['s_admin'] || $s_owner)
-                {
-                    $out .= '<label>';
-                    $out .= '<input type="checkbox" name="sel[';
-                    $out .= $msg['id'] . ']" value="1"';
-                    $out .= isset($selected_msgs[$id]) ? ' checked="checked"' : '';
-                    $out .= '>&nbsp;';
-                    $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
-                    $out .= '</label>';
-                }
-                else
-                {
-                    $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
-                }
-
-                $out .= '</td>';
-
-                $out .= '<td>';
-
-                $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
-                    ['id' => $msg['id']], $msg['content']);
-
-                $out .= '</td>';
-
-                if (!isset($filter['uid']))
-                {
-                    $out .= '<td>';
-                    $out .= $app['account']->link($msg['id_user'], $app['pp_ary']);
-                    $out .= '</td>';
-
-                    $out .= '<td>';
-                    $out .= $msg['postcode'] ?? '';
-                    $out .= '</td>';
-                }
-
-                if (!($filter['cid'] ?? false))
-                {
-                    $out .= '<td>';
-                    $out .= $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
-                        $cat_params[$msg['id_category']],
-                        $categories[$msg['id_category']]);
-                    $out .= '</td>';
-                }
-
-                $out .= '<td>';
-                $out .= $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
-                $out .= '</td>';
-
-                if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
-                {
-                    $out .= '<td>';
-                    $out .= $app['item_access']->get_label($msg['local'] ? 'user' : 'guest');
-                    $out .= '</td>';
-                }
-
-                $out .= '</tr>';
-            }
-
-            $out .= '</tbody>';
-            $out .= '</table>';
-
-            $out .= '</div>';
-            $out .= '</div>';
-        }
-        else if ($v_extended)
-        {
-            $time = time();
-
-            foreach ($messages as $msg)
-            {
-                $type_str = ($msg['msg_type']) ? 'Aanbod' : 'Vraag';
-
-                $sf_owner = $app['s_system_self']
-                    && $msg['id_user'] === $app['s_id'];
-
-                $exp = strtotime($msg['validity']) < $time;
-
-                $out .= '<div class="panel panel-info printview">';
-                $out .= '<div class="panel-body';
-                $out .= ($exp) ? ' bg-danger' : '';
                 $out .= '">';
-
-                $out .= '<div class="media">';
-
-                if (isset($imgs[$msg['id']]))
-                {
-                    $out .= '<div class="media-left">';
-                    $out .= '<a href="';
-
-                    $out .= $app['link']->context_path('messages_show', $app['pp_ary'],
-                        ['id' => $msg['id']]);
-
-                    $out .= '">';
-                    $out .= '<img class="media-object" src="';
-                    $out .= $app['s3_url'] . $imgs[$msg['id']];
-                    $out .= '" width="150">';
-                    $out .= '</a>';
-                    $out .= '</div>';
-                }
-
-                $out .= '<div class="media-body">';
-                $out .= '<h3 class="media-heading">';
-
-                $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
-                    ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
-
-                if ($exp)
-                {
-                    $out .= ' <small><span class="text-danger">';
-                    $out .= 'Vervallen</span></small>';
-                }
-
-                $out .= '</h3>';
-
-                $out .= htmlspecialchars($msg['Description'], ENT_QUOTES);
-
-                $out .= '</div>';
-                $out .= '</div>';
-
-                $out .= '</div>';
-
-                $out .= '<div class="panel-footer">';
-                $out .= '<p><i class="fa fa-user"></i> ';
-                $out .= $app['account']->link($msg['id_user'], $app['pp_ary']);
-                $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
-
-                if ($app['s_admin'] || $sf_owner)
-                {
-                    $out .= '<span class="inline-buttons pull-right hidden-xs">';
-
-                    $out .= $app['link']->link_fa('messages_edit', $app['pp_ary'],
-                        ['id' => $msg['id']], 'Aanpassen',
-                        ['class'	=> 'btn btn-primary btn-xs'],
-                        'pencil');
-
-                    $out .= $app['link']->link_fa('messages_del', $app['pp_ary'],
-                        ['id' => $msg['id']], 'Verwijderen',
-                        ['class' => 'btn btn-danger btn-xs'],
-                        'times');
-
-                    $out .= '</span>';
-                }
-                $out .= '</p>';
-                $out .= '</div>';
-
+                $out .= '<img class="media-object" src="';
+                $out .= $app['s3_url'] . $imgs[$msg['id']];
+                $out .= '" width="150">';
+                $out .= '</a>';
                 $out .= '</div>';
             }
+
+            $out .= '<div class="media-body">';
+            $out .= '<h3 class="media-heading">';
+
+            $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
+                ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
+
+            if ($exp)
+            {
+                $out .= ' <small><span class="text-danger">';
+                $out .= 'Vervallen</span></small>';
+            }
+
+            $out .= '</h3>';
+
+            $out .= htmlspecialchars($msg['Description'], ENT_QUOTES);
+
+            $out .= '</div>';
+            $out .= '</div>';
+
+            $out .= '</div>';
+
+            $out .= '<div class="panel-footer">';
+            $out .= '<p><i class="fa fa-user"></i> ';
+            $out .= $app['account']->link($msg['id_user'], $app['pp_ary']);
+            $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
+
+            if ($app['s_admin'] || $sf_owner)
+            {
+                $out .= '<span class="inline-buttons pull-right hidden-xs">';
+
+                $out .= $app['link']->link_fa('messages_edit', $app['pp_ary'],
+                    ['id' => $msg['id']], 'Aanpassen',
+                    ['class'	=> 'btn btn-primary'],
+                    'pencil');
+
+                $out .= $app['link']->link_fa('messages_del', $app['pp_ary'],
+                    ['id' => $msg['id']], 'Verwijderen',
+                    ['class' => 'btn btn-danger'],
+                    'times');
+
+                $out .= '</span>';
+            }
+            $out .= '</p>';
+            $out .= '</div>';
+
+            $out .= '</div>';
         }
 
         $out .= $app['pagination']->get();
-
-        if ($v_list)
-        {
-            if (($app['s_admin'] || $s_owner) && count($messages))
-            {
-                $extend_options = [
-                    '7'		=> '1 week',
-                    '14'	=> '2 weken',
-                    '30'	=> '1 maand',
-                    '60'	=> '2 maanden',
-                    '180'	=> '6 maanden',
-                    '365'	=> '1 jaar',
-                    '730'	=> '2 jaar',
-                    '1825'	=> '5 jaar',
-                ];
-
-                $out .= '<div class="panel panel-default" id="actions">';
-                $out .= '<div class="panel-heading">';
-                $out .= '<span class="btn btn-default" id="invert_selection">';
-                $out .= 'Selectie omkeren</span>&nbsp;';
-                $out .= '<span class="btn btn-default" id="select_all">';
-                $out .= 'Selecteer alle</span>&nbsp;';
-                $out .= '<span class="btn btn-default" id="deselect_all">';
-                $out .= 'De-selecteer alle</span>';
-                $out .= '</div></div>';
-
-                $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
-
-                $out .= '<div class="panel panel-info">';
-                $out .= '<div class="panel-heading">';
-
-                $out .= '<ul class="nav nav-tabs" role="tablist">';
-                $out .= '<li class="active"><a href="#extend_tab" ';
-                $out .= 'data-toggle="tab">Verlengen</a></li>';
-
-                if ($app['intersystem_en'])
-                {
-                    $out .= '<li>';
-                    $out .= '<a href="#access_tab" data-toggle="tab">';
-                    $out .= 'Zichtbaarheid</a><li>';
-                }
-
-                $out .= '</ul>';
-
-                $out .= '<div class="tab-content">';
-
-                $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
-                $out .= '<h3>Vraag en aanbod verlengen</h3>';
-
-                $out .= '<form method="post" class="form-horizontal">';
-
-                $out .= '<div class="form-group">';
-                $out .= '<label for="extend" class="col-sm-2 control-label">';
-                $out .= 'Verlengen met</label>';
-                $out .= '<div class="col-sm-10">';
-                $out .= '<select name="extend" id="extend" class="form-control">';
-                $out .= $app['select']->get_options($extend_options, '30');
-                $out .= "</select>";
-                $out .= '</div>';
-                $out .= '</div>';
-
-                $out .= '<input type="submit" value="Verlengen" ';
-                $out .= 'name="extend_submit" class="btn btn-primary">';
-
-                $out .= $app['form_token']->get_hidden_input();
-
-                $out .= '</form>';
-
-                $out .= '</div>';
-
-                if ($app['intersystem_en'])
-                {
-                    $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
-                    $out .= '<h3>Zichtbaarheid instellen</h3>';
-                    $out .= '<form method="post">';
-
-                    $out .= $app['item_access']->get_radio_buttons('access', '', '', true);
-
-                    $out .= '<input type="submit" value="Aanpassen" ';
-                    $out .= 'name="access_submit" class="btn btn-primary">';
-                    $out .= $app['form_token']->get_hidden_input();
-                    $out .= '</form>';
-                    $out .= '</div>';
-                }
-
-                $out .= '</div>';
-
-                $out .= '<div class="clearfix"></div>';
-                $out .= '</div>';
-
-                $out .= '</div></div>';
-            }
-        }
 
         $app['tpl']->add($out);
         $app['tpl']->menu('messages');
 
         return $app['tpl']->get();
-    }
-
-    static public function get_radio(
-        array $radio_ary,
-        string $name,
-        string $selected,
-        bool $required):string
-    {
-        $out = '';
-
-        foreach ($radio_ary as $value => $label)
-        {
-            $out .= '<label class="radio-inline">';
-            $out .= '<input type="radio" name="' . $name . '" ';
-            $out .= 'value="' . $value . '"';
-            $out .= (string) $value === $selected ? ' checked' : '';
-            $out .= $required ? ' required' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
-        }
-
-        return $out;
-    }
-
-    public static function get_checkbox_filter(
-        array $checkbox_ary,
-        string $filter_id,
-        array $filter_ary):string
-    {
-        $out = '';
-
-        foreach ($checkbox_ary as $key => $label)
-        {
-            $id = 'f_' . $filter_id . '_' . $key;
-            $out .= '<label class="checkbox-inline" for="' . $id . '">';
-            $out .= '<input type="checkbox" id="' . $id . '" ';
-            $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
-            $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
-        }
-
-        return $out;
     }
 }
