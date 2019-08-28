@@ -22,9 +22,14 @@ class messages_list
 
         if ($request->isMethod('POST')
             && !$app['s_guest']
-            && count($bulk_submit) === 1)
+            && count($bulk_submit))
         {
             $errors = [];
+
+            if (count($bulk_submit) > 1)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Meer dan 1 submit.');
+            }
 
             if (count($bulk_field) > 1)
             {
