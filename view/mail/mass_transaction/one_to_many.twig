@@ -14,7 +14,7 @@
         {{- 'label.from'|trans -}}
     </p>
     <p>
-        {{- context_url_open('users', pp_ary, {'id': from_user_id, 'et': et})|raw -}}
+        {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': from_user_id})|raw -}}
         {{- account(from_user_id, schema) -}}
         </a>
     </p>
@@ -24,7 +24,7 @@
 {%- endblock html_before_many -%}
 
 {%- block html_account_many -%}
-    {{- context_url_open('users', pp_ary, {'id': t.id_to, 'et': et})|raw -}}
+    {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': t.id_to})|raw -}}
     {{- account(t.id_to, schema) -}}
     </a>
 {%- endblock %}

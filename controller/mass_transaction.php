@@ -297,7 +297,7 @@ class mass_transaction
 
                 foreach($transactions as $t)
                 {
-                    $app['autominlimit']->process($t['id_from'], $t['id_to'], $t['amount']);
+                    $app['autominlimit']->process($t['id_from'], $t['id_to'], (int) $t['amount']);
                 }
 
                 if ($to_one)
