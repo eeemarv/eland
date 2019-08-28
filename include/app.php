@@ -363,7 +363,7 @@ $c_system_guest->get('/messages/extended',
 		'controller\\messages_extended::messages_extended')
 	->bind('messages_extended');
 
-$c_system_guest->get('/messages',
+$c_system_guest->match('/messages',
 		'controller\\messages_list::messages_list')
 	->bind('messages_list');
 

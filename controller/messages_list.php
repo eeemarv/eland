@@ -8,17 +8,159 @@ use Symfony\Component\HttpFoundation\Response;
 use render\pagination;
 use render\tpl;
 use render\btn_nav;
+use cnst\access as cnst_access;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class messages_list
 {
     public function messages_list(Request $request, app $app):Response
     {
+        $selected_messages = $request->request->get('sel', []);
+        $bulk_field = $request->request->get('bulk_field', []);
+        $bulk_verify = $request->request->get('bulk_verify', []);
+        $bulk_submit = $request->request->get('bulk_submit', []);
+
+        if ($request->isMethod('POST')
+            && !$app['s_guest']
+            && count($bulk_submit) === 1)
+        {
+            $errors = [];
+
+            if (count($bulk_field) > 1)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Request voor meer dan één veld.');
+            }
+
+            if (count($bulk_verify) > 1)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
+            }
+
+            if ($error_token = $app['form_token']->get_error())
+            {
+                $errors[] = $error_token;
+            }
+
+            if (!count($selected_messages))
+            {
+                $errors[] = 'Selecteer ten minste één vraag of aanbod voor deze actie.';
+            }
+
+            if (count($bulk_verify) !== 1)
+            {
+                $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
+            }
+
+            $bulk_submit_action = array_key_first($bulk_submit);
+            $bulk_verify_action = array_key_first($bulk_verify);
+            $bulk_field_action = array_key_first($bulk_field);
+
+            if (isset($bulk_verify_action)
+                && $bulk_verify_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Actie nazichtvakje klopt niet.');
+            }
+
+            if (isset($bulk_field_action)
+                && $bulk_field_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Actie waardeveld klopt niet.');
+            }
+
+            if (!isset($bulk_field_action))
+            {
+                throw new BadRequestHttpException('Ongeldig formulier. Waarde veld ontbreekt.');
+            }
+
+            $bulk_field_value = $bulk_field[$bulk_field_action];
+
+            if (!isset($bulk_field_value) || !$bulk_field_value)
+            {
+                $errors[] = 'Bulk actie waarde-veld niet ingevuld.';
+            }
+
+            $validity_ary = [];
+
+            $rows = $app['db']->executeQuery('select id_user, id, validity
+                from ' . $app['tschema'] . '.messages
+                where id in (?)',
+                [array_keys($selected_messages)],
+                [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+
+            foreach ($rows as $row)
+            {
+                if (!$app['s_admin']
+                    && ($row['id_user'] !== $app['s_id']))
+                {
+                    $errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' .
+                        $row['content'] . ' ( ' . $row['id'] . ')';
+                }
+
+                $validity_ary[$row['id']] = $row['validity'];
+            }
+
+            if ($bulk_submit_action === 'extend' && !count($errors))
+            {
+                foreach ($validity_ary as $id => $validity)
+                {
+                    $validity = gmdate('Y-m-d H:i:s', strtotime($validity . ' UTC') + (86400 * (int) $bulk_field_value));
+
+                    $msg_update = [
+                        'validity'		=> $validity,
+                        'mdate'			=> gmdate('Y-m-d H:i:s'),
+                        'exp_user_warn'	=> 'f',
+                    ];
+
+                    $app['db']->update($app['tschema'] . '.messages',
+                        $msg_update, ['id' => $id]);
+                }
+
+                if (count($validity_ary) > 1)
+                {
+                    $app['alert']->success('De berichten zijn verlengd.');
+                }
+                else
+                {
+                    $app['alert']->success('Het bericht is verlengd.');
+                }
+
+                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+            }
+
+            if ($bulk_submit_action === 'access' && !count($errors))
+            {
+                $msg_update = [
+                    'local' => cnst_access::TO_LOCAL[$bulk_field_value],
+                    'mdate' => gmdate('Y-m-d H:i:s')
+                ];
+
+                foreach ($validity_ary as $id => $validity)
+                {
+                    $app['db']->update($app['tschema'] . '.messages', $msg_update, ['id' => $id]);
+                }
+
+                if (count($selected_messages) > 1)
+                {
+                    $app['alert']->success('De zichtbaarheid van de berichten is aangepast.');
+                }
+                else
+                {
+                    $app['alert']->success('De zichtbaarheid van het bericht is aangepast.');
+                }
+
+                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+            }
+
+            $app['alert']->error($errors);
+        }
+
         $fetch_and_filter = messages_list::fetch_and_filter($request, $app);
 
         $messages = $fetch_and_filter['messages'];
         $params = $fetch_and_filter['params'];
         $categories = $fetch_and_filter['categories'];
         $cat_params = $fetch_and_filter['cat_params'];
+        $s_owner = $fetch_and_filter['s_owner'];
 
         self::set_view_btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'list');
 
@@ -98,7 +240,7 @@ class messages_list
                 $out .= '<label>';
                 $out .= '<input type="checkbox" name="sel[';
                 $out .= $msg['id'] . ']" value="1"';
-                $out .= isset($selected_msgs[$id]) ? ' checked="checked"' : '';
+                $out .= isset($selected_messages[$msg['id']]) ? ' checked="checked"' : '';
                 $out .= '>&nbsp;';
                 $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
                 $out .= '</label>';
@@ -172,15 +314,24 @@ class messages_list
                 '1825'	=> '5 jaar',
             ];
 
-            $out .= '<div class="panel panel-default" id="actions">';
+            $out .= '<div class="panel panel-default">';
             $out .= '<div class="panel-heading">';
-            $out .= '<span class="btn btn-default" id="invert_selection">';
-            $out .= 'Selectie omkeren</span>&nbsp;';
-            $out .= '<span class="btn btn-default" id="select_all">';
-            $out .= 'Selecteer alle</span>&nbsp;';
-            $out .= '<span class="btn btn-default" id="deselect_all">';
-            $out .= 'De-selecteer alle</span>';
-            $out .= '</div></div>';
+
+            $out .= '<input type="button" ';
+            $out .= 'class="btn btn-default" ';
+            $out .= 'data-table-sel="invert" ';
+            $out .= 'value="Selectie omkeren">&nbsp;';
+            $out .= '<input type="button" ';
+            $out .= 'class="btn btn-default" ';
+            $out .= 'data-table-sel="all" ';
+            $out .= 'value="Selecteer alle">&nbsp;';
+            $out .= '<input type="button" ';
+            $out .= 'class="btn btn-default" ';
+            $out .= 'data-table-sel="none" ';
+            $out .= 'value="De-selecteer alle">';
+
+            $out .= '</div>';
+            $out .= '</div>';
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
@@ -205,20 +356,27 @@ class messages_list
             $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
             $out .= '<h3>Vraag en aanbod verlengen</h3>';
 
-            $out .= '<form method="post" class="form-horizontal">';
+            $out .= '<form method="post">';
 
             $out .= '<div class="form-group">';
-            $out .= '<label for="extend" class="col-sm-2 control-label">';
+            $out .= '<label for="extend" class="control-label">';
             $out .= 'Verlengen met</label>';
-            $out .= '<div class="col-sm-10">';
-            $out .= '<select name="extend" id="extend" class="form-control">';
+            $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
             $out .= $app['select']->get_options($extend_options, '30');
             $out .= "</select>";
             $out .= '</div>';
+
+            $out .= '<div class="form-group">';
+            $out .= '<label for="bulk_verify[extend]" class="control-label">';
+            $out .= '<input type="checkbox" name="bulk_verify[extend]" ';
+            $out .= 'id="bulk_verify[extend]" ';
+            $out .= 'value="1" required> ';
+            $out .= 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.';
+            $out .= '</label>';
             $out .= '</div>';
 
             $out .= '<input type="submit" value="Verlengen" ';
-            $out .= 'name="extend_submit" class="btn btn-primary">';
+            $out .= 'name="bulk_submit[extend]" class="btn btn-primary">';
 
             $out .= $app['form_token']->get_hidden_input();
 
@@ -232,10 +390,19 @@ class messages_list
                 $out .= '<h3>Zichtbaarheid instellen</h3>';
                 $out .= '<form method="post">';
 
-                $out .= $app['item_access']->get_radio_buttons('access', '', '', true);
+                $out .= $app['item_access']->get_radio_buttons('bulk_field[access]', '', '', true);
+
+                $out .= '<div class="form-group">';
+                $out .= '<label for="bulk_verify[access]" class="control-label">';
+                $out .= '<input type="checkbox" name="bulk_verify[access]" ';
+                $out .= 'id="bulk_verify[access]" ';
+                $out .= 'value="1" required> ';
+                $out .= 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.';
+                $out .= '</label>';
+                $out .= '</div>';
 
                 $out .= '<input type="submit" value="Aanpassen" ';
-                $out .= 'name="access_submit" class="btn btn-primary">';
+                $out .= 'name="bulk_submit[access]" class="btn btn-primary">';
                 $out .= $app['form_token']->get_hidden_input();
                 $out .= '</form>';
                 $out .= '</div>';
@@ -875,6 +1042,7 @@ class messages_list
             'params'        => $params,
             'categories'    => $categories,
             'cat_params'    => $cat_params,
+            's_owner'       => $s_owner,
         ];
     }
 }
