@@ -366,7 +366,7 @@ class messages_list
         if (!($params['f']['cid'] ?? false))
         {
             $table_header_ary += [
-                'm.id_category' => array_merge($asc_preset_ary, [
+                'c.fullname' => array_merge($asc_preset_ary, [
                     'lbl' 		=> 'Categorie',
                     'data_hide'	=> 'phone, tablet',
                 ]),
@@ -580,10 +580,12 @@ class messages_list
             $where_sql = '';
         }
 
-        $query = 'select m.*, u.postcode
+        $query = 'select m.*, u.postcode, c.fullname
             from ' . $app['tschema'] . '.messages m, ' .
-                $app['tschema'] . '.users u
-                where m.id_user = u.id' . $where_sql . '
+                $app['tschema'] . '.users u, ' .
+                $app['tschema'] . '.categories c
+                where m.id_user = u.id
+                    and m.id_category = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
         $row_count = $app['db']->fetchColumn('select count(m.*)
@@ -603,6 +605,13 @@ class messages_list
         $cats = ['' => '-- alle categorieën --'];
 
         $categories = $cat_params  = [];
+
+        $cat_params_sort = $params;
+
+        if ($params['s']['orderby'] === 'c.fullname')
+        {
+            unset($cat_params_sort['s']);
+        }
 
         if (isset($filter['uid']))
         {
@@ -633,7 +642,7 @@ class messages_list
 
             $categories[$row['id']] = $row['fullname'];
 
-            $cat_params[$row['id']] = $params;
+            $cat_params[$row['id']] = $cat_params_sort;
             $cat_params[$row['id']]['f']['cid'] = $row['id'];
         }
 
