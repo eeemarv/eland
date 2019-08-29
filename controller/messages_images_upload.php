@@ -96,7 +96,7 @@ class messages_images_upload
                     ['schema' => $app['tschema']]);
             }
 
-            $return_ary[] = ['filename' => $filename];
+            $return_ary[] = $filename;
         }
 
         return $app->json($return_ary);

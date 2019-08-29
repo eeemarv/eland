@@ -58,7 +58,7 @@ $(document).ready(function () {
             if (file.filename) {
 
 				var input_str = '<input type="hidden" name="uploaded_images[]" value="';
-				input_str += file.filename + '">'; 
+				input_str += file.filename + '">';
 
 				var $input = $(input_str);
 
@@ -86,9 +86,9 @@ $(document).ready(function () {
 
 				alert('Fout bij het opladen van de afbeelding: ' + file.error);
 
-			}  
+			}
         });
-        
+
      }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 

@@ -36,8 +36,6 @@ class messages_show
             && $app['s_id'] === $message['id_user']
             && $message['id_user'];
 
-        $cc = $request->isMethod('POST') ? $user_mail_cc : true;
-
         $user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
         // process mail form
@@ -146,7 +144,8 @@ class messages_show
         $balance = $user['saldo'];
 
         $data_images = [
-            'base_url'    => $app['s3_url'],
+            'base_url'      => $app['s3_url'],
+            'files'         => [],
         ];
 
         $st = $app['db']->prepare('select "PictureFile"
@@ -252,7 +251,7 @@ class messages_show
         $out .= '<div class="panel-body">';
 
         $out .= '<div id="no_images" ';
-        $out .= 'class="text-center center-body" style="display: none;">';
+        $out .= 'class="text-center center-body">';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
         $out .= $message['label']['type_this'] . '</p>';
@@ -302,7 +301,7 @@ class messages_show
 
         $out .= '</div>';
         $out .= '</div>';
-//////////////////////////////////////////////
+
         $out .= '<div class="col-md-6">';
 
         $out .= '<div class="panel panel-default printview">';
