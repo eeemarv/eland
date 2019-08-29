@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
+use util\app;
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use cnst\pages as cnst_pages;
 use cnst\role as cnst_role;
 
-$app = new util\app();
+$app = new app();
 
 $app['debug'] = getenv('DEBUG');
 $app['route_class'] = 'util\route';
@@ -446,6 +447,35 @@ $app['s_elas_guest'] = function ($app):bool{
 	}
 
 	return false;
+};
+
+$app['welcome_msg'] = function (app $app):string{
+	$msg = '<strong>Welkom bij ';
+	$msg .= $app['config']->get('systemname', $app['tschema']);
+	$msg .= '</strong><br>';
+	$msg .= 'Waardering bij ';
+	$msg .= $app['config']->get('systemname', $app['tschema']);
+	$msg .= ' gebeurt met \'';
+	$msg .= $app['config']->get('currency', $app['tschema']);
+	$msg .= '\'. ';
+	$msg .= $app['config']->get('currencyratio', $app['tschema']);
+	$msg .= ' ';
+	$msg .= $app['config']->get('currency', $app['tschema']);
+	$msg .= ' stemt overeen met 1 uur.<br>';
+
+	if ($app['s_elas_guest'])
+	{
+		$msg .= 'Je bent ingelogd als gast, je kan informatie ';
+		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
+		$msg .= 'ingeven in je eigen Systeem.';
+	}
+	else
+	{
+		$msg .= 'Je kan steeds terug naar je eigen Systeem via het menu <strong>Systeem</strong> ';
+		$msg .= 'boven in de navigatiebalk.';
+	}
+
+	return $msg;
 };
 
 /**

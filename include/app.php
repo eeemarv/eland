@@ -48,6 +48,11 @@ $fn_before_system_guest = function(Request $request, app $app){
 	{
 		throw new NotFoundHttpException('Guest routes not enabled (intersystem_en)');
 	}
+
+	if ($request->query->get('welcome', ''))
+	{
+		$app['alert']->info($app['welcome_msg']);
+	}
 };
 
 $fn_before_system_role = function(Request $request, app $app){
@@ -236,23 +241,23 @@ $c_system_admin->get('/contacts',
 	->bind('contacts');
 
 $c_system_admin->match('/users/{user_id}/contacts/{contact_id}/edit',
-		'controller\\contacts_edit::users_contacts_edit')
+		'controller\\users_contacts_edit::users_contacts_edit_admin')
 	->bind('users_contacts_edit_admin');
 
 $c_system_user->match('/users/contacts/{contact_id}/edit',
-		'controller\\contacts_edit::users_contacts_edit')
+		'controller\\users_contacts_edit::users_contacts_edit')
 	->bind('users_contacts_edit');
 
 $c_system_admin->match('/users/{user_id}/contacts/{contact_id}/del',
-		'controller\\contacts_del::users_contacts_del_admin')
+		'controller\\users_contacts_del::users_contacts_del_admin')
 	->bind('users_contacts_del_admin');
 
 $c_system_user->match('/users/contacts/{contact_id}/del',
-		'controller\\contacts_del::users_contacts_del')
+		'controller\\users_contacts_del::users_contacts_del')
 	->bind('users_contacts_del');
 
 $c_system_user->match('/users/{user_id}/contacts/add',
-		'controller\\contacts_add::users_contacts_add')
+		'controller\\users_contacts_add::users_contacts_add_admin')
 	->bind('users_contacts_add_admin');
 
 $c_system_user->match('/users/contacts/add',
