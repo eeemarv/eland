@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class users_list
 {
-    const USER_SELECT_CHECKBOX = '<label for="su_%1$s">&nbsp;<input type="checkbox" name="su[%1$s]" id="su_%1$s" value="1"%2$s>&nbsp;&nbsp;';
+    const USER_SELECT_CHECKBOX = '<label for="su[%1$s]">&nbsp;<input type="checkbox" name="su[%1$s]" id="su[%1$s]" value="1"%2$s>&nbsp;&nbsp;';
 
     public function users_list_admin(Request $request, app $app, string $status):Response
     {

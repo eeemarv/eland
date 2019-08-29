@@ -449,12 +449,17 @@ class messages_show
         $message['is_offer'] = $message['type'] === 'offer';
         $message['is_want'] = $message['type'] === 'want';
 
-        $message['label'] = [
-            'type'  => cnst_message_type::TO_LABEL[$message['type']],
-            'type_the'  => cnst_message_type::TO_THE_LABEL[$message['type']],
-            'type_this' => cnst_message_type::TO_THIS_LABEL[$message['type']],
-        ];
+        $message['label'] = self::get_label($message['type']);
 
         return $message;
+    }
+
+    public static function get_label(string $type):array
+    {
+        return [
+            'type'  => cnst_message_type::TO_LABEL[$type],
+            'type_the'  => cnst_message_type::TO_THE_LABEL[$type],
+            'type_this' => cnst_message_type::TO_THIS_LABEL[$type],
+        ];
     }
 }

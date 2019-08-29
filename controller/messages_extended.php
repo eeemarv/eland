@@ -53,8 +53,6 @@ class messages_extended
 
         foreach ($messages as $msg)
         {
-            $type_str = $msg['msg_type'] ? 'Aanbod' : 'Vraag';
-
             $sf_owner = $app['s_system_self']
                 && $msg['id_user'] === $app['s_id'];
 
@@ -62,7 +60,7 @@ class messages_extended
 
             $out .= '<div class="panel panel-info printview">';
             $out .= '<div class="panel-body';
-            $out .= ($exp) ? ' bg-danger' : '';
+            $out .= $exp ? ' bg-danger' : '';
             $out .= '">';
 
             $out .= '<div class="media">';
@@ -87,7 +85,8 @@ class messages_extended
             $out .= '<h3 class="media-heading">';
 
             $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
-                ['id' => $msg['id']], $type_str . ': ' . $msg['content']);
+                ['id' => $msg['id']],
+                ucfirst($msg['label']['type']) . ': ' . $msg['content']);
 
             if ($exp)
             {

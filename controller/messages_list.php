@@ -9,10 +9,14 @@ use render\pagination;
 use render\tpl;
 use render\btn_nav;
 use cnst\access as cnst_access;
+use cnst\message_type as cnst_message_type;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use controller\messages_show;
 
 class messages_list
 {
+    const CHECKBOX_TPL = '<label for="sel[%1$s]">&nbsp;&nbsp;<input type="checkbox" name="sel[%1$s]" id="sel[%1$s]" value="1"%2$s>&nbsp;&nbsp;%3$s</label>';
+
     public function messages_list(Request $request, app $app):Response
     {
         $selected_messages = $request->request->get('sel', []);
@@ -242,17 +246,14 @@ class messages_list
 
             if ($app['s_admin'] || $s_owner)
             {
-                $out .= '<label>';
-                $out .= '<input type="checkbox" name="sel[';
-                $out .= $msg['id'] . ']" value="1"';
-                $out .= isset($selected_messages[$msg['id']]) ? ' checked="checked"' : '';
-                $out .= '>&nbsp;';
-                $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
-                $out .= '</label>';
+                $checked = isset($selected_messages[$msg['id']]) ? ' checked' : '';
+                $label_type = ucfirst($msg['label']['type']);
+
+                $out .= sprintf(self::CHECKBOX_TPL, $msg['id'], $checked, $label_type);
             }
             else
             {
-                $out .= $msg['msg_type'] ? 'Aanbod' : 'Vraag';
+                $out .= ucfirst($msg['label']['type']);
             }
 
             $out .= '</td>';
@@ -744,7 +745,17 @@ class messages_list
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $messages = $app['db']->fetchAll($query, $params_sql);
+        $messages = [];
+
+        $st = $app['db']->executeQuery($query, $params_sql);
+
+        while ($msg = $st->fetch())
+        {
+            $msg['type'] = cnst_message_type::FROM_DB[$msg['msg_type']];
+            $msg['label'] = messages_show::get_label($msg['type']);
+
+            $messages[] = $msg;
+        }
 
         $app['pagination']->init($app['r_messages'], $app['pp_ary'],
             $row_count, $params);
@@ -812,11 +823,6 @@ class messages_list
                         ['uid' => $filter['uid']], $str);
                 }
             }
-        }
-
-        if ($app['s_admin'])
-        {
-            $app['btn_nav']->csv();
         }
 
         $app['assets']->add(['messages_filter.js']);
