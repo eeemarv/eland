@@ -352,7 +352,7 @@ $c_system_user->match('/messages/{id}/edit',
 	->bind('messages_edit');
 
 $c_system_user->match('/messages/add',
-		'controller\\messages_add::messages_add')
+		'controller\\messages_edit::messages_add')
 	->bind('messages_add');
 
 $c_system_guest->match('/messages/{id}',

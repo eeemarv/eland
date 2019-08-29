@@ -446,31 +446,6 @@ class messages_list
         return $tpl->get();
     }
 
-    static public function get_radio(
-        array $radio_ary,
-        string $name,
-        string $selected,
-        bool $required):string
-    {
-        $out = '';
-
-        foreach ($radio_ary as $value => $label)
-        {
-            $out .= '<label class="radio-inline">';
-            $out .= '<input type="radio" name="' . $name . '" ';
-            $out .= 'value="' . $value . '"';
-            $out .= (string) $value === $selected ? ' checked' : '';
-            $out .= $required ? ' required' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
-        }
-
-        return $out;
-    }
-
     public static function get_checkbox_filter(
         array $checkbox_ary,
         string $filter_id,

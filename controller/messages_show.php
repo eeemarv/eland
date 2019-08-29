@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as db;
 use render\link;
 use cnst\access as cnst_access;
+use cnst\message_type as cnst_message_type;
 use controller\contacts_user_show_inline;
 use controller\users_show;
 
@@ -35,10 +36,7 @@ class messages_show
             && $app['s_id'] === $message['id_user']
             && $message['id_user'];
 
-        $ow_type = $message['is_offer'] ? 'aanbod' : 'vraag';
-	    $ow_type_this = $message['is_offer'] ? 'dit aanbod' : 'deze vraag';
-
-        $cc = $request->isMethod('POST') ? $cc : 1;
+        $cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
         $user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
@@ -198,10 +196,10 @@ class messages_show
         if ($app['s_admin'] || $s_owner)
         {
             $app['btn_top']->edit('messages_edit', $app['pp_ary'],
-                ['id' => $id],	ucfirst($ow_type) . ' aanpassen');
+                ['id' => $id],	ucfirst($message['label']['type']) . ' aanpassen');
 
             $app['btn_top']->del('messages_del', $app['pp_ary'],
-                ['id' => $id], ucfirst($ow_type) . ' verwijderen');
+                ['id' => $id], ucfirst($message['label']['type']) . ' verwijderen');
         }
 
         if ($message['is_offer'] === 1
@@ -231,7 +229,7 @@ class messages_show
         $app['btn_nav']->nav_list($app['r_messages'], $app['pp_ary'],
             [], 'Lijst', 'newspaper-o');
 
-        $app['heading']->add(ucfirst($ow_type));
+        $app['heading']->add(ucfirst($message['label']['type']));
         $app['heading']->add(': ' . htmlspecialchars($message['content'], ENT_QUOTES));
         $app['heading']->add(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
         $app['heading']->fa('newspaper-o');
@@ -257,7 +255,7 @@ class messages_show
         $out .= 'class="text-center center-body" style="display: none;">';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
-        $out .= $ow_type_this . '</p>';
+        $out .= $message['label']['type_this'] . '</p>';
         $out .= '</div>';
 
         $out .= '<div id="images_con" ';
@@ -448,9 +446,15 @@ class messages_show
 
         $message['access'] = cnst_access::FROM_LOCAL[$message['local']];
 
-        $message['type'] = $message['msg_type'] ? 'offer' : 'want';
+        $message['type'] = cnst_message_type::FROM_DB[$message['msg_type']];
         $message['is_offer'] = $message['type'] === 'offer';
         $message['is_want'] = $message['type'] === 'want';
+
+        $message['label'] = [
+            'type'  => cnst_message_type::TO_LABEL[$message['type']],
+            'type_the'  => cnst_message_type::TO_THE_LABEL[$message['type']],
+            'type_this' => cnst_message_type::TO_THIS_LABEL[$message['type']],
+        ];
 
         return $message;
     }
