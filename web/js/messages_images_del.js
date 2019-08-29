@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-	$('span[data-img-del]').click(function(){
+	$('span[data-img]').click(function(){
 
 		var btn = $(this);
 
@@ -21,4 +21,3 @@ $(document).ready(function () {
 		});
 	});
 });
-

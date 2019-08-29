@@ -321,6 +321,12 @@ $c_system_anon->get('/',
 		'controller\\home_system::home_system')
 	->bind('home_system');
 
+$c_system_user->post('/messages/{id}/images/{img}/del/{form_token}',
+	'controller\\messages_images_del::messages_images_instant_del')
+	->assert('img', cnst_assert::MESSAGE_IMAGE)
+	->assert('form_token', cnst_assert::TOKEN)
+	->bind('messages_images_instant_del');
+
 $c_system_user->match('/messages/{id}/images/del',
 	'controller\\messages_images_del::messages_images_del')
 	->bind('messages_images_del');

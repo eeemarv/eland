@@ -22,4 +22,5 @@ class assert
     const USER_PRIMARY_STATUS = 'active|inactive|im|ip|extern';
     const USER_ACTIVE_STATUS = 'active|new|leaving';
     const USER_STATUS = 'active|new|leaving|inactive|im|ip|extern|all';
+    const MESSAGE_IMAGE = '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}';
 }
