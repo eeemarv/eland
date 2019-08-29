@@ -11,7 +11,7 @@ require_once __DIR__ . '/deps.php';
 
 $fn_after_locale = function (Request $request, Response $response, app $app){
 	$origin = rtrim($app['s3_url'], '/');
-	$origin .= ', http://img.letsa.net';
+	$origin .= ', http://doc.letsa.net';
 	$response->headers->set('Access-Control-Allow-Origin', $origin);
 };
 
