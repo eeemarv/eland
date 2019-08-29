@@ -14,17 +14,10 @@ class messages_del
     {
         $message = messages_show::get_message($app['db'], $id, $app['tschema']);
 
-        if ($message['access'] === 'user' && $app['s_guest'])
-        {
-            throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
-        }
-
         $s_owner = !$app['s_guest']
             && $app['s_system_self']
             && $app['s_id'] === $message['id_user']
             && $message['id_user'];
-
-        $ow_type_this = $message['msg_type'] ? 'dit aanbod' : 'deze vraag';
 
         if (!($s_owner || $app['s_admin']))
         {
@@ -50,14 +43,14 @@ class messages_del
                     set ' . $column . ' = ' . $column . ' - 1
                     where id = ?', [$message['id_category']]);
 
-                $app['alert']->success(ucfirst($ow_type_this) . ' is verwijderd.');
+                $app['alert']->success(ucfirst($message['label']['type_this']) . ' is verwijderd.');
                 $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
             }
 
-            $app['alert']->error(ucfirst($ow_type_this) . ' is niet verwijderd.');
+            $app['alert']->error(ucfirst($message['label']['type_this']) . ' is niet verwijderd.');
         }
 
-        $app['heading']->add(ucfirst($ow_type_this) . ' ');
+        $app['heading']->add(ucfirst($message['label']['type_this']) . ' ');
 
         $app['heading']->add($app['link']->link_no_attr('messages_show', $app['pp_ary'],
             ['id' => $id], $message['content']));
@@ -104,7 +97,7 @@ class messages_del
         $out .= '<div class="panel-heading">';
         $out .= '<h3>';
         $out .= '<span class="danger">';
-        $out .= 'Ben je zeker dat ' . $ow_type_this;
+        $out .= 'Ben je zeker dat ' . $message['label']['type_this'];
         $out .= ' moet verwijderd worden?</span>';
 
         $out .= '</h3>';
