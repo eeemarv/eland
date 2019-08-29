@@ -89,7 +89,7 @@ class form_token
 		{
 			return 'Geen form token gedefiniëerd.';
 		}
-		else if (!$this->predis->get(self::NAME . $form_token))
+		else if (!$this->predis->get(self::STORE_PREFIX . $form_token))
 		{
 			return 'Formulier verlopen of ongeldig.';
 		}

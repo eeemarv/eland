@@ -334,7 +334,7 @@ class messages_edit
 
         $app['assets']->add([
             'fileupload',
-            'messages_edit.js',
+            'messages_edit_images_upload.js',
         ]);
 
         if ($add_mode)
