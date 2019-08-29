@@ -682,7 +682,7 @@ $app['task.fetch_elas_intersystem'] = function ($app){
 	);
 };
 
-// schema tasks (tasks applied to every group seperate)
+// schema tasks (tasks applied to every system seperate)
 
 $app['schema_task.cleanup_messages'] = function ($app){
 	return new schema_task\cleanup_messages(
