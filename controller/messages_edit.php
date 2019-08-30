@@ -320,9 +320,9 @@ class messages_edit
 
         $cat_list = ['' => ''];
 
-        $rs = $app['db']->prepare('select id, fullname
+        $rs = $app['db']->prepare('select id, fullname, id_parent
             from ' . $app['tschema'] . '.categories
-            where leafnote=1
+            where leafnote = 1
             order by fullname');
 
         $rs->execute();

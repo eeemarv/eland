@@ -67,6 +67,14 @@ $fn_before_system_admin = function(Request $request, app $app){
 
 };
 
+$fn_before_system_init = function(Request $request, app $app){
+
+	if (!getenv('APP_INIT_ENABLED'))
+	{
+		throw new NotFoundHttpException('Page not found');
+	}
+};
+
 $app['controllers']
 	->assert('id', cnst_assert::NUMBER)
 	->assert('days', cnst_assert::NUMBER)
@@ -79,6 +87,7 @@ $c_system_anon = $app['controllers_factory'];
 $c_system_guest = $app['controllers_factory'];
 $c_system_user = $app['controllers_factory'];
 $c_system_admin = $app['controllers_factory'];
+$c_system_init = $app['controllers_factory'];
 
 $c_locale->assert('_locale', cnst_assert::LOCALE)
 	->after($fn_after_locale)
@@ -134,6 +143,14 @@ $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_system_auth)
 	->before($fn_before_system_role)
 	->before($fn_before_system_admin);
+
+$c_system_init->assert('_locale', cnst_assert::LOCALE)
+	->assert('system', cnst_assert::SYSTEM)
+	->assert('start', cnst_assert::NUMBER)
+	->after($fn_after_locale)
+	->before($fn_before_locale)
+	->before($fn_before_system)
+	->before($fn_before_system_init);
 
 $app->get('/monitor', 'controller\\monitor::get')
 	->bind('monitor');
@@ -618,9 +635,49 @@ $c_system_admin->get('/weighted-balances/{days}',
 		'controller\\weighted_balances::weighted_balances')
 	->bind('weighted_balances');
 
+$c_system_init->get('/elas-db-upgrade',
+	'controller\\init::elas_db_upgrade')
+	->bind('init_elas_db_upgrade');
+
+$c_system_init->get('/sync-users-images/{start}',
+	'controller\\init::sync_users_images')
+	->value('start', 0)
+	->bind('init_sync_users_images');
+
+$c_system_init->get('/sync-messages-images/{start}',
+	'controller\\init::sync_messages_images')
+	->value('start', 0)
+	->bind('init_sync_messages_images');
+
+$c_system_init->get('/clear-users-cache',
+	'controller\\init::clear_users_cache')
+	->bind('init_clear_users_cache');
+
+$c_system_init->get('/empty-elas-tokens',
+	'controller\\init::empty_elas_tokens')
+	->bind('init_empty_elas_tokens');
+
+$c_system_init->get('/empty-city-distance',
+	'controller\\init::empty_city_distance')
+	->bind('init_empty_city_distance');
+
+$c_system_init->get('/queue-geocoding/{start}',
+	'controller\\init::queue_geocoding')
+	->value('start', 0)
+	->bind('init_queue_geocoding');
+
+$c_system_init->get('/copy-config',
+	'controller\\init::copy_config')
+	->bind('init_copy_config');
+
+$c_system_init->get('/',
+	'controller\\init::init')
+	->bind('init');
+
 $c_system_anon->mount('/{role_short}', $c_system_admin);
 $c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_guest);
+$c_system_anon->mount('/init', $c_system_init);
 $c_locale->mount('/{system}', $c_system_anon);
 $app->mount('/{_locale}', $c_locale);
 
