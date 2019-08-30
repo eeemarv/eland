@@ -13,11 +13,10 @@ use cnst\message_type as cnst_message_type;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use controller\messages_show;
 use cnst\bulk as cnst_bulk;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class messages_list
 {
-    const CHECKBOX_TPL = '<label for="sel[%1$s]">&nbsp;&nbsp;<input type="checkbox" name="sel[%1$s]" id="sel[%1$s]" value="1"%2$s>&nbsp;&nbsp;%3$s</label>';
-
     public function messages_list(Request $request, app $app):Response
     {
         $selected_messages = $request->request->get('sel', []);
@@ -102,8 +101,8 @@ class messages_list
                 if (!$app['s_admin']
                     && ($row['id_user'] !== $app['s_id']))
                 {
-                    $errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' .
-                        $row['content'] . ' ( ' . $row['id'] . ')';
+                    throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
+                        $row['content'] . ' ( ' . $row['id'] . ')');
                 }
 
                 $validity_ary[$row['id']] = $row['validity'];
@@ -141,7 +140,7 @@ class messages_list
             {
                 $msg_update = [
                     'local' => cnst_access::TO_LOCAL[$bulk_field_value],
-                    'mdate' => gmdate('Y-m-d H:i:s')
+                    'mdate' => gmdate('Y-m-d H:i:s'),
                 ];
 
                 foreach ($validity_ary as $id => $validity)
@@ -161,6 +160,32 @@ class messages_list
                 $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
             }
 
+            if ($bulk_submit_action === 'category' && !count($errors))
+            {
+                $msg_update = [
+                    'id_category'   => (int) $bulk_field_value,
+                    'mdate'         => gmdate('Y-m-d H:i:s'),
+                ];
+
+                foreach ($validity_ary as $id => $validity)
+                {
+                    $app['db']->update($app['tschema'] . '.messages', $msg_update, ['id' => $id]);
+                }
+
+                // to do: recount category msgs
+
+                if (count($selected_messages) > 1)
+                {
+                    $app['alert']->success('De categorie van de berichten is aangepast.');
+                }
+                else
+                {
+                    $app['alert']->success('De categorie van het bericht is aangepast.');
+                }
+
+                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+            }
+
             $app['alert']->error($errors);
         }
 
@@ -169,6 +194,7 @@ class messages_list
         $messages = $fetch_and_filter['messages'];
         $params = $fetch_and_filter['params'];
         $categories = $fetch_and_filter['categories'];
+        $categories_move_options = $fetch_and_filter['categories_move_options'];
         $cat_params = $fetch_and_filter['cat_params'];
         $s_owner = $fetch_and_filter['s_owner'];
 
@@ -247,10 +273,11 @@ class messages_list
 
             if ($app['s_admin'] || $s_owner)
             {
-                $checked = isset($selected_messages[$msg['id']]) ? ' checked' : '';
-                $label_type = ucfirst($msg['label']['type']);
-
-                $out .= sprintf(self::CHECKBOX_TPL, $msg['id'], $checked, $label_type);
+                $out .= strtr(cnst_bulk::TPL_CHECKBOX_ITEM, [
+                    '%id%'      => $msg['id'],
+                    '%attr%'    => isset($selected_messages[$msg['id']]) ? ' checked' : '',
+                    '%label%'   => ucfirst($msg['label']['type']),
+                ]);
             }
             else
             {
@@ -401,7 +428,7 @@ class messages_list
             $out .= '<form method="post">';
 
             $out .= strtr(cnst_bulk::TPL_SELECT, [
-                '%options%' => $app['select']->get_options($categories, ''),
+                '%options%' => $app['select']->get_options($categories_move_options, ''),
                 '%name%'    => 'bulk_field[category]',
                 '%label%'   => 'Categorie',
                 '%attr%'    => ' required',
@@ -766,7 +793,8 @@ class messages_list
         $app['pagination']->init($app['r_messages'], $app['pp_ary'],
             $row_count, $params);
 
-        $cats = ['' => '-- alle categorieën --'];
+        $categories_filter_options = ['' => '-- alle categorieën --'];
+        $categories_move_options = ['' => ''];
 
         $categories = $cat_params  = [];
 
@@ -795,19 +823,24 @@ class messages_list
 
         while ($row = $st->fetch())
         {
-            $cats[$row['id']] = $row['id_parent'] ? ' . . ' : '';
-            $cats[$row['id']] .= $row['name'];
+            $categories_filter_options[$row['id']] = $row['id_parent'] ? ' . . ' : '';
+            $categories_filter_options[$row['id']] .= $row['name'];
             $count_msgs = $row['stat_msgs_offers'] + $row['stat_msgs_wanted'];
 
             if ($row['id_parent'] && $count_msgs)
             {
-                $cats[$row['id']] .= ' (' . $count_msgs . ')';
+                $categories_filter_options[$row['id']] .= ' (' . $count_msgs . ')';
             }
 
             $categories[$row['id']] = $row['fullname'];
 
             $cat_params[$row['id']] = $cat_params_sort;
             $cat_params[$row['id']]['f']['cid'] = $row['id'];
+
+            if ($row['id_parent'])
+            {
+                $categories_move_options[$row['id']] = $row['fullname'];
+            }
         }
 
         if ($app['s_admin'] || $app['s_user'])
@@ -894,7 +927,7 @@ class messages_list
         $out .= '</span>';
         $out .= '<select class="form-control" id="cid" name="f[cid]">';
 
-        $out .= $app['select']->get_options($cats, (string) $filter['cid'] ?? '');
+        $out .= $app['select']->get_options($categories_filter_options, (string) $filter['cid'] ?? '');
 
         $out .= '</select>';
         $out .= '</div>';
@@ -1030,11 +1063,12 @@ class messages_list
         $app['tpl']->menu('messages');
 
         return [
-            'messages'      => $messages,
-            'params'        => $params,
-            'categories'    => $categories,
-            'cat_params'    => $cat_params,
-            's_owner'       => $s_owner,
+            'messages'                  => $messages,
+            'params'                    => $params,
+            'categories'                => $categories,
+            'cat_params'                => $cat_params,
+            'categories_move_options'   => $categories_move_options,
+            's_owner'                   => $s_owner,
         ];
     }
 }

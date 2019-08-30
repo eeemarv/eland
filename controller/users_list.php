@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class users_list
 {
-    const USER_SELECT_CHECKBOX = '<label for="su[%1$s]">&nbsp;<input type="checkbox" name="su[%1$s]" id="su[%1$s]" value="1"%2$s>&nbsp;&nbsp;';
+    const TPL_CHECKBOX_ITEM = '<label for="su[%1$s]">&nbsp;<input type="checkbox" name="su[%1$s]" id="su[%1$s]" value="1"%2$s>&nbsp;&nbsp;';
 
     public function users_list_admin(Request $request, app $app, string $status):Response
     {
@@ -29,7 +29,7 @@ class users_list
         $q = $request->get('q', '');
         $show_columns = $request->query->get('sh', []);
 
-        $selected_users = $request->request->get('su', []);
+        $selected_users = $request->request->get('sel', []);
         $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
         $bulk_mail_content = $request->request->get('bulk_mail_content', '');
         $bulk_mail_cc = $request->request->get('bulk_mail_cc', '') ? true : false;
@@ -1246,32 +1246,29 @@ class users_list
                     $out .= isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
                     $out .= '>';
 
-                    if ($app['s_admin'] && $first)
-                    {
-                        $out .= sprintf(self::USER_SELECT_CHECKBOX, $id, isset($selected_users[$id]) ? ' checked="checked"' : '');
-                    }
+                    $td = '';
 
                     if (isset($link_user_keys[$key]))
                     {
                         if ($can_link)
                         {
-                            $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
+                            $td .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
                                 ['id' => $u['id'], 'status' => $status], $u[$key] ?: '**leeg**');
                         }
                         else
                         {
-                            $out .= htmlspecialchars($u[$key], ENT_QUOTES);
+                            $td .= htmlspecialchars($u[$key], ENT_QUOTES);
                         }
                     }
                     else if (isset($date_keys[$key]))
                     {
                         if ($u[$key])
                         {
-                            $out .= $app['date_format']->get($u[$key], 'day', $app['tschema']);
+                            $td .= $app['date_format']->get($u[$key], 'day', $app['tschema']);
                         }
                         else
                         {
-                            $out .= '&nbsp;';
+                            $td .= '&nbsp;';
                         }
                     }
                     else if ($key === 'fullname')
@@ -1282,39 +1279,46 @@ class users_list
                         {
                             if ($can_link)
                             {
-                                $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
+                                $td .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
                                     ['id' => $u['id'], 'status' => $status], $u['fullname']);
                             }
                             else
                             {
-                                $out .= htmlspecialchars($u['fullname'], ENT_QUOTES);
+                                $td .= htmlspecialchars($u['fullname'], ENT_QUOTES);
                             }
                         }
                         else
                         {
-                            $out .= '<span class="btn btn-default">';
-                            $out .= 'verborgen</span>';
+                            $td .= '<span class="btn btn-default">';
+                            $td .= 'verborgen</span>';
                         }
                     }
                     else if ($key === 'accountrole')
                     {
-                        $out .= cnst_role::LABEL_ARY[$u['accountrole']];
+                        $td .= cnst_role::LABEL_ARY[$u['accountrole']];
                     }
                     else
                     {
-                        $out .= htmlspecialchars((string) $u[$key]);
+                        $td .= htmlspecialchars((string) $u[$key]);
                     }
 
                     if ($app['s_admin'] && $first)
                     {
-                        $out .= '</label>';
+                        $out .= strtr(cnst_bulk::TPL_CHECKBOX_ITEM, [
+                            '%id%'      => $id,
+                            '%attr%'    => isset($selected_users[$id]) ? ' checked' : '',
+                            '%label%'   => $td,
+                        ]);
+
                         $first = false;
+                    }
+                    else
+                    {
+                        $out .= $td;
                     }
 
                     $out .= '</td>';
                 }
-
-
             }
 
             if (isset($show_columns['c']))
@@ -1323,7 +1327,7 @@ class users_list
                 {
                     $out .= '<td>';
 
-                    if ($key == 'adr' && $adr_split != '')
+                    if ($key === 'adr' && $adr_split !== '')
                     {
                         if (!isset($contacts[$id][$key]))
                         {

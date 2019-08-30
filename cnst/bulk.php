@@ -74,6 +74,8 @@ class bulk
         ],
     ];
 
+    const TPL_CHECKBOX_ITEM = '<label for="sel[%id%]">&nbsp;&nbsp;<input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>&nbsp;&nbsp;%label%</label>';
+
     const TPL_INPUT =  <<<'TPL'
     <div class="form-group">
     <label for="%name%" class="control-label">%label%</label>
