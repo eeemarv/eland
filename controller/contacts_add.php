@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\contacts_edit;
 use cnst\access as cnst_access;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class contacts_add
 {
@@ -58,7 +59,7 @@ class contacts_add
 
             if (!isset(cnst_access::TO_FLAG_PUBLIC[$access]))
             {
-                $errors[] = 'Ongeldige waarde zichtbaarheid';
+                throw new BadRequestHttpException('Ongeldige waarde zichtbaarheid');
             }
 
             $abbrev_type = $app['db']->fetchColumn('select abbrev
@@ -67,7 +68,7 @@ class contacts_add
 
             if(!$abbrev_type)
             {
-                $errors[] = 'Ongeldig contact type!';
+                throw new BadRequestHttpException('Ongeldig contact type!');
             }
 
             if ($abbrev_type === 'mail'

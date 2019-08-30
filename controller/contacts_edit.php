@@ -324,49 +324,17 @@ class contacts_edit
         return $app['tpl']->get();
     }
 
-    public static function get_contact_for_users_route(
-        int $contact_id,
-        int $user_id,
-        int $s_id,
-        bool $s_admin,
+    public static function get_contact(
         db $db,
+        int $contact_id,
         string $tschema
     ):array
     {
-        $contact = $db->fetchAssoc('select *
-            from ' . $tschema . '.contact
-            where id = ?', [$contact_id]);
-
-        if (!$contact)
-        {
-            throw new NotFoundHttpException(
-                sprintf('Het contact met id %1$d bestaat niet', $contact_id));
-        }
-
-        if (!$s_admin && $user_id !== $s_id)
-        {
-            throw new AccessDeniedHttpException(
-                sprintf('Je hebt geen toegang tot deze actie.'));
-        }
-
-        if ($user_id !== $contact['id_user'])
-        {
-            throw new BadRequestHttpException(
-                sprintf('Het contact met id %1$d is niet van gebruiker met id %2$d', $contact_id, $user_id));
-        }
-
-        return $contact;
-    }
-
-    public static function get_contact_for_admin_route(
-        int $contact_id,
-        db $db,
-        string $tschema
-    ):array
-    {
-        $contact = $db->fetchAssoc('select *
-            from ' . $tschema . '.contact
-            where id = ?', [$contact_id]);
+        $contact = $db->fetchAssoc('select c.*, tc.abbrev
+            from ' . $tschema . '.contact c,
+                ' . $tschema . '.type_contact tc
+            where c.id = ?
+                and tc.id = c.id_type_contact', [$contact_id]);
 
         if (!$contact)
         {

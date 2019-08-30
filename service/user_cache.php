@@ -40,6 +40,12 @@ class user_cache
 		return;
 	}
 
+	public function is_active_user(int $id, string $schema):bool
+	{
+		$user = $this->get($id, $schema);
+		return in_array($user['status'], [1, 2]);
+	}
+
 	public function get(int $id, string $schema):array
 	{
 		if (!$id)

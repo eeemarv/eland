@@ -4,8 +4,6 @@ namespace controller;
 
 use util\app;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contacts_edit;
-use cnst\access as cnst_access;
 
 class contacts_user_show_inline
 {
@@ -94,8 +92,16 @@ class contacts_user_show_inline
                 }
                 else if ($s_owner || $app['s_admin'])
                 {
-                    $tr_c = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
-                        ['contact_id' => $c['id'], 'user_id' => $uid], $c['value']);
+                    if ($app['s_admin'])
+                    {
+                        $tr_c = $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                            ['contact_id' => $c['id'], 'user_id' => $uid], $c['value']);
+                    }
+                    else
+                    {
+                        $tr_c = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
+                            ['contact_id' => $c['id']], $c['value']);
+                    }
 
                     if ($c['abbrev'] == 'adr')
                     {
@@ -113,8 +119,16 @@ class contacts_user_show_inline
 
                     if (isset($c['comments']))
                     {
-                        $tr[] = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
-                            ['contact_id' => $c['id'], 'user_id' => $uid], $c['comments']);
+                        if ($app['s_admin'])
+                        {
+                            $tr[] = $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                                ['contact_id' => $c['id'], 'user_id' => $uid], $c['comments']);
+                        }
+                        else
+                        {
+                            $tr[] = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
+                                ['contact_id' => $c['id']], $c['comments']);
+                        }
                     }
                     else
                     {
@@ -160,9 +174,18 @@ class contacts_user_show_inline
                 {
                     $tr[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
-                    $tr[] = $app['link']->link_fa('users_contacts_del', $app['pp_ary'],
-                        ['contact_id' => $c['id'], 'user_id' => $uid], 'Verwijderen',
-                        ['class' => 'btn btn-danger'], 'times');
+                    if ($app['s_admin'])
+                    {
+                        $tr[] = $app['link']->link_fa('users_contacts_del_admin', $app['pp_ary'],
+                            ['contact_id' => $c['id'], 'user_id' => $uid], 'Verwijderen',
+                            ['class' => 'btn btn-danger'], 'times');
+                    }
+                    else
+                    {
+                        $tr[] = $app['link']->link_fa('users_contacts_del', $app['pp_ary'],
+                            ['contact_id' => $c['id']], 'Verwijderen',
+                            ['class' => 'btn btn-danger'], 'times');
+                    }
                 }
 
                 $out .= '<tr><td>';

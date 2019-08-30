@@ -5,23 +5,17 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\status as cnst_status;
-use cnst\role as cnst_role;
+use controller\contacts_del;
 
 class users_contacts_del
 {
     public function users_contacts_del(Request $request, app $app, int $contact_id):Response
     {
-        return $this->users_contacts_edit_admin($request, $app, $app['s_id'], $contact_id);
+        return contacts_del::form($request, $app, $app['s_id'], $contact_id, false);
     }
 
     public function users_contacts_del_admin(Request $request, app $app, int $user_id, int $contact_id):Response
     {
-
-
-        $app['tpl']->add($out);
-        $app['tpl']->menu('users');
-
-        return $app['tpl']->get();
+        return contacts_del::form($request, $app, $user_id, $contact_id, false);
     }
 }
