@@ -39,46 +39,52 @@ class contacts_edit
         ],
     ];
 
-    public function users_contacts_edit(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function contacts_edit_admin(Request $request, app $app, int $user_id, int $contact_id):Response
     {
-        $contact = self::get_contact_for_users_route(
-            $contact_id, $user_id, $app['s_id'],
-            $app['s_admin'], $app['db'], $app['tschema']);
-
-        return $this->contacts_edit_admin($request, $app, $contact_id);
+        return self::form($request, $app, $user_id, $contact_id, true);
     }
 
-    public function contacts_edit_admin(Request $request, app $app, int $id):Response
+    public static function form(
+        Request $request,
+        app $app,
+        int $user_id,
+        int $id,
+        bool $redirect_contacts
+    ):Response
     {
-        $contact = self::get_contact_for_admin_route(
-            $id, $app['db'], $app['tschema']);
+        $contact = self::get_contact(
+            $app['db'], $id, $app['tschema']);
 
-        $user_id = $contact['id_user'];
+        if ($user_id !== $contact['id_user'])
+        {
+            throw new BadRequestHttpException(
+                sprintf('Contact %1$s behoort niet tot gebruiker %2$s', $id, $user_id));
+        }
+
+        $id_type_contact = $contact['id_type_contact'];
+        $value = $contact['value'];
+        $comments = $contact['comments'];
+        $access = $contact['access'];
+
 
         if($request->isMethod('POST'))
         {
             $errors = [];
+
+            $id_type_contact = (int) $request->request->get('id_type_contact', '');
+            $value = $request->request->get('value', '');
+            $comments = $request->request->get('comments', '');
+            $access = $request->request->get('access', '');
 
             if ($error_token = $app['form_token']->get_error())
             {
                 $errors[] = $error_token;
             }
 
-            $access = $request->request->get('access', '');
-
-            if ($access)
-            {
-                $flag_public = cnst_access::TO_FLAG_PUBLIC[$access];
-            }
-            else
+            if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in!';
-                $flag_public = cnst_access::TO_FLAG_PUBLIC['admin'];
             }
-
-            $id_type_contact = (int) $request->request->get('id_type_contact', '');
-            $value = $request->request->get('value', '');
-            $comments = $request->request->get('comments', '');
 
             $abbrev_type = $app['db']->fetchColumn('select abbrev
                 from ' . $app['tschema'] . '.type_contact
@@ -184,7 +190,7 @@ class contacts_edit
                 'id_type_contact'   => $id_type_contact,
                 'value'             => $value,
                 'comments'          => $comments,
-                'flag_public'       => $flag_public,
+                'flag_public'       => cnst_access::TO_FLAG_PUBLIC[$access],
             ];
 
             if(!count($errors))
@@ -198,26 +204,25 @@ class contacts_edit
                     ], 0);
                 }
 
-                if ($app['db']->update($app['tschema'] . '.contact',
-                    $update_ary, ['id' => $id]))
+                $app['db']->update($app['tschema'] . '.contact',
+                    $update_ary, ['id' => $id]);
+
+                $app['alert']->success('Contact aangepast.');
+
+                if ($redirect_contacts)
                 {
-                    $app['alert']->success('Contact aangepast.');
                     $app['link']->redirect('contacts', $app['pp_ary'], []);
                 }
                 else
                 {
-                    $app['alert']->error('Fout bij het opslaan');
+                    $app['link']->redirect('users_show', $app['pp_ary'],
+                        ['id' => $user_id]);
                 }
-            }
-            else
-            {
-                $app['alert']->error($errors);
+
             }
 
-            $contact = $update_ary;
+            $app['alert']->error($errors);
         }
-
-        $access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
 
         $type_contact_ary = [];
 
@@ -233,11 +238,15 @@ class contacts_edit
 
         $app['assets']->add(['contacts_edit.js']);
 
-        $abbrev = $type_contact_ary[$contact['id_type_contact']]['abbrev'];
+        $abbrev = $type_contact_ary[$id_type_contact]['abbrev'];
 
         $app['heading']->add('Contact aanpassen');
-        $app['heading']->add(' voor ');
-        $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
+
+        if ($app['s_admin'])
+        {
+            $app['heading']->add(' voor ');
+            $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
+        }
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -257,7 +266,7 @@ class contacts_edit
             $out .= 'data-abbrev="';
             $out .= $type['abbrev'];
             $out .= '" ';
-            $out .= $tc_id == $contact['id_type_contact'] ? ' selected="selected"' : '';
+            $out .= $tc_id === $id_type_contact ? ' selected="selected"' : '';
             $out .= '>';
             $out .= $type['name'];
             $out .= '</option>';
@@ -277,7 +286,7 @@ class contacts_edit
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
         $out .= 'value="';
-        $out .= $contact['value'];
+        $out .= $value;
         $out .= '" required disabled maxlength="130" ';
         $out .= 'data-contacts-format="';
         $out .= htmlspecialchars(json_encode(self::FORMAT));
@@ -297,14 +306,22 @@ class contacts_edit
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="comments" name="comments" ';
         $out .= 'value="';
-        $out .= $contact['comments'];
+        $out .= $comments;
         $out .= '" maxlength="50">';
         $out .= '</div>';
         $out .= '</div>';
 
         $out .= $app['item_access']->get_radio_buttons('access', $access);
 
-        $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+        if ($redirect_contacts)
+        {
+            $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+        }
+        else
+        {
+            $out .= $app['link']->btn_cancel('users_show', $app['pp_ary'],
+                ['id' => $user_id]);
+        }
 
         $out .= '&nbsp;';
 
@@ -319,7 +336,7 @@ class contacts_edit
         $out .= '</div>';
 
         $app['tpl']->add($out);
-        $app['tpl']->menu('contacts');
+        $app['tpl']->menu($redirect_contacts ? 'contacts' : 'users');
 
         return $app['tpl']->get();
     }
@@ -327,12 +344,12 @@ class contacts_edit
     public static function get_contact(
         db $db,
         int $contact_id,
-        string $tschema
+        string $schema
     ):array
     {
         $contact = $db->fetchAssoc('select c.*, tc.abbrev
-            from ' . $tschema . '.contact c,
-                ' . $tschema . '.type_contact tc
+            from ' . $schema . '.contact c,
+                ' . $schema . '.type_contact tc
             where c.id = ?
                 and tc.id = c.id_type_contact', [$contact_id]);
 
@@ -341,6 +358,8 @@ class contacts_edit
             throw new NotFoundHttpException(
                 sprintf('Het contact met id %1$d bestaat niet.', $contact_id));
         }
+
+        $contact['access'] = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
 
         return $contact;
     }

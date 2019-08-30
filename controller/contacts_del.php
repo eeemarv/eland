@@ -121,7 +121,7 @@ class contacts_del
         $out .= '<dt>Zichtbaarheid</dt>';
         $out .= '<dd>';
 
-        $out .= $app['item_access']->get_label_flag_public($contact['flag_public']);
+        $out .= $app['item_access']->get_label($contact['access']);
 
         $out .= '</dd>';
         $out .= '</dl>';
