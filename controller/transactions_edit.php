@@ -97,14 +97,16 @@ class transactions_edit
         $app['heading']->add('Omschrijving transactie aanpassen');
         $app['heading']->fa('exchange');
 
-        $out = '<ul><i>';
+        $out = '<i><ul>';
+        $out .= '<li>Enkel Admins kunnen de omschrijving van ';
+        $out .= 'een transactie aanpassen.</li>';
         $out .= '<li>Pas de omschrijving van een transactie ';
         $out .= 'enkel aan wanneer het echt noodzakelijk is! ';
         $out .= 'Dit om verwarring te vermijden.</li>';
         $out .= '<li>Transacties kunnen nooit ongedaan ';
         $out .= 'gemaakt worden. Doe een tegenboeking ';
         $out .= 'bij vergissing.</li>';
-        $out .= '</i></ul>';
+        $out .= '</ul></i>';
 
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

@@ -10,13 +10,19 @@ use cnst\access as cnst_access;
 
 class contacts_add
 {
-    public function users_contacts_add(Request $request, app $app, int $user_id):Response
-    {
-        return $this->contacts_add_admin($request, $app, 'users');
-    }
-
     public function contacts_add_admin(Request $request, app $app):Response
     {
+        return self::form($request, $app, 0, true);
+    }
+
+    public static function form(Request $request, app $app, int $user_id, bool $redirect_contacts):Response
+    {
+        $account_code = $request->request->get('account_code', '');
+        $id_type_contact = (int) $request->request->get('id_type_contact', '');
+        $value = $request->request->get('value', '');
+        $comments = $request->request->get('comments', '');
+        $access = $request->request->get('access', '');
+
         if($request->isMethod('POST'))
         {
             $errors = [];
@@ -26,79 +32,67 @@ class contacts_add
                 $errors[] = $error_token;
             }
 
-            $letscode = $request->request->get('letscode', '');
-            [$letscode] = explode(' ', trim($letscode));
-
-            $user_id = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.users
-                where letscode = ?', [$letscode]);
-
-            if ($user_id)
+            if ($app['s_admin'] && $redirect_contacts)
             {
-                $letscode = $app['account']->str($user_id, $app['tschema']);
-            }
-            else
-            {
-                $errors[] = 'Ongeldige Account Code.';
+               [$code] = explode(' ', trim($account_code));
+
+                $user_id = $app['db']->fetchColumn('select id
+                    from ' . $app['tschema'] . '.users
+                    where letscode = ?', [$code]);
+
+                if (!$user_id)
+                {
+                    $errors[] = 'Ongeldige Account Code.';
+                }
             }
 
-            $access = $request->request->get('access', '');
-
-            if ($access)
-            {
-                $flag_public = cnst_access::TO_FLAG_PUBLIC[$access];
-            }
-            else
-            {
-                $errors[] = 'Vul een zichtbaarheid in!';
-                $flag_public = cnst_access::TO_FLAG_PUBLIC['admin'];
-            }
-
-            $contact = [
-                'id_type_contact'		=> $request->request->get('id_type_contact'),
-                'value'					=> $request->request->get('value'),
-                'comments' 				=> $request->request->get('comments'),
-                'flag_public'			=> $flag_public,
-                'id_user'				=> $user_id,
-            ];
-
-            $abbrev_type = $app['db']->fetchColumn('select abbrev
-                from ' . $app['tschema'] . '.type_contact
-                where id = ?', [$contact['id_type_contact']]);
-
-            if ($abbrev_type === 'mail'
-                && !filter_var($contact['value'], FILTER_VALIDATE_EMAIL))
-            {
-                $errors[] = 'Geen geldig E-mail adres';
-            }
-
-            if (!$contact['value'])
+            if (!$value)
             {
                 $errors[] = 'Vul waarde in!';
             }
 
-            if (strlen($contact['value']) > 130)
+            if (!$access)
             {
-                $errors[] = 'De waarde mag maximaal 130 tekens lang zijn.';
+                $errors[] = 'Vul zichtbaarheid in.';
             }
 
-            if (strlen($contact['comments']) > 50)
+            if (!isset(cnst_access::TO_FLAG_PUBLIC[$access]))
             {
-                $errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
+                $errors[] = 'Ongeldige waarde zichtbaarheid';
             }
+
+            $abbrev_type = $app['db']->fetchColumn('select abbrev
+                from ' . $app['tschema'] . '.type_contact
+                where id = ?', [$id_type_contact]);
 
             if(!$abbrev_type)
             {
                 $errors[] = 'Ongeldig contact type!';
             }
 
+            if ($abbrev_type === 'mail'
+                && !filter_var($value, FILTER_VALIDATE_EMAIL))
+            {
+                $errors[] = 'Geen geldig E-mail adres';
+            }
+
+            if (strlen($value) > 130)
+            {
+                $errors[] = 'De waarde mag maximaal 130 tekens lang zijn.';
+            }
+
+            if (strlen($comments) > 50)
+            {
+                $errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
+            }
+
             $mail_type_id = $app['db']->fetchColumn('select id
                 from ' . $app['tschema'] . '.type_contact
                 where abbrev = \'mail\'');
 
-            if ($contact['id_type_contact'] == $mail_type_id)
+            if ($id_type_contact === $mail_type_id)
             {
-                $mailadr = $contact['value'];
+                $mailadr = $value;
 
                 $mail_count = $app['db']->fetchColumn('select count(c.*)
                     from ' . $app['tschema'] . '.contact c, ' .
@@ -147,16 +141,32 @@ class contacts_add
                 if ($abbrev_type === 'adr')
                 {
                     $app['queue.geocode']->cond_queue([
-                        'adr'		=> $contact['value'],
-                        'uid'		=> $contact['id_user'],
+                        'adr'		=> $value,
+                        'uid'		=> $user_id,
                         'schema'	=> $app['tschema'],
                     ], 0);
                 }
 
-                if ($app['db']->insert($app['tschema'] . '.contact', $contact))
+                $insert_ary = [
+                    'id_type_contact'		=> $id_type_contact,
+                    'value'					=> $value,
+                    'comments' 				=> $comments,
+                    'flag_public'			=> cnst_access::TO_FLAG_PUBLIC[$access],
+                    'id_user'				=> $user_id,
+                ];
+
+                if ($app['db']->insert($app['tschema'] . '.contact', $insert_ary))
                 {
                     $app['alert']->success('Contact opgeslagen.');
-                    $app['link']->redirect('contacts', $app['pp_ary'], []);
+
+                    if ($redirect_contacts)
+                    {
+                        $app['link']->redirect('contacts', $app['pp_ary'], []);
+                    }
+
+                    $app['link']->redirect('users_show', $app['pp_ary'],
+                        ['id' => $user_id]);
+
                 }
                 else
                 {
@@ -167,15 +177,6 @@ class contacts_add
             {
                 $app['alert']->error($errors);
             }
-        }
-        else
-        {
-            $contact = [
-                'value'				=> '',
-                'comments'			=> '',
-            ];
-
-            $access = '';
         }
 
         $tc = [];
@@ -189,66 +190,75 @@ class contacts_add
         {
             $tc[$row['id']] = $row;
 
-            if (isset($contact['id_type_contact']))
+            if ($id_type_contact)
             {
                 continue;
             }
 
-            $contact['id_type_contact'] = $row['id'];
+            $id_type_contact = $row['id'];
         }
 
         $app['assets']->add(['contacts_edit.js']);
 
-        $abbrev = $tc[$contact['id_type_contact']]['abbrev'];
+        $abbrev = $tc[$id_type_contact]['abbrev'];
 
         $app['heading']->add('Contact toevoegen');
+
+        if ($app['s_admin'] && !$redirect_contacts)
+        {
+            $app['heading']->add(' voor ');
+            $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
+        }
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="letscode" class="control-label">Voor</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control" id="letscode" name="letscode" ';
+        if ($app['s_admin'] && $redirect_contacts)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<label for="account_code" class="control-label">Voor</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon" id="fcode_addon">';
+            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<input type="text" class="form-control" id="account_code" name="account_code" ';
 
-        $out .= 'data-typeahead="';
-        $out .= $app['typeahead']->ini($app['pp_ary'])
-            ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->add('accounts', ['status' => 'extern'])
-            ->str([
-                'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
-            ]);
-        $out .= '" ';
+            $out .= 'data-typeahead="';
+            $out .= $app['typeahead']->ini($app['pp_ary'])
+                ->add('accounts', ['status' => 'active'])
+                ->add('accounts', ['status' => 'inactive'])
+                ->add('accounts', ['status' => 'ip'])
+                ->add('accounts', ['status' => 'im'])
+                ->add('accounts', ['status' => 'extern'])
+                ->str([
+                    'filter'        => 'accounts',
+                    'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+                ]);
+            $out .= '" ';
 
-        $out .= 'placeholder="Account Code" ';
-        $out .= 'value="';
-        $out .= $letscode;
-        $out .= '" required>';
-        $out .= '</div>';
-        $out .= '</div>';
+            $out .= 'placeholder="Account Code" ';
+            $out .= 'value="';
+            $out .= $account_code;
+            $out .= '" required>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $out .= '<div class="form-group">';
         $out .= '<label for="id_type_contact" class="control-label">Type</label>';
         $out .= '<select name="id_type_contact" id="id_type_contact" ';
         $out .= 'class="form-control" required>';
 
-        foreach ($tc as $id => $type)
+        foreach ($tc as $id_tc => $type)
         {
             $out .= '<option value="';
-            $out .= $id;
+            $out .= $id_tc;
             $out .= '" ';
             $out .= 'data-abbrev="';
             $out .= $type['abbrev'];
             $out .= '" ';
-            $out .= $id == $contact['id_type_contact'] ? ' selected="selected"' : '';
+            $out .= $id_tc === $id_type_contact ? ' selected="selected"' : '';
             $out .= '>';
             $out .= $type['name'];
             $out .= '</option>';
@@ -268,7 +278,7 @@ class contacts_add
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
         $out .= 'value="';
-        $out .= $contact['value'];
+        $out .= $value;
         $out .= '" required disabled maxlength="130" ';
         $out .= 'data-contacts-format="';
         $out .= htmlspecialchars(json_encode(contacts_edit::FORMAT));
@@ -288,14 +298,22 @@ class contacts_add
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="comments" name="comments" ';
         $out .= 'value="';
-        $out .= $contact['comments'];
+        $out .= $comments;
         $out .= '" maxlength="50">';
         $out .= '</div>';
         $out .= '</div>';
 
         $out .= $app['item_access']->get_radio_buttons('access', $access, 'contacts_add');
 
-        $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+        if ($redirect_contacts)
+        {
+           $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+        }
+        else
+        {
+            $out .= $app['link']->btn_cancel('users_show', $app['pp_ary'],
+                ['id' => $user_id]);
+        }
 
         $out .= '&nbsp;';
 
@@ -310,7 +328,7 @@ class contacts_add
         $out .= '</div>';
 
         $app['tpl']->add($out);
-        $app['tpl']->menu('contacts');
+        $app['tpl']->menu($redirect_contacts ? 'contacts' : 'users');
 
         return $app['tpl']->get();
     }
