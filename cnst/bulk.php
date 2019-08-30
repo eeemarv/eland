@@ -88,7 +88,7 @@ class bulk
     const TPL_CHECKBOX = <<<'TPL'
     <div class="form-group">
     <label for="%name%" class="control-label">
-    <input type="%type%" id="%name%" name="%name%" %attr%>
+    <input type="checkbox" id="%name%" name="%name%"%attr%>
     &nbsp;%label%</label></div>
     TPL;
 
@@ -103,6 +103,25 @@ class bulk
     class="form-control"%attr%>
     %options%
     </select>
+    </div>
+    </div>
+    TPL;
+
+    const TPL_SELECT_BUTTONS = <<<'TPL'
+    <div class="panel panel-default">
+    <div class="panel-heading">
+    <input type="button"
+    class="btn btn-default"
+    data-table-sel="invert"
+    value="Selectie omkeren">&nbsp;
+    <input type="button"
+    class="btn btn-default"
+    data-table-sel="all"
+    value="Selecteer alle">&nbsp;
+    <input type="button"
+    class="btn btn-default"
+    data-table-sel="none"
+    value="De-selecteer alle">
     </div>
     </div>
     TPL;

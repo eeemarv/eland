@@ -12,6 +12,7 @@ use cnst\access as cnst_access;
 use cnst\message_type as cnst_message_type;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use controller\messages_show;
+use cnst\bulk as cnst_bulk;
 
 class messages_list
 {
@@ -320,24 +321,7 @@ class messages_list
                 '1825'	=> '5 jaar',
             ];
 
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<input type="button" ';
-            $out .= 'class="btn btn-default" ';
-            $out .= 'data-table-sel="invert" ';
-            $out .= 'value="Selectie omkeren">&nbsp;';
-            $out .= '<input type="button" ';
-            $out .= 'class="btn btn-default" ';
-            $out .= 'data-table-sel="all" ';
-            $out .= 'value="Selecteer alle">&nbsp;';
-            $out .= '<input type="button" ';
-            $out .= 'class="btn btn-default" ';
-            $out .= 'data-table-sel="none" ';
-            $out .= 'value="De-selecteer alle">';
-
-            $out .= '</div>';
-            $out .= '</div>';
+            $out .= cnst_bulk::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
@@ -345,6 +329,7 @@ class messages_list
             $out .= '<div class="panel-heading">';
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
+
             $out .= '<li class="active"><a href="#extend_tab" ';
             $out .= 'data-toggle="tab">Verlengen</a></li>';
 
@@ -354,6 +339,9 @@ class messages_list
                 $out .= '<a href="#access_tab" data-toggle="tab">';
                 $out .= 'Zichtbaarheid</a><li>';
             }
+
+            $out .= '<li><a href="#category_tab" ';
+            $out .= 'data-toggle="tab">Categorie</a></li>';
 
             $out .= '</ul>';
 
@@ -365,21 +353,18 @@ class messages_list
             $out .= '<form method="post">';
 
             $out .= '<div class="form-group">';
-            $out .= '<label for="extend" class="control-label">';
+            $out .= '<label for="buld_field[extend]" class="control-label">';
             $out .= 'Verlengen met</label>';
             $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
             $out .= $app['select']->get_options($extend_options, '30');
             $out .= "</select>";
             $out .= '</div>';
 
-            $out .= '<div class="form-group">';
-            $out .= '<label for="bulk_verify[extend]" class="control-label">';
-            $out .= '<input type="checkbox" name="bulk_verify[extend]" ';
-            $out .= 'id="bulk_verify[extend]" ';
-            $out .= 'value="1" required> ';
-            $out .= 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.';
-            $out .= '</label>';
-            $out .= '</div>';
+            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                '%name%'    => 'bulk_verify[extend]',
+                '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                '%attr%'    => ' required',
+            ]);
 
             $out .= '<input type="submit" value="Verlengen" ';
             $out .= 'name="bulk_submit[extend]" class="btn btn-primary">';
@@ -398,14 +383,11 @@ class messages_list
 
                 $out .= $app['item_access']->get_radio_buttons('bulk_field[access]', '', '', true);
 
-                $out .= '<div class="form-group">';
-                $out .= '<label for="bulk_verify[access]" class="control-label">';
-                $out .= '<input type="checkbox" name="bulk_verify[access]" ';
-                $out .= 'id="bulk_verify[access]" ';
-                $out .= 'value="1" required> ';
-                $out .= 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.';
-                $out .= '</label>';
-                $out .= '</div>';
+                $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[access]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
 
                 $out .= '<input type="submit" value="Aanpassen" ';
                 $out .= 'name="bulk_submit[access]" class="btn btn-primary">';
@@ -413,6 +395,30 @@ class messages_list
                 $out .= '</form>';
                 $out .= '</div>';
             }
+
+            $out .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
+            $out .= '<h3>Verhuizen naar categorie</h3>';
+            $out .= '<form method="post">';
+
+            $out .= strtr(cnst_bulk::TPL_SELECT, [
+                '%options%' => $app['select']->get_options($categories, ''),
+                '%name%'    => 'bulk_field[category]',
+                '%label%'   => 'Categorie',
+                '%attr%'    => ' required',
+                '%fa%'      => 'clone',
+            ]);
+
+            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                '%name%'    => 'bulk_verify[category]',
+                '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                '%attr%'    => ' required',
+            ]);
+
+            $out .= '<input type="submit" value="Categorie anpassen" ';
+            $out .= 'name="bulk_submit[category]" class="btn btn-primary">';
+            $out .= $app['form_token']->get_hidden_input();
+            $out .= '</form>';
+            $out .= '</div>';
 
             $out .= '</div>';
 

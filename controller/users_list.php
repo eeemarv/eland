@@ -1470,24 +1470,7 @@ class users_list
 
         if ($app['s_admin'] & isset($show_columns['u']))
         {
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<input type="button" ';
-            $out .= 'class="btn btn-default" ';
-            $out .= 'data-table-sel="invert" ';
-            $out .= 'value="Selectie omkeren">&nbsp;';
-            $out .= '<input type="button" ';
-            $out .= 'class="btn btn-default" ';
-            $out .= 'data-table-sel="all" ';
-            $out .= 'value="Selecteer alle">&nbsp;';
-            $out .= '<input type="button" ';
-            $out .= 'class="btn btn-default" ';
-            $out .= 'data-table-sel="none" ';
-            $out .= 'value="De-selecteer alle">';
-
-            $out .= '</div>';
-            $out .= '</div>';
+            $out .= cnst_bulk::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerde gebruikers</h3>';
             $out .= '<div class="panel panel-info">';
@@ -1542,24 +1525,17 @@ class users_list
             $out .= '</textarea>';
             $out .= '</div>';
 
-            $out .= '<div class="form-group">';
-            $out .= '<label for="bulk_mail_cc" class="control-label">';
-            $out .= '<input type="checkbox" name="bulk_mail_cc" ';
-            $out .= 'id="bulk_mail_cc"';
-            $out .= $bulk_mail_cc ? ' checked="checked"' : '';
-            $out .= ' value="1" > ';
-            $out .= 'Stuur een kopie met verzendinfo naar mijzelf';
-            $out .= '</label>';
-            $out .= '</div>';
+            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                '%name%'    => 'bulk_mail_cc',
+                '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
+                '%attr%'    => $bulk_mail_cc ? ' checked' : '',
+            ]);
 
-            $out .= '<div class="form-group">';
-            $out .= '<label for="bulk_verify[mail]" class="control-label">';
-            $out .= '<input type="checkbox" name="bulk_verify[mail]" ';
-            $out .= 'id="bulk_verify[mail]" ';
-            $out .= 'value="1" required> ';
-            $out .= 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.';
-            $out .= '</label>';
-            $out .= '</div>';
+            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                '%name%'    => 'bulk_verify[mail]',
+                '%label%'   => 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.',
+                '%attr%'    => ' required',
+            ]);
 
             $out .= '<input type="submit" value="Zend test E-mail naar mijzelf" ';
             $out .= 'name="bulk_submit[mail_test]" class="btn btn-default">&nbsp;';
@@ -1616,15 +1592,11 @@ class users_list
                     ]);
                 }
 
-                $bulk_verify_name = 'bulk_verify[' . $k  . ']';
-                $out .= '<div class="form-group">';
-                $out .= '<label for="' . $bulk_verify_name . '" class="control-label">';
-                $out .= '<input type="checkbox" name="' . $bulk_verify_name . '" ';
-                $out .= 'id="' . $bulk_verify_name . '" ';
-                $out .= 'value="1" required> ';
-                $out .= 'Ik heb nagekeken dat de juiste gebruikers geselecteerd zijn en veld en ingevulde waarde nagekeken.';
-                $out .= '</label>';
-                $out .= '</div>';
+                $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[' . $k  . ']',
+                    '%label%'   => 'Ik heb de ingevulde waarde nagekeken en dat de juiste gebruikers geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
 
                 $out .= '<input type="submit" value="Veld aanpassen" ';
                 $out .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary">';
