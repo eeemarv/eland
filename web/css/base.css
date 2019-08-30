@@ -680,6 +680,10 @@ table.jqplot-cursor-tooltip {
   color: rgb(131, 111, 0);
 }
 
+.jqplot-highlighter-tooltip {
+  z-index: 100;
+}
+
 .jqplot-point-label {
     font-size: 0.75em;
     z-index: 2;
