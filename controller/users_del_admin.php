@@ -32,7 +32,7 @@ class users_del_admin
         if (!$user)
         {
             throw new NotFoundHttpException(
-                sprintf('De gebruiker met id %1$d bestaat niet.', $id));
+                'De gebruiker met id ' . $id . ' bestaat niet.');
         }
 
         if ($request->isMethod('POST'))

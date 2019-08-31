@@ -73,7 +73,7 @@ EOF
             }
 
             if (!$route) {
-                throw new InvalidArgumentException(sprintf('The route "%s" does not exist.', $name));
+                throw new InvalidArgumentException('The route ' . $name . ' does not exist.');
             }
 
             $helper->describe($io, $route, [

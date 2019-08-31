@@ -58,7 +58,7 @@ class contacts_edit
         if ($user_id !== $contact['id_user'])
         {
             throw new BadRequestHttpException(
-                sprintf('Contact %1$s behoort niet tot gebruiker %2$s', $id, $user_id));
+                'Contact ' . $id . ' behoort niet tot gebruiker ' . $user_id);
         }
 
         $id_type_contact = $contact['id_type_contact'];
@@ -356,7 +356,7 @@ class contacts_edit
         if (!$contact)
         {
             throw new NotFoundHttpException(
-                sprintf('Het contact met id %1$d bestaat niet.', $contact_id));
+                'Het contact met id ' . $contact_id . ' bestaat niet.');
         }
 
         $contact['access'] = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];

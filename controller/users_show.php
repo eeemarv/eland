@@ -39,7 +39,7 @@ class users_show
         if (!$user)
         {
             throw new NotFoundHttpException(
-                sprintf('De gebruiker met id %1$d bestaat niet', $id));
+                'De gebruiker met id ' . $id . ' bestaat niet');
         }
 
         if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
@@ -665,43 +665,6 @@ class users_show
         $out .=  $str ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
         $out .=  '</dd>';
         return $out;
-    }
-
-    public static function get_post_mail_errors(app $app):array
-    {
-        $errors = [];
-
-        if ($app['s_master'])
-        {
-            throw new AccessDeniedHttpException('Het master account kan
-                geen E-mail berichten versturen.');
-        }
-
-        if (!$app['s_schema'] || $app['s_elas_guest'])
-        {
-            throw new AccessDeniedHttpException('Je hebt onvoldoende
-                rechten om een E-mail bericht te versturen.');
-        }
-
-        if ($error_token = $app['form_token']->get_error())
-        {
-            $errors[] = $error_token;
-        }
-
-        if (!$user_mail_content)
-        {
-            $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
-        }
-
-        $reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
-
-        if (!count($reply_ary))
-        {
-            $errors[] = 'Fout: Je kan geen berichten naar andere gebruikers
-                verzenden als er geen E-mail adres is ingesteld voor je eigen account.';
-        }
-
-        return $errors;
     }
 
     public static function get_mail_form(

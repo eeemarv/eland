@@ -5,15 +5,16 @@ namespace controller;
 use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use render\pagination;
 use render\tpl;
 use render\btn_nav;
 use cnst\access as cnst_access;
 use cnst\message_type as cnst_message_type;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use controller\messages_show;
 use cnst\bulk as cnst_bulk;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use controller\messages_show;
+use controller\messages_edit;
 
 class messages_list
 {
@@ -88,9 +89,10 @@ class messages_list
                 $errors[] = 'Bulk actie waarde-veld niet ingevuld.';
             }
 
-            $validity_ary = [];
+            $update_msgs_ary  = [];
 
-            $rows = $app['db']->executeQuery('select id_user, id, validity
+            $rows = $app['db']->executeQuery('select id_user, id, validity,
+                id_category, msg_type
                 from ' . $app['tschema'] . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
@@ -105,13 +107,14 @@ class messages_list
                         $row['content'] . ' ( ' . $row['id'] . ')');
                 }
 
-                $validity_ary[$row['id']] = $row['validity'];
+                $update_msgs_ary[$row['id']] = $row;
             }
 
             if ($bulk_submit_action === 'extend' && !count($errors))
             {
-                foreach ($validity_ary as $id => $validity)
+                foreach ($update_msgs_ary as $id => $row)
                 {
+                    $validity = $row['validity'];
                     $validity = gmdate('Y-m-d H:i:s', strtotime($validity . ' UTC') + (86400 * (int) $bulk_field_value));
 
                     $msg_update = [
@@ -124,7 +127,7 @@ class messages_list
                         $msg_update, ['id' => $id]);
                 }
 
-                if (count($validity_ary) > 1)
+                if (count($update_msgs_ary) > 1)
                 {
                     $app['alert']->success('De berichten zijn verlengd.');
                 }
@@ -143,7 +146,7 @@ class messages_list
                     'mdate' => gmdate('Y-m-d H:i:s'),
                 ];
 
-                foreach ($validity_ary as $id => $validity)
+                foreach ($update_msgs_ary as $id => $row)
                 {
                     $app['db']->update($app['tschema'] . '.messages', $msg_update, ['id' => $id]);
                 }
@@ -162,17 +165,65 @@ class messages_list
 
             if ($bulk_submit_action === 'category' && !count($errors))
             {
+                $to_id_category = (int) $bulk_field_value;
+
+                $test_id_category = $app['db']->fetchColumn('select id
+                    from ' . $app['tschema'] . '.categories
+                    where id_parent <> 0
+                        and leafnote = 1
+                        and id = ?', [$to_id_category]);
+
+                if (!$test_id_category)
+                {
+                    throw new BadRequestHttpException('Ongeldige categorie optie, id ' . $to_id_category);
+                }
+
                 $msg_update = [
-                    'id_category'   => (int) $bulk_field_value,
+                    'id_category'   => $to_id_category,
                     'mdate'         => gmdate('Y-m-d H:i:s'),
                 ];
 
-                foreach ($validity_ary as $id => $validity)
+                $stats_update = [
+                    $to_id_category = [
+                        'offer' => 0,
+                        'want'  => 0,
+                    ],
+                ];
+
+                foreach ($update_msgs_ary as $id => $row)
                 {
                     $app['db']->update($app['tschema'] . '.messages', $msg_update, ['id' => $id]);
+
+                    $type = cnst_message_type::FROM_DB[$row['msg_type']];
+                    $id_category = $row['id_category'];
+
+                    if ($id_category === $to_id_category)
+                    {
+                        continue;
+                    }
+
+                    if (!isset($stats_update[$id_category]))
+                    {
+                        $stats_update[$id_category] = [];
+                    }
+
+                    if (!isset($stats_update[$id_category][$type]))
+                    {
+                        $stats_update[$id_category][$type] = 0;
+                    }
+
+                    $stats_update[$id_category][$type]--;
+                    $stats_update[$to_id_category][$type]++;
                 }
 
-                // to do: recount category msgs
+                foreach ($stats_update as $id_category => $type_count_ary)
+                {
+                    foreach ($type_count_ary as $type => $count)
+                    {
+                        messages_edit::adjust_category_stats($type,
+                            (int) $id_category, $count, $app['db'], $app['tschema']);
+                    }
+                }
 
                 if (count($selected_messages) > 1)
                 {

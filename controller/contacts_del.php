@@ -22,7 +22,7 @@ class contacts_del
         if ($user_id !== $contact['id_user'])
         {
             throw new BadRequestHttpException(
-                sprintf('Contact %1$s behoort niet tot gebruiker %2$s', $id, $user_id));
+                'Contact ' . $id . ' behoort niet tot gebruiker ' . $user_id);
         }
 
         if ($request->isMethod('GET'))

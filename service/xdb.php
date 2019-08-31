@@ -168,7 +168,7 @@ class xdb
 
 		if (!$agg_version)
 		{
-			$this->monolog->debug(sprintf('Id %1$s not found for xdb::del', $agg_id),
+			$this->monolog->debug('Id ' . $agg_id . ' not found for xdb::del',
 				['schema' => $agg_schema]);
 			$agg_version = 0;
 		}
