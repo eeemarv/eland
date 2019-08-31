@@ -175,7 +175,7 @@ class messages_list
 
                 if (!$test_id_category)
                 {
-                    throw new BadRequestHttpException('Ongeldige categorie optie, id ' . $to_id_category);
+                    throw new BadRequestHttpException('Ongeldig categorie id ' . $to_id_category);
                 }
 
                 $msg_update = [
@@ -184,7 +184,7 @@ class messages_list
                 ];
 
                 $stats_update = [
-                    $to_id_category = [
+                    $to_id_category => [
                         'offer' => 0,
                         'want'  => 0,
                     ],
