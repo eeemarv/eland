@@ -18,7 +18,7 @@ class apikeys
         $app['heading']->add('Apikeys');
         $app['heading']->fa('key');
 
-        $out = $this->get_apikey_explain();
+        $out = self::get_apikey_explain();
 
         $out .= '<div class="panel panel-default printview">';
 
@@ -92,7 +92,7 @@ class apikeys
         $app['heading']->add('Apikey toevoegen');
         $app['heading']->fa('key');
 
-        $out = $this->get_apikey_explain();
+        $out = self::get_apikey_explain();
 
         $out .= '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -144,7 +144,7 @@ class apikeys
         return $app['tpl']->get();
     }
 
-    private function get_apikey_explain():string
+    private static function get_apikey_explain():string
     {
         $out = '<p>';
         $out .= '<ul>';
@@ -161,7 +161,7 @@ class apikeys
         return $out;
     }
 
-    public function del(Request $request, app $app, int $id):Response
+    public function apikeys_del(Request $request, app $app, int $id):Response
     {
         if($request->isMethod('POST'))
         {
