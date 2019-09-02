@@ -133,11 +133,6 @@ class tpl
 
 	public function get():Response
 	{
-		if ($css = $this->config->get('css', $this->tschema))
-		{
-			$this->assets->add_external_css([$css]);
-		}
-
 		$out = '<!DOCTYPE html>';
 		$out .= '<html lang="nl">';
 		$out .= '<head>';
