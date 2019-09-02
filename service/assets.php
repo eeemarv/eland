@@ -119,7 +119,6 @@ class assets
 	];
 
 	protected $include_ary = [];
-	protected $include_css_print_ary = [];
 
 	public function __construct(
 		cache $cache
@@ -226,15 +225,15 @@ class assets
 	{
 		foreach ($asset_ary as $asset_name)
 		{
-			$this->include_css_print_ary[$this->get_location($asset_name, 'css')] = true;
+			$this->include_ary['css_print'][$this->get_location($asset_name, 'css')] = true;
 		}
 	}
 
 	public function add_external_css(array $asset_ary):void
 	{
-		foreach ($asset_ary as $asset_name)
+		foreach ($asset_ary as $asset_location)
 		{
-			$this->include['css'][] = $asset_name;
+			$this->include_ary['css'][$asset_location] = true;
 		}
 	}
 
@@ -259,7 +258,7 @@ class assets
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
 		}
 
-		foreach ($this->include_css_print_ary as $css => $dummy_bool)
+		foreach ($this->include_ary['css_print'] as $css => $dummy_bool)
 		{
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="print">';
 		}
@@ -271,5 +270,10 @@ class assets
 	{
 		$type = $this->get_type($asset_name);
 		return $this->get_location($asset_name, $type);
+	}
+
+	public function get_ary(string $type):array
+	{
+		return array_keys($this->include_ary[$type]);
 	}
 }

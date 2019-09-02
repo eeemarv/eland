@@ -53,6 +53,9 @@ $app->extend('twig', function($twig, $app) {
 		twig\date_format::class => function() use ($app){
 			return new twig\date_format($app['date_format']);
 		},
+		twig\assets::class => function() use ($app){
+			return new twig\assets($app['assets']);
+		},
 		twig\account::class => function() use ($app){
 			return new twig\account($app['user_cache']);
 		},

@@ -4,11 +4,11 @@
 
 	<title>{{- title -}}</title>
 
-	{%- for c in css_screen -%}
+	{%- for c in assets('css') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
 	{%- endfor -%}
 
-	{%- for c in css_print -%}
+	{%- for c in assets('css_print') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
 	{%- endfor -%}
 
@@ -55,7 +55,7 @@
 	</footer>
 </div>
 
-{%- for j in js -%}
+{%- for j in assets('js') -%}
 	<script src="{{- j -}}"></script>
 {%- endfor -%}
 
