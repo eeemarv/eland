@@ -1,0 +1,58 @@
+{%- extends 'base/sidebar_menu.html.twig' -%}
+
+{%- block navbar_toggle_button -%}
+	<button type="button" class="navbar-toggle collapsed"
+	data-toggle="collapse" data-target="#navbar-collapse-1"
+	aria-expanded="false">
+	<span class="sr-only">Toggle navigation</span>
+	<span class="icon-bar"></span>
+	<span class="icon-bar"></span>
+	<span class="icon-bar"></span>
+	</button>
+{%- endblock navbar_toggle_button -%}
+
+{%- block navbar_collapse -%}
+	<div class="collapse navbar-collapse" id="navbar-collapse-1">
+	<ul class="nav navbar-nav navbar-right">
+
+	{%- block navbar_menu -%}
+		{%- if system_menu -%}
+			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', system_menu) -}}
+		{%- endif -%}
+		{%- if user_menu -%}
+			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', user_menu) -}}
+		{%- endif -%}
+		{%- if admin_menu -%}
+			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', admin_menu) -}}
+		{%- elseif admin_link -%}
+			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
+				<i class="fa fa-times text-danger"></i>&nbsp;
+				Admin modus
+			</a>
+		{%- endif -%}
+	{%- endblock -%}
+
+	</ul>
+	</div>
+{%- endblock navbar_collapse -%}
+
+{%- macro navbar_menu_dropdown_button(label, fa, menu_items) -%}
+	<li class="dropdown">
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+		<span class="fa fa-share-alt"></span>&nbsp;{{- label -}}&nbsp;<span class="caret"></span>
+	</a>
+	<ul class="dropdown-menu" role="menu">
+		{%- for m in menu_items -%}
+			{%- if m.header -%}
+				<li class="dropdown-header">{{- m.label -}}</li>
+			{%- elseif m.divider -%}
+				<li class="divider"></li>
+			{%- else -%}
+				<li{%- for k, v in m.attr %} {{ k -}}="{{- v -}}"{%- endfor -%}>
+					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+					<a href="{{- m.link -}}">{{- m.label -}}</a>
+				</li>
+			{%- endif -%}
+		{%- endfor -%}
+	</ul>
+{%- endmacro navbar_menu_dropdown_button -%}

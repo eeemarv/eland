@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="{{- lang -}}">
+<head>
+
+	<title>{{- title -}}</title>
+
+	{%- for c in css_screen -%}
+		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
+	{%- endfor -%}
+
+	{%- for c in css_print -%}
+		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
+	{%- endfor -%}
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="/manifest.json">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">
+	<meta name="theme-color" content="#ffffff">
+
+</head>
+<body{{- body_attr -}}>
+
+<img src="{{- loading_img -}}" class="ajax-loader" alt="waiting">
+
+<div class="navbar navbar-default navbar-fixed-top{{- navbar_class -}}">
+    <div class="container-fluid">
+		<div class="navbar-header">
+
+		{%- block navbar_toggle_button -%}{%- endblock -%}
+
+		<a href="{{- homepage_link -}}" class="pull-left hidden-xs">
+			<div class="logo"></div>
+		</a>
+
+		<a href="{{- homepage_link -}}" class="navbar-brand">
+		{{- system_name -}}
+		</a>
+		</div>
+
+	{%- block nevbar_menu -%}{%- endblock -%}
+
+	</div>
+</div>
+
+<div class="swiper-container">
+
+	{%- block page_container -%}{%- endblock -%}
+
+	<footer class="footer">
+		<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	</footer>
+</div>
+
+{%- for j in js -%}
+	<script src="{{- j -}}"></script>
+{%- endfor -%}
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+{%- extends 'base/base.html.twig' -%}
+
+{%- block page_container -%}
+
+	<div class="swiper-container">
+	<div class="row-offcanvas row-offcanvas-left">
+	<div id="sidebar" class="sidebar-offcanvas">
+
+	<br>
+	<ul class="nav nav-pills nav-stacked">
+
+	{%- for m in sidebar_menu -%}
+		<li{%- if m.active %} class="active"{%- endif -%}>
+			m.menu_item
+		</li>
+	{%- endfor -%}
+
+	</ul>
+
+	</div>
+
+	<div id="wrap">
+	<div id="main" class="container-fluid clear-top{{- main_div_class -}}">
+
+	{{- alert -}}
+
+	<div class="row">
+	<div class="col-md-12 top-buttons">
+
+	<div class="visible-xs pull-left button-offcanvas menu-button">
+		<button type="button" class="btn btn-primary" data-toggle="offcanvas" title="Menu">
+			<i class="fa fa-chevron-left"></i>
+		</button>
+	</div>
+
+	{{- btn_top -}}
+
+	{%- if btn_nav -%}
+		<div class="pull-right">
+			{{- btn-nav -}}
+		</div>
+	{%- endif -%}
+
+	</div>
+	</div>
+
+	{{- heading -}}
+	{{- sub_heading -}}
+
+	{%- block content -%}{%- endblock -%}
+
+	</div>
+	</div>
+	</div>
+{%- endblock page_container -%}
