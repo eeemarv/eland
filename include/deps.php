@@ -427,7 +427,7 @@ $app['pp_user'] = function ($app):bool{
 	return $app['pp_role'] === 'user';
 };
 
-$app['s_anonymous'] = function ($app):bool{
+$app['pp_anonymous'] = function ($app):bool{
 	return $app['pp_role'] === 'anonymous';
 };
 
@@ -933,7 +933,7 @@ $app['tpl'] = function ($app){
 		$app['pp_ary'],
 		$app['session_user'],
 		$app['s_logins'],
-		$app['s_anonymous'],
+		$app['pp_anonymous'],
 		$app['pp_guest'],
 		$app['pp_user'],
 		$app['pp_admin'],

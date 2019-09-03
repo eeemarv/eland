@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-if ($app['s_anonymous'])
+if ($app['pp_anonymous'])
 {
 	exit;
 }
@@ -426,7 +426,7 @@ if ($del)
  * Fetch all newsitems
  */
 
-if (!$app['s_anonymous'])
+if (!$app['pp_anonymous'])
 {
 	exit;
 }

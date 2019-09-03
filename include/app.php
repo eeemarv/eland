@@ -748,7 +748,7 @@ $app['s_elas_guest'] = false;
 $app['pp_guest'] = false;
 $app['pp_user'] = false;
 $app['pp_admin'] = false;
-$app['s_anonymous'] = false;
+$app['pp_anonymous'] = false;
 $app['s_master'] = false;
 
 if ($app['pp_role'] === 'guest')
@@ -849,7 +849,7 @@ if (!ctype_digit((string) $app['s_id']))
 	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
 }
 
-if (!$app['s_anonymous'] && $app['s_role'] === 'anonymous')
+if (!$app['pp_anonymous'] && $app['s_role'] === 'anonymous')
 {
 	$app['monolog']->debug('Not authenticated, redirect to login.',
 		['schema' => $app['tschema']]);

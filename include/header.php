@@ -56,7 +56,7 @@ echo '<div class="container-fluid">';
 
 echo '<div class="navbar-header">';
 
-if (!$app['s_anonymous'])
+if (!$app['pp_anonymous'])
 {
 	echo '<button type="button" class="navbar-toggle collapsed" ';
 	echo 'data-toggle="collapse" data-target="#navbar-collapse-1" ';
@@ -72,7 +72,7 @@ $homepage_url = $app['config']->get('homepage_url', $app['tschema']);
 
 if (!$homepage_url)
 {
-	if ($app['s_anonymous'])
+	if ($app['pp_anonymous'])
 	{
 		$homepage_url = $app['link']->path('login', ['system' => $app['pp_system']]);
 	}
@@ -98,7 +98,7 @@ echo '</div>';
 echo '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 echo '<ul class="nav navbar-nav navbar-right">';
 
-if (!$app['s_anonymous']
+if (!$app['pp_anonymous']
 	&& ($app['intersystems']->get_count($app['s_schema']) + count($app['s_logins'])) > 1)
 {
 	echo '<li class="dropdown">';
@@ -207,7 +207,7 @@ if (!$app['s_anonymous']
 	echo '</li>';
 }
 
-if (!$app['s_anonymous'])
+if (!$app['pp_anonymous'])
 {
 	echo '<li class="dropdown">';
 	echo '<a href="#" class="dropdown-toggle" ';
@@ -384,7 +384,7 @@ echo '<div class="swiper-container">';
 echo '<div class="row-offcanvas row-offcanvas-left">';
 echo '<div id="sidebar" class="sidebar-offcanvas">';
 
-if ($app['s_anonymous'])
+if ($app['pp_anonymous'])
 {
 	$menu = [
 		'login'			=> [

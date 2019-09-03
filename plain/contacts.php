@@ -2,7 +2,7 @@
 
 use cnst\access as cnst_access;
 
-if ($app['s_anonymous'])
+if ($app['pp_anonymous'])
 {
 	exit;
 }

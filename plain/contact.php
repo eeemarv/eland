@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-if (!$app['s_anonymous'])
+if (!$app['pp_anonymous'])
 
 $page_access = 'anonymous';
 

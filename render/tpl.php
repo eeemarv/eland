@@ -46,9 +46,9 @@ class tpl
 	protected $pp_ary;
 	protected $session_user;
 	protected $s_logins;
-	protected $s_anonymous;
-	protected $s_guest;
-	protected $s_user;
+	protected $pp_anonymous;
+	protected $pp_guest;
+	protected $pp_user;
 	protected $pp_admin;
 	protected $s_master;
 	protected $s_elas_guest;
@@ -76,9 +76,9 @@ class tpl
 		array $pp_ary,
 		array $session_user,
 		array $s_logins,
-		bool $s_anonymous,
-		bool $s_guest,
-		bool $s_user,
+		bool $pp_anonymous,
+		bool $pp_guest,
+		bool $pp_user,
 		bool $pp_admin,
 		bool $s_master,
 		bool $s_elas_guest,
@@ -107,9 +107,9 @@ class tpl
 		$this->pp_ary = $pp_ary;
 		$this->session_user = $session_user;
 		$this->s_logins = $s_logins;
-		$this->s_anonymous = $s_anonymous;
-		$this->s_guest = $s_guest;
-		$this->s_user = $s_user;
+		$this->pp_anonymous = $pp_anonymous;
+		$this->pp_guest = $pp_guest;
+		$this->pp_user = $pp_user;
 		$this->pp_admin = $pp_admin;
 		$this->s_master = $s_master;
 		$this->s_elas_guest = $s_elas_guest;
@@ -160,7 +160,7 @@ class tpl
 		{
 			$out .= ' class="admin"';
 		}
-		else if ($this->s_guest)
+		else if ($this->pp_guest)
 		{
 			$out .= ' class="guest"';
 		}
@@ -174,13 +174,13 @@ class tpl
 
 		$out .= '<div class="navbar navbar-default navbar-fixed-top';
 		$out .= $this->pp_admin ? ' bg-info' : '';
-		$out .= $this->s_guest ? ' bg-warning' : '';
+		$out .= $this->pp_guest ? ' bg-warning' : '';
 		$out .= '">';
 		$out .= '<div class="container-fluid">';
 
 		$out .= '<div class="navbar-header">';
 
-		if (!$this->s_anonymous)
+		if (!$this->pp_anonymous)
 		{
 			$out .= '<button type="button" class="navbar-toggle collapsed" ';
 			$out .= 'data-toggle="collapse" data-target="#navbar-collapse-1" ';
@@ -196,7 +196,7 @@ class tpl
 
 		if (!$homepage_url)
 		{
-			if ($this->s_anonymous)
+			if ($this->pp_anonymous)
 			{
 				$homepage_url = $this->link->path('login', [
 					'system' => $this->pp_ary['system'],
@@ -226,7 +226,7 @@ class tpl
 		$out .= '<div class="collapse navbar-collapse" id="navbar-collapse-1">';
 		$out .= '<ul class="nav navbar-nav navbar-right">';
 
-		if (!$this->s_anonymous
+		if (!$this->pp_anonymous
 			&& ($this->intersystems->get_count($this->s_schema) + count($this->s_logins)) > 1)
 		{
 			$out .= '<li class="dropdown">';
@@ -338,7 +338,7 @@ class tpl
 			$out .= '</li>';
 		}
 
-		if (!$this->s_anonymous)
+		if (!$this->pp_anonymous)
 		{
 			$out .= '<li class="dropdown">';
 			$out .= '<a href="#" class="dropdown-toggle" ';
@@ -363,7 +363,7 @@ class tpl
 			$out .= '<span class="caret"></span></a>';
 			$out .= '<ul class="dropdown-menu" role="menu">';
 
-			if ($this->s_schema && !$this->s_master && !$this->s_guest)
+			if ($this->s_schema && !$this->s_master && !$this->pp_guest)
 			{
 				$out .= '<li>';
 
