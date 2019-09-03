@@ -28,7 +28,7 @@ $pag = $app['request']->query->get('p', []);
 $sort = $app['request']->query->get('s', []);
 
 if ($app['request']->isMethod('POST')
-	&& $app['s_guest']
+	&& $app['pp_guest']
 	&& ($add || $edit || $del || $img || $img_del || $images
 		|| $extend_submit || $access_submit || $extend))
 {
@@ -195,12 +195,12 @@ if ($id || $edit || $del)
 		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
-	$s_owner = !$app['s_guest']
+	$s_owner = !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $app['s_id'] == $message['id_user']
 		&& $message['id_user'];
 
-	if ($message['access'] === 'user' && $app['s_guest'])
+	if ($message['access'] === 'user' && $app['pp_guest'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit bericht.');
 		$app['link']->redirect('messages', $app['pp_ary'], []);
@@ -249,7 +249,7 @@ if ($id && $extend)
  * post images
  */
 if ($app['request']->isMethod('POST')
-	&& $img && $images && !$app['s_guest'])
+	&& $img && $images && !$app['pp_guest'])
 {
 	$ret_ary = [];
 
@@ -444,7 +444,7 @@ if ($img_del && $app['request']->isMethod('POST')
 		exit;
 	}
 
-	$s_owner = !$app['s_guest']
+	$s_owner = !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $msg['id_user'] == $app['s_id']
 		&& $msg['id_user'];
@@ -1501,7 +1501,7 @@ if ($id)
 		$images[$row['id']] = $row['PictureFile'];
 	}
 
-	$and_local = ($app['s_guest']) ? ' and local = \'f\' ' : '';
+	$and_local = ($app['pp_guest']) ? ' and local = \'f\' ' : '';
 
 	$prev = $app['db']->fetchColumn('select id
 		from ' . $app['tschema'] . '.messages
@@ -1553,7 +1553,7 @@ if ($id)
 		&& ($app['pp_admin']
 			|| (!$s_owner
 				&& $user['status'] != 7
-				&& !($app['s_guest']
+				&& !($app['pp_guest']
 				&& $app['s_system_self']))))
 	{
 			$tus = ['add' => 1, 'mid' => $id];
@@ -1836,7 +1836,7 @@ if ($id)
  * list messages
  */
 
-$s_owner = !$app['s_guest']
+$s_owner = !$app['pp_guest']
 	&& $app['s_system_self']
 	&& isset($filter['uid'])
 	&& $app['s_id'] == $filter['uid']
@@ -2002,7 +2002,7 @@ if ($filter_ustatus)
 	}
 }
 
-if ($app['s_guest'])
+if ($app['pp_guest'])
 {
 	$where_sql[] = 'm.local = \'f\'';
 }
@@ -2105,7 +2105,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
+if (!$app['pp_guest'] && $app['intersystems']->get_count($app['tschema']))
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2521,7 +2521,7 @@ if ($v_list)
 		echo $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
 		echo '</td>';
 
-		if (!$app['s_guest'] && $app['intersystems']->get_count($app['tschema']))
+		if (!$app['pp_guest'] && $app['intersystems']->get_count($app['tschema']))
 		{
 			echo '<td>';
 			echo $app['item_access']->get_label($msg['local'] ? 'user' : 'guest');

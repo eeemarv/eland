@@ -56,7 +56,7 @@ class messages_edit
         {
             $message = messages_show::get_message($app['db'], $id, $app['tschema']);
 
-            $s_owner = !$app['s_guest']
+            $s_owner = !$app['pp_guest']
                 && $app['s_system_self']
                 && $app['s_id'] === $message['id_user']
                 && $message['id_user'];

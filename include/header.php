@@ -36,7 +36,7 @@ if ($app['pp_admin'])
 {
 	echo ' class="admin"';
 }
-else if ($app['s_guest'])
+else if ($app['pp_guest'])
 {
 	echo ' class="guest"';
 }
@@ -50,7 +50,7 @@ echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top';
 echo $app['pp_admin'] ? ' bg-info' : '';
-echo $app['s_guest'] ? ' bg-warning' : '';
+echo $app['pp_guest'] ? ' bg-warning' : '';
 echo '">';
 echo '<div class="container-fluid">';
 
@@ -232,7 +232,7 @@ if (!$app['s_anonymous'])
 	echo '<span class="caret"></span></a>';
 	echo '<ul class="dropdown-menu" role="menu">';
 
-	if ($app['s_schema'] && !$app['s_master'] && !$app['s_guest'])
+	if ($app['s_schema'] && !$app['s_master'] && !$app['pp_guest'])
 	{
 		echo '<li>';
 

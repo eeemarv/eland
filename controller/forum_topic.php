@@ -174,7 +174,7 @@ class forum_topic
             $s_owner = $p['uid']
                 && $p['uid'] == $app['s_id']
                 && $app['s_system_self']
-                && !$app['s_guest'];
+                && !$app['pp_guest'];
 
             $pid = $p['id'];
 

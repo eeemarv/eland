@@ -745,7 +745,7 @@ $app['intersystem_en'] = $app['config']->get('template_lets', $app['tschema'])
 $app['s_system_self'] = true;
 $app['s_schema'] = $app['tschema'];
 $app['s_elas_guest'] = false;
-$app['s_guest'] = false;
+$app['pp_guest'] = false;
 $app['pp_user'] = false;
 $app['pp_admin'] = false;
 $app['s_anonymous'] = false;
@@ -788,7 +788,7 @@ else
 	];
 }
 
-if ($app['s_system_self'] && $app['s_guest'])
+if ($app['s_system_self'] && $app['pp_guest'])
 {
 	$app['intersystem_ary'] = [
 		'elas'	=> [],
@@ -857,7 +857,7 @@ if (!$app['s_anonymous'] && $app['s_role'] === 'anonymous')
 	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
 }
 
-if ($app['s_guest'] && !$app['intersystem_en'])
+if ($app['pp_guest'] && !$app['intersystem_en'])
 {
 	$app['monolog']->debug('Guest routes disabled',
 		['schema' => $app['tschema']]);
@@ -922,7 +922,7 @@ else
 	}
 }
 
-if ($app['s_guest'] && !$app['s_system_self'])
+if ($app['pp_guest'] && !$app['s_system_self'])
 {
 	if (!isset($app['intersystem_ary']['eland'][$app['tschema']]))
 	{
@@ -1156,7 +1156,7 @@ $app['xdb']->set_user($app['s_schema'],
 */
 /** welcome message **/
 /*
-if ($app['request']->query->get('welcome') !== null && $app['s_guest'])
+if ($app['request']->query->get('welcome') !== null && $app['pp_guest'])
 {
 	$msg = '<strong>Welkom bij ';
 	$msg .= $app['config']->get('systemname', $app['tschema']);

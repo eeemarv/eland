@@ -415,7 +415,7 @@ $app['s_role_short'] = function ($app):string{
 	return '';
 };
 
-$app['s_guest'] = function ($app):bool{
+$app['pp_guest'] = function ($app):bool{
 	return $app['pp_role'] == 'guest';
 };
 
@@ -934,7 +934,7 @@ $app['tpl'] = function ($app){
 		$app['session_user'],
 		$app['s_logins'],
 		$app['s_anonymous'],
-		$app['s_guest'],
+		$app['pp_guest'],
 		$app['pp_user'],
 		$app['pp_admin'],
 		$app['s_master'],

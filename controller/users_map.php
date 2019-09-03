@@ -51,7 +51,7 @@ class users_map
 
         if (!$app['s_master'])
         {
-            if ($app['s_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
+            if ($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
             {
                 $my_adr = $app['db']->fetchColumn('select c.value
                     from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc
@@ -59,7 +59,7 @@ class users_map
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'adr\'', [$app['s_id']]);
             }
-            else if (!$app['s_guest'])
+            else if (!$app['pp_guest'])
             {
                 $my_adr = trim($adr_ary[$app['s_id']]['value']);
             }

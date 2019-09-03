@@ -9,7 +9,7 @@ class typeahead_accounts
 {
     public function typeahead_accounts(app $app, string $status):Response
     {
-        if ($app['s_guest'] && $status !== 'active')
+        if ($app['pp_guest'] && $status !== 'active')
         {
             return $app->json(['error' => 'No access.'], 403);
         }

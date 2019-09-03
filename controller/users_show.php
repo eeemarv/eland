@@ -29,7 +29,7 @@ class users_show
 
         $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
-        $s_owner = !$app['s_guest']
+        $s_owner = !$app['pp_guest']
             && $app['s_system_self']
             && $app['s_id'] === $id
             && $id;
@@ -248,7 +248,7 @@ class users_show
 
         if ($app['pp_admin']
             || (!$s_owner && $user['status'] !== 7
-                && !($app['s_guest'] && $app['s_system_self'])))
+                && !($app['pp_guest'] && $app['s_system_self'])))
         {
             $tus = ['tuid' => $id];
 
@@ -674,7 +674,7 @@ class users_show
         bool $user_mail_cc
     ):string
     {
-        $s_owner = !$app['s_guest']
+        $s_owner = !$app['pp_guest']
             && $app['s_system_self']
             && $app['s_id'] === $user_id
             && $user_id;

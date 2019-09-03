@@ -62,7 +62,7 @@ if ($del || $edit)
 	$s_owner = $forum_post['uid']
 		&& $forum_post['uid'] == $app['s_id']
 		&& $app['s_system_self']
-		&& !$app['s_guest'];
+		&& !$app['pp_guest'];
 
 	if (!($app['pp_admin'] || $s_owner))
 	{
@@ -360,7 +360,7 @@ if ($topic)
 	$s_owner = $topic_post['uid']
 		&& $topic_post['uid'] == $app['s_id']
 		&& $app['s_system_self']
-		&& !$app['s_guest'];
+		&& !$app['pp_guest'];
 
 	if (!$app['item_access']->is_visible_xdb($topic_post['access']) && !$s_owner)
 	{
@@ -442,7 +442,7 @@ if ($topic)
 		$s_owner = $p['uid']
 			&& $p['uid'] == $app['s_id']
 			&& $app['s_system_self']
-			&& !$app['s_guest'];
+			&& !$app['pp_guest'];
 
 		$pid = $p['id'];
 
@@ -552,7 +552,7 @@ if ($app['pp_admin'])
 	$app['btn_nav']->csv();
 }
 
-$show_visibility = (!$app['s_guest']
+$show_visibility = (!$app['pp_guest']
 		&& $app['intersystem_en'])
 	|| $app['pp_admin'];
 
@@ -631,7 +631,7 @@ foreach($forum_posts as $p)
 	$s_owner = $p['uid']
 		&& $app['s_id'] == $p['uid']
 		&& $app['s_system_self']
-		&& !$app['s_guest'];
+		&& !$app['pp_guest'];
 
 	$pid = $p['id'];
 

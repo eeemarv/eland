@@ -25,7 +25,7 @@ $currency = $app['config']->get('currency', $app['tschema']);
  */
 if ($add)
 {
-	if ($app['s_guest'])
+	if ($app['pp_guest'])
 	{
 		$app['alert']->error('Je hebt geen rechten om een transactie toe te voegen.');
 		$app['link']->redirect('transactions', $app['pp_ary'], []);
@@ -1987,7 +1987,7 @@ if ($id)
  */
 $pp_inline = $app['request']->query->get('inline', false) ? true : false;
 
-$s_owner = !$app['s_guest']
+$s_owner = !$app['pp_guest']
 	&& $app['s_system_self']
 	&& isset($filter['uid'])
 	&& $app['s_id'] == $filter['uid'];
@@ -2321,7 +2321,7 @@ if (!$pp_inline)
 	$app['typeahead']->ini($app['pp_ary'])
 		->add('accounts', ['status' => 'active']);
 
-	if (!$app['s_guest'])
+	if (!$app['pp_guest'])
 	{
 		$app['typeahead']->add('accounts', ['status' => 'extern']);
 	}

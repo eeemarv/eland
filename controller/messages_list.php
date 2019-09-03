@@ -26,7 +26,7 @@ class messages_list
         $bulk_submit = $request->request->get('bulk_submit', []);
 
         if ($request->isMethod('POST')
-            && !$app['s_guest']
+            && !$app['pp_guest']
             && count($bulk_submit))
         {
             $errors = [];
@@ -258,7 +258,7 @@ class messages_list
 
         $app['assets']->add(['table_sel.js']);
 
-        $show_visibility_column = !$app['s_guest'] && $app['intersystems']->get_count($app['tschema']);
+        $show_visibility_column = !$app['pp_guest'] && $app['intersystems']->get_count($app['tschema']);
 
         if (!count($messages))
         {
@@ -638,7 +638,7 @@ class messages_list
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $s_owner = !$app['s_guest']
+        $s_owner = !$app['pp_guest']
             && $app['s_system_self']
             && isset($filter['uid'])
             && $app['s_id'] === (int) $filter['uid']
@@ -798,7 +798,7 @@ class messages_list
             }
         }
 
-        if ($app['s_guest'])
+        if ($app['pp_guest'])
         {
             $where_sql[] = 'm.local = \'f\'';
         }

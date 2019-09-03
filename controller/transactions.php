@@ -25,7 +25,7 @@ class transactions
         $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['tschema']),
             [$app['s_schema'] => true]);
 
-        $s_owner = !$app['s_guest']
+        $s_owner = !$app['pp_guest']
             && $app['s_system_self']
             && isset($filter['uid'])
             && $app['s_id'] === $filter['uid'];
@@ -363,7 +363,7 @@ class transactions
         $app['typeahead']->ini($app['pp_ary'])
             ->add('accounts', ['status' => 'active']);
 
-        if (!$app['s_guest'])
+        if (!$app['pp_guest'])
         {
             $app['typeahead']->add('accounts', ['status' => 'extern']);
         }

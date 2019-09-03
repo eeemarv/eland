@@ -230,7 +230,7 @@ if ($user_mail_submit && $id && $app['request']->isMethod('POST'))
 
 if ($app['request']->isMethod('POST') && $img && $id )
 {
-	$s_owner = !$app['s_guest']
+	$s_owner = !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $app['s_id'] == $id
 		&& $id;
@@ -348,7 +348,7 @@ if ($app['request']->isMethod('POST') && $img && $id )
 
 if ($img_del && $id)
 {
-	$s_owner = !$app['s_guest']
+	$s_owner = !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $app['s_id'] == $id
 		&& $id;
@@ -812,7 +812,7 @@ if ($app['pp_admin']
 
 if ($pw)
 {
-	$s_owner = !$app['s_guest']
+	$s_owner = !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $pw == $app['s_id']
 		&& $pw;
@@ -1231,7 +1231,7 @@ if ($add || $edit)
 		$app['link']->redirect('users', $app['pp_ary'], []);
 	}
 
-	$s_owner =  !$app['s_guest']
+	$s_owner =  !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $edit
 		&& $app['s_id']
@@ -2599,7 +2599,7 @@ if ($app['pp_admin'])
 
 if ($id)
 {
-	$s_owner = !$app['s_guest']
+	$s_owner = !$app['pp_guest']
 		&& $app['s_system_self']
 		&& $app['s_id'] == $id
 		&& $id;
@@ -2722,7 +2722,7 @@ if ($id)
 
 	if ($app['pp_admin']
 		|| (!$s_owner && $user['status'] !== 7
-			&& !($app['s_guest'] && $app['s_system_self'])))
+			&& !($app['pp_guest'] && $app['s_system_self'])))
 	{
 		$tus = ['add' => 1, 'tuid' => $id];
 
@@ -3299,7 +3299,7 @@ if ($v_list)
 	}
 	else
 	{
-		if ($app['pp_admin'] || $app['s_guest'])
+		if ($app['pp_admin'] || $app['pp_guest'])
 		{
 			$preset_columns = [
 				'u'	=> [
@@ -3452,7 +3452,7 @@ if ($v_list)
 
 	if (isset($show_columns['d']) && !$app['s_master'])
 	{
-		if (($app['s_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
+		if (($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
 			|| !isset($contacts[$app['s_id']]['adr']))
 		{
 			$my_adr = $app['db']->fetchColumn('select c.value
@@ -3462,7 +3462,7 @@ if ($v_list)
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'', [$app['s_id']]);
 		}
-		else if (!$app['s_guest'])
+		else if (!$app['pp_guest'])
 		{
 			$my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
 		}
@@ -3623,7 +3623,7 @@ else
 
 		if (!$app['s_master'])
 		{
-			if ($app['s_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
+			if ($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
 			{
 				$my_adr = $app['db']->fetchColumn('select c.value
 					from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc
@@ -3631,7 +3631,7 @@ else
 						and c.id_type_contact = tc.id
 						and tc.abbrev = \'adr\'', [$app['s_id']]);
 			}
-			else if (!$app['s_guest'])
+			else if (!$app['pp_guest'])
 			{
 				$my_adr = trim($contacts[$app['s_id']]['adr'][0][0]);
 			}
@@ -3993,7 +3993,7 @@ if ($v_list)
 			$app['typeahead']->ini($app['pp_ary'])
 				->add('accounts', ['status' => 'active']);
 
-			if (!$app['s_guest'])
+			if (!$app['pp_guest'])
 			{
 				$app['typeahead']->add('accounts', ['status' => 'extern']);
 			}
@@ -4325,7 +4325,7 @@ if ($v_list)
 
 	foreach($users as $u)
 	{
-		if (($app['pp_user'] || $app['s_guest'])
+		if (($app['pp_user'] || $app['pp_guest'])
 			&& ($u['status'] === 1 || $u['status'] === 2))
 		{
 			$can_link = true;

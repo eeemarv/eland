@@ -26,12 +26,12 @@ class messages_show
 
         $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
-        if ($message['access'] === 'user' && $app['s_guest'])
+        if ($message['access'] === 'user' && $app['pp_guest'])
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
         }
 
-        $s_owner = !$app['s_guest']
+        $s_owner = !$app['pp_guest']
             && $app['s_system_self']
             && $app['s_id'] === $message['id_user']
             && $message['id_user'];
@@ -159,7 +159,7 @@ class messages_show
             $data_images['files'][] =$row['PictureFile'];
         }
 
-        $and_local = $app['s_guest'] ? ' and local = \'f\' ' : '';
+        $and_local = $app['pp_guest'] ? ' and local = \'f\' ' : '';
 
         $prev = $app['db']->fetchColumn('select id
             from ' . $app['tschema'] . '.messages
@@ -205,7 +205,7 @@ class messages_show
             && ($app['pp_admin']
                 || (!$s_owner
                     && $user['status'] != 7
-                    && !($app['s_guest']
+                    && !($app['pp_guest']
                     && $app['s_system_self']))))
         {
             $tus = ['mid' => $id];

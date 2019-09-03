@@ -10,7 +10,7 @@ class contacts_user_show_inline
     public function contacts_user_show_inline(app $app, int $uid):Response
     {
         $s_owner = $app['s_id'] === $uid
-            && !$app['s_guest']
+            && !$app['pp_guest']
             && !$app['s_elas_guest']
             && $app['s_system_self'];
 

@@ -53,7 +53,7 @@ class forum
             $app['btn_nav']->csv();
         }
 
-        $show_visibility = (!$app['s_guest']
+        $show_visibility = (!$app['pp_guest']
                 && $app['intersystem_en'])
             || $app['pp_admin'];
 

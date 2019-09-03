@@ -535,7 +535,7 @@ class users_list
         }
         else
         {
-            if ($app['pp_admin'] || $app['s_guest'])
+            if ($app['pp_admin'] || $app['pp_guest'])
             {
                 $preset_columns = [
                     'u'	=> [
@@ -691,7 +691,7 @@ class users_list
 
         if (isset($show_columns['d']) && !$app['s_master'])
         {
-            if (($app['s_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
+            if (($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
                 || !isset($contacts[$app['s_id']]['adr']))
             {
                 $my_adr = $app['db']->fetchColumn('select c.value
@@ -701,7 +701,7 @@ class users_list
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'adr\'', [$app['s_id']]);
             }
-            else if (!$app['s_guest']
+            else if (!$app['pp_guest']
                 && isset($contacts[$app['s_id']]['adr'][0]['value']))
             {
                 $my_adr = trim($contacts[$app['s_id']]['adr'][0]['value']);
@@ -927,7 +927,7 @@ class users_list
                 $app['typeahead']->ini($app['pp_ary'])
                     ->add('accounts', ['status' => 'active']);
 
-                if (!$app['s_guest'])
+                if (!$app['pp_guest'])
                 {
                     $app['typeahead']->add('accounts', ['status' => 'extern']);
                 }
@@ -1206,7 +1206,7 @@ class users_list
 
         foreach($users as $u)
         {
-            if (($app['pp_user'] || $app['s_guest'])
+            if (($app['pp_user'] || $app['pp_guest'])
                 && ($u['status'] === 1 || $u['status'] === 2))
             {
                 $can_link = true;
