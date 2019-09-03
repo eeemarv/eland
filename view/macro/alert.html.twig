@@ -1,0 +1,14 @@
+{%- macro alert(alert_ary) -%}
+    {%- for a in alert_ary -%}
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="alert alert-{%- if a.type == 'error' -%}danger{%- else -%}{{- a.type -}}{%- endif %} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{- a.message -}}
+                </div>
+            </div>
+        </div>
+    {%- endfor -%}
+{%- endmacro alert ) -%}

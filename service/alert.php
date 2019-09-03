@@ -24,7 +24,7 @@ class alert
 		$this->flashbag = $this->session->getFlashBag();
 	}
 
-	protected function add(string $type, $msg):void
+	protected function add(string $type, $message):void
 	{
 		$url = $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
@@ -33,39 +33,42 @@ class alert
 			'alert_type'	=> $type,
 		];
 
-		if (is_array($msg))
+		if (is_array($message))
 		{
-			$log = implode(' -- & ', $msg);
-			$msg = implode('<br>', $msg);
+			$log = implode(' -- & ', $message);
+			$message = implode('<br>', $message);
 			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $log,
 				$log_ary);
 		}
 		else
 		{
-			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $msg, $log_ary);
+			$this->monolog->debug('[alert ' . $type . ' ' . $url . '] ' . $message, $log_ary);
 		}
 
-		$this->flashbag->add('alert', [$type, $msg]);
+		$this->flashbag->add('alert', [
+			'type' 		=> $type,
+			'message'	=> $message,
+		]);
 	}
 
-	public function error($msg):void
+	public function error($message):void
 	{
-		$this->add('error', $msg);
+		$this->add('error', $message);
 	}
 
-	function success($msg):void
+	function success($message):void
 	{
-		$this->add('success', $msg);
+		$this->add('success', $message);
 	}
 
-	public function info($msg):void
+	public function info($message):void
 	{
-		$this->add('info', $msg);
+		$this->add('info', $message);
 	}
 
-	public function warning($msg):void
+	public function warning($message):void
 	{
-		$this->add('warning', $msg);
+		$this->add('warning', $message);
 	}
 
 	public function get():string
@@ -79,16 +82,26 @@ class alert
 
 		foreach ($this->flashbag->get('alert') as $alert)
 		{
-			$alert[0] = $alert[0] === 'error' ? 'danger' : $alert[0];
+			$class = $alert['type'] === 'error' ? 'danger' : $alert['type'];
 
 			$out .= '<div class="row">';
 			$out .= '<div class="col-xs-12">';
-			$out .= '<div class="alert alert-' . $alert[0] . ' alert-dismissible" role="alert">';
+			$out .= '<div class="alert alert-' . $class . ' alert-dismissible" role="alert">';
 			$out .= '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
 			$out .= '<span aria-hidden="true">&times;</span></button>';
-			$out .= $alert[1] . '</div></div></div>';
+			$out .= $alert['message'] . '</div></div></div>';
 		}
 
 		return $out;
+	}
+
+	public function get_ary():array
+	{
+		if (!$this->flashbag->has('alert'))
+		{
+			return [];
+		}
+
+		return $this->flashbag->get('alert');
 	}
 }

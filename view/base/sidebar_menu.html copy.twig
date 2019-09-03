@@ -1,4 +1,11 @@
 {%- extends 'base/base.html.twig' -%}
+{%- import 'macro/alert.html.twig' as a -%}
+
+{%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
+{%- block system_name -%}{{- config('systemname', schema) -}}{%- endblock -%}
+{%- block system_link -%}
+	{{- config('default_landing_page', schema) -}}
+{%- endblock -%}
 
 {%- block page_container -%}
 
@@ -11,7 +18,7 @@
 
 	{%- for m in sidebar_menu -%}
 		<li{%- if m.active %} class="active"{%- endif -%}>
-			m.menu_item
+			{{- m.menu_item -}}
 		</li>
 	{%- endfor -%}
 
@@ -22,7 +29,7 @@
 	<div id="wrap">
 	<div id="main" class="container-fluid clear-top{{- main_div_class -}}">
 
-	{{- alert -}}
+	{{- a.alert(alert_ary()) -}}
 
 	<div class="row">
 	<div class="col-md-12 top-buttons">

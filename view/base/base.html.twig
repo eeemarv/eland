@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{- lang -}}">
+<html lang="nl">
 <head>
 
-	<title>{{- title -}}</title>
+	<title>{%- block title -%}{{- title -}}{%- endblock -%}</title>
 
-	{%- for c in assets('css') -%}
+	{%- for c in assets_ary('css') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
 	{%- endfor -%}
 
-	{%- for c in assets('css_print') -%}
+	{%- for c in assets_ary('css_print') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
 	{%- endfor -%}
 
@@ -24,7 +24,7 @@
 </head>
 <body{{- body_attr -}}>
 
-<img src="{{- loading_img -}}" class="ajax-loader" alt="waiting">
+<img src="{{- assets('loading.gif') -}}" class="ajax-loader" alt="waiting">
 
 <div class="navbar navbar-default navbar-fixed-top{{- navbar_class -}}">
     <div class="container-fluid">
@@ -32,12 +32,12 @@
 
 		{%- block navbar_toggle_button -%}{%- endblock -%}
 
-		<a href="{{- homepage_link -}}" class="pull-left hidden-xs">
+		<a href="{{- system_link -}}" class="pull-left hidden-xs">
 			<div class="logo"></div>
 		</a>
 
-		<a href="{{- homepage_link -}}" class="navbar-brand">
-		{{- system_name -}}
+		<a href="{{- system_link -}}" class="navbar-brand">
+		{%- block system_name -%}{{- system_name -}}{%- endblock system_name -%}
 		</a>
 		</div>
 
@@ -55,7 +55,7 @@
 	</footer>
 </div>
 
-{%- for j in assets('js') -%}
+{%- for j in assets_ary('js') -%}
 	<script src="{{- j -}}"></script>
 {%- endfor -%}
 

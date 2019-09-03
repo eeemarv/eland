@@ -13,6 +13,11 @@ class assets
 		$this->service_assets = $service_assets;
 	}
 
+	public function get(string $name):string
+	{
+		return $this->service_assets->get($name);
+	}
+
 	public function get_ary(string $type):array
 	{
 		return $this->service_assets->get_ary($type);

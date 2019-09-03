@@ -53,6 +53,9 @@ $app->extend('twig', function($twig, $app) {
 		twig\date_format::class => function() use ($app){
 			return new twig\date_format($app['date_format']);
 		},
+		twig\alert::class => function() use ($app){
+			return new twig\alert($app['alert']);
+		},
 		twig\assets::class => function() use ($app){
 			return new twig\assets($app['assets']);
 		},
@@ -421,11 +424,12 @@ $app['s_guest'] = function ($app):bool{
 };
 
 $app['s_admin'] = function ($app):bool{
-	return $app['s_role'] === 'admin';
+	return $app['s_role'] === 'admin' && $app['pp_role'] === 'admin';
 };
 
 $app['s_user'] = function ($app):bool{
-	return $app['s_role'] === 'user';
+	return ($app['s_role'] === 'user' || $app['s_role'] === 'admin')
+		&& $app['pp_role'] === 'user';
 };
 
 $app['s_anonymous'] = function ($app):bool{
