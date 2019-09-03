@@ -25,7 +25,7 @@ if ($uid)
 }
 else if ($del || $add || $edit)
 {
-	if (!($app['pp_admin'] || $app['s_user']))
+	if (!($app['pp_admin'] || $app['pp_user']))
 	{
 		exit;
 	}

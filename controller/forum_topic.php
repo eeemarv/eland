@@ -16,7 +16,7 @@ class forum_topic
             $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
-        $show_visibility = ($app['s_user']
+        $show_visibility = ($app['pp_user']
                 && $app['intersystem_en'])
             || $app['pp_admin'];
 
@@ -53,7 +53,7 @@ class forum_topic
 
         if ($request->isMethod('POST'))
         {
-            if (!($app['s_user'] || $app['pp_admin']))
+            if (!($app['pp_user'] || $app['pp_admin']))
             {
                 $app['alert']->error('Actie niet toegelaten.');
                 $app['link']->redirect('forum', $app['pp_ary'], []);
@@ -209,7 +209,7 @@ class forum_topic
             $out .= '</div>';
         }
 
-        if ($app['s_user'] || $app['pp_admin'])
+        if ($app['pp_user'] || $app['pp_admin'])
         {
             $out .= '<h3>Reactie toevoegen</h3>';
 

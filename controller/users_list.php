@@ -1206,7 +1206,7 @@ class users_list
 
         foreach($users as $u)
         {
-            if (($app['s_user'] || $app['s_guest'])
+            if (($app['pp_user'] || $app['s_guest'])
                 && ($u['status'] === 1 || $u['status'] === 2))
             {
                 $can_link = true;
@@ -1275,7 +1275,7 @@ class users_list
                     {
                         if ($app['pp_admin']
                             || $u['fullname_access'] === 'interlets'
-                            || ($app['s_user'] && $u['fullname_access'] !== 'admin'))
+                            || ($app['pp_user'] && $u['fullname_access'] !== 'admin'))
                         {
                             if ($can_link)
                             {

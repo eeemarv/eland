@@ -175,7 +175,7 @@ class news_edit
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access, 'news', $app['s_user']);
+        $out .= $app['item_access']->get_radio_buttons('access', $access, 'news', $app['pp_user']);
 
         $out .= $app['link']->btn_cancel('news_show', $app['pp_ary'],
             ['id' => $id]);

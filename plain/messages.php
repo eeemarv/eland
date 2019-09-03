@@ -47,7 +47,7 @@ if ($app['request']->isMethod('GET'))
 if ($app['request']->isMethod('POST')
 	&& (($extend_submit && $extend)
 		|| ($access_submit))
-	& ($app['pp_admin'] || $app['s_user']))
+	& ($app['pp_admin'] || $app['pp_user']))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
@@ -77,7 +77,7 @@ if ($app['request']->isMethod('POST')
 	foreach ($rows as $row)
 	{
 		if (!$app['pp_admin']
-			&& $app['s_user']
+			&& $app['pp_user']
 			&& ($row['id_user'] !== $app['s_id']))
 		{
 			$errors[] = 'Je bent niet de eigenaar van vraag of aanbod ' .
@@ -778,7 +778,7 @@ if ($del)
  */
 if (($edit || $add))
 {
-	if (!($app['pp_admin'] || $app['s_user']) && $add)
+	if (!($app['pp_admin'] || $app['pp_user']) && $add)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om
 			een vraag of aanbod toe te voegen.');
@@ -2159,7 +2159,7 @@ while ($row = $st->fetch())
 	$cat_params[$row['id']]['f']['cid'] = $row['id'];
 }
 
-if ($app['pp_admin'] || $app['s_user'])
+if ($app['pp_admin'] || $app['pp_user'])
 {
 	if (!$p_inline
 		&& ($s_owner || !isset($filter['uid'])))

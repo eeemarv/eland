@@ -158,7 +158,7 @@ class docs
 
         if (count($docs))
         {
-            $show_visibility = ($app['s_user']
+            $show_visibility = ($app['pp_user']
                     && $app['intersystem_en'])
                 || $app['pp_admin'];
 

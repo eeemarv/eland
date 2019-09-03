@@ -77,7 +77,7 @@ class transactions_add
                 }
             }
 
-            if ($app['s_user'] && !$app['s_master'])
+            if ($app['pp_user'] && !$app['s_master'])
             {
                 $fromuser = $app['db']->fetchAssoc('select *
                     from ' . $app['tschema'] . '.users
@@ -222,7 +222,7 @@ class transactions_add
                 $errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
             }
 
-            if ($app['s_user'] && !count($errors))
+            if ($app['pp_user'] && !count($errors))
             {
                 $balance_eq = $app['config']->get('balance_equilibrium', $app['tschema']);
 

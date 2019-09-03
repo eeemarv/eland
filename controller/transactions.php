@@ -256,7 +256,7 @@ class transactions
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        if ($app['pp_admin'] || $app['s_user'])
+        if ($app['pp_admin'] || $app['pp_user'])
         {
             if (isset($filter['uid']))
             {

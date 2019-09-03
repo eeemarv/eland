@@ -40,7 +40,7 @@ if ($approve)
 
 if ($add || $edit)
 {
-	if (!($app['pp_admin'] || $app['s_user']))
+	if (!($app['pp_admin'] || $app['pp_user']))
 	{
 		exit;
 	}
@@ -271,7 +271,7 @@ if ($add || $edit)
 	echo '</textarea>';
 	echo '</div>';
 
-	echo $app['item_access']->get_radio_buttons('access', $news_access, 'news', $app['s_user']);
+	echo $app['item_access']->get_radio_buttons('access', $news_access, 'news', $app['pp_user']);
 
 	$btn = $add ? 'success' : 'primary';
 
@@ -431,7 +431,7 @@ if (!$app['s_anonymous'])
 	exit;
 }
 
-$show_visibility = ($app['s_user']
+$show_visibility = ($app['pp_user']
 		&& $app['intersystem_en'])
 	|| $app['pp_admin'];
 
@@ -649,7 +649,7 @@ $v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
 
 $params = [];
 
-if(($app['s_user'] || $app['pp_admin']) && !$app['p_inline'])
+if(($app['pp_user'] || $app['pp_admin']) && !$app['p_inline'])
 {
 	$app['btn_top']->add('news', $app['pp_ary'],
 		['add' => 1], 'Nieuws toevoegen');

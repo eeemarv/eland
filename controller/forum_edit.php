@@ -178,7 +178,7 @@ class forum_edit
 
         if ($is_topic)
         {
-            $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['s_user']);
+            $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
 
             $out .= $app['link']->btn_cancel('forum_topic',
                 $app['pp_ary'], ['topic_id' => $forum_id]);

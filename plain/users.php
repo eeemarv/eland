@@ -36,7 +36,7 @@ if ($add || $del || $bulk_mail_submit || $bulk_mail_test)
 }
 else if ($edit || $pw || $img_del || $password || $img)
 {
-	if (!($app['pp_admin'] || $app['s_user']))
+	if (!($app['pp_admin'] || $app['pp_user']))
 	{
 		exit;
 	}
@@ -4325,7 +4325,7 @@ if ($v_list)
 
 	foreach($users as $u)
 	{
-		if (($app['s_user'] || $app['s_guest'])
+		if (($app['pp_user'] || $app['s_guest'])
 			&& ($u['status'] === 1 || $u['status'] === 2))
 		{
 			$can_link = true;
@@ -4398,7 +4398,7 @@ if ($v_list)
 				{
 					if ($app['pp_admin']
 						|| $u['fullname_access'] === 'interlets'
-						|| ($app['s_user'] && $u['fullname_access'] !== 'admin'))
+						|| ($app['pp_user'] && $u['fullname_access'] !== 'admin'))
 					{
 						if ($can_link)
 						{

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-if (!($app['pp_admin'] || $app['s_user']))
+if (!($app['pp_admin'] || $app['pp_user']))
 {
 	exit;
 }

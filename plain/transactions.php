@@ -89,7 +89,7 @@ if ($add)
 			}
 		}
 
-		if ($app['s_user'] && !$app['s_master'])
+		if ($app['pp_user'] && !$app['s_master'])
 		{
 			$fromuser = $app['db']->fetchAssoc('select *
 				from ' . $app['tschema'] . '.users
@@ -234,7 +234,7 @@ if ($add)
 			$errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
 		}
 
-		if ($app['s_user'] && !count($errors))
+		if ($app['pp_user'] && !count($errors))
 		{
 			$balance_eq = $app['config']->get('balance_equilibrium', $app['tschema']);
 
@@ -2218,7 +2218,7 @@ $tableheader_ary[$params['s']['orderby']]['asc']
 $tableheader_ary[$params['s']['orderby']]['fa']
 	= $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-if (!$pp_inline && ($app['pp_admin'] || $app['s_user']))
+if (!$pp_inline && ($app['pp_admin'] || $app['pp_user']))
 {
 	if (isset($filter['uid']))
 	{

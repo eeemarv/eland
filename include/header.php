@@ -451,7 +451,7 @@ else
 		];
 	}
 
-	if ($app['s_user'] || $app['pp_admin'])
+	if ($app['pp_user'] || $app['pp_admin'])
 	{
 		$menu['support'] = [
 			'ambulance',

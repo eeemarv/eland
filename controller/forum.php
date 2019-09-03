@@ -42,7 +42,7 @@ class forum
             }
         }
 
-        if ($app['pp_admin'] || $app['s_user'])
+        if ($app['pp_admin'] || $app['pp_user'])
         {
             $app['btn_top']->add('forum_add_topic', $app['pp_ary'],
                 [], 'Onderwerp toevoegen');

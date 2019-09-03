@@ -112,7 +112,7 @@ class forum_add_topic
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['s_user']);
+        $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
 
         $out .= $app['link']->btn_cancel('forum', $app['pp_ary'], []);
 

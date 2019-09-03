@@ -894,7 +894,7 @@ class messages_list
             }
         }
 
-        if ($app['pp_admin'] || $app['s_user'])
+        if ($app['pp_admin'] || $app['pp_user'])
         {
             if ($s_owner || !isset($filter['uid']))
             {

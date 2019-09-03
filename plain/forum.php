@@ -13,7 +13,7 @@ $edit = $_GET['edit'] ?? false;
 $add = isset($_GET['add']) ? true : false;
 $q = $_GET['q'] ?? '';
 
-if (!($app['s_user'] || $app['pp_admin']))
+if (!($app['pp_user'] || $app['pp_admin']))
 {
 	if ($del)
 	{
@@ -305,7 +305,7 @@ if ($add || $edit)
 			$forum_post['access'] = '';
 		}
 
-		echo $app['item_access']->get_radio_buttons('access', $forum_post['access'], 'forum_topic', $app['s_user']);
+		echo $app['item_access']->get_radio_buttons('access', $forum_post['access'], 'forum_topic', $app['pp_user']);
 	}
 
 	$str = $topic ? 'Reactie' : 'Onderwerp';
@@ -336,7 +336,7 @@ if ($add || $edit)
 
 if ($topic)
 {
-	$show_visibility = ($app['s_user']
+	$show_visibility = ($app['pp_user']
 			&& $app['intersystem_en'])
 		|| $app['pp_admin'];
 
@@ -477,7 +477,7 @@ if ($topic)
 		echo '</div>';
 	}
 
-	if ($app['s_user'] || $app['pp_admin'])
+	if ($app['pp_user'] || $app['pp_admin'])
 	{
 		echo '<h3>Reactie toevoegen</h3>';
 
@@ -541,7 +541,7 @@ if (count($rows))
 	}
 }
 
-if ($app['pp_admin'] || $app['s_user'])
+if ($app['pp_admin'] || $app['pp_user'])
 {
 	$app['btn_top']->add('forum', $app['pp_ary'],
 		['add' => 1], 'Onderwerp toevoegen');
