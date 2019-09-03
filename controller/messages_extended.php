@@ -108,7 +108,7 @@ class messages_extended
             $out .= $app['account']->link($msg['id_user'], $app['pp_ary']);
             $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
-            if ($app['s_admin'] || $sf_owner)
+            if ($app['pp_admin'] || $sf_owner)
             {
                 $out .= '<span class="inline-buttons pull-right hidden-xs">';
 

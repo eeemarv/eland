@@ -155,7 +155,7 @@ class contacts_edit
                         and u.id <> ?
                         and c.value = ?', [$user_id, $mailadr]);
 
-                if ($mail_count && $app['s_admin'])
+                if ($mail_count && $app['pp_admin'])
                 {
                     $warning = 'Omdat deze gebruikers niet meer ';
                     $warning .= 'een uniek E-mail adres hebben zullen zij ';
@@ -242,7 +242,7 @@ class contacts_edit
 
         $app['heading']->add('Contact aanpassen');
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['heading']->add(' voor ');
             $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));

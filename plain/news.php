@@ -17,7 +17,7 @@ $id = $_GET['id'] ?? false;
 
 if ($approve)
 {
-	if (!$app['s_admin'])
+	if (!$app['pp_admin'])
 	{
 		exit;
 	}
@@ -40,7 +40,7 @@ if ($approve)
 
 if ($add || $edit)
 {
-	if (!($app['s_admin'] || $app['s_user']))
+	if (!($app['pp_admin'] || $app['s_user']))
 	{
 		exit;
 	}
@@ -109,8 +109,8 @@ if ($add || $edit)
 
 if ($add && $app['request']->isMethod('POST') && !count($errors))
 {
-	$news['approved'] = $app['s_admin'] ? 't' : 'f';
-	$news['published'] = $app['s_admin'] ? 't' : 'f';
+	$news['approved'] = $app['pp_admin'] ? 't' : 'f';
+	$news['published'] = $app['pp_admin'] ? 't' : 'f';
 	$news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 
@@ -126,7 +126,7 @@ if ($add && $app['request']->isMethod('POST') && !count($errors))
 
 		$news['id'] = $id;
 
-		if(!$app['s_admin'])
+		if(!$app['pp_admin'])
 		{
 			$vars = [
 				'news'			=> $news,
@@ -298,7 +298,7 @@ if ($add || $edit)
 
 if ($del)
 {
-	if (!$app['s_admin'])
+	if (!$app['pp_admin'])
 	{
 		exit;
 	}
@@ -433,7 +433,7 @@ if (!$app['s_anonymous'])
 
 $show_visibility = ($app['s_user']
 		&& $app['intersystem_en'])
-	|| $app['s_admin'];
+	|| $app['pp_admin'];
 
 $news_access_ary = $no_access_ary = [];
 
@@ -450,7 +450,7 @@ foreach ($rows as $row)
 
 $query = 'select * from ' . $app['tschema'] . '.news';
 
-if(!$app['s_admin'])
+if(!$app['pp_admin'])
 {
 	$query .= ' where approved = \'t\'';
 }
@@ -499,7 +499,7 @@ if ($id)
 
 	$news_item = $news[$id];
 
-	if (!$app['s_admin'] && !$news_item['approved'])
+	if (!$app['pp_admin'] && !$news_item['approved'])
 	{
 		$app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
 		$app['link']->redirect('news', $app['pp_ary'], []);
@@ -530,7 +530,7 @@ if ($id)
 		$prev = $nid;
 	}
 
-	if($app['s_admin'])
+	if($app['pp_admin'])
 	{
 		$app['btn_top']->edit('news', $app['pp_ary'],
 			['edit' => $id], 'Nieuwsbericht aanpassen');
@@ -566,7 +566,7 @@ if ($id)
 
 	echo '<dl>';
 
-	if ($app['s_admin'])
+	if ($app['pp_admin'])
 	{
 		echo '<dt>Goedgekeurd en gepubliceerd door Admin</dt>';
 		echo '<dd>';
@@ -649,7 +649,7 @@ $v_extended = $app['p_view'] === 'extended' && !$app['p_inline'];
 
 $params = [];
 
-if(($app['s_user'] || $app['s_admin']) && !$app['p_inline'])
+if(($app['s_user'] || $app['pp_admin']) && !$app['p_inline'])
 {
 	$app['btn_top']->add('news', $app['pp_ary'],
 		['add' => 1], 'Nieuws toevoegen');
@@ -668,7 +668,7 @@ else
 {
 	$app['heading']->add('Nieuws');
 
-	if ($app['s_admin'] && $v_list)
+	if ($app['pp_admin'] && $v_list)
 	{
 		$app['btn_nav']->csv();
 	}
@@ -714,7 +714,7 @@ if ($v_list)
 		echo '<th>Titel</th>';
 		echo '<th data-hide="phone" ';
 		echo 'data-sort-initial="descending">Agendadatum</th>';
-		echo $app['s_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
+		echo $app['pp_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
 		echo $show_visibility ? '<th data-hide="phone, tablet">Zichtbaar</th>' : '';
 		echo '</tr>';
 		echo '</thead>';
@@ -737,7 +737,7 @@ if ($v_list)
 
 		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
 
-		if ($app['s_admin'] && !$app['p_inline'])
+		if ($app['pp_admin'] && !$app['p_inline'])
 		{
 			echo '<td>';
 			echo $n['approved'] ? 'Ja' : 'Nee';
@@ -861,7 +861,7 @@ else if ($v_extended)
 
 		echo $app['account']->link($n['id_user'], $app['pp_ary']);
 
-		if ($app['s_admin'])
+		if ($app['pp_admin'])
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 

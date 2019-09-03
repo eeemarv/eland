@@ -39,7 +39,7 @@ class contacts_del
 
                 if ($count_mail === 1)
                 {
-                    if ($app['s_admin'])
+                    if ($app['pp_admin'])
                     {
                         $app['alert']->warning(
                             'Waarschuwing: dit is het enige E-mail adres
@@ -83,7 +83,7 @@ class contacts_del
             $app['alert']->error($error_token);
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['heading']->add('Contact verwijderen voor ');
             $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));

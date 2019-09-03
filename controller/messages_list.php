@@ -100,7 +100,7 @@ class messages_list
 
             foreach ($rows as $row)
             {
-                if (!$app['s_admin']
+                if (!$app['pp_admin']
                     && ($row['id_user'] !== $app['s_id']))
                 {
                     throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
@@ -251,7 +251,7 @@ class messages_list
 
         self::set_view_btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'list');
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_nav']->csv();
         }
@@ -322,7 +322,7 @@ class messages_list
 
             $out .= '<td>';
 
-            if ($app['s_admin'] || $s_owner)
+            if ($app['pp_admin'] || $s_owner)
             {
                 $out .= strtr(cnst_bulk::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
@@ -386,7 +386,7 @@ class messages_list
 
         $out .= $app['pagination']->get();
 
-        if (($app['s_admin'] || $s_owner) && count($messages))
+        if (($app['pp_admin'] || $s_owner) && count($messages))
         {
             $extend_options = [
                 '7'		=> '1 week',
@@ -894,7 +894,7 @@ class messages_list
             }
         }
 
-        if ($app['s_admin'] || $app['s_user'])
+        if ($app['pp_admin'] || $app['s_user'])
         {
             if ($s_owner || !isset($filter['uid']))
             {
@@ -904,7 +904,7 @@ class messages_list
 
             if (isset($filter['uid']))
             {
-                if ($app['s_admin'] && !$s_owner)
+                if ($app['pp_admin'] && !$s_owner)
                 {
                     $str = 'Vraag of aanbod voor ';
                     $str .= $app['account']->str((int) $filter['uid'], $app['tschema']);

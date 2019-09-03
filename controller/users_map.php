@@ -19,7 +19,7 @@ class users_map
         $ref_geo = [];
         $params = ['status' => $status];
 
-        $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = users_list::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
 
         $sql_bind = [];
 
@@ -132,7 +132,7 @@ class users_map
 
         $app['assets']->add(['leaflet', 'users_map.js']);
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_top']->add('users_add', $app['pp_ary'],
                 [], 'Gebruiker toevoegen');
@@ -222,7 +222,7 @@ class users_map
                 $out .= 'de "geocoding service".';
                 $out .= '</p>';
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $out .= '<p>';
                     $out .= 'Hieronder de adressen die nog niet ';
@@ -247,7 +247,7 @@ class users_map
                 }
             }
 
-            if ($app['s_admin'] && $not_present_count)
+            if ($app['pp_admin'] && $not_present_count)
             {
                 $out .= '<h4>';
                 $out .= 'Gebruikers zonder adres';

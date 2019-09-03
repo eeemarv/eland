@@ -48,7 +48,7 @@ class docs_map
             }
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_top']->add('docs_add', $app['pp_ary'],
                 ['map_id' => $map_id], 'Document opladen');
@@ -88,7 +88,7 @@ class docs_map
         {
             $show_visibility = ($app['s_user']
                     && $app['intersystem_en'])
-                || $app['s_admin'];
+                || $app['pp_admin'];
 
             $out .= '<div class="panel panel-default printview">';
 
@@ -110,7 +110,7 @@ class docs_map
                 $out .= 'Zichtbaarheid</th>';
             }
 
-            $out .= $app['s_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
+            $out .= $app['pp_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
             $out .= '</tr>';
 
             $out .= '</thead>';
@@ -136,7 +136,7 @@ class docs_map
                     $td[] = $app['item_access']->get_label_xdb($d['access']);
                 }
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $td_c = $app['link']->link_fa('docs_edit', $app['pp_ary'],
                         ['doc_id' => $did], 'Aanpassen',

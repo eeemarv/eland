@@ -32,7 +32,7 @@ echo '<meta name="theme-color" content="#ffffff">';
 echo '</head>';
 echo '<body';
 
-if ($app['s_admin'])
+if ($app['pp_admin'])
 {
 	echo ' class="admin"';
 }
@@ -49,7 +49,7 @@ echo '" ';
 echo 'class="ajax-loader" alt="waiting">';
 
 echo '<div class="navbar navbar-default navbar-fixed-top';
-echo $app['s_admin'] ? ' bg-info' : '';
+echo $app['pp_admin'] ? ' bg-info' : '';
 echo $app['s_guest'] ? ' bg-warning' : '';
 echo '">';
 echo '<div class="container-fluid">';
@@ -269,7 +269,7 @@ if (!$app['s_anonymous'])
 	echo '</ul>';
 	echo '</li>';
 
-	if ($app['s_admin'])
+	if ($app['pp_admin'])
 	{
 		$menu = [
 			'status'			=> ['exclamation-triangle', 'Status'],
@@ -422,7 +422,7 @@ else
 		],
 		'users'			=> [
 			'users',
-			$app['s_admin'] ? 'Gebruikers' : 'Leden',
+			$app['pp_admin'] ? 'Gebruikers' : 'Leden',
 			['status' => 'active'],
 		],
 		'transactions'	=> [
@@ -451,7 +451,7 @@ else
 		];
 	}
 
-	if ($app['s_user'] || $app['s_admin'])
+	if ($app['s_user'] || $app['pp_admin'])
 	{
 		$menu['support'] = [
 			'ambulance',
@@ -482,7 +482,7 @@ echo '</div>';
 echo '<div id="wrap">';
 echo '<div id="main" ';
 echo 'class="container-fluid clear-top';
-echo $app['s_admin'] ? ' admin' : '';
+echo $app['pp_admin'] ? ' admin' : '';
 echo '">';
 
 echo $app['alert']->get();

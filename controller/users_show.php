@@ -42,12 +42,12 @@ class users_show
                 'De gebruiker met id ' . $id . ' bestaat niet');
         }
 
-        if (!$app['s_admin'] && !in_array($user['status'], [1, 2]))
+        if (!$app['pp_admin'] && !in_array($user['status'], [1, 2]))
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
         }
 
-        $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = users_list::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
 
         // process mail form
 
@@ -167,7 +167,7 @@ class users_show
         }
         else
         {
-            $and_status = $app['s_admin'] ? '' : ' and u.status in (1, 2) ';
+            $and_status = $app['pp_admin'] ? '' : ' and u.status in (1, 2) ';
         }
 
         $next = $app['db']->fetchColumn('select id
@@ -186,7 +186,7 @@ class users_show
 
         $intersystem_missing = false;
 
-        if ($app['s_admin']
+        if ($app['pp_admin']
             && $user['accountrole'] === 'interlets'
             && $app['intersystem_en'])
         {
@@ -213,7 +213,7 @@ class users_show
             'plot_user_transactions.js',
         ]);
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $app['assets']->add([
                 'fileupload',
@@ -221,14 +221,14 @@ class users_show
             ]);
         }
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
-            $title = $app['s_admin'] ? 'Gebruiker' : 'Mijn gegevens';
+            $title = $app['pp_admin'] ? 'Gebruiker' : 'Mijn gegevens';
 
             $app['btn_top']->edit($app['r_users_edit'], $app['pp_ary'],
                 ['id' => $id], $title . ' aanpassen');
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $app['btn_top']->edit_pw('users_password_admin', $app['pp_ary'],
                 ['id' => $id], 'Paswoord aanpassen');
@@ -240,13 +240,13 @@ class users_show
             }
         }
 
-        if ($app['s_admin'] && !$count_transactions && !$s_owner)
+        if ($app['pp_admin'] && !$count_transactions && !$s_owner)
         {
             $app['btn_top']->del('users_del_admin', $app['pp_ary'],
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
-        if ($app['s_admin']
+        if ($app['pp_admin']
             || (!$s_owner && $user['status'] !== 7
                 && !($app['s_guest'] && $app['s_system_self'])))
         {
@@ -283,7 +283,7 @@ class users_show
         $h_status_ary = cnst_status::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
 
-        if ($s_owner && !$app['s_admin'])
+        if ($s_owner && !$app['pp_admin'])
         {
             $app['heading']->add('Mijn gegevens: ');
         }
@@ -299,7 +299,7 @@ class users_show
             $app['heading']->add('</span></small>');
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             if ($intersystem_missing)
             {
@@ -355,7 +355,7 @@ class users_show
 
         $out .= '</div>';
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $btn_del_attr = ['id'	=> 'btn_remove'];
 
@@ -370,7 +370,7 @@ class users_show
             $out .= '<input id="fileupload" type="file" name="image" ';
             $out .= 'data-url="';
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= $app['link']->context_path('users_image_upload_admin', $app['pp_ary'],
                     ['id' => $id]);
@@ -391,7 +391,7 @@ class users_show
             $out .= 'Je foto moet in het jpg/jpeg formaat zijn. ';
             $out .= 'Je kan ook een foto hierheen verslepen.</p>';
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= $app['link']->link_fa('users_image_del_admin', $app['pp_ary'],
                     ['id' => $id], 'Foto verwijderen',
@@ -423,7 +423,7 @@ class users_show
         $out .= 'Volledige naam';
         $out .= '</dt>';
 
-        if ($app['s_admin']
+        if ($app['pp_admin']
             || $s_owner
             || $app['item_access']->is_visible_xdb($fullname_access))
         {
@@ -437,7 +437,7 @@ class users_show
             $out .= '</dd>';
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= '<dt>';
             $out .= 'Zichtbaarheid Volledige Naam';
@@ -452,7 +452,7 @@ class users_show
         $out .= '</dt>';
         $out .= $this->get_dd($user['postcode'] ?? '');
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $out .= '<dt>';
             $out .= 'Geboortedatum';
@@ -478,7 +478,7 @@ class users_show
         $out .= '</dt>';
         $out .= $this->get_dd($user['comments'] ?? '');
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= '<dt>';
             $out .= 'Tijdstip aanmaak';
@@ -565,7 +565,7 @@ class users_show
             $out .= '</dd>';
         }
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $out .= '<dt>';
             $out .= 'Periodieke Overzichts E-mail';

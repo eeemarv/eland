@@ -75,7 +75,7 @@ class docs
             }
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_top']->add('docs_add', $app['pp_ary'],
                 [], 'Document opladen');
@@ -119,7 +119,7 @@ class docs
 
             $out .= '<tr>';
             $out .= '<th data-sort-initial="true">Map</th>';
-            $out .= $app['s_admin'] ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
+            $out .= $app['pp_admin'] ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
             $out .= '</tr>';
 
             $out .= '</thead>';
@@ -136,7 +136,7 @@ class docs
                     $td[] = $app['link']->link_no_attr('docs_map', $app['pp_ary'],
                         ['map_id' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
 
-                    if ($app['s_admin'])
+                    if ($app['pp_admin'])
                     {
                         $td[] = $app['link']->link_fa('docs_map_edit', $app['pp_ary'],
                             ['map_id' => $did], 'Aanpassen',
@@ -160,7 +160,7 @@ class docs
         {
             $show_visibility = ($app['s_user']
                     && $app['intersystem_en'])
-                || $app['s_admin'];
+                || $app['pp_admin'];
 
             $out .= '<div class="panel panel-default printview">';
 
@@ -182,7 +182,7 @@ class docs
                 $out .= 'Zichtbaarheid</th>';
             }
 
-            $out .= $app['s_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
+            $out .= $app['pp_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
             $out .= '</tr>';
 
             $out .= '</thead>';
@@ -208,7 +208,7 @@ class docs
                     $td[] = $app['item_access']->get_label_xdb($d['access']);
                 }
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $td_c = $app['link']->link_fa('docs_edit', $app['pp_ary'],
                         ['doc_id' => $did], 'Aanpassen',

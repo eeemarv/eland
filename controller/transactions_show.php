@@ -52,7 +52,7 @@ class transactions_show
             order by id desc
             limit 1', [$id]);
 
-        if ($app['s_admin']
+        if ($app['pp_admin']
             && ($inter_transaction
                 || !($transaction['real_from']
                     || $transaction['real_to'])))
@@ -100,7 +100,7 @@ class transactions_show
             $out .= '<dt>Van interSysteem Account (in dit Systeem)</dt>';
             $out .= '<dd>';
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
             }
@@ -151,7 +151,7 @@ class transactions_show
             $out .= '<dt>Naar interSysteem Account (in dit Systeem)</dt>';
             $out .= '<dd>';
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
             }
@@ -320,7 +320,7 @@ class transactions_show
                 $out .= 'Het interSysteem Account van het andere Systeem ';
                 $out .= 'in dit Systeem. (';
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $out .= $app['account']->link($transaction['id_to'],
                         $app['pp_ary']);
@@ -366,7 +366,7 @@ class transactions_show
                 $out .= 'Systeem. ';
                 $out .= '(';
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $out .= $app['account']->link($transaction['id_from'],
                         $app['pp_ary']);

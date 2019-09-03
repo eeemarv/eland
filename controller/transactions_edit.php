@@ -132,7 +132,7 @@ class transactions_edit
             $out .= '<dt>Van interSysteem account</dt>';
             $out .= '<dd>';
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
             }
@@ -181,7 +181,7 @@ class transactions_edit
             $out .= '<dt>Naar interSysteem account</dt>';
             $out .= '<dd>';
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
             }

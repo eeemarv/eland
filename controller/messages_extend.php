@@ -18,7 +18,7 @@ class messages_extend
             && $message['id_user']
             && $message['id_user'] === $app['s_id'];
 
-        if (!($s_owner || $app['s_admin']))
+        if (!($s_owner || $app['pp_admin']))
         {
             $app['alert']->error('Je hebt onvoldoende rechten om ' .
                 msg_type::THIS[$message['msg_type']] . ' te verlengen.');

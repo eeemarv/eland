@@ -182,10 +182,6 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
  *
  */
 
-$app['legacy_route'] = function ($app){
-	return new service\legacy_route($app);
-};
-
 $app['new_user_treshold'] = function ($app):int{
 	$new_user_days = (int) $app['config']->get('newuserdays', $app['tschema']);
 	return time() -  ($new_user_days * 86400);
@@ -229,11 +225,11 @@ $app['r_users'] = function ($app):string{
 };
 
 $app['r_users_show'] = function ($app):string{
-	return 'users_show' . ($app['s_admin'] ? '_admin' : '');
+	return 'users_show' . ($app['pp_admin'] ? '_admin' : '');
 };
 
 $app['r_users_edit'] = function ($app):string{
-	return 'users_edit' . ($app['s_admin'] ? '_admin' : '');
+	return 'users_edit' . ($app['pp_admin'] ? '_admin' : '');
 };
 
 $app['r_messages'] = function ($app):string{
@@ -375,7 +371,7 @@ $app['s_id'] = function ($app):int{
 
 $app['session_user'] = function ($app):array{
 
-	if ($app['s_id'] === 0)
+	if (!$app['s_id'])
 	{
 		return [];
 	}
@@ -420,20 +416,19 @@ $app['s_role_short'] = function ($app):string{
 };
 
 $app['s_guest'] = function ($app):bool{
-	return false;
+	return $app['pp_role'] == 'guest';
 };
 
-$app['s_admin'] = function ($app):bool{
-	return $app['s_role'] === 'admin' && $app['pp_role'] === 'admin';
+$app['pp_admin'] = function ($app):bool{
+	return $app['pp_role'] === 'admin';
 };
 
 $app['s_user'] = function ($app):bool{
-	return ($app['s_role'] === 'user' || $app['s_role'] === 'admin')
-		&& $app['pp_role'] === 'user';
+	return $app['pp_role'] === 'user';
 };
 
 $app['s_anonymous'] = function ($app):bool{
-	return $app['s_role'] === 'anonymous';
+	return $app['pp_role'] === 'anonymous';
 };
 
 $app['s_master'] = function ($app):bool{
@@ -941,7 +936,7 @@ $app['tpl'] = function ($app){
 		$app['s_anonymous'],
 		$app['s_guest'],
 		$app['s_user'],
-		$app['s_admin'],
+		$app['pp_admin'],
 		$app['s_master'],
 		$app['s_elas_guest'],
 		$app['s_system_self'],

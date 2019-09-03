@@ -19,7 +19,7 @@ if (($confirm_del
 		|| $add || $edit || $del
 		|| $app['request']->isMethod('POST')
 		|| $map_edit)
-	& !$app['s_admin'])
+	& !$app['pp_admin'])
 {
 	$app['alert']->error('Je hebt onvoldoende rechten voor deze actie.');
 	$app['link']->redirect('docs', $app['pp_ary'], []);
@@ -754,7 +754,7 @@ if (!$map)
 	}
 }
 
-if ($app['s_admin'])
+if ($app['pp_admin'])
 {
 	$add_buttom_params = ['add' => 1];
 
@@ -773,7 +773,7 @@ if ($app['s_admin'])
 	}
 }
 
-if ($app['s_admin'])
+if ($app['pp_admin'])
 {
 	$app['btn_nav']->csv();
 }
@@ -820,7 +820,7 @@ if (!$map && count($maps))
 
 	echo '<tr>';
 	echo '<th data-sort-initial="true">Map</th>';
-	echo $app['s_admin'] ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
+	echo $app['pp_admin'] ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
 	echo '</tr>';
 
 	echo '</thead>';
@@ -837,7 +837,7 @@ if (!$map && count($maps))
 			$out[] = $app['link']->link_no_attr('docs', $app['pp_ary'],
 				['map' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
 
-			if ($app['s_admin'])
+			if ($app['pp_admin'])
 			{
 				$out[] = $app['link']->link_fa('docs', $app['pp_ary'],
 					['map_edit' => $did], 'Aanpassen',
@@ -861,7 +861,7 @@ if (count($docs))
 {
 	$show_visibility = ($app['s_user']
 			&& $app['intersystem_en'])
-		|| $app['s_admin'];
+		|| $app['pp_admin'];
 
 	echo '<div class="panel panel-default printview">';
 
@@ -883,7 +883,7 @@ if (count($docs))
 		echo 'Zichtbaarheid</th>';
 	}
 
-	echo $app['s_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
+	echo $app['pp_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
 	echo '</tr>';
 
 	echo '</thead>';
@@ -909,7 +909,7 @@ if (count($docs))
 			$out[] = $app['item_access']->get_label_xdb($d['access']);
 		}
 
-		if ($app['s_admin'])
+		if ($app['pp_admin'])
 		{
 			$out_c = $app['link']->link_fa('docs', $app['pp_ary'],
 				['edit' => $did], 'Aanpassen',

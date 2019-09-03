@@ -61,7 +61,7 @@ class messages_edit
                 && $app['s_id'] === $message['id_user']
                 && $message['id_user'];
 
-            if (!($app['s_admin'] || $s_owner))
+            if (!($app['pp_admin'] || $s_owner))
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
                     $message['label']['type_this'] . ' aan te passen.');
@@ -88,7 +88,7 @@ class messages_edit
             $validity = time() + ((int) $validity_days * 86400);
             $validity =  gmdate('Y-m-d H:i:s', $validity);
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 if (!$account_code)
                 {
@@ -284,7 +284,7 @@ class messages_edit
                 $account_code = '';
                 $access = '';
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $account_code = $app['session_user']['letscode'] . ' ' . $app['session_user']['name'];
                  }
@@ -353,7 +353,7 @@ class messages_edit
 
         $out .= '<form method="post">';
 
-        if($app['s_admin'])
+        if($app['pp_admin'])
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="account_code" class="control-label">';

@@ -47,7 +47,7 @@ if ($app['request']->isMethod('GET'))
 if ($app['request']->isMethod('POST')
 	&& (($extend_submit && $extend)
 		|| ($access_submit))
-	& ($app['s_admin'] || $app['s_user']))
+	& ($app['pp_admin'] || $app['s_user']))
 {
 	if (!is_array($selected_msgs) || !count($selected_msgs))
 	{
@@ -76,7 +76,7 @@ if ($app['request']->isMethod('POST')
 
 	foreach ($rows as $row)
 	{
-		if (!$app['s_admin']
+		if (!$app['pp_admin']
 			&& $app['s_user']
 			&& ($row['id_user'] !== $app['s_id']))
 		{
@@ -219,7 +219,7 @@ if ($id || $edit || $del)
 
 if ($id && $extend)
 {
-	if (!($s_owner || $app['s_admin']))
+	if (!($s_owner || $app['pp_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' .
 			$ow_type_this . ' te verlengen.');
@@ -255,7 +255,7 @@ if ($app['request']->isMethod('POST')
 
 	if ($id)
 	{
-		if (!$s_owner && !$app['s_admin'])
+		if (!$s_owner && !$app['pp_admin'])
 		{
 			$ret_ary[] = ['error' => 'Je hebt onvoldoende rechten
 				om een afbeelding op te laden voor
@@ -415,7 +415,7 @@ if ($app['request']->isMethod('POST')
 if ($img_del == 'all' && $id
 	&& $app['request']->isMethod('POST'))
 {
-	if (!($s_owner || $app['s_admin']))
+	if (!($s_owner || $app['pp_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten
 			om afbeeldingen te verwijderen voor ' . $ow_type_this);
@@ -449,7 +449,7 @@ if ($img_del && $app['request']->isMethod('POST')
 		&& $msg['id_user'] == $app['s_id']
 		&& $msg['id_user'];
 
-	if (!($s_owner || $app['s_admin']))
+	if (!($s_owner || $app['pp_admin']))
 	{
 		echo json_encode(['error' => 'Onvoldoende rechten om deze afbeelding te verwijderen.']);
 		exit;
@@ -467,7 +467,7 @@ if ($img_del && $app['request']->isMethod('POST')
 
 if ($img_del == 'all' && $id)
 {
-	if (!($app['s_admin'] || $s_owner))
+	if (!($app['pp_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je kan geen afbeeldingen verwijderen voor ' . $ow_type_this);
 		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
@@ -505,7 +505,7 @@ if ($img_del == 'all' && $id)
 
 	include __DIR__ . '/../include/header.php';
 
-	if ($app['s_admin'])
+	if ($app['pp_admin'])
 	{
 		echo 'Gebruiker: ';
 		echo $app['account']->link($message['id_user'], $app['pp_ary']);
@@ -574,7 +574,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 
 	$to_user = $app['user_cache']->get($message['id_user'], $app['tschema']);
 
-	if (!$app['s_admin'] && !in_array($to_user['status'], [1, 2]))
+	if (!$app['pp_admin'] && !in_array($to_user['status'], [1, 2]))
 	{
 		$app['alert']->error('Je hebt geen rechten om een
 			bericht naar een niet-actieve gebruiker te sturen');
@@ -672,7 +672,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
  */
 if ($del)
 {
-	if (!($s_owner || $app['s_admin']))
+	if (!($s_owner || $app['pp_admin']))
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' . $ow_type_this . ' te verwijderen.');
 		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $del]);
@@ -778,14 +778,14 @@ if ($del)
  */
 if (($edit || $add))
 {
-	if (!($app['s_admin'] || $app['s_user']) && $add)
+	if (!($app['pp_admin'] || $app['s_user']) && $add)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om
 			een vraag of aanbod toe te voegen.');
 		$app['link']->redirect('messages', $app['pp_ary'], []);
 	}
 
-	if (!($app['s_admin'] || $s_owner) && $edit)
+	if (!($app['pp_admin'] || $s_owner) && $edit)
 	{
 		$app['alert']->error('Je hebt onvoldoende rechten om ' .
 			$ow_type_this . ' aan te passen.');
@@ -804,7 +804,7 @@ if (($edit || $add))
 		$vtime = time() + ((int) $validity * 86400);
 		$vtime =  gmdate('Y-m-d H:i:s', $vtime);
 
-		if ($app['s_admin'])
+		if ($app['pp_admin'])
 		{
 			[$user_letscode] = explode(' ', trim($_POST['user_letscode']));
 			$user_letscode = trim($user_letscode);
@@ -824,7 +824,7 @@ if (($edit || $add))
 			'content'		=> $_POST['content'],
 			'"Description"'	=> $_POST['description'],
 			'msg_type'		=> $_POST['msg_type'],
-			'id_user'		=> $app['s_admin'] ? (int) $user['id'] : ($app['s_master'] ? 0 : $app['s_id']),
+			'id_user'		=> $app['pp_admin'] ? (int) $user['id'] : ($app['s_master'] ? 0 : $app['s_id']),
 			'id_category'	=> $_POST['id_category'],
 			'amount'		=> $_POST['amount'],
 			'units'			=> $_POST['units'],
@@ -1196,7 +1196,7 @@ if (($edit || $add))
 
 	// checkthis
 		$uid = (isset($_GET['uid'])
-			&& $app['s_admin']) ? $_GET['uid'] :
+			&& $app['pp_admin']) ? $_GET['uid'] :
 				(($app['s_master']) ? 0 : $app['s_id']);
 
 		if ($app['s_master'])
@@ -1244,7 +1244,7 @@ if (($edit || $add))
 
 	echo '<form method="post">';
 
-	if($app['s_admin'])
+	if($app['pp_admin'])
 	{
 		echo '<div class="form-group">';
 		echo '<label for="user_letscode" class="control-label">';
@@ -1532,7 +1532,7 @@ if ($id)
 		'msg.js',
 	]);
 
-	if ($app['s_admin'] || $s_owner)
+	if ($app['pp_admin'] || $s_owner)
 	{
 		$app['assets']->add([
 			'fileupload',
@@ -1540,7 +1540,7 @@ if ($id)
 		]);
 	}
 
-	if ($app['s_admin'] || $s_owner)
+	if ($app['pp_admin'] || $s_owner)
 	{
 		$app['btn_top']->edit('messages', $app['pp_ary'],
 			['edit' => $id],	$ow_type_uc . ' aanpassen');
@@ -1550,7 +1550,7 @@ if ($id)
 	}
 
 	if ($message['msg_type'] == 1
-		&& ($app['s_admin']
+		&& ($app['pp_admin']
 			|| (!$s_owner
 				&& $user['status'] != 7
 				&& !($app['s_guest']
@@ -1614,7 +1614,7 @@ if ($id)
 
 	echo '</div>';
 
-	if ($app['s_admin'] || $s_owner)
+	if ($app['pp_admin'] || $s_owner)
 	{
 		echo '<div class="panel-footer">';
 		echo '<span class="btn btn-success fileinput-button">';
@@ -1729,7 +1729,7 @@ if ($id)
 	echo $app['date_format']->get($message['validity'], 'day', $app['tschema']);
 	echo '</dd>';
 
-	if ($app['s_admin'] || $s_owner)
+	if ($app['pp_admin'] || $s_owner)
 	{
 		echo '<dt>Verlengen</dt>';
 		echo '<dd>';
@@ -2159,7 +2159,7 @@ while ($row = $st->fetch())
 	$cat_params[$row['id']]['f']['cid'] = $row['id'];
 }
 
-if ($app['s_admin'] || $app['s_user'])
+if ($app['pp_admin'] || $app['s_user'])
 {
 	if (!$p_inline
 		&& ($s_owner || !isset($filter['uid'])))
@@ -2170,7 +2170,7 @@ if ($app['s_admin'] || $app['s_user'])
 
 	if (isset($filter['uid']))
 	{
-		if ($app['s_admin'] && !$s_owner)
+		if ($app['pp_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
 			$str .= $app['account']->str($filter['uid'], $app['tschema']);
@@ -2181,7 +2181,7 @@ if ($app['s_admin'] || $app['s_user'])
 	}
 }
 
-if ($app['s_admin'] && $v_list)
+if ($app['pp_admin'] && $v_list)
 {
 	$app['btn_nav']->csv();
 }
@@ -2480,7 +2480,7 @@ if ($v_list)
 
 		echo '<td>';
 
-		if (!$p_inline && ($app['s_admin'] || $s_owner))
+		if (!$p_inline && ($app['pp_admin'] || $s_owner))
 		{
 			echo '<input type="checkbox" name="sel_' . $msg['id'] . '" value="1"';
 			echo (isset($selected_msgs[$id])) ? ' checked="checked"' : '';
@@ -2599,7 +2599,7 @@ else if ($v_extended)
 		echo $app['account']->link($msg['id_user'], $app['pp_ary']);
 		echo $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
-		if ($app['s_admin'] || $sf_owner)
+		if ($app['pp_admin'] || $sf_owner)
 		{
 			echo '<span class="inline-buttons pull-right hidden-xs">';
 
@@ -2630,7 +2630,7 @@ if ($p_inline)
 }
 else if ($v_list)
 {
-	if (($app['s_admin'] || $s_owner) && count($messages))
+	if (($app['pp_admin'] || $s_owner) && count($messages))
 	{
 		$extend_options = [
 			'7'		=> '1 week',

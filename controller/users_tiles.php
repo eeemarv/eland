@@ -18,9 +18,9 @@ class users_tiles
     public function users_tiles(Request $request, app $app, string $status):Response
     {
         $q = $request->get('q', '');
-        $users_route = $app['s_admin'] ? 'users_tiles_admin' : 'users_tiles';
+        $users_route = $app['pp_admin'] ? 'users_tiles_admin' : 'users_tiles';
 
-        $status_def_ary = users_list::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = users_list::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
 
         $params = ['status'	=> $status];
 
@@ -38,7 +38,7 @@ class users_tiles
 
         $app['assets']->add(['isotope', 'users_tiles.js']);
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_top']->add('users_add', $app['pp_ary'],
                 [], 'Gebruiker toevoegen');
@@ -49,7 +49,7 @@ class users_tiles
 
         $out = users_list::get_filter_and_tab_selector(
             $users_route, $app['pp_ary'], $params, $app['link'],
-            $app['s_admin'], '', $q, $app['new_user_treshold']
+            $app['pp_admin'], '', $q, $app['new_user_treshold']
         );
 
         $out .= '<p>';

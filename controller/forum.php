@@ -42,20 +42,20 @@ class forum
             }
         }
 
-        if ($app['s_admin'] || $app['s_user'])
+        if ($app['pp_admin'] || $app['s_user'])
         {
             $app['btn_top']->add('forum_add_topic', $app['pp_ary'],
                 [], 'Onderwerp toevoegen');
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_nav']->csv();
         }
 
         $show_visibility = (!$app['s_guest']
                 && $app['intersystem_en'])
-            || $app['s_admin'];
+            || $app['pp_admin'];
 
         $app['heading']->add('Forum');
         $app['heading']->fa('comments-o');

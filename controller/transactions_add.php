@@ -149,7 +149,7 @@ class transactions_add
                 $errors[] = 'Het bedrag is geen geldig getal';
             }
 
-            if (!$app['s_admin'] && !count($errors))
+            if (!$app['pp_admin'] && !count($errors))
             {
                 if ($fromuser['minlimit'] === -999999999)
                 {
@@ -182,7 +182,7 @@ class transactions_add
                 $errors[] = 'Van en Aan Account Code kunnen hetzelfde zijn.';
             }
 
-            if (!$app['s_admin'] && !count($errors))
+            if (!$app['pp_admin'] && !count($errors))
             {
                 if ($touser['maxlimit'] === 999999999)
                 {
@@ -215,7 +215,7 @@ class transactions_add
             }
 
             if($group_id == 'self'
-                && !$app['s_admin']
+                && !$app['pp_admin']
                 && !($touser['status'] == '1' || $touser['status'] == '2')
                 && !count($errors))
             {
@@ -253,7 +253,7 @@ class transactions_add
                 $errors[] = $error_token;
             }
 
-            $contact_admin = $app['s_admin'] ? '' : ' Contacteer een admin.';
+            $contact_admin = $app['pp_admin'] ? '' : ' Contacteer een admin.';
 
             if (isset($group['url']))
             {
@@ -758,7 +758,7 @@ class transactions_add
             }
 
             $transaction['letscode_to'] = $request->request->get('letscode_to', '');
-            $transaction['letscode_from'] = $app['s_admin'] || $app['s_master']
+            $transaction['letscode_from'] = $app['pp_admin'] || $app['s_master']
                 ? $request->request->get('letscode_from', '')
                 : $app['account']->str($app['s_id'], $app['tschema']);
         }
@@ -846,7 +846,7 @@ class transactions_add
 
                     if ($app['s_id'] === $row['id_user'])
                     {
-                        if ($app['s_admin'])
+                        if ($app['pp_admin'])
                         {
                             $transaction['letscode_from'] = '';
                         }
@@ -863,14 +863,14 @@ class transactions_add
             {
                 $to_user = $app['user_cache']->get($tuid, $app['tschema']);
 
-                if (in_array($to_user['status'], [1, 2]) || $app['s_admin'])
+                if (in_array($to_user['status'], [1, 2]) || $app['pp_admin'])
                 {
                     $transaction['letscode_to'] = $app['account']->str($tuid, $app['tschema']);
                 }
 
                 if ($tuid === $app['s_id'])
                 {
-                    if ($app['s_admin'])
+                    if ($app['pp_admin'])
                     {
                         $transaction['letscode_from'] = '';
                     }
@@ -973,7 +973,7 @@ class transactions_add
         $out .= '<form  method="post" autocomplete="off">';
 
         $out .= '<div class="form-group"';
-        $out .= $app['s_admin'] ? '' : ' disabled" ';
+        $out .= $app['pp_admin'] ? '' : ' disabled" ';
         $out .= '>';
         $out .= '<label for="letscode_from" class="control-label">';
         $out .= 'Van Account Code';
@@ -990,7 +990,7 @@ class transactions_add
         $out .= 'value="';
         $out .= $transaction['letscode_from'];
         $out .= '" required';
-        $out .= $app['s_admin'] ? '' : ' disabled';
+        $out .= $app['pp_admin'] ? '' : ' disabled';
         $out .= '>';
         $out .= '</div>';
         $out .= '</div>';
@@ -1022,7 +1022,7 @@ class transactions_add
 
                     $app['typeahead']->add('accounts', ['status' => 'active']);
 
-                    if ($app['s_admin'])
+                    if ($app['pp_admin'])
                     {
                         $app['typeahead']->add('accounts', ['status' => 'inactive'])
                             ->add('accounts', ['status' => 'ip'])
@@ -1131,7 +1131,7 @@ class transactions_add
             $app['typeahead']->ini($app['pp_ary'])
                 ->add('accounts', ['status' => 'active']);
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $app['typeahead']->add('accounts', ['status' => 'inactive'])
                     ->add('accounts', ['status' => 'ip'])
@@ -1202,7 +1202,7 @@ class transactions_add
         $out .= 'Systeem zich niet op dezelfde ';
         $out .= 'eLAND-server bevindt.</li>';
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= '<li id="info_admin_limit">';
             $out .= 'Admins kunnen over en onder limieten gaan';

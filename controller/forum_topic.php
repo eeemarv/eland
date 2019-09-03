@@ -18,7 +18,7 @@ class forum_topic
 
         $show_visibility = ($app['s_user']
                 && $app['intersystem_en'])
-            || $app['s_admin'];
+            || $app['pp_admin'];
 
         $forum_posts = [];
 
@@ -53,7 +53,7 @@ class forum_topic
 
         if ($request->isMethod('POST'))
         {
-            if (!($app['s_user'] || $app['s_admin']))
+            if (!($app['s_user'] || $app['pp_admin']))
             {
                 $app['alert']->error('Actie niet toegelaten.');
                 $app['link']->redirect('forum', $app['pp_ary'], []);
@@ -138,7 +138,7 @@ class forum_topic
 
         $next = count($rows) ? reset($rows)['eland_id'] : false;
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $app['btn_top']->edit('forum_edit', $app['pp_ary'],
                 ['forum_id' => $topic_id], 'Onderwerp aanpassen');
@@ -191,7 +191,7 @@ class forum_topic
             $out .= $app['date_format']->get($p['ts'], 'min', $app['tschema']);
             $out .= isset($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
 
-            if ($app['s_admin'] || $s_owner)
+            if ($app['pp_admin'] || $s_owner)
             {
                 $out .= '<span class="inline-buttons pull-right">';
                 $out .= $app['link']->link_fa('forum_edit', $app['pp_ary'],
@@ -209,7 +209,7 @@ class forum_topic
             $out .= '</div>';
         }
 
-        if ($app['s_user'] || $app['s_admin'])
+        if ($app['s_user'] || $app['pp_admin'])
         {
             $out .= '<h3>Reactie toevoegen</h3>';
 

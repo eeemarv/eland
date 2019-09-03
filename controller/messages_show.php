@@ -46,7 +46,7 @@ class messages_show
 
             $to_user = $user;
 
-            if (!$app['s_admin'] && !in_array($to_user['status'], [1, 2]))
+            if (!$app['pp_admin'] && !in_array($to_user['status'], [1, 2]))
             {
                 throw new AccessDeniedHttpException('Je hebt geen rechten om een
                     bericht naar een niet-actieve gebruiker te sturen');
@@ -184,7 +184,7 @@ class messages_show
             'messages_show_images_slider.js',
         ]);
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $app['assets']->add([
                 'fileupload',
@@ -192,7 +192,7 @@ class messages_show
             ]);
         }
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $app['btn_top']->edit('messages_edit', $app['pp_ary'],
                 ['id' => $id],	ucfirst($message['label']['type']) . ' aanpassen');
@@ -202,7 +202,7 @@ class messages_show
         }
 
         if ($message['is_offer'] === 1
-            && ($app['s_admin']
+            && ($app['pp_admin']
                 || (!$s_owner
                     && $user['status'] != 7
                     && !($app['s_guest']
@@ -265,7 +265,7 @@ class messages_show
 
         $out .= '</div>';
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-block fileinput-button">';
@@ -374,7 +374,7 @@ class messages_show
         $out .= $app['date_format']->get($message['validity'], 'day', $app['tschema']);
         $out .= '</dd>';
 
-        if ($app['s_admin'] || $s_owner)
+        if ($app['pp_admin'] || $s_owner)
         {
             $out .= '<dt>Verlengen</dt>';
             $out .= '<dd>';

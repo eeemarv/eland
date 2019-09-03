@@ -34,7 +34,7 @@ class contacts_user_show_inline
 		$out .= $app['account']->link($uid, $app['pp_ary']);
         $out .= ' ';
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= $app['link']->link('users_contacts_add_admin', $app['pp_ary'],
                 ['user_id' => $uid], 'Toevoegen', [
@@ -66,7 +66,7 @@ class contacts_user_show_inline
             $out .= '<th>Waarde</th>';
             $out .= '<th data-hide="phone, tablet">Commentaar</th>';
 
-            if ($app['s_admin'] || $s_owner)
+            if ($app['pp_admin'] || $s_owner)
             {
                 $out .= '<th data-hide="phone, tablet">Zichtbaarheid</th>';
                 $out .= '<th data-sort-ignore="true" ';
@@ -90,9 +90,9 @@ class contacts_user_show_inline
                     $tr[] = $tr_c;
                     $tr[] = $tr_c;
                 }
-                else if ($s_owner || $app['s_admin'])
+                else if ($s_owner || $app['pp_admin'])
                 {
-                    if ($app['s_admin'])
+                    if ($app['pp_admin'])
                     {
                         $tr_c = $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
                             ['contact_id' => $c['id'], 'user_id' => $uid], $c['value']);
@@ -119,7 +119,7 @@ class contacts_user_show_inline
 
                     if (isset($c['comments']))
                     {
-                        if ($app['s_admin'])
+                        if ($app['pp_admin'])
                         {
                             $tr[] = $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
                                 ['contact_id' => $c['id'], 'user_id' => $uid], $c['comments']);
@@ -170,11 +170,11 @@ class contacts_user_show_inline
                     $tr[] = htmlspecialchars($c['comments'], ENT_QUOTES);
                 }
 
-                if ($app['s_admin'] || $s_owner)
+                if ($app['pp_admin'] || $s_owner)
                 {
                     $tr[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
-                    if ($app['s_admin'])
+                    if ($app['pp_admin'])
                     {
                         $tr[] = $app['link']->link_fa('users_contacts_del_admin', $app['pp_ary'],
                             ['contact_id' => $c['id'], 'user_id' => $uid], 'Verwijderen',

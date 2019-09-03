@@ -30,7 +30,7 @@ class users_edit_admin
             && $app['s_id']
             && $id === $app['s_id'];
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $username_edit = $fullname_edit = true;
         }
@@ -55,7 +55,7 @@ class users_edit_admin
                 'lang'			=> 'nl'
             ];
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 // hack eLAS compatibility (in eLAND limits can be null)
                 $minlimit = trim($request->request->get('minlimit', ''));
@@ -249,7 +249,7 @@ class users_edit_admin
                 }
             }
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 if (!$user['letscode'])
                 {
@@ -318,7 +318,7 @@ class users_edit_admin
                     maximaal 500 tekens lang zijn.';
             }
 
-            if ($app['s_admin'] && !$user_prefetch['adate'] && $user['status'] == 1)
+            if ($app['pp_admin'] && !$user_prefetch['adate'] && $user['status'] == 1)
             {
                 if (!$password)
                 {
@@ -491,7 +491,7 @@ class users_edit_admin
 
                         $app['alert']->success('Gebruiker aangepast.');
 
-                        if ($app['s_admin'])
+                        if ($app['pp_admin'])
                         {
                             $stored_contacts = [];
 
@@ -647,7 +647,7 @@ class users_edit_admin
                 $fullname_access = cnst_access::FROM_XDB[$user['fullname_access']];
             }
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $contact = $app['db']->fetchAll('select name, abbrev,
                     \'\' as value, 0 as id
@@ -655,7 +655,7 @@ class users_edit_admin
                     where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
             }
 
-            if ($is_edit && $app['s_admin'])
+            if ($is_edit && $app['pp_admin'])
             {
                 $contact_keys = [];
 
@@ -685,7 +685,7 @@ class users_edit_admin
                     $contact[] = $row;
                 }
             }
-            else if ($app['s_admin'])
+            else if ($app['pp_admin'])
             {
                 $user = [
                     'minlimit'		=> $app['config']->get('preset_minlimit', $app['tschema']),
@@ -753,7 +753,7 @@ class users_edit_admin
             'user_edit.js',
         ]);
 
-        if ($s_owner && !$app['s_admin'] && $is_edit)
+        if ($s_owner && !$app['pp_admin'] && $is_edit)
         {
             $app['heading']->add('Je profiel aanpassen');
         }
@@ -779,7 +779,7 @@ class users_edit_admin
 
         $out .= '<form method="post">';
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="letscode" class="control-label">';
@@ -967,7 +967,7 @@ class users_edit_admin
         $out .= '</div>';
         $out .= '</div>';
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="accountrole" class="control-label">';
@@ -1012,7 +1012,7 @@ class users_edit_admin
             $out .= '</div>';
             $out .= '</div>';
 
-            if (empty($user['adate']) && $app['s_admin'])
+            if (empty($user['adate']) && $app['pp_admin'])
             {
                 $out .= '<div id="activate" class="bg-success pan-sub">';
 

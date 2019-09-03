@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-if (!$app['s_admin'])
+if (!$app['pp_admin'])
 {
 	exit;
 }

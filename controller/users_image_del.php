@@ -51,7 +51,7 @@ class users_image_del
 
         $app['heading']->add('Profielfoto ');
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['heading']->add('van ');
             $app['heading']->add($app['account']->link($id, $app['pp_ary']));

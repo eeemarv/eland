@@ -70,8 +70,8 @@ class news_add
 
             if (!count($errors))
             {
-                $news['approved'] = $app['s_admin'] ? 't' : 'f';
-                $news['published'] = $app['s_admin'] ? 't' : 'f';
+                $news['approved'] = $app['pp_admin'] ? 't' : 'f';
+                $news['published'] = $app['pp_admin'] ? 't' : 'f';
                 $news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
                 $news['cdate'] = gmdate('Y-m-d H:i:s');
 
@@ -87,7 +87,7 @@ class news_add
 
                     $news['id'] = $id;
 
-                    if(!$app['s_admin'])
+                    if(!$app['pp_admin'])
                     {
                         $vars = [
                             'news'			=> $news,

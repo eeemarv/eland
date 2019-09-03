@@ -60,7 +60,7 @@ class messages_images_upload
                 && $app['s_id'] === $message['id_user']
                 && $message['id_user'];
 
-            if (!$s_owner && !$app['s_admin'])
+            if (!$s_owner && !$app['pp_admin'])
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
                     om een afbeelding op te laden voor

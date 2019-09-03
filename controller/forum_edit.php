@@ -40,7 +40,7 @@ class forum_edit
             $topic_id = $forum_post['parent_id'];
         }
 
-        if (!($app['s_admin'] || $s_owner))
+        if (!($app['pp_admin'] || $s_owner))
         {
             if ($is_topic)
             {

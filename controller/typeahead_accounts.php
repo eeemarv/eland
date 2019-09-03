@@ -14,7 +14,7 @@ class typeahead_accounts
             return $app->json(['error' => 'No access.'], 403);
         }
 
-        if(!$app['s_admin'] && !in_array($status, ['active', 'extern']))
+        if(!$app['pp_admin'] && !in_array($status, ['active', 'extern']))
         {
             return $app->json(['error' => 'No access.'], 403);
         }

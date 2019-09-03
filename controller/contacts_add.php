@@ -33,7 +33,7 @@ class contacts_add
                 $errors[] = $error_token;
             }
 
-            if ($app['s_admin'] && $redirect_contacts)
+            if ($app['pp_admin'] && $redirect_contacts)
             {
                [$code] = explode(' ', trim($account_code));
 
@@ -106,7 +106,7 @@ class contacts_add
                         and u.id <> ?
                         and c.value = ?', [$user_id, $mailadr]);
 
-                if ($mail_count && $app['s_admin'])
+                if ($mail_count && $app['pp_admin'])
                 {
                     $warning = 'Omdat deze gebruikers niet meer ';
                     $warning .= 'een uniek E-mail adres hebben zullen zij ';
@@ -205,7 +205,7 @@ class contacts_add
 
         $app['heading']->add('Contact toevoegen');
 
-        if ($app['s_admin'] && !$redirect_contacts)
+        if ($app['pp_admin'] && !$redirect_contacts)
         {
             $app['heading']->add(' voor ');
             $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
@@ -216,7 +216,7 @@ class contacts_add
 
         $out .= '<form method="post">';
 
-        if ($app['s_admin'] && $redirect_contacts)
+        if ($app['pp_admin'] && $redirect_contacts)
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="account_code" class="control-label">Voor</label>';

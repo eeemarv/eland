@@ -18,14 +18,14 @@ $sort = $app['request']->query->get('s', []);
 
 if ($uid)
 {
-	if (!$app['s_admin'])
+	if (!$app['pp_admin'])
 	{
 		exit;
 	}
 }
 else if ($del || $add || $edit)
 {
-	if (!($app['s_admin'] || $app['s_user']))
+	if (!($app['pp_admin'] || $app['s_user']))
 	{
 		exit;
 	}
@@ -54,7 +54,7 @@ if ($del)
 		&& $user_id == $app['s_id']
 		&& $user_id;
 
-	if (!($app['s_admin'] || $s_owner))
+	if (!($app['pp_admin'] || $s_owner))
 	{
 		$app['alert']->error('Je hebt geen rechten om het contact te verwijderen.');
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
@@ -207,7 +207,7 @@ if ($edit || $add)
 		&& $user_id == $app['s_id']
 		&& $user_id;
 
-	if (!($app['s_admin'] || $s_owner))
+	if (!($app['pp_admin'] || $s_owner))
 	{
 		$err = $edit
 			? 'dit contact aan te passen.'
@@ -226,7 +226,7 @@ if ($edit || $add)
 			$errors[] = $error_token;
 		}
 
-		if ($app['s_admin'] && $add && !$uid)
+		if ($app['pp_admin'] && $add && !$uid)
 		{
 			$letscode = $app['request']->request->get('letscode', '');
 			[$letscode] = explode(' ', trim($letscode));
@@ -333,7 +333,7 @@ if ($edit || $add)
 					and u.id <> ?
 					and c.value = ?', [$user_id, $contact['value']]);
 
-			if ($mail_count && $app['s_admin'])
+			if ($mail_count && $app['pp_admin'])
 			{
 				$warning = 'Omdat deze gebruikers niet meer ';
 				$warning .= 'een uniek E-mail adres hebben zullen zij ';
@@ -483,7 +483,7 @@ if ($edit || $add)
 	}
 
 
-	if (!(($s_owner && !$app['s_admin']) || ($app['s_admin'] && $add && !$uid)))
+	if (!(($s_owner && !$app['pp_admin']) || ($app['pp_admin'] && $add && !$uid)))
 	{
 		$app['heading']->add(' voor ');
 		$app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
@@ -496,7 +496,7 @@ if ($edit || $add)
 
 	echo '<form method="post">';
 
-	if ($app['s_admin'] && $add && !$uid)
+	if ($app['pp_admin'] && $add && !$uid)
 	{
 		echo '<div class="form-group">';
 		echo '<label for="letscode" class="control-label">Voor</label>';
@@ -639,7 +639,7 @@ if ($uid)
 
 	$user = $app['user_cache']->get($uid, $app['tschema']);
 
-	if ($app['s_admin'] || $s_owner)
+	if ($app['pp_admin'] || $s_owner)
 	{
 		$app['btn_top']->add('contacts', $app['pp_ary'],
 			['add' => 1, 'uid' => $uid], 'Contact toevoegen');
@@ -704,7 +704,7 @@ if ($uid)
 	echo '<th>Waarde</th>';
 	echo '<th data-hide="phone, tablet">Commentaar</th>';
 
-	if ($app['s_admin'] || $s_owner)
+	if ($app['pp_admin'] || $s_owner)
 	{
 		echo '<th data-hide="phone, tablet">Zichtbaarheid</th>';
 		echo '<th data-sort-ignore="true" ';
@@ -728,7 +728,7 @@ if ($uid)
 			$out[] = $out_c;
 			$out[] = $out_c;
 		}
-		else if ($s_owner || $app['s_admin'])
+		else if ($s_owner || $app['pp_admin'])
 		{
 			$out_c = $app['link']->link_no_attr('contacts', $app['pp_ary'],
 				['edit' => $c['id'], 'uid' => $uid], $c['value']);
@@ -792,7 +792,7 @@ if ($uid)
 			$out[] = htmlspecialchars($c['comments'], ENT_QUOTES);
 		}
 
-		if ($app['s_admin'] || $s_owner)
+		if ($app['pp_admin'] || $s_owner)
 		{
 			$out[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
@@ -839,7 +839,7 @@ if ($uid)
  *
  */
 
-if (!$app['s_admin'])
+if (!$app['pp_admin'])
 {
 	$app['alert']->error('Je hebt geen toegang tot deze pagina.');
 	redirect_default_page();

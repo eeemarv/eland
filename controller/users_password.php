@@ -25,7 +25,7 @@ class users_password
                 $errors[] = 'Vul paswoord in!';
             }
 
-            if (!$app['s_admin']
+            if (!$app['pp_admin']
                 && $app['password_strength']->get($password) < 50)
             {
                 $errors[] = 'Te zwak paswoord.';
@@ -106,7 +106,7 @@ class users_password
 
         $app['heading']->add('Paswoord aanpassen');
 
-        if ($app['s_admin'] && $id !== $app['s_id'])
+        if ($app['pp_admin'] && $id !== $app['s_id'])
         {
             $app['heading']->add(' voor ');
             $app['heading']->add($app['account']->link($id, $app['pp_ary']));

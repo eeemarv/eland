@@ -747,7 +747,7 @@ $app['s_schema'] = $app['tschema'];
 $app['s_elas_guest'] = false;
 $app['s_guest'] = false;
 $app['s_user'] = false;
-$app['s_admin'] = false;
+$app['pp_admin'] = false;
 $app['s_anonymous'] = false;
 $app['s_master'] = false;
 
@@ -1130,7 +1130,7 @@ if ($app['page_access'] != 'anonymous'
 }
 
 if ($app['page_access'] != 'anonymous'
-	&& !$app['s_admin']
+	&& !$app['pp_admin']
 	&& $app['config']->get('maintenance', $app['tschema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');

@@ -49,7 +49,7 @@ class tpl
 	protected $s_anonymous;
 	protected $s_guest;
 	protected $s_user;
-	protected $s_admin;
+	protected $pp_admin;
 	protected $s_master;
 	protected $s_elas_guest;
 	protected $s_system_self;
@@ -79,7 +79,7 @@ class tpl
 		bool $s_anonymous,
 		bool $s_guest,
 		bool $s_user,
-		bool $s_admin,
+		bool $pp_admin,
 		bool $s_master,
 		bool $s_elas_guest,
 		bool $s_system_self,
@@ -110,7 +110,7 @@ class tpl
 		$this->s_anonymous = $s_anonymous;
 		$this->s_guest = $s_guest;
 		$this->s_user = $s_user;
-		$this->s_admin = $s_admin;
+		$this->pp_admin = $pp_admin;
 		$this->s_master = $s_master;
 		$this->s_elas_guest = $s_elas_guest;
 		$this->s_system_self = $s_system_self;
@@ -156,7 +156,7 @@ class tpl
 		$out .= '</head>';
 		$out .= '<body';
 
-		if ($this->s_admin)
+		if ($this->pp_admin)
 		{
 			$out .= ' class="admin"';
 		}
@@ -173,7 +173,7 @@ class tpl
 		$out .= 'class="ajax-loader" alt="waiting">';
 
 		$out .= '<div class="navbar navbar-default navbar-fixed-top';
-		$out .= $this->s_admin ? ' bg-info' : '';
+		$out .= $this->pp_admin ? ' bg-info' : '';
 		$out .= $this->s_guest ? ' bg-warning' : '';
 		$out .= '">';
 		$out .= '<div class="container-fluid">';
@@ -400,7 +400,7 @@ class tpl
 			$out .= '</ul>';
 			$out .= '</li>';
 
-			if ($this->s_admin)
+			if ($this->pp_admin)
 			{
 				$admin_menu = [
 					'status'			=> ['exclamation-triangle', 'Status'],
@@ -559,7 +559,7 @@ class tpl
 		$out .= '<div id="wrap">';
 		$out .= '<div id="main" ';
 		$out .= 'class="container-fluid clear-top';
-		$out .= $this->s_admin ? ' admin' : '';
+		$out .= $this->pp_admin ? ' admin' : '';
 		$out .= '">';
 
 		$out .= $this->alert->get();

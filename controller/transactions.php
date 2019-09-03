@@ -256,7 +256,7 @@ class transactions
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        if ($app['s_admin'] || $app['s_user'])
+        if ($app['pp_admin'] || $app['s_user'])
         {
             if (isset($filter['uid']))
             {
@@ -285,7 +285,7 @@ class transactions
             }
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_nav']->csv();
         }
@@ -368,7 +368,7 @@ class transactions
             $app['typeahead']->add('accounts', ['status' => 'extern']);
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['typeahead']->add('accounts', ['status' => 'inactive']);
             $app['typeahead']->add('accounts', ['status' => 'ip']);

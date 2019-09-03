@@ -16,9 +16,9 @@ class news
 
         $show_visibility = ($app['s_user']
                 && $app['intersystem_en'])
-            || $app['s_admin'];
+            || $app['pp_admin'];
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_nav']->csv();
         }
@@ -38,7 +38,7 @@ class news
         $out .= '<th>Titel</th>';
         $out .= '<th data-hide="phone" ';
         $out .= 'data-sort-initial="descending">Agendadatum</th>';
-        $out .= $app['s_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
+        $out .= $app['pp_admin'] ? '<th data-hide="phone">Goedgekeurd</th>' : '';
         $out .= $show_visibility ? '<th data-hide="phone, tablet">Zichtbaar</th>' : '';
         $out .= '</tr>';
         $out .= '</thead>';
@@ -60,7 +60,7 @@ class news
 
             $out .= $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .= '<td>';
                 $out .= $n['approved'] ? 'Ja' : 'Nee';
@@ -94,7 +94,7 @@ class news
 
         $show_visibility = ($app['s_user']
                 && $app['intersystem_en'])
-            || $app['s_admin'];
+            || $app['pp_admin'];
 
         if (!count($news))
         {
@@ -206,7 +206,7 @@ class news
 
             $out .=  $app['account']->link($n['id_user'], $app['pp_ary']);
 
-            if ($app['s_admin'])
+            if ($app['pp_admin'])
             {
                 $out .=  '<span class="inline-buttons pull-right hidden-xs">';
 
@@ -256,7 +256,7 @@ class news
 
         $query = 'select * from ' . $app['tschema'] . '.news';
 
-        if(!$app['s_admin'])
+        if(!$app['pp_admin'])
         {
             $query .= ' where approved = \'t\'';
         }
@@ -296,7 +296,7 @@ class news
 
     private function set_heading_and_btns(app $app, bool $is_list):void
     {
-        if($app['s_user'] || $app['s_admin'])
+        if($app['s_user'] || $app['pp_admin'])
         {
             $app['btn_top']->add('news_add', $app['pp_ary'],
                 [], 'Nieuws toevoegen');

@@ -89,7 +89,7 @@ class plot_user_transactions
             {
                 $intersystem_name = $intersystem_names[$code] ?? $name;
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $user_link = $app['link']->context_path($app['r_users_show'],
                         $app['pp_ary'], ['id' => $t['user_id']]);
@@ -112,7 +112,7 @@ class plot_user_transactions
             {
                 $user_label = $code . ' ' . $name;
 
-                if ($app['s_admin']
+                if ($app['pp_admin']
                     || ($t['status'] === 1 || $t['status'] === 2))
                 {
                     $user_link = $app['link']->context_path($app['r_users_show'],

@@ -35,7 +35,7 @@ class messages_images_del
 
         $s_owner = $app['s_id'] === $message['id_user'];
 
-        if (!($s_owner || $app['s_admin']))
+        if (!($s_owner || $app['pp_admin']))
         {
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }
@@ -61,7 +61,7 @@ class messages_images_del
 
         $s_owner = $app['s_id'] && $app['s_id'] === $message['id_user'];
 
-        if (!($s_owner || $app['s_admin']))
+        if (!($s_owner || $app['pp_admin']))
         {
             throw new AccessDeniedHttpException(
                 'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
@@ -116,7 +116,7 @@ class messages_images_del
 
         $app['assets']->add(['messages_images_del.js']);
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['heading']->add_sub('Gebruiker: ');
             $app['heading']->add_sub($app['account']->link($message['id_user'], $app['pp_ary']));

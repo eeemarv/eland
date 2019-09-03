@@ -41,7 +41,7 @@ class users_list
          * Begin bulk POST
          */
 
-        if ($app['s_admin']
+        if ($app['pp_admin']
             && $request->isMethod('POST')
             && count($bulk_submit) === 1)
         {
@@ -429,7 +429,7 @@ class users_list
          * End bulk POST
          */
 
-        $status_def_ary = self::get_status_def_ary($app['s_admin'], $app['new_user_treshold']);
+        $status_def_ary = self::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
 
         $sql_bind = [];
 
@@ -461,7 +461,7 @@ class users_list
             ],
         ];
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $columns['u'] += [
                 'admincomment'	=> 'Admin commentaar',
@@ -535,7 +535,7 @@ class users_list
         }
         else
         {
-            if ($app['s_admin'] || $app['s_guest'])
+            if ($app['pp_admin'] || $app['s_guest'])
             {
                 $preset_columns = [
                     'u'	=> [
@@ -834,7 +834,7 @@ class users_list
             }
         }
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['btn_nav']->csv();
 
@@ -855,7 +855,7 @@ class users_list
             'datepicker',
         ]);
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $app['assets']->add([
                 'summernote',
@@ -932,7 +932,7 @@ class users_list
                     $app['typeahead']->add('accounts', ['status' => 'extern']);
                 }
 
-                if ($app['s_admin'])
+                if ($app['pp_admin'])
                 {
                     $app['typeahead']->add('accounts', ['status' => 'inactive'])
                         ->add('accounts', ['status' => 'ip'])
@@ -1075,7 +1075,7 @@ class users_list
 
         $out = self::get_filter_and_tab_selector(
             $app['r_users'], $app['pp_ary'], $params, $app['link'],
-            $app['s_admin'], $f_col, $q, $app['new_user_treshold']
+            $app['pp_admin'], $f_col, $q, $app['new_user_treshold']
         );
 
         $out .= '<div class="panel panel-success printview">';
@@ -1202,7 +1202,7 @@ class users_list
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        $can_link = $app['s_admin'];
+        $can_link = $app['pp_admin'];
 
         foreach($users as $u)
         {
@@ -1273,7 +1273,7 @@ class users_list
                     }
                     else if ($key === 'fullname')
                     {
-                        if ($app['s_admin']
+                        if ($app['pp_admin']
                             || $u['fullname_access'] === 'interlets'
                             || ($app['s_user'] && $u['fullname_access'] !== 'admin'))
                         {
@@ -1302,7 +1302,7 @@ class users_list
                         $td .= htmlspecialchars((string) $u[$key]);
                     }
 
-                    if ($app['s_admin'] && $first)
+                    if ($app['pp_admin'] && $first)
                     {
                         $out .= strtr(cnst_bulk::TPL_CHECKBOX_ITEM, [
                             '%id%'      => $id,
@@ -1472,7 +1472,7 @@ class users_list
         $out .= '</span></p>';
         $out .= '</div></div>';
 
-        if ($app['s_admin'] & isset($show_columns['u']))
+        if ($app['pp_admin'] & isset($show_columns['u']))
         {
             $out .= cnst_bulk::TPL_SELECT_BUTTONS;
 
@@ -1653,13 +1653,13 @@ class users_list
     }
 
     static public function get_status_def_ary(
-        bool $s_admin,
+        bool $pp_admin,
         int $new_user_treshold
     ):array
     {
         $status_def_ary = [
             'active'	=> [
-                'lbl'	=> $s_admin ? 'Actief' : 'Alle',
+                'lbl'	=> $pp_admin ? 'Actief' : 'Alle',
                 'sql'	=> 'u.status in (1, 2)',
                 'st'	=> [1, 2],
             ],
@@ -1678,7 +1678,7 @@ class users_list
             ],
         ];
 
-        if ($s_admin)
+        if ($pp_admin)
         {
             $status_def_ary = $status_def_ary + [
                 'inactive'	=> [
@@ -1720,7 +1720,7 @@ class users_list
         array $pp_ary,
         array $params,
         link $link,
-        bool $s_admin,
+        bool $pp_admin,
         string $before,
         string $q,
         int $new_user_treshold
@@ -1768,7 +1768,7 @@ class users_list
 
         $nav_params = $params;
 
-        foreach (self::get_status_def_ary($s_admin, $new_user_treshold) as $k => $tab)
+        foreach (self::get_status_def_ary($pp_admin, $new_user_treshold) as $k => $tab)
         {
             $nav_params['status'] = $k;
 

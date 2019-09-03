@@ -11,7 +11,7 @@ class news_show
     {
         $show_visibility = ($app['s_user']
                 && $app['intersystem_en'])
-            || $app['s_admin'];
+            || $app['pp_admin'];
 
         $news_access_ary = $no_access_ary = [];
 
@@ -28,7 +28,7 @@ class news_show
 
         $query = 'select * from ' . $app['tschema'] . '.news';
 
-        if(!$app['s_admin'])
+        if(!$app['pp_admin'])
         {
             $query .= ' where approved = \'t\'';
         }
@@ -72,7 +72,7 @@ class news_show
 
         $news_item = $news[$id];
 
-        if (!$app['s_admin'] && !$news_item['approved'])
+        if (!$app['pp_admin'] && !$news_item['approved'])
         {
             $app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
             $app['link']->redirect('news_list', $app['pp_ary'], []);
@@ -103,7 +103,7 @@ class news_show
             $prev = $nid;
         }
 
-        if($app['s_admin'])
+        if($app['pp_admin'])
         {
             $app['btn_top']->edit('news_edit', $app['pp_ary'],
                 ['id' => $id], 'Nieuwsbericht aanpassen');
@@ -137,7 +137,7 @@ class news_show
 
         $out .= '<dl>';
 
-        if ($app['s_admin'])
+        if ($app['pp_admin'])
         {
             $out .= '<dt>Goedgekeurd en gepubliceerd door Admin</dt>';
             $out .= '<dd>';
