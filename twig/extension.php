@@ -47,6 +47,8 @@ class extension extends \Twig_Extension
 			new \Twig_Function('btn_top', 'twig\\btn_top::get'),
 			new \Twig_Function('btn_nav', 'twig\\btn_nav::get'),
 			new \Twig_Function('pagination', 'twig\\pagination::get'),
+			new \Twig_Function('role', 'twig\\role::has_role'),
+			new \Twig_Function('menu', 'twig\\menu::get'),
 		];
 	}
 

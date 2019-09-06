@@ -102,6 +102,16 @@ $app->extend('twig', function($twig, $app) {
 				$app['pagination']
 			);
 		},
+		twig\role::class => function() use ($app){
+			return new twig\role(
+				$app['pp_anonymous'],
+				$app['pp_guest'],
+				$app['pp_user'],
+				$app['pp_admin'],
+				$app['s_master'],
+				$app['s_elas_guest']
+			);
+		},
 	]));
 
 	return $twig;

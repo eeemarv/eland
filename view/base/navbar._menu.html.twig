@@ -16,14 +16,14 @@
 	<ul class="nav navbar-nav navbar-right">
 
 	{%- block navbar_menu -%}
-		{%- if system_menu -%}
-			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', system_menu) -}}
+		{%- if system_menu() -%}
+			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', system_menu()) -}}
 		{%- endif -%}
-		{%- if user_menu -%}
-			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', user_menu) -}}
+		{%- if user_menu() -%}
+			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', user_menu()) -}}
 		{%- endif -%}
-		{%- if admin_menu -%}
-			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', admin_menu) -}}
+		{%- if admin_menu() -%}
+			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', admin_menu()) -}}
 		{%- elseif admin_link -%}
 			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
 				<i class="fa fa-times text-danger"></i>&nbsp;

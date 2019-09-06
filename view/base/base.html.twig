@@ -22,22 +22,22 @@
 	<meta name="theme-color" content="#ffffff">
 
 </head>
-<body{{- body_attr -}}>
+<body{%- if role('admin') %} class="admin"{%- elseif role('guest') %} class="guest"{%- endif -%}>
 
 <img src="{{- assets('loading.gif') -}}" class="ajax-loader" alt="waiting">
 
-<div class="navbar navbar-default navbar-fixed-top{{- navbar_class -}}">
+<div class="navbar navbar-default navbar-fixed-top{%- if role('admin') %} bg-info{%- else if role('guest') %} bg-warning{%- endif -%}">
     <div class="container-fluid">
 		<div class="navbar-header">
 
 		{%- block navbar_toggle_button -%}{%- endblock -%}
 
-		<a href="{{- system_link -}}" class="pull-left hidden-xs">
+		<a href="{%- block system_link -%}{%- endblock -%}" class="pull-left hidden-xs">
 			<div class="logo"></div>
 		</a>
 
-		<a href="{{- system_link -}}" class="navbar-brand">
-		{%- block system_name -%}{{- system_name -}}{%- endblock system_name -%}
+		<a href="{{- block('system_link') -}}" class="navbar-brand">
+		{%- block system_name -%}{%- endblock -%}
 		</a>
 		</div>
 
