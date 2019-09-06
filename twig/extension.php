@@ -42,6 +42,11 @@ class extension extends \Twig_Extension
 			new \Twig_Function('assets_ary', 'twig\\assets::get_ary'),
 			new \Twig_Function('alert_ary', 'twig\\alert::get_ary'),
 			new \Twig_Function('access', 'twig\\access::get'),
+			new \Twig_Function('heading', 'twig\\heading::get'),
+			new \Twig_Function('heading_sub', 'twig\\heading::get_sub'),
+			new \Twig_Function('btn_top', 'twig\\btn_top::get'),
+			new \Twig_Function('btn_nav', 'twig\\btn_nav::get'),
+			new \Twig_Function('pagination', 'twig\\pagination::get'),
 		];
 	}
 

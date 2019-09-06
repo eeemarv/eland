@@ -82,6 +82,26 @@ $app->extend('twig', function($twig, $app) {
 				$app['s3_url']
 			);
 		},
+		twig\heading::class => function() use ($app){
+			return new twig\heading(
+				$app['heading']
+			);
+		},
+		twig\btn_nav::class => function() use ($app){
+			return new twig\btn_nav(
+				$app['btn_nav']
+			);
+		},
+		twig\btn_top::class => function() use ($app){
+			return new twig\btn_top(
+				$app['btn_top']
+			);
+		},
+		twig\pagination::class => function() use ($app){
+			return new twig\pagination(
+				$app['pagination']
+			);
+		},
 	]));
 
 	return $twig;
@@ -311,13 +331,12 @@ $app['s_schema'] = function ($app):string{
 
 	$s_schema = $app['session']->get('schema');
 
-	if ($app['pp_role_short'] === 'g')
+	if ($app['pp_guest'])
 	{
 		if ($s_schema)
 		{
 			return $s_schema;
 		}
-
 	}
 
 	if ($s_schema !== $app['tschema'])

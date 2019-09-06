@@ -40,19 +40,14 @@
 		</button>
 	</div>
 
-	{{- btn_top -}}
-
-	{%- if btn_nav -%}
-		<div class="pull-right">
-			{{- btn-nav -}}
-		</div>
-	{%- endif -%}
+	{{- btn_top() -}}
+	{{- btn_nav() -}}
 
 	</div>
 	</div>
 
-	{{- heading -}}
-	{{- sub_heading -}}
+	{{- heading() -}}
+	{{- heading_sub() -}}
 
 	{%- block content -%}{%- endblock -%}
 

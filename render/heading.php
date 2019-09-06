@@ -35,11 +35,6 @@ class heading
 		return '<h1>' . $this->get() . '</h1>';
 	}
 
-	public function get_h3():string
-	{
-		return '<h3>' . $this->get() . '</h3>';
-	}
-
 	public function get_sub():string
 	{
 		return $this->str_sub ? '<h2>' . $this->str_sub . '</h2>' : '';
