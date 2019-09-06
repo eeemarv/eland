@@ -684,7 +684,7 @@ $c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_guest);
 $c_system_anon->mount('/init', $c_system_init);
 $c_locale->mount('/{system}', $c_system_anon);
-$app->mount('/{_locale}', $c_locale);
+$app->mount('/', $c_locale);
 
 /**
  * Routes end

@@ -374,7 +374,7 @@ class tpl
 
 				$out .= '<li>';
 
-				$out .= $this->link->link_fa('messages_extended', $this->pp_ary,
+				$out .= $this->link->link_fa($this->r_messages, $this->pp_ary,
 					['f' => ['uid' => $this->s_id]],
 					'Mijn vraag en aanbod', [], 'newspaper-o');
 

@@ -1,41 +1,5 @@
 {%- extends 'base/sidebar_menu.html.twig' -%}
 
-{%- block navbar_toggle_button -%}
-	<button type="button" class="navbar-toggle collapsed"
-	data-toggle="collapse" data-target="#navbar-collapse-1"
-	aria-expanded="false">
-	<span class="sr-only">Toggle navigation</span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-	</button>
-{%- endblock navbar_toggle_button -%}
-
-{%- block navbar_collapse -%}
-	<div class="collapse navbar-collapse" id="navbar-collapse-1">
-	<ul class="nav navbar-nav navbar-right">
-
-	{%- block navbar_menu -%}
-		{%- if system_menu() -%}
-			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', system_menu()) -}}
-		{%- endif -%}
-		{%- if user_menu() -%}
-			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', user_menu()) -}}
-		{%- endif -%}
-		{%- if admin_menu() -%}
-			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', admin_menu()) -}}
-		{%- elseif admin_link -%}
-			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
-				<i class="fa fa-times text-danger"></i>&nbsp;
-				Admin modus
-			</a>
-		{%- endif -%}
-	{%- endblock -%}
-
-	</ul>
-	</div>
-{%- endblock navbar_collapse -%}
-
 {%- macro navbar_menu_dropdown_button(label, fa, menu_items) -%}
 	<li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -56,3 +20,67 @@
 		{%- endfor -%}
 	</ul>
 {%- endmacro navbar_menu_dropdown_button -%}
+
+{%- block navbar_toggle_button -%}
+	<button type="button" class="navbar-toggle collapsed"
+	data-toggle="collapse" data-target="#navbar-collapse-1"
+	aria-expanded="false">
+	<span class="sr-only">Toggle navigation</span>
+	<span class="icon-bar"></span>
+	<span class="icon-bar"></span>
+	<span class="icon-bar"></span>
+	</button>
+{%- endblock navbar_toggle_button -%}
+
+{%- block navbar_collapse -%}
+	<div class="collapse navbar-collapse" id="navbar-collapse-1">
+	<ul class="nav navbar-nav navbar-right">
+
+	{%- block navbar_menu -%}
+		{%- if has_menu('system') -%}
+			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', menu('system')) -}}
+		{%- endif -%}
+		{%- if has_menu('user') -%}
+			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', menu('user')) -}}
+		{%- endif -%}
+		{%- if has_menu('admin') -%}
+			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', menu('admin')) -}}
+		{%- elseif admin_link -%}
+			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
+				<i class="fa fa-times text-danger"></i>&nbsp;
+				Admin modus
+			</a>
+		{%- endif -%}
+	{%- endblock -%}
+
+	</ul>
+	</div>
+{%- endblock navbar_collapse -%}
+
+{%- block sidebar_menu -%}
+	{%- if role('guest') -%}
+		{%- for m in guest_sidebar_menu() -%}
+			<li{%- if m.active %} class="active"{%- endif -%}>
+				{{- m.menu_item -}}
+			</li>
+		{%- endfor -%}
+	{%- elseif role('user') -%}
+		{%- for m in user_sidebar_menu('user_sidebar') -%}
+			<li{%- if m.active %} class="active"{%- endif -%}>
+				{{- m.menu_item -}}
+			</li>
+		{%- endfor -%}
+	{%- elseif role('admin') -%}
+		{%- for m in menu('admin_sidebar') -%}
+			<li{%- if m.active %} class="active"{%- endif -%}>
+				<a href="{{- -}}">{{- m.label -}}</a>
+				{{- m.menu_item -}}
+			</li>
+		{%- endfor -%}
+		{%- for m in admin_anon_sidebar_menu('admin_anon_sidebar') -%}
+			<li class="admin-anon-sidebar{%- if m.active %} active{%- endif -%}">
+				{{- m.menu_item -}}
+			</li>
+		{%- endfor -%}
+	{%- endif -%}
+{%- endblock sidebar_manu -%}

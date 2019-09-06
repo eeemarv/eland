@@ -23,11 +23,13 @@
 	<br>
 	<ul class="nav nav-pills nav-stacked">
 
-	{%- for m in sidebar_menu() -%}
-		<li{%- if m.active %} class="active"{%- endif -%}>
-			{{- m.menu_item -}}
-		</li>
-	{%- endfor -%}
+	{%- block sidebar_menu -%}
+		{%- for m in anon_menu() -%}
+			<li{%- if m.active %} class="active"{%- endif -%}>
+				{{- m.menu_item -}}
+			</li>
+		{%- endfor -%}
+	{%- endblock sidebar_manu -%}
 
 	</ul>
 
