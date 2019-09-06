@@ -1,4 +1,5 @@
 {%- extends 'base/sidebar_menu.html.twig' -%}
+{%- import 'macro/sidebar_menu.html.twig' as m -%}
 
 {%- macro navbar_menu_dropdown_button(label, fa, menu_items) -%}
 	<li class="dropdown">
@@ -37,14 +38,14 @@
 	<ul class="nav navbar-nav navbar-right">
 
 	{%- block navbar_menu -%}
-		{%- if has_menu('system') -%}
-			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', menu('system')) -}}
+		{%- if has_nav_menu('system') -%}
+			{{- _self.navbar_menu_dropdown_button('Systeem', 'share-alt', nav_menu('system')) -}}
 		{%- endif -%}
-		{%- if has_menu('user') -%}
-			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', menu('user')) -}}
+		{%- if has_nav_menu('user') -%}
+			{{- _self.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu('user')) -}}
 		{%- endif -%}
-		{%- if has_menu('admin') -%}
-			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', menu('admin')) -}}
+		{%- if role('admin') -%}
+			{{- _self.navbar_menu_dropdown_button('Admin modus', 'cog', nav_admin_menu()) -}}
 		{%- elseif admin_link -%}
 			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
 				<i class="fa fa-times text-danger"></i>&nbsp;
@@ -57,30 +58,8 @@
 	</div>
 {%- endblock navbar_collapse -%}
 
-{%- block sidebar_menu -%}
-	{%- if role('guest') -%}
-		{%- for m in guest_sidebar_menu() -%}
-			<li{%- if m.active %} class="active"{%- endif -%}>
-				{{- m.menu_item -}}
-			</li>
-		{%- endfor -%}
-	{%- elseif role('user') -%}
-		{%- for m in user_sidebar_menu('user_sidebar') -%}
-			<li{%- if m.active %} class="active"{%- endif -%}>
-				{{- m.menu_item -}}
-			</li>
-		{%- endfor -%}
-	{%- elseif role('admin') -%}
-		{%- for m in menu('admin_sidebar') -%}
-			<li{%- if m.active %} class="active"{%- endif -%}>
-				<a href="{{- -}}">{{- m.label -}}</a>
-				{{- m.menu_item -}}
-			</li>
-		{%- endfor -%}
-		{%- for m in admin_anon_sidebar_menu('admin_anon_sidebar') -%}
-			<li class="admin-anon-sidebar{%- if m.active %} active{%- endif -%}">
-				{{- m.menu_item -}}
-			</li>
-		{%- endfor -%}
+{%- block sidebar_menu_append -%}
+	{%- if role('admin') -%}
+		{{- m.menu_admin_anon(menu_admin_anon('admin_anon')) -}}
 	{%- endif -%}
-{%- endblock sidebar_manu -%}
+{%- endblock sidebar_manu_append -%}

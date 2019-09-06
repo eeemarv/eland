@@ -4,6 +4,7 @@ namespace render;
 
 use Symfony\Component\HttpFoundation\Response;
 use cnst\pages as cnst_pages;
+use cnst\menu as cnst_menu;
 use service\alert;
 use service\assets;
 use service\config;
@@ -374,7 +375,7 @@ class tpl
 
 				$out .= '<li>';
 
-				$out .= $this->link->link_fa($this->r_messages, $this->pp_ary,
+				$out .= $this->link->link_fa($app['r_messages'], $this->pp_ary,
 					['f' => ['uid' => $this->s_id]],
 					'Mijn vraag en aanbod', [], 'newspaper-o');
 
@@ -622,7 +623,7 @@ class tpl
 
 	public function get_route_from_menu(string $menu):string
 	{
-		if (isset(cnst_pages::SIDE_MENU[$menu]['var_route']))
+		if (isset(cnst_menu::SIDE_MENU[$menu]['var_route']))
 		{
 			$var_route = cnst_pages::SIDE_MENU[$menu]['var_route'];
 			return $this->{$var_route};

@@ -2,6 +2,10 @@
 
 namespace twig;
 
+use Symfony\Component\HttpFoundation\Request;
+
+use cnst\menu as cnst_menu;
+
 class menu
 {
 	protected $pp_anonymous;
@@ -10,6 +14,7 @@ class menu
 	protected $pp_admin;
 	protected $s_master;
 	protected $s_elas_guest;
+	protected $request;
 
 	public function __construct(
 		bool $pp_anonymous,
@@ -17,7 +22,8 @@ class menu
 		bool $pp_user,
 		bool $pp_admin,
 		bool $s_master,
-		bool $s_elas_guest
+		bool $s_elas_guest,
+		Request $request
 	)
 	{
 		$this->pp_anonymous = $pp_anonymous;
@@ -26,35 +32,70 @@ class menu
 		$this->pp_admin = $pp_admin;
 		$this->s_master = $s_master;
 		$this->s_elas_guest = $s_elas_guest;
+		$this->request = $request;
 	}
 
-	public function get_admin_menu(string $role):bool
+	public function has_nav_menu(sring $menu):bool
 	{
-		switch($role)
+
+		return false;
+	}
+
+	public function nav_admin_menu(string $menu):array
+	{
+		$menu_ary = [];
+
+		switch($menu)
 		{
-			case 'anonymoous':
-				return $this->pp_anonymous;
-				break;
-			case 'guest':
-				return $this->pp_guest;
-				break;
-			case 'user':
-				return $this->pp_user;
-				break;
 			case 'admin':
-				return $this->pp_admin;
-				break;
-			case 'master':
-				return $this->s_master;
-				break;
-			case 'elas_guest':
-				return $this->s_elas_guest;
-				break;
-			default:
-				return false;
+				$menu_ary = cnst_menu::NAV_ADMIN;
+
+				if (!$this->intersystem_en)
+				{
+					unset($menu_ary['intersystems'], $menu_ary['apikeys'], $menu_ary['guest_mode']);
+				}
+
+
+
+				return $menu_ary;
 				break;
 		}
 
-		return false;
+		return [];
+	}
+
+	public function menu():array
+	{
+		$menu_ary = [];
+
+		foreach (cnst_menu::SIDEBAR as $m_route => $item)
+		{
+			if (!$this->item_access->is_visible($item['access']))
+			{
+				continue;
+			}
+
+			if (isset($item['config_en']))
+			{
+				if (!$this->config->get($item['config_en'], $this->tschema))
+				{
+					continue;
+				}
+			}
+
+			$menu_ary[] = [
+				'route'		=> isset($item['var_route']) ? $this->{$item['var_route']} : $m_route,
+				'label'		=> $item['label'],
+				'fa'		=> $item['fa'],
+				'active'	=> $route = $this->menu,
+			];
+		}
+
+		return $menu_ary;
+	}
+
+	private function anonymous():array
+	{
+
 	}
 }

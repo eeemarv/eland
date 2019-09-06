@@ -112,6 +112,9 @@ $app->extend('twig', function($twig, $app) {
 				$app['s_elas_guest']
 			);
 		},
+		twig\pp_ary::class => function() use ($app){
+			return new twig\pp_ary($app['pp_ary']);
+		},
 	]));
 
 	return $twig;

@@ -1,0 +1,21 @@
+{%- macro menu() -%}
+    {%- for m in menu() -%}
+        <li{%- if m.active %} class="active"{%- endif -%}>
+            <a href="{{- path(m.route, pp_ary()) -}}">
+            <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+            {{- m.label -}}
+            </a>
+        </li>
+    {%- endfor -%}
+{%- endmacro menu -%}
+
+{%- macro menu_admin_anon() -%}
+    {%- for m in menu_admin_anon() -%}
+        <li class="admin-anon{%- if m.active %} active{%- endif -%}">
+            <a href="{{- path(m.route, pp_ary()) -}}">
+            <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+            {{- m.label -}}
+            </a>
+        </li>
+    {%- endfor -%}
+{%- endmacro menu -%}

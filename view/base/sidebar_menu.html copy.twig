@@ -1,5 +1,6 @@
 {%- extends 'base/base.html.twig' -%}
 {%- import 'macro/alert.html.twig' as a -%}
+{%- import 'macro/sidebar_menu.html.twig' as m -%}
 
 {%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
 {%- block system_name -%}{{- config('systemname', schema) -}}{%- endblock -%}
@@ -24,11 +25,7 @@
 	<ul class="nav nav-pills nav-stacked">
 
 	{%- block sidebar_menu -%}
-		{%- for m in anon_menu() -%}
-			<li{%- if m.active %} class="active"{%- endif -%}>
-				{{- m.menu_item -}}
-			</li>
-		{%- endfor -%}
+		{{- m.menu() -}}
 	{%- endblock sidebar_manu -%}
 
 	</ul>
