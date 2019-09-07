@@ -192,9 +192,11 @@ class register
 
         $out .= $bottom_text ?: '';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('register');
+        $app['menu']->set('register');
 
-        return $app['tpl']->get();
+        return $app->render('base/sidebar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

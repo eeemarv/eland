@@ -197,9 +197,11 @@ class register_token
 
         $registration_success_text = $app['config']->get('registration_success_text', $app['tschema']);
 
-        $app['tpl']->add($registration_success_text ?: '');
-        $app['tpl']->menu('register');
+        $app['menu']->set('register');
 
-        return $app['tpl']->get();
+        return $app->render('base/sidebar.html.twig', [
+            'content'   => $registration_success_text ?: '',
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

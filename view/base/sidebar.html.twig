@@ -1,6 +1,6 @@
 {%- extends 'base/base.html.twig' -%}
 {%- import 'macro/alert.html.twig' as a -%}
-{%- import 'macro/sidebar_menu.html.twig' as m -%}
+{%- import 'macro/menu.html.twig' as m -%}
 
 {%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
 {%- block system_name -%}{{- config('systemname', schema) -}}{%- endblock -%}
@@ -9,9 +9,9 @@
 	{%- if config('homepage_url', schema) -%}
 		{{- config('homepage_url', schema) -}}
 	{%- elseif role('anonymous') -%}
-		{{- context_url('login', pp_ary()) -}}
-	{%- else -%}
-		{{- context_url(config('default_landing_page', schema), pp_ary()) -}}
+		{{- path('login', pp_ary()) -}}
+	{%- else -%} # {#-
+		{{- path(r_default(), pp_ary()) -}} -#}
 	{%- endif -%}
 {%- endblock -%}
 
@@ -24,9 +24,9 @@
 	<br>
 	<ul class="nav nav-pills nav-stacked">
 
-	{%- block sidebar_menu -%}
-		{{- m.menu() -}}
-	{%- endblock sidebar_manu -%}
+	{%- block menu_sidebar -%}
+		{{- m.menu_sidebar() -}}
+	{%- endblock menu_sidebar -%}
 
 	</ul>
 
@@ -55,7 +55,7 @@
 	{{- heading() -}}
 	{{- heading_sub() -}}
 
-	{%- block content -%}{%- endblock -%}
+	{%- block content -%}{{- content|raw -}}{%- endblock -%}
 
 	</div>
 	</div>

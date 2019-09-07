@@ -375,7 +375,7 @@ class tpl
 
 				$out .= '<li>';
 
-				$out .= $this->link->link_fa($app['r_messages'], $this->pp_ary,
+				$out .= $this->link->link_fa($this->r_messages, $this->pp_ary,
 					['f' => ['uid' => $this->s_id]],
 					'Mijn vraag en aanbod', [], 'newspaper-o');
 
@@ -519,7 +519,7 @@ class tpl
 		$out .= '<br>';
 		$out .= '<ul class="nav nav-pills nav-stacked">';
 
-		foreach (cnst_pages::SIDE_MENU as $route => $item)
+		foreach (cnst_menu::SIDEBAR as $route => $item)
 		{
 			if (!$this->item_access->is_visible($item['access']))
 			{
@@ -548,7 +548,7 @@ class tpl
 			}
 
 			$out .= $this->link->link_fa($v_route, $this->pp_ary,
-				[], $item['lbl'], [], $item['fa']);
+				[], $item['label'], [], $item['fa']);
 
 			$out .= '</li>';
 		}
@@ -623,9 +623,9 @@ class tpl
 
 	public function get_route_from_menu(string $menu):string
 	{
-		if (isset(cnst_menu::SIDE_MENU[$menu]['var_route']))
+		if (isset(cnst_menu::SIDEBAR[$menu]['var_route']))
 		{
-			$var_route = cnst_pages::SIDE_MENU[$menu]['var_route'];
+			$var_route = cnst_menu::SIDEBAR[$menu]['var_route'];
 			return $this->{$var_route};
 		}
 

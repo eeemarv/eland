@@ -1,0 +1,37 @@
+{%- extends 'base/sidebar.html.twig' -%}
+{%- import 'macro/menu.html.twig' as m -%}
+
+{%- block navbar_toggle_button -%}
+	{{- m.navbar_toggle_button() -}}
+{%- endblock navbar_toggle_button -%}
+
+{%- block navbar_collapse -%}
+	<div class="collapse navbar-collapse" id="navbar-collapse-1">
+	<ul class="nav navbar-nav navbar-right">
+
+	{%- block navbar_menu -%}
+		{%- if has_nav_menu('system') -%}
+			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', nav_menu('system')) -}}
+		{%- endif -%}
+		{%- if has_nav_menu('user') -%}
+			{{- m.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu('user')) -}}
+		{%- endif -%}
+		{%- if role('admin') -%}
+			{{- m.navbar_menu_dropdown_button('Admin modus', 'cog', nav_admin_menu()) -}}
+		{%- elseif admin_link -%}
+			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
+				<i class="fa fa-times text-danger"></i>&nbsp;
+				Admin modus
+			</a>
+		{%- endif -%}
+	{%- endblock -%}
+
+	</ul>
+	</div>
+{%- endblock navbar_collapse -%}
+
+{%- block sidebar_menu_append -%}
+	{%- if role('admin') -%}
+		{{- m.menu_admin_anon(menu_admin_anon('admin_anon')) -}}
+	{%- endif -%}
+{%- endblock sidebar_manu_append -%}

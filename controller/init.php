@@ -48,10 +48,12 @@ class init
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('init');
+        $app['menu']->set('init');
 
-        return $app['tpl']->get();
+        return $app->render('base/sidebar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     public function elas_db_upgrade(Request $request, app $app):Response

@@ -183,9 +183,11 @@ class contact
         $out .= 'aanvragen met je E-mail adres ';
         $out .= 'vanuit de login-pagina!</i></p>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('contact');
+        $app['menu']->set('contact');
 
-        return $app['tpl']->get();
+        return $app->render('base/sidebar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

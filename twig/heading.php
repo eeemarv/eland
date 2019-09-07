@@ -13,9 +13,9 @@ class heading
 		$this->render_heading = $render_heading;
 	}
 
-	public function get():string
+	public function get_h1():string
 	{
-		return $this->render_heading->get();
+		return $this->render_heading->get_h1();
 	}
 
 	public function get_sub():string

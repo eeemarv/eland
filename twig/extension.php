@@ -42,13 +42,15 @@ class extension extends \Twig_Extension
 			new \Twig_Function('assets_ary', 'twig\\assets::get_ary'),
 			new \Twig_Function('alert_ary', 'twig\\alert::get_ary'),
 			new \Twig_Function('access', 'twig\\access::get'),
-			new \Twig_Function('heading', 'twig\\heading::get'),
-			new \Twig_Function('heading_sub', 'twig\\heading::get_sub'),
-			new \Twig_Function('btn_top', 'twig\\btn_top::get'),
-			new \Twig_Function('btn_nav', 'twig\\btn_nav::get'),
-			new \Twig_Function('pagination', 'twig\\pagination::get'),
+			new \Twig_Function('heading', 'twig\\heading::get_h1', ['is_safe' => ['html']]),
+			new \Twig_Function('heading_sub', 'twig\\heading::get_sub', ['is_safe' => ['html']]),
+			new \Twig_Function('btn_top', 'twig\\btn_top::get', ['is_safe' => ['html']]),
+			new \Twig_Function('btn_nav', 'twig\\btn_nav::get', ['is_safe' => ['html']]),
+			new \Twig_Function('pagination', 'twig\\pagination::get', ['is_safe' => ['html']]),
 			new \Twig_Function('role', 'twig\\role::has_role'),
-			new \Twig_Function('menu', 'twig\\menu::get'),
+			new \Twig_Function('pp_ary', 'twig\\pp_ary::get'),
+			new \Twig_Function('r_default', 'twig\\r_default::get'),
+			new \Twig_Function('menu_sidebar', 'twig\\menu::get_sidebar'),
 		];
 	}
 

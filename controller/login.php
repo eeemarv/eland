@@ -307,9 +307,11 @@ class login
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('login');
+        $app['menu']->set('login');
 
-        return $app['tpl']->get();
+        return $app->render('base/sidebar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

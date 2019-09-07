@@ -115,6 +115,12 @@ $app->extend('twig', function($twig, $app) {
 		twig\pp_ary::class => function() use ($app){
 			return new twig\pp_ary($app['pp_ary']);
 		},
+		twig\r_default::class => function() use ($app){
+			return new twig\r_default($app['r_default']);
+		},
+		twig\menu::class => function() use ($app){
+			return new twig\menu($app['menu']);
+		},
 	]));
 
 	return $twig;
@@ -858,6 +864,18 @@ $app['alert'] = function ($app){
 		$app['monolog'],
 		$app['session'],
 		$app['tschema']);
+};
+
+$app['menu'] = function($app){
+	return new service\menu(
+		$app['config'],
+		$app['item_access'],
+		$app['tschema'],
+		$app['intersystem_en'],
+		$app['r_messages'],
+		$app['r_users'],
+		$app['r_news']
+	);
 };
 
 $app['item_access'] = function($app){
