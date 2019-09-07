@@ -157,21 +157,11 @@ $c_system_init->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_system)
 	->before($fn_before_system_init);
 
-$app->get('/monitor', 'controller\\monitor::get')
+$app->get('/monitor', 'controller\\monitor::monitor')
 	->bind('monitor');
-
-$app->get('/test', function () use ($app){
-
-	$test = '<html><head></head><body>';
-	$test .= '<p>TEST</p>';
-	$test .= '</body>';
-
-	return new Response($test);
-});
 
 $c_locale->match('/contact', 'controller\\contact_host::contact_host')
 	->bind('contact_host');
-
 
 $c_system_anon->match('/login-elas/{elas_token}',
 		'controller\\login_elas_token::login_elas_token')

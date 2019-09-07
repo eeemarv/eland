@@ -3,13 +3,16 @@
 namespace controller;
 
 use util\app;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class monitor
 {
     public function monitor(app $app):Response
     {
-        return $app['legacy_route']->render('monitor');
+        $out = $app['monitor_process']->monitor();
+
+        return $app->render('base/minimal.html.twig', [
+            'content'   => $out,
+        ]);
     }
 }
