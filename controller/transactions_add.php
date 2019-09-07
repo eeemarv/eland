@@ -1274,9 +1274,11 @@ class transactions_add
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('transactions');
+        $app['menu']->set('transactions');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

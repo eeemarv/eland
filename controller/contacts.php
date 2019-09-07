@@ -397,9 +397,12 @@ class contacts
 
             $out .= $app['pagination']->get();
 
-            $app['tpl']->add($out);
+            $app['menu']->set('contacts');
 
-            return $app['tpl']->get();
+            return $app->render('base/navbar.html.twig', [
+                'content'   => $out,
+                'schema'    => $app['tschema'],
+            ]);
         }
 
         $out .= '<div class="panel panel-danger">';
@@ -495,9 +498,11 @@ class contacts
 
         $out .= $app['pagination']->get();
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('contacts');
+        $app['menu']->set('contacts');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

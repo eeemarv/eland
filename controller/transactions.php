@@ -525,10 +525,12 @@ class transactions
             $out .= '</div></div>';
             $out .= $app['pagination']->get();
 
-            $app['tpl']->add($out);
-            $app['tpl']->menu('transactions');
+            $app['menu']->set('transactions');
 
-            return $app['tpl']->get();
+            return $app->render('base/navbar.html.twig', [
+                'content'   => $out,
+                'schema'    => $app['tschema'],
+            ]);
         }
 
         $out .= '<div class="panel panel-primary printview">';
@@ -796,10 +798,12 @@ class transactions
         $out .= self::get_valuation($app['config'], $app['tschema']);
         $out .= '</ul>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('transactions');
+        $app['menu']->set('transactions');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     static public function get_valuation(config $config, string $schema):string

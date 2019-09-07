@@ -159,9 +159,11 @@ class autominlimit
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('autominlimit');
+        $app['menu']->set('autominlimit');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

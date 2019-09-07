@@ -53,9 +53,11 @@ class categories_del
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('categories');
+        $app['menu']->set('categories');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

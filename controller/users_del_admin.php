@@ -104,10 +104,12 @@ class users_del_admin
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('users');
+        $app['menu']->set('users');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     private function remove_user(app $app, int $id):void

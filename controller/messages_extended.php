@@ -15,6 +15,7 @@ class messages_extended
 
         $messages = $fetch_and_filter['messages'];
         $params = $fetch_and_filter['params'];
+        $out = $fetch_and_filter['out'];
 
         $ids = $imgs = [];
 
@@ -45,11 +46,11 @@ class messages_extended
 
         if (!count($messages))
         {
-            return messages_list::no_messages($app['pagination'], $app['tpl']);
+            return messages_list::no_messages($app);
         }
 
         $time = time();
-        $out = $app['pagination']->get();
+        $out .= $app['pagination']->get();
 
         foreach ($messages as $msg)
         {
@@ -132,9 +133,11 @@ class messages_extended
 
         $out .= $app['pagination']->get();
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('messages');
+        $app['menu']->set('messages');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

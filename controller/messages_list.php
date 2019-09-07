@@ -248,6 +248,7 @@ class messages_list
         $categories_move_options = $fetch_and_filter['categories_move_options'];
         $cat_params = $fetch_and_filter['cat_params'];
         $s_owner = $fetch_and_filter['s_owner'];
+        $out = $fetch_and_filter['out'];
 
         self::set_view_btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'list');
 
@@ -262,10 +263,10 @@ class messages_list
 
         if (!count($messages))
         {
-            return self::no_messages($app['pagination'], $app['tpl']);
+            return self::no_messages($app);
         }
 
-        $out = $app['pagination']->get();
+        $out .= $app['pagination']->get();
 
         $out .= '<div class="panel panel-info printview">';
 
@@ -506,29 +507,31 @@ class messages_list
             $out .= '</div></div>';
         }
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('messages');
+        $app['menu']->set('messages');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
-    static public function no_messages(
-        pagination $pagination,
-        tpl $tpl
-    ):Response
+    static public function no_messages(app $app):Response
     {
-        $out = $pagination->get();
+        $out = $app['pagination']->get();
 
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body">';
         $out .= '<p>Er zijn geen resultaten.</p>';
         $out .= '</div></div>';
 
-        $out .= $pagination->get();
+        $out .= $app['pagination']->get();
 
-        $tpl->add($out);
+        $app['menu']->set('messages');
 
-        return $tpl->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     public static function get_checkbox_filter(
@@ -1110,9 +1113,6 @@ class messages_list
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('messages');
-
         return [
             'messages'                  => $messages,
             'params'                    => $params,
@@ -1120,6 +1120,7 @@ class messages_list
             'cat_params'                => $cat_params,
             'categories_move_options'   => $categories_move_options,
             's_owner'                   => $s_owner,
+            'out'                       => $out,
         ];
     }
 }

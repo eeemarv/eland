@@ -721,10 +721,12 @@ class config
 
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('config');
+        $app['menu']->set('config');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     private function get_tag_ary(string $tag_name, string $line):array

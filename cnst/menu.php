@@ -68,46 +68,57 @@ class menu
         'status'			=> [
             'fa'        => 'exclamation-triangle',
             'label'     => 'Status',
+            'route'     => 'status',
         ],
         'categories'	 	=> [
             'fa'        => 'clone',
             'label'     => 'Categorieën',
+            'route'     => 'categories',
         ],
         'contact_types'		=> [
             'fa'        => 'circle-o-notch',
             'label'     => 'Contact Types',
+            'route'     => 'contact_types',
         ],
         'contacts'			=> [
             'fa'        => 'map-marker',
             'label'     => 'Contacten',
+            'route'     => 'contacts',
         ],
         'config'			=> [
             'fa'        => 'gears',
             'label'     => 'Instellingen',
+            'route'     => 'config',
         ],
         'intersystems'		=> [
             'fa'        => 'share-alt',
             'label'     => 'InterSysteem',
+            'route'     => 'intersystems',
         ],
         'apikeys'			=> [
             'fa'        => 'key',
             'label'     => 'Apikeys',
+            'route'     => 'apikeys',
         ],
         'export'			=> [
             'fa'        => 'download',
             'label'     => 'Export',
+            'route'     => 'export',
         ],
         'autominlimit'		=> [
             'fa'        => 'arrows-v',
             'label'     => 'Auto Min Limiet',
+            'route'     => 'autominlimit',
         ],
         'mass_transaction'	=> [
             'fa'        => 'exchange',
             'label'     => 'Massa-Transactie',
+            'route'     => 'mass_transaction',
         ],
         'logs'				=> [
             'fa'        => 'history',
             'label'     => 'Logs',
+            'route'     => 'logs',
         ],
         'divider_1'     => [
             'divider'   => true,

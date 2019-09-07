@@ -406,10 +406,12 @@ class messages_show
 
         $out .= $contacts_content;
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('messages');
+        $app['menu']->set('messages');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     static public function btn_extend(

@@ -928,9 +928,11 @@ class mass_transaction
 
         $out .= '</form>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('mass_transaction');
+        $app['menu']->set('mass_transaction');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

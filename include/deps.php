@@ -212,9 +212,11 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
 
 	// to do
 	$app['heading']->add((string) $code);
-	$app['tpl']->add($e->getMessage());
-	$app['tpl']->menu('error');
-	$app['tpl']->get();
+	$app['menu']->set('contacts');
+
+	return $app->render('base/base.html.twig', [
+
+	]);
 });
 
 /**

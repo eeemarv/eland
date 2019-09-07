@@ -98,10 +98,12 @@ class forum
             $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
             $out .= '</div></div>';
 
-            $app['tpl']->add($out);
-            $app['tpl']->menu('forum');
+            $app['menu']->set('forum');
 
-            return $app['tpl']->get();
+            return $app->render('base/navbar.html.twig', [
+                'content'   => $out,
+                'schema'    => $app['tschema'],
+            ]);
         }
 
         $out .= '<div class="panel panel-default printview">';
@@ -164,10 +166,11 @@ class forum
         $out .= '</div>';
         $out .= '</div>';
 
+        $app['menu']->set('forum');
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('forum');
-
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

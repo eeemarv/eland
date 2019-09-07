@@ -343,9 +343,11 @@ class logs
 
         $out .= $app['pagination']->get();
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('logs');
+        $app['menu']->set('logs');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

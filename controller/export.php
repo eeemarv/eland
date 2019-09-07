@@ -304,9 +304,11 @@ class export
 
         $out .= '</div></div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('export');
+        $app['menu']->set('export');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

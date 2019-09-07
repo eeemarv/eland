@@ -36,9 +36,12 @@ class register_token
             $out .= '</div>';
             $out .= '</div>';
 
-            $app['tpl']->add($out);
+            $app['menu']->set('register');
 
-            return $app['tpl']->get();
+            return $app->render('base/navbar.html.twig', [
+                'content'   => $out,
+                'schema'    => $app['tschema'],
+            ]);
         }
 
         $app['data_token']->del($token, 'register', $app['tschema']);

@@ -25,7 +25,7 @@ class news
 
         if (!count($news))
         {
-            return $this->no_news($app['tpl']);
+            return $this->no_news($app);
         }
 
         $out = '<div class="panel panel-warning printview">';
@@ -80,10 +80,12 @@ class news
         $out .= '</tbody>';
         $out .= '</table></div></div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('news');
+        $app['menu']->set('news');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     public function news_extended(app $app):Response
@@ -98,7 +100,7 @@ class news
 
         if (!count($news))
         {
-            return $this->no_news($app['tpl']);
+            return $this->no_news($app);
         }
 
         $out = '';
@@ -233,10 +235,12 @@ class news
             $out .=  '</div>';
         }
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('news');
+        $app['menu']->set('news');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     private function get_data(app $app):array
@@ -312,16 +316,18 @@ class news
             [], 'Lijst met omschrijvingen', 'th-list', !$is_list);
     }
 
-    private function no_news(tpl $tpl):Response
+    private function no_news(app $app):Response
     {
         $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
         $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
         $out .= '</div></div>';
 
-        $tpl->add($out);
-        $tpl->menu('news');
+        $app['menu']->set('news');
 
-        return $tpl->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

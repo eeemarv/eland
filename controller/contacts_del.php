@@ -147,9 +147,11 @@ class contacts_del
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu($redirect_contacts ? 'contacts' : 'users');
+        $app['menu']->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

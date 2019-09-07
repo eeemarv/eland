@@ -49,6 +49,7 @@ class menu
 
 	public function get_nav_admin():array
 	{
+		$menu_ary = [];
 		$m_ary = cnst_menu::NAV_ADMIN;
 
 		if (!$this->intersystem_en)
@@ -59,6 +60,11 @@ class menu
 		if (isset($m_ary[$this->active_menu]))
 		{
 			$m_ary[$this->active_menu]['active'] = true;
+		}
+
+		foreach ($m_ary as $m_route => $item)
+		{
+
 		}
 
 		return $m_ary;
