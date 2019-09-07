@@ -52,7 +52,7 @@ class docs_add
             }
             else
             {
-                $doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
+                $doc_id = substr(sha1(random_bytes(16)), 0, 24);
 
                 $filename = $app['tschema'] . '_d_' . $doc_id . '.' . $ext;
 
@@ -89,7 +89,7 @@ class docs_add
 
                         if (!$map)
                         {
-                            $map_id = substr(sha1(time() . mt_rand(0, 220000)), 0, 24);
+                            $map_id = substr(sha1(random_bytes(16)), 0, 24);
 
                             $map = ['map_name' => $map_name];
 

@@ -51,6 +51,7 @@ class extension extends \Twig_Extension
 			new \Twig_Function('pp_ary', 'twig\\pp_ary::get'),
 			new \Twig_Function('r_default', 'twig\\r_default::get'),
 			new \Twig_Function('menu_sidebar', 'twig\\menu::get_sidebar'),
+			new \Twig_Function('menu_nav_admin', 'twig\\menu::get_nav_admin'),
 		];
 	}
 

@@ -66,7 +66,7 @@ class forum_add_topic
             }
             else
             {
-                $topic_id = substr(sha1(microtime() . $app['tschema']), 0, 24);
+                $topic_id = substr(sha1(random_bytes(16)), 0, 24);
 
                 $app['xdb']->set('forum', $topic_id, $topic, $app['tschema']);
 

@@ -47,27 +47,21 @@ class menu
 		return false;
 	}
 
-	public function nav_admin_menu(string $menu):array
+	public function get_nav_admin():array
 	{
-		$menu_ary = [];
+		$m_ary = cnst_menu::NAV_ADMIN;
 
-		switch($menu)
+		if (!$this->intersystem_en)
 		{
-			case 'admin':
-				$menu_ary = cnst_menu::NAV_ADMIN;
-
-				if (!$this->intersystem_en)
-				{
-					unset($menu_ary['intersystems'], $menu_ary['apikeys'], $menu_ary['guest_mode']);
-				}
-
-
-
-				return $menu_ary;
-				break;
+			unset($m_ary['intersystems'], $m_ary['apikeys'], $m_ary['guest_mode']);
 		}
 
-		return [];
+		if (isset($m_ary[$this->active_menu]))
+		{
+			$m_ary[$this->active_menu]['active'] = true;
+		}
+
+		return $m_ary;
 	}
 
 	public function get_sidebar():array

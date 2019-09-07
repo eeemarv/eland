@@ -302,8 +302,8 @@ $c_system_admin->get('/intersystems',
 		'controller\\intersystems::intersystems')
 	->bind('intersystems');
 
-$c_system_admin->match('/apikeys/{id}/apikeys_del',
-		'controller\\apikeys::del')
+$c_system_admin->match('/apikeys/{id}/del',
+		'controller\\apikeys::apikeys_del')
 	->bind('apikeys_del');
 
 $c_system_admin->match('/apikeys/add',

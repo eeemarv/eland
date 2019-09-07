@@ -56,10 +56,12 @@ class apikeys
         $out .= '</table>';
         $out .= '</div></div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('apikeys');
+        $app['menu']->set('apikeys');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     public function apikeys_add(Request $request, app $app):Response
@@ -87,7 +89,7 @@ class apikeys
             $app['alert']->error('Apikey niet opgeslagen.');
         }
 
-        $key = sha1($app['config']->get('systemname', $app['tschema']) . microtime());
+        $key = sha1(random_bytes(16));
 
         $app['heading']->add('Apikey toevoegen');
         $app['heading']->fa('key');
@@ -138,10 +140,12 @@ class apikeys
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('apikeys');
+        $app['menu']->set('apikeys');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 
     private static function get_apikey_explain():string
@@ -211,9 +215,11 @@ class apikeys
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['tpl']->add($out);
-        $app['tpl']->menu('apikeys');
+        $app['menu']->set('apikeys');
 
-        return $app['tpl']->get();
+        return $app->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $app['tschema'],
+        ]);
     }
 }

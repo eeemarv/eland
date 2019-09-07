@@ -69,7 +69,7 @@ class docs_edit
                     {
                         $map = ['map_name' => $map_name];
 
-                        $mid = substr(sha1(microtime() . $app['tschema'] . $map_name), 0, 24);
+                        $mid = substr(sha1(random_bytes(16)), 0, 24);
 
                         $app['xdb']->set('doc', $mid, $map, $app['tschema']);
 

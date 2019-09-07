@@ -31,9 +31,13 @@
 				<li class="dropdown-header">{{- m.label -}}</li>
 			{%- elseif m.divider -%}
 				<li class="divider"></li>
+			{%- elseif m.route -%}
+				<li{%- if m.active %} class="active"{%- endif -%}>
+					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+					<a href="{{- path(m.route, pp_ary()) -}}">{{- m.label -}}</a>
+				</li>
 			{%- else -%}
 				<li{%- for k, v in m.attr %} {{ k -}}="{{- v -}}"{%- endfor -%}>
-					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
 					<a href="{{- m.link -}}">{{- m.label -}}</a>
 				</li>
 			{%- endif -%}

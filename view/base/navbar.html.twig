@@ -10,28 +10,38 @@
 	<ul class="nav navbar-nav navbar-right">
 
 	{%- block navbar_menu -%}
+	{#
 		{%- if has_nav_menu('system') -%}
 			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', nav_menu('system')) -}}
 		{%- endif -%}
-		{%- if has_nav_menu('user') -%}
-			{{- m.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu('user')) -}}
+
+		{%- if role('user') or role('admin') -%}
+			{{- m.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu_user()) -}}
 		{%- endif -%}
+
+		{%- if role('guest') -%}
+			{{- m.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu_logout()) -}}
+		{%- endif -%}
+		#}
+
 		{%- if role('admin') -%}
-			{{- m.navbar_menu_dropdown_button('Admin modus', 'cog', nav_admin_menu()) -}}
+			{{- m.navbar_menu_dropdown_button('Admin modus', 'cog', menu_nav_admin()) -}}
 		{%- elseif admin_link -%}
 			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
 				<i class="fa fa-times text-danger"></i>&nbsp;
 				Admin modus
 			</a>
 		{%- endif -%}
-	{%- endblock -%}
+	{%- endblock navbar_menu-%}
 
 	</ul>
 	</div>
 {%- endblock navbar_collapse -%}
 
 {%- block sidebar_menu_append -%}
+{#
 	{%- if role('admin') -%}
 		{{- m.menu_admin_anon(menu_admin_anon('admin_anon')) -}}
 	{%- endif -%}
-{%- endblock sidebar_manu_append -%}
+#}
+{%- endblock sidebar_menu_append -%}

@@ -48,4 +48,9 @@ class menu
 	{
 		return $this->service_menu->get_sidebar();
 	}
+
+	public function get_nav_admin():array
+	{
+		return $this->service_menu->get_nav_admin();
+	}
 }
