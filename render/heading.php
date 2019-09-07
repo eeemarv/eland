@@ -23,7 +23,7 @@ class heading
 	public function get():string
 	{
 		$out = isset($this->fa) ? '<i class="fa fa-' . $this->fa . '"></i>&nbsp;' : '';
-		$out .= htmlspecialchars($this->str);
+		$out .= $this->str;
 		$out .= $this->filtered ? '&nbsp;<small>Gefilterd</small>' : '';
 		$out .= $this->btn_filter ? implode('', self::BTN_FILTER) : '';
 
@@ -37,7 +37,7 @@ class heading
 
 	public function get_sub():string
 	{
-		return $this->str_sub ? '<h2>' . htmlspecialchars($this->str_sub) . '</h2>' : '';
+		return $this->str_sub ? '<h2>' . $this->str_sub . '</h2>' : '';
 	}
 
 	public function add_inline_btn(string $str):void
@@ -54,10 +54,20 @@ class heading
 
     public function add(string $str):void
     {
+		$this->str .= htmlspecialchars($str, ENT_QUOTES);
+	}
+
+    public function add_raw(string $str):void
+    {
 		$this->str .= $str;
 	}
 
     public function add_sub(string $str_sub):void
+    {
+		$this->str_sub .= htmlspecialchars($str_sub, ENT_QUOTES);
+	}
+
+    public function add_sub_raw(string $str_sub):void
     {
 		$this->str_sub .= $str_sub;
 	}

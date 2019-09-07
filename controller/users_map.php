@@ -233,8 +233,8 @@ class users_map
                     {
                         $out .= '<li>';
 
-                        $out .= $app['link']->link_no_attr('contacts_edit', $app['pp_ary'],
-                            ['id' => $not_geocoded['id'], 'uid' => $not_geocoded['user_id']],
+                        $out .= $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                            ['contact_id' => $not_geocoded['id'], 'user_id' => $not_geocoded['user_id']],
                             $not_geocoded['value']);
 
                         $out .= ' gebruiker: ';

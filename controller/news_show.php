@@ -127,7 +127,7 @@ class news_show
         $app['btn_nav']->nav_list('news_list', $app['pp_ary'],
             [], 'Lijst', 'calendar-o');
 
-        $app['heading']->add('Nieuwsbericht: ' . htmlspecialchars($news_item['headline'], ENT_QUOTES));
+        $app['heading']->add('Nieuwsbericht: ' . $news_item['headline']);
         $app['heading']->fa('calendar-o');
 
         $out = '<div class="panel panel-default printview">';

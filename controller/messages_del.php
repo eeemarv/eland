@@ -52,7 +52,7 @@ class messages_del
 
         $app['heading']->add(ucfirst($message['label']['type_this']) . ' ');
 
-        $app['heading']->add($app['link']->link_no_attr('messages_show', $app['pp_ary'],
+        $app['heading']->add_raw($app['link']->link_no_attr('messages_show', $app['pp_ary'],
             ['id' => $id], $message['content']));
 
         $app['heading']->add(' verwijderen?');

@@ -305,16 +305,13 @@ class transactions
             }
             else
             {
-                $app['heading']->add($app['link']->link_no_attr('transactions', $app['pp_ary'],
-                    ['f' => ['uid' => $filter['uid']]], 'Transacties'));
-
-                $app['heading']->add(' van ');
-                $app['heading']->add($app['account']->link($filter['uid'], $app['pp_ary']));
+                $app['heading']->add('Transacties van ');
+                $app['heading']->add_raw($app['account']->link($filter['uid'], $app['pp_ary']));
             }
 
-            $app['heading']->add_sub('Huidig saldo: <span class="label label-info">');
+            $app['heading']->add_sub_raw('Huidig saldo: <span class="label label-info">');
             $app['heading']->add_sub((string) $user['saldo']);
-            $app['heading']->add_sub('</span>&nbsp;');
+            $app['heading']->add_sub_raw('</span>&nbsp;');
             $app['heading']->add_sub($app['config']->get('currency', $app['tschema']));
         }
         else

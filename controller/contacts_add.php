@@ -208,7 +208,7 @@ class contacts_add
         if ($app['pp_admin'] && !$redirect_contacts)
         {
             $app['heading']->add(' voor ');
-            $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
+            $app['heading']->add_raw($app['account']->link($user_id, $app['pp_ary']));
         }
 
         $out = '<div class="panel panel-info">';

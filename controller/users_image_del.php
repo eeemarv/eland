@@ -54,7 +54,7 @@ class users_image_del
         if ($app['pp_admin'])
         {
             $app['heading']->add('van ');
-            $app['heading']->add($app['account']->link($id, $app['pp_ary']));
+            $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
             $app['heading']->add(' ');
         }
 

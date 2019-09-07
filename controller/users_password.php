@@ -109,7 +109,7 @@ class users_password
         if ($app['pp_admin'] && $id !== $app['s_id'])
         {
             $app['heading']->add(' voor ');
-            $app['heading']->add($app['account']->link($id, $app['pp_ary']));
+            $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
         }
 
         $app['heading']->fa('key');

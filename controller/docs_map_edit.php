@@ -73,7 +73,7 @@ class docs_map_edit
         }
 
         $app['heading']->add('Map aanpassen: ');
-        $app['heading']->add($app['link']->link_no_attr('docs_map', $app['pp_ary'],
+        $app['heading']->add_raw($app['link']->link_no_attr('docs_map', $app['pp_ary'],
             ['map_id' => $map_id], $map_name));
 
         $out = '<div class="panel panel-info" id="add">';

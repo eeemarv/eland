@@ -119,7 +119,7 @@ class messages_images_del
         if ($app['pp_admin'])
         {
             $app['heading']->add_sub('Gebruiker: ');
-            $app['heading']->add_sub($app['account']->link($message['id_user'], $app['pp_ary']));
+            $app['heading']->add_sub_raw($app['account']->link($message['id_user'], $app['pp_ary']));
         }
 
         $out = '<div class="row">';

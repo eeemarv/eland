@@ -764,7 +764,7 @@ class users_edit_admin
             if ($is_edit)
             {
                 $app['heading']->add('aanpassen: ');
-                $app['heading']->add($app['account']->link($id, $app['pp_ary']));
+                $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
             }
             else
             {

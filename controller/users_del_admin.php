@@ -68,7 +68,7 @@ class users_del_admin
         }
 
         $app['heading']->add('Gebruiker ');
-        $app['heading']->add($app['account']->link($id, $app['pp_ary']));
+        $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
         $app['heading']->add(' verwijderen?');
         $app['heading']->fa('user');
 

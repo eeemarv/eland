@@ -932,12 +932,12 @@ class messages_list
             }
             else
             {
-                $app['heading']->add($app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
+                $app['heading']->add_raw($app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
                     ['f' => ['uid' => $filter['uid']]],
                     'Vraag en aanbod'));
 
                 $app['heading']->add(' van ');
-                $app['heading']->add($app['account']->link((int) $filter['uid'], $app['pp_ary']));
+                $app['heading']->add_raw($app['account']->link((int) $filter['uid'], $app['pp_ary']));
             }
         }
         else

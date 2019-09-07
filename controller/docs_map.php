@@ -59,7 +59,7 @@ class docs_map
             $app['btn_nav']->csv();
         }
 
-        $app['heading']->add($app['link']->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
+        $app['heading']->add_raw($app['link']->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
         $app['heading']->add(': map "' . $map_name . '"');
 
         $out = '<div class="panel panel-info">';

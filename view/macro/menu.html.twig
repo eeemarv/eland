@@ -23,7 +23,7 @@
 {%- macro navbar_menu_dropdown_button(label, fa, menu_items) -%}
 	<li class="dropdown">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-		<span class="fa fa-share-alt"></span>&nbsp;{{- label -}}&nbsp;<span class="caret"></span>
+		<span class="fa fa-{{- fa -}}"></span>&nbsp;{{- label -}}&nbsp;<span class="caret"></span>
 	</a>
 	<ul class="dropdown-menu" role="menu">
 		{%- for m in menu_items -%}

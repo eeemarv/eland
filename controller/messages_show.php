@@ -229,8 +229,8 @@ class messages_show
             [], 'Lijst', 'newspaper-o');
 
         $app['heading']->add(ucfirst($message['label']['type']));
-        $app['heading']->add(': ' . htmlspecialchars($message['content'], ENT_QUOTES));
-        $app['heading']->add(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+        $app['heading']->add(': ' . $message['content']);
+        $app['heading']->add_raw(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
         $app['heading']->fa('newspaper-o');
 
         if ($message['cid'])

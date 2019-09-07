@@ -288,29 +288,29 @@ class users_show
             $app['heading']->add('Mijn gegevens: ');
         }
 
-        $app['heading']->add($app['account']->link($id, $app['pp_ary']));
+        $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
 
         if ($status_id != 1)
         {
-            $app['heading']->add(' <small><span class="text-');
-            $app['heading']->add(cnst_status::CLASS_ARY[$status_id]);
-            $app['heading']->add('">');
-            $app['heading']->add($h_status_ary[$status_id]);
-            $app['heading']->add('</span></small>');
+            $app['heading']->add_raw(' <small><span class="text-');
+            $app['heading']->add_raw(cnst_status::CLASS_ARY[$status_id]);
+            $app['heading']->add_raw('">');
+            $app['heading']->add_raw($h_status_ary[$status_id]);
+            $app['heading']->add_raw('</span></small>');
         }
 
         if ($app['pp_admin'])
         {
             if ($intersystem_missing)
             {
-                $app['heading']->add(' <span class="label label-warning label-sm">');
-                $app['heading']->add('<i class="fa fa-exclamation-triangle"></i> ');
-                $app['heading']->add('De interSysteem-verbinding ontbreekt</span>');
+                $app['heading']->add_raw(' <span class="label label-warning label-sm">');
+                $app['heading']->add_raw('<i class="fa fa-exclamation-triangle"></i> ');
+                $app['heading']->add_raw('De interSysteem-verbinding ontbreekt</span>');
             }
             else if ($intersystem_id)
             {
                 $app['heading']->add(' ');
-                $app['heading']->add($app['link']->link_fa('intersystems_show', $app['pp_ary'],
+                $app['heading']->add_raw($app['link']->link_fa('intersystems_show', $app['pp_ary'],
                     ['id' => $intersystem_id], 'Gekoppeld interSysteem',
                     ['class' => 'btn btn-default'], 'share-alt'));
             }

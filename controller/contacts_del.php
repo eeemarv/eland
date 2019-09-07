@@ -86,7 +86,7 @@ class contacts_del
         if ($app['pp_admin'])
         {
             $app['heading']->add('Contact verwijderen voor ');
-            $app['heading']->add($app['account']->link($user_id, $app['pp_ary']));
+            $app['heading']->add_raw($app['account']->link($user_id, $app['pp_ary']));
             $app['heading']->add('?');
         }
         else

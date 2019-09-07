@@ -83,7 +83,7 @@ class forum_del
         if ($is_topic)
         {
             $app['heading']->add('Forum onderwerp ');
-            $app['heading']->add($app['link']->link_no_attr('forum_topic', $app['pp_ary'],
+            $app['heading']->add_raw($app['link']->link_no_attr('forum_topic', $app['pp_ary'],
                 ['topic_id' => $forum_id], $forum_post['subject']));
             $app['heading']->add(' verwijderen?');
         }
