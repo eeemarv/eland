@@ -2,7 +2,7 @@
 
 namespace twig;
 
-class role
+class pp_role
 {
 	protected $pp_anonymous;
 	protected $pp_guest;

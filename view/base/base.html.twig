@@ -22,11 +22,11 @@
 	<meta name="theme-color" content="#ffffff">
 
 </head>
-<body{%- if role('admin') %} class="admin"{%- elseif role('guest') %} class="guest"{%- endif -%}>
+<body{%- if pp_role('admin') %} class="admin"{%- elseif pp_role('guest') %} class="guest"{%- endif -%}>
 
 <img src="{{- assets('loading.gif') -}}" class="ajax-loader" alt="waiting">
 
-<div class="navbar navbar-default navbar-fixed-top{%- if role('admin') %} bg-info{%- elseif role('guest') %} bg-warning{%- endif -%}">
+<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
     <div class="container-fluid">
 		<div class="navbar-header">
 

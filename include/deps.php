@@ -102,14 +102,19 @@ $app->extend('twig', function($twig, $app) {
 				$app['pagination']
 			);
 		},
-		twig\role::class => function() use ($app){
-			return new twig\role(
+		twig\pp_role::class => function() use ($app){
+			return new twig\pp_role(
 				$app['pp_anonymous'],
 				$app['pp_guest'],
 				$app['pp_user'],
 				$app['pp_admin'],
 				$app['s_master'],
 				$app['s_elas_guest']
+			);
+		},
+		twig\s_role::class => function() use ($app){
+			return new twig\s_role(
+				$app['s_role']
 			);
 		},
 		twig\pp_ary::class => function() use ($app){

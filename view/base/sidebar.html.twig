@@ -8,7 +8,7 @@
 {%- block system_link -%}
 	{%- if config('homepage_url', schema) -%}
 		{{- config('homepage_url', schema) -}}
-	{%- elseif role('anonymous') -%}
+	{%- elseif pp_role('anonymous') -%}
 		{{- path('login', pp_ary()) -}}
 	{%- else -%} # {#-
 		{{- path(r_default(), pp_ary()) -}} -#}
@@ -33,7 +33,7 @@
 	</div>
 
 	<div id="wrap">
-	<div id="main" class="container-fluid clear-top{%- if role('admin') %} admin{%- endif -%}">
+	<div id="main" class="container-fluid clear-top{%- if pp_role('admin') %} admin{%- endif -%}">
 
 	{{- a.alert(alert_ary()) -}}
 

@@ -15,22 +15,24 @@
 			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', nav_menu('system')) -}}
 		{%- endif -%}
 
-		{%- if role('user') or role('admin') -%}
+		{%- if pp_role('user') or pp_role('admin') -%}
 			{{- m.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu_user()) -}}
 		{%- endif -%}
 
-		{%- if role('guest') -%}
+		{%- if pp_role('guest') -%}
 			{{- m.navbar_menu_dropdown_button(session_user_str, 'user', nav_menu_logout()) -}}
 		{%- endif -%}
 		#}
 
-		{%- if role('admin') -%}
+		{%- if pp_role('admin') -%}
 			{{- m.navbar_menu_dropdown_button('Admin modus', 'cog', menu_nav_admin()) -}}
-		{%- elseif admin_link is defined -%}
-			<a href="{{- admin_link -}}" title="Admin modus inschakelen">
-				<i class="fa fa-times text-danger"></i>&nbsp;
-				Admin modus
-			</a>
+		{%- elseif s_role('admin') -%}
+			<li>
+				<a href="{{- path(global.request.attributes.get('_route'), global.request.attributes.all|merge({'role_short': 'a'})) -}}" title="Admin modus inschakelen">
+					<i class="fa fa-times text-danger"></i>&nbsp;
+					Admin modus
+				</a>
+			</li>
 		{%- endif -%}
 	{%- endblock navbar_menu -%}
 
@@ -40,7 +42,7 @@
 
 {%- block sidebar_menu_append -%}
 {#
-	{%- if role('admin') -%}
+	{%- if pp_role('admin') -%}
 		{{- m.menu_admin_anon(menu_admin_anon('admin_anon')) -}}
 	{%- endif -%}
 #}

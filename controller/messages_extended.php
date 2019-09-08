@@ -54,7 +54,7 @@ class messages_extended
 
         foreach ($messages as $msg)
         {
-            $sf_owner = $app['s_system_self']
+            $sf_owner = $app['pp_user']
                 && $msg['id_user'] === $app['s_id'];
 
             $exp = strtotime($msg['validity']) < $time;
