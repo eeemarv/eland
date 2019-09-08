@@ -583,7 +583,7 @@ $c_system_admin->get('/typeahead-doc-map-names',
 	->bind('typeahead_doc_map_names');
 
 $c_system_user->get('/typeahead-eland-intersystem-accounts/{remote_schema}',
-		'controller\\typeahead_eland_intersystem_accounts::get')
+		'controller\\typeahead_eland_intersystem_accounts::typeahead_eland_intersystem_accounts')
 	->assert('remote_schema', cnst_assert::SCHEMA)
 	->bind('typeahead_eland_intersystem_accounts');
 
