@@ -10,9 +10,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class contacts_del
 {
-    public function contacts_del_admin(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function contacts_del_admin(Request $request, app $app, int $id):Response
     {
-        return self::form($request, $app, $user_id, $contact_id, true);
+        $contact = contacts_edit::get_contact($app['db'], $id,  $app['tschema']);
+
+        return self::form($request, $app, $contact['id_user'], $id, true);
     }
 
     public static function form(Request $request, app $app, int $user_id, int $id, bool $redirect_contacts):Response

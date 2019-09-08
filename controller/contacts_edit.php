@@ -6,7 +6,6 @@ use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as db;
 use cnst\access as cnst_access;
@@ -39,9 +38,12 @@ class contacts_edit
         ],
     ];
 
-    public function contacts_edit_admin(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function contacts_edit_admin(Request $request, app $app, int $id):Response
     {
-        return self::form($request, $app, $user_id, $contact_id, true);
+        $contact = self::get_contact(
+            $app['db'], $id, $app['tschema']);
+
+        return self::form($request, $app, $contact['id_user'], $id, true);
     }
 
     public static function form(
