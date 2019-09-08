@@ -6,11 +6,10 @@ use util\app;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\intersystems;
-use render\select;
 
 class intersystems_edit
 {
-    public function intersystems_edit(Request $request, app $app):Response
+    public function intersystems_add(Request $request, app $app):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -81,10 +80,10 @@ class intersystems_edit
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-success">';
 
-        return self::render_form($request, $app, $group, $btn);
+        return self::render_form($app, $group, $btn);
     }
 
-    public function edit(Request $request, app $app, int $id):Response
+    public function intersystems_edit(Request $request, app $app, int $id):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -148,7 +147,7 @@ class intersystems_edit
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-primary">';
 
-        return self::render_form($request, $app, $group, $btn);
+        return self::render_form($app, $group, $btn);
     }
 
     private static function get_post_errors(Request $request, app $app):array
@@ -227,7 +226,6 @@ class intersystems_edit
     }
 
     private static function render_form(
-        Request $request,
         app $app,
         array $group,
         string $btn
