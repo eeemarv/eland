@@ -1590,7 +1590,7 @@ class users_list
                         '%label%'       => $t['lbl'],
                         '%type%'        => $t['type'] ?? '',
                         '%options%'     => $options,
-                        '%required%'    => $t['required'] ? ' required' : '',
+                        '%required%'    => isset($t['required']) ? ' required' : '',
                         '%fa%'          => $t['fa'] ?? '',
                         '%attr%'        => $t['attr'] ?? '',
                     ]);
