@@ -31,11 +31,18 @@
 				<li class="dropdown-header">{{- m.label -}}</li>
 			{%- elseif m.divider is defined -%}
 				<li class="divider"></li>
+			{%- elseif m.params is defined -%}
+				<li>
+					<a href="{{- path(m.route, m.params) -}}">
+					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+						{{- m.label -}}
+					</a>
+				</li>
 			{%- elseif m.route is defined -%}
 				<li{%- if m.active is defined %} class="active"{%- endif -%}>
 					<a href="{{- path(m.route, pp_ary()) -}}">
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-					{{- m.label -}}
+						{{- m.label -}}
 					</a>
 				</li>
 			{%- endif -%}

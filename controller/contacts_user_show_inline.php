@@ -140,18 +140,18 @@ class contacts_user_show_inline
                     $tr[] = '<a href="mailto:' . $c['value'] . '">' .
                         $c['value'] . '</a>';
 
-                    $tr[] = htmlspecialchars($c['comments'], ENT_QUOTES);
+                    $tr[] = htmlspecialchars($c['comments'] ?? '', ENT_QUOTES);
                 }
                 else if ($c['abbrev'] === 'web')
                 {
                     $tr[] = '<a href="' . $c['value'] . '">' .
                         $c['value'] .  '</a>';
 
-                    $tr[] = htmlspecialchars($c['comments'], ENT_QUOTES);
+                    $tr[] = htmlspecialchars($c['comments'] ?? '', ENT_QUOTES);
                 }
                 else
                 {
-                    $tr_c = htmlspecialchars($c['value'], ENT_QUOTES);
+                    $tr_c = htmlspecialchars($c['value'] ?? '', ENT_QUOTES);
 
                     if ($c['abbrev'] == 'adr')
                     {
@@ -167,7 +167,7 @@ class contacts_user_show_inline
 
                     $tr[] = $tr_c;
 
-                    $tr[] = htmlspecialchars($c['comments'], ENT_QUOTES);
+                    $tr[] = htmlspecialchars($c['comments'] ?? '', ENT_QUOTES);
                 }
 
                 if ($app['pp_admin'] || $s_owner)

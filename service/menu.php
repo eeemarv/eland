@@ -8,32 +8,45 @@ use cnst\menu as cnst_menu;
 
 class menu
 {
+	const FALLBACK_VAR = [
+		'messages'		=> true,
+		'users'			=> true,
+		'news'			=> true,
+		'transactions'	=> false,
+	];
+
 	protected $config;
 	protected $item_access;
 	protected $tschema;
+	protected $pp_system;
 	protected $intersystem_en;
 	protected $r_messages;
 	protected $r_users;
 	protected $r_news;
+	protected $r_default;
 	protected $active_menu;
 
 	public function __construct(
 		config $config,
 		item_access $item_access,
 		string $tschema,
+		string $pp_system,
 		bool $intersystem_en,
 		string $r_messages,
 		string $r_users,
-		string $r_news
+		string $r_news,
+		string $r_default
 	)
 	{
 		$this->config = $config;
 		$this->item_access = $item_access;
 		$this->tschema = $tschema;
+		$this->pp_system = $pp_system;
 		$this->intersystem_en = $intersystem_en;
 		$this->r_messages = $r_messages;
 		$this->r_users = $r_users;
 		$this->r_news = $r_news;
+		$this->r_default = $r_default;
 	}
 
 	public function set(string $active_menu):void
@@ -47,10 +60,35 @@ class menu
 		return false;
 	}
 
+	private function get_fallback_route():string
+	{
+		if (isset(self::FALLBACK_VAR[$this->active_menu]))
+		{
+			if (self::FALLBACK_VAR[$this->active_menu])
+			{
+				$route = 'r_' . $this->active_menu;
+				$route = $this->{$route};
+				return str_replace('_admin', '', $route);
+			}
+
+			return $this->active_menu;
+		}
+
+		return str_replace('_admin', '', $this->r_default);
+	}
+
+
 	public function get_nav_admin():array
 	{
-		$menu_ary = [];
 		$m_ary = cnst_menu::NAV_ADMIN;
+
+		$m_ary['user_mode']['params']['system'] = $this->pp_system;
+		$m_ary['guest_mode']['params']['system'] = $this->pp_system;
+
+		$fallback_route = $this->get_fallback_route();
+
+		$m_ary['user_mode']['route'] = $fallback_route;
+		$m_ary['guest_mode']['route'] = $fallback_route;
 
 		if (!$this->intersystem_en)
 		{
@@ -60,11 +98,6 @@ class menu
 		if (isset($m_ary[$this->active_menu]))
 		{
 			$m_ary[$this->active_menu]['active'] = true;
-		}
-
-		foreach ($m_ary as $m_route => $item)
-		{
-
 		}
 
 		return $m_ary;

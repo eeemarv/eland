@@ -9,19 +9,19 @@ class item_access
 {
 	protected $assets;
 	protected $tschema;
-	protected $s_role;
+	protected $pp_role;
 	protected $intersystem_en;
 
 	public function __construct(
 		assets $assets,
 		string $tschema,
-		string $s_role,
+		string $pp_role,
 		bool $intersystem_en
 	)
 	{
 		$this->assets = $assets;
 		$this->tschema = $tschema;
-		$this->s_role = $s_role;
+		$this->pp_role = $pp_role;
 		$this->intersystem_en = $intersystem_en;
 	}
 
@@ -29,7 +29,7 @@ class item_access
 	{
 		if ($access === 'anonymous')
 		{
-			if ($this->s_role === 'anonymous')
+			if ($this->pp_role === 'anonymous')
 			{
 				return true;
 			}
@@ -37,18 +37,18 @@ class item_access
 			return false;
 		}
 
-		if ($this->s_role === 'admin')
+		if ($this->pp_role === 'admin')
 		{
 			return true;
 		}
-		else if ($this->s_role === 'user')
+		else if ($this->pp_role === 'user')
 		{
 			if ($access === 'user' || $access === 'guest')
 			{
 				return true;
 			}
 		}
-		else if ($this->s_role === 'guest')
+		else if ($this->pp_role === 'guest')
 		{
 			if ($this->intersystem_en && $access === 'guest')
 			{
@@ -88,17 +88,17 @@ class item_access
 	{
 		$ary = cnst_access::ARY;
 
-		if (!isset($ary[$this->s_role]))
+		if (!isset($ary[$this->pp_role]))
 		{
 			return [];
 		}
 
-		if ($this->s_role !== 'admin')
+		if ($this->pp_role !== 'admin')
 		{
 			unset($ary['admin']);
 		}
 
-		if ($this->s_role === 'guest')
+		if ($this->pp_role === 'guest')
 		{
 			unset($ary['user']);
 		}

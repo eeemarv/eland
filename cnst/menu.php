@@ -123,17 +123,19 @@ class menu
         'divider_1'     => [
             'divider'   => true,
         ],
-        'users_mode'    => [
+        'user_mode'    => [
             'fa'            => 'user',
             'label'         => 'Leden modus',
-            'role_short'    => 'u',
-            'role'          => 'user',
+            'params'        => [
+                'role_short'    => 'u',
+            ],
         ],
         'guest_mode'    => [
             'fa'            => 'user',
             'label'         => 'Gast modus',
-            'role_short'    => 'g',
-            'guest'         => 'guest',
+            'params'        => [
+                'role_short'    => 'g',
+            ],
         ],
     ];
 }

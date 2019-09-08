@@ -873,10 +873,12 @@ $app['menu'] = function($app){
 		$app['config'],
 		$app['item_access'],
 		$app['tschema'],
+		$app['pp_system'],
 		$app['intersystem_en'],
 		$app['r_messages'],
 		$app['r_users'],
-		$app['r_news']
+		$app['r_news'],
+		$app['r_default']
 	);
 };
 
@@ -884,7 +886,7 @@ $app['item_access'] = function($app){
 	return new service\item_access(
 		$app['assets'],
 		$app['tschema'],
-		$app['s_role'],
+		$app['pp_role'],
 		$app['intersystem_en']
 	);
 };
