@@ -113,8 +113,9 @@ $app->extend('twig', function($twig, $app) {
 			);
 		},
 		twig\s_role::class => function() use ($app){
-			return new twig\s_role(
-				$app['s_role']
+			return new twig\s_role($app['s_role'], $app['s_id'],
+				$app['s_schema'], $app['s_master'], $app['s_elas_guest'],
+				$app['s_system_self']
 			);
 		},
 		twig\pp_ary::class => function() use ($app){
@@ -125,6 +126,9 @@ $app->extend('twig', function($twig, $app) {
 		},
 		twig\menu::class => function() use ($app){
 			return new twig\menu($app['menu']);
+		},
+		twig\menu_nav_user::class => function() use ($app){
+			return new twig\menu_nav_user($app['menu_nav_user']);
 		},
 	]));
 
@@ -884,6 +888,14 @@ $app['menu'] = function($app){
 		$app['r_users'],
 		$app['r_news'],
 		$app['r_default']
+	);
+};
+
+$app['menu_nav_user'] = function($app){
+	return new service\menu_nav_user(
+		$app['s_id'],
+		$app['r_messages'],
+		$app['r_users_show']
 	);
 };
 

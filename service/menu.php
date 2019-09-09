@@ -54,12 +54,6 @@ class menu
 		$this->active_menu = $active_menu;
 	}
 
-	public function has_nav_menu(sring $menu):bool
-	{
-
-		return false;
-	}
-
 	private function get_fallback_route():string
 	{
 		if (isset(self::FALLBACK_VAR[$this->active_menu]))
@@ -76,7 +70,6 @@ class menu
 
 		return str_replace('_admin', '', $this->r_default);
 	}
-
 
 	public function get_nav_admin():array
 	{

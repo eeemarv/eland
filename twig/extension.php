@@ -48,11 +48,18 @@ class extension extends \Twig_Extension
 			new \Twig_Function('btn_nav', 'twig\\btn_nav::get', ['is_safe' => ['html']]),
 			new \Twig_Function('pagination', 'twig\\pagination::get', ['is_safe' => ['html']]),
 			new \Twig_Function('pp_role', 'twig\\pp_role::has_role'),
-			new \Twig_Function('s_role', 'twig\\s_role::has_role'),
 			new \Twig_Function('pp_ary', 'twig\\pp_ary::get'),
 			new \Twig_Function('r_default', 'twig\\r_default::get'),
 			new \Twig_Function('menu_sidebar', 'twig\\menu::get_sidebar'),
 			new \Twig_Function('menu_nav_admin', 'twig\\menu::get_nav_admin'),
+			new \Twig_Function('menu_nav_user', 'twig\\menu_nav_user::get_nav_user'),
+			new \Twig_Function('menu_nav_logout', 'twig\\menu_nav_user::get_nav_logout'),
+			new \Twig_Function('s_role', 'twig\\s_role::has_role'),
+			new \Twig_Function('get_s_id', 'twig\\s_role::get_s_id'),
+			new \Twig_Function('get_s_schema', 'twig\\s_role::get_s_schema'),
+			new \Twig_Function('is_s_master', 'twig\\s_role::is_s_master'),
+			new \Twig_Function('is_s_elas_guest', 'twig\\s_role::is_s_elas_guest'),
+			new \Twig_Function('is_s_system_self', 'twig\\s_role::is_s_system_self'),
 		];
 	}
 

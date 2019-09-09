@@ -33,7 +33,7 @@
 				<li class="divider"></li>
 			{%- elseif m.params is defined -%}
 				<li>
-					<a href="{{- path(m.route, m.params) -}}">
+					<a href="{{- path(m.route, pp_ary()|merge(m.params)) -}}">
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
 						{{- m.label -}}
 					</a>

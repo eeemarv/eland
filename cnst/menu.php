@@ -64,6 +64,36 @@ class menu
         ],
     ];
 
+    const NAV_USER = [
+        'users_show'    => [
+            'fa'        => 'user',
+            'label'     => 'Mijn gegevens',
+            'params'    => [],
+        ],
+        'messages' => [
+            'fa'        => 'newspaper-o',
+            'label'     => 'Mijn vraag en aanbod',
+            'params'    => ['f' => []],
+        ],
+        'transactions' => [
+            'fa'        => 'exchange',
+            'label'     => 'Mijn transacties',
+            'params'    => ['f' => []],
+            'route'     => 'transactions',
+        ],
+        'divider_1'     => [
+            'divider'   => true,
+        ],
+    ];
+
+    const NAV_LOGOUT = [
+        'logout'        => [
+            'fa'        => 'sign-out',
+            'label'     => 'Uitloggen',
+            'route'     => 'logout',
+        ],
+    ];
+
     const NAV_ADMIN = [
         'status'			=> [
             'fa'        => 'exclamation-triangle',

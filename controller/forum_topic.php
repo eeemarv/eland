@@ -43,7 +43,8 @@ class forum_topic
         $topic_post['id'] = $topic_id;
 
         $s_owner = $topic_post['uid']
-            && (int) $topic_post['uid'] === $app['s_id'];
+            && (int) $topic_post['uid'] === $app['s_id']
+            && $app['pp_user'];
 
         if (!$app['item_access']->is_visible_xdb($topic_post['access']) && !$s_owner)
         {
