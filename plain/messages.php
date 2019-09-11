@@ -601,7 +601,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
 	}
 
-	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+	$reply_ary = $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']);
 
 	if (!count($reply_ary))
 	{
@@ -642,7 +642,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
-		'to'		=> $app['mail_addr_user']->get($to_user['id'], $app['tschema']),
+		'to'		=> $app['mail_addr_user']->get_active($to_user['id'], $app['tschema']),
 		'reply_to'	=> $reply_ary,
 		'template'	=> $mail_template,
 		'vars'		=> $vars,
@@ -656,7 +656,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+			'to'		=> $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']),
 			'template'	=> $mail_template,
 			'vars'		=> $vars,
 		], 8000);
@@ -1478,12 +1478,12 @@ if ($id)
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
-	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
+	$mail_to = $app['mail_addr_user']->get_active($user['id'], $app['tschema']);
 
 	$mail_from = $app['s_schema']
 		&& !$app['s_master']
 		&& !$app['s_elas_guest']
-			? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+			? $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema'])
 			: [];
 
 	$balance = $user['saldo'];

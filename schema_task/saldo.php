@@ -532,7 +532,7 @@ class saldo extends schema_task
 
 		foreach ($saldo_mail as $id => $b)
 		{
-			$to = $this->mail_addr_user->get($id, $this->schema);
+			$to = $this->mail_addr_user->get_active($id, $this->schema);
 
 			if (!count($to))
 			{

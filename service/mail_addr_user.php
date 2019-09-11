@@ -16,7 +16,17 @@ class mail_addr_user
 		$this->monolog = $monolog;
 	}
 
-	public function get(int $user_id, string $schema, bool $active_only = true):array
+	public function get(int $user_id, string $schema):array
+	{
+		return $this->get_ary($user_id, $schema, false);
+	}
+
+	public function get_active(int $user_id, string $schema):array
+	{
+		return $this->get_ary($user_id, $schema, true);
+	}
+
+	private function get_ary(int $user_id, string $schema, bool $active_only):array
 	{
 		$out = [];
 		$status_sql = $active_only ? ' and u.status in (1,2)' : '';

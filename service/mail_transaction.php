@@ -62,7 +62,7 @@ class mail_transaction
 
 		$this->mail->queue([
 			'schema'	=> $schema,
-			'to' 		=> $this->mail_addr_user->get($transaction['id_to'], $schema),
+			'to' 		=> $this->mail_addr_user->get_active($transaction['id_to'], $schema),
 			'reply_to' 	=> $this->mail_addr_system->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type',
 			'vars'		=> array_merge($vars, [
@@ -113,7 +113,7 @@ class mail_transaction
 
 			$this->mail->queue([
 				'schema'	=> $schema,
-				'to' 		=> $this->mail_addr_user->get($from_user_id, $schema),
+				'to' 		=> $this->mail_addr_user->get_active($from_user_id, $schema),
 				'template'	=> $tpl,
 				'vars'		=> array_merge($vars, [
 					'user_id' 		=> $from_user_id,
@@ -130,7 +130,7 @@ class mail_transaction
 			$tpl .= $from_user['accountrole'] == 'interlets' ? 'from_intersystem' : 'transaction';
 
 			$this->mail->queue([
-				'to' 		=> $this->mail_addr_user->get($to_user_id, $schema),
+				'to' 		=> $this->mail_addr_user->get_active($to_user_id, $schema),
 				'schema'	=> $schema,
 				'template'	=> $tpl,
 				'vars'		=> array_merge($vars, [

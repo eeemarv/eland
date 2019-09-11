@@ -163,7 +163,7 @@ if ($user_mail_submit && $id && $app['request']->isMethod('POST'))
 		$app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
 	}
 
-	$reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+	$reply_ary = $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']);
 
 	if (!count($reply_ary))
 	{
@@ -213,7 +213,7 @@ if ($user_mail_submit && $id && $app['request']->isMethod('POST'))
 
 		$app['queue.mail']->queue([
 			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+			'to' 		=> $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']),
 			'template' 	=> $mail_template,
 			'vars'		=> $vars,
 		], 8000);
@@ -721,7 +721,7 @@ if ($app['pp_admin']
 			'schema'			=> $app['tschema'],
 			'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['tschema']),
 			'pre_html_template' => $bulk_mail_content,
-			'reply_to' 			=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+			'reply_to' 			=> $app['mail_addr_user']->get_active($app['s_id'], $app['tschema']),
 			'vars'				=> $vars,
 			'template'			=> 'skeleton',
 		], random_int(1000, 4000));
@@ -792,7 +792,7 @@ if ($app['pp_admin']
 
 		$app['queue.mail']->queue([
 			'schema'			=> $app['tschema'],
-			'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+			'to' 				=> $app['mail_addr_user']->get_active($app['s_id'], $app['tschema']),
 			'template'			=> 'skeleton',
 			'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
 			'vars'				=> $vars,
@@ -877,7 +877,7 @@ if ($pw)
 
 						$app['queue.mail']->queue([
 							'schema'	=> $app['tschema'],
-							'to' 		=> $app['mail_addr_user']->get($pw, $app['tschema']),
+							'to' 		=> $app['mail_addr_user']->get_active($pw, $app['tschema']),
 							'reply_to'	=> $app['mail_addr_system']->get_support($app['tschema']),
 							'template'	=> 'password_reset/user',
 							'vars'		=> $vars,
@@ -2630,10 +2630,11 @@ if ($id)
 	}
 
 	$mail_to = $app['mail_addr_user']->get($user['id'], $app['tschema']);
+
 	$mail_from = $app['s_schema']
 		&& !$app['s_master']
 		&& !$app['s_elas_guest']
-			? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+			? $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema'])
 			: [];
 
 	$sql_bind = [$user['letscode']];
@@ -4900,7 +4901,7 @@ function send_activation_mail_admin(
 		'template'	=> 'account_activation/admin',
 		'vars'		=> [
 			'user_id'		=> $user_id,
-			'user_email'	=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+			'user_email'	=> $app['mail_addr_user']->get_active($user_id, $app['tschema']),
 		],
 	], 5000);
 }
@@ -4911,7 +4912,7 @@ function send_activation_mail_user(int $user_id, string $password):void
 
 	$app['queue.mail']->queue([
 		'schema'	=> $app['tschema'],
-		'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+		'to' 		=> $app['mail_addr_user']->get_active($user_id, $app['tschema']),
 		'reply_to' 	=> $app['mail_addr_system']->get_support($app['tschema']),
 		'template'	=> 'account_activation/user',
 		'vars'		=> [

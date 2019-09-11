@@ -11,7 +11,7 @@ if ($app['s_master'])
 }
 else
 {
-	$user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+	$user_email_ary = $app['mail_addr_user']->get_active($app['s_id'], $app['tschema']);
 }
 
 $can_reply = count($user_email_ary) ? true : false;
