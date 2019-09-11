@@ -34,7 +34,7 @@ if ($token)
 
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
-					'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+					'to' 		=> $app['mail_addr_user']->get_active($user_id, $app['tschema']),
 					'template'	=> 'password_reset/user',
 					'vars'		=> [
 						'password'		=> $password,

@@ -344,7 +344,7 @@ if ($submit)
 
 				$app['queue.mail']->queue([
 					'schema'	=> $app['tschema'],
-					'to'		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+					'to'		=> $app['mail_addr_user']->get_active($user_id, $app['tschema']),
 					'template'	=> 'transaction/transaction',
 					'vars'		=> $vars,
 				], random_int(0, 5000));
@@ -372,8 +372,8 @@ if ($submit)
 				'schema'	=> $app['tschema'],
 				'to' 		=> array_merge(
 					$app['mail_addr_system']->get_admin($app['tschema']),
-					$app['mail_addr_user']->get($app['s_id'], $app['tschema']),
-					$app['mail_addr_user']->get($one_uid, $app['tschema'])
+					$app['mail_addr_user']->get_active($app['s_id'], $app['tschema']),
+					$app['mail_addr_user']->get_active($one_uid, $app['tschema'])
 				),
 				'template'	=> $mail_template,
 				'vars'		=> $vars,
