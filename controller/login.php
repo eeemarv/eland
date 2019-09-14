@@ -42,10 +42,10 @@ class login
                 && $master_password
                 && hash('sha512', $password) === $master_password)
             {
-                $app['s_logins'] = array_merge($app['s_logins'], [
+                $s_logins = array_merge($app['s_logins'], [
                     $app['pp_schema'] 	=> 'master',
                 ]);
-                $app['session']->set('logins', $app['s_logins']);
+                $app['session']->set('logins', $s_logins);
                 $app['session']->set('schema', $app['pp_schema']);
 
                 $app['alert']->success('OK - Gebruiker ingelogd als master.');
