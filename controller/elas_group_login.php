@@ -69,7 +69,7 @@ class elas_group_login
 
         $apikey = $group['remoteapikey'];
 
-        $client = new nusoap_client($soapurl, true);
+        $client = new \nusoap_client($soapurl, true);
 
         $err = $client->getError();
 

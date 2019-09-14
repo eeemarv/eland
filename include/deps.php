@@ -905,12 +905,14 @@ $app['menu_nav_user'] = function($app){
 $app['menu_nav_system'] = function($app){
 	return new service\menu_nav_system(
 		$app['intersystems'],
+		$app['systems'],
 		$app['s_logins'],
 		$app['s_schema'],
 		$app['pp_schema'],
 		$app['intersystem_en'],
-		$app['r_messages'],
-		$app['r_users_show']
+		$app['menu'],
+		$app['config'],
+		$app['user_cache']
 	);
 };
 

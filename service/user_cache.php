@@ -46,6 +46,11 @@ class user_cache
 		return in_array($user['status'], [1, 2]);
 	}
 
+	public function get_role(int $id, string $schema):string
+	{
+		return $this->get($id, $schema)['accountrole'];
+	}
+
 	public function get(int $id, string $schema):array
 	{
 		if (!$id)
