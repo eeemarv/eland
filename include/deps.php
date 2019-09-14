@@ -433,6 +433,11 @@ $app['session_user'] = function ($app):array{
 
 $app['s_role'] = function ($app):string{
 
+	if ($app['s_master'])
+	{
+		return 'admin';
+	}
+
 	$role = $app['session_user']['accountrole'] ?? 'anonymous';
 
 	if ($role === 'interlets')

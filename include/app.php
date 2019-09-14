@@ -61,7 +61,10 @@ $fn_before_system_guest = function(Request $request, app $app){
 };
 
 $fn_before_system_role = function(Request $request, app $app){
+	if (!$app['s_system_self'])
+	{
 
+	}
 };
 
 $fn_before_system_user = function(Request $request, app $app){
