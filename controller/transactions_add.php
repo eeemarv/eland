@@ -886,8 +886,6 @@ class transactions_add
             'transaction_add.js',
         ]);
 
-        $balance = $app['session_user']['saldo'];
-
         $systems = [];
 
         $systems[] = [
@@ -906,8 +904,7 @@ class transactions_add
                 $map_eland_schema_url[$eland_url] = $remote_eland_schema;
             }
 
-            $eland_systems = $app['db']->executeQuery('select id,
-                    groupname, url
+            $eland_systems = $app['db']->executeQuery('select id, url
                 from ' . $app['pp_schema'] . '.letsgroups
                 where apimethod = \'elassoap\'
                     and url in (?)',
@@ -918,6 +915,7 @@ class transactions_add
             {
                 $sys['eland'] = true;
                 $sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
+                $sys['groupname'] = $app['config']->get('systemname', $sys['remote_schema']);
                 $systems[] = $sys;
             }
         }
