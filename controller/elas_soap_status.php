@@ -59,7 +59,7 @@ class elas_soap_status
             $m = 'Kan geen verbinding maken.';
 
             $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             $response->setContent($m);
             $response->setStatusCode(404);
@@ -75,7 +75,7 @@ class elas_soap_status
             $m = 'Kan geen status verkrijgen. ' . $err;
 
             $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             $response->setContent($m);
             $response->setStatusCode(404);

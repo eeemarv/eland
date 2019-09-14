@@ -10,13 +10,13 @@ class transactions_edit
 {
     public function transactions_edit(Request $request, app $app, int $id):Response
     {
-        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
+        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['tschema']),
+        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $transaction = $app['db']->fetchAssoc('select t.*
-            from ' . $app['tschema'] . '.transactions t
+            from ' . $app['pp_schema'] . '.transactions t
             where t.id = ?', [$id]);
 
         $inter_schema = false;
@@ -71,7 +71,7 @@ class transactions_edit
 
             if (!count($errors))
             {
-                $app['db']->update($app['tschema'] . '.transactions',
+                $app['db']->update($app['pp_schema'] . '.transactions',
                     ['description' => $description],
                     ['id' => $id]);
 
@@ -84,7 +84,7 @@ class transactions_edit
 
                 $app['monolog']->info('Transaction description edited from "' . $transaction['description'] .
                     '" to "' . $description . '", transid: ' .
-                    $transaction['transid'], ['schema' => $app['tschema']]);
+                    $transaction['transid'], ['schema' => $app['pp_schema']]);
 
                 $app['alert']->success('Omschrijving transactie aangepast.');
 
@@ -119,7 +119,7 @@ class transactions_edit
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($transaction['cdate'], 'min', $app['tschema']);
+        $out .= $app['date_format']->get($transaction['cdate'], 'min', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';
@@ -138,7 +138,7 @@ class transactions_edit
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_from'], $app['tschema']);
+                $out .= $app['account']->str($transaction['id_from'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -187,7 +187,7 @@ class transactions_edit
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_to'], $app['tschema']);
+                $out .= $app['account']->str($transaction['id_to'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -227,7 +227,7 @@ class transactions_edit
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -271,7 +271,7 @@ class transactions_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

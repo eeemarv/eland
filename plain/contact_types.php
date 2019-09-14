@@ -29,7 +29,7 @@ if ($add)
 
 		if (!$error)
 		{
-			if ($app['db']->insert($app['tschema'] . '.type_contact', $tc))
+			if ($app['db']->insert($app['pp_schema'] . '.type_contact', $tc))
 			{
 				$app['alert']->success('Contact type toegevoegd.');
 			}
@@ -95,7 +95,7 @@ if ($add)
 if ($edit)
 {
 	$tc_prefetch = $app['db']->fetchAssoc('select *
-		from ' . $app['tschema'] . '.type_contact
+		from ' . $app['pp_schema'] . '.type_contact
 		where id = ?', [$edit]);
 
 	if (in_array($tc_prefetch['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
@@ -123,7 +123,7 @@ if ($edit)
 
 		if (!$error)
 		{
-			if ($app['db']->update($app['tschema'] . '.type_contact',
+			if ($app['db']->update($app['pp_schema'] . '.type_contact',
 				$tc,
 				['id' => $edit]))
 			{
@@ -194,7 +194,7 @@ if ($edit)
 if ($del)
 {
 	$ct = $app['db']->fetchAssoc('select *
-		from ' . $app['tschema'] . '.type_contact
+		from ' . $app['pp_schema'] . '.type_contact
 		where id = ?', [$del]);
 
 	if (in_array($ct['abbrev'], ['mail', 'tel', 'gsm', 'adr', 'web']))
@@ -204,7 +204,7 @@ if ($del)
 	}
 
 	if ($app['db']->fetchColumn('select id
-		from ' . $app['tschema'] . '.contact
+		from ' . $app['pp_schema'] . '.contact
 		where id_type_contact = ?', [$del]))
 	{
 		$app['alert']->warning('Er is ten minste één contact
@@ -221,7 +221,7 @@ if ($del)
 			$app['link']->redirect('contact_types', $app['pp_ary'], []);
 		}
 
-		if ($app['db']->delete($app['tschema'] . '.type_contact', ['id' => $del]))
+		if ($app['db']->delete($app['pp_schema'] . '.type_contact', ['id' => $del]))
 		{
 			$app['alert']->success('Contact type verwijderd.');
 		}
@@ -259,12 +259,12 @@ if ($del)
 }
 
 $types = $app['db']->fetchAll('select *
-	from ' . $app['tschema'] . '.type_contact tc');
+	from ' . $app['pp_schema'] . '.type_contact tc');
 
 $contact_count = [];
 
 $rs = $app['db']->prepare('select distinct id_type_contact, count(id)
-	from ' . $app['tschema'] . '.contact
+	from ' . $app['pp_schema'] . '.contact
 	group by id_type_contact');
 $rs->execute();
 

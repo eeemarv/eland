@@ -34,7 +34,7 @@ class news_add
 
             if ($news['itemdate'])
             {
-                $news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['tschema']);
+                $news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['pp_schema']);
 
                 if ($news['itemdate'] === '')
                 {
@@ -75,13 +75,13 @@ class news_add
                 $news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
                 $news['cdate'] = gmdate('Y-m-d H:i:s');
 
-                if ($app['db']->insert($app['tschema'] . '.news', $news))
+                if ($app['db']->insert($app['pp_schema'] . '.news', $news))
                 {
-                    $id = $app['db']->lastInsertId($app['tschema'] . '.news_id_seq');
+                    $id = $app['db']->lastInsertId($app['pp_schema'] . '.news_id_seq');
 
                     $app['xdb']->set('news_access', (string) $id, [
                         'access' => cnst_access::TO_XDB[$access],
-                    ], $app['tschema']);
+                    ], $app['pp_schema']);
 
                     $app['alert']->success('Nieuwsbericht opgeslagen.');
 
@@ -94,8 +94,8 @@ class news_add
                         ];
 
                         $app['queue.mail']->queue([
-                            'schema'	=> $app['tschema'],
-                            'to' 		=> $app['mail_addr_system']->get_newsadmin($app['tschema']),
+                            'schema'	=> $app['pp_schema'],
+                            'to' 		=> $app['mail_addr_system']->get_newsadmin($app['pp_schema']),
                             'template'	=> 'news/review_admin',
                             'vars'		=> $vars,
                         ], 7000);
@@ -152,17 +152,17 @@ class news_add
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-today-highlight="true" ';
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+        $out .= $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
         $out .= '" ';
         $out .= 'required>';
         $out .= '</div>';
@@ -220,7 +220,7 @@ class news_add
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

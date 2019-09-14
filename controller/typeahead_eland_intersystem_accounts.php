@@ -9,13 +9,13 @@ class typeahead_eland_intersystem_accounts
 {
     public function typeahead_eland_intersystem_accounts(app $app, string $remote_schema):Response
     {
-        $eland_intersystems = $app['intersystems']->get_eland($app['tschema']);
+        $eland_intersystems = $app['intersystems']->get_eland($app['pp_schema']);
 
         if (!isset($eland_intersystems[$remote_schema]))
         {
             $app['monolog']->debug('typeahead/eland_intersystem_accounts: ' .
                 $remote_schema . ' not valid',
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             return $app->json([], 404);
         }

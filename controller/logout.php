@@ -17,7 +17,7 @@ class logout
         $app['session']->invalidate();
 
         $app['monolog']->info('user logged out',
-            ['schema' => $app['tschema']]);
+            ['schema' => $app['pp_schema']]);
 
         $app['link']->redirect('login', ['system' => $app['pp_system']], []);
 

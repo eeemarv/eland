@@ -53,7 +53,7 @@ class messages_images_upload
 
         if ($id)
         {
-            $message = messages_show::get_message($app['db'], $id, $app['tschema']);
+            $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
 
             $s_owner = !$app['pp_guest']
                 && $app['s_system_self']
@@ -70,30 +70,30 @@ class messages_images_upload
         else
         {
             $id = $app['db']->fetchColumn('select max(id)
-                from ' . $app['tschema'] . '.messages');
+                from ' . $app['pp_schema'] . '.messages');
             $id++;
         }
 
         foreach ($uploaded_files as $uploaded_file)
         {
-            $filename = $app['image_upload']->gen_filename_for_message_image($id, $app['tschema']);
-            $app['image_upload']->upload($uploaded_file, $filename, $app['tschema']);
+            $filename = $app['image_upload']->gen_filename_for_message_image($id, $app['pp_schema']);
+            $app['image_upload']->upload($uploaded_file, $filename, $app['pp_schema']);
 
             if ($insert_in_db)
             {
-                $app['db']->insert($app['tschema'] . '.msgpictures', [
+                $app['db']->insert($app['pp_schema'] . '.msgpictures', [
                     'msgid'			=> $id,
                     '"PictureFile"'	=> $filename]);
 
                 $app['monolog']->info('Message-Picture ' .
                     $filename . ' uploaded and inserted in db.',
-                    ['schema' => $app['tschema']]);
+                    ['schema' => $app['pp_schema']]);
             }
             else
             {
                 $app['monolog']->info('Message-Picture ' .
                     $filename . ' uploaded, not (yet) inserted in db.',
-                    ['schema' => $app['tschema']]);
+                    ['schema' => $app['pp_schema']]);
             }
 
             $return_ary[] = $filename;

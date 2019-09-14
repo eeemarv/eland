@@ -12,12 +12,12 @@ class contact_types
     public function contact_types(app $app):Response
     {
         $types = $app['db']->fetchAll('select *
-            from ' . $app['tschema'] . '.type_contact tc');
+            from ' . $app['pp_schema'] . '.type_contact tc');
 
         $contact_count = [];
 
         $rs = $app['db']->prepare('select distinct id_type_contact, count(id)
-            from ' . $app['tschema'] . '.contact
+            from ' . $app['pp_schema'] . '.contact
             group by id_type_contact');
         $rs->execute();
 
@@ -129,7 +129,7 @@ class contact_types
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

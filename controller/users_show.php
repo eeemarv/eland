@@ -34,7 +34,7 @@ class users_show
             && $app['s_id'] === $id
             && $id;
 
-        $user = $app['user_cache']->get($id, $app['tschema']);
+        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -102,7 +102,7 @@ class users_show
                     'from_user'			=> $from_user,
                     'from_schema'		=> $app['s_schema'],
                     'to_user'			=> $user,
-                    'to_schema'			=> $app['tschema'],
+                    'to_schema'			=> $app['pp_schema'],
                     'is_same_system'	=> $app['s_system_self'],
                     'msg_content'		=> $user_mail_content,
                 ];
@@ -112,8 +112,8 @@ class users_show
                     : 'user_msg/msg_intersystem';
 
                 $app['queue.mail']->queue([
-                    'schema'	=> $app['tschema'],
-                    'to'		=> $app['mail_addr_user']->get($id, $app['tschema']),
+                    'schema'	=> $app['pp_schema'],
+                    'to'		=> $app['mail_addr_user']->get($id, $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -126,7 +126,7 @@ class users_show
                         : 'user_msg/copy_intersystem';
 
                     $app['queue.mail']->queue([
-                        'schema'	=> $app['tschema'],
+                        'schema'	=> $app['pp_schema'],
                         'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
                         'template' 	=> $mail_template,
                         'vars'		=> $vars,
@@ -144,11 +144,11 @@ class users_show
         }
 
         $count_messages = $app['db']->fetchColumn('select count(*)
-            from ' . $app['tschema'] . '.messages
+            from ' . $app['pp_schema'] . '.messages
             where id_user = ?', [$id]);
 
         $count_transactions = $app['db']->fetchColumn('select count(*)
-            from ' . $app['tschema'] . '.transactions
+            from ' . $app['pp_schema'] . '.transactions
             where id_from = ?
                 or id_to = ?', [$id, $id]);
 
@@ -171,14 +171,14 @@ class users_show
         }
 
         $next = $app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.users u
             where u.letscode > ?
             ' . $and_status . '
             order by u.letscode asc
             limit 1', $sql_bind);
 
         $prev = $app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.users u
             where u.letscode < ?
             ' . $and_status . '
             order by u.letscode desc
@@ -191,7 +191,7 @@ class users_show
             && $app['intersystem_en'])
         {
             $intersystem_id = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where localletscode = ?', [$user['letscode']]);
 
             if (!$intersystem_id)
@@ -254,11 +254,11 @@ class users_show
 
             if (!$app['s_system_self'])
             {
-                $tus['tus'] = $app['tschema'];
+                $tus['tus'] = $app['pp_schema'];
             }
 
             $app['btn_top']->add_trans('transactions_add', $app['s_ary'],
-                $tus, 'Transactie naar ' . $app['account']->str($id, $app['tschema']));
+                $tus, 'Transactie naar ' . $app['account']->str($id, $app['pp_schema']));
         }
 
         $pp_status_ary = $app['pp_ary'];
@@ -460,7 +460,7 @@ class users_show
 
             if (isset($user['birthday']))
             {
-                $out .= $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
+                $out .= $app['date_format']->get($user['birthday'], 'day', $app['pp_schema']);
             }
             else
             {
@@ -486,7 +486,7 @@ class users_show
 
             if (isset($user['cdate']))
             {
-                $out .= $this->get_dd($app['date_format']->get($user['cdate'], 'min', $app['tschema']));
+                $out .= $this->get_dd($app['date_format']->get($user['cdate'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -499,7 +499,7 @@ class users_show
 
             if (isset($user['adate']))
             {
-                $out .= $this->get_dd($app['date_format']->get($user['adate'], 'min', $app['tschema']));
+                $out .= $this->get_dd($app['date_format']->get($user['adate'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -512,7 +512,7 @@ class users_show
 
             if (isset($user['lastlogin']))
             {
-                $out .= $this->get_dd($app['date_format']->get($user['lastlogin'], 'min', $app['tschema']));
+                $out .= $this->get_dd($app['date_format']->get($user['lastlogin'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -540,7 +540,7 @@ class users_show
         $out .= '<span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span>&nbsp;';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
         if ($user['minlimit'] !== '')
@@ -550,7 +550,7 @@ class users_show
             $out .= '<span class="label label-danger">';
             $out .= $user['minlimit'];
             $out .= '</span>&nbsp;';
-            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= $app['config']->get('currency', $app['pp_schema']);
             $out .= '</dd>';
         }
 
@@ -561,7 +561,7 @@ class users_show
             $out .= '<span class="label label-success">';
             $out .= $user['maxlimit'];
             $out .= '</span>&nbsp;';
-            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= $app['config']->get('currency', $app['pp_schema']);
             $out .= '</dd>';
         }
 
@@ -586,7 +586,7 @@ class users_show
         $out .= '<h3>Huidig saldo: <span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span> ';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</h3>';
         $out .= '</div></div>';
 
@@ -615,7 +615,7 @@ class users_show
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body">';
 
-        $account_str = $app['account']->str($id, $app['tschema']);
+        $account_str = $app['account']->str($id, $app['pp_schema']);
 
         $attr_link_messages = $attr_link_transactions = [
             'class'     => 'btn btn-default btn-lg btn-block',
@@ -657,7 +657,7 @@ class users_show
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -687,7 +687,7 @@ class users_show
                 ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
                 : [];
 
-        $mail_to = $app['mail_addr_user']->get($user_id, $app['tschema']);
+        $mail_to = $app['mail_addr_user']->get($user_id, $app['pp_schema']);
 
         $user_mail_disabled = true;
 

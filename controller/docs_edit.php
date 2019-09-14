@@ -11,7 +11,7 @@ class docs_edit
 {
     public function docs_edit(Request $request, app $app, string $doc_id):Response
     {
-        $row = $app['xdb']->get('doc', $doc_id, $app['tschema']);
+        $row = $app['xdb']->get('doc', $doc_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -57,7 +57,7 @@ class docs_edit
                 if (strlen($map_name))
                 {
                     $rows = $app['xdb']->get_many(['agg_type' => 'doc',
-                        'agg_schema' => $app['tschema'],
+                        'agg_schema' => $app['pp_schema'],
                         'data->>\'map_name\'' => $map_name], 'limit 1');
 
                     if (count($rows))
@@ -71,7 +71,7 @@ class docs_edit
 
                         $mid = substr(sha1(random_bytes(16)), 0, 24);
 
-                        $app['xdb']->set('doc', $mid, $map, $app['tschema']);
+                        $app['xdb']->set('doc', $mid, $map, $app['pp_schema']);
 
                         $map['id'] = $mid;
                     }
@@ -88,16 +88,16 @@ class docs_edit
                         || !strlen($map_name)))
                 {
                     $rows = $app['xdb']->get_many(['agg_type' => 'doc',
-                        'agg_schema' => $app['tschema'],
+                        'agg_schema' => $app['pp_schema'],
                         'data->>\'map_id\'' => $doc['map_id']]);
 
                     if (count($rows) < 2)
                     {
-                        $app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
+                        $app['xdb']->del('doc', $doc['map_id'], $app['pp_schema']);
                     }
                 }
 
-                $app['xdb']->set('doc', $doc_id, $update, $app['tschema']);
+                $app['xdb']->set('doc', $doc_id, $update, $app['pp_schema']);
 
                 $app['typeahead']->delete_thumbprint('doc_map_names',
                     $app['pp_ary'], []);
@@ -121,7 +121,7 @@ class docs_edit
             $map_id = $doc['map_id'];
 
             $map = $app['xdb']->get('doc', $map_id,
-                $app['tschema'])['data'];
+                $app['pp_schema'])['data'];
         }
 
         $app['heading']->add('Document aanpassen');
@@ -210,7 +210,7 @@ class docs_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

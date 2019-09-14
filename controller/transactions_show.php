@@ -9,13 +9,13 @@ class transactions_show
 {
     public function transactions_show(app $app, int $id):Response
     {
-        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
+        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['tschema']),
+        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $transaction = $app['db']->fetchAssoc('select t.*
-            from ' . $app['tschema'] . '.transactions t
+            from ' . $app['pp_schema'] . '.transactions t
             where t.id = ?', [$id]);
 
         $inter_schema = false;
@@ -41,13 +41,13 @@ class transactions_show
         }
 
         $next = $app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.transactions
+            from ' . $app['pp_schema'] . '.transactions
             where id > ?
             order by id asc
             limit 1', [$id]);
 
         $prev = $app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.transactions
+            from ' . $app['pp_schema'] . '.transactions
             where id < ?
             order by id desc
             limit 1', [$id]);
@@ -87,7 +87,7 @@ class transactions_show
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($transaction['cdate'], 'min', $app['tschema']);
+        $out .= $app['date_format']->get($transaction['cdate'], 'min', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';
@@ -106,7 +106,7 @@ class transactions_show
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_from'], $app['tschema']);
+                $out .= $app['account']->str($transaction['id_from'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -157,7 +157,7 @@ class transactions_show
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_to'], $app['tschema']);
+                $out .= $app['account']->str($transaction['id_to'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -200,7 +200,7 @@ class transactions_show
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -302,7 +302,7 @@ class transactions_show
                 $out .= ' (';
                 $out .= $transaction['amount'];
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= $app['config']->get('currency', $app['pp_schema']);
                 $out .= ').';
             }
 
@@ -328,7 +328,7 @@ class transactions_show
                 else
                 {
                     $out .= $app['account']->str($transaction['id_to'],
-                        $app['tschema']);
+                        $app['pp_schema']);
                 }
 
                 $out .= ')';
@@ -374,7 +374,7 @@ class transactions_show
                 else
                 {
                     $out .= $app['account']->str($transaction['id_from'],
-                        $app['tschema']);
+                        $app['pp_schema']);
                 }
 
                 $out .= ')';
@@ -395,7 +395,7 @@ class transactions_show
                 $out .= 'in de eigen tijdsmunt ';
                 $out .= '(';
                 $out .= $transaction['amount'] . ' ';
-                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= $app['config']->get('currency', $app['pp_schema']);
                 $out .= ') ';
                 $out .= 'met gelijke tijdswaarde als Tr-1.';
             }
@@ -456,7 +456,7 @@ class transactions_show
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

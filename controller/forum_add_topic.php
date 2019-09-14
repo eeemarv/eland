@@ -11,7 +11,7 @@ class forum_add_topic
 {
     public function forum_add_topic(Request $request, app $app):Response
     {
-        if (!$app['config']->get('forum_en', $app['tschema']))
+        if (!$app['config']->get('forum_en', $app['pp_schema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
             $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
@@ -68,7 +68,7 @@ class forum_add_topic
             {
                 $topic_id = substr(sha1(random_bytes(16)), 0, 24);
 
-                $app['xdb']->set('forum', $topic_id, $topic, $app['tschema']);
+                $app['xdb']->set('forum', $topic_id, $topic, $app['pp_schema']);
 
                 $app['alert']->success('Onderwerp toegevoegd.');
 
@@ -131,7 +131,7 @@ class forum_add_topic
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

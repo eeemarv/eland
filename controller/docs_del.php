@@ -10,7 +10,7 @@ class docs_del
 {
     public function docs_del(Request $request, app $app, string $doc_id):Response
     {
-        $row = $app['xdb']->get('doc', $doc_id, $app['tschema']);
+        $row = $app['xdb']->get('doc', $doc_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -38,18 +38,18 @@ class docs_del
                 if ($err)
                 {
                     $app['monolog']->error('doc delete file fail: ' . $err,
-                        ['schema' => $app['tschema']]);
+                        ['schema' => $app['pp_schema']]);
                 }
 
                 if (isset($doc['map_id']))
                 {
-                    $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+                    $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
                         'agg_type'	=> 'doc',
                         'data->>\'map_id\'' => $doc['map_id']]);
 
                     if (count($rows) < 2)
                     {
-                        $app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
+                        $app['xdb']->del('doc', $doc['map_id'], $app['pp_schema']);
 
                         $app['typeahead']->delete_thumbprint('doc_map_names',
                             $app['pp_ary'], []);
@@ -58,7 +58,7 @@ class docs_del
                     }
                 }
 
-                $app['xdb']->del('doc', $doc_id, $app['tschema']);
+                $app['xdb']->del('doc', $doc_id, $app['pp_schema']);
 
                 $app['alert']->success('Het document werd verwijderd.');
 
@@ -111,7 +111,7 @@ class docs_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

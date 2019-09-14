@@ -31,7 +31,7 @@ if (($confirm_del
 
 if ($map_edit)
 {
-	$row = $app['xdb']->get('doc', $map_edit, $app['tschema']);
+	$row = $app['xdb']->get('doc', $map_edit, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -64,7 +64,7 @@ if ($map_edit)
 		if (!count($errors))
 		{
 
-			$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+			$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 				'agg_type' => 'doc',
 				'eland_id' => ['<>' => $map_edit],
 				'data->>\'map_name\'' => $posted_map_name]);
@@ -79,7 +79,7 @@ if ($map_edit)
 		{
 			$app['xdb']->set('doc', $map_edit, [
 					'map_name' => $posted_map_name
-				], $app['tschema']);
+				], $app['pp_schema']);
 
 			$app['alert']->success('Map naam aangepast.');
 
@@ -146,7 +146,7 @@ if ($map_edit)
 
 if ($edit)
 {
-	$row = $app['xdb']->get('doc', $edit, $app['tschema']);
+	$row = $app['xdb']->get('doc', $edit, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -191,7 +191,7 @@ if ($edit)
 			if (strlen($map_name))
 			{
 				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $app['tschema'],
+					'agg_schema' => $app['pp_schema'],
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
 				if (count($rows))
@@ -203,9 +203,9 @@ if ($edit)
 				{
 					$map = ['map_name' => $map_name];
 
-					$mid = substr(sha1(microtime() . $app['tschema'] . $map_name), 0, 24);
+					$mid = substr(sha1(microtime() . $app['pp_schema'] . $map_name), 0, 24);
 
-					$app['xdb']->set('doc', $mid, $map, $app['tschema']);
+					$app['xdb']->set('doc', $mid, $map, $app['pp_schema']);
 
 					$map['id'] = $mid;
 				}
@@ -222,16 +222,16 @@ if ($edit)
 					|| !strlen($map_name)))
 			{
 				$rows = $app['xdb']->get_many(['agg_type' => 'doc',
-					'agg_schema' => $app['tschema'],
+					'agg_schema' => $app['pp_schema'],
 					'data->>\'map_id\'' => $doc['map_id']]);
 
 				if (count($rows) < 2)
 				{
-					$app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
+					$app['xdb']->del('doc', $doc['map_id'], $app['pp_schema']);
 				}
 			}
 
-			$app['xdb']->set('doc', $edit, $update, $app['tschema']);
+			$app['xdb']->set('doc', $edit, $update, $app['pp_schema']);
 
 			$app['typeahead']->delete_thumbprint('doc_map_names',
 				$app['pp_ary'], []);
@@ -250,7 +250,7 @@ if ($edit)
 		$map_id = $doc['map_id'];
 
 		$map = $app['xdb']->get('doc', $map_id,
-			$app['tschema'])['data'];
+			$app['pp_schema'])['data'];
 	}
 
 	$app['heading']->add('Document aanpassen');
@@ -352,7 +352,7 @@ if ($confirm_del && $del)
 		$app['link']->redirect('docs', $app['pp_ary'], []);
 	}
 
-	$row = $app['xdb']->get('doc', $del, $app['tschema']);
+	$row = $app['xdb']->get('doc', $del, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -366,18 +366,18 @@ if ($confirm_del && $del)
 		if ($err)
 		{
 			$app['monolog']->error('doc delete file fail: ' . $err,
-				['schema' => $app['tschema']]);
+				['schema' => $app['pp_schema']]);
 		}
 
 		if (isset($doc['map_id']))
 		{
-			$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+			$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 				'agg_type'	=> 'doc',
 				'data->>\'map_id\'' => $doc['map_id']]);
 
 			if (count($rows) < 2)
 			{
-				$app['xdb']->del('doc', $doc['map_id'], $app['tschema']);
+				$app['xdb']->del('doc', $doc['map_id'], $app['pp_schema']);
 
 				$app['typeahead']->delete_thumbprint('doc_map_names',
 					$app['pp_ary'], []);
@@ -386,7 +386,7 @@ if ($confirm_del && $del)
 			}
 		}
 
-		$app['xdb']->del('doc', $del, $app['tschema']);
+		$app['xdb']->del('doc', $del, $app['pp_schema']);
 
 		$app['alert']->success('Het document werd verwijderd.');
 
@@ -399,7 +399,7 @@ if ($confirm_del && $del)
 
 if ($del)
 {
-	$row = $app['xdb']->get('doc', $del, $app['tschema']);
+	$row = $app['xdb']->get('doc', $del, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -486,7 +486,7 @@ if ($app['request']->isMethod('POST'))
 	{
 		$doc_id = substr(sha1(microtime() . mt_rand(0, 1000000)), 0, 24);
 
-		$filename = $app['tschema'] . '_d_' . $doc_id . '.' . $ext;
+		$filename = $app['pp_schema'] . '_d_' . $doc_id . '.' . $ext;
 
 		$error = $app['s3']->doc_upload($filename, $tmpfile);
 
@@ -494,7 +494,7 @@ if ($app['request']->isMethod('POST'))
 		{
 			$app['monolog']->error('doc upload fail: ' . $error);
 			$app['alert']->error('Bestand opladen mislukt.',
-				['schema' => $app['tschema']]);
+				['schema' => $app['pp_schema']]);
 		}
 		else
 		{
@@ -509,7 +509,7 @@ if ($app['request']->isMethod('POST'))
 
 			if (strlen($map_name))
 			{
-				$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+				$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 					'agg_type' => 'doc',
 					'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -525,7 +525,7 @@ if ($app['request']->isMethod('POST'))
 
 					$map = ['map_name' => $map_name];
 
-					$app['xdb']->set('doc', $map_id, $map, $app['tschema']);
+					$app['xdb']->set('doc', $map_id, $map, $app['pp_schema']);
 
 					$app['typeahead']->delete_thumbprint('doc_map_names',
 						$app['pp_ary'], []);
@@ -541,7 +541,7 @@ if ($app['request']->isMethod('POST'))
 				$doc['name'] = $name;
 			}
 
-			$app['xdb']->set('doc', $doc_id, $doc, $app['tschema']);
+			$app['xdb']->set('doc', $doc_id, $doc, $app['pp_schema']);
 
 
 			$app['alert']->success('Het bestand is opgeladen.');
@@ -560,7 +560,7 @@ if ($add)
 {
 	if ($map)
 	{
-		$row = $app['xdb']->get('doc', $map, $app['tschema']);
+		$row = $app['xdb']->get('doc', $map, $app['pp_schema']);
 
 		if ($row)
 		{
@@ -647,7 +647,7 @@ if ($add)
 
 if ($map)
 {
-	$row = $app['xdb']->get('doc', $map, $app['tschema']);
+	$row = $app['xdb']->get('doc', $map, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -660,7 +660,7 @@ if ($map)
 		$app['link']->redirect('docs', $app['pp_ary'], []);
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 		'agg_type' => 'doc',
 		'data->>\'map_id\'' => $map,
 		'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -687,7 +687,7 @@ if ($map)
 }
 else
 {
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -708,7 +708,7 @@ else
 		}
 	}
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 		'agg_type' => 'doc',
 		'data->>\'map_name\'' => ['is null'],
 		'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -902,7 +902,7 @@ if (count($docs))
 		$out_c .= '</a>';
 		$out[] = $out_c;
 
-		$out[] = $app['date_format']->get($d['ts'], 'min', $app['tschema']);
+		$out[] = $app['date_format']->get($d['ts'], 'min', $app['pp_schema']);
 
 		if ($show_visibility)
 		{

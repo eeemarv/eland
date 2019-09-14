@@ -41,7 +41,7 @@ class contacts_edit
     public function contacts_edit_admin(Request $request, app $app, int $id):Response
     {
         $contact = self::get_contact(
-            $app['db'], $id, $app['tschema']);
+            $app['db'], $id, $app['pp_schema']);
 
         return self::form($request, $app, $contact['id_user'], $id, true);
     }
@@ -55,7 +55,7 @@ class contacts_edit
     ):Response
     {
         $contact = self::get_contact(
-            $app['db'], $id, $app['tschema']);
+            $app['db'], $id, $app['pp_schema']);
 
         if ($user_id !== $contact['id_user'])
         {
@@ -89,7 +89,7 @@ class contacts_edit
             }
 
             $abbrev_type = $app['db']->fetchColumn('select abbrev
-                from ' . $app['tschema'] . '.type_contact
+                from ' . $app['pp_schema'] . '.type_contact
                 where id = ?', [$id_type_contact]);
 
             if ($abbrev_type === 'mail'
@@ -119,17 +119,17 @@ class contacts_edit
             }
 
             $mail_type_id = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.type_contact
+                from ' . $app['pp_schema'] . '.type_contact
                 where abbrev = \'mail\'');
 
             $count_mail = $app['db']->fetchColumn('select count(*)
-                from ' . $app['tschema'] . '.contact
+                from ' . $app['pp_schema'] . '.contact
                 where id_user = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
 
             $mail_id = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.contact
+                from ' . $app['pp_schema'] . '.contact
                 where id_user = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
@@ -147,9 +147,9 @@ class contacts_edit
                 $mailadr = $value;
 
                 $mail_count = $app['db']->fetchColumn('select count(c.*)
-                    from ' . $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc, ' .
+                        $app['pp_schema'] . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
                         and c.id_user = u.id
@@ -202,11 +202,11 @@ class contacts_edit
                     $app['queue.geocode']->cond_queue([
                         'adr'		=> $value,
                         'uid'		=> $user_id,
-                        'schema'	=> $app['tschema'],
+                        'schema'	=> $app['pp_schema'],
                     ], 0);
                 }
 
-                $app['db']->update($app['tschema'] . '.contact',
+                $app['db']->update($app['pp_schema'] . '.contact',
                     $update_ary, ['id' => $id]);
 
                 $app['alert']->success('Contact aangepast.');
@@ -229,7 +229,7 @@ class contacts_edit
         $type_contact_ary = [];
 
         $rs = $app['db']->prepare('select id, name, abbrev
-            from ' . $app['tschema'] . '.type_contact');
+            from ' . $app['pp_schema'] . '.type_contact');
 
         $rs->execute();
 
@@ -341,7 +341,7 @@ class contacts_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 

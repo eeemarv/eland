@@ -24,7 +24,7 @@ $cond_ary = [
 
 $block_ary = cnst_config::BLOCK_ARY;
 
-if (!$app['config']->get('forum_en', $app['tschema']))
+if (!$app['config']->get('forum_en', $app['pp_schema']))
 {
 	unset($block_ary['periodic_mail']['forum']);
 }
@@ -46,7 +46,7 @@ $explain_replace_ary = [
 ];
 
 $addon_replace_ary = [
-	'%config_currency%'	=> $app['config']->get('currency', $app['tschema']),
+	'%config_currency%'	=> $app['config']->get('currency', $app['pp_schema']),
 ];
 
 $attr_replace_ary = [
@@ -63,13 +63,13 @@ foreach ($pane['inputs'] as $input_name => $input_config)
 
 		foreach ($inline_input_names as $inline_input_name)
 		{
-			$config[$inline_input_name] = $app['config']->get($inline_input_name, $app['tschema']);
+			$config[$inline_input_name] = $app['config']->get($inline_input_name, $app['pp_schema']);
 		}
 
 		continue;
 	}
 
-	$config[$input_name] = $app['config']->get($input_name, $app['tschema']);
+	$config[$input_name] = $app['config']->get($input_name, $app['pp_schema']);
 }
 
 if ($app['request']->isMethod('POST'))
@@ -275,7 +275,7 @@ if ($app['request']->isMethod('POST'))
 
 	foreach ($posted_configs as $input_name => $posted_value)
 	{
-		$app['config']->set($input_name, $app['tschema'], $posted_value);
+		$app['config']->set($input_name, $app['pp_schema'], $posted_value);
 
 		// prevent string too long error for eLAS database
 
@@ -288,7 +288,7 @@ if ($app['request']->isMethod('POST'))
 
 		$posted_value = substr($posted_value, 0, 60);
 
-		$app['db']->update($app['tschema'] . '.config',
+		$app['db']->update($app['pp_schema'] . '.config',
 			['value' => $posted_value, '"default"' => 'f'],
 			['setting' => $input_name]);
 

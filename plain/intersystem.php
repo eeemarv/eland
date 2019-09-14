@@ -21,7 +21,7 @@ if ($id || $edit || $del)
 	$id = $id ?: ($edit ?: $del);
 
 	$group = $app['db']->fetchAssoc('select *
-		from ' . $app['tschema'] . '.letsgroups
+		from ' . $app['pp_schema'] . '.letsgroups
 		where id = ?', [$id]);
 
 	if (!$group)
@@ -109,7 +109,7 @@ if ($add || $edit)
 		if ($edit)
 		{
 			if ($app['db']->fetchColumn('select id
-				from ' . $app['tschema'] . '.letsgroups
+				from ' . $app['pp_schema'] . '.letsgroups
 				where url = ?
 					and id <> ?', [$group['url'], $edit]))
 			{
@@ -117,7 +117,7 @@ if ($add || $edit)
 			}
 
 			if ($app['db']->fetchColumn('select id
-				from ' . $app['tschema'] . '.letsgroups
+				from ' . $app['pp_schema'] . '.letsgroups
 				where localletscode = ?
 					and id <> ?', [$group['localletscode'], $edit]))
 			{
@@ -126,13 +126,13 @@ if ($add || $edit)
 
 			if (!count($errors))
 			{
-				if ($app['db']->update($app['tschema'] . '.letsgroups',
+				if ($app['db']->update($app['pp_schema'] . '.letsgroups',
 					$group,
 					['id' => $id]))
 				{
 					$app['alert']->success('InterSysteem aangepast.');
 
-					$app['intersystems']->clear_cache($app['tschema']);
+					$app['intersystems']->clear_cache($app['pp_schema']);
 
 					$app['link']->redirect('intersystem', $app['pp_ary'],
 						['id'	=> $edit]);
@@ -144,14 +144,14 @@ if ($add || $edit)
 		else
 		{
 			if ($app['db']->fetchColumn('select id
-				from ' . $app['tschema'] . '.letsgroups
+				from ' . $app['pp_schema'] . '.letsgroups
 				where url = ?', [$group['url']]))
 			{
 				$errors[] = 'Er bestaat al een interSysteem met deze URL.';
 			}
 
 			if ($app['db']->fetchColumn('select id
-				from ' . $app['tschema'] . '.letsgroups
+				from ' . $app['pp_schema'] . '.letsgroups
 				where localletscode = ?', [$group['localletscode']]))
 			{
 				$errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
@@ -159,13 +159,13 @@ if ($add || $edit)
 
 			if (!count($errors))
 			{
-				if ($app['db']->insert($app['tschema'] . '.letsgroups', $group))
+				if ($app['db']->insert($app['pp_schema'] . '.letsgroups', $group))
 				{
 					$app['alert']->success('Intersysteem opgeslagen.');
 
-					$id = $app['db']->lastInsertId($app['tschema'] . '.letsgroups_id_seq');
+					$id = $app['db']->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
 
-					$app['intersystems']->clear_cache($app['tschema']);
+					$app['intersystems']->clear_cache($app['pp_schema']);
 
 					$app['link']->redirect('intersystem', $app['pp_ary'],
 						['id' => $id]);
@@ -376,11 +376,11 @@ if ($del)
 			$app['link']->redirect('intersystem', $app['pp_ary'], []);
 		}
 
-		if($app['db']->delete($app['tschema'] . '.letsgroups', ['id' => $del]))
+		if($app['db']->delete($app['pp_schema'] . '.letsgroups', ['id' => $del]))
 		{
 			$app['alert']->success('InterSysteem verwijderd.');
 
-			$app['intersystems']->clear_cache($app['tschema']);
+			$app['intersystems']->clear_cache($app['pp_schema']);
 
 			$app['link']->redirect('intersystem', $app['pp_ary'], []);
 		}
@@ -429,7 +429,7 @@ if ($id)
 	else
 	{
 		$user = $app['db']->fetchAssoc('select *
-			from ' . $app['tschema'] . '.users
+			from ' . $app['pp_schema'] . '.users
 			where letscode = ?', [$group['localletscode']]);
 	}
 
@@ -585,7 +585,7 @@ if ($id)
  */
 
 $groups = $app['db']->fetchAll('select *
-	from ' . $app['tschema'] . '.letsgroups');
+	from ' . $app['pp_schema'] . '.letsgroups');
 
 $letscodes = [];
 
@@ -609,7 +609,7 @@ foreach ($groups as $key => $sys)
 	else if ($sys['apimethod'] == 'internal')
 	{
 		$groups[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
-			from ' . $app['tschema'] . '.users
+			from ' . $app['pp_schema'] . '.users
 			where status in (1, 2)');
 	}
 	else
@@ -621,7 +621,7 @@ foreach ($groups as $key => $sys)
 $users_letscode = [];
 
 $intersystem_users = $app['db']->executeQuery('select id, status, letscode, accountrole
-	from ' . $app['tschema'] . '.users
+	from ' . $app['pp_schema'] . '.users
 	where letscode in (?)',
 	[$letscodes],
 	[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -849,7 +849,7 @@ function get_schemas_groups():string
 	$loc_letscode_ary = [];
 
 	$groups = $app['db']->executeQuery('select localletscode, url, id
-		from ' . $app['tschema'] . '.letsgroups
+		from ' . $app['pp_schema'] . '.letsgroups
 		where url in (?)',
 		[$url_ary],
 		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -862,7 +862,7 @@ function get_schemas_groups():string
 	}
 
 	$interlets_accounts = $app['db']->executeQuery('select id, letscode, status, accountrole
-		from ' . $app['tschema'] . '.users
+		from ' . $app['pp_schema'] . '.users
 		where letscode in (?)',
 		[$loc_letscode_ary],
 		[\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -970,7 +970,7 @@ function get_schemas_groups():string
 		$out .= $group_user_count_ary[$rem_schema];
 		$out .= '</td>';
 
-		if ($app['tschema'] === $rem_schema)
+		if ($app['pp_schema'] === $rem_schema)
 		{
 			$out .= '<td colspan="4">';
 			$out .= 'Eigen Systeem';

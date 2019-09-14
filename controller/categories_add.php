@@ -42,14 +42,14 @@ class categories_add
                 if ($cat['leafnote'])
                 {
                     $cat['fullname'] .= $app['db']->fetchColumn('select name
-                        from ' . $app['tschema'] . '.categories
+                        from ' . $app['pp_schema'] . '.categories
                         where id = ?', [(int) $cat['id_parent']]);
                     $cat['fullname'] .= ' - ';
                 }
 
                 $cat['fullname'] .= $cat['name'];
 
-                if ($app['db']->insert($app['tschema'] . '.categories', $cat))
+                if ($app['db']->insert($app['pp_schema'] . '.categories', $cat))
                 {
                     $app['alert']->success('Categorie toegevoegd.');
                     $app['link']->redirect('categories', $app['pp_ary'], []);
@@ -66,7 +66,7 @@ class categories_add
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $app['db']->prepare('select id, name
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             where leafnote = 0 order by name');
 
         $rs->execute();
@@ -123,7 +123,7 @@ class categories_add
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

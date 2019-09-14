@@ -8,19 +8,19 @@ use cnst\access as cnst_access;
 class item_access
 {
 	protected $assets;
-	protected $tschema;
+	protected $pp_schema;
 	protected $pp_role;
 	protected $intersystem_en;
 
 	public function __construct(
 		assets $assets,
-		string $tschema,
+		string $pp_schema,
 		string $pp_role,
 		bool $intersystem_en
 	)
 	{
 		$this->assets = $assets;
-		$this->tschema = $tschema;
+		$this->pp_schema = $pp_schema;
 		$this->pp_role = $pp_role;
 		$this->intersystem_en = $intersystem_en;
 	}
@@ -208,7 +208,7 @@ class item_access
 			$this->assets->add(['access_input_cache.js']);
 
 			$out .= ' data-access-cache-id="';
-			$out .= $this->tschema . '_' . $cache_id . '"';
+			$out .= $this->pp_schema . '_' . $cache_id . '"';
 		}
 
 		$out .= '>';

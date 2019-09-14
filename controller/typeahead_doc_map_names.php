@@ -18,7 +18,7 @@ class typeahead_doc_map_names
                 and data->>\'map_name\' <> \'\'
             order by data->>\'map_name\' asc');
 
-        $st->bindValue(1, $app['tschema']);
+        $st->bindValue(1, $app['pp_schema']);
 
         $st->execute();
 

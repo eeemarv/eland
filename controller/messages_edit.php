@@ -54,7 +54,7 @@ class messages_edit
 
         if ($edit_mode)
         {
-            $message = messages_show::get_message($app['db'], $id, $app['tschema']);
+            $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
 
             $s_owner = !$app['pp_guest']
                 && $app['s_system_self']
@@ -99,7 +99,7 @@ class messages_edit
                     [$account_code_expl] = explode(' ', trim($account_code));
                     $account_code_expl = trim($account_code_expl);
                     $user_id = $app['db']->fetchColumn('select id
-                        from ' . $app['tschema'] . '.users
+                        from ' . $app['pp_schema'] . '.users
                         where letscode = ?
                             and status in (1, 2)', [$account_code_expl]);
 
@@ -114,7 +114,7 @@ class messages_edit
                 $user_id = $app['s_id'];
             }
 
-            if ($app['intersystems']->get_count($app['tschema']))
+            if ($app['intersystems']->get_count($app['pp_schema']))
             {
                 if (!$access)
                 {
@@ -134,7 +134,7 @@ class messages_edit
             if (!ctype_digit((string) $amount) && $amount !== '')
             {
                 $err = 'De (richt)prijs in ';
-                $err .= $app['config']->get('currency', $app['tschema']);
+                $err .= $app['config']->get('currency', $app['pp_schema']);
                 $err .= ' moet nul of een positief getal zijn.';
                 $errors[] = $err;
             }
@@ -144,7 +144,7 @@ class messages_edit
                 $errors[] = 'Geieve een categorie te selecteren.';
             }
             else if(!$app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.categories
+                from ' . $app['pp_schema'] . '.categories
                 where id = ?', [$id_category]))
             {
                 throw new BadRequestHttpException('Categorie bestaat niet!');
@@ -171,7 +171,7 @@ class messages_edit
             }
 
             if(!($app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where id = ? and status in (1, 2)', [$user_id])))
             {
                 $errors[] = 'Gebruiker bestaat niet of is niet actief.';
@@ -201,16 +201,16 @@ class messages_edit
             {
                 $post_message['cdate'] = gmdate('Y-m-d H:i:s');
 
-                $app['db']->insert($app['tschema'] . '.messages', $post_message);
+                $app['db']->insert($app['pp_schema'] . '.messages', $post_message);
 
-                $id = (int) $app['db']->lastInsertId($app['tschema'] . '.messages_id_seq');
+                $id = (int) $app['db']->lastInsertId($app['pp_schema'] . '.messages_id_seq');
 
                 self::adjust_category_stats($type,
-                    (int) $id_category, 1, $app['db'], $app['tschema']);
+                    (int) $id_category, 1, $app['db'], $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, true,
                     $app['db'], $app['monolog'], $app['alert'],
-                    $app['s3'], $app['tschema']);
+                    $app['s3'], $app['pp_schema']);
 
                 $app['alert']->success('Nieuw vraag of aanbod toegevoegd.');
                 $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
@@ -221,24 +221,24 @@ class messages_edit
 
                 $app['db']->beginTransaction();
 
-                $app['db']->update($app['tschema'] . '.messages', $post_message, ['id' => $id]);
+                $app['db']->update($app['pp_schema'] . '.messages', $post_message, ['id' => $id]);
 
                 if ($type !== $message['type']
                     || $id_category !== $message['id_category'])
                 {
                     self::adjust_category_stats($message['type'],
-                        $message['id_category'], -1, $app['db'], $app['tschema']);
+                        $message['id_category'], -1, $app['db'], $app['pp_schema']);
 
                     self::adjust_category_stats($type,
-                        (int) $id_category, 1, $app['db'], $app['tschema']);
+                        (int) $id_category, 1, $app['db'], $app['pp_schema']);
                 }
 
                 self::delete_images_from_db($deleted_images, $id,
-                    $app['db'], $app['monolog'], $app['tschema']);
+                    $app['db'], $app['monolog'], $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, false,
                     $app['db'], $app['monolog'], $app['alert'],
-                    $app['s3'], $app['tschema']);
+                    $app['s3'], $app['pp_schema']);
 
                 $app['db']->commit();
                 $app['alert']->success('Vraag/aanbod aangepast');
@@ -265,7 +265,7 @@ class messages_edit
                 $validity_days = (int) round((strtotime($message['validity'] . ' UTC') - time()) / 86400);
                 $validity_days = $validity_days < 1 ? 0 : $validity_days;
 
-                $user = $app['user_cache']->get($message['id_user'], $app['tschema']);
+                $user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
 
                 $account_code = $user['letscode'] . ' ' . $user['name'];
 
@@ -280,7 +280,7 @@ class messages_edit
                 $units = '';
                 $id_category = '';
                 $type = '';
-                $validity_days = (int) $app['config']->get('msgs_days_default', $app['tschema']);
+                $validity_days = (int) $app['config']->get('msgs_days_default', $app['pp_schema']);
                 $account_code = '';
                 $access = '';
 
@@ -296,7 +296,7 @@ class messages_edit
         if ($edit_mode)
         {
             $st = $app['db']->prepare('select "PictureFile"
-                from ' . $app['tschema'] . '.msgpictures
+                from ' . $app['pp_schema'] . '.msgpictures
                 where msgid = ?', [$id]);
 
             $st->bindValue(1, $id);
@@ -321,7 +321,7 @@ class messages_edit
         $cat_list = ['' => ''];
 
         $rs = $app['db']->prepare('select id, fullname, id_parent
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             where leafnote = 1
             order by fullname');
 
@@ -371,7 +371,7 @@ class messages_edit
                 ->add('accounts', ['status' => 'active'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+                    'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
                 ]);
             $out .= '" ';
 
@@ -438,7 +438,7 @@ class messages_edit
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" min="0" ';
@@ -534,7 +534,7 @@ class messages_edit
         $out .= 'verslepen.</p>';
         $out .= '</div>';
 
-        if ($app['intersystems']->get_count($app['tschema']))
+        if ($app['intersystems']->get_count($app['pp_schema']))
         {
             $out .= $app['item_access']->get_radio_buttons('access', $access, 'messages', true);
         }
@@ -573,7 +573,7 @@ class messages_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 

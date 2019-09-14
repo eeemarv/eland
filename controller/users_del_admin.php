@@ -20,14 +20,14 @@ class users_del_admin
         }
 
         if ($app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.transactions
+            from ' . $app['pp_schema'] . '.transactions
             where id_to = ? or id_from = ?', [$id, $id]))
         {
             throw new AccessDeniedHttpException('Een gebruiker met transacties
                 kan niet worden verwijderd.');
         }
 
-        $user = $app['user_cache']->get($id, $app['tschema']);
+        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -108,13 +108,13 @@ class users_del_admin
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
     private function remove_user(app $app, int $id):void
     {
-        $user = $app['user_cache']->get($id, $app['tschema']);
+        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
         // remove messages
 
@@ -122,7 +122,7 @@ class users_del_admin
         $msgs = '';
         $st = $app['db']->prepare('select id, content,
                 id_category, msg_type
-            from ' . $app['tschema'] . '.messages
+            from ' . $app['pp_schema'] . '.messages
             where id_user = ?');
 
         $st->bindValue(1, $id);
@@ -138,24 +138,24 @@ class users_del_admin
         {
             $app['monolog']->info('Delete user ' . $usr .
                 ', deleted Messages ' . $msgs,
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
-            $app['db']->delete($app['tschema'] . '.messages',
+            $app['db']->delete($app['pp_schema'] . '.messages',
                 ['id_user' => $id]);
         }
 
         // remove orphaned images.
 
         $rs = $app['db']->prepare('select mp.id, mp."PictureFile"
-            from ' . $app['tschema'] . '.msgpictures mp
-                left join ' . $app['tschema'] . '.messages m on mp.msgid = m.id
+            from ' . $app['pp_schema'] . '.msgpictures mp
+                left join ' . $app['pp_schema'] . '.messages m on mp.msgid = m.id
             where m.id is null');
 
         $rs->execute();
 
         while ($row = $rs->fetch())
         {
-            $app['db']->delete($app['tschema'] . '.msgpictures', ['id' => $row['id']]);
+            $app['db']->delete($app['pp_schema'] . '.msgpictures', ['id' => $row['id']]);
         }
 
         // update counts for each category
@@ -163,8 +163,8 @@ class users_del_admin
         $offer_count = $want_count = [];
 
         $rs = $app['db']->prepare('select m.id_category, count(m.*)
-            from ' . $app['tschema'] . '.messages m, ' .
-                $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.messages m, ' .
+                $app['pp_schema'] . '.users u
             where  m.id_user = u.id
                 and u.status IN (1, 2, 3)
                 and msg_type = 1
@@ -178,8 +178,8 @@ class users_del_admin
         }
 
         $rs = $app['db']->prepare('select m.id_category, count(m.*)
-            from ' . $app['tschema'] . '.messages m, ' .
-                $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.messages m, ' .
+                $app['pp_schema'] . '.users u
             where m.id_user = u.id
                 and u.status IN (1, 2, 3)
                 and msg_type = 0
@@ -194,7 +194,7 @@ class users_del_admin
 
         $all_cat = $app['db']->fetchAll('select id,
                 stat_msgs_offers, stat_msgs_wanted
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             where id_parent is not null');
 
         foreach ($all_cat as $val)
@@ -216,31 +216,31 @@ class users_del_admin
                 'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
             ];
 
-            $app['db']->update($app['tschema'] . '.categories',
+            $app['db']->update($app['pp_schema'] . '.categories',
                 $stats,
                 ['id' => $cat_id]);
         }
 
         //delete contacts
 
-        $app['db']->delete($app['tschema'] . '.contact',
+        $app['db']->delete($app['pp_schema'] . '.contact',
             ['id_user' => $id]);
 
         //delete fullname access record.
 
-        $app['xdb']->del('user_fullname_access', (string) $id, $app['tschema']);
+        $app['xdb']->del('user_fullname_access', (string) $id, $app['pp_schema']);
 
         //finally, the user
 
-        $app['db']->delete($app['tschema'] . '.users',
+        $app['db']->delete($app['pp_schema'] . '.users',
             ['id' => $id]);
-        $app['predis']->expire($app['tschema'] . '_user_' . $id, 0);
+        $app['predis']->expire($app['pp_schema'] . '_user_' . $id, 0);
 
         $app['alert']->success('De gebruiker is verwijderd.');
 
         $thumbprint_status = cnst_status::THUMBPINT_ARY[$user['status']];
-        $app['thumbprint_accounts']->delete($thumbprint_status, $app['pp_ary'], $app['tschema']);
+        $app['thumbprint_accounts']->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
 
-        $app['intersystems']->clear_cache($app['tschema']);
+        $app['intersystems']->clear_cache($app['pp_schema']);
     }
 }

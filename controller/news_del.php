@@ -18,9 +18,9 @@ class news_del
                 $app['link']->redirect('news_list', $app['pp_ary'], []);
             }
 
-            if($app['db']->delete($app['tschema'] . '.news', ['id' => $id]))
+            if($app['db']->delete($app['pp_schema'] . '.news', ['id' => $id]))
             {
-                $app['xdb']->del('news_access', (string) $id, $app['tschema']);
+                $app['xdb']->del('news_access', (string) $id, $app['pp_schema']);
 
                 $app['alert']->success('Nieuwsbericht verwijderd.');
                 $app['link']->redirect('news_list', $app['pp_ary'], []);
@@ -30,11 +30,11 @@ class news_del
         }
 
         $news = $app['db']->fetchAssoc('select n.*
-            from ' . $app['tschema'] . '.news n
+            from ' . $app['pp_schema'] . '.news n
             where n.id = ?', [$id]);
 
         $news_access = $app['xdb']->get('news_access', (string) $id,
-            $app['tschema'])['data']['access'];
+            $app['pp_schema'])['data']['access'];
 
         $app['heading']->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
         $app['heading']->fa('calendar-o');
@@ -57,7 +57,7 @@ class news_del
 
         if ($news['itemdate'])
         {
-            $out .= $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+            $out .= $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
         }
         else
         {
@@ -126,7 +126,7 @@ class news_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

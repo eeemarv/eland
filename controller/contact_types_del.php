@@ -12,7 +12,7 @@ class contact_types_del
     public function contact_types_del(Request $request, app $app, int $id):Response
     {
         $ct = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.type_contact
+            from ' . $app['pp_schema'] . '.type_contact
             where id = ?', [$id]);
 
         if (in_array($ct['abbrev'], contact_types::PROTECTED))
@@ -22,7 +22,7 @@ class contact_types_del
         }
 
         if ($app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.contact
+            from ' . $app['pp_schema'] . '.contact
             where id_type_contact = ?', [$id]))
         {
             $app['alert']->warning('Er is ten minste één contact
@@ -39,7 +39,7 @@ class contact_types_del
                 $app['link']->redirect('contact_types', $app['pp_ary'], []);
             }
 
-            if ($app['db']->delete($app['tschema'] . '.type_contact', ['id' => $id]))
+            if ($app['db']->delete($app['pp_schema'] . '.type_contact', ['id' => $id]))
             {
                 $app['alert']->success('Contact type verwijderd.');
             }
@@ -74,7 +74,7 @@ class contact_types_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

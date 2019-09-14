@@ -101,7 +101,7 @@ class users_list
 
             if (in_array($bulk_submit_action, ['mail', 'mail_test']))
             {
-                if (!$app['config']->get('mailenabled', $app['tschema']))
+                if (!$app['config']->get('mailenabled', $app['pp_schema']))
                 {
                     $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
                 }
@@ -145,14 +145,14 @@ class users_list
                 $users_log = '';
 
                 $rows = $app['db']->executeQuery('select letscode, name, id
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where id in (?)',
                     [$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
                 foreach ($rows as $row)
                 {
                     $users_log .= ', ';
-                    $users_log .= $app['account']->str_id($row['id'], $app['tschema'], false, true);
+                    $users_log .= $app['account']->str_id($row['id'], $app['pp_schema'], false, true);
                 }
 
                 $users_log = ltrim($users_log, ', ');
@@ -168,13 +168,13 @@ class users_list
                 {
                     $app['xdb']->set('user_fullname_access', (string) $user_id, [
                         'fullname_access' => $bulk_fullname_access_xdb,
-                    ], $app['tschema']);
-                    $app['predis']->del($app['tschema'] . '_user_' . $user_id);
+                    ], $app['pp_schema']);
+                    $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
                 $app['monolog']->info('bulk: Set fullname_access to ' .
                     $bulk_field_value . ' for users ' .
-                    $users_log, ['schema' => $app['tschema']]);
+                    $users_log, ['schema' => $app['pp_schema']]);
 
                 $app['alert']->success('De zichtbaarheid van de
                     volledige naam werd aangepast.');
@@ -187,12 +187,12 @@ class users_list
                 [$abbrev] = explode('_', $bulk_field_action);
 
                 $id_type_contact = $app['db']->fetchColumn('select id
-                    from ' . $app['tschema'] . '.type_contact
+                    from ' . $app['pp_schema'] . '.type_contact
                     where abbrev = ?', [$abbrev]);
 
                 $flag_public = cnst_access::TO_FLAG_PUBLIC[$bulk_field_value];
 
-                $app['db']->executeUpdate('update ' . $app['tschema'] . '.contact
+                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.contact
                     set flag_public = ?
                     where id_user in (?) and id_type_contact = ?',
                         [$flag_public, $user_ids, $id_type_contact],
@@ -201,7 +201,7 @@ class users_list
                 $app['monolog']->info('bulk: Set ' . $bulk_field_action .
                     ' to ' . $bulk_field_value .
                     ' for users ' . $users_log,
-                    ['schema' => $app['tschema']]);
+                    ['schema' => $app['pp_schema']]);
                 $app['alert']->success('Het veld werd aangepast.');
 
                 $redirect = true;
@@ -209,7 +209,7 @@ class users_list
             else if (!count($errors)
                 && $bulk_submit_action === 'cron_saldo')
             {
-                $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                     set cron_saldo = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
@@ -217,7 +217,7 @@ class users_list
 
                 foreach ($user_ids as $user_id)
                 {
-                    $app['predis']->del($app['tschema'] . '_user_' . $user_id);
+                    $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
@@ -225,7 +225,7 @@ class users_list
                 $app['monolog']->info('bulk: Set periodic mail to ' .
                     $log_value . ' for users ' .
                     $users_log,
-                    ['schema' => $app['tschema']]);
+                    ['schema' => $app['pp_schema']]);
 
                 $app['intersystems']->clear_cache($app['s_schema']);
 
@@ -250,28 +250,28 @@ class users_list
 
                 $field_type = cnst_bulk::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-                $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
                     [$store_value, $user_ids],
                     [$field_type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
                 foreach ($user_ids as $user_id)
                 {
-                    $app['predis']->del($app['tschema'] . '_user_' . $user_id);
+                    $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
                 if ($bulk_field == 'status')
                 {
-                    $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['tschema']);
-                    $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['tschema']);
+                    $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['pp_schema']);
+                    $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                 }
 
                 $app['monolog']->info('bulk: Set ' . $bulk_submit_action .
                     ' to ' . $store_value .
                     ' for users ' . $users_log,
-                    ['schema' => $app['tschema']]);
+                    ['schema' => $app['pp_schema']]);
 
-                $app['intersystems']->clear_cache($app['tschema']);
+                $app['intersystems']->clear_cache($app['pp_schema']);
 
                 $app['alert']->success('Het veld werd aangepast.');
 
@@ -299,9 +299,9 @@ class users_list
                 $bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
 
                 $sel_users = $app['db']->executeQuery('select u.*, c.value as mail
-                    from ' . $app['tschema'] . '.users u, ' .
-                        $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc
+                    from ' . $app['pp_schema'] . '.users u, ' .
+                        $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc
                     where u.id in (?)
                         and u.id = c.id_user
                         and c.id_type_contact = tc.id
@@ -328,10 +328,10 @@ class users_list
                     }
 
                     $app['queue.mail']->queue([
-                        'schema'			=> $app['tschema'],
-                        'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['tschema']),
+                        'schema'			=> $app['pp_schema'],
+                        'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['pp_schema']),
                         'pre_html_template' => $bulk_mail_content,
-                        'reply_to' 			=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+                        'reply_to' 			=> $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
                         'vars'				=> $vars,
                         'template'			=> 'skeleton',
                     ], random_int(1000, 4000));
@@ -401,8 +401,8 @@ class users_list
                     $mail_users_info .= '<hr /><br />';
 
                     $app['queue.mail']->queue([
-                        'schema'			=> $app['tschema'],
-                        'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
+                        'schema'			=> $app['pp_schema'],
+                        'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
                         'template'			=> 'skeleton',
                         'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
                         'vars'				=> $vars,
@@ -410,7 +410,7 @@ class users_list
 
                     $app['monolog']->debug('#bulk mail:: ' .
                         $mail_users_info . $bulk_mail_content,
-                        ['schema' => $app['tschema']]);
+                        ['schema' => $app['pp_schema']]);
                 }
 
                 if ($bulk_submit_action === 'mail')
@@ -443,7 +443,7 @@ class users_list
         $ref_geo = [];
 
         $type_contact = $app['db']->fetchAll('select id, abbrev, name
-            from ' . $app['tschema'] . '.type_contact');
+            from ' . $app['pp_schema'] . '.type_contact');
 
         $columns = [
             'u'		=> [
@@ -504,9 +504,9 @@ class users_list
                 'total'	=> 'Transacties totaal',
             ],
             'amount'	=> [
-                'in'	=> $app['config']->get('currency', $app['tschema']) . ' in',
-                'out'	=> $app['config']->get('currency', $app['tschema']) . ' uit',
-                'total'	=> $app['config']->get('currency', $app['tschema']) . ' totaal',
+                'in'	=> $app['config']->get('currency', $app['pp_schema']) . ' in',
+                'out'	=> $app['config']->get('currency', $app['pp_schema']) . ' uit',
+                'total'	=> $app['config']->get('currency', $app['pp_schema']) . ' totaal',
             ],
         ];
 
@@ -582,7 +582,7 @@ class users_list
         $saldo_date = trim($saldo_date);
 
         $users = $app['db']->fetchAll('select u.*
-            from ' . $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
@@ -604,7 +604,7 @@ class users_list
                 $user['fullname_access'] = $app['xdb']->get(
                     'user_fullname_access',
                     (string) $user['id'],
-                    $app['tschema']
+                    $app['pp_schema']
                 )['data']['fullname_access'] ?? 'admin';
 
                 error_log($user['fullname_access']);
@@ -615,12 +615,12 @@ class users_list
         {
             if ($saldo_date)
             {
-                $saldo_date_rev = $app['date_format']->reverse($saldo_date, 'min', $app['tschema']);
+                $saldo_date_rev = $app['date_format']->reverse($saldo_date, 'min', $app['pp_schema']);
             }
 
             if ($saldo_date_rev === '' || $saldo_date == '')
             {
-                $saldo_date = $app['date_format']->get('', 'day', $app['tschema']);
+                $saldo_date = $app['date_format']->get('', 'day', $app['pp_schema']);
 
                 array_walk($users, function(&$user, $user_id){
                     $user['saldo_date'] = $user['saldo'];
@@ -632,7 +632,7 @@ class users_list
                 $datetime = new \DateTime($saldo_date_rev);
 
                 $rs = $app['db']->prepare('select id_to, sum(amount)
-                    from ' . $app['tschema'] . '.transactions
+                    from ' . $app['pp_schema'] . '.transactions
                     where date <= ?
                     group by id_to');
 
@@ -646,7 +646,7 @@ class users_list
                 }
 
                 $rs = $app['db']->prepare('select id_from, sum(amount)
-                    from ' . $app['tschema'] . '.transactions
+                    from ' . $app['pp_schema'] . '.transactions
                     where date <= ?
                     group by id_from');
                 $rs->bindValue(1, $datetime, 'datetime');
@@ -670,9 +670,9 @@ class users_list
         {
             $c_ary = $app['db']->fetchAll('select tc.abbrev,
                     c.id_user, c.value, c.flag_public
-                from ' . $app['tschema'] . '.contact c, ' .
-                    $app['tschema'] . '.type_contact tc, ' .
-                    $app['tschema'] . '.users u
+                from ' . $app['pp_schema'] . '.contact c, ' .
+                    $app['pp_schema'] . '.type_contact tc, ' .
+                    $app['pp_schema'] . '.users u
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.id_user = u.id
@@ -720,8 +720,8 @@ class users_list
             if (isset($show_columns['m']['offers']))
             {
                 $ary = $app['db']->fetchAll('select count(m.id), m.id_user
-                    from ' . $app['tschema'] . '.messages m, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.messages m, ' .
+                        $app['pp_schema'] . '.users u
                     where msg_type = 1
                         and m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
@@ -736,8 +736,8 @@ class users_list
             if (isset($show_columns['m']['wants']))
             {
                 $ary = $app['db']->fetchAll('select count(m.id), m.id_user
-                    from ' . $app['tschema'] . '.messages m, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.messages m, ' .
+                        $app['pp_schema'] . '.users u
                     where msg_type = 0
                         and m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
@@ -752,8 +752,8 @@ class users_list
             if (isset($show_columns['m']['total']))
             {
                 $ary = $app['db']->fetchAll('select count(m.id), m.id_user
-                    from ' . $app['tschema'] . '.messages m, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.messages m, ' .
+                        $app['pp_schema'] . '.users u
                     where m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);
@@ -787,16 +787,16 @@ class users_list
 
             $trans_in_ary = $app['db']->fetchAll('select sum(t.amount),
                     count(t.id), t.id_to
-                from ' . $app['tschema'] . '.transactions t, ' .
-                    $app['tschema'] . '.users u
+                from ' . $app['pp_schema'] . '.transactions t, ' .
+                    $app['pp_schema'] . '.users u
                 where t.id_from = u.id
                     and t.cdate > ?' . $and . '
                 group by t.id_to', $sql_bind);
 
             $trans_out_ary = $app['db']->fetchAll('select sum(t.amount),
                     count(t.id), t.id_from
-                from ' . $app['tschema'] . '.transactions t, ' .
-                    $app['tschema'] . '.users u
+                from ' . $app['pp_schema'] . '.transactions t, ' .
+                    $app['pp_schema'] . '.users u
                 where t.id_to = u.id
                     and t.cdate > ?' . $and . '
                 group by t.id_from', $sql_bind);
@@ -960,7 +960,7 @@ class users_list
 
                 $f_col .= $app['typeahead']->str([
                     'filter'		=> 'accounts',
-                    'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+                    'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
                 ]);
 
                 $f_col .= '">';
@@ -1038,7 +1038,7 @@ class users_list
                     $f_col .= 'name="sh[p][u][saldo_date]" ';
                     $f_col .= 'data-provide="datepicker" ';
                     $f_col .= 'data-date-format="';
-                    $f_col .= $app['date_format']->datepicker_format($app['tschema']);
+                    $f_col .= $app['date_format']->datepicker_format($app['pp_schema']);
                     $f_col .= '" ';
                     $f_col .= 'data-date-language="nl" ';
                     $f_col .= 'data-date-today-highlight="true" ';
@@ -1047,7 +1047,7 @@ class users_list
                     $f_col .= 'data-date-end-date="0d" ';
                     $f_col .= 'data-date-orientation="bottom" ';
                     $f_col .= 'placeholder="';
-                    $f_col .= $app['date_format']->datepicker_placeholder($app['tschema']);
+                    $f_col .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
                     $f_col .= '" ';
                     $f_col .= 'value="';
                     $f_col .= $saldo_date;
@@ -1264,7 +1264,7 @@ class users_list
                     {
                         if ($u[$key])
                         {
-                            $td .= $app['date_format']->get($u[$key], 'day', $app['tschema']);
+                            $td .= $app['date_format']->get($u[$key], 'day', $app['pp_schema']);
                         }
                         else
                         {
@@ -1425,7 +1425,7 @@ class users_list
 
             if (isset($show_columns['a']))
             {
-                $from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day', $app['tschema']);
+                $from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day', $app['pp_schema']);
 
                 foreach($show_columns['a'] as $a_key => $a_ary)
                 {
@@ -1468,7 +1468,7 @@ class users_list
 
         $out .= '<div class="row"><div class="col-md-12">';
         $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</span></p>';
         $out .= '</div></div>';
 
@@ -1620,7 +1620,7 @@ class users_list
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 

@@ -29,18 +29,18 @@ class users_image_upload
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        $filename = $app['image_upload']->gen_filename_for_user_image($id, $app['tschema']);
-        $app['image_upload']->upload($uploaded_file, $filename, $app['tschema']);
+        $filename = $app['image_upload']->gen_filename_for_user_image($id, $app['pp_schema']);
+        $app['image_upload']->upload($uploaded_file, $filename, $app['pp_schema']);
 
-        $app['db']->update($app['tschema'] . '.users', [
+        $app['db']->update($app['pp_schema'] . '.users', [
             '"PictureFile"'	=> $filename
         ],['id' => $id]);
 
         $app['monolog']->info('User image ' . $filename .
             ' uploaded. User: ' . $id,
-            ['schema' => $app['tschema']]);
+            ['schema' => $app['pp_schema']]);
 
-        $app['user_cache']->clear($id, $app['tschema']);
+        $app['user_cache']->clear($id, $app['pp_schema']);
 
         return $app->json([$filename]);
     }

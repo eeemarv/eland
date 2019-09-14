@@ -25,7 +25,7 @@ class messages_extended
         }
 
         $_imgs = $app['db']->executeQuery('select mp.msgid, mp."PictureFile"
-            from ' . $app['tschema'] . '.msgpictures mp
+            from ' . $app['pp_schema'] . '.msgpictures mp
             where msgid in (?)',
             [$ids],
             [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -137,7 +137,7 @@ class messages_extended
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

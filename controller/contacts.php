@@ -30,7 +30,7 @@ class contacts
         if (isset($filter['uid']))
         {
             $params['f']['uid'] = $filter['uid'];
-            $filter['code'] = $app['account']->str($filter['uid'], $app['tschema']);
+            $filter['code'] = $app['account']->str($filter['uid'], $app['pp_schema']);
         }
 
         if (isset($filter['code']) && $filter['code'])
@@ -38,14 +38,14 @@ class contacts
             [$code] = explode(' ', trim($filter['code']));
 
             $fuid = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$code]);
 
             if ($fuid)
             {
                 $where_sql[] = 'c.id_user = ?';
                 $params_sql[] = $fuid;
-                $params['f']['code'] = $app['account']->str($fuid, $app['tschema']);
+                $params['f']['code'] = $app['account']->str($fuid, $app['pp_schema']);
             }
             else
             {
@@ -139,7 +139,7 @@ class contacts
         if ($params['f']['ustatus'] !== 'all'
             || $params['s']['orderby'] === 'u.letscode')
         {
-            $user_table_sql = ', ' . $app['tschema'] . '.users u ';
+            $user_table_sql = ', ' . $app['pp_schema'] . '.users u ';
             $where_sql[] = 'u.id = c.id_user';
         }
 
@@ -153,13 +153,13 @@ class contacts
         }
 
         $query = 'select c.*, tc.abbrev
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc' . $user_table_sql . '
+            from ' . $app['pp_schema'] . '.contact c, ' .
+                $app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
             where c.id_type_contact = tc.id' . $where_sql;
 
         $row_count = $app['db']->fetchColumn('select count(c.*)
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc' . $user_table_sql . '
+            from ' . $app['pp_schema'] . '.contact c, ' .
+                $app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
             where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
         $query .= ' order by ' . $params['s']['orderby'] . ' ';
@@ -206,7 +206,7 @@ class contacts
         $abbrev_ary = [];
 
         $rs = $app['db']->prepare('select abbrev
-            from ' . $app['tschema'] . '.type_contact');
+            from ' . $app['pp_schema'] . '.type_contact');
 
         $rs->execute();
 
@@ -337,7 +337,7 @@ class contacts
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+                'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
             ]);
         $out .= '" ';
 
@@ -401,7 +401,7 @@ class contacts
 
             return $app->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['tschema'],
+                'schema'    => $app['pp_schema'],
             ]);
         }
 
@@ -502,7 +502,7 @@ class contacts
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

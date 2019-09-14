@@ -77,7 +77,7 @@ $rs = $app['db']->prepare(
 		accountrole, status, saldo,
 		minlimit, maxlimit, adate,
 		postcode
-	from ' . $app['tschema'] . '.users
+	from ' . $app['pp_schema'] . '.users
 	where status IN (0, 1, 2, 5, 6)
 	order by letscode');
 
@@ -139,7 +139,7 @@ if ($app['request']->isMethod('POST'))
 		$letscode = $to_one ? $to_letscode : $from_letscode;
 
 		$one_uid = $app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.users
+			from ' . $app['pp_schema'] . '.users
 			where letscode = ?', [$letscode]);
 
 		if (!$one_uid)
@@ -195,7 +195,7 @@ if ($app['request']->isMethod('POST'))
 	}
 
 	if ($app['db']->fetchColumn('select id
-		from ' . $app['tschema'] . '.transactions
+		from ' . $app['pp_schema'] . '.transactions
 		where transid = ?', [$transid]))
 	{
 		$errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
@@ -245,7 +245,7 @@ if ($app['request']->isMethod('POST'))
 				$alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
 				$alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
 				$alert_success .= '  met bedrag ' . $amo .' ';
-				$alert_success .= $app['config']->get('currency', $app['tschema']);
+				$alert_success .= $app['config']->get('currency', $app['pp_schema']);
 				$alert_success .= ' uitgevoerd.<br>';
 
 				$log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
@@ -261,10 +261,10 @@ if ($app['request']->isMethod('POST'))
 					'creator'		=> $app['s_master'] ? 0 : $app['s_id'],
 				];
 
-				$app['db']->insert($app['tschema'] . '.transactions', $transaction);
-				$transaction['id'] = $app['db']->lastInsertId($app['tschema'] . '.transactions_id_seq');
+				$app['db']->insert($app['pp_schema'] . '.transactions', $transaction);
+				$transaction['id'] = $app['db']->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
 
-				$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+				$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
 					set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
 					where id = ?', [$amo, $many_uid]);
 
@@ -275,7 +275,7 @@ if ($app['request']->isMethod('POST'))
 				$transactions[] = $transaction;
 			}
 
-			$app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+			$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
 				set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
 				where id = ?', [$total_amount, $one_uid]);
 
@@ -288,7 +288,7 @@ if ($app['request']->isMethod('POST'))
 			throw $e;
 		}
 
-		$app['autominlimit']->init($app['tschema']);
+		$app['autominlimit']->init($app['pp_schema']);
 
 		foreach($transactions as $t)
 		{
@@ -299,29 +299,29 @@ if ($app['request']->isMethod('POST'))
 		{
 			foreach ($transactions as $t)
 			{
-				$app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
+				$app['predis']->del($app['pp_schema'] . '_user_' . $t['id_from']);
 			}
 
-			$app['predis']->del($app['tschema'] . '_user_' . $t['id_to']);
+			$app['predis']->del($app['pp_schema'] . '_user_' . $t['id_to']);
 		}
 		else
 		{
 			foreach ($transactions as $t)
 			{
-				$app['predis']->del($app['tschema'] . '_user_' . $t['id_to']);
+				$app['predis']->del($app['pp_schema'] . '_user_' . $t['id_to']);
 			}
 
-			$app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
+			$app['predis']->del($app['pp_schema'] . '_user_' . $t['id_from']);
 		}
 
 		$alert_success .= 'Totaal: ' . $total_amount . ' ';
-		$alert_success .= $app['config']->get('currency', $app['tschema']);
+		$alert_success .= $app['config']->get('currency', $app['pp_schema']);
 		$app['alert']->success($alert_success);
 
 		$log_one = $users[$one_uid]['letscode'] . ' ';
 		$log_one .= $users[$one_uid]['name'];
 		$log_one .= '(Total amount: ' . $total_amount . ' ';
-		$log_one .= $app['config']->get('currency', $app['tschema']);
+		$log_one .= $app['config']->get('currency', $app['pp_schema']);
 		$log_one .= ')';
 
 		$log_many = rtrim($log_many, ', ');
@@ -330,7 +330,7 @@ if ($app['request']->isMethod('POST'))
 		$log_str .= ' to ';
 		$log_str .= $to_one ? $log_one : $log_many;
 
-		$app['monolog']->info('trans: ' . $log_str, ['schema' => $app['tschema']]);
+		$app['monolog']->info('trans: ' . $log_str, ['schema' => $app['pp_schema']]);
 
 		if ($app['s_master'])
 		{
@@ -350,8 +350,8 @@ if ($app['request']->isMethod('POST'))
 				];
 
 				$app['queue.mail']->queue([
-					'schema'	=> $app['tschema'],
-					'to'		=> $app['mail_addr_user']->get_active($user_id, $app['tschema']),
+					'schema'	=> $app['pp_schema'],
+					'to'		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
 					'template'	=> 'transaction/transaction',
 					'vars'		=> $vars,
 				], random_int(0, 5000));
@@ -376,11 +376,11 @@ if ($app['request']->isMethod('POST'))
 			$mail_template .= $to_one ? 'many_to_one' : 'one_to_many';
 
 			$app['queue.mail']->queue([
-				'schema'	=> $app['tschema'],
+				'schema'	=> $app['pp_schema'],
 				'to' 		=> array_merge(
-					$app['mail_addr_system']->get_admin($app['tschema']),
-					$app['mail_addr_user']->get_active($app['s_id'], $app['tschema']),
-					$app['mail_addr_user']->get_active($one_uid, $app['tschema'])
+					$app['mail_addr_system']->get_admin($app['pp_schema']),
+					$app['mail_addr_user']->get_active($app['s_id'], $app['pp_schema']),
+					$app['mail_addr_user']->get_active($one_uid, $app['pp_schema'])
 				),
 				'template'	=> $mail_template,
 				'vars'		=> $vars,
@@ -402,7 +402,7 @@ $transid = $app['transaction']->generate_transid($app['s_id'], $app['pp_system']
 if ($to_letscode)
 {
 	if ($to_name = $app['db']->fetchColumn('select name
-		from ' . $app['tschema'] . '.users
+		from ' . $app['pp_schema'] . '.users
 		where letscode = ?', [$to_letscode]))
 	{
 		$to_letscode .= ' ' . $to_name;
@@ -411,15 +411,15 @@ if ($to_letscode)
 if ($from_letscode)
 {
 	if ($from_name = $app['db']->fetchColumn('select name
-		from ' . $app['tschema'] . '.users
+		from ' . $app['pp_schema'] . '.users
 		where letscode = ?', [$from_letscode]))
 	{
 		$from_letscode .= ' ' . $from_name;
 	}
 }
 
-$system_minlimit = $app['config']->get('minlimit', $app['tschema']);
-$system_maxlimit = $app['config']->get('maxlimit', $app['tschema']);
+$system_minlimit = $app['config']->get('minlimit', $app['pp_schema']);
+$system_maxlimit = $app['config']->get('maxlimit', $app['pp_schema']);
 
 $app['assets']->add([
 	'mass_transaction.js',
@@ -473,7 +473,7 @@ echo '<label for="fixed" class="control-label">';
 echo 'Vast bedrag</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $app['tschema']);
+echo $app['config']->get('currency', $app['pp_schema']);
 echo '</span>';
 echo '<input type="number" class="form-control margin-bottom" id="fixed" ';
 echo 'min="0">';
@@ -519,7 +519,7 @@ echo '</div>';
 echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $app['tschema']);
+echo $app['config']->get('currency', $app['pp_schema']);
 echo ': basis';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_base">';
@@ -595,7 +595,7 @@ echo '<div class="col-sm-6">';
 
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $app['tschema']);
+echo $app['config']->get('currency', $app['pp_schema']);
 echo ': min';
 echo '</span>';
 
@@ -607,7 +607,7 @@ echo '</div>';
 echo '<div class="col-sm-6">';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $app['tschema']);
+echo $app['config']->get('currency', $app['pp_schema']);
 echo ': max';
 echo '</span>';
 echo '<input type="number" class="form-control" id="var_max">';
@@ -625,26 +625,26 @@ echo '<input type="checkbox" id="respect_minlimit" checked="checked">';
 echo ' Respecteer minimum limieten</label>';
 echo '</div>';
 
-if ($app['config']->get('minlimit', $app['tschema']) !== ''
-	|| $app['config']->get('maxlimit', $app['tschema']) !== '')
+if ($app['config']->get('minlimit', $app['pp_schema']) !== ''
+	|| $app['config']->get('maxlimit', $app['pp_schema']) !== '')
 {
 	echo '<ul>';
 
-	if ($app['config']->get('minlimit', $app['tschema']) !== '')
+	if ($app['config']->get('minlimit', $app['pp_schema']) !== '')
 	{
 		echo '<li>Minimum Systeemslimiet: ';
-		echo $app['config']->get('minlimit', $app['tschema']);
+		echo $app['config']->get('minlimit', $app['pp_schema']);
 		echo ' ';
-		echo $app['config']->get('currency', $app['tschema']);
+		echo $app['config']->get('currency', $app['pp_schema']);
 		echo '</li>';
 	}
 
-	if ($app['config']->get('maxlimit', $app['tschema']) !== '')
+	if ($app['config']->get('maxlimit', $app['pp_schema']) !== '')
 	{
 		echo '<li>Maximum Systeemslimiet: ';
-		echo $app['config']->get('maxlimit', $app['tschema']);
+		echo $app['config']->get('maxlimit', $app['pp_schema']);
 		echo ' ';
-		echo $app['config']->get('currency', $app['tschema']);
+		echo $app['config']->get('currency', $app['pp_schema']);
 		echo '</li>';
 	}
 
@@ -732,7 +732,7 @@ echo $app['typeahead']->ini($app['pp_ary'])
 	->add('accounts', ['status' => 'extern'])
 	->str([
 		'filter'        => 'accounts',
-		'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+		'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
 	]);
 echo '">';
 
@@ -850,7 +850,7 @@ echo '<label for="total" class="control-label">Totaal';
 echo '</label>';
 echo '<div class="input-group">';
 echo '<span class="input-group-addon">';
-echo $app['config']->get('currency', $app['tschema']);
+echo $app['config']->get('currency', $app['pp_schema']);
 echo '</span>';
 echo '<input type="number" class="form-control" id="total" readonly>';
 echo '</div>';

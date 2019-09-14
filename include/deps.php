@@ -236,7 +236,7 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
  */
 
 $app['new_user_treshold'] = function ($app):int{
-	$new_user_days = (int) $app['config']->get('newuserdays', $app['tschema']);
+	$new_user_days = (int) $app['config']->get('newuserdays', $app['pp_schema']);
 	return time() -  ($new_user_days * 86400);
 };
 
@@ -295,7 +295,7 @@ $app['r_news'] = function ($app):string{
 
 $app['r_default'] = function ($app):string{
 
-	$route = $app['config']->get('default_landing_page', $app['tschema']);
+	$route = $app['config']->get('default_landing_page', $app['pp_schema']);
 
 	switch ($route)
 	{
@@ -311,8 +311,8 @@ $app['r_default'] = function ($app):string{
 };
 
 $app['intersystem_en'] = function($app):bool{
-	return $app['config']->get('template_lets', $app['tschema'])
-		&& $app['config']->get('interlets_en', $app['tschema']);
+	return $app['config']->get('template_lets', $app['pp_schema'])
+		&& $app['config']->get('interlets_en', $app['pp_schema']);
 };
 
 $app['pp_role_short'] = function ($app):string{
@@ -352,7 +352,7 @@ $app['pp_ary'] = function ($app):array{
 	return [];
 };
 
-$app['tschema'] = function ($app):string{
+$app['pp_schema'] = function ($app):string{
 	return $app['systems']->get_schema($app['pp_system']);
 };
 
@@ -372,12 +372,12 @@ $app['s_schema'] = function ($app):string{
 		}
 	}
 
-	if ($s_schema !== $app['tschema'])
+	if ($s_schema !== $app['pp_schema'])
 	{
-		$app['session']->set('schema', $app['tschema']);
+		$app['session']->set('schema', $app['pp_schema']);
 	}
 
-	return $app['tschema'];
+	return $app['pp_schema'];
 };
 
 $app['s_system'] = function ($app){
@@ -402,7 +402,7 @@ $app['s_ary'] = function ($app){
 };
 
 $app['s_system_self'] = function ($app):bool{
-	return $app['s_schema'] === $app['tschema'];
+	return $app['s_schema'] === $app['pp_schema'];
 };
 
 $app['s_logins'] = function ($app):array{
@@ -505,16 +505,16 @@ $app['s_elas_guest'] = function ($app):bool{
 
 $app['welcome_msg'] = function (app $app):string{
 	$msg = '<strong>Welkom bij ';
-	$msg .= $app['config']->get('systemname', $app['tschema']);
+	$msg .= $app['config']->get('systemname', $app['pp_schema']);
 	$msg .= '</strong><br>';
 	$msg .= 'Waardering bij ';
-	$msg .= $app['config']->get('systemname', $app['tschema']);
+	$msg .= $app['config']->get('systemname', $app['pp_schema']);
 	$msg .= ' gebeurt met \'';
-	$msg .= $app['config']->get('currency', $app['tschema']);
+	$msg .= $app['config']->get('currency', $app['pp_schema']);
 	$msg .= '\'. ';
-	$msg .= $app['config']->get('currencyratio', $app['tschema']);
+	$msg .= $app['config']->get('currencyratio', $app['pp_schema']);
 	$msg .= ' ';
-	$msg .= $app['config']->get('currency', $app['tschema']);
+	$msg .= $app['config']->get('currency', $app['pp_schema']);
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($app['s_elas_guest'])
@@ -877,14 +877,14 @@ $app['alert'] = function ($app){
 	return new service\alert(
 		$app['monolog'],
 		$app['session'],
-		$app['tschema']);
+		$app['pp_schema']);
 };
 
 $app['menu'] = function($app){
 	return new service\menu(
 		$app['config'],
 		$app['item_access'],
-		$app['tschema'],
+		$app['pp_schema'],
 		$app['pp_system'],
 		$app['intersystem_en'],
 		$app['r_messages'],
@@ -907,6 +907,7 @@ $app['menu_nav_system'] = function($app){
 		$app['intersystems'],
 		$app['s_logins'],
 		$app['s_schema'],
+		$app['pp_schema'],
 		$app['intersystem_en'],
 		$app['r_messages'],
 		$app['r_users_show']
@@ -916,7 +917,7 @@ $app['menu_nav_system'] = function($app){
 $app['item_access'] = function($app){
 	return new service\item_access(
 		$app['assets'],
-		$app['tschema'],
+		$app['pp_schema'],
 		$app['pp_role'],
 		$app['intersystem_en']
 	);
@@ -1012,7 +1013,7 @@ $app['tpl'] = function ($app){
 		$app['btn_top'],
 		$app['heading'],
 		$app['link'],
-		$app['tschema'],
+		$app['pp_schema'],
 		$app['s_schema'],
 		$app['s_id'],
 		$app['pp_ary'],

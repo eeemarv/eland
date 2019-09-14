@@ -47,8 +47,8 @@ class transactions_sum
         }
 
         $query = 'select sum(t.amount), t.id_' . $res . ' as uid
-            from ' . $app['tschema'] . '.transactions t, ' .
-                $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.transactions t, ' .
+                $app['pp_schema'] . '.users u
             where u.id = t.id_' . $inp . '
                 and t.cdate > ?';
 

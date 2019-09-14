@@ -10,13 +10,13 @@ class forum_del
 {
     public function forum_del(Request $request, app $app, string $forum_id):Response
     {
-        if (!$app['config']->get('forum_en', $app['tschema']))
+        if (!$app['config']->get('forum_en', $app['pp_schema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
             $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
-        $row = $app['xdb']->get('forum', $forum_id, $app['tschema']);
+        $row = $app['xdb']->get('forum', $forum_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -56,17 +56,17 @@ class forum_del
             }
             else
             {
-                $app['xdb']->del('forum', $forum_id, $app['tschema']);
+                $app['xdb']->del('forum', $forum_id, $app['pp_schema']);
 
                 if ($is_topic)
                 {
                     $rows = $app['xdb']->get_many(['agg_type' => 'forum',
-                        'agg_schema' => $app['tschema'],
+                        'agg_schema' => $app['pp_schema'],
                         'data->>\'parent_id\'' => $forum_id]);
 
                     foreach ($rows as $row)
                     {
-                        $app['xdb']->del('forum', $row['eland_id'], $app['tschema']);
+                        $app['xdb']->del('forum', $row['eland_id'], $app['pp_schema']);
                     }
 
                     $app['alert']->success('Het forum onderwerp is verwijderd.');
@@ -128,7 +128,7 @@ class forum_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

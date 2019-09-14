@@ -69,7 +69,7 @@ if ($app['request']->isMethod('POST')
 	$validity_ary = [];
 
 	$rows = $app['db']->executeQuery('select id_user, id, content, validity
-		from ' . $app['tschema'] . '.messages
+		from ' . $app['pp_schema'] . '.messages
 		where id in (?)',
 		[$selected_msgs],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -101,7 +101,7 @@ if ($app['request']->isMethod('POST')
 				'exp_user_warn'	=> 'f',
 			];
 
-			if (!$app['db']->update($app['tschema'] . '.messages',
+			if (!$app['db']->update($app['pp_schema'] . '.messages',
 				$m,
 				['id' => $id]))
 			{
@@ -143,7 +143,7 @@ if ($app['request']->isMethod('POST')
 			{
 				foreach ($validity_ary as $id => $validity)
 				{
-					$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]);
+					$app['db']->update($app['pp_schema'] . '.messages', $m, ['id' => $id]);
 				}
 
 				$app['db']->commit();
@@ -182,8 +182,8 @@ if ($id || $edit || $del)
 	$message = $app['db']->fetchAssoc('select m.*,
 			c.id as cid,
 			c.fullname as catname
-		from ' . $app['tschema'] . '.messages m, ' .
-			$app['tschema'] . '.categories c
+		from ' . $app['pp_schema'] . '.messages m, ' .
+			$app['pp_schema'] . '.categories c
 		where m.id = ?
 			and c.id = m.id_category', [$id]);
 
@@ -235,7 +235,7 @@ if ($id && $extend)
 		'exp_user_warn'	=> 'f',
 	];
 
-	if (!$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]))
+	if (!$app['db']->update($app['pp_schema'] . '.messages', $m, ['id' => $id]))
 	{
 		$app['alert']->error('Fout: ' . $ow_type_the . ' is niet verlengd.');
 		$app['link']->redirect('messages', $app['pp_ary'], ['id' => $id]);
@@ -355,11 +355,11 @@ if ($app['request']->isMethod('POST')
 		if (!$id)
 		{
 			$id = $app['db']->fetchColumn('select max(id)
-				from ' . $app['tschema'] . '.messages');
+				from ' . $app['pp_schema'] . '.messages');
 			$id++;
 		}
 
-		$filename = $app['tschema'] . '_m_' . $id . '_';
+		$filename = $app['pp_schema'] . '_m_' . $id . '_';
 		$filename .= sha1($filename . microtime()) . '.jpg';
 
 		$err = $app['s3']->img_upload($filename, $tmpfile2);
@@ -367,7 +367,7 @@ if ($app['request']->isMethod('POST')
 		if ($err)
 		{
 			$app['monolog']->error('Upload fail : ' . $err,
-				['schema' => $app['tschema']]);
+				['schema' => $app['pp_schema']]);
 
 			$ret_ary = [['error' => 'Opladen mislukt.']];
 			break;
@@ -376,19 +376,19 @@ if ($app['request']->isMethod('POST')
 		{
 			if ($insert_img)
 			{
-				$app['db']->insert($app['tschema'] . '.msgpictures', [
+				$app['db']->insert($app['pp_schema'] . '.msgpictures', [
 					'msgid'			=> $id,
 					'"PictureFile"'	=> $filename]);
 
 				$app['monolog']->info('Message-Picture ' .
 					$filename . ' uploaded and inserted in db.',
-					['schema' => $app['tschema']]);
+					['schema' => $app['pp_schema']]);
 			}
 			else
 			{
 				$app['monolog']->info('Message-Picture ' .
 					$filename . ' uploaded, not (yet) inserted in db.',
-					['schema' => $app['tschema']]);
+					['schema' => $app['pp_schema']]);
 			}
 
 			unlink($tmpfile);
@@ -421,7 +421,7 @@ if ($img_del == 'all' && $id
 			om afbeeldingen te verwijderen voor ' . $ow_type_this);
 	}
 
-	$app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $id]);
+	$app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
 
 	$app['alert']->success('De afbeeldingen voor ' . $ow_type_this .
 		' zijn verwijderd.');
@@ -436,7 +436,7 @@ if ($img_del && $app['request']->isMethod('POST')
 	&& ctype_digit((string) $img_del))
 {
 	if (!($msg = $app['db']->fetchAssoc('select m.id_user, p."PictureFile"
-		from ' . $app['tschema'] . '.msgpictures p, ' . $app['tschema'] . '.messages m
+		from ' . $app['pp_schema'] . '.msgpictures p, ' . $app['pp_schema'] . '.messages m
 		where p.msgid = m.id
 			and p.id = ?', [$img_del])))
 	{
@@ -455,7 +455,7 @@ if ($img_del && $app['request']->isMethod('POST')
 		exit;
 	}
 
-	$app['db']->delete($app['tschema'] . '.msgpictures', ['id' => $img_del]);
+	$app['db']->delete($app['pp_schema'] . '.msgpictures', ['id' => $img_del]);
 
 	echo json_encode(['success' => true]);
 	exit;
@@ -476,7 +476,7 @@ if ($img_del == 'all' && $id)
 	$images = [];
 
 	$st = $app['db']->prepare('select id, "PictureFile"
-		from ' . $app['tschema'] . '.msgpictures
+		from ' . $app['pp_schema'] . '.msgpictures
 		where msgid = ?');
 	$st->bindValue(1, $id);
 	$st->execute();
@@ -572,7 +572,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 	$content = $_POST['content'];
 	$cc = isset($_POST['cc']);
 
-	$to_user = $app['user_cache']->get($message['id_user'], $app['tschema']);
+	$to_user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
 
 	if (!$app['pp_admin'] && !in_array($to_user['status'], [1, 2]))
 	{
@@ -631,7 +631,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 		'from_schema'		=> $app['s_schema'],
 		'is_same_system'	=> $app['s_system_self'],
 		'to_user'			=> $to_user,
-		'to_schema'			=> $app['tschema'],
+		'to_schema'			=> $app['pp_schema'],
 		'msg_content'		=> $content,
 		'message'			=> $message,
 	];
@@ -641,8 +641,8 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 		: 'message_msg/msg_intersystem';
 
 	$app['queue.mail']->queue([
-		'schema'	=> $app['tschema'],
-		'to'		=> $app['mail_addr_user']->get_active($to_user['id'], $app['tschema']),
+		'schema'	=> $app['pp_schema'],
+		'to'		=> $app['mail_addr_user']->get_active($to_user['id'], $app['pp_schema']),
 		'reply_to'	=> $reply_ary,
 		'template'	=> $mail_template,
 		'vars'		=> $vars,
@@ -655,7 +655,7 @@ if ($mail && $app['request']->isMethod('POST') && $id)
 			: 'message_msg/copy_intersystem';
 
 		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
+			'schema'	=> $app['pp_schema'],
 			'to'		=> $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']),
 			'template'	=> $mail_template,
 			'vars'		=> $vars,
@@ -685,14 +685,14 @@ if ($del)
 			$app['alert']->error($error_token);
 		}
 
-		$app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $del]);
+		$app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $del]);
 
-		if ($app['db']->delete($app['tschema'] . '.messages', ['id' => $del]))
+		if ($app['db']->delete($app['pp_schema'] . '.messages', ['id' => $del]))
 		{
 			$column = 'stat_msgs_';
 			$column .= $message['msg_type'] ? 'offers' : 'wanted';
 
-			$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+			$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
 				set ' . $column . ' = ' . $column . ' - 1
 				where id = ?', [$message['id_category']]);
 
@@ -733,7 +733,7 @@ if ($del)
 	echo $message['validity'];
 	echo '</dd>';
 
-	if ($app['intersystem_en'] && $app['intersystems']->get_count($app['tschema']))
+	if ($app['intersystem_en'] && $app['intersystems']->get_count($app['pp_schema']))
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
@@ -809,7 +809,7 @@ if (($edit || $add))
 			[$user_letscode] = explode(' ', trim($_POST['user_letscode']));
 			$user_letscode = trim($user_letscode);
 			$user = $app['db']->fetchAssoc('select *
-				from ' . $app['tschema'] . '.users
+				from ' . $app['pp_schema'] . '.users
 				where letscode = ?
 					and status in (1, 2)', [$user_letscode]);
 			if (!$user)
@@ -852,7 +852,7 @@ if (($edit || $add))
 		if (!ctype_digit((string) $msg['amount']) && $msg['amount'] != '')
 		{
 			$err = 'De (richt)prijs in ';
-			$err .= $app['config']->get('currency', $app['tschema']);
+			$err .= $app['config']->get('currency', $app['pp_schema']);
 			$err .= ' moet nul of een positief getal zijn.';
 			$errors[] = $err;
 		}
@@ -862,7 +862,7 @@ if (($edit || $add))
 			$errors[] = 'Geieve een categorie te selecteren.';
 		}
 		else if(!$app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.categories
+			from ' . $app['pp_schema'] . '.categories
 			where id = ?', [$msg['id_category']]))
 		{
 			$errors[] = 'Categorie bestaat niet!';
@@ -889,7 +889,7 @@ if (($edit || $add))
 		}
 
 		if(!($app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.users
+			from ' . $app['pp_schema'] . '.users
 			where id = ? and status <> 0', [$msg['id_user']])))
 		{
 			$errors[] = 'Gebruiker bestaat niet!';
@@ -916,14 +916,14 @@ if (($edit || $add))
 				unset($msg['amount']);
 			}
 
-			if ($app['db']->insert($app['tschema'] . '.messages', $msg))
+			if ($app['db']->insert($app['pp_schema'] . '.messages', $msg))
 			{
-				$id = $app['db']->lastInsertId($app['tschema'] . '.messages_id_seq');
+				$id = $app['db']->lastInsertId($app['pp_schema'] . '.messages_id_seq');
 
 				$stat_column = 'stat_msgs_';
 				$stat_column .= $msg['msg_type'] ? 'offers' : 'wanted';
 
-				$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+				$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
 					set ' . $stat_column . ' = ' . $stat_column . ' + 1
 					where id = ?', [$msg['id_category']]);
 
@@ -935,7 +935,7 @@ if (($edit || $add))
 
 						[$sch, $img_type, $msgid, $hash] = explode('_', $img);
 
-						if ($sch != $app['tschema'])
+						if ($sch != $app['pp_schema'])
 						{
 							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
 						}
@@ -954,24 +954,24 @@ if (($edit || $add))
 
 						if ($msgid == $id)
 						{
-							if ($app['db']->insert($app['tschema'] . '.msgpictures', [
+							if ($app['db']->insert($app['pp_schema'] . '.msgpictures', [
 								'"PictureFile"' => $img,
 								'msgid'			=> $id,
 							]))
 							{
 								$app['monolog']->info('message-picture ' . $img .
-									' inserted in db.', ['schema' => $app['tschema']]);
+									' inserted in db.', ['schema' => $app['pp_schema']]);
 							}
 							else
 							{
 								$app['monolog']->error('error message-picture ' . $img .
-									' not inserted in db.', ['schema' => $app['tschema']]);
+									' not inserted in db.', ['schema' => $app['pp_schema']]);
 							}
 
 							continue;
 						}
 
-						$new_filename = $app['tschema'] . '_m_' . $id . '_';
+						$new_filename = $app['pp_schema'] . '_m_' . $id . '_';
 						$new_filename .= sha1($new_filename . microtime()) . '.jpg';
 
 						$err = $app['s3']->copy($img, $new_filename);
@@ -979,25 +979,25 @@ if (($edit || $add))
 						if (isset($err))
 						{
 							$app['monolog']->error('message-picture renaming and storing in db ' . $img .
-								' not succeeded. ' . $err, ['schema' => $app['tschema']]);
+								' not succeeded. ' . $err, ['schema' => $app['pp_schema']]);
 						}
 						else
 						{
 							$app['monolog']->info('renamed ' . $img . ' to ' .
-								$new_filename, ['schema' => $app['tschema']]);
+								$new_filename, ['schema' => $app['pp_schema']]);
 
-							if ($app['db']->insert($app['tschema'] . '.msgpictures', [
+							if ($app['db']->insert($app['pp_schema'] . '.msgpictures', [
 								'"PictureFile"'		=> $new_filename,
 								'msgid'				=> $id,
 							]))
 							{
 								$app['monolog']->info('message-picture ' . $new_filename .
-									' inserted in db.', ['schema' => $app['tschema']]);
+									' inserted in db.', ['schema' => $app['pp_schema']]);
 							}
 							else
 							{
 								$app['monolog']->error('error: message-picture ' . $new_filename .
-									' not inserted in db.', ['schema' => $app['tschema']]);
+									' not inserted in db.', ['schema' => $app['pp_schema']]);
 							}
 						}
 					}
@@ -1034,21 +1034,21 @@ if (($edit || $add))
 
 			try
 			{
-				$app['db']->update($app['tschema'] . '.messages', $msg, ['id' => $edit]);
+				$app['db']->update($app['pp_schema'] . '.messages', $msg, ['id' => $edit]);
 
 				if ($msg['msg_type'] != $message['msg_type'] || $msg['id_category'] != $message['id_category'])
 				{
 					$column = 'stat_msgs_';
 					$column .= ($message['msg_type']) ? 'offers' : 'wanted';
 
-					$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+					$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
 						set ' . $column . ' = ' . $column . ' - 1
 						where id = ?', [$message['id_category']]);
 
 					$column = 'stat_msgs_';
 					$column .= ($msg['msg_type']) ? 'offers' : 'wanted';
 
-					$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+					$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
 						set ' . $column . ' = ' . $column . ' + 1
 						where id = ?', [$msg['id_category']]);
 				}
@@ -1057,13 +1057,13 @@ if (($edit || $add))
 				{
 					foreach ($deleted_images as $img)
 					{
-						if ($app['db']->delete($app['tschema'] . '.msgpictures', [
+						if ($app['db']->delete($app['pp_schema'] . '.msgpictures', [
 							'msgid'		=> $edit,
 							'"PictureFile"'	=> $img,
 						]))
 						{
 							$app['monolog']->info('message-picture ' . $img .
-								' deleted from db.', ['schema' => $app['tschema']]);
+								' deleted from db.', ['schema' => $app['pp_schema']]);
 						}
 					}
 				}
@@ -1076,7 +1076,7 @@ if (($edit || $add))
 
 						[$sch, $img_type, $msgid, $hash] = explode('_', $img);
 
-						if ($sch != $app['tschema'])
+						if ($sch != $app['pp_schema'])
 						{
 							$img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
 						}
@@ -1098,18 +1098,18 @@ if (($edit || $add))
 							continue;
 						}
 
-						if ($app['db']->insert($app['tschema'] . '.msgpictures', [
+						if ($app['db']->insert($app['pp_schema'] . '.msgpictures', [
 							'"PictureFile"' => $img,
 							'msgid'			=> $edit,
 						]))
 						{
 							$app['monolog']->info('message-picture ' . $img .
-								' inserted in db.', ['schema' => $app['tschema']]);
+								' inserted in db.', ['schema' => $app['pp_schema']]);
 						}
 						else
 						{
 							$app['monolog']->error('error message-picture ' . $img .
-								' not inserted in db.', ['schema' => $app['tschema']]);
+								' not inserted in db.', ['schema' => $app['pp_schema']]);
 						}
 					}
 				}
@@ -1134,7 +1134,7 @@ if (($edit || $add))
 		$msg['description'] = $msg['"Description"'];
 
 		$images = $edit ? $app['db']->fetchAll('select *
-			from ' . $app['tschema'] . '.msgpictures
+			from ' . $app['pp_schema'] . '.msgpictures
 			where msgid = ?', [$edit]) : [];
 
 		if (count($deleted_images))
@@ -1163,7 +1163,7 @@ if (($edit || $add))
 	{
 		$msg =  $app['db']->fetchAssoc('select m.*,
 			m."Description" as description
-			from ' . $app['tschema'] . '.messages m
+			from ' . $app['pp_schema'] . '.messages m
 			where m.id = ?', [$edit]);
 
 		$msg['description'] = $msg['Description'];
@@ -1172,18 +1172,18 @@ if (($edit || $add))
 		$rev = round((strtotime($msg['validity']) - time()) / (86400));
 		$msg['validity'] = $rev < 1 ? 0 : $rev;
 
-		$user = $app['user_cache']->get($msg['id_user'], $app['tschema']);
+		$user = $app['user_cache']->get($msg['id_user'], $app['pp_schema']);
 
 		$user_letscode = $user['letscode'] . ' ' . $user['name'];
 
 		$images = $app['db']->fetchAll('select *
-			from ' . $app['tschema'] . '.msgpictures
+			from ' . $app['pp_schema'] . '.msgpictures
 			where msgid = ?', [$edit]);
 	}
 	else if ($add)
 	{
 		$msg = [
-			'validity'		=> $app['config']->get('msgs_days_default', $app['tschema']),
+			'validity'		=> $app['config']->get('msgs_days_default', $app['pp_schema']),
 			'content'		=> '',
 			'description'	=> '',
 			'msg_type'		=> 'none',
@@ -1205,7 +1205,7 @@ if (($edit || $add))
 		}
 		else
 		{
-			$user = $app['user_cache']->get($uid, $app['tschema']);
+			$user = $app['user_cache']->get($uid, $app['pp_schema']);
 
 			$user_letscode = $user['letscode'] . ' ' . $user['name'];
 		}
@@ -1216,7 +1216,7 @@ if (($edit || $add))
 	$cat_list = ['' => ''];
 
 	$rs = $app['db']->prepare('select id, fullname
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		where leafnote=1
 		order by fullname');
 
@@ -1262,7 +1262,7 @@ if (($edit || $add))
 			->add('accounts', ['status' => 'active'])
 			->str([
 				'filter'        => 'accounts',
-				'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+				'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
 			]);
 		echo '" ';
 
@@ -1329,7 +1329,7 @@ if (($edit || $add))
 	echo '</label>';
 	echo '<div class="input-group">';
 	echo '<span class="input-group-addon">';
-	echo $app['config']->get('currency', $app['tschema']);
+	echo $app['config']->get('currency', $app['pp_schema']);
 	echo '</span>';
 	echo '<input type="number" class="form-control" ';
 	echo 'id="amount" name="amount" min="0" ';
@@ -1469,16 +1469,16 @@ if ($id)
 {
 	$cc = $app['request']->isMethod('POST') ? $cc : 1;
 
-	$user = $app['user_cache']->get($message['id_user'], $app['tschema']);
+	$user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
 
 	$to = $app['db']->fetchColumn('select c.value
-		from ' . $app['tschema'] . '.contact c, ' .
-			$app['tschema'] . '.type_contact tc
+		from ' . $app['pp_schema'] . '.contact c, ' .
+			$app['pp_schema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
 			and tc.abbrev = \'mail\'', [$user['id']]);
 
-	$mail_to = $app['mail_addr_user']->get_active($user['id'], $app['tschema']);
+	$mail_to = $app['mail_addr_user']->get_active($user['id'], $app['pp_schema']);
 
 	$mail_from = $app['s_schema']
 		&& !$app['s_master']
@@ -1491,7 +1491,7 @@ if ($id)
 	$images = [];
 
 	$st = $app['db']->prepare('select id, "PictureFile"
-		from ' . $app['tschema'] . '.msgpictures
+		from ' . $app['pp_schema'] . '.msgpictures
 		where msgid = ?');
 	$st->bindValue(1, $id);
 	$st->execute();
@@ -1504,14 +1504,14 @@ if ($id)
 	$and_local = ($app['pp_guest']) ? ' and local = \'f\' ' : '';
 
 	$prev = $app['db']->fetchColumn('select id
-		from ' . $app['tschema'] . '.messages
+		from ' . $app['pp_schema'] . '.messages
 		where id > ?
 		' . $and_local . '
 		order by id asc
 		limit 1', [$id]);
 
 	$next = $app['db']->fetchColumn('select id
-		from ' . $app['tschema'] . '.messages
+		from ' . $app['pp_schema'] . '.messages
 		where id < ?
 		' . $and_local . '
 		order by id desc
@@ -1520,8 +1520,8 @@ if ($id)
 	$title = $message['content'];
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-		from ' . $app['tschema'] . '.contact c, ' .
-			$app['tschema'] . '.type_contact tc
+		from ' . $app['pp_schema'] . '.contact c, ' .
+			$app['pp_schema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?
 			and c.flag_public = 1', [$user['id']]);
@@ -1560,7 +1560,7 @@ if ($id)
 
 			if (!$app['s_system_self'])
 			{
-				$tus['tus'] = $app['tschema'];
+				$tus['tus'] = $app['pp_schema'];
 			}
 
 			$app['btn_top']->add_trans('transactions', $app['s_ary'],
@@ -1695,7 +1695,7 @@ if ($id)
 	else
 	{
 		echo $message['amount'] . ' ';
-		echo $app['config']->get('currency', $app['tschema']);
+		echo $app['config']->get('currency', $app['pp_schema']);
 		echo $message['units'] ? ' per ' . $message['units'] : '';
 	}
 
@@ -1710,7 +1710,7 @@ if ($id)
 	echo ' (saldo: <span class="label label-info">';
 	echo $balance;
 	echo '</span> ';
-	echo $app['config']->get('currency', $app['tschema']);
+	echo $app['config']->get('currency', $app['pp_schema']);
 	echo ')';
 	echo '</dd>';
 
@@ -1721,12 +1721,12 @@ if ($id)
 
 	echo '<dt>Aangemaakt op</dt>';
 	echo '<dd>';
-	echo $app['date_format']->get($message['cdate'], 'day', $app['tschema']);
+	echo $app['date_format']->get($message['cdate'], 'day', $app['pp_schema']);
 	echo '</dd>';
 
 	echo '<dt>Geldig tot</dt>';
 	echo '<dd>';
-	echo $app['date_format']->get($message['validity'], 'day', $app['tschema']);
+	echo $app['date_format']->get($message['validity'], 'day', $app['pp_schema']);
 	echo '</dd>';
 
 	if ($app['pp_admin'] || $s_owner)
@@ -1741,7 +1741,7 @@ if ($id)
 		echo '</dd>';
 	}
 
-	if ($app['intersystems']->get_count($app['tschema']))
+	if ($app['intersystems']->get_count($app['pp_schema']))
 	{
 		echo '<dt>Zichtbaarheid</dt>';
 		echo '<dd>';
@@ -1865,7 +1865,7 @@ if (isset($filter['uid'])
 	&& $filter['uid']
 	&& !isset($filter['s']))
 {
-	$filter['fcode'] = $app['account']->str($filter['uid'], $app['tschema']);
+	$filter['fcode'] = $app['account']->str($filter['uid'], $app['pp_schema']);
 }
 
 if (isset($filter['uid']))
@@ -1889,7 +1889,7 @@ if (isset($filter['fcode'])
 	$fcode = trim($fcode);
 
 	$fuid = $app['db']->fetchColumn('select id
-		from ' . $app['tschema'] . '.users
+		from ' . $app['pp_schema'] . '.users
 		where letscode = ?', [$fcode]);
 
 	if ($fuid)
@@ -1897,7 +1897,7 @@ if (isset($filter['fcode'])
 		$where_sql[] = 'u.id = ?';
 		$params_sql[] = $fuid;
 
-		$fcode = $app['account']->str($fuid, $app['tschema']);
+		$fcode = $app['account']->str($fuid, $app['pp_schema']);
 		$params['f']['fcode'] = $fcode;
 	}
 	else
@@ -1912,7 +1912,7 @@ if (isset($filter['cid'])
 	$cat_ary = [];
 
 	$st = $app['db']->prepare('select id
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		where id_parent = ?');
 	$st->bindValue(1, $filter['cid']);
 	$st->execute();
@@ -2017,14 +2017,14 @@ else
 }
 
 $query = 'select m.*, u.postcode
-	from ' . $app['tschema'] . '.messages m, ' .
-		$app['tschema'] . '.users u
+	from ' . $app['pp_schema'] . '.messages m, ' .
+		$app['pp_schema'] . '.users u
 		where m.id_user = u.id' . $where_sql . '
 	order by ' . $params['s']['orderby'] . ' ';
 
 $row_count = $app['db']->fetchColumn('select count(m.*)
-	from ' . $app['tschema'] . '.messages m, ' .
-		$app['tschema'] . '.users u
+	from ' . $app['pp_schema'] . '.messages m, ' .
+		$app['pp_schema'] . '.users u
 	where m.id_user = u.id' . $where_sql, $params_sql);
 
 $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -2043,7 +2043,7 @@ if ($v_extended)
 	}
 
 	$_imgs = $app['db']->executeQuery('select mp.msgid, mp."PictureFile"
-		from ' . $app['tschema'] . '.msgpictures mp
+		from ' . $app['pp_schema'] . '.msgpictures mp
 		where msgid in (?)',
 		[$ids],
 		[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -2105,7 +2105,7 @@ $tableheader_ary += [
 	]),
 ];
 
-if (!$app['pp_guest'] && $app['intersystems']->get_count($app['tschema']))
+if (!$app['pp_guest'] && $app['intersystems']->get_count($app['pp_schema']))
 {
 	$tableheader_ary += [
 		'm.local' => array_merge($asc_preset_ary, [
@@ -2129,8 +2129,8 @@ $categories = $cat_params  = [];
 if (isset($filter['uid']))
 {
 	$st = $app['db']->executeQuery('select c.*
-		from ' . $app['tschema'] . '.categories c, ' .
-			$app['tschema'] . '.messages m
+		from ' . $app['pp_schema'] . '.categories c, ' .
+			$app['pp_schema'] . '.messages m
 		where m.id_category = c.id
 			and m.id_user = ?
 		order by c.fullname', [$filter['uid']]);
@@ -2138,7 +2138,7 @@ if (isset($filter['uid']))
 else
 {
 	$st = $app['db']->executeQuery('select *
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		order by fullname');
 }
 
@@ -2173,7 +2173,7 @@ if ($app['pp_admin'] || $app['pp_user'])
 		if ($app['pp_admin'] && !$s_owner)
 		{
 			$str = 'Vraag of aanbod voor ';
-			$str .= $app['account']->str($filter['uid'], $app['tschema']);
+			$str .= $app['account']->str($filter['uid'], $app['pp_schema']);
 
 			$app['btn_top']->add('messages', $app['pp_ary'],
 				['add' => 1, 'uid' => $filter['uid']], $str);
@@ -2349,7 +2349,7 @@ if (!$p_inline)
 		->add('accounts', ['status'	=> 'active'])
 		->str([
 			'filter'		=> 'accounts',
-			'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+			'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
 		]);
 
 	echo '" ';
@@ -2518,10 +2518,10 @@ if ($v_list)
 		}
 
 		echo '<td>';
-		echo $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
+		echo $app['date_format']->get($msg['validity'], 'day', $app['pp_schema']);
 		echo '</td>';
 
-		if (!$app['pp_guest'] && $app['intersystems']->get_count($app['tschema']))
+		if (!$app['pp_guest'] && $app['intersystems']->get_count($app['pp_schema']))
 		{
 			echo '<td>';
 			echo $app['item_access']->get_label($msg['local'] ? 'user' : 'guest');

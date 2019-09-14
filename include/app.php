@@ -37,7 +37,7 @@ $fn_before_system = function(Request $request, app $app){
 		$app['email_validate']->validate($request->query->get('et'));
 	}
 
-	if ($css = $app['config']->get('css', $app['tschema']))
+	if ($css = $app['config']->get('css', $app['pp_schema']))
 	{
 		$app['assets']->add_external_css([$css]);
 	}
@@ -729,11 +729,11 @@ else
 	$app['pp_role'] = 'anonymous';
 }
 
-$app['intersystem_en'] = $app['config']->get('template_lets', $app['tschema'])
-	&& $app['config']->get('interlets_en', $app['tschema']);
+$app['intersystem_en'] = $app['config']->get('template_lets', $app['pp_schema'])
+	&& $app['config']->get('interlets_en', $app['pp_schema']);
 
 $app['s_system_self'] = true;
-$app['s_schema'] = $app['tschema'];
+$app['s_schema'] = $app['pp_schema'];
 $app['s_elas_guest'] = false;
 $app['pp_guest'] = false;
 $app['pp_user'] = false;
@@ -744,7 +744,7 @@ $app['s_master'] = false;
 if ($app['pp_role'] === 'guest')
 {
 	if ($app['request']->query->get('s') !== null
-		&& $app['request']->query->get('s') !== $app['tschema'])
+		&& $app['request']->query->get('s') !== $app['pp_schema'])
 	{
 		$app['pp_ary']['s'] = $app['request']->query->get('s');
 		$app['s_schema'] = $app['pp_ary']['s'];
@@ -834,7 +834,7 @@ if (!ctype_digit((string) $app['s_id']))
 	$app['session']->set('logins', $app['s_logins']);
 
 	$app['monolog']->debug('Non numeric s_id: ' . $app['s_id'],
-		['schema' => $app['tschema']]);
+		['schema' => $app['pp_schema']]);
 
 	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
 }
@@ -842,7 +842,7 @@ if (!ctype_digit((string) $app['s_id']))
 if (!$app['pp_anonymous'] && $app['s_role'] === 'anonymous')
 {
 	$app['monolog']->debug('Not authenticated, redirect to login.',
-		['schema' => $app['tschema']]);
+		['schema' => $app['pp_schema']]);
 
 	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
 }
@@ -850,7 +850,7 @@ if (!$app['pp_anonymous'] && $app['s_role'] === 'anonymous')
 if ($app['pp_guest'] && !$app['intersystem_en'])
 {
 	$app['monolog']->debug('Guest routes disabled',
-		['schema' => $app['tschema']]);
+		['schema' => $app['pp_schema']]);
 
 
 	if ($app['s_role'] === 'user')
@@ -863,7 +863,7 @@ if ($app['pp_guest'] && !$app['intersystem_en'])
 			], []);
 		}
 
-		$landing_route = $app['config']->get('default_landing_page', $app['tschema']);
+		$landing_route = $app['config']->get('default_landing_page', $app['pp_schema']);
 
 		$app['link']->redirect($landing_route, [
 			'system' => $app['pp_system'],
@@ -893,7 +893,7 @@ if ($app['page_access'] === 'anonymous')
 	if (!isset($app['allow_authenticated'])
 		&& $app['s_auth_en'])
 	{
-		$default_landing_page = $app['config']->get('default_landing_page', $app['tschema']);
+		$default_landing_page = $app['config']->get('default_landing_page', $app['pp_schema']);
 		$app['link']->redirect();
 	}
 }
@@ -914,7 +914,7 @@ else
 
 if ($app['pp_guest'] && !$app['s_system_self'])
 {
-	if (!isset($app['intersystem_ary']['eland'][$app['tschema']]))
+	if (!isset($app['intersystem_ary']['eland'][$app['pp_schema']]))
 	{
 		$app['link']->redirect('login',
 			['system' => $app['pp_system']],
@@ -1012,7 +1012,7 @@ else if (ctype_digit((string) $app['s_id']))
 	{
 		$app['s_accountrole'] = $app['session_user']['accountrole'];
 
-		$route = $app['config']->get('default_landing_page', $app['tschema']);
+		$route = $app['config']->get('default_landing_page', $app['pp_schema']);
 
 		$app['link']->redirect($route, $app['pp_ary'], []);
 
@@ -1065,7 +1065,7 @@ switch ($app['s_accountrole'])
 
 		if ($app['page_access'] != 'guest')
 		{
-			$route = $app['config']->get('default_landing_page', $app['tschema']);
+			$route = $app['config']->get('default_landing_page', $app['pp_schema']);
 
 			$app['link']->redirect($route, $app['pp_ary'], []);
 		}
@@ -1076,7 +1076,7 @@ switch ($app['s_accountrole'])
 
 		if (!($app['page_access'] == 'user' || $app['page_access'] == 'guest'))
 		{
-			$route = $app['config']->get('default_landing_page', $app['tschema']);
+			$route = $app['config']->get('default_landing_page', $app['pp_schema']);
 
 			$app['link']->redirect($route, $app['pp_ary'], []);
 		}
@@ -1087,7 +1087,7 @@ switch ($app['s_accountrole'])
 
 		if ($app['page_access'] == 'anonymous')
 		{
-			$page = $app['config']->get('default_landing_page', $app['tschema']);
+			$page = $app['config']->get('default_landing_page', $app['pp_schema']);
 
 			$app['link']->redirect($route, $app['pp_ary'], []);
 		}
@@ -1111,17 +1111,17 @@ switch ($app['s_accountrole'])
 /*
 if ($app['page_access'] != 'anonymous'
 	&& !$app['s_system_self']
-	&& !$app['intersystem_ary']['eland'][$app['tschema']])
+	&& !$app['intersystem_ary']['eland'][$app['pp_schema']])
 {
 	$app['link']->redirect('messages', [
-			'system'		=> $app['systems']->get_system($app['tschema']),
+			'system'		=> $app['systems']->get_system($app['pp_schema']),
 			'role_short'	=> $app['pp_role_short'],
 		], []);
 }
 
 if ($app['page_access'] != 'anonymous'
 	&& !$app['pp_admin']
-	&& $app['config']->get('maintenance', $app['tschema']))
+	&& $app['config']->get('maintenance', $app['pp_schema']))
 {
 	echo $app['twig']->render('maintenance.html.twig');
 	exit;
@@ -1149,16 +1149,16 @@ $app['xdb']->set_user($app['s_schema'],
 if ($app['request']->query->get('welcome') !== null && $app['pp_guest'])
 {
 	$msg = '<strong>Welkom bij ';
-	$msg .= $app['config']->get('systemname', $app['tschema']);
+	$msg .= $app['config']->get('systemname', $app['pp_schema']);
 	$msg .= '</strong><br>';
 	$msg .= 'Waardering bij ';
-	$msg .= $app['config']->get('systemname', $app['tschema']);
+	$msg .= $app['config']->get('systemname', $app['pp_schema']);
 	$msg .= ' gebeurt met \'';
-	$msg .= $app['config']->get('currency', $app['tschema']);
+	$msg .= $app['config']->get('currency', $app['pp_schema']);
 	$msg .= '\'. ';
-	$msg .= $app['config']->get('currencyratio', $app['tschema']);
+	$msg .= $app['config']->get('currencyratio', $app['pp_schema']);
 	$msg .= ' ';
-	$msg .= $app['config']->get('currency', $app['tschema']);
+	$msg .= $app['config']->get('currency', $app['pp_schema']);
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($app['s_elas_guest'])

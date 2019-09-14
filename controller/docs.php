@@ -12,7 +12,7 @@ class docs
     {
         $q = $request->query->get('q', '');
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -33,7 +33,7 @@ class docs
             }
         }
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_name\'' => ['is null'],
             'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -201,7 +201,7 @@ class docs
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $app['date_format']->get($d['ts'], 'min', $app['tschema']);
+                $td[] = $app['date_format']->get($d['ts'], 'min', $app['pp_schema']);
 
                 if ($show_visibility)
                 {
@@ -243,7 +243,7 @@ class docs
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

@@ -11,7 +11,7 @@ class intersystems_del
     public function intersystems_del(Request $request, app $app, int $id):Response
     {
         $group = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.letsgroups
+            from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$id]);
 
         if (!$group)
@@ -28,11 +28,11 @@ class intersystems_del
                 $app['link']->redirect('intersystems', $app['pp_ary'], []);
             }
 
-            if($app['db']->delete($app['tschema'] . '.letsgroups', ['id' => $id]))
+            if($app['db']->delete($app['pp_schema'] . '.letsgroups', ['id' => $id]))
             {
                 $app['alert']->success('InterSysteem verwijderd.');
 
-                $app['intersystems']->clear_cache($app['tschema']);
+                $app['intersystems']->clear_cache($app['pp_schema']);
 
                 $app['link']->redirect('intersystems', $app['pp_ary'], []);
             }
@@ -67,7 +67,7 @@ class intersystems_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

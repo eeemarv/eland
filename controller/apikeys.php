@@ -11,7 +11,7 @@ class apikeys
     public function apikeys(app $app):Response
     {
         $apikeys = $app['db']->fetchAll('select *
-            from ' . $app['tschema'] . '.apikeys');
+            from ' . $app['pp_schema'] . '.apikeys');
 
         $app['btn_top']->add('apikeys_add', $app['pp_ary'], [], 'Apikey toevoegen');
 
@@ -42,7 +42,7 @@ class apikeys
             $td[] = $a['id'];
             $td[] = $a['comment'];
             $td[] = $a['apikey'];
-            $td[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
+            $td[] = $app['date_format']->get_td($a['created'], 'min', $app['pp_schema']);
             $td[] = $app['link']->link_fa('apikeys_del', $app['pp_ary'],
                 ['id' => $a['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'], 'times');
@@ -60,7 +60,7 @@ class apikeys
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -80,7 +80,7 @@ class apikeys
                 'type'		=> 'interlets',
             ];
 
-            if($app['db']->insert($app['tschema'] . '.apikeys', $apikey))
+            if($app['db']->insert($app['pp_schema'] . '.apikeys', $apikey))
             {
                 $app['alert']->success('Apikey opgeslagen.');
                 $app['link']->redirect('apikeys', $app['pp_ary'], []);
@@ -144,7 +144,7 @@ class apikeys
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -175,7 +175,7 @@ class apikeys
                 $app['link']->redirect('apikeys', $app['pp_ary'], []);
             }
 
-            if ($app['db']->delete($app['tschema'] . '.apikeys',
+            if ($app['db']->delete($app['pp_schema'] . '.apikeys',
                 ['id' => $id]))
             {
                 $app['alert']->success('Apikey verwijderd.');
@@ -185,7 +185,7 @@ class apikeys
             $app['alert']->error('Apikey niet verwijderd.');
         }
         $apikey = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.apikeys
+            from ' . $app['pp_schema'] . '.apikeys
             where id = ?', [$id]);
 
         $app['heading']->add('Apikey verwijderen?');
@@ -219,7 +219,7 @@ class apikeys
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

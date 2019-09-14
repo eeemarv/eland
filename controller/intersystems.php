@@ -10,7 +10,7 @@ class intersystems
     public function intersystems(app $app):Response
     {
         $intersystems = $app['db']->fetchAll('select *
-            from ' . $app['tschema'] . '.letsgroups');
+            from ' . $app['pp_schema'] . '.letsgroups');
 
         $letscodes = [];
 
@@ -34,7 +34,7 @@ class intersystems
             else if ($sys['apimethod'] == 'internal')
             {
                 $intersystems[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where status in (1, 2)');
             }
             else
@@ -46,7 +46,7 @@ class intersystems
         $users_letscode = [];
 
         $intersystem_users = $app['db']->executeQuery('select id, status, letscode, accountrole
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where letscode in (?)',
             [$letscodes],
             [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -204,7 +204,7 @@ class intersystems
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -271,7 +271,7 @@ class intersystems
         $loc_letscode_ary = [];
 
         $groups = $app['db']->executeQuery('select localletscode, url, id
-            from ' . $app['tschema'] . '.letsgroups
+            from ' . $app['pp_schema'] . '.letsgroups
             where url in (?)',
             [$url_ary],
             [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -284,7 +284,7 @@ class intersystems
         }
 
         $interlets_accounts = $app['db']->executeQuery('select id, letscode, status, accountrole
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where letscode in (?)',
             [$loc_letscode_ary],
             [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
@@ -392,7 +392,7 @@ class intersystems
             $out .= $group_user_count_ary[$rem_schema];
             $out .= '</td>';
 
-            if ($app['tschema'] === $rem_schema)
+            if ($app['pp_schema'] === $rem_schema)
             {
                 $out .= '<td colspan="4">';
                 $out .= 'Eigen Systeem';

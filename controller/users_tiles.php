@@ -32,7 +32,7 @@ class users_tiles
         }
 
         $users = $app['db']->fetchAll('select u.*
-            from ' . $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
@@ -127,7 +127,7 @@ class users_tiles
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

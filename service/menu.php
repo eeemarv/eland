@@ -17,7 +17,7 @@ class menu
 
 	protected $config;
 	protected $item_access;
-	protected $tschema;
+	protected $pp_schema;
 	protected $pp_system;
 	protected $intersystem_en;
 	protected $r_messages;
@@ -29,7 +29,7 @@ class menu
 	public function __construct(
 		config $config,
 		item_access $item_access,
-		string $tschema,
+		string $pp_schema,
 		string $pp_system,
 		bool $intersystem_en,
 		string $r_messages,
@@ -40,7 +40,7 @@ class menu
 	{
 		$this->config = $config;
 		$this->item_access = $item_access;
-		$this->tschema = $tschema;
+		$this->pp_schema = $pp_schema;
 		$this->pp_system = $pp_system;
 		$this->intersystem_en = $intersystem_en;
 		$this->r_messages = $r_messages;
@@ -54,7 +54,7 @@ class menu
 		$this->active_menu = $active_menu;
 	}
 
-	private function get_fallback_route():string
+	public function get_fallback_route():string
 	{
 		if (isset(self::FALLBACK_VAR[$this->active_menu]))
 		{
@@ -109,7 +109,7 @@ class menu
 
 			if (isset($item['config_en']))
 			{
-				if (!$this->config->get($item['config_en'], $this->tschema))
+				if (!$this->config->get($item['config_en'], $this->pp_schema))
 				{
 					continue;
 				}

@@ -38,7 +38,7 @@ class contacts_add
                [$code] = explode(' ', trim($account_code));
 
                 $user_id = $app['db']->fetchColumn('select id
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where letscode = ?', [$code]);
 
                 if (!$user_id)
@@ -63,7 +63,7 @@ class contacts_add
             }
 
             $abbrev_type = $app['db']->fetchColumn('select abbrev
-                from ' . $app['tschema'] . '.type_contact
+                from ' . $app['pp_schema'] . '.type_contact
                 where id = ?', [$id_type_contact]);
 
             if(!$abbrev_type)
@@ -88,7 +88,7 @@ class contacts_add
             }
 
             $mail_type_id = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.type_contact
+                from ' . $app['pp_schema'] . '.type_contact
                 where abbrev = \'mail\'');
 
             if ($id_type_contact === $mail_type_id)
@@ -96,9 +96,9 @@ class contacts_add
                 $mailadr = $value;
 
                 $mail_count = $app['db']->fetchColumn('select count(c.*)
-                    from ' . $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc, ' .
+                        $app['pp_schema'] . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
                         and c.id_user = u.id
@@ -144,7 +144,7 @@ class contacts_add
                     $app['queue.geocode']->cond_queue([
                         'adr'		=> $value,
                         'uid'		=> $user_id,
-                        'schema'	=> $app['tschema'],
+                        'schema'	=> $app['pp_schema'],
                     ], 0);
                 }
 
@@ -156,7 +156,7 @@ class contacts_add
                     'id_user'				=> $user_id,
                 ];
 
-                if ($app['db']->insert($app['tschema'] . '.contact', $insert_ary))
+                if ($app['db']->insert($app['pp_schema'] . '.contact', $insert_ary))
                 {
                     $app['alert']->success('Contact opgeslagen.');
 
@@ -183,7 +183,7 @@ class contacts_add
         $tc = [];
 
         $rs = $app['db']->prepare('select id, name, abbrev
-            from ' . $app['tschema'] . '.type_contact');
+            from ' . $app['pp_schema'] . '.type_contact');
 
         $rs->execute();
 
@@ -234,7 +234,7 @@ class contacts_add
                 ->add('accounts', ['status' => 'extern'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+                    'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
                 ]);
             $out .= '" ';
 
@@ -332,7 +332,7 @@ class contacts_add
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

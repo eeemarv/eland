@@ -11,13 +11,13 @@ class forum_edit
 {
     public function forum_edit(Request $request, app $app, string $forum_id):Response
     {
-        if (!$app['config']->get('forum_en', $app['tschema']))
+        if (!$app['config']->get('forum_en', $app['pp_schema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
             $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
-        $row = $app['xdb']->get('forum', $forum_id, $app['tschema']);
+        $row = $app['xdb']->get('forum', $forum_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -56,7 +56,7 @@ class forum_edit
 
         if (!$is_topic)
         {
-            $row = $app['xdb']->get('forum', $topic_id, $app['tschema']);
+            $row = $app['xdb']->get('forum', $topic_id, $app['pp_schema']);
 
             if ($row)
             {
@@ -117,7 +117,7 @@ class forum_edit
 
             if (!count($errors))
             {
-                $app['xdb']->set('forum', $forum_id, $forum_post, $app['tschema']);
+                $app['xdb']->set('forum', $forum_id, $forum_post, $app['pp_schema']);
 
                 if ($is_topic)
                 {
@@ -204,7 +204,7 @@ class forum_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

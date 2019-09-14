@@ -9,14 +9,14 @@ class login_elas_token
 {
     public function login_elas_token(app $app, string $elas_token):Response
     {
-        if($apikey = $app['predis']->get($app['tschema'] . '_token_' . $elas_token))
+        if($apikey = $app['predis']->get($app['pp_schema'] . '_token_' . $elas_token))
         {
             $s_logins = array_merge($app['s_logins'], [
-                $app['tschema'] 	=> 'elas',
+                $app['pp_schema'] 	=> 'elas',
             ]);
 
             $app['session']->set('logins', $s_logins);
-            $app['session']->set('schema', $app['tschema']);
+            $app['session']->set('schema', $app['pp_schema']);
 
             $referrer = $app['request']->server->get('HTTP_REFERER');
 
@@ -26,14 +26,14 @@ class login_elas_token
                 $domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
                 $app['xdb']->set('apikey_login', $apikey, [
                     'domain' => $domain_referrer
-                ], $app['tschema']);
+                ], $app['pp_schema']);
             }
 
             $app['monolog']->info('eLAS guest login using token ' .
                 $elas_token . ' succeeded. referrer: ' . $referrer,
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
-            $location = $app['config']->get($app['r_default'], $app['tschema']);
+            $location = $app['config']->get($app['r_default'], $app['pp_schema']);
 
             return $app['link']->redirect($location, [
                 'welcome'	    => '1',

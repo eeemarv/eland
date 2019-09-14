@@ -28,7 +28,7 @@ class contact_types_add
 
             if (!$error)
             {
-                if ($app['db']->insert($app['tschema'] . '.type_contact', $tc))
+                if ($app['db']->insert($app['pp_schema'] . '.type_contact', $tc))
                 {
                     $app['alert']->success('Contact type toegevoegd.');
                 }
@@ -89,7 +89,7 @@ class contact_types_add
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

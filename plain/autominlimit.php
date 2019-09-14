@@ -20,14 +20,14 @@ if ($app['request']->isMethod('POST'))
 		'trans_exclusive'	=> $app['request']->request->get('trans_exclusive', ''),
 	];
 
-	$app['xdb']->set('setting', 'autominlimit', $data, $app['tschema']);
+	$app['xdb']->set('setting', 'autominlimit', $data, $app['pp_schema']);
 
 	$app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
 	$app['link']->redirect('autominlimit', $app['pp_ary'], []);
 }
 else
 {
-	$row = $app['xdb']->get('setting', 'autominlimit', $app['tschema']);
+	$row = $app['xdb']->get('setting', 'autominlimit', $app['pp_schema']);
 
 	if ($row)
 	{

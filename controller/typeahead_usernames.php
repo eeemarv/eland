@@ -12,7 +12,7 @@ class typeahead_usernames
         $usernames = [];
 
         $st = $app['db']->prepare('select name
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             order by name asc');
 
         $st->execute();

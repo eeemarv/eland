@@ -10,7 +10,7 @@ class forum_topic
 {
     public function forum_topic(Request $request, app $app, string $topic_id):Response
     {
-        if (!$app['config']->get('forum_en', $app['tschema']))
+        if (!$app['config']->get('forum_en', $app['pp_schema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
             $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
@@ -22,7 +22,7 @@ class forum_topic
 
         $forum_posts = [];
 
-        $row = $app['xdb']->get('forum', $topic_id, $app['tschema']);
+        $row = $app['xdb']->get('forum', $topic_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -88,9 +88,9 @@ class forum_topic
 
             if (!count($errors))
             {
-                $new_id = substr(sha1(microtime() . $app['tschema']), 0, 24);
+                $new_id = substr(sha1(microtime() . $app['pp_schema']), 0, 24);
 
-                $app['xdb']->set('forum', $new_id, $reply, $app['tschema']);
+                $app['xdb']->set('forum', $new_id, $reply, $app['pp_schema']);
 
                 $app['alert']->success('Reactie toegevoegd.');
                 $app['link']->redirect('forum_topic', $app['pp_ary'],
@@ -102,7 +102,7 @@ class forum_topic
 
         $forum_posts[] = $topic_post;
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'data->>\'parent_id\'' => $topic_id], 'order by event_time asc');
 
@@ -122,7 +122,7 @@ class forum_topic
         }
 
         $rows = $app['xdb']->get_many([
-            'agg_schema' => $app['tschema'],
+            'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'event_time' => ['>' => $topic_post['ts']],
             'access' => $app['item_access']->get_visible_ary_xdb(),
@@ -131,7 +131,7 @@ class forum_topic
         $prev = count($rows) ? reset($rows)['eland_id'] : false;
 
         $rows = $app['xdb']->get_many([
-            'agg_schema' => $app['tschema'],
+            'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'event_time' => ['<' => $topic_post['ts']],
             'access' => $app['item_access']->get_visible_ary_xdb(),
@@ -189,7 +189,7 @@ class forum_topic
             $out .= '<p>';
             $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
             $out .= ' @';
-            $out .= $app['date_format']->get($p['ts'], 'min', $app['tschema']);
+            $out .= $app['date_format']->get($p['ts'], 'min', $app['pp_schema']);
             $out .= isset($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
 
             if ($app['pp_admin'] || $s_owner)
@@ -241,7 +241,7 @@ class forum_topic
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

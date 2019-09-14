@@ -25,7 +25,7 @@ if ($del)
 			$app['link']->redirect('apikeys', $app['pp_ary'], []);
 		}
 
-		if ($app['db']->delete($app['tschema'] . '.apikeys',
+		if ($app['db']->delete($app['pp_schema'] . '.apikeys',
 			['id' => $del]))
 		{
 			$app['alert']->success('Apikey verwijderd.');
@@ -35,7 +35,7 @@ if ($del)
 		$app['alert']->error('Apikey niet verwijderd.');
 	}
 	$apikey = $app['db']->fetchAssoc('select *
-		from ' . $app['tschema'] . '.apikeys
+		from ' . $app['pp_schema'] . '.apikeys
 		where id = ?', [$del]);
 
 	$app['heading']->add('Apikey verwijderen?');
@@ -91,7 +91,7 @@ if ($add)
 			'type'		=> 'interlets',
 		];
 
-		if($app['db']->insert($app['tschema'] . '.apikeys', $apikey))
+		if($app['db']->insert($app['pp_schema'] . '.apikeys', $apikey))
 		{
 			$app['alert']->success('Apikey opgeslagen.');
 			$app['link']->redirect('apikeys', $app['pp_ary'], []);
@@ -100,7 +100,7 @@ if ($add)
 		$app['alert']->error('Apikey niet opgeslagen.');
 	}
 
-	$key = sha1($app['config']->get('systemname', $app['tschema']) . microtime());
+	$key = sha1($app['config']->get('systemname', $app['pp_schema']) . microtime());
 
 	$app['heading']->add('Apikey toevoegen');
 	$app['heading']->fa('key');
@@ -158,7 +158,7 @@ if ($add)
 }
 
 $apikeys = $app['db']->fetchAll('select *
-	from ' . $app['tschema'] . '.apikeys');
+	from ' . $app['pp_schema'] . '.apikeys');
 
 $app['btn_top']->add('apikeys', $app['pp_ary'], ['add' => '1'], 'Apikey toevoegen');
 
@@ -191,7 +191,7 @@ foreach($apikeys as $a)
 	$td[] = $a['id'];
 	$td[] = $a['comment'];
 	$td[] = $a['apikey'];
-	$td[] = $app['date_format']->get_td($a['created'], 'min', $app['tschema']);
+	$td[] = $app['date_format']->get_td($a['created'], 'min', $app['pp_schema']);
 	$td[] = $app['link']->link_fa('apikeys', $app['pp_ary'],
 		['del' => $a['id']], 'Verwijderen',
 		['class' => 'btn btn-danger btn-xs'], 'times');

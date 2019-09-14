@@ -19,7 +19,7 @@ class thumbprint_accounts
 		$this->intersystems = $intersystems;
 	}
 
-    public function delete(string $status, array $pp_ary, string $tschema):void
+    public function delete(string $status, array $pp_ary, string $pp_schema):void
     {
         $this->typeahead->delete_thumbprint('accounts', $pp_ary, [
             'status'	=> $status,
@@ -30,7 +30,7 @@ class thumbprint_accounts
             return;
         }
 
-        foreach ($this->intersystems->get_eland($tschema) as $remote_schema => $h)
+        foreach ($this->intersystems->get_eland($pp_schema) as $remote_schema => $h)
         {
             $this->typeahead->delete_thumbprint('eland_intersystem_accounts',
                 $pp_ary, [

@@ -34,7 +34,7 @@ else if ($del || $add || $edit)
 if ($del)
 {
 	if (!($user_id = $app['db']->fetchColumn('select c.id_user
-		from ' . $app['tschema'] . '.contact c
+		from ' . $app['pp_schema'] . '.contact c
 		where c.id = ?', [$del])))
 	{
 		$app['alert']->error('Het contact bestaat niet.');
@@ -61,18 +61,18 @@ if ($del)
 	}
 
 	$contact = $app['db']->fetchAssoc('select c.*, tc.abbrev
-		from ' . $app['tschema'] . '.contact c, ' .
-			$app['tschema'] . '.type_contact tc
+		from ' . $app['pp_schema'] . '.contact c, ' .
+			$app['pp_schema'] . '.type_contact tc
 		where c.id = ?
 			and tc.id = c.id_type_contact', [$del]);
 
-	$owner = $app['user_cache']->get($del, $app['tschema']);
+	$owner = $app['user_cache']->get($del, $app['pp_schema']);
 
 	if ($contact['abbrev'] == 'mail' && ($owner['status'] == 1 || $owner['status'] == 2))
 	{
 		if ($app['db']->fetchColumn('select count(c.*)
-			from ' . $app['tschema'] . '.contact c, ' .
-				$app['tschema'] . '.type_contact tc
+			from ' . $app['pp_schema'] . '.contact c, ' .
+				$app['pp_schema'] . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and c.id_user = ?
 				and tc.abbrev = \'mail\'', [$user_id]) == 1)
@@ -90,7 +90,7 @@ if ($del)
 			$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
 		}
 
-		if ($app['db']->delete($app['tschema'] . '.contact', ['id' => $del]))
+		if ($app['db']->delete($app['pp_schema'] . '.contact', ['id' => $del]))
 		{
 			$app['alert']->success('Contact verwijderd.');
 		}
@@ -104,8 +104,8 @@ if ($del)
 
 	$contact = $app['db']->fetchAssoc('select tc.abbrev,
 			c.value, c.comments, c.flag_public
-		from ' . $app['tschema'] . '.type_contact tc, ' .
-			$app['tschema'] . '.contact c
+		from ' . $app['pp_schema'] . '.type_contact tc, ' .
+			$app['pp_schema'] . '.contact c
 		where c.id_type_contact = tc.id
 			and c.id = ?', [$del]);
 
@@ -180,7 +180,7 @@ if ($edit || $add)
 	if ($edit)
 	{
 		if (!($user_id = $app['db']->fetchColumn('select id_user
-			from ' . $app['tschema'] . '.contact
+			from ' . $app['pp_schema'] . '.contact
 			where id = ?', [$edit])))
 		{
 			$app['alert']->error('Dit contact heeft geen eigenaar
@@ -232,12 +232,12 @@ if ($edit || $add)
 			[$letscode] = explode(' ', trim($letscode));
 
 			$user_id = $app['db']->fetchColumn('select id
-				from ' . $app['tschema'] . '.users
+				from ' . $app['pp_schema'] . '.users
 				where letscode = ?', [$letscode]);
 
 			if ($user_id)
 			{
-				$letscode = $app['account']->str($user_id, $app['tschema']);
+				$letscode = $app['account']->str($user_id, $app['pp_schema']);
 			}
 			else
 			{
@@ -266,7 +266,7 @@ if ($edit || $add)
 		];
 
 		$abbrev_type = $app['db']->fetchColumn('select abbrev
-			from ' . $app['tschema'] . '.type_contact
+			from ' . $app['pp_schema'] . '.type_contact
 			where id = ?', [$contact['id_type_contact']]);
 
 		if ($abbrev_type === 'mail'
@@ -296,19 +296,19 @@ if ($edit || $add)
 		}
 
 		$mail_type_id = $app['db']->fetchColumn('select id
-			from ' . $app['tschema'] . '.type_contact
+			from ' . $app['pp_schema'] . '.type_contact
 			where abbrev = \'mail\'');
 
 		if ($edit)
 		{
 			$count_mail = $app['db']->fetchColumn('select count(*)
-				from ' . $app['tschema'] . '.contact
+				from ' . $app['pp_schema'] . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
 				[$user_id, $mail_type_id]);
 
 			$mail_id = $app['db']->fetchColumn('select id
-				from ' . $app['tschema'] . '.contact
+				from ' . $app['pp_schema'] . '.contact
 				where id_user = ?
 					and id_type_contact = ?',
 				[$user_id, $mail_type_id]);
@@ -323,9 +323,9 @@ if ($edit || $add)
 		if ($contact['id_type_contact'] == $mail_type_id)
 		{
 			$mail_count = $app['db']->fetchColumn('select count(c.*)
-				from ' . $app['tschema'] . '.contact c, ' .
-					$app['tschema'] . '.type_contact tc, ' .
-					$app['tschema'] . '.users u
+				from ' . $app['pp_schema'] . '.contact c, ' .
+					$app['pp_schema'] . '.type_contact tc, ' .
+					$app['pp_schema'] . '.users u
 				where c.id_type_contact = tc.id
 					and tc.abbrev = \'mail\'
 					and c.id_user = u.id
@@ -371,13 +371,13 @@ if ($edit || $add)
 				$app['queue.geocode']->cond_queue([
 					'adr'		=> $contact['value'],
 					'uid'		=> $contact['id_user'],
-					'schema'	=> $app['tschema'],
+					'schema'	=> $app['pp_schema'],
 				], 0);
 			}
 
 			if ($edit)
 			{
-				if ($app['db']->update($app['tschema'] . '.contact',
+				if ($app['db']->update($app['pp_schema'] . '.contact',
 					$contact, ['id' => $edit]))
 				{
 					$app['alert']->success('Contact aangepast.');
@@ -390,7 +390,7 @@ if ($edit || $add)
 			}
 			else
 			{
-				if ($app['db']->insert($app['tschema'] . '.contact', $contact))
+				if ($app['db']->insert($app['pp_schema'] . '.contact', $contact))
 				{
 					$app['alert']->success('Contact opgeslagen.');
 					$app['link']->redirect('users', $app['pp_ary'], ['id' => $uid]);
@@ -409,7 +409,7 @@ if ($edit || $add)
 	else if ($edit)
 	{
 		$contact = $app['db']->fetchAssoc('select *
-			from ' . $app['tschema'] . '.contact
+			from ' . $app['pp_schema'] . '.contact
 			where id = ?', [$edit]);
 
 		$access = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
@@ -427,7 +427,7 @@ if ($edit || $add)
 	$tc = [];
 
 	$rs = $app['db']->prepare('select id, name, abbrev
-		from ' . $app['tschema'] . '.type_contact');
+		from ' . $app['pp_schema'] . '.type_contact');
 
 	$rs->execute();
 
@@ -514,7 +514,7 @@ if ($edit || $add)
 			->add('accounts', ['status' => 'extern'])
 			->str([
 				'filter'        => 'accounts',
-				'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+				'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
 			]);
 		echo '" ';
 
@@ -632,12 +632,12 @@ if ($uid)
 		&& $uid;
 
 	$contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-		from ' . $app['tschema'] . '.contact c, ' .
-			$app['tschema'] . '.type_contact tc
+		from ' . $app['pp_schema'] . '.contact c, ' .
+			$app['pp_schema'] . '.type_contact tc
 		where c.id_type_contact = tc.id
 			and c.id_user = ?', [$uid]);
 
-	$user = $app['user_cache']->get($uid, $app['tschema']);
+	$user = $app['user_cache']->get($uid, $app['pp_schema']);
 
 	if ($app['pp_admin'] || $s_owner)
 	{
@@ -654,7 +654,7 @@ if ($uid)
 		else
 		{
 			$app['heading']->add('Contacten Gebruiker ');
-			$app['heading']->add($app['account']->link($uid, $app['tschema']));
+			$app['heading']->add($app['account']->link($uid, $app['pp_schema']));
 		}
 
 		$app['heading']->fa('map-marker');
@@ -866,7 +866,7 @@ $params_sql = $where_sql = [];
 if (isset($filter['uid']))
 {
 	$params['f']['uid'] = $filter['uid'];
-	$filter['code'] = $app['account']->str($filter['uid'], $app['tschema']);
+	$filter['code'] = $app['account']->str($filter['uid'], $app['pp_schema']);
 }
 
 if (isset($filter['code']) && $filter['code'])
@@ -874,14 +874,14 @@ if (isset($filter['code']) && $filter['code'])
 	[$code] = explode(' ', trim($filter['code']));
 
 	$fuid = $app['db']->fetchColumn('select id
-		from ' . $app['tschema'] . '.users
+		from ' . $app['pp_schema'] . '.users
 		where letscode = ?', [$code]);
 
 	if ($fuid)
 	{
 		$where_sql[] = 'c.id_user = ?';
 		$params_sql[] = $fuid;
-		$params['f']['code'] = $app['account']->str($fuid, $app['tschema']);
+		$params['f']['code'] = $app['account']->str($fuid, $app['pp_schema']);
 	}
 	else
 	{
@@ -975,7 +975,7 @@ $user_table_sql = '';
 if ($params['f']['ustatus'] !== 'all'
 	|| $params['s']['orderby'] === 'u.letscode')
 {
-	$user_table_sql = ', ' . $app['tschema'] . '.users u ';
+	$user_table_sql = ', ' . $app['pp_schema'] . '.users u ';
 	$where_sql[] = 'u.id = c.id_user';
 }
 
@@ -989,13 +989,13 @@ else
 }
 
 $query = 'select c.*, tc.abbrev
-	from ' . $app['tschema'] . '.contact c, ' .
-		$app['tschema'] . '.type_contact tc' . $user_table_sql . '
+	from ' . $app['pp_schema'] . '.contact c, ' .
+		$app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql;
 
 $row_count = $app['db']->fetchColumn('select count(c.*)
-	from ' . $app['tschema'] . '.contact c, ' .
-		$app['tschema'] . '.type_contact tc' . $user_table_sql . '
+	from ' . $app['pp_schema'] . '.contact c, ' .
+		$app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
 	where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
 $query .= ' order by ' . $params['s']['orderby'] . ' ';
@@ -1042,7 +1042,7 @@ unset($tableheader_ary['c.id']);
 $abbrev_ary = [];
 
 $rs = $app['db']->prepare('select abbrev
-	from ' . $app['tschema'] . '.type_contact');
+	from ' . $app['pp_schema'] . '.type_contact');
 
 $rs->execute();
 
@@ -1174,7 +1174,7 @@ echo $app['typeahead']->ini($app['pp_ary'])
 	->add('accounts', ['status' => 'extern'])
 	->str([
 		'filter'        => 'accounts',
-		'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+		'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
 	]);
 echo '" ';
 

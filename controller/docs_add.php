@@ -54,7 +54,7 @@ class docs_add
             {
                 $doc_id = substr(sha1(random_bytes(16)), 0, 24);
 
-                $filename = $app['tschema'] . '_d_' . $doc_id . '.' . $ext;
+                $filename = $app['pp_schema'] . '_d_' . $doc_id . '.' . $ext;
 
                 $error = $app['s3']->doc_upload($filename, $tmpfile);
 
@@ -62,7 +62,7 @@ class docs_add
                 {
                     $app['monolog']->error('doc upload fail: ' . $error);
                     $app['alert']->error('Bestand opladen mislukt.',
-                        ['schema' => $app['tschema']]);
+                        ['schema' => $app['pp_schema']]);
                 }
                 else
                 {
@@ -77,7 +77,7 @@ class docs_add
 
                     if (strlen($map_name))
                     {
-                        $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+                        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
                             'agg_type' => 'doc',
                             'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -93,7 +93,7 @@ class docs_add
 
                             $map = ['map_name' => $map_name];
 
-                            $app['xdb']->set('doc', $map_id, $map, $app['tschema']);
+                            $app['xdb']->set('doc', $map_id, $map, $app['pp_schema']);
 
                             $app['typeahead']->delete_thumbprint('doc_map_names',
                                 $app['pp_ary'], []);
@@ -109,7 +109,7 @@ class docs_add
                         $doc['name'] = $name;
                     }
 
-                    $app['xdb']->set('doc', $doc_id, $doc, $app['tschema']);
+                    $app['xdb']->set('doc', $doc_id, $doc, $app['pp_schema']);
 
 
                     $app['alert']->success('Het bestand is opgeladen.');
@@ -127,7 +127,7 @@ class docs_add
 
         if ($map_id)
         {
-            $row = $app['xdb']->get('doc', $map_id, $app['tschema']);
+            $row = $app['xdb']->get('doc', $map_id, $app['pp_schema']);
 
             if ($row)
             {
@@ -214,7 +214,7 @@ class docs_add
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

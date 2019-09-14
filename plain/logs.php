@@ -24,7 +24,7 @@ $params = [
 
 $params_sql = $where_sql = [];
 
-$params_sql[] = $app['tschema'];
+$params_sql[] = $app['pp_schema'];
 
 if (isset($filter['code'])
 	&& $filter['code'])
@@ -198,7 +198,7 @@ echo $app['typeahead']->ini($app['pp_ary'])
 	->add('accounts', ['status' => 'extern'])
 	->str([
 		'filter'        => 'accounts',
-		'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+		'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
 	]);
 echo '" ';
 
@@ -302,7 +302,7 @@ foreach($rows as $value)
 {
 	echo '<tr>';
 	echo '<td>';
-	echo $app['date_format']->get($value['ts'], 'sec', $app['tschema']);
+	echo $app['date_format']->get($value['ts'], 'sec', $app['pp_schema']);
 	echo '</td>';
 	echo '<td>';
 	echo $value['type'];

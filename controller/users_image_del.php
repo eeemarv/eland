@@ -21,7 +21,7 @@ class users_image_del
 
     public function users_image_del_admin(Request $request, app $app, int $id):Response
     {
-        $user = $app['user_cache']->get($id, $app['tschema']);
+        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -39,11 +39,11 @@ class users_image_del
 
         if ($request->isMethod('POST'))
         {
-            $app['db']->update($app['tschema'] . '.users',
+            $app['db']->update($app['pp_schema'] . '.users',
                 ['"PictureFile"' => ''],
                 ['id' => $id]);
 
-            $app['user_cache']->clear($id, $app['tschema']);
+            $app['user_cache']->clear($id, $app['pp_schema']);
 
             $app['alert']->success('Profielfoto verwijderd.');
             $app['link']->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
@@ -90,7 +90,7 @@ class users_image_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

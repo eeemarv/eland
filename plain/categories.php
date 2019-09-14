@@ -48,14 +48,14 @@ if ($add)
 			if ($cat['leafnote'])
 			{
 				$cat['fullname'] .= $app['db']->fetchColumn('select name
-					from ' . $app['tschema'] . '.categories
+					from ' . $app['pp_schema'] . '.categories
 					where id = ?', [(int) $cat['id_parent']]);
 				$cat['fullname'] .= ' - ';
 			}
 
 			$cat['fullname'] .= $cat['name'];
 
-			if ($app['db']->insert($app['tschema'] . '.categories', $cat))
+			if ($app['db']->insert($app['pp_schema'] . '.categories', $cat))
 			{
 				$app['alert']->success('Categorie toegevoegd.');
 				$app['link']->redirect('categories', $app['pp_ary'], []);
@@ -72,7 +72,7 @@ if ($add)
 	$parent_cats = [0 => '-- Hoofdcategorie --'];
 
 	$rs = $app['db']->prepare('select id, name
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		where leafnote = 0 order by name');
 
 	$rs->execute();
@@ -136,7 +136,7 @@ if ($edit)
 	$cats = [];
 
 	$rs = $app['db']->prepare('select *
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		order by fullname');
 
 	$rs->execute();
@@ -186,17 +186,17 @@ if ($edit)
 			if ($cat['id_parent'])
 			{
 				$prefix .= $app['db']->fetchColumn('select name
-					from ' . $app['tschema'] . '.categories
+					from ' . $app['pp_schema'] . '.categories
 					where id = ?', [$cat['id_parent']]) . ' - ';
 			}
 
 			$cat['fullname'] = $prefix . $cat['name'];
 			unset($cat['id']);
 
-			if ($app['db']->update($app['tschema'] . '.categories', $cat, ['id' => $edit]))
+			if ($app['db']->update($app['pp_schema'] . '.categories', $cat, ['id' => $edit]))
 			{
 				$app['alert']->success('Categorie aangepast.');
-				$app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+				$app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
 					set fullname = ? || \' - \' || name
 					where id_parent = ?', [$cat['name'], $edit]);
 
@@ -210,7 +210,7 @@ if ($edit)
 	$parent_cats = [0 => '-- Hoofdcategorie --'];
 
 	$rs = $app['db']->prepare('select id, name
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		where leafnote = 0
 		order by name');
 
@@ -282,7 +282,7 @@ if ($del)
 			$app['link']->redirect('categories', $app['pp_ary'], []);
 		}
 
-		if ($app['db']->delete($app['tschema'] . '.categories', ['id' => $del]))
+		if ($app['db']->delete($app['pp_schema'] . '.categories', ['id' => $del]))
 		{
 			$app['alert']->success('Categorie verwijderd.');
 			$app['link']->redirect('categories', $app['pp_ary'], []);
@@ -292,7 +292,7 @@ if ($del)
 	}
 
 	$fullname = $app['db']->fetchColumn('select fullname
-		from ' . $app['tschema'] . '.categories
+		from ' . $app['pp_schema'] . '.categories
 		where id = ?', [$del]);
 
 	$app['heading']->add('Categorie verwijderen : ');
@@ -324,7 +324,7 @@ if ($del)
 }
 
 $cats = $app['db']->fetchAll('select *
-	from ' . $app['tschema'] . '.categories
+	from ' . $app['pp_schema'] . '.categories
 	order by fullname');
 
 $child_count_ary = [];

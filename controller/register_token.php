@@ -10,13 +10,13 @@ class register_token
 {
     public function register_token(app $app, string $token):Response
     {
-        if (!$app['config']->get('registration_en', $app['tschema']))
+        if (!$app['config']->get('registration_en', $app['pp_schema']))
         {
             $app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
             $app['link']->redirect('login', $app['pp_ary'], []);
         }
 
-        $data = $app['data_token']->retrieve($token, 'register', $app['tschema']);
+        $data = $app['data_token']->retrieve($token, 'register', $app['pp_schema']);
 
         if (!$data)
         {
@@ -40,11 +40,11 @@ class register_token
 
             return $app->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['tschema'],
+                'schema'    => $app['pp_schema'],
             ]);
         }
 
-        $app['data_token']->del($token, 'register', $app['tschema']);
+        $app['data_token']->del($token, 'register', $app['pp_schema']);
 
         for ($i = 0; $i < 20; $i++)
         {
@@ -60,22 +60,22 @@ class register_token
                 }
                 else
                 {
-                    $name .= substr(hash('sha512', $app['tschema'] . time() . mt_rand(0, 100000)), 0, 4);
+                    $name .= substr(hash('sha512', $app['pp_schema'] . time() . mt_rand(0, 100000)), 0, 4);
                 }
             }
 
             if (!$app['db']->fetchColumn('select name
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where name = ?', [$name]))
             {
                 break;
             }
         }
 
-        $minlimit = $app['config']->get('preset_minlimit', $app['tschema']);
+        $minlimit = $app['config']->get('preset_minlimit', $app['pp_schema']);
         $minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-        $maxlimit = $app['config']->get('preset_maxlimit', $app['tschema']);
+        $maxlimit = $app['config']->get('preset_maxlimit', $app['pp_schema']);
         $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
         $user = [
@@ -98,14 +98,14 @@ class register_token
 
         try
         {
-            $app['db']->insert($app['tschema'] . '.users', $user);
+            $app['db']->insert($app['pp_schema'] . '.users', $user);
 
-            $user_id = $app['db']->lastInsertId($app['tschema'] . '.users_id_seq');
+            $user_id = $app['db']->lastInsertId($app['pp_schema'] . '.users_id_seq');
 
             $tc = [];
 
             $rs = $app['db']->prepare('select abbrev, id
-                from ' . $app['tschema'] . '.type_contact');
+                from ' . $app['pp_schema'] . '.type_contact');
 
             $rs->execute();
 
@@ -123,7 +123,7 @@ class register_token
                 'id_type_contact'	=> $tc['mail'],
             ];
 
-            $app['db']->insert($app['tschema'] . '.contact', $mail);
+            $app['db']->insert($app['pp_schema'] . '.contact', $mail);
 
             if ($data['gsm'] || $data['tel'])
             {
@@ -136,7 +136,7 @@ class register_token
                         'id_type_contact'	=> $tc['gsm'],
                     ];
 
-                    $app['db']->insert($app['tschema'] . '.contact', $gsm);
+                    $app['db']->insert($app['pp_schema'] . '.contact', $gsm);
                 }
 
                 if ($data['tel'])
@@ -148,7 +148,7 @@ class register_token
                         'id_type_contact'	=> $tc['tel'],
                     ];
 
-                    $app['db']->insert($app['tschema'] . '.contact', $tel);
+                    $app['db']->insert($app['pp_schema'] . '.contact', $tel);
                 }
             }
             $app['db']->commit();
@@ -166,8 +166,8 @@ class register_token
         ];
 
         $app['queue.mail']->queue([
-            'schema'		=> $app['tschema'],
-            'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
+            'schema'		=> $app['pp_schema'],
+            'to' 			=> $app['mail_addr_system']->get_admin($app['pp_schema']),
             'vars'			=> $vars,
             'template'		=> 'register/admin',
         ], 8000);
@@ -184,27 +184,27 @@ class register_token
         }
 
         $vars['subject'] = $app['translator']->trans('register_success.subject', [
-            '%system_name%'	=> $app['config']->get('systemname', $app['tschema']),
+            '%system_name%'	=> $app['config']->get('systemname', $app['pp_schema']),
         ], 'mail');
 
         $app['queue.mail']->queue([
-            'schema'				=> $app['tschema'],
+            'schema'				=> $app['pp_schema'],
             'to' 					=> [$data['email'] => $user['fullname']],
-            'reply_to'				=> $app['mail_addr_system']->get_admin($app['tschema']),
-            'pre_html_template'		=> $app['config']->get('registration_success_mail', $app['tschema']),
+            'reply_to'				=> $app['mail_addr_system']->get_admin($app['pp_schema']),
+            'pre_html_template'		=> $app['config']->get('registration_success_mail', $app['pp_schema']),
             'template'				=> 'skeleton',
             'vars'					=> $vars,
         ], 8500);
 
         $app['alert']->success('Inschrijving voltooid.');
 
-        $registration_success_text = $app['config']->get('registration_success_text', $app['tschema']);
+        $registration_success_text = $app['config']->get('registration_success_text', $app['pp_schema']);
 
         $app['menu']->set('register');
 
         return $app->render('base/sidebar.html.twig', [
             'content'   => $registration_success_text ?: '',
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

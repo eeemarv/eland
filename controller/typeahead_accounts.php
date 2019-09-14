@@ -52,7 +52,7 @@ class typeahead_accounts
                 saldo as b,
                 minlimit as min,
                 maxlimit as max
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where status ' . $status_sql . '
             order by id asc'
         );

@@ -9,7 +9,7 @@ class plot_user_transactions
 {
     public function plot_user_transactions(app $app, int $user_id, int $days):Response
     {
-        $user = $app['user_cache']->get($user_id, $app['tschema']);
+        $user = $app['user_cache']->get($user_id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -20,7 +20,7 @@ class plot_user_transactions
 
         $st = $app['db']->prepare('select url, apimethod,
             localletscode as code, groupname as name
-            from ' . $app['tschema'] . '.letsgroups');
+            from ' . $app['pp_schema'] . '.letsgroups');
 
         $st->execute();
 
@@ -59,8 +59,8 @@ class plot_user_transactions
                 t.real_from, t.real_to, t.cdate, t.description,
                 u.id as user_id, u.name, u.letscode as code,
                 u.accountrole as role, u.status
-            from ' . $app['tschema'] . '.transactions t, ' .
-                $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.transactions t, ' .
+                $app['pp_schema'] . '.users u
             where (t.id_to = ? or t.id_from = ?)
                 and (u.id = t.id_to or u.id = t.id_from)
                 and u.id <> ?
@@ -139,7 +139,7 @@ class plot_user_transactions
             $transactions[] = [
                 'amount' 	        => $amount,
                 'time'              => $time,
-                'fdate'             => $app['date_format']->get_from_unix($time, 'day', $app['tschema']),
+                'fdate'             => $app['date_format']->get_from_unix($time, 'day', $app['pp_schema']),
                 'link' 		        => $app['link']->context_path('transactions_show',
                     $app['pp_ary'], ['id' => $t['id']]),
                 'user'              => $tr_user,
@@ -151,7 +151,7 @@ class plot_user_transactions
         return $app->json([
             'user_id' 		=> $user_id,
             'ticks' 		=> $days === 365 ? 12 : 4,
-            'currency' 		=> $app['config']->get('currency', $app['tschema']),
+            'currency' 		=> $app['config']->get('currency', $app['pp_schema']),
             'transactions' 	=> $transactions,
             'begin_balance' => $begin_balance,
             'begin_unix' 	=> $begin_unix,

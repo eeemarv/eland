@@ -17,11 +17,11 @@ class transactions_add
         $tuid = (int) $request->query->get('tuid', 0);
         $tus = $request->query->get('tus', '');
 
-        $currency = $app['config']->get('currency', $app['tschema']);
+        $currency = $app['config']->get('currency', $app['pp_schema']);
 
         $transaction = [];
 
-        $redis_transid_key = $app['tschema'] . '_transid_u_' . $app['s_id'];
+        $redis_transid_key = $app['pp_schema'] . '_transid_u_' . $app['s_id'];
 
         if ($request->isMethod('POST'))
         {
@@ -50,7 +50,7 @@ class transactions_add
             }
 
             if ($app['db']->fetchColumn('select transid
-                from ' . $app['tschema'] . '.transactions
+                from ' . $app['pp_schema'] . '.transactions
                 where transid = ?', [$stored_transid]))
             {
                 $errors[] = 'Een herinvoer van de transactie werd voorkomen.';
@@ -64,7 +64,7 @@ class transactions_add
             if ($group_id != 'self')
             {
                 $group = $app['db']->fetchAssoc('select *
-                    from ' . $app['tschema'] . '.letsgroups
+                    from ' . $app['pp_schema'] . '.letsgroups
                     where id = ?', [$group_id]);
 
                 if (!isset($group))
@@ -80,20 +80,20 @@ class transactions_add
             if ($app['pp_user'] && !$app['s_master'])
             {
                 $fromuser = $app['db']->fetchAssoc('select *
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where id = ?', [$app['s_id']]);
             }
             else
             {
                 $fromuser = $app['db']->fetchAssoc('select *
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where letscode = ?', [$letscode_from]);
             }
 
             $letscode_touser = $group_id == 'self' ? $letscode_to : $group['localletscode'];
 
             $touser = $app['db']->fetchAssoc('select *
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$letscode_touser]);
 
             if(empty($fromuser))
@@ -153,7 +153,7 @@ class transactions_add
             {
                 if ($fromuser['minlimit'] === -999999999)
                 {
-                    $minlimit = $app['config']->get('minlimit', $app['tschema']);
+                    $minlimit = $app['config']->get('minlimit', $app['pp_schema']);
 
                     if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
                     {
@@ -186,7 +186,7 @@ class transactions_add
             {
                 if ($touser['maxlimit'] === 999999999)
                 {
-                    $maxlimit = $app['config']->get('maxlimit', $app['tschema']);
+                    $maxlimit = $app['config']->get('maxlimit', $app['pp_schema']);
 
                     if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
                     {
@@ -224,14 +224,14 @@ class transactions_add
 
             if ($app['pp_user'] && !count($errors))
             {
-                $balance_eq = $app['config']->get('balance_equilibrium', $app['tschema']);
+                $balance_eq = $app['config']->get('balance_equilibrium', $app['pp_schema']);
 
                 if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
                 {
                     $err = 'Als Uitstapper kan je geen ';
                     $err .= $amount;
                     $err .= ' ';
-                    $err .= $app['config']->get('currency', $app['tschema']);
+                    $err .= $app['config']->get('currency', $app['pp_schema']);
                     $err .= ' uitgeven.';
                     $errors[] = $err;
                 }
@@ -242,7 +242,7 @@ class transactions_add
                     $err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
                     $err .= ' heeft de status \'Uitstapper\' en kan geen ';
                     $err .= $amount . ' ';
-                    $err .= $app['config']->get('currency', $app['tschema']);
+                    $err .= $app['config']->get('currency', $app['pp_schema']);
                     $err .= ' ontvangen.';
                     $errors[] = $err;
                 }
@@ -270,10 +270,10 @@ class transactions_add
             }
             else if ($group_id == 'self')
             {
-                if ($id = $app['transaction']->insert($transaction, $app['tschema']))
+                if ($id = $app['transaction']->insert($transaction, $app['pp_schema']))
                 {
                     $transaction['id'] = $id;
-                    $app['mail_transaction']->queue($transaction, $app['tschema']);
+                    $app['mail_transaction']->queue($transaction, $app['pp_schema']);
                     $app['alert']->success('Transactie opgeslagen');
                 }
                 else
@@ -287,12 +287,12 @@ class transactions_add
             {
                 $transaction['real_to'] = $letscode_to;
 
-                if ($id = $app['transaction']->insert($transaction, $app['tschema']))
+                if ($id = $app['transaction']->insert($transaction, $app['pp_schema']))
                 {
                     $transaction['id'] = $id;
                     $transaction['letscode_to'] = $letscode_to;
 
-                    $app['mail_transaction']->queue_mail_type($transaction, $app['tschema']);
+                    $app['mail_transaction']->queue_mail_type($transaction, $app['pp_schema']);
 
                     $app['alert']->success('InterSysteem transactie opgeslagen. Een E-mail werd
                         verstuurd naar de administratie van het andere Systeem om de transactie aldaar
@@ -337,7 +337,7 @@ class transactions_add
                     $errors[] = 'Geen Remote Account Code ingesteld voor dit interSysteem.' . $contact_admin;
                 }
 
-                $currencyratio = $app['config']->get('currencyratio', $app['tschema']);
+                $currencyratio = $app['config']->get('currencyratio', $app['pp_schema']);
 
                 if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
                 {
@@ -403,12 +403,12 @@ class transactions_add
                 $result = $client->call('dopayment', [
                     'apikey' 		=> $group['remoteapikey'],
                     'from' 			=> $group['myremoteletscode'],
-                    'real_from' 	=> $app['account']->str($fromuser['id'], $app['tschema']),
+                    'real_from' 	=> $app['account']->str($fromuser['id'], $app['pp_schema']),
                     'to' 			=> $letscode_to,
                     'description' 	=> $trans['description'],
                     'amount' 		=> $trans['amount'],
                     'transid' 		=> $trans['transid'],
-                    'signature' 	=> $app['transaction']->sign($trans, trim($group['presharedkey']), $app['tschema']),
+                    'signature' 	=> $app['transaction']->sign($trans, trim($group['presharedkey']), $app['pp_schema']),
                 ]);
 
                 $error = $client->getError();
@@ -464,15 +464,15 @@ class transactions_add
 
                 $app['monolog']->debug('insert transation: --  ' .
                     http_build_query($transaction) .
-                    ' --', ['schema' => $app['tschema']]);
+                    ' --', ['schema' => $app['pp_schema']]);
 
-                $id = $app['transaction']->insert($transaction, $app['tschema']);
+                $id = $app['transaction']->insert($transaction, $app['pp_schema']);
 
                 if (!$id)
                 {
                     $app['queue.mail']->queue([
-                        'schema'		=> $app['tschema'],
-                        'to' 			=> $app['mail_addr_system']->get_admin($app['tschema']),
+                        'schema'		=> $app['pp_schema'],
+                        'to' 			=> $app['mail_addr_system']->get_admin($app['pp_schema']),
                         'template'		=> 'transaction/intersystem_fail',
                         'vars'			=> [
                             'remote_system_name'	=> $group['groupname'],
@@ -490,7 +490,7 @@ class transactions_add
                 $transaction['id'] = $id;
 
                 // to eLAS intersystem
-                $app['mail_transaction']->queue($transaction, $app['tschema']);
+                $app['mail_transaction']->queue($transaction, $app['pp_schema']);
 
                 $app['alert']->success('De interSysteem transactie werd verwerkt.');
                 $app['link']->redirect('transactions', $app['pp_ary'], []);
@@ -514,7 +514,7 @@ class transactions_add
                     $errors[] = 'Het bestemmings Account ("Aan Account Code") in het andere Systeem is niet actief.';
                 }
 
-                $legacy_eland_origin = $app['systems']->get_legacy_eland_origin($app['tschema']);
+                $legacy_eland_origin = $app['systems']->get_legacy_eland_origin($app['pp_schema']);
 
                 $remote_group = $app['db']->fetchAssoc('select *
                     from ' . $remote_schema . '.letsgroups
@@ -523,7 +523,7 @@ class transactions_add
                 if (!$remote_group && !count($errors))
                 {
                     $err = 'Het andere Systeem heeft dit Systeem (';
-                    $err .= $app['config']->get('systemname', $app['tschema']);
+                    $err .= $app['config']->get('systemname', $app['pp_schema']);
                     $err .= ') niet geconfigureerd als interSysteem.';
                     $errors[] = $err;
                 }
@@ -555,7 +555,7 @@ class transactions_add
                 $remote_currency = $app['config']->get('currency', $remote_schema);
                 $remote_currencyratio = $app['config']->get('currencyratio', $remote_schema);
                 $remote_balance_eq = $app['config']->get('balance_equilibrium', $remote_schema);
-                $currencyratio = $app['config']->get('currencyratio', $app['tschema']);
+                $currencyratio = $app['config']->get('currencyratio', $app['pp_schema']);
 
                 if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
                     && !count($errors))
@@ -622,7 +622,7 @@ class transactions_add
                     $err .= $remote_amount . ' ';
                     $err .= $remote_currency . ' uitgeven ';
                     $err .= '(' . $amount . ' ';
-                    $err .= $app['config']->get('currency', $app['tschema']);
+                    $err .= $app['config']->get('currency', $app['pp_schema']);
                     $err .= ').';
                     $errors[] = $err;
                 }
@@ -669,7 +669,7 @@ class transactions_add
                     $err .= 'en kan geen ' . $remote_amount . ' ';
                     $err .= $remote_currency . ' ontvangen (';
                     $err .= $amount . ' ';
-                    $err .= $app['config']->get('currency', $app['tschema']);
+                    $err .= $app['config']->get('currency', $app['pp_schema']);
                     $err .= ').';
                     $errors[] = $err;
                 }
@@ -688,12 +688,12 @@ class transactions_add
 
                     try
                     {
-                        $app['db']->insert($app['tschema'] . '.transactions', $transaction);
-                        $id = $app['db']->lastInsertId($app['tschema'] . '.transactions_id_seq');
-                        $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                        $app['db']->insert($app['pp_schema'] . '.transactions', $transaction);
+                        $id = $app['db']->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
+                        $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                             set saldo = saldo + ? where id = ?',
                             [$transaction['amount'], $transaction['id_to']]);
-                        $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                        $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                             set saldo = saldo - ? where id = ?',
                             [$transaction['amount'], $transaction['id_from']]);
 
@@ -704,7 +704,7 @@ class transactions_add
                         $transaction['amount'] = $remote_amount;
                         $transaction['id_from'] = $remote_interlets_account['id'];
                         $transaction['id_to'] = $to_remote_user['id'];
-                        $transaction['real_from'] = $app['account']->str($fromuser['id'], $app['tschema']);
+                        $transaction['real_from'] = $app['account']->str($fromuser['id'], $app['pp_schema']);
 
                         unset($transaction['real_to']);
 
@@ -729,27 +729,27 @@ class transactions_add
                         exit;
                     }
 
-                    $app['user_cache']->clear($fromuser['id'], $app['tschema']);
-                    $app['user_cache']->clear($touser['id'], $app['tschema']);
+                    $app['user_cache']->clear($fromuser['id'], $app['pp_schema']);
+                    $app['user_cache']->clear($touser['id'], $app['pp_schema']);
 
                     $app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
                     $app['user_cache']->clear($to_remote_user['id'], $remote_schema);
 
                     // to eLAND interSystem
-                    $app['mail_transaction']->queue($trans_org, $app['tschema']);
+                    $app['mail_transaction']->queue($trans_org, $app['pp_schema']);
                     $app['mail_transaction']->queue($transaction, $remote_schema);
 
                     $app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
-                        $amount . ' from user: ' .  $app['account']->str_id($fromuser['id'], $app['tschema']) .
-                        ' to user: ' . $app['account']->str_id($touser['id'], $app['tschema']),
-                        ['schema' => $app['tschema']]);
+                        $amount . ' from user: ' .  $app['account']->str_id($fromuser['id'], $app['pp_schema']) .
+                        ' to user: ' . $app['account']->str_id($touser['id'], $app['pp_schema']),
+                        ['schema' => $app['pp_schema']]);
 
                     $app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
                         ' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
                         $remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
                         $to_remote_user['name'], ['schema' => $remote_schema]);
 
-                    $app['autominlimit']->init($app['tschema'])
+                    $app['autominlimit']->init($app['pp_schema'])
                         ->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
                     $app['alert']->success('InterSysteem transactie uitgevoerd.');
@@ -760,7 +760,7 @@ class transactions_add
             $transaction['letscode_to'] = $request->request->get('letscode_to', '');
             $transaction['letscode_from'] = $app['pp_admin'] || $app['s_master']
                 ? $request->request->get('letscode_from', '')
-                : $app['account']->str($app['s_id'], $app['tschema']);
+                : $app['account']->str($app['s_id'], $app['pp_schema']);
         }
         else
         {
@@ -774,7 +774,7 @@ class transactions_add
 
             $transaction = [
                 'date'			=> gmdate('Y-m-d H:i:s'),
-                'letscode_from'	=> $app['s_master'] ? '' : $app['account']->str($app['s_id'], $app['tschema']),
+                'letscode_from'	=> $app['s_master'] ? '' : $app['account']->str($app['s_id'], $app['pp_schema']),
                 'letscode_to'	=> '',
                 'amount'		=> '',
                 'description'	=> '',
@@ -790,7 +790,7 @@ class transactions_add
                     $origin_from_tus = $app['systems']->get_legacy_eland_origin($tus);
 
                     $group_id = $app['db']->fetchColumn('select id
-                        from ' . $app['tschema'] . '.letsgroups
+                        from ' . $app['pp_schema'] . '.letsgroups
                         where url = ?', [$origin_from_tus]);
 
                     if ($mid)
@@ -809,7 +809,7 @@ class transactions_add
                             $transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
                             $transaction['description'] =  substr($row['content'], 0, 60);
                             $amount = $row['amount'];
-                            $amount = ($app['config']->get('currencyratio', $app['tschema']) * $amount) / $app['config']->get('currencyratio', $tus);
+                            $amount = ($app['config']->get('currencyratio', $app['pp_schema']) * $amount) / $app['config']->get('currencyratio', $tus);
                             $amount = (int) round($amount);
                             $transaction['amount'] = $amount;
                         }
@@ -830,8 +830,8 @@ class transactions_add
                 $row = $app['db']->fetchAssoc('select
                         m.content, m.amount, m.id_user,
                         u.letscode, u.name, u.status
-                    from ' . $app['tschema'] . '.messages m,
-                        '. $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.messages m,
+                        '. $app['pp_schema'] . '.users u
                     where u.id = m.id_user
                         and m.id = ?', [$mid]);
 
@@ -861,11 +861,11 @@ class transactions_add
             }
             else if ($tuid)
             {
-                $to_user = $app['user_cache']->get($tuid, $app['tschema']);
+                $to_user = $app['user_cache']->get($tuid, $app['pp_schema']);
 
                 if (in_array($to_user['status'], [1, 2]) || $app['pp_admin'])
                 {
-                    $transaction['letscode_to'] = $app['account']->str($tuid, $app['tschema']);
+                    $transaction['letscode_to'] = $app['account']->str($tuid, $app['pp_schema']);
                 }
 
                 if ($tuid === $app['s_id'])
@@ -891,15 +891,15 @@ class transactions_add
         $systems = [];
 
         $systems[] = [
-            'groupname' => $app['config']->get('systemname', $app['tschema']),
+            'groupname' => $app['config']->get('systemname', $app['pp_schema']),
             'id'		=> 'self',
         ];
 
-        if ($app['intersystems']->get_eland_count($app['tschema']))
+        if ($app['intersystems']->get_eland_count($app['pp_schema']))
         {
             $eland_urls = [];
 
-            foreach ($app['intersystems']->get_eland($app['tschema']) as $remote_eland_schema => $host)
+            foreach ($app['intersystems']->get_eland($app['pp_schema']) as $remote_eland_schema => $host)
             {
                 $eland_url = $app['systems']->get_legacy_eland_origin($remote_eland_schema);
                 $eland_urls[] = $eland_url;
@@ -908,7 +908,7 @@ class transactions_add
 
             $eland_systems = $app['db']->executeQuery('select id,
                     groupname, url
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where apimethod = \'elassoap\'
                     and url in (?)',
                     [$eland_urls],
@@ -922,17 +922,17 @@ class transactions_add
             }
         }
 
-        if ($app['intersystems']->get_elas_count($app['tschema']))
+        if ($app['intersystems']->get_elas_count($app['pp_schema']))
         {
             $ids = [];
 
-            foreach ($app['intersystems']->get_elas($app['tschema']) as $key => $name)
+            foreach ($app['intersystems']->get_elas($app['pp_schema']) as $key => $name)
             {
                 $ids[] = $key;
             }
 
             $elas_systems = $app['db']->executeQuery('select id, groupname
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where apimethod = \'elassoap\'
                     and id in (?)',
                     [$ids],
@@ -948,8 +948,8 @@ class transactions_add
         if ($app['intersystem_en'])
         {
             $mail_systems = $app['db']->executeQuery('select l.id, l.groupname
-                from ' . $app['tschema'] . '.letsgroups l, ' .
-                    $app['tschema'] . '.users u
+                from ' . $app['pp_schema'] . '.letsgroups l, ' .
+                    $app['pp_schema'] . '.users u
                 where l.apimethod = \'mail\'
                     and u.letscode = l.localletscode
                     and u.status in (1, 2, 7)');
@@ -962,7 +962,7 @@ class transactions_add
         }
 
         $systems_en = count($systems) > 1
-            && $app['config']->get('currencyratio', $app['tschema']) > 0;
+            && $app['config']->get('currencyratio', $app['pp_schema']) > 0;
 
         $app['heading']->add('Nieuwe transactie');
         $app['heading']->fa('exchange');
@@ -1029,7 +1029,7 @@ class transactions_add
                             ->add('accounts', ['status' => 'im']);
                     }
 
-                    $config_schema = $app['tschema'];
+                    $config_schema = $app['pp_schema'];
                 }
                 else if (isset($sys['eland']))
                 {
@@ -1140,7 +1140,7 @@ class transactions_add
 
             $out .= $app['typeahead']->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+                'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
             ]);
 
             $out .= '" ';
@@ -1182,7 +1182,7 @@ class transactions_add
 
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" ';
@@ -1193,7 +1193,7 @@ class transactions_add
 
         $out .= '<ul>';
 
-        $out .= transactions::get_valuation($app['config'], $app['tschema']);
+        $out .= transactions::get_valuation($app['config'], $app['pp_schema']);
 
         $out .= '<li id="info_remote_amount_unknown" ';
         $out .= 'class="hidden">De omrekening ';
@@ -1232,8 +1232,8 @@ class transactions_add
 
         $out .= '<ul>';
 
-        if ($app['config']->get('template_lets', $app['tschema'])
-            && $app['config']->get('currencyratio', $app['tschema']) > 0)
+        if ($app['config']->get('template_lets', $app['pp_schema'])
+            && $app['config']->get('currencyratio', $app['pp_schema']) > 0)
         {
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
             $out .= '</span> per uur</li>';
@@ -1278,7 +1278,7 @@ class transactions_add
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

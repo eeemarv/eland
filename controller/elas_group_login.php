@@ -78,7 +78,7 @@ class elas_group_login
             $m = 'Kan geen verbinding maken.';
 
             $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             return $app->json([
                 'error' => $m,
@@ -94,7 +94,7 @@ class elas_group_login
             $m = 'Kan geen token krijgen voor dit interSysteem.';
 
             $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             return $app->json([
                 'error' => $m,

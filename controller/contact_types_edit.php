@@ -12,7 +12,7 @@ class contact_types_edit
     public function contact_types_edit(Request $request, app $app, int $id):Response
     {
         $tc_prefetch = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.type_contact
+            from ' . $app['pp_schema'] . '.type_contact
             where id = ?', [$id]);
 
         if (in_array($tc_prefetch['abbrev'], contact_types::PROTECTED))
@@ -40,7 +40,7 @@ class contact_types_edit
 
             if (!$error)
             {
-                if ($app['db']->update($app['tschema'] . '.type_contact',
+                if ($app['db']->update($app['pp_schema'] . '.type_contact',
                     $tc,
                     ['id' => $id]))
                 {
@@ -106,7 +106,7 @@ class contact_types_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

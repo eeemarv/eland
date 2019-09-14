@@ -21,9 +21,9 @@ class password_reset
             else if($email)
             {
                 $user = $app['db']->fetchAll('select u.id, u.name, u.letscode
-                    from ' . $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc, ' .
+                        $app['pp_schema'] . '.users u
                     where c. value = ?
                         and tc.id = c.id_type_contact
                         and tc.abbrev = \'mail\'
@@ -41,10 +41,10 @@ class password_reset
                         $token = $app['data_token']->store([
                             'user_id'	=> $user_id,
                             'email'		=> $email,
-                        ], 'password_reset', $app['tschema'], 86400);
+                        ], 'password_reset', $app['pp_schema'], 86400);
 
                         $app['queue.mail']->queue([
-                            'schema'	=> $app['tschema'],
+                            'schema'	=> $app['pp_schema'],
                             'to' 		=> [$email => $user['letscode'] . ' ' . $user['name']],
                             'template'	=> 'password_reset/confirm',
                             'vars'		=> [
@@ -110,7 +110,7 @@ class password_reset
 
         return $app->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

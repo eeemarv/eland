@@ -43,20 +43,20 @@ class users_password
                     'mdate'		=> gmdate('Y-m-d H:i:s'),
                 ];
 
-                if ($app['db']->update($app['tschema'] . '.users',
+                if ($app['db']->update($app['pp_schema'] . '.users',
                     $update,
                     ['id' => $id]))
                 {
-                    $app['user_cache']->clear($id, $app['tschema']);
-                    $user = $app['user_cache']->get($id, $app['tschema']);
+                    $app['user_cache']->clear($id, $app['pp_schema']);
+                    $user = $app['user_cache']->get($id, $app['pp_schema']);
                     $app['alert']->success('Paswoord opgeslagen.');
 
                     if (($user['status'] === 1 || $user['status'] === 2)
                         && $notify)
                     {
                         $to = $app['db']->fetchColumn('select c.value
-                            from ' . $app['tschema'] . '.contact c, ' .
-                                $app['tschema'] . '.type_contact tc
+                            from ' . $app['pp_schema'] . '.contact c, ' .
+                                $app['pp_schema'] . '.type_contact tc
                             where tc.id = c.id_type_contact
                                 and tc.abbrev = \'mail\'
                                 and c.id_user = ?', [$id]);
@@ -69,9 +69,9 @@ class users_password
                             ];
 
                             $app['queue.mail']->queue([
-                                'schema'	=> $app['tschema'],
-                                'to' 		=> $app['mail_addr_user']->get($id, $app['tschema']),
-                                'reply_to'	=> $app['mail_addr_system']->get_support($app['tschema']),
+                                'schema'	=> $app['pp_schema'],
+                                'to' 		=> $app['mail_addr_user']->get($id, $app['pp_schema']),
+                                'reply_to'	=> $app['mail_addr_system']->get_support($app['pp_schema']),
                                 'template'	=> 'password_reset/user',
                                 'vars'		=> $vars,
                             ], 8000);
@@ -98,7 +98,7 @@ class users_password
 
         }
 
-        $user = $app['user_cache']->get($id, $app['tschema']);
+        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
         $app['assets']->add([
             'generate_password.js',
@@ -164,7 +164,7 @@ class users_password
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

@@ -10,7 +10,7 @@ class forum
 {
     public function forum(Request $request, app $app):Response
     {
-        if (!$app['config']->get('forum_en', $app['tschema']))
+        if (!$app['config']->get('forum_en', $app['pp_schema']))
         {
             $app['alert']->warning('De forum pagina is niet ingeschakeld.');
             $app['link']->redirect($app['default'], $app['pp_ary'], []);
@@ -19,7 +19,7 @@ class forum
         $q = $request->query->get('q', '');
 
         $rows = $app['xdb']->get_many([
-            'agg_schema' => $app['tschema'],
+            'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'access' => $app['item_access']->get_visible_ary_xdb()],
                 'order by event_time desc');
@@ -30,7 +30,7 @@ class forum
 
             foreach ($rows as $row)
             {
-                $replies = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+                $replies = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
                     'agg_type' => 'forum',
                     'data->>\'parent_id\'' => $row['eland_id']]);
 
@@ -102,7 +102,7 @@ class forum
 
             return $app->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['tschema'],
+                'schema'    => $app['pp_schema'],
             ]);
         }
 
@@ -149,7 +149,7 @@ class forum
             $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
             $out .= '</td>';
 
-            $out .= $app['date_format']->get_td($p['ts'], 'min', $app['tschema']);
+            $out .= $app['date_format']->get_td($p['ts'], 'min', $app['pp_schema']);
 
             if ($show_visibility)
             {
@@ -170,7 +170,7 @@ class forum
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

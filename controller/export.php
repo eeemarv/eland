@@ -23,7 +23,7 @@ class export
             'users'		=> [
                 'label'		=> 'Gebruikers',
                 'sql'		=> 'select *
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     order by letscode',
                 'columns'	=> [
                     'letscode',
@@ -48,9 +48,9 @@ class export
             'contacts'	=> [
                 'label'	=> 'Contactgegevens',
                 'sql'	=> 'select c.*, tc.abbrev, u.letscode, u.name
-                    from ' . $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc, ' .
+                        $app['pp_schema'] . '.users u
                     where c.id_type_contact = tc.id
                         and c.id_user = u.id',
                 'columns'	=> [
@@ -64,7 +64,7 @@ class export
             ],
             'categories'	=> [
                 'label'		=> 'Categorieën',
-                'sql'		=> 'select * from ' . $app['tschema'] . '.categories',
+                'sql'		=> 'select * from ' . $app['pp_schema'] . '.categories',
                 'columns'	=> [
                     'name',
                     'id_parent',
@@ -77,8 +77,8 @@ class export
             'messages'	=> [
                 'label'		=> 'Vraag en Aanbod',
                 'sql'		=> 'select m.*, u.name as username, u.letscode
-                    from ' . $app['tschema'] . '.messages m, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.messages m, ' .
+                        $app['pp_schema'] . '.users u
                     where m.id_user = u.id
                         and validity > ?',
                 'sql_bind'	=> [gmdate('Y-m-d H:i:s')],
@@ -97,9 +97,9 @@ class export
                                     concat(fu.letscode, \' \', fu.name) as from_user,
                                     concat(tu.letscode, \' \', tu.name) as to_user,
                                     t.cdate, t.real_from, t.real_to, t.amount
-                                from ' . $app['tschema'] . '.transactions t, ' .
-                                    $app['tschema'] . '.users fu, ' .
-                                    $app['tschema'] . '.users tu
+                                from ' . $app['pp_schema'] . '.transactions t, ' .
+                                    $app['pp_schema'] . '.users fu, ' .
+                                    $app['pp_schema'] . '.users tu
                                 where t.id_to = tu.id
                                     and t.id_from = fu.id
                                 order by t.date desc',
@@ -121,7 +121,7 @@ class export
 
         if ($exec_en && $db_download)
         {
-            $filename = $app['tschema'] . '-';
+            $filename = $app['pp_schema'] . '-';
             $filename .= $db_elas ? 'elas-db' : 'eland-xdb';
             $filename .= $db_eland_aggs ? '-aggs' : '';
             $filename .= $db_eland_events ? '-events' : '';
@@ -134,7 +134,7 @@ class export
             {
                 $exec = 'pg_dump --dbname=';
                 $exec .= getenv('DATABASE_URL');
-                $exec .= ' --schema=' . $app['tschema'];
+                $exec .= ' --schema=' . $app['pp_schema'];
                 $exec .= ' --no-owner --no-acl > ' . $filename;
             }
             else
@@ -146,7 +146,7 @@ class export
                 $exec .= 'from xdb.';
                 $exec .= $db_eland_aggs ? 'aggs' : 'events';
                 $exec .= ' where agg_schema = \'';
-                $exec .= $app['tschema'] . '\')';
+                $exec .= $app['pp_schema'] . '\')';
                 $exec .= ' TO ' . $filename;
                 $exec .= ' with delimiter \',\' ';
                 $exec .= 'csv header;"';
@@ -177,7 +177,7 @@ class export
             $download_log .= $db_eland_events ? 'events' : '';
 
             $app['monolog']->info($download_log . ' downloaded',
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             $response = new Response($out);
 
@@ -220,7 +220,7 @@ class export
                 }
 
                 $app['monolog']->info('csv ' . $ex_key . ' exported.',
-                    ['schema' => $app['tschema']]);
+                    ['schema' => $app['pp_schema']]);
 
                 $filename = 'elas-' . $ex_key . '-'.date('Y-m-d-H-i-S').'.csv';
 
@@ -308,7 +308,7 @@ class export
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

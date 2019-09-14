@@ -10,7 +10,7 @@ class typeahead_elas_intersystem_accounts
     public function typeahead_elas_intersystem_accounts(app $app, int $group_id):Response
     {
         $group = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.letsgroups
+            from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$group_id]);
 
         if (!$group || !$group['url'])
@@ -31,7 +31,7 @@ class typeahead_elas_intersystem_accounts
         {
             $app['monolog']->debug('typeahead/elas_intersystem_accounts: empty for id ' .
                 $group_id . ', url: ' . $group['url'],
-                ['schema' => $app['tschema']]);
+                ['schema' => $app['pp_schema']]);
 
             return $app->json([], 404);
         }

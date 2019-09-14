@@ -16,7 +16,7 @@ class typeahead_log_types
             where schema = ?
             order by type asc');
 
-        $st->bindValue(1, $app['tschema']);
+        $st->bindValue(1, $app['pp_schema']);
 
         $st->execute();
 

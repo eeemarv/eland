@@ -16,7 +16,7 @@ class weighted_balances
         $balance = [];
 
         $rs = $app['db']->prepare('select id, saldo
-            from ' . $app['tschema'] . '.users');
+            from ' . $app['pp_schema'] . '.users');
 
         $rs->execute();
 
@@ -29,7 +29,7 @@ class weighted_balances
         $acc = array_map(function (){ return 0; }, $balance);
 
         $trans = $app['db']->fetchAll('select id_to, id_from, amount, date
-            from ' . $app['tschema'] . '.transactions
+            from ' . $app['pp_schema'] . '.transactions
             where date >= ?
             order by date desc', [$begin]);
 

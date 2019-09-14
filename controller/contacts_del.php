@@ -12,14 +12,14 @@ class contacts_del
 {
     public function contacts_del_admin(Request $request, app $app, int $id):Response
     {
-        $contact = contacts_edit::get_contact($app['db'], $id,  $app['tschema']);
+        $contact = contacts_edit::get_contact($app['db'], $id,  $app['pp_schema']);
 
         return self::form($request, $app, $contact['id_user'], $id, true);
     }
 
     public static function form(Request $request, app $app, int $user_id, int $id, bool $redirect_contacts):Response
     {
-        $contact = contacts_edit::get_contact($app['db'], $id,  $app['tschema']);
+        $contact = contacts_edit::get_contact($app['db'], $id,  $app['pp_schema']);
 
         if ($user_id !== $contact['id_user'])
         {
@@ -30,10 +30,10 @@ class contacts_del
         if ($request->isMethod('GET'))
         {
             if ($contact['abbrev'] === 'mail'
-                && $app['user_cache']->is_active_user($user_id, $app['tschema']))
+                && $app['user_cache']->is_active_user($user_id, $app['pp_schema']))
             {
                 $count_mail = $app['db']->fetchColumn('select count(c.*)
-                    from ' . $app['tschema'] . '.contact c
+                    from ' . $app['pp_schema'] . '.contact c
                     where c.id_type_contact = ?
                         and c.id_user = ?', [
                             $contact['id_type_contact'],
@@ -67,7 +67,7 @@ class contacts_del
 
             if (!count($errors))
             {
-                $app['db']->delete($app['tschema'] . '.contact', ['id' => $id]);
+                $app['db']->delete($app['pp_schema'] . '.contact', ['id' => $id]);
 
                 $app['alert']->success('Contact verwijderd.');
 
@@ -153,7 +153,7 @@ class contacts_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

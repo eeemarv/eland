@@ -20,9 +20,9 @@ class transactions
             $filter['uid'] = (int) $filter['uid'];
         }
 
-        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['tschema']);
+        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['tschema']),
+        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $s_owner = !$app['pp_guest']
@@ -45,7 +45,7 @@ class transactions
 
         if (isset($filter['uid']))
         {
-            $filter['fcode'] = $app['account']->str($filter['uid'], $app['tschema']);
+            $filter['fcode'] = $app['account']->str($filter['uid'], $app['pp_schema']);
             $filter['tcode'] = $filter['fcode'];
             $filter['andor'] = 'or';
             $params['f']['uid'] = $filter['uid'];
@@ -64,7 +64,7 @@ class transactions
             $fcode = trim($fcode);
 
             $fuid = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$fcode]);
 
             if ($fuid)
@@ -75,7 +75,7 @@ class transactions
                 $where_code_sql[] = $fuid_sql;
                 $params_sql[] = $fuid;
 
-                $fcode = $app['account']->str($fuid, $app['tschema']);
+                $fcode = $app['account']->str($fuid, $app['pp_schema']);
             }
             else if ($filter['andor'] !== 'nor')
             {
@@ -90,7 +90,7 @@ class transactions
             [$tcode] = explode(' ', trim($filter['tcode']));
 
             $tuid = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = \'' . $tcode . '\'');
 
             if ($tuid)
@@ -101,7 +101,7 @@ class transactions
                 $where_code_sql[] = $tuid_sql;
                 $params_sql[] = $tuid;
 
-                $tcode = $app['account']->str($tuid, $app['tschema']);
+                $tcode = $app['account']->str($tuid, $app['pp_schema']);
             }
             else if ($filter['andor'] !== 'nor')
             {
@@ -120,7 +120,7 @@ class transactions
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
-            $fdate_sql = $app['date_format']->reverse($filter['fdate'], $app['tschema']);
+            $fdate_sql = $app['date_format']->reverse($filter['fdate'], $app['pp_schema']);
 
             if ($fdate_sql === '')
             {
@@ -136,7 +136,7 @@ class transactions
 
         if (isset($filter['tdate']) && $filter['tdate'])
         {
-            $tdate_sql = $app['date_format']->reverse($filter['tdate'], $app['tschema']);
+            $tdate_sql = $app['date_format']->reverse($filter['tdate'], $app['pp_schema']);
 
             if ($tdate_sql === '')
             {
@@ -161,7 +161,7 @@ class transactions
         }
 
         $query = 'select t.*
-            from ' . $app['tschema'] . '.transactions t ' .
+            from ' . $app['pp_schema'] . '.transactions t ' .
             $where_sql . '
             order by t.' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -203,7 +203,7 @@ class transactions
         }
 
         $row = $app['db']->fetchAssoc('select count(t.*), sum(t.amount)
-            from ' . $app['tschema'] . '.transactions t ' .
+            from ' . $app['pp_schema'] . '.transactions t ' .
             $where_sql, $params_sql);
 
         $row_count = $row['count'];
@@ -221,7 +221,7 @@ class transactions
             'description' => array_merge($asc_preset_ary, [
                 'lbl' => 'Omschrijving']),
             'amount' => array_merge($asc_preset_ary, [
-                'lbl' => $app['config']->get('currency', $app['tschema'])]),
+                'lbl' => $app['config']->get('currency', $app['pp_schema'])]),
             'cdate'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Tijdstip',
                 'data_hide' => 'phone'])
@@ -260,8 +260,8 @@ class transactions
         {
             if (isset($filter['uid']))
             {
-                $user = $app['user_cache']->get($filter['uid'], $app['tschema']);
-                $user_str = $app['account']->str($user['id'], $app['tschema']);
+                $user = $app['user_cache']->get($filter['uid'], $app['pp_schema']);
+                $user_str = $app['account']->str($user['id'], $app['pp_schema']);
 
                 if ($user['status'] != 7)
                 {
@@ -312,7 +312,7 @@ class transactions
             $app['heading']->add_sub_raw('Huidig saldo: <span class="label label-info">');
             $app['heading']->add_sub((string) $user['saldo']);
             $app['heading']->add_sub_raw('</span>&nbsp;');
-            $app['heading']->add_sub($app['config']->get('currency', $app['tschema']));
+            $app['heading']->add_sub($app['config']->get('currency', $app['pp_schema']));
         }
         else
         {
@@ -379,7 +379,7 @@ class transactions
 
         $out .= $app['typeahead']->str([
             'filter'		=> 'accounts',
-            'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+            'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
         ]);
 
         $out .= '" ';
@@ -435,7 +435,7 @@ class transactions
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-default-view-date="-1y" ';
         $out .= 'data-date-end-date="0d" ';
@@ -445,7 +445,7 @@ class transactions
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
         $out .= '">';
 
         $out .= '</div>';
@@ -464,7 +464,7 @@ class transactions
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-end-date="0d" ';
         $out .= 'data-date-language="nl" ';
@@ -473,7 +473,7 @@ class transactions
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
         $out .= '">';
 
         $out .= '</div>';
@@ -529,7 +529,7 @@ class transactions
 
             return $app->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['tschema'],
+                'schema'    => $app['pp_schema'],
             ]);
         }
 
@@ -613,7 +613,7 @@ class transactions
                 $out .= '</span></td>';
 
                 $out .= '<td>';
-                $out .= $app['date_format']->get($t['cdate'], 'min', $app['tschema']);
+                $out .= $app['date_format']->get($t['cdate'], 'min', $app['pp_schema']);
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -709,7 +709,7 @@ class transactions
                 $out .= '</td>';
 
                 $out .= '<td>';
-                $out .= $app['date_format']->get($t['cdate'], 'min', $app['tschema']);
+                $out .= $app['date_format']->get($t['cdate'], 'min', $app['pp_schema']);
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -793,16 +793,16 @@ class transactions
         $out .= '<strong>';
         $out .= $amount_sum;
         $out .= '</strong> ';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</li>';
-        $out .= self::get_valuation($app['config'], $app['tschema']);
+        $out .= self::get_valuation($app['config'], $app['pp_schema']);
         $out .= '</ul>';
 
         $app['menu']->set('transactions');
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 

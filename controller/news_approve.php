@@ -14,7 +14,7 @@ class news_approve
             'published' => 't',
         ];
 
-        if ($app['db']->update($app['tschema'] . '.news',
+        if ($app['db']->update($app['pp_schema'] . '.news',
             $data, ['id' => $id]))
         {
             $app['alert']->success('Nieuwsbericht goedgekeurd en gepubliceerd.');

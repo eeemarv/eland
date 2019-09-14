@@ -12,7 +12,7 @@ class docs_map
     {
         $q = $request->query->get('q', '');
 
-        $row = $app['xdb']->get('doc', $map_id, $app['tschema']);
+        $row = $app['xdb']->get('doc', $map_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -25,7 +25,7 @@ class docs_map
             $app['link']->redirect('docs', $app['pp_ary'], []);
         }
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_id\'' => $map_id,
             'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -129,7 +129,7 @@ class docs_map
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $app['date_format']->get($d['ts'], 'min', $app['tschema']);
+                $td[] = $app['date_format']->get($d['ts'], 'min', $app['pp_schema']);
 
                 if ($show_visibility)
                 {
@@ -171,7 +171,7 @@ class docs_map
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

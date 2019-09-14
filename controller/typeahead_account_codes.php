@@ -12,7 +12,7 @@ class typeahead_account_codes
         $account_codes = [];
 
         $st = $app['db']->prepare('select letscode
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             order by letscode asc');
 
         $st->execute();

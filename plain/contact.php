@@ -8,12 +8,12 @@ require_once __DIR__ . '/include/web.php';
 
 $token = $_GET['token'] ?? false;
 
-if (!$app['config']->get('contact_form_en', $app['tschema']))
+if (!$app['config']->get('contact_form_en', $app['pp_schema']))
 {
 	exit;
 }
 
-if (!$app['config']->get('contact_form_en', $app['tschema']))
+if (!$app['config']->get('contact_form_en', $app['pp_schema']))
 {
 	$app['alert']->warning('De contactpagina is niet ingeschakeld.');
 	$app['link']->redirect('login', $app['pp_ary'], []);
@@ -39,7 +39,7 @@ if($app['request']->isMethod('POST'))
 		$errors[] = 'Geef een bericht in.';
 	}
 
-	if (!trim($app['config']->get('support', $app['tschema'])))
+	if (!trim($app['config']->get('support', $app['pp_schema'])))
 	{
 		$errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
 	}
@@ -69,15 +69,15 @@ if($app['request']->isMethod('POST'))
 		];
 
 		$token = $app['data_token']->store($contact,
-			'contact', $app['tschema'], 86400);
+			'contact', $app['pp_schema'], 86400);
 
 		$app['monolog']->info('Contact form filled in with address ' .
 			$email . ' ' .
 			json_encode($contact),
-			['schema' => $app['tschema']]);
+			['schema' => $app['pp_schema']]);
 
 		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
+			'schema'	=> $app['pp_schema'],
 			'to' 		=> [
 				$email => $email
 			],
@@ -107,7 +107,7 @@ else
 $form_disabled = false;
 $captcha_inline = '';
 
-if (!$app['config']->get('mailenabled', $app['tschema']))
+if (!$app['config']->get('mailenabled', $app['pp_schema']))
 {
 	$app['alert']->warning('E-mail functies zijn
 		uitgeschakeld door de beheerder.
@@ -115,7 +115,7 @@ if (!$app['config']->get('mailenabled', $app['tschema']))
 
 	$form_disabled = true;
 }
-else if (!$app['config']->get('support', $app['tschema']))
+else if (!$app['config']->get('support', $app['pp_schema']))
 {
 	$app['alert']->warning('Er is geen support E-mail adres
 		ingesteld door de beheerder.
@@ -144,7 +144,7 @@ $app['heading']->fa('comment-o');
 
 require_once __DIR__ . '/../include/header.php';
 
-$top_text = $app['config']->get('contact_form_top_text', $app['tschema']);
+$top_text = $app['config']->get('contact_form_top_text', $app['pp_schema']);
 
 if ($top_text)
 {
@@ -215,7 +215,7 @@ echo '</form>';
 echo '</div>';
 echo '</div>';
 
-$bottom_text = $app['config']->get('contact_form_bottom_text', $app['tschema']);
+$bottom_text = $app['config']->get('contact_form_bottom_text', $app['pp_schema']);
 
 if ($bottom_text)
 {

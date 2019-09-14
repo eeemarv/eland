@@ -34,7 +34,7 @@ if (!($app['pp_user'] || $app['pp_admin']))
 	}
 }
 
-if (!$app['config']->get('forum_en', $app['tschema']))
+if (!$app['config']->get('forum_en', $app['pp_schema']))
 {
 	$app['alert']->warning('De forum pagina is niet ingeschakeld.');
 	redirect_default_page();
@@ -44,7 +44,7 @@ if ($del || $edit)
 {
 	$t = ($del) ? $del : $edit;
 
-	$row = $app['xdb']->get('forum', $t, $app['tschema']);
+	$row = $app['xdb']->get('forum', $t, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -94,17 +94,17 @@ if ($app['request']->isMethod('POST'))
 			$app['link']->redirect('forum', $app['pp_ary'], []);
 		}
 
-		$app['xdb']->del('forum', $del, $app['tschema']);
+		$app['xdb']->del('forum', $del, $app['pp_schema']);
 
 		if (!isset($forum_post['parent_id']))
 		{
 			$rows = $app['xdb']->get_many(['agg_type' => 'forum',
-				'agg_schema' => $app['tschema'],
+				'agg_schema' => $app['pp_schema'],
 				'data->>\'parent_id\'' => $del]);
 
 			foreach ($rows as $row)
 			{
-				$app['xdb']->del('forum', $row['eland_id'], $app['tschema']);
+				$app['xdb']->del('forum', $row['eland_id'], $app['pp_schema']);
 			}
 
 			$app['alert']->success('Het forum onderwerp is verwijderd.');
@@ -176,7 +176,7 @@ if ($app['request']->isMethod('POST'))
 	else if ($edit)
 	{
 
-		$app['xdb']->set('forum', $edit, $forum_post, $app['tschema']);
+		$app['xdb']->set('forum', $edit, $forum_post, $app['pp_schema']);
 
 		$app['alert']->success((($topic) ? 'Reactie' : 'Onderwerp') . ' aangepast.');
 
@@ -185,9 +185,9 @@ if ($app['request']->isMethod('POST'))
 	}
 	else
 	{
-		$new_id = substr(sha1(microtime() . $app['tschema']), 0, 24);
+		$new_id = substr(sha1(microtime() . $app['pp_schema']), 0, 24);
 
-		$app['xdb']->set('forum', $new_id, $forum_post, $app['tschema']);
+		$app['xdb']->set('forum', $new_id, $forum_post, $app['pp_schema']);
 
 		$app['alert']->success(($topic ? 'Reactie' : 'Onderwerp') . ' toegevoegd.');
 
@@ -248,7 +248,7 @@ if ($add || $edit)
 
 	if ($topic)
 	{
-		$row = $app['xdb']->get('forum', $topic, $app['tschema']);
+		$row = $app['xdb']->get('forum', $topic, $app['pp_schema']);
 
 		if ($row)
 		{
@@ -342,7 +342,7 @@ if ($topic)
 
 	$forum_posts = [];
 
-	$row = $app['xdb']->get('forum', $topic, $app['tschema']);
+	$row = $app['xdb']->get('forum', $topic, $app['pp_schema']);
 
 	if ($row)
 	{
@@ -370,7 +370,7 @@ if ($topic)
 
 	$forum_posts[] = $topic_post;
 
-	$rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+	$rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 		'agg_type' => 'forum',
 		'data->>\'parent_id\'' => $topic], 'order by event_time asc');
 
@@ -390,7 +390,7 @@ if ($topic)
 	}
 
 	$rows = $app['xdb']->get_many([
-		'agg_schema' => $app['tschema'],
+		'agg_schema' => $app['pp_schema'],
 		'agg_type' => 'forum',
 		'event_time' => ['>' => $topic_post['ts']],
 		'access' => $app['item_access']->get_visible_ary_xdb(),
@@ -399,7 +399,7 @@ if ($topic)
 	$prev = count($rows) ? reset($rows)['eland_id'] : false;
 
 	$rows = $app['xdb']->get_many([
-		'agg_schema' => $app['tschema'],
+		'agg_schema' => $app['pp_schema'],
 		'agg_type' => 'forum',
 		'event_time' => ['<' => $topic_post['ts']],
 		'access' => $app['item_access']->get_visible_ary_xdb(),
@@ -456,7 +456,7 @@ if ($topic)
 		echo '<p>';
 		echo $app['account']->link((int) $p['uid'], $app['pp_ary']);
 		echo ' @';
-		echo $app['date_format']->get($p['ts'], 'min', $app['tschema']);
+		echo $app['date_format']->get($p['ts'], 'min', $app['pp_schema']);
 		echo (isset($p['edit_count'])) ? ' Aangepast: ' . $p['edit_count'] : '';
 
 		if ($app['pp_admin'] || $s_owner)
@@ -518,7 +518,7 @@ if ($topic)
  */
 
 $rows = $app['xdb']->get_many([
-	'agg_schema' => $app['tschema'],
+	'agg_schema' => $app['pp_schema'],
 	'agg_type' => 'forum',
 	'access' => $app['item_access']->get_visible_ary_xdb()],
 		'order by event_time desc');
@@ -529,7 +529,7 @@ if (count($rows))
 
 	foreach ($rows as $row)
 	{
-		$replies = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+		$replies = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
 			'agg_type' => 'forum',
 			'data->>\'parent_id\'' => $row['eland_id']]);
 
@@ -650,7 +650,7 @@ foreach($forum_posts as $p)
 	echo $app['account']->link($p['uid'], $app['pp_ary']);
 	echo '</td>';
 
-	echo $app['date_format']->get_td($p['ts'], 'min', $app['tschema']);
+	echo $app['date_format']->get_td($p['ts'], 'min', $app['pp_schema']);
 
 	if ($show_visibility)
 	{

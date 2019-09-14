@@ -13,7 +13,7 @@ class categories_edit
         $cats = [];
 
         $rs = $app['db']->prepare('select *
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             order by fullname');
 
         $rs->execute();
@@ -63,17 +63,17 @@ class categories_edit
                 if ($cat['id_parent'])
                 {
                     $prefix .= $app['db']->fetchColumn('select name
-                        from ' . $app['tschema'] . '.categories
+                        from ' . $app['pp_schema'] . '.categories
                         where id = ?', [$cat['id_parent']]) . ' - ';
                 }
 
                 $cat['fullname'] = $prefix . $cat['name'];
                 unset($cat['id']);
 
-                if ($app['db']->update($app['tschema'] . '.categories', $cat, ['id' => $id]))
+                if ($app['db']->update($app['pp_schema'] . '.categories', $cat, ['id' => $id]))
                 {
                     $app['alert']->success('Categorie aangepast.');
-                    $app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+                    $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
                         set fullname = ? || \' - \' || name
                         where id_parent = ?', [$cat['name'], $id]);
 
@@ -87,7 +87,7 @@ class categories_edit
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $app['db']->prepare('select id, name
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             where leafnote = 0
             order by name');
 
@@ -147,7 +147,7 @@ class categories_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

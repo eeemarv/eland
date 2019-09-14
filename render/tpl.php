@@ -41,7 +41,7 @@ class tpl
 	protected $btn_top;
 	protected $heading;
 	protected $link;
-	protected $tschema;
+	protected $pp_schema;
 	protected $s_schema;
 	protected $s_id;
 	protected $pp_ary;
@@ -71,7 +71,7 @@ class tpl
 		btn_top $btn_top,
 		heading $heading,
 		link $link,
-		string $tschema,
+		string $pp_schema,
 		string $s_schema,
 		int $s_id,
 		array $pp_ary,
@@ -102,7 +102,7 @@ class tpl
 		$this->btn_top = $btn_top;
 		$this->heading = $heading;
 		$this->link = $link;
-		$this->tschema = $tschema;
+		$this->pp_schema = $pp_schema;
 		$this->s_schema = $s_schema;
 		$this->s_id = $s_id;
 		$this->pp_ary = $pp_ary;
@@ -139,7 +139,7 @@ class tpl
 		$out .= '<head>';
 
 		$out .= '<title>';
-		$out .= $this->config->get('systemname', $this->tschema);
+		$out .= $this->config->get('systemname', $this->pp_schema);
 		$out .= '</title>';
 
 		$out .= $this->assets->get_css();
@@ -193,7 +193,7 @@ class tpl
 			$out .= '</button>';
 		}
 
-		$homepage_url = $this->config->get('homepage_url', $this->tschema);
+		$homepage_url = $this->config->get('homepage_url', $this->pp_schema);
 
 		if (!$homepage_url)
 		{
@@ -205,7 +205,7 @@ class tpl
 			}
 			else
 			{
-				$route = $this->config->get('default_landing_page', $this->tschema);
+				$route = $this->config->get('default_landing_page', $this->pp_schema);
 				$route = self::LINK_ROUTE[$route];
 //				$homepage_url = $this->link->path($route, $this->pp_ary);
 			}
@@ -220,7 +220,7 @@ class tpl
 		$out .= '<a href="';
 		$out .= $homepage_url;
 		$out .= '" class="navbar-brand">';
-		$out .= $this->config->get('systemname', $this->tschema);
+		$out .= $this->config->get('systemname', $this->pp_schema);
 		$out .= '</a>';
 		$out .= '</div>';
 
@@ -257,7 +257,7 @@ class tpl
 
 				if ($login_schema === $this->s_schema)
 				{
-					if ($login_schema === $this->tschema)
+					if ($login_schema === $this->pp_schema)
 					{
 						$out .= ' class="active"';
 					}
@@ -296,7 +296,7 @@ class tpl
 					{
 						$out .= '<li';
 
-						if ($this->tschema === $eland_schema)
+						if ($this->pp_schema === $eland_schema)
 						{
 							$out .= ' class="active"';
 						}
@@ -446,7 +446,7 @@ class tpl
 
 				if ($this->pp_ary['role_short'] === 'a')
 				{
-					$user_url = $this->config->get('default_landing_page', $this->tschema);
+					$user_url = $this->config->get('default_landing_page', $this->pp_schema);
 					$user_url .= '.php';
 
 					$u_param = 'view_' . $user_url;
@@ -528,7 +528,7 @@ class tpl
 
 			if (isset($item['config_en']))
 			{
-				if (!$this->config->get($item['config_en'], $this->tschema))
+				if (!$this->config->get($item['config_en'], $this->pp_schema))
 				{
 					continue;
 				}

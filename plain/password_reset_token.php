@@ -6,7 +6,7 @@ if (!$app['pp_anonymous'])
 }
 
 $token = $app['request']->attributes->get('token');
-$data = $app['data_token']->retrieve($token, 'password_reset', $app['tschema']);
+$data = $app['data_token']->retrieve($token, 'password_reset', $app['pp_schema']);
 
 if (!$data)
 {
@@ -27,16 +27,16 @@ if ($app['request']->isMethod('POST'))
 	}
 	else if (!($app['password_strength']->get($password) < 50))
 	{
-		$app['db']->update($app['tschema'] . '.users',
+		$app['db']->update($app['pp_schema'] . '.users',
 			['password' => hash('sha512', $password)],
 			['id' => $user_id]);
 
-		$app['user_cache']->clear($user_id, $app['tschema']);
+		$app['user_cache']->clear($user_id, $app['pp_schema']);
 		$app['alert']->success('Paswoord opgeslagen.');
 
 		$app['queue.mail']->queue([
-			'schema'	=> $app['tschema'],
-			'to' 		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+			'schema'	=> $app['pp_schema'],
+			'to' 		=> $app['mail_addr_user']->get($user_id, $app['pp_schema']),
 			'template'	=> 'password_reset/user',
 			'vars'		=> [
 				'password'		=> $password,
@@ -44,7 +44,7 @@ if ($app['request']->isMethod('POST'))
 			],
 		], 10000);
 
-		$data = $app['data_token']->del($token, 'password_reset', $app['tschema']);
+		$data = $app['data_token']->del($token, 'password_reset', $app['pp_schema']);
 		$app['link']->redirect('login', $app['pp_ary'], []);
 	}
 	else

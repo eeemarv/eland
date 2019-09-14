@@ -12,7 +12,7 @@ class messages_del
 {
     public function messages_del(Request $request, app $app, int $id):Response
     {
-        $message = messages_show::get_message($app['db'], $id, $app['tschema']);
+        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
 
         $s_owner = !$app['pp_guest']
             && $app['s_system_self']
@@ -32,14 +32,14 @@ class messages_del
                 $app['alert']->error($error_token);
             }
 
-            $app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $id]);
+            $app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
 
-            if ($app['db']->delete($app['tschema'] . '.messages', ['id' => $id]))
+            if ($app['db']->delete($app['pp_schema'] . '.messages', ['id' => $id]))
             {
                 $column = 'stat_msgs_';
                 $column .= $message['msg_type'] ? 'offers' : 'wanted';
 
-                $app['db']->executeUpdate('update ' . $app['tschema'] . '.categories
+                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
                     set ' . $column . ' = ' . $column . ' - 1
                     where id = ?', [$message['id_category']]);
 
@@ -78,7 +78,7 @@ class messages_del
         $out .= $message['validity'];
         $out .= '</dd>';
 
-        if ($app['intersystem_en'] && $app['intersystems']->get_count($app['tschema']))
+        if ($app['intersystem_en'] && $app['intersystems']->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
@@ -118,7 +118,7 @@ class messages_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

@@ -16,7 +16,7 @@ class support
         }
         else
         {
-            $user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['tschema']);
+            $user_email_ary = $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']);
         }
 
         $can_reply = count($user_email_ary) ? true : false;
@@ -33,7 +33,7 @@ class support
                 $errors[] = 'Het bericht is leeg.';
             }
 
-            if (!trim($app['config']->get('support', $app['tschema'])))
+            if (!trim($app['config']->get('support', $app['pp_schema'])))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
             }
@@ -59,7 +59,7 @@ class support
                 if ($cc && $can_reply)
                 {
                     $app['queue.mail']->queue([
-                        'schema'	=> $app['tschema'],
+                        'schema'	=> $app['pp_schema'],
                         'template'	=> 'support/copy',
                         'vars'		=> $vars,
                         'to'		=> $user_email_ary,
@@ -67,10 +67,10 @@ class support
                 }
 
                 $app['queue.mail']->queue([
-                    'schema'	=> $app['tschema'],
+                    'schema'	=> $app['pp_schema'],
                     'template'	=> 'support/support',
                     'vars'		=> $vars,
-                    'to'		=> $app['mail_addr_system']->get_support($app['tschema']),
+                    'to'		=> $app['mail_addr_system']->get_support($app['pp_schema']),
                     'reply_to'	=> $user_email_ary,
                 ], 8000);
 
@@ -106,11 +106,11 @@ class support
             $cc = false;
         }
 
-        if (!$app['config']->get('mailenabled', $app['tschema']))
+        if (!$app['config']->get('mailenabled', $app['pp_schema']))
         {
             $app['alert']->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }
-        else if (!$app['config']->get('support', $app['tschema']))
+        else if (!$app['config']->get('support', $app['pp_schema']))
         {
             $app['alert']->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
@@ -171,7 +171,7 @@ class support
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

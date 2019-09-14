@@ -11,7 +11,7 @@ class messages_extend
     public function messages_extend(app $app, int $id, int $days):Response
     {
         $message = $app['db']->fetchAssoc('select m.*
-            from ' . $app['tschema'] . '.messages m
+            from ' . $app['pp_schema'] . '.messages m
             where m.id = ?', [$id]);
 
         $s_owner = $app['s_id']
@@ -34,7 +34,7 @@ class messages_extend
             'exp_user_warn'	=> 'f',
         ];
 
-        if (!$app['db']->update($app['tschema'] . '.messages', $m, ['id' => $id]))
+        if (!$app['db']->update($app['pp_schema'] . '.messages', $m, ['id' => $id]))
         {
             $app['alert']->error('Fout: ' . msg_type::THE[$message['msg_type']] . ' is niet verlengd.');
             $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);

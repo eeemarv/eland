@@ -4,7 +4,7 @@ use cnst\pages as cnst_pages;
 
 $matched_route = $app['request']->attributes->get('_route');
 
-if ($css = $app['config']->get('css', $app['tschema']))
+if ($css = $app['config']->get('css', $app['pp_schema']))
 {
 	$app['assets']->add_external_css([$css]);
 }
@@ -14,7 +14,7 @@ echo '<html lang="nl">';
 echo '<head>';
 
 echo '<title>';
-echo $app['config']->get('systemname', $app['tschema']);
+echo $app['config']->get('systemname', $app['pp_schema']);
 echo '</title>';
 
 echo $app['assets']->get_css();
@@ -68,7 +68,7 @@ if (!$app['pp_anonymous'])
 	echo '</button>';
 }
 
-$homepage_url = $app['config']->get('homepage_url', $app['tschema']);
+$homepage_url = $app['config']->get('homepage_url', $app['pp_schema']);
 
 if (!$homepage_url)
 {
@@ -91,7 +91,7 @@ echo '</a>';
 echo '<a href="';
 echo $homepage_url;
 echo '" class="navbar-brand">';
-echo $app['config']->get('systemname', $app['tschema']);
+echo $app['config']->get('systemname', $app['pp_schema']);
 echo '</a>';
 echo '</div>';
 
@@ -128,7 +128,7 @@ if (!$app['pp_anonymous']
 
 		if ($login_schema === $app['s_schema'])
 		{
-			if ($login_schema === $app['tschema'])
+			if ($login_schema === $app['pp_schema'])
 			{
 				echo ' class="active"';
 			}
@@ -166,7 +166,7 @@ if (!$app['pp_anonymous']
 			{
 				echo '<li';
 
-				if ($app['tschema'] === $eland_schema)
+				if ($app['pp_schema'] === $eland_schema)
 				{
 					echo ' class="active"';
 				}
@@ -314,7 +314,7 @@ if (!$app['pp_anonymous'])
 
 		if ($app['page_access'] == 'admin')
 		{
-			$user_url = $app['config']->get('default_landing_page', $app['tschema']);
+			$user_url = $app['config']->get('default_landing_page', $app['pp_schema']);
 			$user_url .= '.php';
 
 			$u_param = 'view_' . $user_url;
@@ -394,7 +394,7 @@ if ($app['pp_anonymous'])
 		],
 	];
 
-	if ($app['config']->get('contact_form_en', $app['tschema']))
+	if ($app['config']->get('contact_form_en', $app['pp_schema']))
 	{
 		$menu['contact'] = [
 			'comment-o',
@@ -403,7 +403,7 @@ if ($app['pp_anonymous'])
 		];
 	}
 
-	if ($app['config']->get('registration_en', $app['tschema']))
+	if ($app['config']->get('registration_en', $app['pp_schema']))
 	{
 		$menu['register'] = [
 			'check-square-o',
@@ -442,7 +442,7 @@ else
 		],
 	];
 
-	if ($app['config']->get('forum_en', $app['tschema']))
+	if ($app['config']->get('forum_en', $app['pp_schema']))
 	{
 		$menu['forum'] = [
 			'comments-o',

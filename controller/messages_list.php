@@ -93,7 +93,7 @@ class messages_list
 
             $rows = $app['db']->executeQuery('select id_user, id, validity,
                 id_category, msg_type
-                from ' . $app['tschema'] . '.messages
+                from ' . $app['pp_schema'] . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
                 [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -123,7 +123,7 @@ class messages_list
                         'exp_user_warn'	=> 'f',
                     ];
 
-                    $app['db']->update($app['tschema'] . '.messages',
+                    $app['db']->update($app['pp_schema'] . '.messages',
                         $msg_update, ['id' => $id]);
                 }
 
@@ -148,7 +148,7 @@ class messages_list
 
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $app['db']->update($app['tschema'] . '.messages', $msg_update, ['id' => $id]);
+                    $app['db']->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
                 }
 
                 if (count($selected_messages) > 1)
@@ -168,7 +168,7 @@ class messages_list
                 $to_id_category = (int) $bulk_field_value;
 
                 $test_id_category = $app['db']->fetchColumn('select id
-                    from ' . $app['tschema'] . '.categories
+                    from ' . $app['pp_schema'] . '.categories
                     where id_parent <> 0
                         and leafnote = 1
                         and id = ?', [$to_id_category]);
@@ -192,7 +192,7 @@ class messages_list
 
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $app['db']->update($app['tschema'] . '.messages', $msg_update, ['id' => $id]);
+                    $app['db']->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
 
                     $type = cnst_message_type::FROM_DB[$row['msg_type']];
                     $id_category = $row['id_category'];
@@ -221,7 +221,7 @@ class messages_list
                     foreach ($type_count_ary as $type => $count)
                     {
                         messages_edit::adjust_category_stats($type,
-                            (int) $id_category, $count, $app['db'], $app['tschema']);
+                            (int) $id_category, $count, $app['db'], $app['pp_schema']);
                     }
                 }
 
@@ -259,7 +259,7 @@ class messages_list
 
         $app['assets']->add(['table_sel.js']);
 
-        $show_visibility_column = !$app['pp_guest'] && $app['intersystems']->get_count($app['tschema']);
+        $show_visibility_column = !$app['pp_guest'] && $app['intersystems']->get_count($app['pp_schema']);
 
         if (!count($messages))
         {
@@ -366,7 +366,7 @@ class messages_list
             }
 
             $out .= '<td>';
-            $out .= $app['date_format']->get($msg['validity'], 'day', $app['tschema']);
+            $out .= $app['date_format']->get($msg['validity'], 'day', $app['pp_schema']);
             $out .= '</td>';
 
             if ($show_visibility_column)
@@ -511,7 +511,7 @@ class messages_list
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -530,7 +530,7 @@ class messages_list
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -664,7 +664,7 @@ class messages_list
             && $filter['uid']
             && !isset($filter['s']))
         {
-            $filter['fcode'] = $app['account']->str((int) $filter['uid'], $app['tschema']);
+            $filter['fcode'] = $app['account']->str((int) $filter['uid'], $app['pp_schema']);
         }
 
         if (isset($filter['uid']))
@@ -688,7 +688,7 @@ class messages_list
             $fcode = trim($fcode);
 
             $fuid = $app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$fcode]);
 
             if ($fuid)
@@ -696,7 +696,7 @@ class messages_list
                 $where_sql[] = 'u.id = ?';
                 $params_sql[] = $fuid;
 
-                $fcode = $app['account']->str((int) $fuid, $app['tschema']);
+                $fcode = $app['account']->str((int) $fuid, $app['pp_schema']);
                 $params['f']['fcode'] = $fcode;
             }
             else
@@ -711,7 +711,7 @@ class messages_list
             $cat_ary = [];
 
             $st = $app['db']->prepare('select id
-                from ' . $app['tschema'] . '.categories
+                from ' . $app['pp_schema'] . '.categories
                 where id_parent = ?');
             $st->bindValue(1, $filter['cid']);
             $st->execute();
@@ -816,16 +816,16 @@ class messages_list
         }
 
         $query = 'select m.*, u.postcode, c.fullname
-            from ' . $app['tschema'] . '.messages m, ' .
-                $app['tschema'] . '.users u, ' .
-                $app['tschema'] . '.categories c
+            from ' . $app['pp_schema'] . '.messages m, ' .
+                $app['pp_schema'] . '.users u, ' .
+                $app['pp_schema'] . '.categories c
                 where m.id_user = u.id
                     and m.id_category = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
         $row_count = $app['db']->fetchColumn('select count(m.*)
-            from ' . $app['tschema'] . '.messages m, ' .
-                $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.messages m, ' .
+                $app['pp_schema'] . '.users u
             where m.id_user = u.id' . $where_sql, $params_sql);
 
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -862,8 +862,8 @@ class messages_list
         if (isset($filter['uid']))
         {
             $st = $app['db']->executeQuery('select c.*
-                from ' . $app['tschema'] . '.categories c, ' .
-                    $app['tschema'] . '.messages m
+                from ' . $app['pp_schema'] . '.categories c, ' .
+                    $app['pp_schema'] . '.messages m
                 where m.id_category = c.id
                     and m.id_user = ?
                 order by c.fullname', [$filter['uid']]);
@@ -871,7 +871,7 @@ class messages_list
         else
         {
             $st = $app['db']->executeQuery('select *
-                from ' . $app['tschema'] . '.categories
+                from ' . $app['pp_schema'] . '.categories
                 order by fullname');
         }
 
@@ -910,7 +910,7 @@ class messages_list
                 if ($app['pp_admin'] && !$s_owner)
                 {
                     $str = 'Vraag of aanbod voor ';
-                    $str .= $app['account']->str((int) $filter['uid'], $app['tschema']);
+                    $str .= $app['account']->str((int) $filter['uid'], $app['pp_schema']);
 
                     $app['btn_top']->add('messages_add', $app['pp_ary'],
                         ['uid' => $filter['uid']], $str);
@@ -1066,7 +1066,7 @@ class messages_list
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $app['config']->get('newuserdays', $app['tschema']),
+                'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
             ]);
 
         $out .= '" ';

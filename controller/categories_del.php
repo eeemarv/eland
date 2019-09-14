@@ -18,7 +18,7 @@ class categories_del
                 $app['link']->redirect('categories', $app['pp_ary'], []);
             }
 
-            if ($app['db']->delete($app['tschema'] . '.categories', ['id' => $id]))
+            if ($app['db']->delete($app['pp_schema'] . '.categories', ['id' => $id]))
             {
                 $app['alert']->success('Categorie verwijderd.');
                 $app['link']->redirect('categories', $app['pp_ary'], []);
@@ -28,7 +28,7 @@ class categories_del
         }
 
         $fullname = $app['db']->fetchColumn('select fullname
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             where id = ?', [$id]);
 
         $app['heading']->add('Categorie verwijderen : ');
@@ -57,7 +57,7 @@ class categories_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

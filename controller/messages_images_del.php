@@ -26,7 +26,7 @@ class messages_images_del
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
 
-        $message = messages_show::get_message($app['db'], $id, $app['tschema']);
+        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
 
         if (!$message)
         {
@@ -41,7 +41,7 @@ class messages_images_del
         }
 
         $image = $app['db']->fetchAssoc('select p."PictureFile"
-            from ' . $app['tschema'] . '.msgpictures p
+            from ' . $app['pp_schema'] . '.msgpictures p
             where p.msgid = ?
                 and p."PictureFile" = ?', [$id, $img]);
 
@@ -50,14 +50,14 @@ class messages_images_del
             throw new NotFoundHttpException('Afbeelding niet gevonden');
         }
 
-        $app['db']->delete($app['tschema'] . '.msgpictures', ['"PictureFile"' => $img]);
+        $app['db']->delete($app['pp_schema'] . '.msgpictures', ['"PictureFile"' => $img]);
 
         return $app->json(['success' => true]);
     }
 
     public function messages_images_del(Request $request, app $app, int $id):Response
     {
-        $message = messages_show::get_message($app['db'], $id, $app['tschema']);
+        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
 
         $s_owner = $app['s_id'] && $app['s_id'] === $message['id_user'];
 
@@ -76,7 +76,7 @@ class messages_images_del
 
             if (!count($errors))
             {
-                $app['db']->delete($app['tschema'] . '.msgpictures', ['msgid' => $id]);
+                $app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
 
                 $app['alert']->success('De afbeeldingen voor ' . $message['label']['type_this'] .
                     ' zijn verwijderd.');
@@ -90,7 +90,7 @@ class messages_images_del
         $images = [];
 
         $st = $app['db']->prepare('select "PictureFile"
-            from ' . $app['tschema'] . '.msgpictures
+            from ' . $app['pp_schema'] . '.msgpictures
             where msgid = ?');
         $st->bindValue(1, $id);
         $st->execute();
@@ -179,7 +179,7 @@ class messages_images_del
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

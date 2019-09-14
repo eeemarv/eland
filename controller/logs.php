@@ -29,7 +29,7 @@ class logs
 
         $params_sql = $where_sql = [];
 
-        $params_sql[] = $app['tschema'];
+        $params_sql[] = $app['pp_schema'];
 
         if (isset($filter['code'])
             && $filter['code'])
@@ -201,7 +201,7 @@ class logs
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+                'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
             ]);
         $out .= '" ';
 
@@ -305,7 +305,7 @@ class logs
         {
             $out .= '<tr>';
             $out .= '<td>';
-            $out .= $app['date_format']->get($value['ts'], 'sec', $app['tschema']);
+            $out .= $app['date_format']->get($value['ts'], 'sec', $app['pp_schema']);
             $out .= '</td>';
             $out .= '<td>';
             $out .= $value['type'];
@@ -322,7 +322,7 @@ class logs
             {
                 $params_context = [
                     'system'        => $app['systems']->get_system($value['user_schema']),
-                    'role_short'    => $value['user_schema'] === $app['tschema'] ? 'a' : 'g',
+                    'role_short'    => $value['user_schema'] === $app['pp_schema'] ? 'a' : 'g',
                 ];
 
                 $out .= $app['account']->link($value['user_id'], $params_context);
@@ -347,7 +347,7 @@ class logs
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

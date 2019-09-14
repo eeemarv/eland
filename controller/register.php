@@ -10,7 +10,7 @@ class register
 {
     public function register(Request $request, app $app):Response
     {
-        if (!$app['config']->get('registration_en', $app['tschema']))
+        if (!$app['config']->get('registration_en', $app['pp_schema']))
         {
             $app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
             $app['link']->redirect('login', $app['pp_ary'], []);
@@ -28,7 +28,7 @@ class register
             ];
 
             $app['monolog']->info('Registration request for ' .
-                $reg['email'], ['schema' => $app['tschema']]);
+                $reg['email'], ['schema' => $app['pp_schema']]);
 
             if(!$reg['email'])
             {
@@ -43,8 +43,8 @@ class register
                 $app['alert']->error('Geen geldig E-mail adres.');
             }
             else if ($app['db']->fetchColumn('select c.id_user
-                from ' . $app['tschema'] . '.contact c, ' .
-                    $app['tschema'] . '.type_contact tc
+                from ' . $app['pp_schema'] . '.contact c, ' .
+                    $app['pp_schema'] . '.type_contact tc
                 where c. value = ?
                     AND tc.id = c.id_type_contact
                     AND tc.abbrev = \'mail\'', [$reg['email']]))
@@ -71,10 +71,10 @@ class register
             else
             {
                 $token = $app['data_token']->store($reg,
-                    'register', $app['tschema'], 604800); // 1 week
+                    'register', $app['pp_schema'], 604800); // 1 week
 
                 $app['queue.mail']->queue([
-                    'schema'	=> $app['tschema'],
+                    'schema'	=> $app['pp_schema'],
                     'to' 		=> [$reg['email'] => $reg['first_name'] . ' ' . $reg['last_name']],
                     'vars'		=> ['token' => $token],
                     'template'	=> 'register/confirm',
@@ -91,7 +91,7 @@ class register
         $app['heading']->add('Inschrijven');
         $app['heading']->fa('check-square-o');
 
-        $top_text = $app['config']->get('registration_top_text', $app['tschema']);
+        $top_text = $app['config']->get('registration_top_text', $app['pp_schema']);
 
         $out = $top_text ?: '';
 
@@ -188,7 +188,7 @@ class register
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $app['config']->get('registration_bottom_text', $app['tschema']);
+        $bottom_text = $app['config']->get('registration_bottom_text', $app['pp_schema']);
 
         $out .= $bottom_text ?: '';
 
@@ -196,7 +196,7 @@ class register
 
         return $app->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

@@ -22,7 +22,7 @@ if ($approve)
 		exit;
 	}
 
-	if ($app['db']->update($app['tschema'] . '.news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
+	if ($app['db']->update($app['pp_schema'] . '.news', ['approved' => 't', 'published' => 't'], ['id' => $approve]))
 	{
 		$app['alert']->success('Nieuwsbericht goedgekeurd en gepubliceerd.');
 	}
@@ -66,7 +66,7 @@ if ($add || $edit)
 
 		if ($news['itemdate'])
 		{
-			$news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['tschema']);
+			$news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['pp_schema']);
 
 			if ($news['itemdate'] === '')
 			{
@@ -114,13 +114,13 @@ if ($add && $app['request']->isMethod('POST') && !count($errors))
 	$news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
 	$news['cdate'] = gmdate('Y-m-d H:i:s');
 
-	if ($app['db']->insert($app['tschema'] . '.news', $news))
+	if ($app['db']->insert($app['pp_schema'] . '.news', $news))
 	{
-		$id = $app['db']->lastInsertId($app['tschema'] . '.news_id_seq');
+		$id = $app['db']->lastInsertId($app['pp_schema'] . '.news_id_seq');
 
 		$app['xdb']->set('news_access', $id, [
 			'access' => cnst_access::TO_XDB[$access],
-		], $app['tschema']);
+		], $app['pp_schema']);
 
 		$app['alert']->success('Nieuwsbericht opgeslagen.');
 
@@ -133,8 +133,8 @@ if ($add && $app['request']->isMethod('POST') && !count($errors))
 			];
 
 			$app['queue.mail']->queue([
-				'schema'	=> $app['tschema'],
-				'to' 		=> $app['mail_addr_system']->get_newsadmin($app['tschema']),
+				'schema'	=> $app['pp_schema'],
+				'to' 		=> $app['mail_addr_system']->get_newsadmin($app['pp_schema']),
 				'template'	=> 'news/review_admin',
 				'vars'		=> $vars,
 			], 7000);
@@ -154,11 +154,11 @@ if ($add && $app['request']->isMethod('POST') && !count($errors))
 
 if ($edit && $app['request']->isMethod('POST') && !count($errors))
 {
-	if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $edit]))
+	if($app['db']->update($app['pp_schema'] . '.news', $news, ['id' => $edit]))
 	{
 		$app['xdb']->set('news_access', $edit, [
 			'access' => $app['item_access']->get_xdb($access)
-		], $app['tschema']);
+		], $app['pp_schema']);
 
 		$app['alert']->success('Nieuwsbericht aangepast.');
 		$app['link']->redirect('news', $app['pp_ary'], ['id' => $edit]);
@@ -172,11 +172,11 @@ if ($edit && $app['request']->isMethod('POST') && !count($errors))
 if ($edit)
 {
 	$news = $app['db']->fetchAssoc('select *
-		from ' . $app['tschema'] . '.news
+		from ' . $app['pp_schema'] . '.news
 		where id = ?', [$edit]);
 
 	$news_access = $app['xdb']->get('news_access', $edit,
-		$app['tschema'])['data']['access'];
+		$app['pp_schema'])['data']['access'];
 }
 
 if ($add && !$app['request']->isMethod('POST'))
@@ -221,17 +221,17 @@ if ($add || $edit)
 	echo '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
 	echo 'data-provide="datepicker" ';
 	echo 'data-date-format="';
-	echo $app['date_format']->datepicker_format($app['tschema']);
+	echo $app['date_format']->datepicker_format($app['pp_schema']);
 	echo '" ';
 	echo 'data-date-language="nl" ';
 	echo 'data-date-today-highlight="true" ';
 	echo 'data-date-autoclose="true" ';
 	echo 'data-date-orientation="bottom" ';
 	echo 'value="';
-	echo $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+	echo $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
 	echo '" ';
 	echo 'placeholder="';
-	echo $app['date_format']->datepicker_placeholder($app['tschema']);
+	echo $app['date_format']->datepicker_placeholder($app['pp_schema']);
 	echo '" ';
 	echo 'required>';
 	echo '</div>';
@@ -311,9 +311,9 @@ if ($del)
 			$app['link']->redirect('news', $app['pp_ary'], []);
 		}
 
-		if($app['db']->delete($app['tschema'] . '.news', ['id' => $del]))
+		if($app['db']->delete($app['pp_schema'] . '.news', ['id' => $del]))
 		{
-			$app['xdb']->del('news_access', $del, $app['tschema']);
+			$app['xdb']->del('news_access', $del, $app['pp_schema']);
 
 			$app['alert']->success('Nieuwsbericht verwijderd.');
 			$app['link']->redirect('news', $app['pp_ary'], []);
@@ -323,11 +323,11 @@ if ($del)
 	}
 
 	$news = $app['db']->fetchAssoc('select n.*
-		from ' . $app['tschema'] . '.news n
+		from ' . $app['pp_schema'] . '.news n
 		where n.id = ?', [$del]);
 
 	$news_access = $app['xdb']->get('news_access', $del,
-		$app['tschema'])['data']['access'];
+		$app['pp_schema'])['data']['access'];
 
 	$app['heading']->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
 	$app['heading']->add('calendar-o');
@@ -352,7 +352,7 @@ if ($del)
 
 	if ($news['itemdate'])
 	{
-		echo $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+		echo $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
 	}
 	else
 	{
@@ -438,7 +438,7 @@ $show_visibility = ($app['pp_user']
 $news_access_ary = $no_access_ary = [];
 
 $rows = $app['xdb']->get_many([
-	'agg_schema' => $app['tschema'],
+	'agg_schema' => $app['pp_schema'],
 	'agg_type' => 'news_access',
 ]);
 
@@ -448,7 +448,7 @@ foreach ($rows as $row)
 	$news_access_ary[$row['eland_id']] = $access;
 }
 
-$query = 'select * from ' . $app['tschema'] . '.news';
+$query = 'select * from ' . $app['pp_schema'] . '.news';
 
 if(!$app['pp_admin'])
 {
@@ -456,7 +456,7 @@ if(!$app['pp_admin'])
 }
 
 $query .= ' order by itemdate ';
-$query .= $app['config']->get('news_order_asc', $app['tschema']) === '1' ? 'asc' : 'desc';
+$query .= $app['config']->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
 
 $st = $app['db']->prepare($query);
 $st->execute();
@@ -470,7 +470,7 @@ while ($row = $st->fetch())
 	{
 		$app['xdb']->set('news_access', $news_id, [
 			'access' => 'interlets',
-		], $app['tschema']);
+		], $app['pp_schema']);
 		$news[$k]['access'] = 'interlets';
 	}
 	else
@@ -580,7 +580,7 @@ if ($id)
 
 	if ($news_item['itemdate'])
 	{
-		echo $app['date_format']->get($news_item['itemdate'], 'day', $app['tschema']);
+		echo $app['date_format']->get($news_item['itemdate'], 'day', $app['pp_schema']);
 	}
 	else
 	{
@@ -735,7 +735,7 @@ if ($v_list)
 
 		echo '</td>';
 
-		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
+		echo $app['date_format']->get_td($n['itemdate'], 'day', $app['pp_schema']);
 
 		if ($app['pp_admin'] && !$app['p_inline'])
 		{
@@ -792,7 +792,7 @@ else if ($v_extended)
 
 		if ($n['itemdate'])
 		{
-			echo $app['date_format']->get($n['itemdate'], 'day', $app['tschema']);
+			echo $app['date_format']->get($n['itemdate'], 'day', $app['pp_schema']);
 
 			echo '<br><i>';
 

@@ -34,7 +34,7 @@ class news_edit
 
             if ($news['itemdate'])
             {
-                $news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['tschema']);
+                $news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['pp_schema']);
 
                 if ($news['itemdate'] === '')
                 {
@@ -68,11 +68,11 @@ class news_edit
 
             if (!count($errors))
             {
-                if($app['db']->update($app['tschema'] . '.news', $news, ['id' => $id]))
+                if($app['db']->update($app['pp_schema'] . '.news', $news, ['id' => $id]))
                 {
                     $app['xdb']->set('news_access', (string) $id, [
                         'access' => cnst_access::TO_XDB[$access]
-                    ], $app['tschema']);
+                    ], $app['pp_schema']);
 
                     $app['alert']->success('Nieuwsbericht aangepast.');
                     $app['link']->redirect('news_show', $app['pp_ary'], ['id' => $id]);
@@ -86,11 +86,11 @@ class news_edit
         else
         {
             $news = $app['db']->fetchAssoc('select *
-                from ' . $app['tschema'] . '.news
+                from ' . $app['pp_schema'] . '.news
                 where id = ?', [$id]);
 
             $access = $app['xdb']->get('news_access', (string) $id,
-                $app['tschema'])['data']['access'];
+                $app['pp_schema'])['data']['access'];
 
             $access = cnst_access::FROM_XDB[$access];
         }
@@ -125,17 +125,17 @@ class news_edit
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-today-highlight="true" ';
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $app['date_format']->get($news['itemdate'], 'day', $app['tschema']);
+        $out .= $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
         $out .= '" ';
         $out .= 'required>';
         $out .= '</div>';
@@ -194,7 +194,7 @@ class news_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

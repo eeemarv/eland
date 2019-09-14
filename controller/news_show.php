@@ -16,7 +16,7 @@ class news_show
         $news_access_ary = $no_access_ary = [];
 
         $rows = $app['xdb']->get_many([
-            'agg_schema' => $app['tschema'],
+            'agg_schema' => $app['pp_schema'],
             'agg_type' => 'news_access',
         ]);
 
@@ -26,7 +26,7 @@ class news_show
             $news_access_ary[$row['eland_id']] = $access;
         }
 
-        $query = 'select * from ' . $app['tschema'] . '.news';
+        $query = 'select * from ' . $app['pp_schema'] . '.news';
 
         if(!$app['pp_admin'])
         {
@@ -34,7 +34,7 @@ class news_show
         }
 
         $query .= ' order by itemdate ';
-        $query .= $app['config']->get('news_order_asc', $app['tschema']) === '1' ? 'asc' : 'desc';
+        $query .= $app['config']->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
 
         $st = $app['db']->prepare($query);
         $st->execute();
@@ -48,7 +48,7 @@ class news_show
             {
                 $app['xdb']->set('news_access', (string) $news_id, [
                     'access' => 'interlets',
-                ], $app['tschema']);
+                ], $app['pp_schema']);
 
                 $news[$news_id]['access'] = 'interlets';
             }
@@ -151,7 +151,7 @@ class news_show
 
         if ($news_item['itemdate'])
         {
-            $out .= $app['date_format']->get($news_item['itemdate'], 'day', $app['tschema']);
+            $out .= $app['date_format']->get($news_item['itemdate'], 'day', $app['pp_schema']);
         }
         else
         {
@@ -206,7 +206,7 @@ class news_show
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

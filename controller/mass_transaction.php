@@ -82,7 +82,7 @@ class mass_transaction
                 accountrole, status, saldo,
                 minlimit, maxlimit, adate,
                 postcode
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where status IN (0, 1, 2, 5, 6)
             order by letscode');
 
@@ -144,7 +144,7 @@ class mass_transaction
                 $letscode = $to_one ? $to_letscode : $from_letscode;
 
                 $one_uid = $app['db']->fetchColumn('select id
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where letscode = ?', [$letscode]);
 
                 if (!$one_uid)
@@ -200,7 +200,7 @@ class mass_transaction
             }
 
             if ($app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.transactions
+                from ' . $app['pp_schema'] . '.transactions
                 where transid = ?', [$transid]))
             {
                 $errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
@@ -250,7 +250,7 @@ class mass_transaction
                         $alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
                         $alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
                         $alert_success .= '  met bedrag ' . $amo .' ';
-                        $alert_success .= $app['config']->get('currency', $app['tschema']);
+                        $alert_success .= $app['config']->get('currency', $app['pp_schema']);
                         $alert_success .= ' uitgevoerd.<br>';
 
                         $log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
@@ -266,10 +266,10 @@ class mass_transaction
                             'creator'		=> $app['s_master'] ? 0 : $app['s_id'],
                         ];
 
-                        $app['db']->insert($app['tschema'] . '.transactions', $transaction);
-                        $transaction['id'] = $app['db']->lastInsertId($app['tschema'] . '.transactions_id_seq');
+                        $app['db']->insert($app['pp_schema'] . '.transactions', $transaction);
+                        $transaction['id'] = $app['db']->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
 
-                        $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                        $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                             set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
                             where id = ?', [$amo, $many_uid]);
 
@@ -280,7 +280,7 @@ class mass_transaction
                         $transactions[] = $transaction;
                     }
 
-                    $app['db']->executeUpdate('update ' . $app['tschema'] . '.users
+                    $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                         set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
                         where id = ?', [$total_amount, $one_uid]);
 
@@ -293,7 +293,7 @@ class mass_transaction
                     throw $e;
                 }
 
-                $app['autominlimit']->init($app['tschema']);
+                $app['autominlimit']->init($app['pp_schema']);
 
                 foreach($transactions as $t)
                 {
@@ -304,29 +304,29 @@ class mass_transaction
                 {
                     foreach ($transactions as $t)
                     {
-                        $app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
+                        $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_from']);
                     }
 
-                    $app['predis']->del($app['tschema'] . '_user_' . $t['id_to']);
+                    $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_to']);
                 }
                 else
                 {
                     foreach ($transactions as $t)
                     {
-                        $app['predis']->del($app['tschema'] . '_user_' . $t['id_to']);
+                        $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_to']);
                     }
 
-                    $app['predis']->del($app['tschema'] . '_user_' . $t['id_from']);
+                    $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_from']);
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';
-                $alert_success .= $app['config']->get('currency', $app['tschema']);
+                $alert_success .= $app['config']->get('currency', $app['pp_schema']);
                 $app['alert']->success($alert_success);
 
                 $log_one = $users[$one_uid]['letscode'] . ' ';
                 $log_one .= $users[$one_uid]['name'];
                 $log_one .= '(Total amount: ' . $total_amount . ' ';
-                $log_one .= $app['config']->get('currency', $app['tschema']);
+                $log_one .= $app['config']->get('currency', $app['pp_schema']);
                 $log_one .= ')';
 
                 $log_many = rtrim($log_many, ', ');
@@ -335,7 +335,7 @@ class mass_transaction
                 $log_str .= ' to ';
                 $log_str .= $to_one ? $log_one : $log_many;
 
-                $app['monolog']->info('trans: ' . $log_str, ['schema' => $app['tschema']]);
+                $app['monolog']->info('trans: ' . $log_str, ['schema' => $app['pp_schema']]);
 
                 if ($app['s_master'])
                 {
@@ -355,8 +355,8 @@ class mass_transaction
                         ];
 
                         $app['queue.mail']->queue([
-                            'schema'	=> $app['tschema'],
-                            'to'		=> $app['mail_addr_user']->get($user_id, $app['tschema']),
+                            'schema'	=> $app['pp_schema'],
+                            'to'		=> $app['mail_addr_user']->get($user_id, $app['pp_schema']),
                             'template'	=> 'transaction/transaction',
                             'vars'		=> $vars,
                         ], random_int(0, 5000));
@@ -381,11 +381,11 @@ class mass_transaction
                     $mail_template .= $to_one ? 'many_to_one' : 'one_to_many';
 
                     $app['queue.mail']->queue([
-                        'schema'	=> $app['tschema'],
+                        'schema'	=> $app['pp_schema'],
                         'to' 		=> array_merge(
-                            $app['mail_addr_system']->get_admin($app['tschema']),
-                            $app['mail_addr_user']->get($app['s_id'], $app['tschema']),
-                            $app['mail_addr_user']->get($one_uid, $app['tschema'])
+                            $app['mail_addr_system']->get_admin($app['pp_schema']),
+                            $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
+                            $app['mail_addr_user']->get($one_uid, $app['pp_schema'])
                         ),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
@@ -407,7 +407,7 @@ class mass_transaction
         if ($to_letscode)
         {
             if ($to_name = $app['db']->fetchColumn('select name
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$to_letscode]))
             {
                 $to_letscode .= ' ' . $to_name;
@@ -416,15 +416,15 @@ class mass_transaction
         if ($from_letscode)
         {
             if ($from_name = $app['db']->fetchColumn('select name
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$from_letscode]))
             {
                 $from_letscode .= ' ' . $from_name;
             }
         }
 
-        $system_minlimit = $app['config']->get('minlimit', $app['tschema']);
-        $system_maxlimit = $app['config']->get('maxlimit', $app['tschema']);
+        $system_minlimit = $app['config']->get('minlimit', $app['pp_schema']);
+        $system_maxlimit = $app['config']->get('maxlimit', $app['pp_schema']);
 
         $app['assets']->add([
             'mass_transaction.js',
@@ -476,7 +476,7 @@ class mass_transaction
         $out .= 'Vast bedrag</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
         $out .= 'min="0">';
@@ -521,7 +521,7 @@ class mass_transaction
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= ': basis';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_base">';
@@ -597,7 +597,7 @@ class mass_transaction
 
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= ': min';
         $out .= '</span>';
 
@@ -609,7 +609,7 @@ class mass_transaction
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= ': max';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_max">';
@@ -627,26 +627,26 @@ class mass_transaction
         $out .= ' Respecteer minimum limieten</label>';
         $out .= '</div>';
 
-        if ($app['config']->get('minlimit', $app['tschema']) !== ''
-            || $app['config']->get('maxlimit', $app['tschema']) !== '')
+        if ($app['config']->get('minlimit', $app['pp_schema']) !== ''
+            || $app['config']->get('maxlimit', $app['pp_schema']) !== '')
         {
             $out .= '<ul>';
 
-            if ($app['config']->get('minlimit', $app['tschema']) !== '')
+            if ($app['config']->get('minlimit', $app['pp_schema']) !== '')
             {
                 $out .= '<li>Minimum Systeemslimiet: ';
-                $out .= $app['config']->get('minlimit', $app['tschema']);
+                $out .= $app['config']->get('minlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= $app['config']->get('currency', $app['pp_schema']);
                 $out .= '</li>';
             }
 
-            if ($app['config']->get('maxlimit', $app['tschema']) !== '')
+            if ($app['config']->get('maxlimit', $app['pp_schema']) !== '')
             {
                 $out .= '<li>Maximum Systeemslimiet: ';
-                $out .= $app['config']->get('maxlimit', $app['tschema']);
+                $out .= $app['config']->get('maxlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= $app['config']->get('currency', $app['pp_schema']);
                 $out .= '</li>';
             }
 
@@ -734,7 +734,7 @@ class mass_transaction
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['tschema']),
+                'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
             ]);
         $out .= '">';
 
@@ -852,7 +852,7 @@ class mass_transaction
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="total" readonly>';
         $out .= '</div>';
@@ -932,7 +932,7 @@ class mass_transaction
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

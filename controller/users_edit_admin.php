@@ -36,8 +36,8 @@ class users_edit_admin
         }
         else if ($s_owner)
         {
-            $username_edit = $app['config']->get('users_can_edit_username', $app['tschema']);
-            $fullname_edit = $app['config']->get('users_can_edit_fullname', $app['tschema']);
+            $username_edit = $app['config']->get('users_can_edit_username', $app['pp_schema']);
+            $fullname_edit = $app['config']->get('users_can_edit_fullname', $app['pp_schema']);
         }
         else
         {
@@ -79,9 +79,9 @@ class users_edit_admin
                 $password = trim($request->request->get('password', ''));
 
                 $mail_unique_check_sql = 'select count(c.value)
-                    from ' . $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc, ' .
-                        $app['tschema'] . '.users u
+                    from ' . $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc, ' .
+                        $app['pp_schema'] . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
                         and c.value = ?
@@ -171,7 +171,7 @@ class users_edit_admin
                 }
 
                 $letscode_sql = 'select letscode
-                    from ' . $app['tschema'] . '.users
+                    from ' . $app['pp_schema'] . '.users
                     where letscode = ?';
                 $letscode_sql_params = [$user['letscode']];
             }
@@ -189,12 +189,12 @@ class users_edit_admin
             $fullname_access = $request->request->get('fullname_access', '');
 
             $name_sql = 'select name
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where name = ?';
             $name_sql_params = [$user['name']];
 
             $fullname_sql = 'select fullname
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where fullname = ?';
             $fullname_sql_params = [$user['fullname']];
 
@@ -207,7 +207,7 @@ class users_edit_admin
                 $fullname_sql .= 'and id <> ?';
                 $fullname_sql_params[] = $id;
 
-                $user_prefetch = $app['user_cache']->get($id, $app['tschema']);
+                $user_prefetch = $app['user_cache']->get($id, $app['pp_schema']);
             }
 
             if (!$fullname_access)
@@ -292,7 +292,7 @@ class users_edit_admin
 
             if ($user['birthday'])
             {
-                $user['birthday'] = $app['date_format']->reverse($user['birthday'], $app['tschema']);
+                $user['birthday'] = $app['date_format']->reverse($user['birthday'], $app['pp_schema']);
 
                 if ($user['birthday'] === '')
                 {
@@ -340,7 +340,7 @@ class users_edit_admin
                 $contact_types = [];
 
                 $rs = $app['db']->prepare('select abbrev, id
-                    from ' . $app['tschema'] . '.type_contact');
+                    from ' . $app['pp_schema'] . '.type_contact');
 
                 $rs->execute();
 
@@ -365,20 +365,20 @@ class users_edit_admin
                         $user['password'] = hash('sha512', sha1(microtime()));
                     }
 
-                    if ($app['db']->insert($app['tschema'] . '.users', $user))
+                    if ($app['db']->insert($app['pp_schema'] . '.users', $user))
                     {
-                        $id = (int) app['db']->lastInsertId($app['tschema'] . '.users_id_seq');
+                        $id = (int) app['db']->lastInsertId($app['pp_schema'] . '.users_id_seq');
 
                         $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
 
                         $app['xdb']->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
-                        ], $app['tschema']);
+                        ], $app['pp_schema']);
 
                         $app['alert']->success('Gebruiker opgeslagen.');
 
-                        $app['user_cache']->clear($id, $app['tschema']);
-                        $user = $app['user_cache']->get($id, $app['tschema']);
+                        $app['user_cache']->clear($id, $app['pp_schema']);
+                        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
                         foreach ($contact as $contact_ary)
                         {
@@ -392,7 +392,7 @@ class users_edit_admin
                                 $app['queue.geocode']->cond_queue([
                                     'adr'		=> $contact_ary['value'],
                                     'uid'		=> $id,
-                                    'schema'	=> $app['tschema'],
+                                    'schema'	=> $app['pp_schema'],
                                 ], 0);
                             }
 
@@ -403,14 +403,14 @@ class users_edit_admin
                                 'id_user'			=> $id,
                             ];
 
-                            $app['db']->insert($app['tschema'] . '.contact', $insert);
+                            $app['db']->insert($app['pp_schema'] . '.contact', $insert);
                         }
 
                         if ($user['status'] == 1)
                         {
                             if ($notify && $password)
                             {
-                                if ($app['config']->get('mailenabled', $app['tschema']))
+                                if ($app['config']->get('mailenabled', $app['pp_schema']))
                                 {
                                     if ($mailadr)
                                     {
@@ -427,7 +427,7 @@ class users_edit_admin
                                     self::send_activation_mail($app['queue.mail'],
                                         $app['mail_addr_system'], $app['mail_addr_user'],
                                         $mailadr ? true : false, $password,
-                                        $id, $app['tschema']);
+                                        $id, $app['pp_schema']);
                                 }
                                 else
                                 {
@@ -444,12 +444,12 @@ class users_edit_admin
 
                         if ($user['status'] == 2 | $user['status'] == 1)
                         {
-                            $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['tschema']);
+                            $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['pp_schema']);
                         }
 
                         if ($user['status'] == 7)
                         {
-                            $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['tschema']);
+                            $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                         }
 
                         $app['intersystems']->clear_cache($app['s_schema']);
@@ -463,7 +463,7 @@ class users_edit_admin
                 }
                 else if ($is_edit)
                 {
-                    $user_stored = $app['user_cache']->get($id, $app['tschema']);
+                    $user_stored = $app['user_cache']->get($id, $app['pp_schema']);
 
                     $user['mdate'] = gmdate('Y-m-d H:i:s');
 
@@ -477,17 +477,17 @@ class users_edit_admin
                         }
                     }
 
-                    if ($app['db']->update($app['tschema'] . '.users', $user, ['id' => $id]))
+                    if ($app['db']->update($app['pp_schema'] . '.users', $user, ['id' => $id]))
                     {
 
                         $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
 
                         $app['xdb']->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
-                        ], $app['tschema']);
+                        ], $app['pp_schema']);
 
-                        $app['user_cache']->clear($id, $app['tschema']);
-                        $user = $app['user_cache']->get($id, $app['tschema']);
+                        $app['user_cache']->clear($id, $app['pp_schema']);
+                        $user = $app['user_cache']->get($id, $app['pp_schema']);
 
                         $app['alert']->success('Gebruiker aangepast.');
 
@@ -497,8 +497,8 @@ class users_edit_admin
 
                             $rs = $app['db']->prepare('select c.id,
                                     tc.abbrev, c.value, c.flag_public
-                                from ' . $app['tschema'] . '.type_contact tc, ' .
-                                    $app['tschema'] . '.contact c
+                                from ' . $app['pp_schema'] . '.type_contact tc, ' .
+                                    $app['pp_schema'] . '.contact c
                                 WHERE tc.id = c.id_type_contact
                                     AND c.id_user = ?');
                             $rs->bindValue(1, $id);
@@ -518,7 +518,7 @@ class users_edit_admin
                                 {
                                     if ($stored_contact)
                                     {
-                                        $app['db']->delete($app['tschema'] . '.contact',
+                                        $app['db']->delete($app['pp_schema'] . '.contact',
                                             ['id_user' => $id, 'id' => $contact_ary['id']]);
                                     }
                                     continue;
@@ -536,7 +536,7 @@ class users_edit_admin
                                     $app['queue.geocode']->cond_queue([
                                         'adr'		=> $contact_ary['value'],
                                         'uid'		=> $id,
-                                        'schema'	=> $app['tschema'],
+                                        'schema'	=> $app['pp_schema'],
                                     ], 0);
                                 }
 
@@ -549,7 +549,7 @@ class users_edit_admin
                                         'id_user'			=> $id,
                                     ];
 
-                                    $app['db']->insert($app['tschema'] . '.contact', $insert);
+                                    $app['db']->insert($app['pp_schema'] . '.contact', $insert);
                                     continue;
                                 }
 
@@ -558,7 +558,7 @@ class users_edit_admin
                                 unset($contact_update['id'], $contact_update['abbrev'],
                                     $contact_update['access']);
 
-                                $app['db']->update($app['tschema'] . '.contact',
+                                $app['db']->update($app['pp_schema'] . '.contact',
                                     $contact_update,
                                     ['id' => $contact_ary['id'], 'id_user' => $id]);
                             }
@@ -567,7 +567,7 @@ class users_edit_admin
                             {
                                 if ($notify && $password)
                                 {
-                                    if ($app['config']->get('mailenabled', $app['tschema']))
+                                    if ($app['config']->get('mailenabled', $app['pp_schema']))
                                     {
                                         if ($mailadr)
                                         {
@@ -585,7 +585,7 @@ class users_edit_admin
                                         self::send_activation_mail($app['queue.mail'],
                                             $app['mail_addr_system'], $app['mail_addr_user'],
                                             $mailadr ? true : false, $password,
-                                            $id, $app['tschema']);
+                                            $id, $app['pp_schema']);
                                     }
                                     else
                                     {
@@ -605,13 +605,13 @@ class users_edit_admin
                                 || $user_stored['status'] == 1
                                 || $user_stored['status'] == 2)
                             {
-                                $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['tschema']);
+                                $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['pp_schema']);
                             }
 
                             if ($user['status'] == 7
                                 || $user_stored['status'] == 7)
                             {
-                                $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['tschema']);
+                                $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                             }
 
                             $app['intersystems']->clear_cache($app['s_schema']);
@@ -643,7 +643,7 @@ class users_edit_admin
         {
             if ($is_edit)
             {
-                $user = $app['user_cache']->get($id, $app['tschema']);
+                $user = $app['user_cache']->get($id, $app['pp_schema']);
                 $fullname_access = cnst_access::FROM_XDB[$user['fullname_access']];
             }
 
@@ -651,7 +651,7 @@ class users_edit_admin
             {
                 $contact = $app['db']->fetchAll('select name, abbrev,
                     \'\' as value, 0 as id
-                    from ' . $app['tschema'] . '.type_contact
+                    from ' . $app['pp_schema'] . '.type_contact
                     where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
             }
 
@@ -665,8 +665,8 @@ class users_edit_admin
                 }
 
                 $st = $app['db']->prepare('select tc.abbrev, c.value, tc.name, c.flag_public, c.id
-                    from ' . $app['tschema'] . '.type_contact tc, ' .
-                        $app['tschema'] . '.contact c
+                    from ' . $app['pp_schema'] . '.type_contact tc, ' .
+                        $app['pp_schema'] . '.contact c
                     where tc.id = c.id_type_contact
                         and c.id_user = ?');
 
@@ -688,8 +688,8 @@ class users_edit_admin
             else if ($app['pp_admin'])
             {
                 $user = [
-                    'minlimit'		=> $app['config']->get('preset_minlimit', $app['tschema']),
-                    'maxlimit'		=> $app['config']->get('preset_maxlimit', $app['tschema']),
+                    'minlimit'		=> $app['config']->get('preset_minlimit', $app['pp_schema']),
+                    'maxlimit'		=> $app['config']->get('preset_maxlimit', $app['pp_schema']),
                     'accountrole'	=> 'user',
                     'status'		=> '1',
                     'cron_saldo'	=> 1,
@@ -698,7 +698,7 @@ class users_edit_admin
                 if ($intersystem_code)
                 {
                     if ($group = $app['db']->fetchAssoc('select *
-                        from ' . $app['tschema'] . '.letsgroups
+                        from ' . $app['pp_schema'] . '.letsgroups
                         where localletscode = ?
                             and apimethod <> \'internal\'', [$intersystem_code]))
                     {
@@ -741,7 +741,7 @@ class users_edit_admin
 
         if ($is_edit)
         {
-            $edit_user_cached = $app['user_cache']->get($id, $app['tschema']);
+            $edit_user_cached = $app['user_cache']->get($id, $app['pp_schema']);
         }
 
         array_walk($user, function(&$value){ $value = trim(htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')); });
@@ -921,17 +921,17 @@ class users_edit_admin
 
         if (isset($user['birthday']) && !empty($user['birtday']))
         {
-            $out .= $app['date_format']->get($user['birthday'], 'day', $app['tschema']);
+            $out .= $app['date_format']->get($user['birthday'], 'day', $app['pp_schema']);
         }
 
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['tschema']);
+        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-default-view="2" ';
         $out .= 'data-date-end-date="';
-        $out .= $app['date_format']->get('', 'day', $app['tschema']);
+        $out .= $app['date_format']->get('', 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-start-view="2" ';
@@ -940,7 +940,7 @@ class users_edit_admin
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['tschema']);
+        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';
@@ -1091,7 +1091,7 @@ class users_edit_admin
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-arrow-down"></span> ';
-            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= $app['config']->get('currency', $app['pp_schema']);
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="minlimit" name="minlimit" ';
@@ -1108,7 +1108,7 @@ class users_edit_admin
             $out .= ' ';
             $out .= 'van toepassing. ';
 
-            if ($app['config']->get('minlimit', $app['tschema']) === '')
+            if ($app['config']->get('minlimit', $app['pp_schema']) === '')
             {
                 $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
                 $out .= 'geledende Minimum Systeemslimiet ingesteld. ';
@@ -1117,9 +1117,9 @@ class users_edit_admin
             {
                 $out .= 'De algemeen geldende ';
                 $out .= 'Minimum Systeemslimiet bedraagt <strong>';
-                $out .= $app['config']->get('minlimit', $app['tschema']);
+                $out .= $app['config']->get('minlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= $app['config']->get('currency', $app['pp_schema']);
                 $out .= '</strong>. ';
             }
 
@@ -1131,10 +1131,10 @@ class users_edit_admin
             $out .= '" ';
             $out .= 'die gedefiniëerd is in de instellingen.';
 
-            if ($app['config']->get('preset_minlimit', $app['tschema']) !== '')
+            if ($app['config']->get('preset_minlimit', $app['pp_schema']) !== '')
             {
                 $out .= ' De Preset bedraagt momenteel <strong>';
-                $out .= $app['config']->get('preset_minlimit', $app['tschema']);
+                $out .= $app['config']->get('preset_minlimit', $app['pp_schema']);
                 $out .= '</strong>.';
             }
 
@@ -1147,7 +1147,7 @@ class users_edit_admin
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-arrow-up"></span> ';
-            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= $app['config']->get('currency', $app['pp_schema']);
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="maxlimit" name="maxlimit" ';
@@ -1166,7 +1166,7 @@ class users_edit_admin
             $out .= ' ';
             $out .= 'van toepassing. ';
 
-            if ($app['config']->get('maxlimit', $app['tschema']) === '')
+            if ($app['config']->get('maxlimit', $app['pp_schema']) === '')
             {
                 $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
                 $out .= 'geledende Maximum Systeemslimiet ingesteld. ';
@@ -1175,9 +1175,9 @@ class users_edit_admin
             {
                 $out .= 'De algemeen geldende Maximum ';
                 $out .= 'Systeemslimiet bedraagt <strong>';
-                $out .= $app['config']->get('maxlimit', $app['tschema']);
+                $out .= $app['config']->get('maxlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['tschema']);
+                $out .= $app['config']->get('currency', $app['pp_schema']);
                 $out .= '</strong>. ';
             }
 
@@ -1189,10 +1189,10 @@ class users_edit_admin
             $out .= '" ';
             $out .= 'is ingevuld in de instellingen.';
 
-            if ($app['config']->get('preset_maxlimit', $app['tschema']) !== '')
+            if ($app['config']->get('preset_maxlimit', $app['pp_schema']) !== '')
             {
                 $out .= ' De Preset bedraagt momenteel <strong>';
-                $out .= $app['config']->get('preset_maxlimit', $app['tschema']);
+                $out .= $app['config']->get('preset_maxlimit', $app['pp_schema']);
                 $out .= '</strong>.';
             }
 
@@ -1308,7 +1308,7 @@ class users_edit_admin
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -1319,16 +1319,16 @@ class users_edit_admin
         bool $to_user_en,
         string $password,
         int $user_id,
-        string $tschema
+        string $pp_schema
     ):void
     {
         $queue_mail->queue([
-            'schema'	=> $tschema,
-            'to' 		=> $mail_addr_system->get_admin($tschema),
+            'schema'	=> $pp_schema,
+            'to' 		=> $mail_addr_system->get_admin($pp_schema),
             'template'	=> 'account_activation/admin',
             'vars'		=> [
                 'user_id'		=> $user_id,
-                'user_email'	=> $mail_addr_user->get($user_id, $tschema),
+                'user_email'	=> $mail_addr_user->get($user_id, $pp_schema),
             ],
         ], 5000);
 
@@ -1338,9 +1338,9 @@ class users_edit_admin
         }
 
         $queue_mail->queue([
-            'schema'	=> $tschema,
-            'to' 		=> $mail_addr_user->get($user_id, $tschema),
-            'reply_to' 	=> $mail_addr_system->get_support($tschema),
+            'schema'	=> $pp_schema,
+            'to' 		=> $mail_addr_user->get($user_id, $pp_schema),
+            'reply_to' 	=> $mail_addr_system->get_support($pp_schema),
             'template'	=> 'account_activation/user',
             'vars'		=> [
                 'user_id'	=> $user_id,

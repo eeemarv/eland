@@ -58,7 +58,7 @@ class news
 
             $out .= '</td>';
 
-            $out .= $app['date_format']->get_td($n['itemdate'], 'day', $app['tschema']);
+            $out .= $app['date_format']->get_td($n['itemdate'], 'day', $app['pp_schema']);
 
             if ($app['pp_admin'])
             {
@@ -84,7 +84,7 @@ class news
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -139,7 +139,7 @@ class news
 
             if ($n['itemdate'])
             {
-                $out .=  $app['date_format']->get($n['itemdate'], 'day', $app['tschema']);
+                $out .=  $app['date_format']->get($n['itemdate'], 'day', $app['pp_schema']);
 
                 $out .=  '<br><i>';
 
@@ -239,7 +239,7 @@ class news
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -248,7 +248,7 @@ class news
         $news = $news_access_ary = [];
 
         $rows = $app['xdb']->get_many([
-            'agg_schema' => $app['tschema'],
+            'agg_schema' => $app['pp_schema'],
             'agg_type' => 'news_access',
         ]);
 
@@ -258,7 +258,7 @@ class news
             $news_access_ary[$row['eland_id']] = $access;
         }
 
-        $query = 'select * from ' . $app['tschema'] . '.news';
+        $query = 'select * from ' . $app['pp_schema'] . '.news';
 
         if(!$app['pp_admin'])
         {
@@ -266,7 +266,7 @@ class news
         }
 
         $query .= ' order by itemdate ';
-        $query .= $app['config']->get('news_order_asc', $app['tschema']) === '1' ? 'asc' : 'desc';
+        $query .= $app['config']->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
 
         $st = $app['db']->prepare($query);
         $st->execute();
@@ -280,7 +280,7 @@ class news
             {
                 $app['xdb']->set('news_access', (string) $news_id, [
                     'access' => 'interlets',
-                ], $app['tschema']);
+                ], $app['pp_schema']);
 
                 $news[$news_id]['access'] = 'interlets';
             }
@@ -327,7 +327,7 @@ class news
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

@@ -10,7 +10,7 @@ class docs_map_edit
 {
     public function docs_map_edit(Request $request, app $app, string $map_id):Response
     {
-        $row = $app['xdb']->get('doc', $map_id, $app['tschema']);
+        $row = $app['xdb']->get('doc', $map_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -43,7 +43,7 @@ class docs_map_edit
             if (!count($errors))
             {
 
-                $rows = $app['xdb']->get_many(['agg_schema' => $app['tschema'],
+                $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
                     'agg_type' => 'doc',
                     'eland_id' => ['<>' => $map_id],
                     'data->>\'map_name\'' => $posted_map_name]);
@@ -58,7 +58,7 @@ class docs_map_edit
             {
                 $app['xdb']->set('doc', $map_id, [
                         'map_name' => $posted_map_name
-                    ], $app['tschema']);
+                    ], $app['pp_schema']);
 
                 $app['alert']->success('Map naam aangepast.');
 
@@ -117,7 +117,7 @@ class docs_map_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

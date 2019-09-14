@@ -11,7 +11,7 @@ class intersystems_show
     public function intersystems_show(app $app, int $id):Response
     {
         $group = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.letsgroups
+            from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$id]);
 
         if (!$group)
@@ -27,7 +27,7 @@ class intersystems_show
         else
         {
             $user = $app['db']->fetchAssoc('select *
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$group['localletscode']]);
         }
 
@@ -176,7 +176,7 @@ class intersystems_show
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

@@ -18,7 +18,7 @@ class messages_show
 {
     public function messages_show(Request $request, app $app, int $id):Response
     {
-        $message = self::get_message($app['db'], $id, $app['tschema']);
+        $message = self::get_message($app['db'], $id, $app['pp_schema']);
 
         $user_mail_content = $request->request->get('user_mail_content', '');
         $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
@@ -36,7 +36,7 @@ class messages_show
             && $app['s_id'] === $message['id_user']
             && $message['id_user'];
 
-        $user = $app['user_cache']->get($message['id_user'], $app['tschema']);
+        $user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
 
         // process mail form
 
@@ -102,7 +102,7 @@ class messages_show
                     'from_schema'		=> $app['s_schema'],
                     'is_same_system'	=> $app['s_system_self'],
                     'to_user'			=> $to_user,
-                    'to_schema'			=> $app['tschema'],
+                    'to_schema'			=> $app['pp_schema'],
                     'msg_content'		=> $user_mail_content,
                     'message'			=> $message,
                 ];
@@ -112,8 +112,8 @@ class messages_show
                     : 'message_msg/msg_intersystem';
 
                 $app['queue.mail']->queue([
-                    'schema'	=> $app['tschema'],
-                    'to'		=> $app['mail_addr_user']->get($to_user['id'], $app['tschema']),
+                    'schema'	=> $app['pp_schema'],
+                    'to'		=> $app['mail_addr_user']->get($to_user['id'], $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -126,7 +126,7 @@ class messages_show
                         : 'message_msg/copy_intersystem';
 
                     $app['queue.mail']->queue([
-                        'schema'	=> $app['tschema'],
+                        'schema'	=> $app['pp_schema'],
                         'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
@@ -149,7 +149,7 @@ class messages_show
         ];
 
         $st = $app['db']->prepare('select "PictureFile"
-            from ' . $app['tschema'] . '.msgpictures
+            from ' . $app['pp_schema'] . '.msgpictures
             where msgid = ?');
         $st->bindValue(1, $id);
         $st->execute();
@@ -162,14 +162,14 @@ class messages_show
         $and_local = $app['pp_guest'] ? ' and local = \'f\' ' : '';
 
         $prev = $app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.messages
+            from ' . $app['pp_schema'] . '.messages
             where id > ?
             ' . $and_local . '
             order by id asc
             limit 1', [$id]);
 
         $next = $app['db']->fetchColumn('select id
-            from ' . $app['tschema'] . '.messages
+            from ' . $app['pp_schema'] . '.messages
             where id < ?
             ' . $and_local . '
             order by id desc
@@ -212,7 +212,7 @@ class messages_show
 
             if (!$app['s_system_self'])
             {
-                $tus['tus'] = $app['tschema'];
+                $tus['tus'] = $app['pp_schema'];
             }
 
             $app['btn_top']->add_trans('transactions_add', $app['s_ary'],
@@ -340,7 +340,7 @@ class messages_show
         else
         {
             $out .= $message['amount'] . ' ';
-            $out .= $app['config']->get('currency', $app['tschema']);
+            $out .= $app['config']->get('currency', $app['pp_schema']);
             $out .= $message['units'] ? ' per ' . $message['units'] : '';
         }
 
@@ -355,7 +355,7 @@ class messages_show
         $out .= ' (saldo: <span class="label label-info">';
         $out .= $balance;
         $out .= '</span> ';
-        $out .= $app['config']->get('currency', $app['tschema']);
+        $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= ')';
         $out .= '</dd>';
 
@@ -366,12 +366,12 @@ class messages_show
 
         $out .= '<dt>Aangemaakt op</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($message['cdate'], 'day', $app['tschema']);
+        $out .= $app['date_format']->get($message['cdate'], 'day', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Geldig tot</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($message['validity'], 'day', $app['tschema']);
+        $out .= $app['date_format']->get($message['validity'], 'day', $app['pp_schema']);
         $out .= '</dd>';
 
         if ($app['pp_admin'] || $s_owner)
@@ -386,7 +386,7 @@ class messages_show
             $out .= '</dd>';
         }
 
-        if ($app['intersystems']->get_count($app['tschema']))
+        if ($app['intersystems']->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
@@ -410,7 +410,7 @@ class messages_show
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 
@@ -430,13 +430,13 @@ class messages_show
             ]);
     }
 
-    public static function get_message(db $db, int $id, string $tschema):array
+    public static function get_message(db $db, int $id, string $pp_schema):array
     {
         $message = $db->fetchAssoc('select m.*,
                 c.id as cid,
                 c.fullname as catname
-            from ' . $tschema . '.messages m, ' .
-                $tschema . '.categories c
+            from ' . $pp_schema . '.messages m, ' .
+                $pp_schema . '.categories c
             where m.id = ?
                 and c.id = m.id_category', [$id]);
 

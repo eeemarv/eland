@@ -12,7 +12,7 @@ class typeahead_postcodes
         $postcodes = [];
 
         $st = $app['db']->prepare('select distinct postcode
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             order by postcode asc');
 
         $st->execute();

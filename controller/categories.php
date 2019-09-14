@@ -10,7 +10,7 @@ class categories
     public function categories(app $app):Response
     {
         $cats = $app['db']->fetchAll('select *
-            from ' . $app['tschema'] . '.categories
+            from ' . $app['pp_schema'] . '.categories
             order by fullname');
 
         $child_count_ary = [];
@@ -152,7 +152,7 @@ class categories
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }

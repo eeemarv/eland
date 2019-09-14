@@ -13,9 +13,9 @@ class status
         $status_msgs = false;
 
         $non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc, ' .
-                $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.contact c, ' .
+                $app['pp_schema'] . '.type_contact tc, ' .
+                $app['pp_schema'] . '.users u
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'mail\'
                 and c.id_user = u.id
@@ -26,7 +26,7 @@ class status
         if (count($non_unique_mail))
         {
             $st = $app['db']->prepare('select id_user
-                from ' . $app['tschema'] . '.contact c
+                from ' . $app['pp_schema'] . '.contact c
                 where c.value = ?');
 
             foreach ($non_unique_mail as $key => $ary)
@@ -46,7 +46,7 @@ class status
         //
 
         $non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where letscode <> \'\'
             group by letscode
             having count(*) > 1');
@@ -54,7 +54,7 @@ class status
         if (count($non_unique_letscode))
         {
             $st = $app['db']->prepare('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where letscode = ?');
 
             foreach ($non_unique_letscode as $key => $ary)
@@ -74,7 +74,7 @@ class status
         //
 
         $non_unique_name = $app['db']->fetchAll('select name, count(*)
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where name <> \'\'
             group by name
             having count(*) > 1');
@@ -82,7 +82,7 @@ class status
         if (count($non_unique_name))
         {
             $st = $app['db']->prepare('select id
-                from ' . $app['tschema'] . '.users
+                from ' . $app['pp_schema'] . '.users
                 where name = ?');
 
             foreach ($non_unique_name as $key => $ary)
@@ -102,8 +102,8 @@ class status
         //
 
         $unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc
+            from ' . $app['pp_schema'] . '.contact c, ' .
+                $app['pp_schema'] . '.type_contact tc
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'mail\'
                 and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
@@ -112,11 +112,11 @@ class status
         $no_mail = array();
 
         $st = $app['db']->prepare(' select u.id
-            from ' . $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.users u
             where u.status in (1, 2)
                 and not exists (select c.id
-                    from ' . $app['tschema'] . '.contact c, ' .
-                        $app['tschema'] . '.type_contact tc
+                    from ' . $app['pp_schema'] . '.contact c, ' .
+                        $app['pp_schema'] . '.type_contact tc
                     where c.id_user = u.id
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\')');
@@ -130,11 +130,11 @@ class status
         }
 
         $empty_letscode = $app['db']->fetchAll('select id
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where status in (1, 2) and letscode = \'\'');
 
         $empty_name = $app['db']->fetchAll('select id
-            from ' . $app['tschema'] . '.users
+            from ' . $app['pp_schema'] . '.users
             where name = \'\'');
 
         if ($unvalid_mail || $empty_letscode || $empty_name)
@@ -143,10 +143,10 @@ class status
         }
 
         $no_msgs_users = $app['db']->fetchAll('select id, letscode, name, saldo, status
-            from ' . $app['tschema'] . '.users u
+            from ' . $app['pp_schema'] . '.users u
             where status in (1, 2)
                 and not exists (select 1
-                    from ' . $app['tschema'] . '.messages m
+                    from ' . $app['pp_schema'] . '.messages m
                     where m.id_user = u.id)');
 
         if (count($no_msgs_users))
@@ -421,7 +421,7 @@ class status
 
                 $out .= '<ul>';
 
-                $currency = $app['config']->get('currency', $app['tschema']);
+                $currency = $app['config']->get('currency', $app['pp_schema']);
 
                 foreach ($no_msgs_users as $u)
                 {

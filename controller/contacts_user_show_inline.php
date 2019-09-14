@@ -15,8 +15,8 @@ class contacts_user_show_inline
             && $app['s_system_self'];
 
         $contacts = $app['db']->fetchAll('select c.*, tc.abbrev
-            from ' . $app['tschema'] . '.contact c, ' .
-                $app['tschema'] . '.type_contact tc
+            from ' . $app['pp_schema'] . '.contact c, ' .
+                $app['pp_schema'] . '.type_contact tc
             where c.id_type_contact = tc.id
                 and c.id_user = ?', [$uid]);
 
@@ -213,7 +213,7 @@ class contacts_user_show_inline
             $out .= '<div class="panel panel-danger">';
             $out .= '<div class="panel-body">';
             $out .= '<p>Er is geen contactinfo voor ';
-            $out .= $app['account']->str($uid, $app['tschema']);
+            $out .= $app['account']->str($uid, $app['pp_schema']);
             $out .= '.</p>';
         }
 

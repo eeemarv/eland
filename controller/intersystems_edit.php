@@ -16,14 +16,14 @@ class intersystems_edit
             [$group, $errors] = self::get_post_errors($request, $app);
 
             if ($app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where url = ?', [$group['url']]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze URL.';
             }
 
             if ($app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where localletscode = ?', [$group['localletscode']]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
@@ -31,13 +31,13 @@ class intersystems_edit
 
             if (!count($errors))
             {
-                if ($app['db']->insert($app['tschema'] . '.letsgroups', $group))
+                if ($app['db']->insert($app['pp_schema'] . '.letsgroups', $group))
                 {
                     $app['alert']->success('Intersysteem opgeslagen.');
 
-                    $id = $app['db']->lastInsertId($app['tschema'] . '.letsgroups_id_seq');
+                    $id = $app['db']->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
 
-                    $app['intersystems']->clear_cache($app['tschema']);
+                    $app['intersystems']->clear_cache($app['pp_schema']);
 
                     $app['link']->redirect('intersystems_show', $app['pp_ary'],
                         ['id' => $id]);
@@ -90,7 +90,7 @@ class intersystems_edit
             [$group, $errors] = self::get_post_errors($request, $app);
 
             if ($app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where url = ?
                     and id <> ?', [$group['url'], $id]))
             {
@@ -98,7 +98,7 @@ class intersystems_edit
             }
 
             if ($app['db']->fetchColumn('select id
-                from ' . $app['tschema'] . '.letsgroups
+                from ' . $app['pp_schema'] . '.letsgroups
                 where localletscode = ?
                     and id <> ?', [$group['localletscode'], $id]))
             {
@@ -107,13 +107,13 @@ class intersystems_edit
 
             if (!count($errors))
             {
-                if ($app['db']->update($app['tschema'] . '.letsgroups',
+                if ($app['db']->update($app['pp_schema'] . '.letsgroups',
                     $group,
                     ['id' => $id]))
                 {
                     $app['alert']->success('InterSysteem aangepast.');
 
-                    $app['intersystems']->clear_cache($app['tschema']);
+                    $app['intersystems']->clear_cache($app['pp_schema']);
 
                     $app['link']->redirect('intersystems_show', $app['pp_ary'],
                         ['id'	=> $id]);
@@ -129,7 +129,7 @@ class intersystems_edit
         else
         {
             $group = $app['db']->fetchAssoc('select *
-            from ' . $app['tschema'] . '.letsgroups
+            from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$id]);
 
             if (!$group)
@@ -377,7 +377,7 @@ class intersystems_edit
 
         return $app->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['tschema'],
+            'schema'    => $app['pp_schema'],
         ]);
     }
 }
