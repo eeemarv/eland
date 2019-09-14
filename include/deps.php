@@ -130,6 +130,9 @@ $app->extend('twig', function($twig, $app) {
 		twig\menu_nav_user::class => function() use ($app){
 			return new twig\menu_nav_user($app['menu_nav_user']);
 		},
+		twig\menu_nav_system::class => function() use ($app){
+			return new twig\menu_nav_system($app['menu_nav_system']);
+		},
 	]));
 
 	return $twig;
@@ -894,6 +897,17 @@ $app['menu'] = function($app){
 $app['menu_nav_user'] = function($app){
 	return new service\menu_nav_user(
 		$app['s_id'],
+		$app['r_messages'],
+		$app['r_users_show']
+	);
+};
+
+$app['menu_nav_system'] = function($app){
+	return new service\menu_nav_system(
+		$app['intersystems'],
+		$app['s_logins'],
+		$app['s_schema'],
+		$app['intersystem_en'],
 		$app['r_messages'],
 		$app['r_users_show']
 	);

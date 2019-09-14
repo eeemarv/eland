@@ -54,6 +54,8 @@ class extension extends \Twig_Extension
 			new \Twig_Function('menu_nav_admin', 'twig\\menu::get_nav_admin'),
 			new \Twig_Function('menu_nav_user', 'twig\\menu_nav_user::get_nav_user'),
 			new \Twig_Function('menu_nav_logout', 'twig\\menu_nav_user::get_nav_logout'),
+			new \Twig_Function('menu_nav_system', 'twig\\menu_nav_system::get_nav_system'),
+			new \Twig_Function('has_menu_nav_system', 'twig\\menu_nav_system::has_nav_system'),
 			new \Twig_Function('s_role', 'twig\\s_role::has_role'),
 			new \Twig_Function('get_s_id', 'twig\\s_role::get_s_id'),
 			new \Twig_Function('get_s_schema', 'twig\\s_role::get_s_schema'),

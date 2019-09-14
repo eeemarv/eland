@@ -10,11 +10,9 @@
 	<ul class="nav navbar-nav navbar-right">
 
 	{%- block navbar_menu -%}
-	{#
-		{%- if has_nav_menu('system') -%}
+		{%- if not pp_role('anonymous') and has_menu_nav_system() -%}
 			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', menu_nav_system()) -}}
 		{%- endif -%}
-	#}
 
 		{%- if pp_role('user') or pp_role('admin') -%}
 			{{- m.navbar_menu_dropdown_button(account(get_s_id(), schema), 'user', menu_nav_user()) -}}
