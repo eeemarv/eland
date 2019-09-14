@@ -105,7 +105,7 @@ function gettoken($apikey)
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$token = 'elasv2' . substr(md5(microtime() . $app['pp_schema']), 0, 12);
+		$token = 'elasv2' . md5(random_bytes(16));
 
 		$key = $app['pp_schema'] . '_token_' . $token;
 
