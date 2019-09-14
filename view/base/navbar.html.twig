@@ -14,29 +14,28 @@
 			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', menu_nav_system()) -}}
 		{%- endif -%}
 
-		{%- if pp_role('user') or pp_role('admin') -%}
-			{{- m.navbar_menu_dropdown_button(account(get_s_id(), schema), 'user', menu_nav_user()) -}}
+		{%- if is_s_elas_guest() -%}
+			{%- set account_name = 'eLAS gast' -%}
+		{%- elseif is_s_master() -%}
+			{%- set account_name = 'Master' -%}
+		{%- else -%}
+			{%- set account_name =  account(get_s_id(), get_s_schema()) -%}
 		{%- endif -%}
 
-		{%- if pp_role('guest') -%}
-			{%- if is_s_elas_guest() -%}
-				{%- set account_name = 'eLAS gast' -%}
-			{%- elseif is_s_master() -%}
-				{%- set account_name = 'eLAS gast' -%}
-			{%- else -%}
-				{%- set account_name =  account(get_s_id(), get_s_schema()) -%}
-
-				{%- if not is_s_system_self() -%}
-					{%- set account_name = account_name ~ ' [' ~ config('systemname', get_s_schema()) ~ ']' -%}
-				{%- endif -%}
+		{%- if pp_role('guest') or is_s_master() -%}
+			{%- if not is_s_system_self() -%}
+				{%- set account_name = account_name ~ ' [' ~ config('systemname', get_s_schema()) ~ ']' -%}
 			{%- endif -%}
 
 			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_logout()) -}}
+
+		{%- elseif pp_role('user') or pp_role('admin') -%}
+			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_user()) -}}
 		{%- endif -%}
 
 		{%- if pp_role('admin') -%}
 			{{- m.navbar_menu_dropdown_button('Admin modus', 'cog', menu_nav_admin()) -}}
-		{%- elseif s_role('admin') -%}
+		{%- elseif s_role('admin') and is_s_system_self() -%}
 			<li>
 				<a href="{{- path(global.request.attributes.get('_route'), global.request.attributes.all|merge(global.request.query.all)|merge({'role_short': 'a'})) -}}" title="Admin modus inschakelen">
 					<i class="fa fa-times text-danger"></i>&nbsp;

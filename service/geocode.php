@@ -42,7 +42,7 @@ class geocode
             return [];
         }
 
-        catch (Exception $e)
+        catch (\Exception $e)
 		{
 			error_log('Geocode adr: ' . $address . ' exception: ' . $e->getMessage());
 			return [];

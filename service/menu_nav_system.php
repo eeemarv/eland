@@ -42,6 +42,8 @@ class menu_nav_system
 		$this->menu = $menu;
 		$this->config = $config;
 		$this->user_cache = $user_cache;
+
+		error_log('S_SCHEMA: ' . $s_schema);
 	}
 
 	public function has_nav_system():bool
