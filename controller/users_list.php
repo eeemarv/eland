@@ -1650,7 +1650,7 @@ class users_list
 
     static public function heading(heading $heading):void
     {
-        $heading->add('Gebruikers');
+        $heading->add('Leden');
         $heading->fa('users');
     }
 
