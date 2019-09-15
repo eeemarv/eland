@@ -11,15 +11,14 @@ class login
 {
     public function login(Request $request, app $app):Response
     {
-        $location = $_GET['location'] ?? false;
+        $location = $request->query->get('location', '');
 
         if (!$location
             || strpos($location, 'login') !== false
             || strpos($location, 'logout') !== false
-            || $location == ''
-            || $location == '/')
+            || $location === '/')
         {
-            $location = $app['r_default'];
+            $location = '';
         }
 
         $login = trim($request->request->get('login', ''));
@@ -50,13 +49,10 @@ class login
 
                 $app['alert']->success('OK - Gebruiker ingelogd als master.');
 
-                $query = [];
-                $route = $location;
-
-                if (strpos($location, '?') !== false)
+                if ($location)
                 {
-                    [$route, $query_str] = explode('?', $location);
-                    parse_str($query_str, $query);
+                    header('Location: ' . $location);
+                    exit;
                 }
 
                 $pp_ary = [
@@ -64,7 +60,7 @@ class login
                     'role_short'    => 'a',
                 ];
 
-                $app['link']->redirect($route, $pp_ary, $query);
+                $app['link']->redirect($app['r_default'], $pp_ary, []);
             }
 
             $user_id = false;
@@ -231,21 +227,18 @@ class login
 
                 $app['alert']->success('Je bent ingelogd.');
 
-                $query = [];
-                $route = $location;
-
-                if (strpos($location, '?') !== false)
+                if ($location)
                 {
-                    [$route, $query_str] = explode('?', $location);
-                    parse_str($query_str, $query);
+                    header('Location: ' . $location);
+                    exit;
                 }
 
                 $pp_ary = [
-                    'system'		=> $app['pp_system'],
-                    'role_short'	=> cnst_role::SHORT[$user['accountrole']],
+                    'system'        => $app['pp_system'],
+                    'role_short'    => cnst_role::SHORT[$user['accountrole']],
                 ];
 
-                $app['link']->redirect($location, $pp_ary, $query);
+                $app['link']->redirect($app['r_default'], $pp_ary, []);
             }
 
             $app['alert']->error($errors);
