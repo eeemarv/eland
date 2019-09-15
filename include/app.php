@@ -42,6 +42,8 @@ $fn_before_system = function(Request $request, app $app){
 		$app['assets']->add_external_css([$css]);
 	}
 
+	$app['log_schema_en'] = true;
+
 	error_log('REQUEST URI: ' . $request->getRequestUri());
 };
 

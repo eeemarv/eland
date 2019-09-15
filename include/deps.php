@@ -17,6 +17,7 @@ $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
 $app['s3_region'] = getenv('AWS_S3_REGION');
 $app['s3_url'] = 'https://s3.' . $app['s3_region'] . '.amazonaws.com/' . $app['s3_bucket'] . '/';
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
+$app['log_schema_en'] = false;
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
 	'predis.parameters' => getenv('REDIS_URL'),
@@ -174,15 +175,27 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
-		$request = $app['request_stack']->getCurrentRequest();
-
-		if ($request
-			&& $request->attributes->get('schema')
-			&& $request->attributes->get('role_short'))
+		if ($app['log_schema_en'])
 		{
+
+			error_log('LOG_SCHEMA_EN: ' . $app['pp_schema']);
+			/*
+			$request = $app['request_stack']->getCurrentRequest();
+
+			if ($request
+				&& $request->attributes->get('schema')
+				&& $request->attributes->get('role_short'))
+			{
+				$record['extra']['user_schema'] = $app['s_schema'];
+				$record['extra']['user_id'] = $app['s_id'];
+			}
+			*/
+
+			$record['extra']['schema'] = $app['pp_schema'];
 			$record['extra']['user_schema'] = $app['s_schema'];
 			$record['extra']['user_id'] = $app['s_id'];
 		}
+
 
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
 
