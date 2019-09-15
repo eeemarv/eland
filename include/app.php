@@ -1201,25 +1201,3 @@ function array_intersect_key_recursive(array $ary_1, array $ary_2)
 
     return $ary_1;
 }
-
-function internal_server_error(Twig_Environment $twig)
-{
-	http_response_code(500);
-	echo $twig->render('500.html.twig', []);
-	exit;
-}
-
-function page_not_found(Twig_Environment $twig)
-{
-	http_response_code(404);
-	echo $twig->render('404.html.twig');
-	exit;
-}
-
-/** (dev) */
-function print_r2($val)
-{
-	echo '<pre>';
-	print_r($val);
-	echo  '</pre>';
-}
