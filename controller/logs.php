@@ -320,12 +320,14 @@ class logs
                 && ctype_digit((string) $value['user_id'])
                 && !empty($value['user_schema']))
             {
-                $params_context = [
-                    'system'        => $app['systems']->get_system($value['user_schema']),
-                    'role_short'    => $value['user_schema'] === $app['pp_schema'] ? 'a' : 'g',
-                ];
-
-                $out .= $app['account']->link($value['user_id'], $params_context);
+                if ($value['user_schema'] === $app['pp_schema'])
+                {
+                    $out .= $app['account']->link($value['user_id'], $app['pp_ary']);
+                }
+                else
+                {
+                    $out .= $app['account']->inter_link($value['user_id'], $value['user_schema']);
+                }
             }
             else
             {

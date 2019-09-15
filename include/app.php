@@ -41,6 +41,8 @@ $fn_before_system = function(Request $request, app $app){
 	{
 		$app['assets']->add_external_css([$css]);
 	}
+
+	error_log('REQUEST URI: ' . $request->getRequestUri());
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
@@ -49,10 +51,13 @@ $fn_before_system_auth = function(Request $request, app $app){
 
 $fn_before_system_guest = function(Request $request, app $app){
 
-	if ($app['pp_role'] === 'guest' && !$app['intersystem_en'])
+	if ($app['pp_role'] === 'guest'
+		&& !$app['intersystem_en'])
 	{
 		throw new NotFoundHttpException('Guest routes not enabled (intersystem_en)');
 	}
+
+
 
 	if ($request->query->get('welcome', ''))
 	{
