@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+require_once __DIR__ . '/../../include/app.php';
+
+$app->flush();
+
 if (!$app['config']->get('template_lets', $app['pp_schema']))
 {
 	echo 'NO_ELAS_TIMEBANK';

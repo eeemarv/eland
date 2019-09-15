@@ -13,7 +13,7 @@ if (!$app instanceof Silex\Application)
 
 if (!isset($app['console']))
 {
-    throw new LogicException('The console service does not exist.
+    throw new \LogicException('The console service does not exist.
         Did you forget to register Knp\Provider\ConsoleServiceProvider ?');
 }
 

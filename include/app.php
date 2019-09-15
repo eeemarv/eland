@@ -10,6 +10,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/deps.php';
 
+Request::setTrustedProxies(
+	['172.17.0.0/255'],
+    Request::HEADER_X_FORWARDED_ALL
+);
+
 $fn_after_locale = function (Request $request, Response $response, app $app){
 	$origin = rtrim($app['s3_url'], '/');
 	$origin .= ', http://doc.letsa.net';
@@ -47,9 +52,11 @@ $fn_before_system = function(Request $request, app $app){
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
+
 	if (!isset($app['s_logins'][$app['pp_schema']]))
 	{
 		if ($app['pp_guest']
+			&& $app['intersystem_en']
 			&& !$app['s_system_self']
 			&& isset($app['s_logins'][$app['s_schema']]))
 		{
@@ -68,36 +75,30 @@ $fn_before_system_auth = function(Request $request, app $app){
 };
 
 $fn_before_system_guest = function(Request $request, app $app){
-
-	if (!$app['intersystem_en'])
+	if ($app['pp_guest'])
 	{
-		throw new NotFoundHttpException('Guest routes not enabled (intersystem_en)');
-	}
+		if (!$app['intersystem_en'])
+		{
+			throw new NotFoundHttpException('Guest routes are not enabled in this system.');
+		}
 
-	if ($request->query->get('welcome', '')
-		&& $app['pp_guest']
-		&& !$app['s_system_self'])
-	{
-		$app['alert']->info($app['welcome_msg']);
-	}
-};
-
-$fn_before_system_role = function(Request $request, app $app){
-	if (!$app['s_system_self'])
-	{
-		throw new AccessDeniedHttpException('You have no access to this system.');
+		if ($request->query->get('welcome', '')
+			&& !$app['s_system_self'])
+		{
+			$app['alert']->info($app['welcome_msg']);
+		}
 	}
 };
 
 $fn_before_system_user = function(Request $request, app $app){
-	if (!in_array($app['s_role'], ['admin', 'user']))
+	if ($app['pp_user'] && !in_array($app['s_role'], ['admin', 'user']))
 	{
 		throw new AccessDeniedHttpException('You have no access to the user pages.');
 	}
 };
 
 $fn_before_system_admin = function(Request $request, app $app){
-	if ($app['s_role'] !== 'admin')
+	if ($app['pp_admin'] && $app['s_role'] !== 'admin')
 	{
 		throw new AccessDeniedHttpException('You have no access to the admin pages.');
 	}
@@ -148,7 +149,9 @@ $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_locale)
 	->before($fn_before_system)
 	->before($fn_before_system_auth)
-	->before($fn_before_system_guest);
+	->before($fn_before_system_guest)
+	->before($fn_before_system_user)
+	->before($fn_before_system_admin);
 
 $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
@@ -162,8 +165,8 @@ $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_locale)
 	->before($fn_before_system)
 	->before($fn_before_system_auth)
-	->before($fn_before_system_role)
-	->before($fn_before_system_user);
+	->before($fn_before_system_user)
+	->before($fn_before_system_admin);
 
 $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->assert('system', cnst_assert::SYSTEM)
@@ -706,507 +709,6 @@ $c_system_anon->mount('/{role_short}', $c_system_guest);
 $c_system_anon->mount('/init', $c_system_init);
 $c_locale->mount('/{system}', $c_system_anon);
 $app->mount('/', $c_locale);
-
-/**
- * Routes end
- *
- */
-
-
-/*
- * check if we are on the contact url.
- */
-/*
-$app['env_server_name'] = str_replace('.', '__', strtoupper($app['server_name']));
-
-if ($app['script_name'] == 'index'
-	&& getenv('APP_HOSTER_CONTACT_' . $app['env_server_name']))
-{
-	$app['page_access'] = 'anonymous';
-	$app['app_hoster_contact'] = getenv('APP_HOSTER_CONTACT_' . $app['env_server_name']);
-	return;
-}
-
-/*
-if (getenv('WEBSITE_MAINTENANCE'))
-{
-	echo $app['twig']->render('website_maintenance.html.twig',
-		['message' =>  getenv('WEBSITE_MAINTENANCE')]);
-	exit;
-}
-*/
-/**
- * Route and parameters
- */
-/*
-$app['matched_route'] = $app['request']->attributes->get('_route');
-
-if (isset($app['pp_role_short'])
-	&& isset(cnst_role::LONG[$app['pp_role_short']]))
-{
-	$app['pp_ary'] = [
-		'system'		=> $app['pp_system'],
-		'role_short'	=> $app['pp_role_short'],
-	];
-
-	$app['pp_role'] = cnst_role::LONG[$app['pp_role_short']];
-}
-else
-{
-	$app['pp_ary'] = [
-		'system'	=> $app['pp_system'],
-	];
-
-	$app['pp_role'] = 'anonymous';
-}
-
-$app['intersystem_en'] = $app['config']->get('template_lets', $app['pp_schema'])
-	&& $app['config']->get('interlets_en', $app['pp_schema']);
-
-$app['s_system_self'] = true;
-$app['s_schema'] = $app['pp_schema'];
-$app['s_elas_guest'] = false;
-$app['pp_guest'] = false;
-$app['pp_user'] = false;
-$app['pp_admin'] = false;
-$app['pp_anonymous'] = false;
-$app['s_master'] = false;
-
-if ($app['pp_role'] === 'guest')
-{
-	if ($app['request']->query->get('s') !== null
-		&& $app['request']->query->get('s') !== $app['pp_schema'])
-	{
-		$app['pp_ary']['s'] = $app['request']->query->get('s');
-		$app['s_schema'] = $app['pp_ary']['s'];
-		$app['s_system_self'] = false;
-	}
-	else if ($app['request']->query->get('elas_guest') !== null)
-	{
-		$app['pp_ary']['elas_guest'] = $app['request']->query->get('elas_guest');
-		$app['s_elas_guest'] = true;
-	}
-}
-
-*/
-/**
- * load interSystems
- **/
-
-/*
-if ($app['intersystem_en'])
-{
-	$app['intersystem_ary'] = [
-		'elas'	=> $app['intersystems']->get_elas($app['s_schema']),
-		'eland'	=> $app['intersystems']->get_eland($app['s_schema']),
-	];
-}
-else
-{
-	$app['intersystem_ary'] = [
-		'elas'	=> [],
-		'eland'	=> [],
-	];
-}
-
-if ($app['s_system_self'] && $app['pp_guest'])
-{
-	$app['intersystem_ary'] = [
-		'elas'	=> [],
-		'eland'	=> [],
-	];
-}
-
-$app['count_intersystems'] = count($app['intersystem_ary']['eland'])
-	+ count($app['intersystem_ary']['elas']);
-
-/**
- * Authentication User: s_schema, s_id, session_user
- */
-
-/*
-$app['session_user'] = [];
-$app['s_role'] = 'anonymous';
-$app['s_id'] = 0;
-$app['s_logins'] = $app['session']->get('logins') ?? [];
-$app['s_auth_en'] = count($app['s_logins'])
-	&& isset($app['s_logins'][$app['s_schema']]);
-
-if ($app['s_auth_en'])
-{
-	switch($app['s_logins'][$app['s_schema']])
-	{
-		case 'master':
-			$app['s_master'] = true;
-			$app['s_role'] = 'admin';
-			break;
-
-		case 'elas':
-			$app['s_role'] = 'guest';
-			break;
-
-		default:
-			$app['s_id'] = $app['s_logins'][$app['s_schema']];
-			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
-			$app['s_role'] = $app['session_user']['accountrole'];
-			break;
-	}
-}
-
-error_log($app['request']->getPathInfo());
-
-/**
- * Authorization
- */
-/*
-if (!ctype_digit((string) $app['s_id']))
-{
-	unset($app['s_logins'][$app['s_schema']]);
-	$app['session']->set('logins', $app['s_logins']);
-
-	$app['monolog']->debug('Non numeric s_id: ' . $app['s_id'],
-		['schema' => $app['pp_schema']]);
-
-	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
-}
-
-if (!$app['pp_anonymous'] && $app['s_role'] === 'anonymous')
-{
-	$app['monolog']->debug('Not authenticated, redirect to login.',
-		['schema' => $app['pp_schema']]);
-
-	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
-}
-
-if ($app['pp_guest'] && !$app['intersystem_en'])
-{
-	$app['monolog']->debug('Guest routes disabled',
-		['schema' => $app['pp_schema']]);
-
-
-	if ($app['s_role'] === 'user')
-	{
-		if ($app['page_access'] === 'admin')
-		{
-			$app['link']->redirect($app['matched_route'], [
-				'system' 		=> $app['pp_system'],
-				'role_short' 	=> 'u',
-			], []);
-		}
-
-		$landing_route = $app['config']->get('default_landing_page', $app['pp_schema']);
-
-		$app['link']->redirect($landing_route, [
-			'system' => $app['pp_system'],
-			'role_short' => 'u',
-		], []);
-	}
-	else if ($app['s_role'] === 'admin')
-	{
-		$app['link']->redirect($app['matched_route'],
-			['system' => $app['pp_system'], 'role_short' => 'a'], []);
-	}
-
-	// s_role === 'guest'
-
-	$app['link']->redirect('login', ['system' => $app['pp_system']], []);
-}
-
-
-
-
-
-
-
-
-if ($app['page_access'] === 'anonymous')
-{
-	if (!isset($app['allow_authenticated'])
-		&& $app['s_auth_en'])
-	{
-		$default_landing_page = $app['config']->get('default_landing_page', $app['pp_schema']);
-		$app['link']->redirect();
-	}
-}
-else
-{
-	if (!$app['s_auth_en'])
-	{
-		$location = $app['request']->getQueryString();
-		$location = isset($location) ? '?' . $location : '';
-		$location = $app['request']->getPathInfo() . $location;
-
-		$app['link']->redirect('login',
-			['system' => $app['pp_system']],
-			['location'	=> $location],
-		);
-	}
-}
-
-if ($app['pp_guest'] && !$app['s_system_self'])
-{
-	if (!isset($app['intersystem_ary']['eland'][$app['pp_schema']]))
-	{
-		$app['link']->redirect('login',
-			['system' => $app['pp_system']],
-			[],
-		);
-	}
-}
-
-if (!$app['s_id'])
-{
-	if ($app['page_access'] != 'anonymous')
-	{
-		if (isset($app['s_logins'][$app['s_schema']])
-			&& ctype_digit((string) $app['s_logins'][$app['s_schema']]))
-		{
-			$app['s_id'] = $app['s_logins'][$app['s_schema']];
-
-			$location = parse_url($app['request_uri'], PHP_URL_PATH);
-			$get = $_GET;
-
-			unset($get['u'], $get['s'], $get['r']);
-
-			$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
-
-			$get['r'] = $app['session_user']['accountrole'];
-			$get['u'] = $app['s_id'];
-
-			if (!$app['s_system_self'])
-			{
-				$get['s'] = $app['s_schema'];
-			}
-
-			$get = http_build_query($get);
-			header('Location: ' . $location . '?' . $get);
-			exit;
-		}
-
-		redirect_login();
-	}
-
-	if ($app['s_accountrole'] != 'anonymous')
-	{
-		redirect_login();
-	}
-}
-else if (!isset($app['s_logins'][$app['s_schema']]))
-{
-	if ($app['s_accountrole'] != 'anonymous')
-	{
-		redirect_login();
-	}
-}
-else if ($app['s_logins'][$app['s_schema']] != $app['s_id']
-	|| !$app['s_id'])
-{
-	$app['s_id'] = $app['s_logins'][$app['s_schema']];
-
-	if (ctype_digit((string) $app['s_id']))
-	{
-		$location = parse_url($app['request_uri'], PHP_URL_PATH);
-		$get = $_GET;
-
-		unset($get['u'], $get['s'], $get['r']);
-
-		$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
-
-		$get['r'] = $app['session_user']['accountrole'];
-		$get['u'] = $app['s_id'];
-
-		if (!$app['s_system_self'])
-		{
-			$get['s'] = $app['s_schema'];
-		}
-
-		$get = http_build_query($get);
-		header('Location: ' . $location . '?' . $get);
-		exit;
-	}
-
-	redirect_login();
-}
-else if (ctype_digit((string) $app['s_id']))
-{
-	$app['session_user'] = $app['user_cache']->get($app['s_id'], $app['s_schema']);
-
-	if (!$app['s_system_self'] && $app['s_accountrole'] != 'guest')
-	{
-		$location = $app['link']->redirect('messages', [
-			'system' => $app['systems']->get_system($app['s_schema']),
-			'role_short' => cnst_role::SHORT[$app['session_user']['accountrole']],
-		], []);
-	}
-
-	if (cnst::ACCESS_ARY[$app['session_user']['accountrole']] > cnst::ACCESS_ARY[$app['s_accountrole']])
-	{
-		$app['s_accountrole'] = $app['session_user']['accountrole'];
-
-		$route = $app['config']->get('default_landing_page', $app['pp_schema']);
-
-		$app['link']->redirect($route, $app['pp_ary'], []);
-
-	}
-
-	if (!($app['session_user']['status'] == 1 || $app['session_user']['status'] == 2))
-	{
-		$app['session']->invalidate();
-		redirect_login();
-	}
-}
-else if ($app['s_id'] == 'elas')
-{
-	if ($app['s_accountrole'] != 'guest' || !$app['s_system_self'])
-	{
-		redirect_login();
-	}
-
-	$app['s_elas_guest'] = true;
-}
-else if ($app['s_id'] == 'master')
-{
-	if (!$app['s_system_self'] && $app['s_accountrole'] != 'guest')
-	{
-		$app['link']->redirect('messages', [
-			'system' 		=> $app['systems']->get_system($app['s_schema']),
-			'role_short' 	=> 'a',
-		], []);
-	}
-
-	$app['s_master'] = true;
-}
-else
-{
-	redirect_login();
-}
-
-switch ($app['s_accountrole'])
-{
-	case 'anonymous':
-
-		if ($app['page_access'] != 'anonymous')
-		{
-			redirect_login();
-		}
-
-		break;
-
-	case 'guest':
-
-		if ($app['page_access'] != 'guest')
-		{
-			$route = $app['config']->get('default_landing_page', $app['pp_schema']);
-
-			$app['link']->redirect($route, $app['pp_ary'], []);
-		}
-
-		break;
-
-	case 'user':
-
-		if (!($app['page_access'] == 'user' || $app['page_access'] == 'guest'))
-		{
-			$route = $app['config']->get('default_landing_page', $app['pp_schema']);
-
-			$app['link']->redirect($route, $app['pp_ary'], []);
-		}
-
-		break;
-
-	case 'admin':
-
-		if ($app['page_access'] == 'anonymous')
-		{
-			$page = $app['config']->get('default_landing_page', $app['pp_schema']);
-
-			$app['link']->redirect($route, $app['pp_ary'], []);
-		}
-
-		break;
-
-	default:
-
-		redirect_login();
-
-		break;
-}
-
-*/
-/**
- * some vars
- **/
-
-// $app['s_access_level'] = cnst::ACCESS_ARY[$app['p_role']];
-
-/*
-if ($app['page_access'] != 'anonymous'
-	&& !$app['s_system_self']
-	&& !$app['intersystem_ary']['eland'][$app['pp_schema']])
-{
-	$app['link']->redirect('messages', [
-			'system'		=> $app['systems']->get_system($app['pp_schema']),
-			'role_short'	=> $app['pp_role_short'],
-		], []);
-}
-
-if ($app['page_access'] != 'anonymous'
-	&& !$app['pp_admin']
-	&& $app['config']->get('maintenance', $app['pp_schema']))
-{
-	echo $app['twig']->render('maintenance.html.twig');
-	exit;
-}
-
-$app['xdb']->set_user($app['s_schema'],
-	ctype_digit((string) $app['s_id']) ? $app['s_id'] : 0);
-*/
-/**
- * inline
- */
-
-//$app['p_inline'] = isset($_GET['inline']) ? true : false;
-
-/**
- * view (global for all systems)
- */
-
-/* */
-/*
-
-*/
-/** welcome message **/
-/*
-if ($app['request']->query->get('welcome') !== null && $app['pp_guest'])
-{
-	$msg = '<strong>Welkom bij ';
-	$msg .= $app['config']->get('systemname', $app['pp_schema']);
-	$msg .= '</strong><br>';
-	$msg .= 'Waardering bij ';
-	$msg .= $app['config']->get('systemname', $app['pp_schema']);
-	$msg .= ' gebeurt met \'';
-	$msg .= $app['config']->get('currency', $app['pp_schema']);
-	$msg .= '\'. ';
-	$msg .= $app['config']->get('currencyratio', $app['pp_schema']);
-	$msg .= ' ';
-	$msg .= $app['config']->get('currency', $app['pp_schema']);
-	$msg .= ' stemt overeen met 1 uur.<br>';
-
-	if ($app['s_elas_guest'])
-	{
-		$msg .= 'Je bent ingelogd als gast, je kan informatie ';
-		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
-		$msg .= 'ingeven in je eigen Systeem.';
-	}
-	else
-	{
-		$msg .= 'Je kan steeds terug naar je eigen Systeem via het menu <strong>Systeem</strong> ';
-		$msg .= 'boven in de navigatiebalk.';
-	}
-
-	$app['alert']->info($msg);
-}
-*/
 
 /**************** FUNCTIONS ***************/
 
