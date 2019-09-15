@@ -12,7 +12,7 @@ if (!$app['config']->get('interlets_en', $app['pp_schema']))
 	exit;
 }
 
-$server = new soap_server();
+$server = new \soap_server();
 $server->configureWSDL('interletswsdl', 'urn:interletswsdl');
 
 $server->register('gettoken',
