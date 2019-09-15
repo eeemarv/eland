@@ -7,7 +7,6 @@ use service\systems;
 use service\menu;
 use service\config;
 use service\user_cache;
-use cnst\menu as cnst_menu;
 
 class menu_nav_system
 {
@@ -116,6 +115,11 @@ class menu_nav_system
 		}
 
 		if (!$this->intersystems->get_count($this->s_schema))
+		{
+			return $m_ary;
+		}
+
+		if (!$this->intersystem_en)
 		{
 			return $m_ary;
 		}
