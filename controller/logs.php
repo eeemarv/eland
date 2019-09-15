@@ -303,17 +303,11 @@ class logs
 
         foreach($rows as $value)
         {
-            $out .= '<tr>';
-            $out .= '<td>';
-            $out .= $app['date_format']->get($value['ts'], 'sec', $app['pp_schema']);
-            $out .= '</td>';
-            $out .= '<td>';
-            $out .= $value['type'];
-            $out .= '</td>';
-            $out .= '<td>';
-            $out .= $value['ip'];
-            $out .= '</td>';
-            $out .= '<td>';
+            $td = [];
+
+            $td[] = $app['date_format']->get($value['ts'], 'sec', $app['pp_schema']);
+            $td[] = $value['type'];
+            $td[] .= $value['ip'];
 
             if (isset($value['user_schema'])
                 && isset($value['user_id'])
@@ -322,21 +316,23 @@ class logs
             {
                 if ($value['user_schema'] === $app['pp_schema'])
                 {
-                    $out .= $app['account']->link($value['user_id'], $app['pp_ary']);
+                    $td[] = $app['account']->link($value['user_id'], $app['pp_ary']);
                 }
                 else
                 {
-                    $out .= $app['account']->inter_link($value['user_id'], $value['user_schema']);
+                    $td[] = $app['account']->inter_link($value['user_id'], $value['user_schema']);
                 }
             }
             else
             {
-                $out .= '<i> ** geen ** </i>';
+                $td[] = '<i> ** geen ** </i>';
             }
 
-            $out .= '</td>';
-            $out .= '<td>' . $value['event'] . '</td>';
-            $out .= '</tr>';
+            $td[] = $value['event'];
+
+            $out .= '<tr><td>';
+            $out .= implode('</td><td>', $td);
+            $out .= '</td></tr>';
         }
 
         $out .= '</tbody>';
