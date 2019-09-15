@@ -174,29 +174,23 @@ $app->extend('monolog', function($monolog, $app) {
 
 	$monolog->pushProcessor(function ($record) use ($app){
 
-/*
-		if (isset($app['session_user']) && count($app['session_user']))
-		{
-			$record['extra']['letscode'] = $app['session_user']['letscode'] ?? '';
-			$record['extra']['user_id'] = $app['session_user']['id'] ?? '';
-			$record['extra']['username'] = $app['session_user']['name'] ?? '';
-		}
-*/
+		$request = $app['request_stack']->getCurrentRequest();
 
-/*
-		if (isset($app['s_schema']))
+		if ($request
+			&& $request->attributes->get('schema')
+			&& $request->attributes->get('role_short'))
 		{
 			$record['extra']['user_schema'] = $app['s_schema'];
+			$record['extra']['user_id'] = $app['s_id'];
 		}
-*/
 
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
 
 		if ($ip)
 		{
-//			$record['extra']['ip'] = $app['request']->getClientIp();
 			$record['extra']['ip'] = $ip;
 		}
+
 
 		return $record;
 	});
@@ -207,8 +201,8 @@ $app->extend('monolog', function($monolog, $app) {
 if ($app['debug'])
 {
 	$app->register(new Provider\WebProfilerServiceProvider(), array(
-		'profiler.cache_dir' => __DIR__.'/../cache/profiler',
-		'profiler.mount_prefix' => '/_profiler',
+		'profiler.cache_dir' 	=> __DIR__.'/../cache/profiler',
+		'profiler.mount_prefix'	=> '/_profiler',
 	));
 }
 

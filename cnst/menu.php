@@ -161,7 +161,7 @@ class menu
             ],
         ],
         'guest_mode'    => [
-            'fa'            => 'user',
+            'fa'            => 'share-alt',
             'label'         => 'Gast modus',
             'params'        => [
                 'role_short'    => 'g',
