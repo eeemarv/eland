@@ -4,6 +4,7 @@ use util\app;
 use cnst\assert as cnst_assert;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -43,25 +44,39 @@ $fn_before_system = function(Request $request, app $app){
 	}
 
 	$app['log_schema_en'] = true;
-
-	error_log('REQUEST URI: ' . $request->getRequestUri());
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
+	if (!isset($app['s_logins'][$app['pp_schema']]))
+	{
+		if ($app['pp_guest']
+			&& !$app['s_system_self']
+			&& isset($app['s_logins'][$app['s_schema']]))
+		{
+			$eland_intersystems = $app['intersystems']->get_eland($app['s_schema']);
 
+			if (isset($eland_intersystems[$app['pp_schema']]))
+			{
+				return;
+			}
+		}
+
+		$location = $request->getRequestUri();
+		$app['link']->redirect('login', ['system' => $app['pp_system']],
+			['location' => $location]);
+	}
 };
 
 $fn_before_system_guest = function(Request $request, app $app){
 
-	if ($app['pp_role'] === 'guest'
-		&& !$app['intersystem_en'])
+	if (!$app['intersystem_en'])
 	{
 		throw new NotFoundHttpException('Guest routes not enabled (intersystem_en)');
 	}
 
-
-
-	if ($request->query->get('welcome', ''))
+	if ($request->query->get('welcome', '')
+		&& $app['pp_guest']
+		&& !$app['s_system_self'])
 	{
 		$app['alert']->info($app['welcome_msg']);
 	}
@@ -70,16 +85,22 @@ $fn_before_system_guest = function(Request $request, app $app){
 $fn_before_system_role = function(Request $request, app $app){
 	if (!$app['s_system_self'])
 	{
-
+		throw new AccessDeniedHttpException('You have no access to this system.');
 	}
 };
 
 $fn_before_system_user = function(Request $request, app $app){
-
+	if (!in_array($app['s_role'], ['admin', 'user']))
+	{
+		throw new AccessDeniedHttpException('You have no access to the user pages.');
+	}
 };
 
 $fn_before_system_admin = function(Request $request, app $app){
-
+	if ($app['s_role'] !== 'admin')
+	{
+		throw new AccessDeniedHttpException('You have no access to the admin pages.');
+	}
 };
 
 $fn_before_system_init = function(Request $request, app $app){
