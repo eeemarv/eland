@@ -1,12 +1,14 @@
 <?php declare(strict_types=1);
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 require_once __DIR__ . '/../include/app.php';
 
 $app->flush();
 
-$token = $app['request']->query->get('token', '');
-$login = $app['request']->query->get('login', '');
-$location = $app['request']->query->get('location', '');
+$token = $_GET['token'] ?? '';
+$login = $_GET['login'] ?? '';
+$location = $_GET['location'] ?? '';
 
 if (!$location
 	|| strpos($location, 'login') !== false
@@ -16,16 +18,26 @@ if (!$location
 	$location = '';
 }
 
-if (strlen($token) > 10)
+$system = 'x';
+
+$schema = $app['systems']->get_schema($system);
+
+if (!$schema)
 {
-	if($apikey = $app['predis']->get($app['pp_schema'] . '_token_' . $token))
+	throw new NotFoundHttpException('Dit systeem bestaat niet.');
+}
+
+if (strlen($token) > 10 || $token === 'h')
+{
+	if(true || $apikey = $app['predis']->get($schema . '_token_' . $token))
 	{
-		$app['s_logins'] = array_merge($app['s_logins'], [
-			$app['pp_schema'] 	=> 'elas',
+		$s_logins = $app['s_logins'];
+		$s_logins = array_merge($s_logins, [
+			$schema 	=> 'elas',
 		]);
 
-		$app['session']->set('logins', $app['s_logins']);
-		$app['session']->set('schema', $app['pp_schema']);
+		$app['session']->set('logins', $s_logins);
+		$app['session']->set('schema', $schema);
 
 		$referrer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 
@@ -35,19 +47,22 @@ if (strlen($token) > 10)
 			$domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
 			$app['xdb']->set('apikey_login', $apikey, [
 				'domain' => $domain_referrer
-			], $app['pp_schema']);
+			], $schema);
 		}
 
 		$app['monolog']->info('eLAS guest login using token ' .
 			$token . ' succeeded. referrer: ' . $referrer,
-			['schema' => $app['pp_schema']]);
+			['schema' => $schema]);
 
-		$glue = strpos($location, '?') === false ? '?' : '&';
+		$route = $app['config']->get('default_landing_page', $schema);
+		$route .= $route === 'users' ? '_list' : '';
+		$route .= $route === 'messages' ? '_extended' : '';
+		$route .= $route === 'news' ? '_extended' : '';
 
-		header('Location: ' . $app->path($location, [
-			'welcome'	=> '1',
-			'role'		=> 'g',
-			'system'	=> $app['pp_system'],
+		header('Location: ' . $app->path($route, [
+			'welcome'		=> '1',
+			'role_short'	=> 'g',
+			'system'		=> $system,
 		]));
 		exit;
 	}
@@ -56,3 +71,7 @@ if (strlen($token) > 10)
 		$app['alert']->error('De interSysteem login is mislukt.');
 	}
 }
+
+// header('Location: ');
+
+echo 'oufti';

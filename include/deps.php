@@ -177,8 +177,6 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if ($app['log_schema_en'])
 		{
-
-			error_log('LOG_SCHEMA_EN: ' . $app['pp_schema']);
 			/*
 			$request = $app['request_stack']->getCurrentRequest();
 
@@ -334,29 +332,47 @@ $app['pp_system'] = function ($app):string{
 	return $app['request']->attributes->get('system', '');
 };
 
+$app['pp_org_system'] = function ($app):string{
+	$pp_org_system = $app['request']->query->get('org_system', '');
+
+	if ($pp_org_system === $app['pp_system'])
+	{
+		return '';
+	}
+
+	if (!$app['systems']->get_schema($pp_org_system))
+	{
+		return '';
+	}
+
+	return $pp_org_system;
+};
+
 $app['pp_ary'] = function ($app):array{
 
-	if ($app['pp_system'] === '')
+	$pp_ary = [];
+
+	if ($app['pp_system'] !== '')
 	{
-		return [];
+		$pp_ary['system'] = $app['pp_system'];
+
+		if ($app['pp_role_short'] !== '')
+		{
+			if (!isset(cnst_role::LONG[$app['pp_role_short']]))
+			{
+				return [];
+			}
+
+			$pp_ary['role_short'] = $app['pp_role_short'];
+
+			if ($app['pp_org_system'] !== '')
+			{
+				$pp_ary['org_system'] = $app['pp_org_system'];
+			}
+		}
 	}
 
-	if ($app['pp_role_short'] === '')
-	{
-		return [
-			'system'	=> $app['pp_system'],
-		];
-	}
-
-	if (isset(cnst_role::LONG[$app['pp_role_short']]))
-	{
-		return [
-			'system'		=> $app['pp_system'],
-			'role_short'	=> $app['pp_role_short'],
-		];
-	}
-
-	return [];
+	return $pp_ary;
 };
 
 $app['pp_schema'] = function ($app):string{
@@ -369,19 +385,9 @@ $app['request'] = function ($app):Request{
 
 $app['s_schema'] = function ($app):string{
 
-	$s_schema = $app['session']->get('schema');
-
-	if ($app['pp_guest'])
+	if ($app['pp_org_system'])
 	{
-		if ($s_schema)
-		{
-			return $s_schema;
-		}
-	}
-
-	if ($s_schema !== $app['pp_schema'])
-	{
-		$app['session']->set('schema', $app['pp_schema']);
+		return $app['systems']->get_schema($app['pp_org_system']);
 	}
 
 	return $app['pp_schema'];
@@ -507,9 +513,14 @@ $app['s_master'] = function ($app):bool{
 
 $app['s_elas_guest'] = function ($app):bool{
 
-	if (isset($app['s_logins'][$app['s_schema']]))
+	if (!$app['s_system_self'])
 	{
-		return $app['s_logins'][$app['s_schema']] === 'elas';
+		return false;
+	}
+
+	if (isset($app['s_logins'][$app['pp_schema']]))
+	{
+		return $app['s_logins'][$app['pp_schema']] === 'elas';
 	}
 
 	return false;
@@ -924,7 +935,8 @@ $app['menu_nav_system'] = function($app){
 		$app['intersystem_en'],
 		$app['menu'],
 		$app['config'],
-		$app['user_cache']
+		$app['user_cache'],
+		$app['s_elas_guest']
 	);
 };
 
@@ -1012,40 +1024,6 @@ $app['btn_top'] = function ($app){
 
 $app['render_stat'] = function (){
 	return new render\stat();
-};
-
-$app['tpl'] = function ($app){
-	return new render\tpl(
-		$app['alert'],
-		$app['assets'],
-		$app['config'],
-		$app['systems'],
-		$app['intersystems'],
-		$app['item_access'],
-		$app['account'],
-		$app['btn_nav'],
-		$app['btn_top'],
-		$app['heading'],
-		$app['link'],
-		$app['pp_schema'],
-		$app['s_schema'],
-		$app['s_id'],
-		$app['pp_ary'],
-		$app['session_user'],
-		$app['s_logins'],
-		$app['pp_anonymous'],
-		$app['pp_guest'],
-		$app['pp_user'],
-		$app['pp_admin'],
-		$app['s_master'],
-		$app['s_elas_guest'],
-		$app['s_system_self'],
-		$app['intersystem_en'],
-		$app['r_messages'],
-		$app['r_users'],
-		$app['r_news'],
-		$app['r_users_show']
-	);
 };
 
 // init

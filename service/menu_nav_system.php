@@ -19,6 +19,7 @@ class menu_nav_system
 	protected $menu;
 	protected $config;
 	protected $user_cache;
+	protected $s_elas_guest;
 
 	public function __construct(
 		intersystems $intersystems,
@@ -29,7 +30,8 @@ class menu_nav_system
 		bool $intersystem_en,
 		menu $menu,
 		config $config,
-		user_cache $user_cache
+		user_cache $user_cache,
+		bool $s_elas_guest
 	)
 	{
 		$this->intersystems = $intersystems;
@@ -41,8 +43,7 @@ class menu_nav_system
 		$this->menu = $menu;
 		$this->config = $config;
 		$this->user_cache = $user_cache;
-
-		error_log('S_SCHEMA: ' . $s_schema);
+		$this->s_elas_guest = $s_elas_guest;
 	}
 
 	public function has_nav_system():bool
@@ -105,13 +106,18 @@ class menu_nav_system
 				{
 					$m_item['active'] = true;
 				}
-				else if (count($this->s_logins) > 1)
+				else
 				{
 					$m_item['active_group'] = true;
 				}
 			}
 
 			$m_ary[] = $m_item;
+		}
+
+		if ($this->s_elas_guest)
+		{
+			return $m_ary;
 		}
 
 		if (!$this->intersystems->get_count($this->s_schema))
@@ -134,6 +140,7 @@ class menu_nav_system
 			$m_item = [
 				'route'		=> $route,
 				'params'	=> [
+					'org_system'	=> $this->systems->get_system($this->s_schema),
 					'system' 		=> $this->systems->get_system($eland_schema),
 					'role_short'	=> 'g',
 					'welcome'		=> '1',

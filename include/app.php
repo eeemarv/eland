@@ -53,12 +53,19 @@ $fn_before_system = function(Request $request, app $app){
 
 $fn_before_system_auth = function(Request $request, app $app){
 
+	error_log('S_SCHEMA: ' . $app['s_schema']);
+	error_log('PP_SCHEMA: ' . $app['pp_schema']);
+	error_log('S_ELAS_GUEST: ' . ($app['s_elas_guest'] ? 'TRUE' : 'FALSE'));
+	error_log('PP_GUEST: ' . ($app['pp_guest'] ? 'TRUE' : 'FALSE'));
+
 	if (!isset($app['s_logins'][$app['pp_schema']]))
 	{
 		if ($app['pp_guest']
 			&& $app['intersystem_en']
 			&& !$app['s_system_self']
-			&& isset($app['s_logins'][$app['s_schema']]))
+			&& !$app['s_elas_guest']
+			&& isset($app['s_logins'][$app['s_schema']])
+			&& ctype_digit((string) $app['s_logins'][$app['s_schema']]))
 		{
 			$eland_intersystems = $app['intersystems']->get_eland($app['s_schema']);
 
@@ -82,8 +89,16 @@ $fn_before_system_guest = function(Request $request, app $app){
 			throw new NotFoundHttpException('Guest routes are not enabled in this system.');
 		}
 
+		if ($app['s_system_self'])
+		{
+			if (true)
+			{
+
+			}
+		}
+
 		if ($request->query->get('welcome', '')
-			&& !$app['s_system_self'])
+			&& (!$app['s_system_self'] || $app['s_elas_guest']))
 		{
 			$app['alert']->info($app['welcome_msg']);
 		}
@@ -180,7 +195,6 @@ $c_system_admin->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_locale)
 	->before($fn_before_system)
 	->before($fn_before_system_auth)
-	->before($fn_before_system_role)
 	->before($fn_before_system_admin);
 
 $c_system_init->assert('_locale', cnst_assert::LOCALE)

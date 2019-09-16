@@ -45,7 +45,6 @@ class login
                     $app['pp_schema'] 	=> 'master',
                 ]);
                 $app['session']->set('logins', $s_logins);
-                $app['session']->set('schema', $app['pp_schema']);
 
                 $app['alert']->success('OK - Gebruiker ingelogd als master.');
 
@@ -207,7 +206,6 @@ class login
                 ]);
 
                 $app['session']->set('logins', $s_logins);
-                $app['session']->set('schema', $app['pp_schema']);
 
                 $agent = $request->server->get('HTTP_USER_AGENT');
 
