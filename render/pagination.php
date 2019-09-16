@@ -120,8 +120,8 @@ class pagination
 		$this->out .= $this->select->get_options($this->limit_options, (string) $this->limit);
 		$this->out .= '</select>';
 
-		$action_params = $this->params;
-		unset($action_params['p']['limit']);
+		$action_params = array_merge($this->pp_ary, $this->params);
+		unset($action_params['p']['limit'], $action_params['role_short'], $action_params['system']);
 		$action_params['p']['start'] = 0;
 //			$action_params = array_merge($action_params,  get_session_query_param());
 

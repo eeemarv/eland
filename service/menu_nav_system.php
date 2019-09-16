@@ -96,6 +96,7 @@ class menu_nav_system
 				'params'	=> [
 					'system' 		=> $this->systems->get_system($login_schema),
 					'role_short'	=> $role_short,
+					'org_system'	=> '',
 				],
 				'label'		=> $this->config->get('systemname', $login_schema),
 			];

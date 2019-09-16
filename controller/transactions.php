@@ -486,7 +486,9 @@ class transactions
 
         $out .= '</div>';
 
-        $params_form = $params;
+        $params_form = array_merge($params, $app['pp_ary']);
+        unset($params_form['role_short']);
+        unset($params_form['system']);
         unset($params_form['f']);
         unset($params_form['uid']);
         unset($params_form['p']['start']);
