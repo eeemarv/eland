@@ -34,7 +34,7 @@ class messages_show
         $s_owner = !$app['pp_guest']
             && $app['s_system_self']
             && $app['s_id'] === $message['id_user']
-            && $message['id_user'];
+            && $message['id_user'] > 0;
 
         $user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
 
@@ -201,12 +201,11 @@ class messages_show
                 ['id' => $id], ucfirst($message['label']['type']) . ' verwijderen');
         }
 
-        if ($message['is_offer'] === 1
+        if ($message['is_offer']
             && ($app['pp_admin']
                 || (!$s_owner
-                    && $user['status'] != 7
-                    && !($app['pp_guest']
-                    && $app['s_system_self']))))
+                    && $user['status'] !== 7
+                    && !($app['pp_guest'] && $app['s_system_self']))))
         {
             $tus = ['mid' => $id];
 
