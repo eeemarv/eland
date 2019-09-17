@@ -256,13 +256,16 @@ class transactions
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
+        if (isset($filter['uid']))
+        {
+            $user = $app['user_cache']->get($filter['uid'], $app['pp_schema']);
+            $user_str = $app['account']->str($user['id'], $app['pp_schema']);
+        }
+
         if ($app['pp_admin'] || $app['pp_user'])
         {
             if (isset($filter['uid']))
             {
-                $user = $app['user_cache']->get($filter['uid'], $app['pp_schema']);
-                $user_str = $app['account']->str($user['id'], $app['pp_schema']);
-
                 if ($user['status'] != 7)
                 {
                     if ($s_owner)
