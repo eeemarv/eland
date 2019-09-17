@@ -356,7 +356,7 @@ class mass_transaction
 
                         $app['queue.mail']->queue([
                             'schema'	=> $app['pp_schema'],
-                            'to'		=> $app['mail_addr_user']->get($user_id, $app['pp_schema']),
+                            'to'		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
                             'template'	=> 'transaction/transaction',
                             'vars'		=> $vars,
                         ], random_int(0, 5000));
@@ -384,8 +384,8 @@ class mass_transaction
                         'schema'	=> $app['pp_schema'],
                         'to' 		=> array_merge(
                             $app['mail_addr_system']->get_admin($app['pp_schema']),
-                            $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
-                            $app['mail_addr_user']->get($one_uid, $app['pp_schema'])
+                            $app['mail_addr_user']->get_active($app['s_id'], $app['pp_schema']),
+                            $app['mail_addr_user']->get_active($one_uid, $app['pp_schema'])
                         ),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,

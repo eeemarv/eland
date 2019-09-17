@@ -70,7 +70,7 @@ class users_password
 
                             $app['queue.mail']->queue([
                                 'schema'	=> $app['pp_schema'],
-                                'to' 		=> $app['mail_addr_user']->get($id, $app['pp_schema']),
+                                'to' 		=> $app['mail_addr_user']->get_active($id, $app['pp_schema']),
                                 'reply_to'	=> $app['mail_addr_system']->get_support($app['pp_schema']),
                                 'template'	=> 'password_reset/user',
                                 'vars'		=> $vars,

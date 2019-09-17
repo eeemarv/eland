@@ -39,7 +39,7 @@ class password_reset_token
 
                 $app['queue.mail']->queue([
                     'schema'	=> $app['pp_schema'],
-                    'to' 		=> $app['mail_addr_user']->get($user_id, $app['pp_schema']),
+                    'to' 		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
                     'template'	=> 'password_reset/user',
                     'vars'		=> [
                         'password'		=> $password,

@@ -76,7 +76,7 @@ class messages_show
                 $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
             }
 
-            $reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+            $reply_ary = $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']);
 
             if (!count($reply_ary))
             {
@@ -113,7 +113,7 @@ class messages_show
 
                 $app['queue.mail']->queue([
                     'schema'	=> $app['pp_schema'],
-                    'to'		=> $app['mail_addr_user']->get($to_user['id'], $app['pp_schema']),
+                    'to'		=> $app['mail_addr_user']->get_active($to_user['id'], $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -127,7 +127,7 @@ class messages_show
 
                     $app['queue.mail']->queue([
                         'schema'	=> $app['pp_schema'],
-                        'to'		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+                        'to'		=> $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);
