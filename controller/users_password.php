@@ -10,7 +10,7 @@ class users_password
 {
     public function users_password(Request $request, app $app):Response
     {
-        return $this->form_admin($request, $app, $app['s_id']);
+        return $this->users_password_admin($request, $app, $app['s_id']);
     }
 
     public function users_password_admin(Request $request, app $app, int $id):Response
@@ -143,8 +143,13 @@ class users_password
         $out .= $user['status'] == 1 || $user['status'] == 2 ? ' checked="checked"' : ' readonly';
         $out .= '>';
         $out .= ' Verzend notificatie E-mail met nieuw paswoord. ';
-        $out .= 'Dit is enkel mogelijk wanneer de Status ';
-        $out .= 'actief is en E-mail adres ingesteld.';
+
+        if ($app['pp_admin'])
+        {
+            $out .= 'Dit is enkel mogelijk wanneer de Status ';
+            $out .= 'actief is en E-mail adres ingesteld.';
+        }
+
         $out .= '</label>';
         $out .= '</div>';
 

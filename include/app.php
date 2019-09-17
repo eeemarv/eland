@@ -65,30 +65,6 @@ $fn_before_system_auth = function(Request $request, app $app){
 		$app['link']->redirect('login', ['system' => $app['pp_system']],
 			['location' => $location]);
 	}
-
-/*
-	if (!isset($app['s_logins'][$app['pp_schema']]))
-	{
-		if ($app['pp_guest']
-			&& $app['intersystem_en']
-			&& !$app['s_system_self']
-			&& !$app['s_elas_guest']
-			&& isset($app['s_logins'][$app['s_schema']])
-			&& ctype_digit((string) $app['s_logins'][$app['s_schema']]))
-		{
-			$eland_intersystems = $app['intersystems']->get_eland($app['s_schema']);
-
-			if (isset($eland_intersystems[$app['pp_schema']]))
-			{
-				return;
-			}
-		}
-
-		$location = $request->getRequestUri();
-		$app['link']->redirect('login', ['system' => $app['pp_system']],
-			['location' => $location]);
-	}
-	*/
 };
 
 $fn_before_system_guest = function(Request $request, app $app){
