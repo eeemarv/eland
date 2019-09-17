@@ -202,7 +202,6 @@ $app->extend('monolog', function($monolog, $app) {
 			$record['extra']['ip'] = $ip;
 		}
 
-
 		return $record;
 	});
 

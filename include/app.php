@@ -89,14 +89,6 @@ $fn_before_system_guest = function(Request $request, app $app){
 			throw new NotFoundHttpException('Guest routes are not enabled in this system.');
 		}
 
-		if ($app['s_system_self'])
-		{
-			if (true)
-			{
-
-			}
-		}
-
 		if ($request->query->get('welcome', '')
 			&& (!$app['s_system_self'] || $app['s_elas_guest']))
 		{
@@ -106,14 +98,18 @@ $fn_before_system_guest = function(Request $request, app $app){
 };
 
 $fn_before_system_user = function(Request $request, app $app){
-	if ($app['pp_user'] && !in_array($app['s_role'], ['admin', 'user']))
+
+	if (!$app['s_system_self']
+		|| ($app['pp_user'] && !in_array($app['s_role'], ['admin', 'user'])))
 	{
 		throw new AccessDeniedHttpException('You have no access to the user pages.');
 	}
 };
 
 $fn_before_system_admin = function(Request $request, app $app){
-	if ($app['pp_admin'] && $app['s_role'] !== 'admin')
+
+	if (!$app['s_system_self']
+		|| ($app['pp_admin'] && $app['s_role'] !== 'admin'))
 	{
 		throw new AccessDeniedHttpException('You have no access to the admin pages.');
 	}
