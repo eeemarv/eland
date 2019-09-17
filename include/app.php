@@ -57,7 +57,16 @@ $fn_before_system_auth = function(Request $request, app $app){
 	error_log('PP_SCHEMA: ' . $app['pp_schema']);
 	error_log('S_ELAS_GUEST: ' . ($app['s_elas_guest'] ? 'TRUE' : 'FALSE'));
 	error_log('PP_GUEST: ' . ($app['pp_guest'] ? 'TRUE' : 'FALSE'));
+	error_log('S_SYSTEM_SELF: ' . ($app['s_system_self'] ? 'TRUE' : 'FALSE'));
 
+	if (!isset($app['s_logins'][$app['s_schema']]))
+	{
+		$location = $request->getRequestUri();
+		$app['link']->redirect('login', ['system' => $app['pp_system']],
+			['location' => $location]);
+	}
+
+/*
 	if (!isset($app['s_logins'][$app['pp_schema']]))
 	{
 		if ($app['pp_guest']
@@ -79,6 +88,7 @@ $fn_before_system_auth = function(Request $request, app $app){
 		$app['link']->redirect('login', ['system' => $app['pp_system']],
 			['location' => $location]);
 	}
+	*/
 };
 
 $fn_before_system_guest = function(Request $request, app $app){
@@ -87,6 +97,21 @@ $fn_before_system_guest = function(Request $request, app $app){
 		if (!$app['intersystem_en'])
 		{
 			throw new NotFoundHttpException('Guest routes are not enabled in this system.');
+		}
+
+		if (!$app['s_system_self'])
+		{
+			$eland_intersystems = $app['intersystems']->get_eland($app['s_schema']);
+
+			if (!isset($eland_intersystems[$app['pp_schema']]))
+			{
+				throw new AccessDeniedHttpException('System ' . $app['pp_system'] . ' permits no guest access to system ' . $app['pp_org_system']);
+			}
+
+			if (!in_array($app['s_role'], ['user', 'admin']))
+			{
+				throw new AccessDeniedHttpException('No permission for guest acces.');
+			}
 		}
 
 		if ($request->query->get('welcome', '')
@@ -99,19 +124,33 @@ $fn_before_system_guest = function(Request $request, app $app){
 
 $fn_before_system_user = function(Request $request, app $app){
 
-	if (!$app['s_system_self']
-		|| ($app['pp_user'] && !in_array($app['s_role'], ['admin', 'user'])))
+	if ($app['pp_user'])
 	{
-		throw new AccessDeniedHttpException('You have no access to the user pages.');
+		if (!$app['s_system_self'])
+		{
+			throw new AccessDeniedHttpException('You are not logged in this system.');
+		}
+
+		if (!in_array($app['s_role'], ['admin', 'user']))
+		{
+			throw new AccessDeniedHttpException('You have no access to the user pages.');
+		}
 	}
 };
 
 $fn_before_system_admin = function(Request $request, app $app){
 
-	if (!$app['s_system_self']
-		|| ($app['pp_admin'] && $app['s_role'] !== 'admin'))
+	if ($app['pp_admin'])
 	{
-		throw new AccessDeniedHttpException('You have no access to the admin pages.');
+		if (!$app['s_system_self'])
+		{
+			throw new AccessDeniedHttpException('You are not logged in this system.');
+		}
+
+		if ($app['s_role'] !== 'admin')
+		{
+			throw new AccessDeniedHttpException('You have no access to the admin pages.');
+		}
 	}
 };
 
@@ -377,10 +416,6 @@ $c_system_admin->get('/logs',
 $c_system_user->match('/support',
 		'controller\\support::support')
 	->bind('support');
-
-$c_system_anon->get('/',
-		'controller\\home_system::home_system')
-	->bind('home_system');
 
 $c_system_user->post('/messages/{id}/images/{img}/del/{form_token}',
 	'controller\\messages_images_del::messages_images_instant_del')
@@ -712,6 +747,10 @@ $c_system_init->get('/copy-config',
 $c_system_init->get('/',
 	'controller\\init::init')
 	->bind('init');
+
+$c_system_anon->get('/',
+	'controller\\home_system::home_system')
+	->bind('home_system');
 
 $c_system_anon->mount('/{role_short}', $c_system_admin);
 $c_system_anon->mount('/{role_short}', $c_system_user);

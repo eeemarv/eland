@@ -48,8 +48,16 @@ class menu_nav_system
 
 	public function has_nav_system():bool
 	{
-		return ($this->intersystems->get_count($this->s_schema)
-			+ count($this->s_logins)) > 1;
+		if ($this->s_elas_guest)
+		{
+			$count_intersystems = 0;
+		}
+		else
+		{
+			$count_intersystems = $this->intersystems->get_count($this->s_schema);
+		}
+
+		return ($count_intersystems + count($this->s_logins)) > 1;
 	}
 
 	public function get_nav_system():array
