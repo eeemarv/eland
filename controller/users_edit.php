@@ -9,8 +9,8 @@ use controller\users_edit_admin;
 
 class users_edit
 {
-    public function users_edit(Request $request, app $app, int $id):Response
+    public function users_edit(Request $request, app $app):Response
     {
-        return users_edit_admin::form($request, $app, $id, true);
+        return users_edit_admin::form($request, $app, $app['s_id'], true);
     }
 }

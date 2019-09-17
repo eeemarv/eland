@@ -101,7 +101,7 @@ class news_add
                         ], 7000);
 
                         $app['alert']->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
-                        $app['link']->redirect('news', $app['pp_ary'], []);
+                        $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
 
                     }
 

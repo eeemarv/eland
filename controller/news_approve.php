@@ -24,7 +24,7 @@ class news_approve
             $app['alert']->error('Goedkeuren en publiceren nieuwsbericht mislukt.');
         }
 
-        $app['link']->redirect('news_list', $app['pp_ary'], ['id' => $id]);
+        $app['link']->redirect($app['r_news'], $app['pp_ary'], ['id' => $id]);
 
         return new Response('');
     }

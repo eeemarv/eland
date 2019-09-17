@@ -15,7 +15,7 @@ class news_del
             if ($error_token = $app['form_token']->get_error())
             {
                 $app['alert']->error($error_token);
-                $app['link']->redirect('news_list', $app['pp_ary'], []);
+                $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
             }
 
             if($app['db']->delete($app['pp_schema'] . '.news', ['id' => $id]))
@@ -23,7 +23,7 @@ class news_del
                 $app['xdb']->del('news_access', (string) $id, $app['pp_schema']);
 
                 $app['alert']->success('Nieuwsbericht verwijderd.');
-                $app['link']->redirect('news_list', $app['pp_ary'], []);
+                $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
             }
 
             $app['alert']->error('Nieuwsbericht niet verwijderd.');

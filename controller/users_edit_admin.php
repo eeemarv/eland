@@ -23,6 +23,7 @@ class users_edit_admin
     public static function form(Request $request, app $app, int $id, bool $is_edit):Response
     {
         $errors = [];
+        $contact = [];
 
         $intersystem_code = $request->query->get('intersystem_code', '');
 

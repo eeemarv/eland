@@ -4,6 +4,7 @@ namespace controller;
 
 use util\app;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class news_show
 {
@@ -66,8 +67,7 @@ class news_show
 
         if (!isset($news[$id]))
         {
-            $app['alert']->error('Dit nieuwsbericht bestaat niet.');
-            $app['link']->redirect('news', $app['pp_ary'], []);
+            throw new NotFoundHttpException('Dit nieuwsbericht bestaat niet.');
         }
 
         $news_item = $news[$id];
