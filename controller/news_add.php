@@ -204,7 +204,7 @@ class news_add
 
         $out .= $app['item_access']->get_radio_buttons('access', $access, 'news', $app['pp_user']);
 
-        $out .= $app['link']->btn_cancel('news_list', $app['pp_ary'], []);
+        $out .= $app['link']->btn_cancel($app['r_news'], $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';

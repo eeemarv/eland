@@ -75,13 +75,13 @@ class news_show
         if (!$app['pp_admin'] && !$news_item['approved'])
         {
             $app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
-            $app['link']->redirect('news_list', $app['pp_ary'], []);
+            $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
         }
 
         if (isset($no_access_ary[$id]))
         {
             $app['alert']->error('Je hebt geen toegang tot dit nieuwsbericht.');
-            $app['link']->redirect('news_list', $app['pp_ary'], []);
+            $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
         }
 
         $next = $prev = $current_news = false;
@@ -124,7 +124,7 @@ class news_show
         $app['btn_nav']->nav('news_show', $app['pp_ary'],
             $prev_ary, $next_ary, false);
 
-        $app['btn_nav']->nav_list('news_list', $app['pp_ary'],
+        $app['btn_nav']->nav_list($app['r_news'], $app['pp_ary'],
             [], 'Lijst', 'calendar-o');
 
         $app['heading']->add('Nieuwsbericht: ' . $news_item['headline']);
