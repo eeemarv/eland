@@ -2,22 +2,9 @@
 
 require_once __DIR__ . '/../include/web_legacy.php';
 
-$extend = $_GET['extend'] ?? false;
-
-if ($extend && $id)
-{
-    header('Location: ' . $app->url('messages_extend', [
-        'system'		=> $system,
-        'role_short'    => $role_short,
-        'days'          => $extend,
-        'id'            => $id,
-    ]));
-    exit;
-}
-
 if ($edit)
 {
-    header('Location: ' . $app->url('messages_edit', [
+    header('Location: ' . $app->url('users_edit', [
         'system'		=> $system,
         'role_short'    => $role_short,
         'id'            => $edit,
@@ -27,7 +14,7 @@ if ($edit)
 
 if ($add)
 {
-    header('Location: ' . $app->url('messages_add', [
+    header('Location: ' . $app->url('users_add', [
         'system'		=> $system,
         'role_short'    => $role_short,
         'id'            => $add,
@@ -37,7 +24,7 @@ if ($add)
 
 if ($id)
 {
-    header('Location: ' . $app->url('messages_show', [
+    header('Location: ' . $app->url('users_show', [
         'system'		=> $system,
         'role_short'    => $role_short,
         'id'            => $id,
@@ -45,7 +32,7 @@ if ($id)
     exit;
 }
 
-header('Location: ' . $app->url('messages_extended', [
+header('Location: ' . $app->url('users_list', [
     'system'		=> $system,
     'role_short'    => $role_short,
 ]));

@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . '/../include/app.php';
+require_once __DIR__ . '/../include/web_legacy.php';
 
-$app['legacy_path'] = 'support.php';
-
-$app->run();
+header('Location: ' . $app->url('support', [
+    'system'		=> $system,
+    'role_short'    => $role_short,
+]));
+exit;

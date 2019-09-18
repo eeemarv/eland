@@ -2,18 +2,9 @@
 
 require_once __DIR__ . '/../include/web_legacy.php';
 
-if ($add)
-{
-    header('Location: ' . $app->url('transactions_add', [
-        'system'		=> $system,
-        'role_short'    => $role_short,
-    ]));
-    exit;
-}
-
 if ($id)
 {
-    header('Location: ' . $app->url('transactions_show', [
+    header('Location: ' . $app->url('news_show', [
         'system'		=> $system,
         'role_short'    => $role_short,
         'id'            => $id,
@@ -21,7 +12,7 @@ if ($id)
     exit;
 }
 
-header('Location: ' . $app->url('transactions', [
+header('Location: ' . $app->url('news_extended', [
     'system'		=> $system,
     'role_short'    => $role_short,
 ]));

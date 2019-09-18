@@ -1,10 +1,6 @@
 <?php declare(strict_types=1);
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
-require_once __DIR__ . '/../include/app.php';
-
-$app->flush();
+require_once __DIR__ . '/../include/web_legacy.php';
 
 $token = $_GET['token'] ?? '';
 $login = $_GET['login'] ?? '';
@@ -18,15 +14,6 @@ if (!$location
 	$location = '';
 }
 
-$system = 'x';
-
-$schema = $app['systems']->get_schema($system);
-
-if (!$schema)
-{
-	throw new NotFoundHttpException('Dit systeem bestaat niet.');
-}
-
 if (strlen($token) > 10 || $token === 'h')
 {
 	if(true || $apikey = $app['predis']->get($schema . '_token_' . $token))
@@ -37,7 +24,6 @@ if (strlen($token) > 10 || $token === 'h')
 		]);
 
 		$app['session']->set('logins', $s_logins);
-		$app['session']->set('schema', $schema);
 
 		$referrer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
 
@@ -59,7 +45,7 @@ if (strlen($token) > 10 || $token === 'h')
 		$route .= $route === 'messages' ? '_extended' : '';
 		$route .= $route === 'news' ? '_extended' : '';
 
-		header('Location: ' . $app->path($route, [
+		header('Location: ' . $app->url($route, [
 			'welcome'		=> '1',
 			'role_short'	=> 'g',
 			'system'		=> $system,
@@ -72,6 +58,7 @@ if (strlen($token) > 10 || $token === 'h')
 	}
 }
 
-// header('Location: ');
-
-echo 'oufti';
+header('Location: ' . $app->url('login', [
+	'system'		=> $system,
+]));
+exit;
