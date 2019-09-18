@@ -1,16 +1,14 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . '/../../include/app.php';
+require_once __DIR__ . '/../../include/web_legacy.php';
 
-$app->flush();
-
-if (!$app['config']->get('template_lets', $app['pp_schema']))
+if (!$app['config']->get('template_lets', $schema))
 {
 	echo 'NO_ELAS_TIMEBANK';
 	exit;
 }
 
-if (!$app['config']->get('interlets_en', $app['pp_schema']))
+if (!$app['config']->get('interlets_en', $schema))
 {
 	echo 'NO_INTERSYSTEM';
 	exit;
@@ -94,48 +92,48 @@ $server->service(file_get_contents('php://input'));
 
 function gettoken($apikey)
 {
-	global $app;
+	global $app, $schema;
 
-	if ($app['config']->get('maintenance', $app['pp_schema']))
+	if ($app['config']->get('maintenance', $schema))
 	{
 		$app['monolog']->debug('elas-soap: Transaction token request deferred (offline)',
-			['schema' => $app['pp_schema']]);
+			['schema' => $schema]);
 
 		return 'OFFLINE';
 	}
 
 	$app['monolog']->debug('Token request',
-		['schema' => $app['pp_schema']]);
+		['schema' => $schema]);
 
 	if(check_apikey($apikey, 'interlets'))
 	{
 		$token = 'elasv2' . md5(random_bytes(16));
 
-		$key = $app['pp_schema'] . '_token_' . $token;
+		$key = $schema . '_token_' . $token;
 
 		$app['predis']->set($key, $apikey);
 		$app['predis']->expire($key, 600);
 
 		$app['monolog']->debug('elas-soap: Token ' . $token .
-			' generated', ['schema' => $app['pp_schema']]);
+			' generated', ['schema' => $schema]);
 
 		return $token;
 	}
 
 	$app['monolog']->debug('elas-soap: apikey fail, apikey: ' . $apikey .
-		' no token generated', ['schema' => $app['pp_schema']]);
+		' no token generated', ['schema' => $schema]);
 
 	return '---';
 }
 
 function dopayment($apikey, $from, $real_from, $to, $description, $amount, $transid, $signature)
 {
-	global $app;
+	global $app, $schema;
 
-	if ($app['config']->get('maintenance', $app['pp_schema']))
+	if ($app['config']->get('maintenance', $schema))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			' deferred (offline)', ['schema' => $app['pp_schema']]);
+			' deferred (offline)', ['schema' => $schema]);
 
 		return 'OFFLINE';
 	}
@@ -145,48 +143,48 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	$app['monolog']->debug('Transaction request from: ' . $from .
 		' real from: ' . $real_from . ' to: ' . $to .
 		' description: "' . $description . '" amount: ' .
-		$amount . ' transid: ' . $transid, ['schema' => $app['pp_schema']]);
+		$amount . ' transid: ' . $transid, ['schema' => $schema]);
 
 	if ($app['db']->fetchColumn('select *
-		from ' . $app['pp_schema'] . '.transactions
+		from ' . $schema . '.transactions
 		where transid = ?', [$transid]))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			' is a duplicate', ['schema' => $app['pp_schema']]);
+			' is a duplicate', ['schema' => $schema]);
 		return 'DUPLICATE';
 	}
 
 	if (!check_apikey($apikey, 'interlets'))
 	{
 		$app['monolog']->debug('elas-soap: APIKEY failed for Transaction ' . $transid .
-			' apikey: ' . $apikey, ['schema' => $app['pp_schema']]);
+			' apikey: ' . $apikey, ['schema' => $schema]);
 
 		return 'APIKEYFAIL';
 	}
 
 	$app['monolog']->debug('Looking up interSystem user ' .
-		$from, ['schema' => $app['pp_schema']]);
+		$from, ['schema' => $schema]);
 
 	if ($fromuser = get_user_by_letscode($from))
 	{
 		$app['monolog']->debug('Found interSystem fromuser ' .
-			json_encode($fromuser), ['schema' => $app['pp_schema']]);
+			json_encode($fromuser), ['schema' => $schema]);
 	}
 	else
 	{
 		$app['monolog']->debug('NOT found interSystem fromuser ' . $from .
-			' transid: ' . $transid, ['schema' => $app['pp_schema']]);
+			' transid: ' . $transid, ['schema' => $schema]);
 	}
 
 	if ($touser = get_user_by_letscode($to))
 	{
 		$app['monolog']->debug('Found InterSystem touser ' .
-			json_encode($touser), ['schema' => $app['pp_schema']]);
+			json_encode($touser), ['schema' => $schema]);
 	}
 	else
 	{
 		$app['monolog']->debug('Not found InterSystem touser ' . $to . ' transid: ' .
-			$transid, ['schema' => $app['pp_schema']]);
+			$transid, ['schema' => $schema]);
 	}
 
 	$transaction = [
@@ -204,47 +202,47 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	if (empty($fromuser['letscode']) || $fromuser['accountrole'] != 'interlets')
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			', unknown FROM user (to:' . $to . ')', ['schema' => $app['pp_schema']]);
+			', unknown FROM user (to:' . $to . ')', ['schema' => $schema]);
 		return 'NOUSER';
 	}
 
 	if (empty($touser['letscode']) || ($touser['status'] != 1 && $touser['status'] != 2))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			', unknown or invalid TO user', ['schema' => $app['pp_schema']]);
+			', unknown or invalid TO user', ['schema' => $schema]);
 		return 'NOUSER';
 	}
 
 	if (empty($transid))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			' missing trans id (failed).', ['schema' => $app['pp_schema']]);
+			' missing trans id (failed).', ['schema' => $schema]);
 		return 'FAILED';
 	}
 
 	if (empty($description))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			' missing description (failed).', ['schema' => $app['pp_schema']]);
+			' missing description (failed).', ['schema' => $schema]);
 		return 'FAILED';
 	}
 
-	$sigtest = $app['transaction']->sign($transaction, $fromuser['presharedkey'], $app['pp_schema']);
+	$sigtest = $app['transaction']->sign($transaction, $fromuser['presharedkey'], $schema);
 
 	if ($sigtest != $signature)
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-			', invalid signature', ['schema' => $app['pp_schema']]);
+			', invalid signature', ['schema' => $schema]);
 		return 'SIGFAIL';
 	}
 
-	$transaction['amount'] = round($amount * $app['config']->get('currencyratio', $app['pp_schema']));
+	$transaction['amount'] = round($amount * $app['config']->get('currencyratio', $schema));
 
 	if ($transaction['amount'] < 1)
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid . ' amount ' .
 			$transaction['amount'] . ' is lower than 1. (failed)',
-			['schema' => $app['pp_schema']]);
+			['schema' => $schema]);
 		return 'FAILED';
 	}
 
@@ -252,40 +250,40 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
 			' amount ' . $transaction['amount'] . ' failed. ' .
-			$app['account']->str_id($touser['id'], $app['pp_schema']) .
-			' over maxlimit.', ['schema' => $app['pp_schema']]);
+			$app['account']->str_id($touser['id'], $schema) .
+			' over maxlimit.', ['schema' => $schema]);
 		return 'FAILED';
 	}
 
 	unset($transaction['letscode_to']);
 
-	if($id = $app['transaction']->insert($transaction, $app['pp_schema']))
+	if($id = $app['transaction']->insert($transaction, $schema))
 	{
 		$app['monolog']->debug('elas-soap: Transaction ' . $transid .
 			' processed (success)',
-			['schema' => $app['pp_schema']]);
+			['schema' => $schema]);
 		$transaction['id'] = $id;
 
 		// from eLAS interSystem
-		$app['mail_transaction']->queue($transaction, $app['pp_schema']);
+		$app['mail_transaction']->queue($transaction, $schema);
 
 		return 'SUCCESS';
 	}
 
 	$app['monolog']->debug('elas-soap: Transaction ' . $transid .
-		' failed', ['schema' => $app['pp_schema']]);
+		' failed', ['schema' => $schema]);
 
 	return 'FAILED';
 }
 
 function userbyletscode($apikey, $letscode)
 {
-	global $app;
+	global $app, $schema;
 
 	$app['monolog']->debug('Lookup request for ' .
-		$letscode, ['schema' => $app['pp_schema']]);
+		$letscode, ['schema' => $schema]);
 
-	if ($app['config']->get('maintenance', $app['pp_schema']))
+	if ($app['config']->get('maintenance', $schema))
 	{
 		return 'OFFLINE';
 	}
@@ -294,7 +292,7 @@ function userbyletscode($apikey, $letscode)
 	{
 		$app['monolog']->debug('Apikey fail, apikey: ' . $apikey .
 			' (lookup request for letscode ' .
-			$letscode . ')', ['schema' => $app['pp_schema']]);
+			$letscode . ')', ['schema' => $schema]);
 
 		return '---';
 	}
@@ -304,7 +302,7 @@ function userbyletscode($apikey, $letscode)
 	if ($user['status'] != 1 && $user['status'] != 2)
 	{
 		$app['monolog']->debug('User not active (lookup request for letscode ' .
-			$letscode . ')', ['schema' => $app['pp_schema']]);
+			$letscode . ')', ['schema' => $schema]);
 		return 'Onbekend';
 	}
 
@@ -318,12 +316,12 @@ function userbyletscode($apikey, $letscode)
 
 function userbyname($apikey, $name)
 {
-	global $app;
+	global $app, $schema;
 
 	$app['monolog']->debug('Lookup request for user ' .
-		$name, ['schema' => $app['pp_schema']]);
+		$name, ['schema' => $schema]);
 
-	if ($app['config']->get('maintenance', $app['pp_schema']))
+	if ($app['config']->get('maintenance', $schema))
 	{
 		return 'OFFLINE';
 	}
@@ -332,12 +330,12 @@ function userbyname($apikey, $name)
 	{
 		$app['monolog']->debug('Apikey fail, apikey: ' . $apikey .
 			' (lookup request for name ' .
-			$name . ')', ['schema' => $app['pp_schema']]);
+			$name . ')', ['schema' => $schema]);
 		return '---';
 	}
 
 	$letscode = $app['db']->fetchColumn('select letscode
-		from ' . $app['pp_schema'] . '.users
+		from ' . $schema . '.users
 		where status in (1, 2)
 			and name ilike ?', ['%' . $name . '%']);
 	return $letscode ?? 'Onbekend';
@@ -345,9 +343,9 @@ function userbyname($apikey, $name)
 
 function getstatus($apikey)
 {
-	global $app;
+	global $app, $schema;
 
-	if ($app['config']->get('maintenance', $app['pp_schema']))
+	if ($app['config']->get('maintenance', $schema))
 	{
 		return 'OFFLINE';
 	}
@@ -358,16 +356,16 @@ function getstatus($apikey)
 	}
 
 	$app['monolog']->debug('Apikey fail, apikey: ' . $apikey .
-		' (lookup request for status)', ['schema' => $app['pp_schema']]);
+		' (lookup request for status)', ['schema' => $schema]);
 
 	return 'APIKEYFAIL';
 }
 
 function apiversion($apikey)
 {
-	global $app;
+	global $app, $schema;
 
-	if ($app['config']->get('maintenance', $app['pp_schema']))
+	if ($app['config']->get('maintenance', $schema))
 	{
 		return 'OFFLINE';
 	}
@@ -379,29 +377,29 @@ function apiversion($apikey)
 
 	$app['monolog']->debug('Apikey fail, apikey: ' . $apikey .
 		' (lookup request for apiversion)',
-		['schema' => $app['pp_schema']]);
+		['schema' => $schema]);
 
 	return 'APIKEYFAIL';
 }
 
 function check_apikey($apikey, $type)
 {
-	global $app;
+	global $app, $schema;
 
 	return $app['db']->fetchColumn('select apikey
-		from ' . $app['pp_schema'] . '.apikeys
+		from ' . $schema . '.apikeys
 		where apikey = ?
 		and type = ?', [trim($apikey), trim($type)]) ? true : false;
 }
 
 function get_user_by_letscode(string $letscode)
 {
-	global $app;
+	global $app, $schema;
 
 	$letscode = trim($letscode);
 	[$letscode] = explode(' ', $letscode);
 
 	return $app['db']->fetchAssoc('select *
-		from ' . $app['pp_schema'] . '.users
+		from ' . $schema . '.users
 		where letscode = ?', [$letscode]);
 }
