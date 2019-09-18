@@ -157,8 +157,12 @@ body,html,.row-offcanvas
 
 body
 {
-  padding-top: 50px;
   background-color: #f9f9ff;
+}
+
+body.body-navbar
+{
+  padding-top: 50px;
 }
 
 body.admin

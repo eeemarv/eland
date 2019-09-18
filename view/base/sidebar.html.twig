@@ -3,7 +3,8 @@
 {%- import 'macro/menu.html.twig' as m -%}
 
 {%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
-{%- block system_name -%}{{- config('systemname', schema) -}}{%- endblock -%}
+
+{%- block body_attr %} class="body-navbar{%- if pp_role('admin') %} admin{%- elseif pp_role('guest') %} guest{%- endif -%}"{%- endblock body_attr -%}
 
 {%- block system_link -%}
 	{%- if config('homepage_url', schema) -%}

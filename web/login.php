@@ -14,9 +14,9 @@ if (!$location
 	$location = '';
 }
 
-if (strlen($token) > 10 || $token === 'h')
+if (strlen($token) > 10)
 {
-	if(true || $apikey = $app['predis']->get($schema . '_token_' . $token))
+	if($apikey = $app['predis']->get($schema . '_token_' . $token))
 	{
 		$s_logins = $app['s_logins'];
 		$s_logins = array_merge($s_logins, [

@@ -728,6 +728,9 @@ $c_system_anon->get('/',
 	'controller\\home_system::home_system')
 	->bind('home_system');
 
+$c_locale->get('/', 'controller\\index::index')
+	->bind('index');
+
 $c_system_anon->mount('/{role_short}', $c_system_admin);
 $c_system_anon->mount('/{role_short}', $c_system_user);
 $c_system_anon->mount('/{role_short}', $c_system_guest);

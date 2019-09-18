@@ -39,7 +39,7 @@ if (getenv('APP_SCHEME'))
     $app['request_context']->setScheme(getenv('APP_SCHEME'));
 }
 
-$role_short = $_GET['r'] === 'admin' ? 'a' : 'u';
+$role_short = isset($_GET['r']) && $_GET['r'] === 'admin' ? 'a' : 'u';
 
 $id = $_GET['id'] ?? false;
 $del = $_GET['del'] ?? false;

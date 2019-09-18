@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 
-	<title>{%- block title -%}{{- title -}}{%- endblock -%}</title>
+	<title>{%- block title -%}{%- endblock -%}</title>
 
 	{%- for c in assets_ary('css') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
@@ -22,38 +22,41 @@
 	<meta name="theme-color" content="#ffffff">
 
 </head>
-<body{%- if pp_role('admin') %} class="admin"{%- elseif pp_role('guest') %} class="guest"{%- endif -%}>
+<body{%- block body_attr -%}{%- endblock -%}>
 
 <img src="{{- assets('loading.gif') -}}" class="ajax-loader" alt="waiting">
 
-<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
-    <div class="container-fluid">
-		<div class="navbar-header">
+{%- block navbar -%}
+	<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
+		<div class="container-fluid">
+			<div class="navbar-header">
 
-		{%- block navbar_toggle_button -%}{%- endblock -%}
+			{%- block navbar_toggle_button -%}{%- endblock -%}
 
-		<a href="{%- block system_link -%}{%- endblock -%}" class="pull-left hidden-xs">
-			<div class="logo"></div>
-		</a>
+			<a href="{%- block system_link -%}#{%- endblock -%}" class="pull-left hidden-xs">
+				<div class="logo"></div>
+			</a>
 
-		<a href="{{- block('system_link') -}}" class="navbar-brand">
-		{%- block system_name -%}{%- endblock -%}
-		</a>
+			<a href="{{- block('system_link') -}}" class="navbar-brand">
+			{{- block('title') -}}
+			</a>
+			</div>
+
+		{%- block navbar_collapse -%}{%- endblock -%}
+
 		</div>
-
-	{%- block navbar_collapse -%}{%- endblock -%}
-
 	</div>
-</div>
+{%- endblock navbar -%}
 
-<div class="swiper-container">
+{%- block page_container -%}{%- endblock -%}
 
-	{%- block page_container -%}{%- endblock -%}
+<footer class="footer">
+	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	{%- block index_link -%}
+		<p><a href="{{- path('index') -}}">Index</a></p>
+	{%- endblock index_link -%}
+</footer>
 
-	<footer class="footer">
-		<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
-	</footer>
-</div>
 
 {%- for j in assets_ary('js') -%}
 	<script src="{{- j -}}"></script>
