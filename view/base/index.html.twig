@@ -15,8 +15,12 @@
 
 
 	<div class="row">
+
+	{%- if systems -%}
+		{%- set systems_per_col = (systems|length / 3)|round(0, 'ceil') -%}
+
 		{%- for s in systems -%}
-			{%- if not (loop.index0 // (loop.length // 3)) -%}
+			{%- if not (loop.index0 % systems_per_col) -%}
 			<div class="col-md-4">
 				<div class="panel panel-info">
 					<ul class="list-group">
@@ -24,13 +28,16 @@
 						<li class="list-group-item">
 							<a href="{{- path('home_system', {'system': s}) -}}">{{- config('systemname', s) -}}</a>
 						</li>
-			{% if not (loop.index // (loop.length // 3)) -%}
+			{% if loop.last or not (loop.index % systems_per_col) -%}
 					</ul>
 				</div>
 			</div>
 			{%- endif -%}
 		{%- endfor -%}
+
+	{%- endif -%}
 	</div>
+
 	<br><br>
 {%- endblock page_container -%}
 
