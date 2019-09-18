@@ -91,6 +91,7 @@ class news_add
                     {
                         $vars = [
                             'news'			=> $news,
+                            'user_id'       => $app['s_id'],
                         ];
 
                         $app['queue.mail']->queue([
