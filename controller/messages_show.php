@@ -348,14 +348,7 @@ class messages_show
         $out .= '<dt>Van gebruiker: ';
         $out .= '</dt>';
         $out .= '<dd>';
-
         $out .= $app['account']->link($message['id_user'], $app['pp_ary']);
-
-        $out .= ' (saldo: <span class="label label-info">';
-        $out .= $balance;
-        $out .= '</span> ';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
-        $out .= ')';
         $out .= '</dd>';
 
         $out .= '<dt>Plaats</dt>';
