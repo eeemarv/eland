@@ -6,10 +6,9 @@ use queue\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use service\cache;
 use service\queue;
-use service\user_cache;
 use Monolog\Logger;
 use service\geocode as geocode_service;
-use render\account;
+use render\account_str;
 
 class geocode implements queue_interface
 {
@@ -17,7 +16,6 @@ class geocode implements queue_interface
 	protected $monolog;
 	protected $cache;
 	protected $db;
-	protected $user_cache;
 	protected $geocode_service;
 	protected $account;
 
@@ -26,18 +24,16 @@ class geocode implements queue_interface
 		cache $cache,
 		queue $queue,
 		Logger $monolog,
-		user_cache $user_cache,
 		geocode_service $geocode_service,
-		account $account
+		account_str $account_str
 	)
 	{
 		$this->queue = $queue;
 		$this->monolog = $monolog;
 		$this->cache = $cache;
 		$this->db = $db;
-		$this->user_cache = $user_cache;
 		$this->geocode_service = $geocode_service;
-		$this->account = $account;
+		$this->account_str = $account_str;
 	}
 
 	public function process(array $data):void
@@ -61,11 +57,8 @@ class geocode implements queue_interface
 			return;
 		}
 
-		$user = $this->user_cache->get($uid, $sch);
-
 		$log_user = 'user: ' . $sch . '.' .
-			$user['letscode'] . ' ' .
-			$user['name'] . ' (' . $uid . ')';
+			$this->account_str->get_with_id($uid, $sch);
 
 		$geo_status_key = 'geo_status_' . $adr;
 		$key = 'geo_' . $adr;
@@ -159,7 +152,7 @@ class geocode implements queue_interface
 		$this->queue($data, $priority);
 
 		$log = 'Queued for Geocoding: ';
-		$log .= $this->account->str_id($data['uid'], $data['schema']);
+		$log .= $this->account_str->get_with_id($data['uid'], $data['schema']);
 		$log .= ', ';
 		$log .= $data['adr'];
 

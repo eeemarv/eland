@@ -863,9 +863,8 @@ $app['queue.geocode'] = function ($app){
 		$app['cache'],
 		$app['queue'],
 		$app['monolog'],
-		$app['user_cache'],
 		$app['geocode'],
-		$app['account']
+		$app['account_str']
 	);
 };
 
@@ -978,6 +977,10 @@ $app['link'] = function ($app){
 	return new render\link(
 		$app['url_generator']
 	);
+};
+
+$app['account_str'] = function ($app) {
+	return new render\account_str($app['user_cache']);
 };
 
 $app['account'] = function ($app) {
