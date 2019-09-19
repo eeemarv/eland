@@ -332,7 +332,7 @@ $c_system_user->match('/users/{user_id}/contacts/add',
 	->bind('users_contacts_add_admin');
 
 $c_system_user->match('/users/contacts/add',
-	'controller\\contacts_add::users_contacts_add')
+	'controller\\users_contacts_add::users_contacts_add')
 	->bind('users_contacts_add');
 
 $c_system_admin->match('/config/{tab}',
