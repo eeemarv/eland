@@ -788,7 +788,7 @@ $app['schema_task.geocode'] = function ($app){
 		$app['queue.geocode'],
 		$app['schedule'],
 		$app['systems'],
-		$app['account']
+		$app['account_str']
 	);
 };
 
@@ -834,7 +834,7 @@ $app['schema_task.saldo'] = function ($app){
 		$app['intersystems'],
 		$app['config'],
 		$app['mail_addr_user'],
-		$app['account']
+		$app['account_str']
 	);
 };
 

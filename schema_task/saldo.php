@@ -13,7 +13,7 @@ use service\systems;
 use service\intersystems;
 use service\config;
 use service\mail_addr_user;
-use render\account;
+use render\account_str;
 
 class saldo extends schema_task
 {
@@ -25,7 +25,7 @@ class saldo extends schema_task
 	protected $intersystems;
 	protected $config;
 	protected $mail_addr_user;
-	protected $account;
+	protected $account_str;
 
 	public function __construct(
 		db $db,
@@ -38,7 +38,7 @@ class saldo extends schema_task
 		intersystems $intersystems,
 		config $config,
 		mail_addr_user $mail_addr_user,
-		account $account
+		account_str $account_str
 	)
 	{
 		parent::__construct($schedule, $systems);
@@ -50,7 +50,7 @@ class saldo extends schema_task
 		$this->intersystems = $intersystems;
 		$this->config = $config;
 		$this->mail_addr_user = $mail_addr_user;
-		$this->account = $account;
+		$this->account_str = $account_str;
 	}
 
 	function process():void
@@ -537,7 +537,7 @@ class saldo extends schema_task
 			if (!count($to))
 			{
 				$this->monolog->info('No periodic mail queued for user ' .
-				$this->account->str_id($id, $this->schema) . ' because no email address.',
+				$this->account_str->get_with_id($id, $this->schema) . ' because no email address.',
 				['schema' => $this->schema]);
 
 				continue;
@@ -552,8 +552,8 @@ class saldo extends schema_task
 				]),
 			], random_int(0, 5000));
 
-			$log_str = $users[$id]['letscode'] . ' ' . $users[$id]['name'];
-			$log_str .= ' (' . $id . ' to: ' . json_encode($to) . ' )';
+			$log_str = $this->account_str->get_with_id($id, $this->schema);
+			$log_str .= ' to: ' . json_encode($to) . ' )';
 			$log_to[] = $log_str;
 		}
 

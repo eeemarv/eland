@@ -9,7 +9,7 @@ use Monolog\Logger;
 use queue\geocode as geocode_queue;
 use service\schedule;
 use service\systems;
-use render\account;
+use render\account_str;
 
 class geocode extends schema_task
 {
@@ -20,7 +20,7 @@ class geocode extends schema_task
 	protected $curl;
 	protected $geocoder;
 	protected $geocode_queue;
-	protected $account;
+	protected $account_str;
 
 	public function __construct(
 		db $db,
@@ -29,7 +29,7 @@ class geocode extends schema_task
 		geocode_queue $geocode_queue,
 		schedule $schedule,
 		systems $systems,
-		account $account
+		account_str $account_str
 	)
 	{
 		parent::__construct($schedule, $systems);
@@ -37,7 +37,7 @@ class geocode extends schema_task
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
-		$this->account = $account;
+		$this->account_str = $account_str;
 	}
 
 	public function process():void
@@ -84,7 +84,7 @@ class geocode extends schema_task
 
 			$this->geocode_queue->queue($data, 0);
 
-			$log = $this->account->str_id($row['id_user'], $this->schema);
+			$log = $this->account_str->get_with_id($row['id_user'], $this->schema);
 			$log .= ': ';
 			$log .= $data['adr'];
 
