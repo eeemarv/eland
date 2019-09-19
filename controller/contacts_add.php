@@ -319,7 +319,7 @@ class contacts_add
         $out .= '&nbsp;';
 
         $out .= '<input type="submit" value="Opslaan" ';
-        $out .= 'name="zend" class="btn btn-success">';
+        $out .= 'name="zend" class="btn btn-success btn-lg">';
 
         $out .= $app['form_token']->get_hidden_input();
 

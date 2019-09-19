@@ -135,7 +135,7 @@ class categories_edit
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" ';
-        $out .= 'name="zend" class="btn btn-primary">';
+        $out .= 'name="zend" class="btn btn-primary btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

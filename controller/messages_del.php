@@ -107,7 +107,7 @@ class messages_del
         $out .= $app['link']->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
         $out .= '</form></p>';
 

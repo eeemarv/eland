@@ -191,7 +191,7 @@ class forum_edit
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" ';
-        $out .= 'class="btn btn-primary">';
+        $out .= 'class="btn btn-primary btn-lg">';
 
         $out .= $app['form_token']->get_hidden_input();
 

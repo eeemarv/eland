@@ -209,7 +209,7 @@ class news_add
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-success">';
+        $out .= 'value="Opslaan" class="btn btn-lg btn-success">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

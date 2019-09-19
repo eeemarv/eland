@@ -1542,9 +1542,9 @@ class users_list
             ]);
 
             $out .= '<input type="submit" value="Zend test E-mail naar mijzelf" ';
-            $out .= 'name="bulk_submit[mail_test]" class="btn btn-default">&nbsp;';
+            $out .= 'name="bulk_submit[mail_test]" class="btn btn-info btn-lg">&nbsp;';
             $out .= '<input type="submit" value="Verzend" name="bulk_submit[mail]" ';
-            $out .= 'class="btn btn-default">';
+            $out .= 'class="btn btn-info btn-lg">';
 
             $out .= $app['form_token']->get_hidden_input();
             $out .= '</form>';
@@ -1603,7 +1603,7 @@ class users_list
                 ]);
 
                 $out .= '<input type="submit" value="Veld aanpassen" ';
-                $out .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary">';
+                $out .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary btn-lg">';
                 $out .= $app['form_token']->get_hidden_input();
                 $out .= '</form>';
 

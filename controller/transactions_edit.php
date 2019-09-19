@@ -256,7 +256,7 @@ class transactions_edit
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Aanpassen" class="btn btn-primary">';
+        $out .= 'value="Aanpassen" class="btn btn-primary btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
         $out .= '<input type="hidden" name="transid" ';
         $out .= 'value="';

@@ -1297,7 +1297,7 @@ class users_edit_admin
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Opslaan" class="btn btn-';
         $out .= $is_edit ? 'primary' : 'success';
-        $out .= '">';
+        $out .= ' btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

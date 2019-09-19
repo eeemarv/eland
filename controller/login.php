@@ -290,7 +290,7 @@ class login
         $out .= '</p>';
         $out .= '</div>';
 
-        $out .= '<input type="submit" class="btn btn-default" ';
+        $out .= '<input type="submit" class="btn btn-info btn-lg" ';
         $out .= 'value="Inloggen" name="zend">';
 
         $out .= '</form>';

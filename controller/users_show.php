@@ -365,7 +365,7 @@ class users_show
             }
 
             $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success btn-block fileinput-button">';
+            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
             $out .= '<input id="fileupload" type="file" name="image" ';
             $out .= 'data-url="';
@@ -395,7 +395,7 @@ class users_show
             {
                 $out .= $app['link']->link_fa('users_image_del_admin', $app['pp_ary'],
                     ['id' => $id], 'Foto verwijderen',
-                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-block']),
+                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
             else
@@ -748,7 +748,7 @@ class users_show
 
         $out .= $app['form_token']->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';
-        $out .= 'value="Versturen" class="btn btn-default"';
+        $out .= 'value="Versturen" class="btn btn-info btn-lg"';
         $out .= $user_mail_disabled ? ' disabled' : '';
         $out .= '>';
 

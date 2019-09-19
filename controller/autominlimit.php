@@ -151,7 +151,7 @@ class autominlimit
         $out .= 'Account Codes gescheiden door comma\'s</p>';
         $out .= '</div>';
 
-        $out .= '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary">';
+        $out .= '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

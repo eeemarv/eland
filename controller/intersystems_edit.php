@@ -78,7 +78,7 @@ class intersystems_edit
         $btn = $app['link']->btn_cancel('intersystems', $app['pp_ary'], []);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
-        $btn .= 'class="btn btn-success">';
+        $btn .= 'class="btn btn-success btn-lg">';
 
         return self::render_form($app, $group, $btn);
     }
@@ -145,7 +145,7 @@ class intersystems_edit
             ['id' => $id]);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
-        $btn .= 'class="btn btn-primary">';
+        $btn .= 'class="btn btn-primary btn-lg">';
 
         return self::render_form($app, $group, $btn);
     }

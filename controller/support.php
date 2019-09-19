@@ -159,7 +159,7 @@ class support
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= '<input type="submit" name="zend" value="Verzenden" class="btn btn-default">';
+        $out .= '<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

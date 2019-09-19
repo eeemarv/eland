@@ -436,7 +436,7 @@ class mass_transaction
 
         $out = '<div class="panel panel-warning">';
         $out .= '<div class="panel-heading">';
-        $out .= '<button class="btn btn-default" ';
+        $out .= '<button class="btn btn-default btn-lg" ';
         $out .= 'title="Toon invul-hulp" data-toggle="collapse" ';
         $out .= 'data-target="#help" type="button">';
         $out .= '<i class="fa fa-question"></i>';
@@ -656,7 +656,7 @@ class mass_transaction
             $out .= '</ul>';
         }
 
-        $out .= '<button class="btn btn-default" id="fill-in">';
+        $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
         $out .= 'Vul in</button>';
 
         $out .= '</form>';
@@ -914,7 +914,7 @@ class mass_transaction
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Massa transactie uitvoeren" ';
-        $out .= 'name="zend" class="btn btn-success">';
+        $out .= 'name="zend" class="btn btn-success btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</div>';

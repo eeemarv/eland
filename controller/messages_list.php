@@ -446,7 +446,7 @@ class messages_list
             ]);
 
             $out .= '<input type="submit" value="Verlengen" ';
-            $out .= 'name="bulk_submit[extend]" class="btn btn-primary">';
+            $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
 
             $out .= $app['form_token']->get_hidden_input();
 
@@ -469,7 +469,7 @@ class messages_list
                 ]);
 
                 $out .= '<input type="submit" value="Aanpassen" ';
-                $out .= 'name="bulk_submit[access]" class="btn btn-primary">';
+                $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
                 $out .= $app['form_token']->get_hidden_input();
                 $out .= '</form>';
                 $out .= '</div>';
@@ -494,7 +494,7 @@ class messages_list
             ]);
 
             $out .= '<input type="submit" value="Categorie anpassen" ';
-            $out .= 'name="bulk_submit[category]" class="btn btn-primary">';
+            $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
             $out .= $app['form_token']->get_hidden_input();
             $out .= '</form>';
             $out .= '</div>';

@@ -132,7 +132,7 @@ class apikeys
         $out .= $app['link']->btn_cancel('apikeys', $app['pp_ary'], []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-success">';
+        $out .= 'value="Opslaan" class="btn btn-success btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';
@@ -208,7 +208,7 @@ class apikeys
         $out .= $app['link']->btn_cancel('apikeys', $app['pp_ary'], []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="zend" class="btn btn-danger">';
+        $out .= 'name="zend" class="btn btn-danger btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
         $out .= '</form>';
 

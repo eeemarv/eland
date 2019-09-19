@@ -157,7 +157,7 @@ class users_password
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" ';
-        $out .= 'class="btn btn-primary">';
+        $out .= 'class="btn btn-primary btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

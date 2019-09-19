@@ -233,7 +233,7 @@ class export
             }
 
             $buttons .= '<form><input type="submit" name="' . $ex_key . '" ';
-            $buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom">';
+            $buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom btn-lg">';
             $buttons .= '<input type="hidden" value="admin" name="r">';
             $buttons .= '<input type="hidden" value="' . $app['s_id'] . '" name="u">';
             $buttons .= '</form>';
@@ -252,7 +252,7 @@ class export
             $out .= '<div class="panel-heading">';
 
             $out .= '<form>';
-            $out .= '<input type="submit" value="Download" name="db_elas" class="btn btn-default margin-bottom">';
+            $out .= '<input type="submit" value="Download" name="db_elas" class="btn btn-default btn-lg margin-bottom">';
             $out .= '<input type="hidden" value="admin" name="r">';
             $out .= '<input type="hidden" value="';
             $out .= $app['s_id'];
@@ -280,11 +280,11 @@ class export
             $out .= '<form>';
             $out .= '<input type="submit" value="Download Data" ';
             $out .= 'name="db_eland_aggs" ';
-            $out .= 'class="btn btn-default margin-bottom">';
+            $out .= 'class="btn btn-default btn-lg margin-bottom">';
             $out .= '&nbsp;';
             $out .= '<input type="submit" value="Download Events" ';
             $out .= 'name="db_eland_events" ';
-            $out .= 'class="btn btn-default margin-bottom">';
+            $out .= 'class="btn btn-default btn-lg margin-bottom">';
             $out .= '<input type="hidden" value="admin" name="r">';
             $out .= '<input type="hidden" value="';
             $out .= $app['s_id'];

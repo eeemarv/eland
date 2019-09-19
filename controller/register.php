@@ -180,7 +180,7 @@ class register
 
         $out .= $app['captcha']->get_form_field();
 
-        $out .= '<input type="submit" class="btn btn-default" value="Inschrijven" name="zend">';
+        $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Inschrijven" name="zend">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

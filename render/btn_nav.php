@@ -71,7 +71,7 @@ class btn_nav
 		if (count($params) < 1)
 		{
 			return $this->tag->get('button', [
-					'class' 	=> 'btn btn-default',
+					'class' 	=> 'btn btn-default btn-lg',
 					'title'		=> $title,
 					'disabled'	=> 'disabled',
 				],
@@ -95,7 +95,7 @@ class btn_nav
 
 		return $this->link->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default' . ($active ? ' active' : ''),
+				'class'	=> 'btn btn-default btn-lg' . ($active ? ' active' : ''),
 				'title'	=> $title,
 			],
 			$fa);
@@ -111,7 +111,7 @@ class btn_nav
 	{
 		return $this->link->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default',
+				'class'	=> 'btn btn-default btn-lg',
 				'title'	=> $title,
 			],
 			$fa);
@@ -157,7 +157,7 @@ class btn_nav
 		$this->assets->add(['csv.js']);
 
 		$this->out['csv'] = $this->tag->get('a', [
-				'class'	=> 'csv btn btn-info',
+				'class'	=> 'csv btn btn-info btn-lg',
 				'title'	=> 'Download CSV',
 			],
 			$this->tag->fa('file')
@@ -167,7 +167,7 @@ class btn_nav
 	public function columns_show():void
 	{
 		$this->out['columns_show'] = $this->tag->get('button', [
-				'class'			=> 'btn btn-default',
+				'class'			=> 'btn btn-default btn-lg',
 				'title'			=> 'Weergave kolommen',
 				'data-toggle'	=> 'collapse',
 				'data-target'	=> '#columns_show',

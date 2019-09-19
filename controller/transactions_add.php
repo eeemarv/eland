@@ -1261,7 +1261,7 @@ class transactions_add
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Overschrijven" class="btn btn-success">';
+        $out .= 'value="Overschrijven" class="btn btn-success btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
         $out .= '<input type="hidden" name="transid" ';
         $out .= 'value="';

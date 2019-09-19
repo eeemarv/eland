@@ -182,7 +182,7 @@ class news_edit
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-primary">';
+        $out .= 'value="Opslaan" class="btn btn-primary btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

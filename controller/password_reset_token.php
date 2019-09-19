@@ -85,7 +85,7 @@ class password_reset_token
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<input type="submit" class="btn btn-default" value="Bewaar paswoord" name="zend">';
+        $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Bewaar paswoord" name="zend">';
         $out .= $app['form_token']->get_hidden_input();
         $out .= '</form>';
 

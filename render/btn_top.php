@@ -35,7 +35,7 @@ class btn_top
 		$this->out[] = $this->link->link_fa_collapse($route,
 			$context_params, $params,
 			'Verwijderen', [
-				'class' => 'btn btn-danger',
+				'class' => 'btn btn-danger btn-lg',
 				'title'	=> $title,
 			], 'times');
 	}
@@ -49,7 +49,7 @@ class btn_top
 		$this->out[] = $this->link->link_fa_collapse($route,
 			$context_params, $params,
 			'Toevoegen', [
-				'class'	=> 'btn btn-success',
+				'class'	=> 'btn btn-success btn-lg',
 				'title'	=> $title,
 			], 'plus');
 	}
@@ -63,7 +63,7 @@ class btn_top
 		$this->out[] = $this->link->link_fa_collapse($route,
 			$context_params, $params,
 			'Aanpassen', [
-				'class'	=> 'btn btn-primary',
+				'class'	=> 'btn btn-primary btn-lg',
 				'title'	=> $title,
 			], 'pencil');
 	}
@@ -77,7 +77,7 @@ class btn_top
 		$this->out[] = $this->link->link_fa_collapse($route,
 			$context_params, $params,
 			'Goedkeuren', [
-				'class'	=> 'btn btn-warning',
+				'class'	=> 'btn btn-warning btn-lg',
 				'title'	=> $title,
 			], 'check');
 	}
@@ -91,7 +91,7 @@ class btn_top
 		$this->out[] = $this->link->link_fa_collapse($route,
 			$context_params, $params,
 			'Transactie', [
-				'class'	=> 'btn btn-warning',
+				'class'	=> 'btn btn-warning btn-lg',
 				'title'	=> $title,
 			], 'exchange');
 	}
@@ -105,7 +105,7 @@ class btn_top
 		$this->out[] = $this->link->link_fa_collapse($route,
 			$context_params, $params,
 			'Paswoord', [
-				'class'	=> 'btn btn-info',
+				'class'	=> 'btn btn-info btn-lg',
 				'title'	=> $title,
 			], 'key');
 	}
@@ -114,7 +114,7 @@ class btn_top
 	{
 		$out = '<a href="';
 		$out .= $link;
-		$out .= '" class="btn btn-info" title="';
+		$out .= '" class="btn btn-info btn-lg" title="';
 		$out .= $title;
 		$out .= '"><i class="fa fa-';
 		$out .= $fa;

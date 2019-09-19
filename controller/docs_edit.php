@@ -199,7 +199,7 @@ class docs_edit
         $out .= $app['link']->btn_cancel('docs', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
+        $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
 
         $out .= '</form>';
 

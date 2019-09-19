@@ -161,7 +161,7 @@ class contact
 
         $out .= '<input type="submit" name="zend" ';
         $out .= $form_disabled ? 'disabled ' : '';
-        $out .= 'value="Verzenden" class="btn btn-default">';
+        $out .= 'value="Verzenden" class="btn btn-info btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

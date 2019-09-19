@@ -708,7 +708,7 @@ class config
 
         $out .= '<input type="hidden" name="tab" value="' . $tab . '">';
 
-        $out .= '<input type="submit" class="btn btn-primary" ';
+        $out .= '<input type="submit" class="btn btn-primary btn-lg" ';
         $out .= 'value="Aanpassen" name="' . $tab . '_submit">';
 
         $out .= $app['form_token']->get_hidden_input();

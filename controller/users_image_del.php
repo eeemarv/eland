@@ -79,7 +79,7 @@ class users_image_del
         $out .= $app['link']->btn_cancel($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
+        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
 
         $out .= '</form>';
 

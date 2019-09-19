@@ -100,7 +100,7 @@ class docs_del
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="confirm_del" class="btn btn-danger">';
+        $out .= 'name="confirm_del" class="btn btn-danger btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
         $out .= '</form>';
 

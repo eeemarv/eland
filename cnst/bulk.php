@@ -113,15 +113,15 @@ class bulk
     <div class="panel panel-default">
     <div class="panel-heading">
     <input type="button"
-    class="btn btn-default"
+    class="btn btn-default btn-lg"
     data-table-sel="invert"
     value="Selectie omkeren">&nbsp;
     <input type="button"
-    class="btn btn-default"
+    class="btn btn-default btn-lg"
     data-table-sel="all"
     value="Selecteer alle">&nbsp;
     <input type="button"
-    class="btn btn-default"
+    class="btn btn-default btn-lg"
     data-table-sel="none"
     value="De-selecteer alle">
     </div>

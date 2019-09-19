@@ -105,7 +105,7 @@ class docs_map_edit
         $out .= $app['link']->btn_cancel('docs_map', $app['pp_ary'], ['map_id' => $map_id]);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary">';
+        $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';

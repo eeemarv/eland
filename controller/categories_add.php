@@ -111,7 +111,7 @@ class categories_add
         $out .= $app['link']->btn_cancel('categories', $app['pp_ary'], []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Toevoegen" ';
-        $out .= 'class="btn btn-success">';
+        $out .= 'class="btn btn-success btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
         $out .= '</form>';
