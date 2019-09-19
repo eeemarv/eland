@@ -79,7 +79,7 @@ class intersystems
 
 		while($row = $st->fetch())
 		{
-			$host = parse_url($row['url'], PHP_URL_HOST);
+			$host = parse_url($row['url'], PHP_URL_HOST) ?? '';
 			[$system] = explode('.', $host);
 			$system = strtolower($system);
 
