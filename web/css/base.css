@@ -150,7 +150,7 @@ p.extern.tt-suggestion, .bg-extern
 
 /******************************************************/
 
-body,html,.row-offcanvas
+div.row-offcanvas
 {
   height:100%;
 }

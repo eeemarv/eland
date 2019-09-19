@@ -5,37 +5,42 @@
 
 {%- block page_container -%}
 
-	<div class="jumbotron">
-		<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron">
+				<div class="container">
 
-		<h1>eLAND index</h1>
-		<p>Server gemeenschapsmunten</p>
+				<h1>eLAND Index</h1>
+				<p>Server gemeenschapsmunten</p>
+				</div>
+			</div>
 		</div>
 	</div>
 
+	<div class="container-fluid">
+		<div class="row">
 
-	<div class="row">
+		{%- if systems -%}
+			{%- set systems_per_col = (systems|length / 3)|round(0, 'ceil') -%}
 
-	{%- if systems -%}
-		{%- set systems_per_col = (systems|length / 3)|round(0, 'ceil') -%}
-
-		{%- for s in systems -%}
-			{%- if not (loop.index0 % systems_per_col) -%}
-			<div class="col-md-4">
-				<div class="panel panel-info">
-					<ul class="list-group">
-			{%- endif -%}
-						<li class="list-group-item">
-							<a href="{{- path('home_system', {'system': s}) -}}">{{- config('systemname', s) -}}</a>
-						</li>
-			{% if loop.last or not (loop.index % systems_per_col) -%}
-					</ul>
+			{%- for s in systems -%}
+				{%- if not (loop.index0 % systems_per_col) -%}
+				<div class="col-md-4">
+					<div class="panel panel-info">
+						<ul class="list-group">
+				{%- endif -%}
+							<li class="list-group-item">
+								<a href="{{- path('home_system', {'system': s}) -}}">{{- config('systemname', s) -}}</a>
+							</li>
+				{% if loop.last or not (loop.index % systems_per_col) -%}
+						</ul>
+					</div>
 				</div>
-			</div>
-			{%- endif -%}
-		{%- endfor -%}
+				{%- endif -%}
+			{%- endfor -%}
 
-	{%- endif -%}
+		{%- endif -%}
+		</div>
 	</div>
 
 	<br><br>
