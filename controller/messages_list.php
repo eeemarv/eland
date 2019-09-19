@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use render\pagination;
-use render\tpl;
 use render\btn_nav;
 use cnst\access as cnst_access;
 use cnst\message_type as cnst_message_type;
@@ -254,6 +252,7 @@ class messages_list
 
         if ($app['pp_admin'])
         {
+            $app['btn_top']->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             $app['btn_nav']->csv();
         }
 

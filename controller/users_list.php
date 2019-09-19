@@ -841,7 +841,7 @@ class users_list
             $app['btn_top']->add('users_add', $app['pp_ary'],
                 [], 'Gebruiker toevoegen');
 
-            $app['btn_top']->local('#actions', 'Bulk acties', 'envelope-o');
+            $app['btn_top']->local('#bulk_actions', 'Bulk acties', 'envelope-o');
         }
 
         $app['btn_nav']->columns_show();

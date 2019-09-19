@@ -110,7 +110,7 @@ class bulk
     TPL;
 
     const TPL_SELECT_BUTTONS = <<<'TPL'
-    <div class="panel panel-default">
+    <div class="panel panel-default" id="bulk_actions">
     <div class="panel-heading">
     <input type="button"
     class="btn btn-default btn-lg"
