@@ -200,7 +200,7 @@ class saldo extends schema_task
 				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 				$row['offer'] = $row['type'] == 'offer' ? true : false;
 				$row['want'] = $row['type'] == 'want' ? true : false;
-				$row['images'] = $image_ary[$row['id']];
+				$row['images'] = $image_ary[$row['id']] ?? [];
 				$row['mail'] = $mailaddr[$uid] ?? '';
 				$row['addr'] = str_replace(' ', '+', $adr);
 				$row['adr'] = $adr;
