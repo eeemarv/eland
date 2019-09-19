@@ -402,7 +402,7 @@ class users_show
             {
                 $out .= $app['link']->link_fa('users_image_del', $app['pp_ary'],
                     [], 'Foto verwijderen',
-                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-block']),
+                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
 
