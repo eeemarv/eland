@@ -38,6 +38,11 @@ $fn_before_locale = function (Request $request, app $app){
 
 $fn_before_system = function(Request $request, app $app){
 
+	if ($app['pp_schema'] === '')
+	{
+		throw new NotFoundHttpException('Systeem ' . $app['pp_system'] . ' niet gevonden.');
+	}
+
 	if ($request->query->get('et') !== null)
 	{
 		$app['email_validate']->validate($request->query->get('et'));
