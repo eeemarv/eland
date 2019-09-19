@@ -632,14 +632,13 @@ class users_show
             unset($attr_link_transactions['disabled']);
         }
 
-
         $out .= $app['link']->link_fa($app['r_messages'],
             $app['pp_ary'],
             ['f' => ['uid' => $id]],
             'Vraag en aanbod van ' . $account_str .
             ' (' . $count_messages . ')',
             $attr_link_messages,
-            'exchange');
+            'newspaper-o');
 
         $out .= $app['link']->link_fa('transactions',
             $app['pp_ary'],
