@@ -342,9 +342,15 @@ class intersystems_edit
         $out .= $group['url'];
         $out .= '" maxlength="256">';
         $out .= '</div>';
-        $out .= '<p>';
-        $out .= 'De URL van het andere Systeem, inclusief het protocol, http:// of https://';
-        $out .= '</p>';
+        $out .= '<lu>';
+        $out .= '<li>';
+        $out .= 'De basis-URL van het andere Systeem, inclusief het protocol, http:// of https://';
+        $out .= '</li>';
+        $out .= '<li>';
+        $out .= 'Wanneer het een eLAND-systeem betreft, gebruik http://systeemnaam.letsa.net en ';
+        $out .= 'vervang "systeemnaam" door de naam van het systeem.';
+        $out .= '</li>';
+        $out .= '</lu>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
