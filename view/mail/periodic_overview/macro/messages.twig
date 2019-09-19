@@ -33,18 +33,11 @@
 {%- endif -%}
 {{- msg.description -}}
 <br />
-{{- mail_link_open('users',
-	{'id': msg.id_user},
-	schema, email_token)|raw -}}
+{{- context_url_open('users_show', mpp_ary(user_id, schema),
+	{'id': msg.id_user})|raw -}}
 {{- account(msg.id_user, schema) -}}
 </a>
-{#-
-{%- if msg.postcode -%}
-	{{- 'label.postcode'|trans -}}:&nbsp;
-		{{- msg.postcode -}}&nbsp;
-		|&nbsp;
-{%- endif -%}
--#}
+
 {%- for mail in msg.mail -%}
 	{%- if not loop.last -%}|{%- endif -%}&nbsp;
 	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
@@ -68,7 +61,7 @@
 
 <p>
 {{- 'periodic_overview.ads.add'|trans({
-	'%link_open%': mail_link_open('messages', {'add': '1'}, schema, email_token),
+	'%link_open%': context_url_open('messages_add', mpp_ary(user_id, schema), {}),
 	'%link_close%': '</a>'
 })|raw -}}
 </p>

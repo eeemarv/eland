@@ -1,10 +1,10 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(news, option, schema, email_token) -%}
+{%- macro html(news, option, user_id, schema) -%}
 
 <h3>
 {{- 'periodic_overview.news.title'|trans({
-	'%link_open%': mail_link_open('news', {}, schema, email_token),
+	'%link_open%': context_url_open('news_extended', mpp_ary(user_id, schema), {}),
 	'%link_close%': '</a>'
 })|raw -}}
 </h3>
@@ -14,7 +14,7 @@
 {%- for n in news -%}
 <li>
 <h4>
-{{- mail_link_open('news', {'id': n.id}, schema, email_token)|raw -}}
+{{- context_url_open('news_show', mpp_ary(user_id, schema), {'id': n.id})|raw -}}
 {{- n.headline -}}
 </a>
 </h4>
@@ -34,7 +34,7 @@
 	<br />
 {%- endif -%}
 {{- 'periodic_overview.news.creator'|trans({
-	'%link_open%': mail_link_open('users', {'id': n.id_user}, schema, email_token),
+	'%link_open%': context_url_open('users_show', mpp_ary(user_id, schema), {'id': n.id_user}),
 	'%link_close%': '</a>',
 	'%account%': account(n.id_user, schema)
 })|raw -}}
@@ -54,7 +54,7 @@
 
 {%- endmacro html -%}
 
-{% macro text(news, option, schema, email_token) %}
+{% macro text(news, option, user_id, schema) %}
 {% autoescape false %}
 
 {{- 'periodic_overview.news.title'|trans({

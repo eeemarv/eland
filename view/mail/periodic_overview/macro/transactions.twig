@@ -1,9 +1,9 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(transactions, schema, email_token) -%}
+{%- macro html(transactions, user_id, schema) -%}
 
 	<h3>
-		{{- mail_link_open('transactions', {}, schema, email_token)|raw -}}
+		{{- context_url_open('transactions', mpp_ary(user_id, schema), {})|raw -}}
 		{{- 'periodic_overview.transactions.title'|trans -}}
 		</a>
 	</h3>
@@ -18,13 +18,13 @@
 			'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_from,
 				'%system_name%': account(tr.id_from, schema)
-			}) : mail_link_open('users', {'id': tr.id_from}, schema, email_token)
+			}) : context_url_open('users_show', mpp_ary(user_id, schema), {'id': tr.id_from})
 				~ account(tr.id_from, schema)
 				~ '</a>',
 			'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_to,
 				'%system_name%': account(tr.id_to, schema)
-			}) : mail_link_open('users', {'id': tr.id_to}, schema, email_token)
+			}) : context_url_open('users_show', mpp_ary(user_id, schema), {'id': tr.id_to})
 				~ account(tr.id_to, schema)
 				~ '</a>',
 		})|raw -}}
@@ -41,7 +41,7 @@
 
 {%- endmacro html -%}
 
-{% macro text(transactions, schema, email_token) %}
+{% macro text(transactions, user_id, schema) %}
 {% autoescape false %}
 
 {{ 'periodic_overview.transactions.title'|trans|underline }}
