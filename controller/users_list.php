@@ -1364,7 +1364,7 @@ class users_list
 
             if (isset($show_columns['d']) && count($ref_geo))
             {
-                $out .= '<td data-value="5000"';
+                $out .= '<td data-value="5000000"';
 
                 $adr_ary = $contacts[$id]['adr'][0] ?? [];
 

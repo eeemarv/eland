@@ -23,7 +23,7 @@ $(document).ready(function() {
 				Math.sin(lng_d / 2) * Math.sin(lng_d / 2);
 			var distance = 2 * Math.atan2(Math.sqrt(angle), Math.sqrt(1 - angle)) * 6371;
 
-			$(this).attr('data-value', (Math.round(distance * 100) / 100));
+			$(this).attr('data-value', Math.round(distance * 1000));
 
 			if (distance < 1){
 				distance = Math.round(distance * 10) * 100;

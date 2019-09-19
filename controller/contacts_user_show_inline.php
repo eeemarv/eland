@@ -153,7 +153,7 @@ class contacts_user_show_inline
                 {
                     $tr_c = htmlspecialchars($c['value'] ?? '', ENT_QUOTES);
 
-                    if ($c['abbrev'] == 'adr')
+                    if ($c['abbrev'] === 'adr')
                     {
                         $app['distance']->set_to_geo($c['value']);
 
@@ -196,11 +196,11 @@ class contacts_user_show_inline
             $out .= '</tbody>';
             $out .= '</table>';
 
-            if ($app['distance']->has_to_data())
+            if ($app['distance']->has_map_data())
             {
                 $out .= '<div class="panel-footer">';
                 $out .= '<div class="user_map" id="map" data-markers="';
-                $out .= $app['distance']->get_to_data();
+                $out .= $app['distance']->get_map_markers();
                 $out .= '" ';
                 $out .= 'data-token="';
                 $out .= $app['mapbox_token'];

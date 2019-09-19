@@ -10,13 +10,14 @@ class distance
 	protected $db;
 	protected $cache;
 
-	protected $lat;
-	protected $lng;
-	protected $geo = false;
+	protected $from_lat;
+	protected $from_lng;
+	protected $from_geo_en;
+	protected $to_geo_en = false;
+
 	protected $to_lat;
 	protected $to_lng;
-	protected $to_geo = false;
-	protected $to = [];
+	protected $to_map_data = [];
 	protected $dist;
 
 	public function __construct(db $db, cache $cache)
@@ -29,7 +30,7 @@ class distance
 		int $s_id,
 		string $s_schema):self
 	{
-		if ($this->geo)
+		if (isset($this->from_geo_en))
 		{
 			return $this;
 		}
@@ -45,7 +46,7 @@ class distance
 
 		if (!$adr)
 		{
-			$this->geo = false;
+			$this->from_geo_en = false;
 			return $this;
 		}
 
@@ -53,15 +54,14 @@ class distance
 
 		if (count($geo))
 		{
-			$this->lat = deg2rad($geo['lat']);
-			$this->lng = deg2rad($geo['lng']);
+			$this->from_lat = deg2rad($geo['lat']);
+			$this->from_lng = deg2rad($geo['lng']);
 
-			$this->geo = true;
+			$this->from_geo_en = true;
+			return $this;
 		}
-		else
-		{
-			$this->geo = false;
-		}
+
+		$this->from_geo_en = false;
 
 		return $this;
 	}
@@ -77,41 +77,55 @@ class distance
 
 		$geo = $this->cache->get('geo_' . $adr);
 
-		if (count($geo))
+		if (!count($geo))
 		{
-			$this->to[] = [
-				'lat'	=> $geo['lat'],
-				'lng'	=> $geo['lng'],
-			];
-
-			$this->to_lat = deg2rad($geo['lat']);
-			$this->to_lng = deg2rad($geo['lng']);
+			$this->to_geo_en = false;
+			return $this;
 		}
 
+		$this->to_map_data[] = [
+			'lat'	=> $geo['lat'],
+			'lng'	=> $geo['lng'],
+		];
+
+		$this->to_lat = deg2rad($geo['lat']);
+		$this->to_lng = deg2rad($geo['lng']);
+
+		$this->to_geo_en = true;
 		return $this;
 	}
 
-	public function has_to_data():bool
+	public function has_map_data():bool
 	{
-		return count($this->to) > 0;
+		return count($this->to_map_data) > 0;
 	}
 
-	public function get_to_data():string
+	public function get_map_markers():string
 	{
-		return htmlspecialchars(json_encode($this->to));
+		return htmlspecialchars(json_encode($this->to_map_data));
 	}
 
 	public function calc():self
 	{
-		if (!$this->geo || !$this->to_geo)
+		if (!isset($this->from_geo_en))
 		{
 			return $this;
 		}
 
-		$lat_d = $this->to_lat - $this->lat;
-		$lng_d = $this->to_lng - $this->lng;
+		if (!$this->from_geo_en)
+		{
+			return $this;
+		}
 
-		$angle = 2 * asin(sqrt(pow(sin($lat_d / 2), 2) + cos($this->lat) * cos($this->to_lat) * pow(sin($lng_d / 2), 2)));
+		if (!$this->to_geo_en)
+		{
+			return $this;
+		}
+
+		$lat_d = $this->to_lat - $this->from_lat;
+		$lng_d = $this->to_lng - $this->from_lng;
+
+		$angle = 2 * asin(sqrt(pow(sin($lat_d / 2), 2) + cos($this->from_lat) * cos($this->to_lat) * pow(sin($lng_d / 2), 2)));
 
 		$this->dist = 6371 * $angle;
 
@@ -120,7 +134,17 @@ class distance
 
 	public function format():string
 	{
-		if (!$this->geo || !$this->to_geo)
+		if (!isset($this->from_geo_en))
+		{
+			return '';
+		}
+
+		if (!$this->from_geo_en)
+		{
+			return '';
+		}
+
+		if (!$this->to_geo_en)
 		{
 			return '';
 		}
