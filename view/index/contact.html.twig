@@ -14,7 +14,7 @@
 		</div>
 	</div>
 
-	<div class="container-fluid">
+	<div class="container">
 
 		{{- a.alert() -}}
 
@@ -75,8 +75,12 @@
 
 		{%- endif -%}
 
-		</div>
-		</div>
+		{%- embed 'include/hosting.html.twig' -%}
+			{%- block contact_form_link -%}
+				dit contactformulier
+			{%- endblock -%}
+		{%- endembed -%}
+
 	</div>
 
 	<br><br>

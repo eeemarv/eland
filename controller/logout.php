@@ -19,6 +19,8 @@ class logout
         $app['monolog']->info('user logged out',
             ['schema' => $app['pp_schema']]);
 
+        $app['alert']->success('Je bent uitgelogd');
+
         $app['link']->redirect('login', ['system' => $app['pp_system']], []);
 
         return new Response('');

@@ -15,7 +15,7 @@ class index_contact
         $message = $request->request->get('message', '');
         $form_ok = $request->query->get('form_ok', '');
 
-        if ($app['request']->isMethod('POST'))
+        if ($request->isMethod('POST'))
         {
             $to = getenv('MAIL_HOSTER_ADDRESS');
             $from = getenv('MAIL_FROM_ADDRESS');
@@ -85,7 +85,7 @@ class index_contact
 
         $app['menu']->set('index_contact');
 
-        return $app->render('base/index_contact.html.twig', [
+        return $app->render('index/contact.html.twig', [
             'form_ok'       => $form_ok !== '',
             'mail'          => $mail,
             'message'       => $message,
