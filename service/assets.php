@@ -8,7 +8,8 @@ use service\cache;
 class assets
 {
 	protected $cache;
-	protected $file_hash_ary;
+	protected $file_hash_ary = [];
+	protected $include_ary = [];
 
 	const CACHE_HASH_KEY = 'assets_files_hashes';
 
@@ -117,8 +118,6 @@ class assets
 			],
 		],
 	];
-
-	protected $include_ary = [];
 
 	public function __construct(
 		cache $cache
@@ -274,6 +273,6 @@ class assets
 
 	public function get_ary(string $type):array
 	{
-		return array_keys($this->include_ary[$type]);
+		return array_keys($this->include_ary[$type] ?? []);
 	}
 }

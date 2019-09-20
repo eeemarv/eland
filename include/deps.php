@@ -212,6 +212,8 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
         return;
 	}
 
+	$app['assets']->add(['bootstrap', 'base.css']);
+
 	return $app->render('exception/general.html.twig', [
 		'code'	=> $code,
 		'message'	=> $e->getMessage(),
