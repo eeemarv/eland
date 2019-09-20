@@ -40,7 +40,6 @@ class extension extends \Twig_Extension
 			new \Twig_Function('mpp_admin_ary', 'twig\\mpp_ary::get_admin', ['needs_context' => true]),
 			new \Twig_Function('assets', 'twig\\assets::get'),
 			new \Twig_Function('assets_ary', 'twig\\assets::get_ary'),
-			new \Twig_Function('alert_ary', 'twig\\alert::get_ary'),
 			new \Twig_Function('access', 'twig\\access::get'),
 			new \Twig_Function('heading', 'twig\\heading::get_h1', ['is_safe' => ['html']]),
 			new \Twig_Function('heading_sub', 'twig\\heading::get_sub', ['is_safe' => ['html']]),

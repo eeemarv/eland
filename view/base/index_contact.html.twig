@@ -1,4 +1,5 @@
 {%- extends 'base/base.html.twig' -%}
+{%- import 'macro/alert.html.twig' as a -%}
 
 {%- block title -%}eLAND Contact{%- endblock -%}
 {%- block navbar -%}{%- endblock -%}
@@ -9,45 +10,70 @@
 		<div class="container">
 
 		<h1>eLAND Contact</h1>
-		<p>Dit contact formulier kan gebruikt worden om eLAND hosting te vragen voor gemeenschapsmunten.</p>
+		<p>Server gemeenschapsmunten.</p>
 		</div>
 	</div>
 
 	<div class="container-fluid">
-		<div class="row">
-		<div class="col-md-12">
 
-		<div class="panel panel-info">
-		<div class="panel-heading">
+		{{- a.alert() -}}
 
-		<form method="post">
+		{%- if form_ok -%}
 
-			<div class="form-group">
-				<label for="mail" class="control-label">E-mail*</label>
-				<input type="email" class="form-control" id="mail" name="mail" value="{{- mail -}}" required>
-				<p>Privacy: uw E-mail adres wordt voor
-				geen ander doel gebruikt dan u terug te kunnen
-				contacteren.</p>
+			<div class="panel panel-success">
+			<div class="panel-heading">
+			<h2>Uw bericht is verstuurd.</h2>
+			<p>Er wordt spoedig contact met u opgenomen.</p>
+			</div>
+			</div>
+			<a href="{{- path('index') -}}"  class="btn btn-default btn-lg">
+				eLAND Index
+			</a>
+			<br><br><br>
+		{%- else -%}
+
+			<div class="panel panel-info">
+			<div class="panel-heading">
+
+			<form method="post">
+
+				<div class="form-group">
+					<label for="mail" class="control-label">Je E-mail adres</label>
+					<div class="input-group">
+						<span class="input-group-addon">
+							<i class="fa fa-envelope-o"></i>
+						</span>
+						<input type="email" class="form-control" id="mail" name="mail" value="{{- mail -}}" required>
+					</div>
+					<p>Privacy: uw E-mail adres wordt voor
+					geen ander doel gebruikt dan u terug te kunnen
+					contacteren.</p>
+				</div>
+
+				<div class="form-group">
+					<label for="message" class="control-label">
+						Je bericht
+					</label>
+					<textarea name="message" class="form-control" id="message" rows="6" required>
+					{{- message -}}
+					</textarea>
+				</div>
+
+				{{- captcha|raw -}}
+
+				<a href="{{- path('index') -}}" class="btn btn-default btn-lg">
+					<i class="fa fa-undo"></i>&nbsp;
+					Annuleren
+				</a>&nbsp;
+				<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">
+				<input type="hidden" name="form_token" value="{{- form_token -}}">
+
+			</form>
+
+			</div>
 			</div>
 
-			<div class="form-group">
-				<label for="message" class="control-label">
-					Bericht
-				</label>
-				<textarea name="message" class="form-control" id="message" rows="6" required>
-				{{- message -}}
-				</textarea>
-			</div>
-
-			{{- captcha|raw -}}
-
-			<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">
-			<input type="hidden" name="form_token" value="{{- form_token -}}">
-
-		</form>
-
-		</div>
-		</div>
+		{%- endif -%}
 
 		</div>
 		</div>

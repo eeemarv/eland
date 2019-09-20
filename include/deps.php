@@ -54,9 +54,6 @@ $app->extend('twig', function($twig, $app) {
 		twig\date_format::class => function() use ($app){
 			return new twig\date_format($app['date_format']);
 		},
-		twig\alert::class => function() use ($app){
-			return new twig\alert($app['alert']);
-		},
 		twig\assets::class => function() use ($app){
 			return new twig\assets($app['assets']);
 		},
@@ -896,6 +893,7 @@ $app['assets'] = function($app){
 
 $app['alert'] = function ($app){
 	return new service\alert(
+		$app['request'],
 		$app['monolog'],
 		$app['session'],
 		$app['pp_schema']);
