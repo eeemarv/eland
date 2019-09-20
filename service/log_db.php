@@ -32,19 +32,25 @@ class log_db
 
 			$log = json_decode($log_json, true);
 
-			if (!isset($log['context']['schema']))
+			$schema = $log['extra']['schema'] ?? '';
+
+			if (!$schema)
+			{
+				continue;
+			}
+
+			if ($log['message'] === '< 200')
 			{
 				continue;
 			}
 
 			$user_id = $log['context']['user_id'] ?? $log['extra']['user_id'] ?? 0;
-
 			$user_id = ctype_digit((string) $user_id) ? $user_id : 0;
 
 			$insert = [
-				'schema'		=> $log['context']['schema'] ?? '',
+				'schema'		=> $schema,
 				'user_id'		=> $user_id,
-				'user_schema'	=> $log['extra']['user_schema'] ?? '',
+				'user_schema'	=> $user_id ? ($log['extra']['user_schema'] ?? '') : '',
 				'letscode'		=> '',
 				'username'		=> '',
 				'ip'			=> $log['extra']['ip'] ?? '',

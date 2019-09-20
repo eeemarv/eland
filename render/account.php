@@ -30,7 +30,10 @@ class account
 	{
 		$user = $this->user_cache->get($id, $schema);
 
-		$str = trim($user['letscode'] . ' ' . $user['name']);
+		$code = $user['letscode'] ?? '';
+		$name = $user['name'] ?? '';
+
+		$str = trim($code . ' ' . $name);
 
 		return $str === '' ? '** (leeg) ***' : $str;
 	}

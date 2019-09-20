@@ -174,23 +174,11 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if ($app['log_schema_en'])
 		{
-			/*
-			$request = $app['request_stack']->getCurrentRequest();
-
-			if ($request
-				&& $request->attributes->get('schema')
-				&& $request->attributes->get('role_short'))
-			{
-				$record['extra']['user_schema'] = $app['s_schema'];
-				$record['extra']['user_id'] = $app['s_id'];
-			}
-			*/
-
+			error_log('LOG_SCHEMA_EN -- Yeah');
 			$record['extra']['schema'] = $app['pp_schema'];
 			$record['extra']['user_schema'] = $app['s_schema'];
 			$record['extra']['user_id'] = $app['s_id'];
 		}
-
 
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
 
@@ -218,17 +206,15 @@ $app->register(new Provider\ServiceControllerServiceProvider());
 $app->register(new ConsoleServiceProvider());
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
+
 	if ($app['debug'])
 	{
         return;
 	}
 
-	// to do
-	$app['heading']->add((string) $code);
-	$app['menu']->set('contacts');
-
-	return $app->render('base/base.html.twig', [
-
+	return $app->render('exception/general.html.twig', [
+		'code'	=> $code,
+		'message'	=> $e->getMessage(),
 	]);
 });
 
