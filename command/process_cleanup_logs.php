@@ -31,7 +31,7 @@ class process_cleanup_logs extends Command
 
             // $schema is not used, logs from all schemas are cleaned up.
 
-            $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 30);
+            $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
 
             $app['db']->executeQuery('delete from xdb.logs
                 where ts < ?', [$treshold]);
