@@ -11,8 +11,12 @@ class index
     {
         $app['menu']->set('index');
 
+        $schemas = $app['systems']->get_schemas();
+
+        sort($schemas);
+
         return $app->render('index/index.html.twig', [
-            'systems'       => $app['systems']->get_systems(),
+            'schemas'       => $schemas,
         ]);
     }
 }
