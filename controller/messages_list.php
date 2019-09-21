@@ -980,7 +980,9 @@ class messages_list
         $out .= '</span>';
         $out .= '<select class="form-control" id="cid" name="f[cid]">';
 
-        $out .= $app['select']->get_options($categories_filter_options, (string) $filter['cid'] ?? '');
+        $cid = (string) ($filter['cid'] ?? '');
+
+        $out .= $app['select']->get_options($categories_filter_options, $cid);
 
         $out .= '</select>';
         $out .= '</div>';
