@@ -23,14 +23,14 @@
 		{%- if schemas -%}
 			{%- set systems_per_col = (schemas|length / 3)|round(0, 'ceil') -%}
 
-			{%- for s in schemas -%}
+			{%- for system, schema in schemas -%}
 				{%- if not (loop.index0 % systems_per_col) -%}
 				<div class="col-md-4">
 					<div class="panel panel-info">
 						<ul class="list-group">
 				{%- endif -%}
 							<li class="list-group-item">
-								<a href="{{- path('home_system', {'system': s}) -}}">{{- config('systemname', s) -}}</a>
+								<a href="{{- path('home_system', {'system': system}) -}}">{{- config('systemname', schema) -}}</a>
 							</li>
 				{% if loop.last or not (loop.index % systems_per_col) -%}
 						</ul>

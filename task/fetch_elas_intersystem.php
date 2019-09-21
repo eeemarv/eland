@@ -463,7 +463,7 @@ class fetch_elas_intersystem
 				->nextAll()
 				->each(function ($node) use (&$users)
 			{
-				$user = $h_user = [];
+				$user = [];
 
 				$td = $node->filter('td')->first();
 
