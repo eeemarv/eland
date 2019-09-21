@@ -58,12 +58,6 @@ $fn_before_system = function(Request $request, app $app){
 
 $fn_before_system_auth = function(Request $request, app $app){
 
-	error_log('S_SCHEMA: ' . $app['s_schema']);
-	error_log('PP_SCHEMA: ' . $app['pp_schema']);
-	error_log('S_ELAS_GUEST: ' . ($app['s_elas_guest'] ? 'TRUE' : 'FALSE'));
-	error_log('PP_GUEST: ' . ($app['pp_guest'] ? 'TRUE' : 'FALSE'));
-	error_log('S_SYSTEM_SELF: ' . ($app['s_system_self'] ? 'TRUE' : 'FALSE'));
-
 	if (!isset($app['s_logins'][$app['s_schema']]))
 	{
 		$location = $request->getRequestUri();

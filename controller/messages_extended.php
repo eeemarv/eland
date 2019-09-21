@@ -97,7 +97,7 @@ class messages_extended
 
             $out .= '</h3>';
 
-            $out .= htmlspecialchars($msg['Description'], ENT_QUOTES);
+            $out .= htmlspecialchars($msg['Description'] ?? '', ENT_QUOTES);
 
             $out .= '</div>';
             $out .= '</div>';

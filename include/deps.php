@@ -173,7 +173,6 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if ($app['log_schema_en'])
 		{
-			error_log('LOG_SCHEMA_EN -- Yeah');
 			$record['extra']['schema'] = $app['pp_schema'];
 			$record['extra']['user_schema'] = $app['s_schema'];
 			$record['extra']['user_id'] = $app['s_id'];
