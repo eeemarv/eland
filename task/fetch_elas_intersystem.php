@@ -467,7 +467,8 @@ class fetch_elas_intersystem
 
 				$td = $node->filter('td')->first();
 
-				$bgcolor = trim($td->attr('bgcolor'));
+				$bgcolor = $td->attr('bgcolor');
+				$bgcolor = trim($bgcolor ?? '');
 				$next_tds = $td->siblings();
 				$postcode = trim($next_tds->eq(3)->text());
 				$balance = trim($next_tds->eq(5)->text());
