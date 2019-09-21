@@ -13,7 +13,7 @@ class index
 
         $schemas = $app['systems']->get_schemas();
 
-        sort($schemas);
+        asort($schemas);
 
         return $app->render('index/index.html.twig', [
             'schemas'       => $schemas,
