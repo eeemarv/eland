@@ -43,6 +43,8 @@ $fn_before_system = function(Request $request, app $app){
 		throw new NotFoundHttpException('Systeem ' . $app['pp_system'] . ' niet gevonden.');
 	}
 
+	$app['log_schema_en'] = true;
+
 	if ($request->query->get('et') !== null)
 	{
 		$app['email_validate']->validate($request->query->get('et'));
@@ -52,8 +54,6 @@ $fn_before_system = function(Request $request, app $app){
 	{
 		$app['assets']->add_external_css([$css]);
 	}
-
-	$app['log_schema_en'] = true;
 };
 
 $fn_before_system_auth = function(Request $request, app $app){
