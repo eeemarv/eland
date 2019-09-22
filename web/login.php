@@ -14,7 +14,7 @@ if (!$location
 	$location = '';
 }
 
-if (strlen($token) > 10)
+if ($token)
 {
 	if($apikey = $app['predis']->get($schema . '_token_' . $token))
 	{
@@ -54,7 +54,10 @@ if (strlen($token) > 10)
 	}
 	else
 	{
-		$app['alert']->error('De interSysteem login is mislukt.');
+		$app['session']->getFlashbag()->add('alert', [
+			'type' 		=> 'error',
+			'message'	=> 'De interSysteem login is mislukt.',
+		]);
 	}
 }
 
