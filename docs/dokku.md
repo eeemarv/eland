@@ -4,23 +4,58 @@ eLAND installs on a VPS with Dokku.
 
 See the [Dokku installation guide](http://dokku.viewdocs.io/dokku/getting-started/installation).
 
-* Install Dokku on a VPS with a fresh Ubuntu 18.04,
+* Install Dokku on a VPS with a fresh Ubuntu 18.04
 
-* Domains: don't set a global domain, but set a domain for the app with a wildchart
+* Set a domain with a DNS A record to your VPS.
+
+* Create app, install postgres and redis plugins and bind them to the app (see Dokku guide).
+
+Tip: use the same name for your postgres and redis instances as your eland-app-name.
+
+* Postgres
+
+[Link a postgres database to the app.](https://github.com/dokku/dokku-postgres)
+
+Schemas to be set up can be found in the [/setup directory](https://github.com/eeemarv/eland/tree/master/setup)
+See also [Migrate from eLAS 3.x](migrate-from-elas-3.md)
+
+* Redis
+
+[Link a redis instance to the app.](https://github.com/dokku/dokku-redis)
+
+* Attach the domain to your dokku eland app.
 
 (all dokku commands are on the server)
 
 ```shell
 
-dokku domains:set app-name *.my-domain.com
+dokku domains:set your-eland-app your-domain.com
 
 ```
 
-* Create app, install postgres and redis plugins and bind them to the app (see Dokku guide).
+* Each currency system on the eLAND server with an interSystem link to eLAS also needs a subdomain where eLAS will connect to:
+
+```shell
+
+dokku domains:set your-eland-app yourschemaname.your-domain.com
+
+```
+
+Note: this cannot be a wildcard because it's not supported by the Letsencrypt plugin.
+
+Also set (when intersystem connections with eLAS needed) a DNS A record with wildcard to the VPS ip.
+
+* Use the [Letsencrypt dokku](https://github.com/dokku/dokku-letsencrypt) plugin to enable https
+
+* Set the environment varables for links in emails. (emails get sent in a background process that does not have a request context.)
+
+´´´shell
+dokku config:set your-eland-app APP_SCHEME=https APP_HOST=your-domain.com
+´´´
 
 ## Configure nginx
 
-* To allow bigger uploads (for documents)
+* Allow bigger uploads (for documents)
 
 ```shell
 
@@ -32,7 +67,7 @@ sudo service nginx reload
 
 ```
 
-* To block unwanted IPs
+* Block unwanted IPs (optional)
 
 ```shell
 
@@ -44,32 +79,21 @@ sudo service nginx reload
 
 ```
 
-## DNS
-
-An A record with wildcard should point to the Dokku app url.
-Subdomains (systems) match the schemas in the Postgres database.
-
-Set the overall domain:
-
-```shell
-
-dokku config:set appname OVERALL_DOMAIN=my-domain.com
-
-```
-
 ## AWS S3
 
 Create a IAM user on AWS with access only to S3.
 Then create a bucket in your region and set the environment variables.
 
 ```shell
-dokku config:set AWS_S3_BUCKET=bucket_name AWS_S3_REGION=eu-central-1
-dokku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
+dokku config:set AWS_S3_BUCKET=yourbucketname AWS_S3_REGION=eu-central-1
+dokku config:set AWS_ACCESS_KEY_ID=youraccesskeyid AWS_SECRET_ACCESS_KEY=yoursecretaccesskey
 ```
 
 ## Email
 
 ### SMTP mailserver (e.i. Amazon Simple Email Service)
+
+Set the environment variables with ´dokku config:set your-eland-app´
 
 * `SMTP_HOST`
 * `SMTP_PORT`
@@ -80,7 +104,7 @@ dokku config:set AWS_ACCESS_KEY_ID=aaa AWS_SECRET_ACCESS_KEY=bbb
 
 * `MAIL_FROM_ADDRESS`: a mail address when a reply-to address has been set.
 * `MAIL_NOREPLY_ADDRESS`: a notification mail you can not reply to
-* `MAIL_HOSTER_ADDRESS`: used for the request-hosting form.
+* `MAIL_HOSTER_ADDRESS`: used for the general contact form on the index page (to contact the hoster).
 
 Mail is sent only from `MAIL_FROM_ADDRESS` and `MAIL_NOREPLY_ADDRESS`.
 These addresses should be set up for DKIM in the mailserver.
@@ -92,6 +116,16 @@ and put the key in the environment variable `GOOGLE_GEO_API_KEY`
 
 The geocoding service can be blocked by setting `GEO_BLOCK` to 1.
 
+## MAPBOX token
+
+For displaying maps, get a token from [Mapbox](https://www.mapbox.com)
+
+and set the environment variable
+
+´´´shell
+dokku config:set MAPBOX_TOKEN=yourmapboxtoken
+´´´
+
 ## Other environment vars
 
 * `TIMEZONE`: defaults to 'Europe/Brussels'
@@ -100,17 +134,6 @@ The geocoding service can be blocked by setting `GEO_BLOCK` to 1.
 ## Permanent redirects
 
 Use the [dokku-redirect](https://github.com/dokku/dokku-redirect) plugin for redirects.
-
-## Postgres
-
-[Link a postgres database to the app.](https://github.com/dokku/dokku-postgres)
-
-Schemas to be set up can be found in the [/setup directory](https://github.com/eeemarv/eland/tree/master/setup)
-See also [Migrate from eLAS 3.x](migrate-from-elas-3.md)
-
-## Redis
-
-[Link a redis instance to the app.](https://github.com/dokku/dokku-redis)
 
 ## Local Development Server
 
@@ -122,4 +145,4 @@ heroku local -e .env dev
 
 `.env` is the file that contains the environment parameters.
 
-The `dev` process is the server for local only (at localhost:5000) and `web` is for production only. The other processes are background and are used in either context.
+The `dev` process is the server for local only (at localhost:5000) and `web` is for production only.

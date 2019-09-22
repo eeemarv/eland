@@ -14,7 +14,7 @@ Serve locally
 gitbook serve
 ```
 
-Build static html and publish [online](http://letsa.net) (pushing to the gh-pages branch)
+Build static html and publish [online](https://eland.letsa.net) (pushing to the gh-pages branch)
 
 ```shell
 npm run docs:publish

@@ -147,7 +147,7 @@ SELECT setval('users_id_seq', COALESCE((SELECT MAX(id)+1 FROM users), 1), false)
 rename the public schema
 
 ```sql
-psql> alter schema public rename to newgroup;
+psql> alter schema public rename to yourschemaname;
 ```
 
 Now the database is converted to 3.x and you can continue with [Migrate from 3.x](migrate-from-elas-3.md)

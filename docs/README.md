@@ -10,8 +10,8 @@ Webtoepassing voor gemeenschapsmunten, gebaseerd op wederzijds krediet
 
 Je kan eLAND uitproberen in deze twee test-Systemen:
 
-* [Tijdbank A](http://a.letsa.net)
-* [Tijdbank B](http://b.letsa.net)
+* [Tijdbank A](https://letsa.net/a)
+* [Tijdbank B](https://letsa.net/b)
 
 Voor beide is de gebruikersnaam admin en het wachtwoord eland.
 Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
@@ -21,15 +21,25 @@ Gelieve de gebruikersnaam en het paswoord van deze gebruiker niet te veranderen.
 De code is open source en te vinden op [Github](https://github.com/eeemarv/eland).
 Vanaf [rubriek "Dokku"](dokku.md) wordt ter referentie uiteengezet hoe eLAND gehost kan worden. Maar omdat de code op dit moment nog onderhevig is aan veel veranderingen wordt het niet aangemoedigd noch ondersteund om eLAND zelf te hosten.
 
-Gratis hosting is beschikbaar voor je gemeenschapsmunt, bvb. Tijdsbank.
+[Gratis en vrijblijvende hosting](https://letsa.net) is beschikbaar voor je gemeenschapsmunt.
 
 eLAND is een persoonlijk en onafhankelijk project.
 
 Melden van bugs en feature requests kan je doen op [Github](https://github.com/eeemarv/eland/issues). Zie daar ook voor aankondigingen.
 
+## eLAND Email nieuwsbrief
+
+Om op de hoogte te blijven van eLAND ontwikkeling en hosting kan je je inschrijven op de eLAND nieuwsbrief door een lege email te sturen naar
+
+eland-software-subscribe@lists.riseup.net
+
+(Uitschrijven gaat met eland-software-unsubscribe@lists.riseup.net)
+
 ## Roadmap
 
-Er zal gewerkt worden om eLAND geschikt te maken voor het [LETSysteem](https://manual.letsa.net/nl/1.3.html), [MultiLETS](http://manual.letsa.net/nl/2.2.html) en [Open Money](http://openmoney.editme.com/) (Zie ook [hier](https://openmoney.org/)). Dit zijn concepten van de Canadees Michael Linton.
+Er zal gewerkt worden om eLAND geschikt te maken voor het [LETSysteem](https://manual.letsa.net/nl/1.3.html), [MultiLETS](https://manual.letsa.net/nl/2.2.html) en [Open Money](http://openmoney.editme.com/) (Zie ook [hier](https://openmoney.org/)). Dit zijn concepten van de Canadees Michael Linton.
 The LETSystem, het LETSysteem of kortweg "LETS" is wereldwijd het best gekende concept van Persoonlijk Geld (Personal Money) en wederzijds krediet. Het werd door Linton gelanceerd in 1983. Ik maakte [een vertaling naar het Nederlands](https://manual.letsa.net/nl) van Linton's referentiewerk the LETSystem Design Manual.
 
 Maarten Vandekeybus [("eeemarv" op Github)](https://github.com/eeemarv)
+
+[Contact](https://letsa.net/contact)

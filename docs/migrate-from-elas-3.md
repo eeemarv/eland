@@ -54,30 +54,10 @@ update msgpictures m set "PictureFile" = trim(leading 'msgpictures/' from f.path
 update parameters set value = '31000' where parameter = 'schemaversion';
 ```
 
-Rename then the public schema to the System code
+Rename then the public schema to an obvious name for the system. The schema/system name will also prefix the paths in all urls of the system.
 
 ```sql
-ALTER SCHEMA public RENAME TO abc;
-```
-
-This way of importing Systems leaves the already present Systems data untouched. This can not be done with the Heroku tools.
-
-* Match a subdomain to a schema with config variable `SCHEMA_subdomain=schema`
-
-In domain all characters must be converted to uppercase.
-
-Example:
-
-```shell
-dokku config:set appname SCHEMA_FLUPKE=flupke
-```
-
-matches flupke.my-domain.com to database schema flupke.
-
-The overall domain my-domain.com was set with
-
-```shell
-dokku config:set appname OVERALL_DOMAIN=my-domain.com
+ALTER SCHEMA public RENAME TO yourschemaname;
 ```
 
 ## Images
@@ -98,17 +78,25 @@ Make the image files public. Use the [awscli](https://aws.amazon.com/cli/)
 
 ```shell
 cd ../imgs
-aws s3 sync . s3://img.letsa.net
+aws s3 sync . s3://yourbucketname
 ```
 
 The aws s3 sync command can also be used to take a backup on your local machine:
 
 ```shell
 cd destination-directory
-aws s3 sync s3://img.letsa.net .
+aws s3 sync s3://yourbucketname .
 ```
 
-* Log in with admin rights to your website (you can use the master login and password) go to path `/init.php` The image files get renamed with a new hash and orphaned files will be cleaned up.
+* Enable the init routes by setting the environment variable (on the server)
+
+´´´shell
+dokku config:set your-eland-app APP_INIT_ENABLED=1
+´´´
+
+Go with your browser to path `/yourschemaname/init` and run all initialization processes (They are idempotent. So there's no harm in hitting the buttons multiple times).
+
+The image files get renamed with a new hash and orphaned files will be cleaned up.
 
 The files get prefixed with the schema name and the user or message id. All extensions become jpg.
 ie.
@@ -116,3 +104,9 @@ ie.
     abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg
 
 * The init procudure copies the images and gives them a new name. The original images, the filename not starting with a schema name but with a number, can be removed manually from the S3 bucket, with the AWS webinterface.
+
+Unset the environment variable after use
+
+´´´shell
+dokku config:unset your-eland-app APP_INIT_ENABLED
+´´´
