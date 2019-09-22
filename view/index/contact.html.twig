@@ -24,11 +24,11 @@
 			<div class="panel-heading">
 			<h2>Uw bericht is verstuurd.</h2>
 			<p>Er wordt spoedig contact met u opgenomen.</p>
-			</div>
-			</div>
 			<a href="{{- path('index') -}}"  class="btn btn-default btn-lg">
 				eLAND Index
 			</a>
+			</div>
+			</div>
 			<br><br><br>
 		{%- else -%}
 
@@ -62,7 +62,6 @@
 				{{- captcha|raw -}}
 
 				<a href="{{- path('index') -}}" class="btn btn-default btn-lg">
-					<i class="fa fa-undo"></i>&nbsp;
 					Annuleren
 				</a>&nbsp;
 				<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">
