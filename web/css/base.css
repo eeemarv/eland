@@ -770,3 +770,19 @@ div.pan-sab {
 span.num {
 	font-weight: bold;
 }
+
+div.eland-jumbo {
+  position: relative;
+}
+
+div.eland-contact {
+  position: absolute;
+  bottom: -4em;
+  right: 2em;
+  width: 8em;
+  height: 12em;
+  background-image: url('/img/contact.png');
+  background-repeat: no-repeat;
+  background-size: 8em;
+  background-clip: border-box;
+}
