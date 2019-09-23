@@ -16,7 +16,6 @@ class login_elas_token
             ]);
 
             $app['session']->set('logins', $s_logins);
-            $app['session']->set('schema', $app['pp_schema']);
 
             $referrer = $app['request']->server->get('HTTP_REFERER');
 
@@ -43,6 +42,8 @@ class login_elas_token
         }
 
         $app['alert']->error('De interSysteem login is mislukt.');
-        return $app['link']->redirect('login', $app['pp_ary'], []);
+        $app['link']->redirect('login', $app['pp_ary'], []);
+
+        return new Response('');
     }
 }

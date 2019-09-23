@@ -107,7 +107,7 @@ function gettoken($apikey)
 
 	if(check_apikey($apikey, 'interlets'))
 	{
-		$token = 'elasv2' . md5(random_bytes(16));
+		$token = md5(random_bytes(16));
 
 		$key = $schema . '_token_' . $token;
 
@@ -117,7 +117,7 @@ function gettoken($apikey)
 		$app['monolog']->debug('elas-soap: Token ' . $token .
 			' generated', ['schema' => $schema]);
 
-		return $token;
+		return 'elasv2' . $token;
 	}
 
 	$app['monolog']->debug('elas-soap: apikey fail, apikey: ' . $apikey .
