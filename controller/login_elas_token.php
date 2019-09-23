@@ -35,10 +35,10 @@ class login_elas_token
             $location = $app['config']->get($app['r_default'], $app['pp_schema']);
 
             return $app['link']->redirect($location, [
-                'welcome'	    => '1',
                 'role_short'	=> 'g',
                 'system'	    => $app['pp_system'],
-            ]);
+                'welcome'	    => '1',
+            ], []);
         }
 
         $app['alert']->error('De interSysteem login is mislukt.');
