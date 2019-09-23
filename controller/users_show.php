@@ -610,7 +610,7 @@ class users_show
         $out .= '</div>';
 
         $out .= '<div class="row">';
-        $out .= '<div class="col-md-6">';
+        $out .= '<div class="col-md-12">';
 
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body">';
