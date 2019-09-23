@@ -32,9 +32,7 @@ class login_elas_token
                 $elas_token . ' succeeded. referrer: ' . $referrer,
                 ['schema' => $app['pp_schema']]);
 
-            $location = $app['config']->get($app['r_default'], $app['pp_schema']);
-
-            return $app['link']->redirect($location, [
+            return $app['link']->redirect($app['r_default'], [
                 'role_short'	=> 'g',
                 'system'	    => $app['pp_system'],
                 'welcome'	    => '1',
