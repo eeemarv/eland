@@ -3,11 +3,12 @@
 namespace controller;
 
 use util\app;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class index
 {
-    public function index(app $app):Response
+    public function index(Request $request, app $app):Response
     {
         $app['menu']->set('index');
 
@@ -15,8 +16,14 @@ class index
 
         asort($schemas);
 
-        return $app->render('index/index.html.twig', [
+        $response = $app->render('index/index.html.twig', [
             'schemas'       => $schemas,
         ]);
+
+        $response->setEtag((string) crc32($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }
