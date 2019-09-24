@@ -771,6 +771,13 @@ span.num {
 	font-weight: bold;
 }
 
+div.eland-index {
+  background-image: url('/img/index.png');
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 400px;
+}
+
 div.eland-jumbo {
   position: relative;
 }
