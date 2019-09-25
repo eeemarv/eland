@@ -4,7 +4,7 @@ namespace controller;
 
 use util\app;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\msg_type;
+use cnst\message_type;
 
 class messages_extend
 {
@@ -21,7 +21,7 @@ class messages_extend
         if (!($s_owner || $app['pp_admin']))
         {
             $app['alert']->error('Je hebt onvoldoende rechten om ' .
-                msg_type::THIS[$message['msg_type']] . ' te verlengen.');
+                message_type::THIS[$message['msg_type']] . ' te verlengen.');
 
             $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
         }
@@ -36,11 +36,11 @@ class messages_extend
 
         if (!$app['db']->update($app['pp_schema'] . '.messages', $m, ['id' => $id]))
         {
-            $app['alert']->error('Fout: ' . msg_type::THE[$message['msg_type']] . ' is niet verlengd.');
+            $app['alert']->error('Fout: ' . message_type::THE[$message['msg_type']] . ' is niet verlengd.');
             $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
         }
 
-        $app['alert']->success(msg_type::UC_THE[$message['msg_type']] . ' is verlengd.');
+        $app['alert']->success(message_type::UC_THE[$message['msg_type']] . ' is verlengd.');
         $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
 
         return new Response('');
