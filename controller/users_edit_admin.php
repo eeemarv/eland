@@ -368,7 +368,7 @@ class users_edit_admin
 
                     if ($app['db']->insert($app['pp_schema'] . '.users', $user))
                     {
-                        $id = (int) app['db']->lastInsertId($app['pp_schema'] . '.users_id_seq');
+                        $id = (int) $app['db']->lastInsertId($app['pp_schema'] . '.users_id_seq');
 
                         $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
 
