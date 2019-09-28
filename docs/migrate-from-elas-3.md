@@ -90,9 +90,9 @@ aws s3 sync s3://yourbucketname .
 
 * Enable the init routes by setting the environment variable (on the server)
 
-´´´shell
+```shell
 dokku config:set your-eland-app APP_INIT_ENABLED=1
-´´´
+```
 
 Go with your browser to path `/yourschemaname/init` and run all initialization processes (They are idempotent. So there's no harm in hitting the buttons multiple times).
 
@@ -107,6 +107,6 @@ ie.
 
 Unset the environment variable after use
 
-´´´shell
+```shell
 dokku config:unset your-eland-app APP_INIT_ENABLED
-´´´
+```

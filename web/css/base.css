@@ -782,34 +782,34 @@ div.eland-jumbo {
   position: relative;
 }
 
-div.eland-contact {
+div.eland-jumbo-image {
+  position: relative;
+}
+
+div.eland-contact, div.eland-exception {
   position: absolute;
   bottom: -30px;
   right: 30px;
   width: 160px;
   height: 240px;
-  background-image: url('/img/contact.png');
   background-repeat: no-repeat;
-  background-size: 100px;
   background-clip: border-box;
   background-position: bottom right;
 }
 
-@media screen and (min-width: 768px) {
-  div.eland-contact {
-    bottom: -50px;
-    background-size: 140px;
-  }
+div.eland-contact {
+  background-image: url('/img/contact.png');
+  background-size: 100px;
 }
 
 div.eland-exception {
-  position: absolute;
-  bottom: -4em;
-  right: 2em;
-  width: 8em;
-  height: 12em;
-  background-image: url('/img/contact.png');
-  background-repeat: no-repeat;
-  background-size: 8em;
-  background-clip: border-box;
+  background-image: url('/img/exception.png');
+  background-size: 140px;
+}
+
+@media screen and (min-width: 768px) {
+  div.eland-contact, div.eland-exception {
+    bottom: -50px;
+    background-size: 140px;
+  }
 }
