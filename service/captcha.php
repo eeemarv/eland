@@ -55,7 +55,7 @@ class captcha
 		$out .= 'value="" required>';
 		$out .= '</div>';
 		$out .= '<p>';
-		$out .= 'Type de code in die hieronder getoond wordt.';
+		$out .= 'Typ de code die hieronder getoond wordt.';
 		$out .= '</p>';
 		$out .= '<img src="';
 		$out .= $this->build->inline();
