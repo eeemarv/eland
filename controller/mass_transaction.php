@@ -120,6 +120,8 @@ class mass_transaction
 
         if ($request->isMethod('POST'))
         {
+            $errors = [];
+
             if (!$request->request->get('verify', false))
             {
                 $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
