@@ -50,7 +50,7 @@ class messages_edit
         $units = $request->request->get('units', '');
         $deleted_images = $request->request->get('deleted_images', []);
         $uploaded_images = $request->request->get('uploaded_images', []);
-        $access = $request->request->get('access', []);
+        $access = $request->request->get('access', '');
 
         if ($edit_mode)
         {
@@ -537,6 +537,10 @@ class messages_edit
         if ($app['intersystems']->get_count($app['pp_schema']))
         {
             $out .= $app['item_access']->get_radio_buttons('access', $access, 'messages', true);
+        }
+        else if ($edit_mode)
+        {
+            $out .= '<input type="hidden" name="access" value="' . $access . '">';
         }
 
         if ($add_mode)

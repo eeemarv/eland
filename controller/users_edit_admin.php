@@ -455,7 +455,7 @@ class users_edit_admin
 
                         $app['intersystems']->clear_cache($app['s_schema']);
 
-                        $app['link']->redirect('users', $app['pp_ary'], ['id' => $id]);
+                        $app['link']->redirect($app['r_users'], $app['pp_ary'], ['id' => $id]);
                     }
                     else
                     {
