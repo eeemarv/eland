@@ -11,6 +11,7 @@ class password_reset_token
     public function password_reset_token(Request $request, app $app, string $token):Response
     {
         $data = $app['data_token']->retrieve($token, 'password_reset', $app['pp_schema']);
+        $password = $request->request->get('password', '');
 
         if (!$data)
         {
@@ -22,8 +23,6 @@ class password_reset_token
 
         if ($request->isMethod('POST'))
         {
-            $password = $request->request->get('password');
-
             if ($error_token = $app['form_token']->get_error())
             {
                 $app['alert']->error($error_token);
