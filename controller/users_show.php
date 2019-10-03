@@ -382,13 +382,13 @@ class users_show
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
+            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
             $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
             $out .= 'data-image-crop="true" ';
             $out .= 'data-image-max-height="400"></span>';
 
             $out .= '<p class="text-warning">';
-            $out .= 'Je foto moet in het jpg/jpeg formaat zijn. ';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook een foto hierheen verslepen.</p>';
 
             if ($app['pp_admin'])

@@ -29,8 +29,8 @@ class users_image_upload
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        $filename = $app['image_upload']->gen_filename_for_user_image($id, $app['pp_schema']);
-        $app['image_upload']->upload($uploaded_file, $filename, $app['pp_schema']);
+        $filename = $app['image_upload']->upload($uploaded_file,
+            'u', $id, 400, 400, $app['pp_schema']);
 
         $app['db']->update($app['pp_schema'] . '.users', [
             '"PictureFile"'	=> $filename

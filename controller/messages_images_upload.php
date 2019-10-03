@@ -76,8 +76,8 @@ class messages_images_upload
 
         foreach ($uploaded_files as $uploaded_file)
         {
-            $filename = $app['image_upload']->gen_filename_for_message_image($id, $app['pp_schema']);
-            $app['image_upload']->upload($uploaded_file, $filename, $app['pp_schema']);
+            $filename = $app['image_upload']->upload($uploaded_file,
+                'm', $id, 400, 400, $app['pp_schema']);
 
             if ($insert_in_db)
             {

@@ -15,10 +15,17 @@ use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class image_upload
 {
+    const ALLOWED_MIME = [
+        'image/jpeg'    => 'jpg',
+        'image/png'     => 'png',
+        'image/gif'     => 'gif',
+    ];
+
+    const FILENAME_WITH_ID_TPL = '%schema%_%type%_%id%_%hash%.%ext%';
+    const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
+
 	protected $monolog;
 	protected $s3;
-
-	const FILENAME_TPL = '%schema%_%type%_%id%_%hash%.jpg';
 
 	public function __construct(
 		Monolog $monolog,
@@ -29,31 +36,14 @@ class image_upload
 		$this->s3 = $s3;
 	}
 
-	public function gen_filename_for_message_image(int $id, string $schema):string
-	{
-		return $this->gen_filename($schema, 'm', $id);
-	}
-
-	public function gen_filename_for_user_image(int $id, string $schema):string
-	{
-		return $this->gen_filename($schema, 'u', $id);
-	}
-
-	public function gen_filename(string $schema, string $type, int $id):string
-	{
-		return strtr(self::FILENAME_TPL, [
-			'%schema%'		=> $schema,
-			'%type%'		=> $type,
-			'%id%'			=> $id,
-			'%hash%'		=> sha1(random_bytes(16)),
-		]);
-	}
-
 	public function upload(
-		UploadedFile $uploaded_file,
-		string $filename,
+        UploadedFile $uploaded_file,
+        string $type,
+        int $id,
+        int $width,
+        int $height,
 		string $schema
-	):void
+	):string
 	{
         if (!$uploaded_file->isValid())
         {
@@ -61,6 +51,7 @@ class image_upload
         }
 
         $size = $uploaded_file->getSize();
+        $mime = $uploaded_file->getMimeType();
 
         if ($size > 400 * 1024
             || $size > $uploaded_file->getMaxFilesize())
@@ -68,10 +59,21 @@ class image_upload
             throw new HttpException(413, 'Het bestand is te groot.');
         }
 
-        if ($uploaded_file->getMimeType() !== 'image/jpeg')
+        if (!in_array($mime, array_keys(self::ALLOWED_MIME)))
         {
             throw new UnsupportedMediaTypeHttpException('Ongeldig bestandstype.');
         }
+
+        $tpl = $id < 1 ? self::FILENAME_TPL : self::FILENAME_WITH_ID_TPL;
+        $ext = self::ALLOWED_MIME[$mime];
+
+		$filename =  strtr($tpl, [
+			'%schema%'		=> $schema,
+			'%type%'		=> $type,
+			'%id%'			=> $id,
+            '%hash%'		=> sha1(random_bytes(16)),
+            '%ext%'         => $ext,
+		]);
 
         $tmp_upload_path = $uploaded_file->getRealPath();
 
@@ -103,7 +105,7 @@ class image_upload
                 break;
         }
 
-        $image->thumbnail(new Box(400, 400), ImageInterface::THUMBNAIL_INSET);
+        $image->thumbnail(new Box($width, $height), ImageInterface::THUMBNAIL_INSET);
         $image->save($tmp_after_resize_path);
 
 		$err = $this->s3->img_upload($filename, $tmp_after_resize_path);
@@ -117,6 +119,8 @@ class image_upload
 				$filename, ['schema' => $schema]);
 
             throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
-		}
+        }
+
+        return $filename;
 	}
 }

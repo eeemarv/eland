@@ -277,12 +277,12 @@ class messages_show
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
+            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
             $out .= 'data-max-file-size="999000" ';
             $out .= 'multiple></span>';
 
             $out .= '<p class="text-warning">';
-            $out .= 'Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
             $out .= $app['link']->link_fa('messages_images_del', $app['pp_ary'],

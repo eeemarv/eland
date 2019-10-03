@@ -525,11 +525,11 @@ class messages_edit
 
         $out .= '" ';
         $out .= 'data-data-type="json" data-auto-upload="true" ';
-        $out .= 'data-accept-file-types="/(\.|\/)(jpe?g)$/i" ';
+        $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
         $out .= 'data-max-file-size="999000" ';
         $out .= 'multiple></span>&nbsp;';
 
-        $out .= '<p>Afbeeldingen moeten in het jpg/jpeg formaat zijn. ';
+        $out .= '<p>Toegestane formaten: jpg/jpeg, png, gif. ';
         $out .= 'Je kan ook afbeeldingen hierheen ';
         $out .= 'verslepen.</p>';
         $out .= '</div>';
