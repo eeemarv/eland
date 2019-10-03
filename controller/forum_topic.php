@@ -54,6 +54,8 @@ class forum_topic
 
         if ($request->isMethod('POST'))
         {
+            $errors = [];
+
             if (!($app['pp_user'] || $app['pp_admin']))
             {
                 $app['alert']->error('Actie niet toegelaten.');
