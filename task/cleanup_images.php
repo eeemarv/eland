@@ -2,7 +2,6 @@
 
 namespace task;
 
-use Predis\Client as Redis;
 use service\cache;
 use Doctrine\DBAL\Connection as db;
 use Monolog\Logger;
@@ -11,7 +10,8 @@ use service\systems;
 
 class cleanup_images
 {
-	protected $days = 365;
+	const DAYS = 365;
+
 	protected $cache;
 	protected $db;
 	protected $monolog;
@@ -41,7 +41,7 @@ class cleanup_images
 
 		$marker = $cached['marker'] ?? '0';
 
-		$time_treshold = time() - (84600 * $this->days);
+		$time_treshold = time() - (84600 * self::DAYS);
 
 		$object = $this->s3->find_next($marker);
 
@@ -60,7 +60,7 @@ class cleanup_images
 		$old = $object_time < $time_treshold;
 
 		$str_log = $object['Key'] . ' ' . $object['LastModified'] . ' ';
-		$str_log .= $old ? 'OLD' : 'NEW';
+		$str_log .= $old ? 'OLD' : 'NEW (keep)';
 
 		error_log($str_log);
 
