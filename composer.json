@@ -47,7 +47,8 @@
 		"silex/web-profiler": "^2.0",
 		"symfony/contracts": "^1.1",
 		"gregwar/captcha": "^1.1",
-		"symfony/var-dumper": "^4.3"
+		"symfony/var-dumper": "^4.3",
+		"mollie/mollie-api-php": "^2.12"
 	},
 
     "minimum-stability": "stable",
