@@ -623,7 +623,7 @@ class config
                 {
                     $out .= '<textarea name="' . $input_name . '" ';
                     $out .= 'id="' . $input_name . '" class="form-control';
-                    $out .= isset($input['rich_edit']) ? ' rich-edit' : '';
+                    $out .= isset($input['summernote']) ? ' summernote' : '';
                     $out .= '" rows="4"';
 
                     $out .= isset($input['attr']['maxlength']) ? '' : ' maxlength="2000"';

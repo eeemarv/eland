@@ -138,7 +138,7 @@ class forum_edit
             $access = cnst_access::FROM_XDB[$forum_post['access']];
         }
 
-        $app['assets']->add(['summernote', 'rich_edit.js']);
+        $app['assets']->add(['codemirror', 'summernote', 'summernote.js']);
 
         if ($is_topic)
         {
@@ -170,7 +170,7 @@ class forum_edit
 
         $out .= '<div class="form-group">';
         $out .= '<textarea name="content" ';
-        $out .= 'class="form-control rich-edit" ';
+        $out .= 'class="form-control summernote" ';
         $out .= 'id="content" rows="4" required>';
         $out .= $forum_post['content'];
         $out .= '</textarea>';

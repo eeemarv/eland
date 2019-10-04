@@ -107,11 +107,32 @@ class assets
 		],
 		'summernote' => [
 			'js'	=> [
-				'summernote/0.8.10/summernote.min.js',
-				'summernote/0.8.10/lang/summernote-nl-NL.min.js',
+				'summernote/0.8.11/summernote.min.js',
+				'summernote/0.8.12/lang/summernote-nl-NL.min.js',
 			],
 			'css'	=> [
 				'summernote/0.8.12/summernote.css',
+			],
+		],
+		'codemirror' => [
+			'js'	=> [
+				'codemirror/5.48.4/codemirror.min.js',
+				'codemirror/5.48.4/addon/dialog/dialog.min.js',
+				'codemirror/5.48.4/mode/xml/xml.min.js',
+				'codemirror/5.48.4/addon/fold/xml-fold.min.js',
+				'codemirror/5.48.4/formatting.min.js',
+				'codemirror/5.48.4/addon/selection/active-line.min.js',
+				'codemirror/5.48.4/addon/search/searchcursor.min.js',
+				'codemirror/5.48.4/addon/search/jump-to-line.min.js',
+				'codemirror/5.48.4/addon/search/search.min.js',
+				'codemirror/5.48.4/addon/edit/matchbrackets.min.js',
+				'codemirror/5.48.4/addon/edit/matchtags.min.js',
+				'codemirror/5.48.4/addon/edit/trailingspace.min.js',
+			],
+			'css'	=> [
+				'codemirror/5.48.4/codemirror.css',
+				'codemirror/5.48.4/theme/monokai.css',
+				'codemirror/5.48.4/addon/dialog/dialog.css',
 			],
 		],
 		'sortable' => [

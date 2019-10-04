@@ -85,7 +85,7 @@ class forum_add_topic
             ];
         }
 
-        $app['assets']->add(['summernote', 'rich_edit.js']);
+        $app['assets']->add(['codemirror', 'summernote', 'summernote.js']);
 
         $app['heading']->add('Nieuw forum onderwerp');
         $app['heading']->fa('comments-o');
@@ -106,7 +106,7 @@ class forum_add_topic
 
         $out .= '<div class="form-group">';
         $out .= '<textarea name="content" ';
-        $out .= 'class="form-control rich-edit" ';
+        $out .= 'class="form-control summernote" ';
         $out .= 'id="content" rows="4" required>';
         $out .= $topic['content'];
         $out .= '</textarea>';

@@ -158,7 +158,7 @@ class forum_topic
         $app['btn_nav']->nav_list('forum', $app['pp_ary'],
             [], 'Forum onderwerpen', 'comments');
 
-        $app['assets']->add(['summernote', 'rich_edit.js']);
+        $app['assets']->add(['codemirror', 'summernote', 'summernote.js']);
 
         $app['heading']->add($topic_post['subject']);
         $app['heading']->fa('comments-o');
@@ -222,7 +222,7 @@ class forum_topic
             $out .= '<form method="post">';
             $out .= '<div class="form-group">';
             $out .= '<textarea name="content" ';
-            $out .= 'class="form-control rich-edit" ';
+            $out .= 'class="form-control summernote" ';
             $out .= 'id="content" rows="4" required>';
             $out .= $content ?? '';
             $out .= '</textarea>';

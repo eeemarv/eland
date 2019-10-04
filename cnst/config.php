@@ -242,14 +242,14 @@ class config
         'contact_form_top_text' => [
             'lbl'	=> 'Tekst boven het contact formulier',
             'type'	=> 'textarea',
-            'rich_edit'	=> true,
+            'summernote'	=> true,
             'default'	=> '',
         ],
 
         'contact_form_bottom_text' => [
             'lbl'		=> 'Tekst onder het contact formulier',
             'type'		=> 'textarea',
-            'rich_edit'	=> true,
+            'summernote'	=> true,
             'default'	=> '',
         ],
 
@@ -261,7 +261,7 @@ class config
         'registration_top_text' => [
             'lbl'	=> 'Tekst boven het inschrijvingsformulier',
             'type'	=> 'textarea',
-            'rich_edit'	=> true,
+            'summernote'	=> true,
             'explain' => 'Geschikt bijvoorbeeld om nadere uitleg
                 bij de inschrijving te geven.',
             'default'	=> '',
@@ -270,7 +270,7 @@ class config
         'registration_bottom_text' => [
             'lbl'		=> 'Tekst onder het inschrijvingsformulier',
             'type'		=> 'textarea',
-            'rich_edit'	=> true,
+            'summernote'	=> true,
             'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
             'default'	=> '',
         ],
@@ -278,7 +278,7 @@ class config
         'registration_success_text'	=> [
             'lbl'	=> 'Tekst na succesvol indienen formulier.',
             'type'	=> 'textarea',
-            'rich_edit'	=> true,
+            'summernote'	=> true,
             'explain'	=> 'Hier kan je aan de gebruiker uitleggen
                 wat er verder gaat gebeuren. <br>Als je Systeem een
                 website heeft, is het nuttig om een link op te nemen
@@ -289,7 +289,7 @@ class config
         'registration_success_mail'	=> [
             'lbl'		=> 'Verstuur E-mail naar gebruiker bij succesvol indienen formulier',
             'type'		=> 'textarea',
-            'rich_edit'	=> true,
+            'summernote'	=> true,
             'attr'		=> [
                 'data-template-vars' => '%map_template_vars%',
             ],
@@ -450,8 +450,9 @@ class config
 
         'contact'	=> [
             'assets'    => [
+                'codemirror',
                 'summernote',
-                'rich_edit.js',
+                'summernote.js',
             ],
             'lbl'	=> 'Contact',
             'lbl_pane'	=> 'Contact Formulier',
@@ -468,8 +469,9 @@ class config
 
         'register'	=> [
             'assets'    => [
+                'codemirror',
                 'summernote',
-                'rich_edit.js',
+                'summernote.js',
             ],
             'lbl'	=> 'Inschrijven',
             'lbl_pane'	=> 'Inschrijvingsformulier',

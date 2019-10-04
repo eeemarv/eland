@@ -858,9 +858,10 @@ class users_list
         if ($app['pp_admin'])
         {
             $app['assets']->add([
+                'codemirror',
                 'summernote',
+                'summernote.js',
                 'table_sel.js',
-                'rich_edit.js',
             ]);
         }
 
@@ -1519,7 +1520,7 @@ class users_list
 
             $out .= '<div class="form-group">';
             $out .= '<textarea name="bulk_mail_content" ';
-            $out .= 'class="form-control rich-edit" ';
+            $out .= 'class="form-control summernote" ';
             $out .= 'id="bulk_mail_content" rows="8" ';
             $out .= 'data-template-vars="';
             $out .= implode(',', array_keys(cnst_bulk::USER_TPL_VARS));
