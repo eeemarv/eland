@@ -138,7 +138,7 @@ class forum_edit
             $access = cnst_access::FROM_XDB[$forum_post['access']];
         }
 
-        $app['assets']->add(['codemirror', 'summernote', 'summernote.js']);
+        $app['assets']->add(['summernote', 'summernote_forum_post.js']);
 
         if ($is_topic)
         {

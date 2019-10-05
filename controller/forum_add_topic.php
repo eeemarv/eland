@@ -85,7 +85,7 @@ class forum_add_topic
             ];
         }
 
-        $app['assets']->add(['codemirror', 'summernote', 'summernote.js']);
+        $app['assets']->add(['summernote', 'summernote_forum_post.js']);
 
         $app['heading']->add('Nieuw forum onderwerp');
         $app['heading']->fa('comments-o');

@@ -860,7 +860,7 @@ class users_list
             $app['assets']->add([
                 'codemirror',
                 'summernote',
-                'summernote.js',
+                'summernote_email.js',
                 'table_sel.js',
             ]);
         }

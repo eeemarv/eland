@@ -452,7 +452,7 @@ class config
             'assets'    => [
                 'codemirror',
                 'summernote',
-                'summernote.js',
+                'summernote_email.js',
             ],
             'lbl'	=> 'Contact',
             'lbl_pane'	=> 'Contact Formulier',
@@ -471,7 +471,7 @@ class config
             'assets'    => [
                 'codemirror',
                 'summernote',
-                'summernote.js',
+                'summernote_email.js',
             ],
             'lbl'	=> 'Inschrijven',
             'lbl_pane'	=> 'Inschrijvingsformulier',

@@ -158,7 +158,7 @@ class forum_topic
         $app['btn_nav']->nav_list('forum', $app['pp_ary'],
             [], 'Forum onderwerpen', 'comments');
 
-        $app['assets']->add(['codemirror', 'summernote', 'summernote.js']);
+        $app['assets']->add(['summernote', 'summernote_forum_post.js']);
 
         $app['heading']->add($topic_post['subject']);
         $app['heading']->fa('comments-o');

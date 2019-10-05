@@ -120,7 +120,7 @@ class assets
 				'codemirror/5.48.4/addon/dialog/dialog.min.js',
 				'codemirror/5.48.4/mode/xml/xml.min.js',
 				'codemirror/5.48.4/addon/fold/xml-fold.min.js',
-				'codemirror/5.48.4/formatting.min.js',
+				'codemirror/5.48.4/addon/hint/xml-hint.min.js',
 				'codemirror/5.48.4/addon/selection/active-line.min.js',
 				'codemirror/5.48.4/addon/search/searchcursor.min.js',
 				'codemirror/5.48.4/addon/search/jump-to-line.min.js',
