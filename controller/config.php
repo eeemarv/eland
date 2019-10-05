@@ -322,6 +322,7 @@ class config
         $app['heading']->fa('gears');
 
         $out = '<div>';
+
         $out .= '<ul class="nav nav-pills">';
 
         foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
@@ -353,6 +354,11 @@ class config
         }
 
         $out .= '</div>';
+
+        if ($tab === 'logo')
+        {
+            $out .= self::render_logo($app);
+        }
 
         $out .= '<ul class="list-group">';
 
@@ -397,7 +403,6 @@ class config
 
             if (isset($input['inline']))
             {
-                $search_inline_ary = [];
                 $replace_inline_ary = [];
                 $id_for_label = '';
 
@@ -708,8 +713,11 @@ class config
 
         $out .= '<input type="hidden" name="tab" value="' . $tab . '">';
 
-        $out .= '<input type="submit" class="btn btn-primary btn-lg" ';
-        $out .= 'value="Aanpassen" name="' . $tab . '_submit">';
+        if (count($pane['inputs']))
+        {
+            $out .= '<input type="submit" class="btn btn-primary btn-lg" ';
+            $out .= 'value="Aanpassen" name="' . $tab . '_submit">';
+        }
 
         $out .= $app['form_token']->get_hidden_input();
 
@@ -851,6 +859,80 @@ class config
         {
             $out .= '<li class="list-group-item"></li>';
         }
+
+        return $out;
+    }
+
+    static function render_logo(app $app)
+    {
+        $logo = $app['config']->get('logo', $app['pp_schema']);
+
+        $out = '<div class="panel-body bg-info">';
+        $out .= '<div class="col-md-6">';
+
+        $out .= '<div class="text-center ';
+        $out .= 'center-block" id="img_user">';
+
+        $show_logo = $logo ? true : false;
+
+        $out .= '<img id="img"';
+        $out .= $show_logo ? '' : ' style="display:none;"';
+        $out .= ' class="img-rounded img-responsive center-block" ';
+        $out .= 'src="';
+
+        if ($show_logo)
+        {
+            $out .= $app['s3_url'] . $logo;
+        }
+        else
+        {
+            $out .= $app['assets']->get('1.gif');
+        }
+
+        $out .= '" ';
+        $out .= 'data-base-url="' . $app['s3_url'] . '"></img>';
+
+        $out .= '<div id="no_img"';
+        $out .= $show_logo ? ' style="display:none;"' : '';
+        $out .= '>';
+        $out .= '<i class="fa fa-image fa-5x text-muted"></i>';
+        $out .= '<br>Geen logo';
+        $out .= '</div>';
+        $out .= '<br>';
+
+        $btn_del_attr = ['id'	=> 'btn_remove'];
+
+        if (!$show_logo)
+        {
+            $btn_del_attr['style'] = 'display:none;';
+        }
+
+        $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
+        $out .= '<i class="fa fa-plus" id="img_plus"></i> Logo opladen';
+        $out .= '<input id="fileupload" type="file" name="image" ';
+        $out .= 'data-url="';
+
+        $out .= $app['link']->context_path('logo_upload', $app['pp_ary'], []);
+
+        $out .= '" ';
+        $out .= 'data-data-type="json" data-auto-upload="true" ';
+        $out .= 'data-accept-file-types="/(\.|\/)(png|gif)$/i" ';
+        $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
+        $out .= 'data-image-crop="true" ';
+        $out .= 'data-image-max-height="400"></span>';
+
+        $out .= '<p class="text-warning">';
+        $out .= 'Toegestane formaten: png en gif. Gebruik een doorzichtige achtergrond. ';
+        $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
+
+        $out .= $app['link']->link_fa('logo_del', $app['pp_ary'],
+            [], 'Logo verwijderen',
+            array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
+            'times');
+
+        $out .= '</div>';
+        $out .= '</div>';
+        $out .= '</div>';
 
         return $out;
     }

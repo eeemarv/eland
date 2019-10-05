@@ -16,10 +16,11 @@ class messages_images_del
         app $app,
         int $id,
         string $img,
+        string $ext,
         string $form_token
     ):Response
     {
-        $img .= '.jpg';
+        $img .= '.' . $ext;
 
         if ($error = $app['form_token']->get_ajax_error($form_token))
         {
@@ -140,8 +141,14 @@ class messages_images_del
 
             $form_token = $app['form_token']->get();
 
-            $out .= $app['link']->context_path('messages_images_instant_del', $app['pp_ary'],
-                ['img' => basename($img, '.jpg'), 'form_token' => $form_token, 'id' => $id]);
+            [$img_base, $ext] = explode('.', $img);
+
+            $out .= $app['link']->context_path('messages_images_instant_del', $app['pp_ary'], [
+                'img'           => $img_base,
+                'ext'           => $ext,
+                'form_token'    => $form_token,
+                'id'            => $id,
+            ]);
 
             $out .= '" role="button">';
             $out .= '<i class="fa fa-times"></i> ';

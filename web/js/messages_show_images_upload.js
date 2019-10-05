@@ -28,8 +28,8 @@ $(document).ready(function () {
 
         $.each(data.result, function (index, file) {
 
-            if (file) {
-				data_images.files.push(file);
+            if (file.filename) {
+				data_images.files.push(file.filename);
 				$("#slider1_container").remove();
 				jssor_init(data_images);
 				jssor_slider1.$GoTo(jssor_slider1.$SlidesCount() - 1);

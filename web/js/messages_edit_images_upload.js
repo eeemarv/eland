@@ -55,10 +55,10 @@ $(document).ready(function () {
 
         $.each(data.result, function (index, file) {
 
-            if (file) {
+            if (file.filename) {
 
 				var input_str = '<input type="hidden" name="uploaded_images[]" value="';
-				input_str += file + '">';
+				input_str += file.filename + '">';
 
 				var $input = $(input_str);
 
@@ -66,11 +66,11 @@ $(document).ready(function () {
 
 				var $thumbnail = $model.clone();
 
-				$thumbnail.prop('id', file);
+				$thumbnail.prop('id', file.filename);
 
 				var $img = $thumbnail.find('img');
 
-				$img.attr('src', s3_url + file);
+				$img.attr('src', s3_url + file.filename);
 
 				$thumbnail.find('span.img-delete').click(function(){
 

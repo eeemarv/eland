@@ -76,8 +76,10 @@ class messages_images_upload
 
         foreach ($uploaded_files as $uploaded_file)
         {
-            $filename = $app['image_upload']->upload($uploaded_file,
+            $upload_data = $app['image_upload']->upload($uploaded_file,
                 'm', $id, 400, 400, $app['pp_schema']);
+
+            $filename = $upload_data['filename'];
 
             if ($insert_in_db)
             {
@@ -96,7 +98,7 @@ class messages_images_upload
                     ['schema' => $app['pp_schema']]);
             }
 
-            $return_ary[] = $filename;
+            $return_ary[] = $upload_data;
         }
 
         return $app->json($return_ary);

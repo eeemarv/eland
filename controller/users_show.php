@@ -217,7 +217,7 @@ class users_show
         {
             $app['assets']->add([
                 'fileupload',
-                'users_show_upload_image.js',
+                'upload_image.js',
             ]);
         }
 
@@ -330,7 +330,7 @@ class users_show
         $user_img = $show_img ? '' : ' style="display:none;"';
         $no_user_img = $show_img ? ' style="display:none;"' : '';
 
-        $out .= '<img id="user_img"';
+        $out .= '<img id="img"';
         $out .= $user_img;
         $out .= ' class="img-rounded img-responsive center-block" ';
         $out .= 'src="';
@@ -347,7 +347,7 @@ class users_show
         $out .= '" ';
         $out .= 'data-base-url="' . $app['s3_url'] . '"></img>';
 
-        $out .= '<div id="no_user_img"';
+        $out .= '<div id="no_img"';
         $out .= $no_user_img;
         $out .= '>';
         $out .= '<i class="fa fa-user fa-5x text-muted"></i>';

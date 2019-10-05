@@ -391,9 +391,10 @@ $c_system_user->match('/support',
 		'controller\\support::support')
 	->bind('support');
 
-$c_system_user->post('/messages/{id}/images/{img}/del/{form_token}',
+$c_system_user->post('/messages/{id}/images/{img}/{ext}/del/{form_token}',
 	'controller\\messages_images_del::messages_images_instant_del')
 	->assert('img', cnst_assert::MESSAGE_IMAGE)
+	->assert('ext', cnst_assert::MESSAGE_IMAGE_EXT)
 	->assert('form_token', cnst_assert::TOKEN)
 	->bind('messages_images_instant_del');
 
@@ -682,6 +683,14 @@ $c_system_admin->get('/transactions-sum-out/{days}',
 $c_system_admin->get('/weighted-balances/{days}',
 		'controller\\weighted_balances::weighted_balances')
 	->bind('weighted_balances');
+
+$c_system_admin->post('/logo/upload',
+	'controller\\logo_upload::logo_upload')
+	->bind('logo_upload');
+
+$c_system_admin->match('/logo/del',
+	'controller\\logo_del::logo_del')
+	->bind('logo_del');
 
 $c_system_init->get('/elas-db-upgrade',
 	'controller\\init::elas_db_upgrade')

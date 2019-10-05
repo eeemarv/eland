@@ -25,7 +25,7 @@ class image_upload
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
 
 	protected $monolog;
-	protected $s3;
+    protected $s3;
 
 	public function __construct(
 		Monolog $monolog,
@@ -43,7 +43,7 @@ class image_upload
         int $width,
         int $height,
 		string $schema
-	):string
+	):array
 	{
         if (!$uploaded_file->isValid())
         {
@@ -107,6 +107,7 @@ class image_upload
 
         $image->thumbnail(new Box($width, $height), ImageInterface::THUMBNAIL_INSET);
         $image->save($tmp_after_resize_path);
+        $new_size = $image->getSize();
 
 		$err = $this->s3->img_upload($filename, $tmp_after_resize_path);
 
@@ -121,6 +122,10 @@ class image_upload
             throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
         }
 
-        return $filename;
-	}
+        return [
+            'filename'  => $filename,
+            'height'    => $new_size->getHeight(),
+            'width'     => $new_size->getWidth(),
+        ];
+    }
 }

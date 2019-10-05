@@ -4,6 +4,17 @@
 
 {%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
 
+{%- block extra_style -%}
+	{%- if config('logo', schema) -%}
+		<style>
+			div.logo {
+				background-image: url('{{- s3_url(config('logo', schema)) -}}');
+				padding-left: calc(.5 * {{ config('logo_width', schema) }}px);
+			}
+		</style>
+	{%- endif -%}
+{%- endblock extra_style -%}
+
 {%- block body_attr %} class="body-navbar{%- if pp_role('admin') %} admin{%- elseif pp_role('guest') %} guest{%- endif -%}"{%- endblock body_attr -%}
 
 {%- block system_link -%}

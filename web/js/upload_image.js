@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	var btn_remove = $('#btn_remove');
-	var user_img = $('#user_img');
-	var no_user_img = $('#no_user_img');
+	var img = $('#img');
+	var no_img = $('#no_img');
 
 	$('#fileupload').bind('fileuploadprocessfail', function (e, data) {
 
@@ -22,9 +22,9 @@ $(document).ready(function () {
 
 		if (data.result[0]) {
 
-			user_img.attr('src', user_img.data('base-url') + data.result[0]);
-			user_img.css('display', 'inherit');
-			no_user_img.css('display', 'none');
+			img.attr('src', img.data('base-url') + data.result[0]['filename']);
+			img.css('display', 'inherit');
+			no_img.css('display', 'none');
 			btn_remove.css('display', 'inherit');
 
 		}

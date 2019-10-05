@@ -393,6 +393,15 @@ class config
             ],
         ],
 
+        'logo'  => [
+            'lbl'       => 'Logo',
+            'inputs'    => [],
+            'assets'    => [
+                'fileupload',
+                'upload_image.js',
+            ],
+        ],
+
         'currency'		=> [
             'lbl'	=> 'Munteenheid',
             'inputs'	=> [

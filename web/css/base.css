@@ -581,7 +581,14 @@ div.user_map {
     position: absolute;
 }
 
-.jqplot-y2axis-label, .jqplot-y3axis-label, .jqplot-y4axis-label, .jqplot-y5axis-label, .jqplot-y6axis-label, .jqplot-y7axis-label, .jqplot-y8axis-label, .jqplot-y9axis-label {
+.jqplot-y2axis-label,
+.jqplot-y3axis-label,
+.jqplot-y4axis-label,
+.jqplot-y5axis-label,
+.jqplot-y6axis-label,
+.jqplot-y7axis-label,
+.jqplot-y8axis-label,
+.jqplot-y9axis-label {
     font-size: 11pt;
     margin-left: 10px;
     position: absolute;
@@ -661,12 +668,6 @@ table.jqplot-cursor-tooltip {
     background: rgba(208,208,208,0.8);
     padding: 1px;
 }
-
-/*
-.jqplot-highlighter-tooltip, .jqplot-canvasOverlay-tooltip {
-
-}
-*/
 
 /** **/
 .jqplot-highlighter {
@@ -812,4 +813,11 @@ div.eland-exception {
     bottom: -50px;
     background-size: 140px;
   }
+}
+
+div.logo {
+	background-position: center;
+	background-repeat: no-repeat;
+	padding-top: 50px;
+	background-size: 60%;
 }
