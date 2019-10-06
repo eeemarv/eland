@@ -390,7 +390,7 @@ class transactions_add
                 $soapurl = $group['elassoapurl'] ?: $group['url'] . '/soap';
                 $soapurl .= '/wsdlelas.php?wsdl';
 
-                $client = new nusoap_client($soapurl, true);
+                $client = new \nusoap_client($soapurl, true);
 
                 $error = $client->getError();
 
