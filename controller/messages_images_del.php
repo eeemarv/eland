@@ -58,6 +58,8 @@ class messages_images_del
 
     public function messages_images_del(Request $request, app $app, int $id):Response
     {
+        $errors = [];
+
         $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
 
         $s_owner = $app['s_id'] && $app['s_id'] === $message['id_user'];
