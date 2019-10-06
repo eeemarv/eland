@@ -48,11 +48,6 @@ $fn_before_system = function(Request $request, app $app){
 	{
 		$app['email_validate']->validate($request->query->get('et'));
 	}
-
-	if ($css = $app['config']->get('css', $app['pp_schema']))
-	{
-		$app['assets']->add_external_css([$css]);
-	}
 };
 
 $fn_before_system_auth = function(Request $request, app $app){

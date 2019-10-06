@@ -371,16 +371,6 @@ class config
             'addon_fa'	=> 'calendar',
             'default'	=> '%e %b %Y, %H:%M:%S',
         ],
-
-        'css'	=> [
-            'lbl'		=> 'Stijl (css)',
-            'type' 		=> 'url',
-            'explain'	=> 'Url van extra stijlblad (css-bestand).
-                Laat dit veld leeg wanneer het niet gebruikt wordt.',
-            'attr'		=> ['maxlength'	=> '100'],
-            'addon_fa'	=> 'link',
-            'default'	=> '',
-        ],
     ];
 
     const TAB_PANES = [
@@ -587,7 +577,6 @@ class config
                 'default_landing_page'	=> true,
                 'homepage_url'	=> true,
                 'date_format'	=> true,
-                'css'	=> true,
             ],
         ],
     ];

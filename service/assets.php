@@ -251,14 +251,6 @@ class assets
 		}
 	}
 
-	public function add_external_css(array $asset_ary):void
-	{
-		foreach ($asset_ary as $asset_location)
-		{
-			$this->include_ary['css'][$asset_location] = true;
-		}
-	}
-
 	public function get_js():string
 	{
 		$out = '';
