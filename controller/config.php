@@ -890,7 +890,8 @@ class config
         }
 
         $out .= '" ';
-        $out .= 'data-base-url="' . $app['s3_url'] . '"></img>';
+        $out .= 'data-base-url="' . $app['s3_url'] . '" ';
+        $out .= 'data-replace-logo="1">';
 
         $out .= '<div id="no_img"';
         $out .= $show_logo ? ' style="display:none;"' : '';
@@ -917,13 +918,18 @@ class config
         $out .= '" ';
         $out .= 'data-data-type="json" data-auto-upload="true" ';
         $out .= 'data-accept-file-types="/(\.|\/)(png|gif)$/i" ';
-        $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
-        $out .= 'data-image-crop="true" ';
-        $out .= 'data-image-max-height="400"></span>';
+        $out .= 'data-max-file-size="999000">';
+        $out .= '</span>';
 
         $out .= '<p class="text-warning">';
-        $out .= 'Toegestane formaten: png en gif. Gebruik een doorzichtige achtergrond. ';
-        $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
+        $out .= 'Toegestane formaten: png en gif. ';
+        $out .= 'Je kan ook een afbeelding hierheen verslepen. ';
+        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat. ';
+        $out .= 'De afbeelding neemt de hele hoogte van de navigatie-balk in. ';
+        $out .= 'Voeg eventueel vooraf boven en/of onder een doorzichtige strook ';
+        $out .= 'toe met een foto-bewerking programma ';
+        $out .= '(bvb. <a href="https://gimp.org">GIMP</a>") om te positioneren';
+        $out .= '</p>';
 
         $out .= $app['link']->link_fa('logo_del', $app['pp_ary'],
             [], 'Logo verwijderen',

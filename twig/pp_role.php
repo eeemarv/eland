@@ -32,7 +32,7 @@ class pp_role
 	{
 		switch($role)
 		{
-			case 'anonymoous':
+			case 'anonymous':
 				return $this->pp_anonymous;
 				break;
 			case 'guest':

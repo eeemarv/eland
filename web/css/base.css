@@ -815,9 +815,6 @@ div.eland-exception {
   }
 }
 
-div.logo {
-	background-position: center;
-	background-repeat: no-repeat;
-	padding-top: 50px;
-	background-size: 60%;
+a.logo {
+  padding-right: 10px;
 }

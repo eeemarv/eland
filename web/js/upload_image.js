@@ -22,11 +22,20 @@ $(document).ready(function () {
 
 		if (data.result[0]) {
 
-			img.attr('src', img.data('base-url') + data.result[0]['filename']);
+			var img_filename = img.data('base-url') + data.result[0];
+			img.attr('src', img_filename);
 			img.css('display', 'inherit');
 			no_img.css('display', 'none');
 			btn_remove.css('display', 'inherit');
 
+			if (img.data('replace-logo')){
+				$('a.logo').remove();
+				var html_logo = '<a href="#" class="navbar-left hidden-xs logo">';
+				html_logo += '<img height="50" src="';
+				html_logo += img_filename;
+				html_logo += '"></a>';
+				$('div.navbar-header').prepend(html_logo);
+			}
 		}
 	}).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');

@@ -345,7 +345,7 @@ class users_show
         }
 
         $out .= '" ';
-        $out .= 'data-base-url="' . $app['s3_url'] . '"></img>';
+        $out .= 'data-base-url="' . $app['s3_url'] . '">';
 
         $out .= '<div id="no_img"';
         $out .= $no_user_img;

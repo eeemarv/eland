@@ -18,19 +18,15 @@ class logo_upload
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        $upload_data = $app['image_upload']->upload($uploaded_file,
-            'l', 0, 400, 80, $app['pp_schema']);
-
-        $filename = $upload_data['filename'];
-        $width = $upload_data['width'];
+        $filename = $app['image_upload']->upload($uploaded_file,
+            'l', 0, 400, 100, $app['pp_schema']);
 
         $app['config']->set('logo', $app['pp_schema'], $filename);
-        $app['config']->set('logo_width', $app['pp_schema'], (string) $width);
 
         $app['monolog']->info('Logo ' . $filename .
             ' uploaded.',
             ['schema' => $app['pp_schema']]);
 
-        return $app->json([$upload_data]);
+        return $app->json([$filename]);
     }
 }

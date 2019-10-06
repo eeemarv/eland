@@ -4,26 +4,23 @@
 
 {%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
 
-{%- block extra_style -%}
-	{%- if config('logo', schema) -%}
-		<style>
-			div.logo {
-				background-image: url('{{- s3_url(config('logo', schema)) -}}');
-				padding-left: calc(.5 * {{ config('logo_width', schema) }}px);
-			}
-		</style>
-	{%- endif -%}
-{%- endblock extra_style -%}
-
 {%- block body_attr %} class="body-navbar{%- if pp_role('admin') %} admin{%- elseif pp_role('guest') %} guest{%- endif -%}"{%- endblock body_attr -%}
+
+{%- block logo -%}
+	{%- if config('logo', schema) -%}
+		<a href="{{- block('system_link') -}}" class="navbar-left hidden-xs logo">
+			<img src="{{- s3_url(config('logo', schema)) -}}" height="50">
+		</a>
+	{%- endif -%}
+{%- endblock logo -%}
 
 {%- block system_link -%}
 	{%- if config('homepage_url', schema) -%}
 		{{- config('homepage_url', schema) -}}
 	{%- elseif pp_role('anonymous') -%}
 		{{- path('login', pp_ary()) -}}
-	{%- else -%} # {#-
-		{{- path(r_default(), pp_ary()) -}} -#}
+	{%- else -%}
+		{{- path(r_default(), pp_ary()) -}}
 	{%- endif -%}
 {%- endblock -%}
 

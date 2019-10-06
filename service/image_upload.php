@@ -43,7 +43,7 @@ class image_upload
         int $width,
         int $height,
 		string $schema
-	):array
+	):string
 	{
         if (!$uploaded_file->isValid())
         {
@@ -105,9 +105,8 @@ class image_upload
                 break;
         }
 
-        $image->thumbnail(new Box($width, $height), ImageInterface::THUMBNAIL_INSET);
-        $image->save($tmp_after_resize_path);
-        $new_size = $image->getSize();
+        $thumbnail = $image->thumbnail(new Box($width, $height), ImageInterface::THUMBNAIL_INSET);
+        $thumbnail->save($tmp_after_resize_path);
 
 		$err = $this->s3->img_upload($filename, $tmp_after_resize_path);
 
@@ -122,10 +121,6 @@ class image_upload
             throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
         }
 
-        return [
-            'filename'  => $filename,
-            'height'    => $new_size->getHeight(),
-            'width'     => $new_size->getWidth(),
-        ];
+        return $filename;
     }
 }

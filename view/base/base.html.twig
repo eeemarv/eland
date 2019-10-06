@@ -12,8 +12,6 @@
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
 	{%- endfor -%}
 
-	{%- block extra_style -%}{%- endblock -%}
-
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">
@@ -47,11 +45,9 @@
 
 			{%- block navbar_toggle_button -%}{%- endblock -%}
 
-			<a href="{%- block system_link -%}#{%- endblock -%}" class="pull-left hidden-xs">
-				<div class="logo"></div>
-			</a>
+			{%- block logo -%}{%- endblock -%}
 
-			<a href="{{- block('system_link') -}}" class="navbar-brand">
+			<a href="{%- block system_link -%}#{%- endblock -%}" class="navbar-brand">
 			{{- block('title') -}}
 			</a>
 			</div>

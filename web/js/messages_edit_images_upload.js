@@ -55,10 +55,10 @@ $(document).ready(function () {
 
         $.each(data.result, function (index, file) {
 
-            if (file.filename) {
+            if (file) {
 
 				var input_str = '<input type="hidden" name="uploaded_images[]" value="';
-				input_str += file.filename + '">';
+				input_str += file + '">';
 
 				var $input = $(input_str);
 
@@ -66,11 +66,11 @@ $(document).ready(function () {
 
 				var $thumbnail = $model.clone();
 
-				$thumbnail.prop('id', file.filename);
+				$thumbnail.prop('id', file);
 
 				var $img = $thumbnail.find('img');
 
-				$img.attr('src', s3_url + file.filename);
+				$img.attr('src', s3_url + file);
 
 				$thumbnail.find('span.img-delete').click(function(){
 
@@ -84,7 +84,7 @@ $(document).ready(function () {
 
             } else {
 
-				alert('Fout bij het opladen van de afbeelding: ' + file.error);
+				alert('Fout bij het opladen van de afbeelding.');
 
 			}
         });

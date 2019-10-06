@@ -28,14 +28,14 @@ $(document).ready(function () {
 
         $.each(data.result, function (index, file) {
 
-            if (file.filename) {
-				data_images.files.push(file.filename);
+            if (file) {
+				data_images.files.push(file);
 				$("#slider1_container").remove();
 				jssor_init(data_images);
 				jssor_slider1.$GoTo(jssor_slider1.$SlidesCount() - 1);
 				$('#btn_remove').css('display', 'inherit');
             } else {
-				alert('Fout bij het opladen van de afbeelding: ' + file.error);
+				alert('Fout bij het opladen van de afbeelding.');
             }
 
             $images_con.data('images', data_images);
