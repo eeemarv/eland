@@ -44,6 +44,11 @@ class log_db
 				continue;
 			}
 
+			if ($log['message'] === 'Notified event "{event}" to listener "{listener}".')
+			{
+				continue;
+			}
+
 			$user_id = $log['context']['user_id'] ?? $log['extra']['user_id'] ?? 0;
 			$user_id = ctype_digit((string) $user_id) ? $user_id : 0;
 

@@ -119,19 +119,19 @@ class typeahead
 		array $params):string
 	{
 		$key_pp_ary = [
-			'_locale'		=> 'nl',
 			'system'		=> $params_context['system'],
 			'role_short'	=> 'a',
 		];
 
 		$key_path = $this->get_path($typeahead_route, $key_pp_ary, $params);
 
-		return strtr($key_path, [
-			'/nl/'			=> '',
+		$key = strtr($key_path, [
 			'/a/'			=> '_',
 			'/'				=> '_',
 			'-'				=> '_',
 		]);
+
+		return ltrim($key, '_');
 	}
 
 	protected function get_thumbprint_by_key(
