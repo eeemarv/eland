@@ -6,7 +6,7 @@ use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use service\xdb;
 use service\cache;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use queue\mail;
 use service\schedule;
 use service\systems;
@@ -20,7 +20,7 @@ class saldo extends schema_task
 	protected $db;
 	protected $xdb;
 	protected $cache;
-	protected $monolog;
+	protected $logger;
 	protected $mail;
 	protected $intersystems;
 	protected $config;
@@ -31,7 +31,7 @@ class saldo extends schema_task
 		db $db,
 		xdb $xdb,
 		cache $cache,
-		Logger $monolog,
+		LoggerInterface $logger,
 		mail $mail,
 		schedule $schedule,
 		systems $systems,
@@ -45,7 +45,7 @@ class saldo extends schema_task
 		$this->db = $db;
 		$this->xdb = $xdb;
 		$this->cache = $cache;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->mail = $mail;
 		$this->intersystems = $intersystems;
 		$this->config = $config;
@@ -536,7 +536,7 @@ class saldo extends schema_task
 
 			if (!count($to))
 			{
-				$this->monolog->info('No periodic mail queued for user ' .
+				$this->logger->info('No periodic mail queued for user ' .
 				$this->account_str->get_with_id($id, $this->schema) . ' because no email address.',
 				['schema' => $this->schema]);
 
@@ -559,12 +559,12 @@ class saldo extends schema_task
 
 		if (count($log_to))
 		{
-			$this->monolog->info('Saldomail queued: ' .
+			$this->logger->info('Saldomail queued: ' .
 				implode(', ', $log_to), ['schema' => $this->schema]);
 		}
 		else
 		{
-			$this->monolog->info('Saldomail NOT queued (no users)',
+			$this->logger->info('Saldomail NOT queued (no users)',
 				['schema' => $this->schema]);
 		}
 

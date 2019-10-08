@@ -5,7 +5,7 @@ namespace App\Queue;
 use queue\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;
 use service\queue;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Twig_Environment as Twig;
 use service\config;
 use service\mail_addr_system;
@@ -17,7 +17,7 @@ class mail implements queue_interface
 	protected $converter;
 	protected $mailer;
 	protected $queue;
-	protected $monolog;
+	protected $logger;
 	protected $twig;
 	protected $config;
 	protected $mail_addr_system;
@@ -26,7 +26,7 @@ class mail implements queue_interface
 
 	public function __construct(
 		queue $queue,
-		Logger $monolog,
+		LoggerInterface $logger,
 		Twig $twig,
 		config $config,
 		mail_addr_system $mail_addr_system,
@@ -35,7 +35,7 @@ class mail implements queue_interface
 	)
 	{
 		$this->queue = $queue;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->twig = $twig;
 		$this->config = $config;
 		$this->mail_addr_system = $mail_addr_system;
@@ -86,7 +86,7 @@ class mail implements queue_interface
 			}
 			catch (\Exception $e)
 			{
-				$this->monolog->error('Mail Queue Process, Pre HTML template err: ' .
+				$this->logger->error('Mail Queue Process, Pre HTML template err: ' .
 					$e->getMessage() . ' ::: ' .
 					json_encode($data),
 					['schema' => $schema]);
@@ -127,13 +127,13 @@ class mail implements queue_interface
 		{
 			if ($this->mailer->send($message, $failed_recipients))
 			{
-				$this->monolog->info('mail queue process, sent to ' .
+				$this->logger->info('mail queue process, sent to ' .
 					json_encode($data['to']) . ' subject: ' . $subject,
 					['schema' => $schema]);
 			}
 			else
 			{
-				$this->monolog->error('mail queue process: failed sending message ' .
+				$this->logger->error('mail queue process: failed sending message ' .
 					json_encode($data) .
 					' failed recipients: ' .
 					json_encode($failed_recipients),
@@ -143,7 +143,7 @@ class mail implements queue_interface
 		catch (\Exception $e)
 		{
 			$err = $e->getMessage();
-			$this->monolog->error('mail queue process: ' . $err . ' | ' .
+			$this->logger->error('mail queue process: ' . $err . ' | ' .
 				json_encode($data),
 				['schema' => $schema]);
 		}
@@ -210,7 +210,7 @@ class mail implements queue_interface
 		{
 			if (!filter_var($email, FILTER_VALIDATE_EMAIL))
 			{
-				$this->monolog->error('mail queue (validate): non-valid email address (not sent): ' .
+				$this->logger->error('mail queue (validate): non-valid email address (not sent): ' .
 					$email . ' data: ' . json_encode($data),
 					['schema' => $schema]);
 				continue;
@@ -224,7 +224,7 @@ class mail implements queue_interface
 
 			$this->queue->set('mail', $val_data, $priority);
 
-			$this->monolog->info('mail in queue with email token ' .
+			$this->logger->info('mail in queue with email token ' .
 				$email_token .
 				', template: ' . $val_data['template'] . ', from : ' .
 				json_encode($val_data['from']) . ' to : ' . json_encode($val_data['to']) . ' ' .
@@ -238,7 +238,7 @@ class mail implements queue_interface
 	{
 		if (!isset($data['schema']))
 		{
-			$this->monolog->error($log_prefix .
+			$this->logger->error($log_prefix .
 				': no schema set. ' .
 				json_encode($data));
 			return true;
@@ -248,7 +248,7 @@ class mail implements queue_interface
 
 		if (!isset($data['template']))
 		{
-			$this->monolog->error($log_prefix .
+			$this->logger->error($log_prefix .
 				': no template set ' .
 				json_encode($data),
 				['schema' => $schema]);
@@ -257,7 +257,7 @@ class mail implements queue_interface
 
 		if (!isset($data['vars']) || !is_array($data['vars']))
 		{
-			$this->monolog->error($log_prefix .
+			$this->logger->error($log_prefix .
 				': no vars set ' .
 				json_encode($data),
 				['schema' => $schema]);
@@ -266,7 +266,7 @@ class mail implements queue_interface
 
 		if (!$this->config->get('mailenabled', $schema))
 		{
-			$this->monolog->info($log_prefix .
+			$this->logger->info($log_prefix .
 				': mail functions are not enabled in config. ' .
 				json_encode($data),
 				['schema' => $schema]);
@@ -275,7 +275,7 @@ class mail implements queue_interface
 
 		if (!isset($data['to']) || !is_array($data['to']) || !count($data['to']))
 		{
-			$this->monolog->error($log_prefix .
+			$this->logger->error($log_prefix .
 				': "To" addr is missing. ' .
 				json_encode($data),
 				['schema' => $schema]);
@@ -289,7 +289,7 @@ class mail implements queue_interface
 	{
 		if (!isset($data['from']) || !is_array($data['from']) || !count($data['from']))
 		{
-			$this->monolog->error($log_prefix .
+			$this->logger->error($log_prefix .
 				': "From" addr is missing. ' .
 				json_encode($data),
 				['schema' => $data['schema']]);

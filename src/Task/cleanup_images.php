@@ -4,7 +4,7 @@ namespace App\Task;
 
 use service\cache;
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use service\s3;
 use service\systems;
 
@@ -14,21 +14,21 @@ class cleanup_images
 
 	protected $cache;
 	protected $db;
-	protected $monolog;
+	protected $logger;
 	protected $s3;
 	protected $systems;
 
 	public function __construct(
 		cache $cache,
 		db $db,
-		Logger $monolog,
+		LoggerInterface $logger,
 		s3 $s3,
 		systems $systems
 	)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->s3 = $s3;
 		$this->systems = $systems;
 	}
@@ -140,7 +140,7 @@ class cleanup_images
 
 		if ($del_str)
 		{
-			$this->monolog->info('cleanup_images: ' . $object['Key'] .
+			$this->logger->info('cleanup_images: ' . $object['Key'] .
 				' deleted ' . $del_str, ['schema' => $sch]);
 		}
 	}

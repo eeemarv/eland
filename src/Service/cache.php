@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Doctrine\DBAL\Connection as db;
 use Predis\Client as Predis;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /*
                           Table "xdb.cache"
@@ -22,15 +22,15 @@ class cache
 {
 	protected $db;
 	protected $predis;
-	protected $monolog;
+	protected $logger;
 
 	const PREFIX = 'cache_';
 
-	public function __construct(db $db, Predis $predis, Logger $monolog)
+	public function __construct(db $db, Predis $predis, LoggerInterface $logger)
 	{
 		$this->db = $db;
 		$this->predis = $predis;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	public function set(string $id, array $data = [], int $expires = 0):void

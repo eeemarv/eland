@@ -4,7 +4,7 @@ namespace App\SchemaTask;
 
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 use service\schedule;
 use service\systems;
@@ -13,12 +13,12 @@ use service\config;
 class cleanup_messages extends schema_task
 {
 	protected $db;
-	protected $monolog;
+	protected $logger;
 	protected $config;
 
 	public function __construct(
 		db $db,
-		Logger $monolog,
+		LoggerInterface $logger,
 		schedule $schedule,
 		systems $systems,
 		config $config
@@ -26,7 +26,7 @@ class cleanup_messages extends schema_task
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->config = $config;
 	}
 
@@ -51,7 +51,7 @@ class cleanup_messages extends schema_task
 
 		if ($msgs)
 		{
-			$this->monolog->info('Expired and deleted Messages ' . $msgs,
+			$this->logger->info('Expired and deleted Messages ' . $msgs,
 				['schema' => $this->schema]);
 
 			$this->db->executeQuery('delete from ' . $this->schema . '.messages
@@ -77,7 +77,7 @@ class cleanup_messages extends schema_task
 
 		if (count($ids))
 		{
-			$this->monolog->info('Cleanup messages from users: ' . $users,
+			$this->logger->info('Cleanup messages from users: ' . $users,
 				['schema' => $this->schema]);
 
 			echo 'Cleanup messages from users: ' . $users;

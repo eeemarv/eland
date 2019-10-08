@@ -4,7 +4,7 @@ namespace App\SchemaTask;
 
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use service\xdb;
 
 use service\schedule;
@@ -14,12 +14,12 @@ class cleanup_news extends schema_task
 {
 	protected $db;
 	protected $xdb;
-	protected $monolog;
+	protected $logger;
 
 	public function __construct(
 		db $db,
 		xdb $xdb,
-		Logger $monolog,
+		LoggerInterface $logger,
 		schedule $schedule,
 		systems $systems
 	)
@@ -27,7 +27,7 @@ class cleanup_news extends schema_task
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->xdb = $xdb;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	public function process():void
@@ -43,7 +43,7 @@ class cleanup_news extends schema_task
 		{
 			$this->xdb->del('news_access', (string) $n['id'], $this->schema);
 			$this->db->delete($this->schema . '.news', ['id' => $n['id']]);
-			$this->monolog->info('removed news item ' . $n['headline'],
+			$this->logger->info('removed news item ' . $n['headline'],
 				['schema' => $this->schema]);
 		}
 	}

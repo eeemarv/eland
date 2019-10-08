@@ -2,17 +2,17 @@
 
 namespace App\Service;
 
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use service\config;
 
 class mail_addr_system
 {
 	protected $config;
-	protected $monolog;
+	protected $logger;
 
-	public function __construct(Logger $monolog, config $config)
+	public function __construct(LoggerInterface $logger, config $config)
 	{
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->config = $config;
 	}
 
@@ -74,7 +74,7 @@ class mail_addr_system
 			return true;
 		}
 
-		$this->monolog->error('Mail Addr System: invalid "' .
+		$this->logger->error('Mail Addr System: invalid "' .
 			$name . '" mail address : ' . $mail,
 			['schema' => $schema]
 		);

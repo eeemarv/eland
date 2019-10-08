@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Predis\Client as Predis;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use service\systems;
 use service\assets;
@@ -11,7 +11,7 @@ use service\assets;
 class typeahead
 {
 	protected $predis;
-	protected $monolog;
+	protected $logger;
 	protected $url_generator;
 	protected $systems;
 	protected $assets;
@@ -22,14 +22,14 @@ class typeahead
 
 	public function __construct(
 		Predis $predis,
-		Logger $monolog,
+		LoggerInterface $logger,
 		UrlGeneratorInterface $url_generator,
 		systems $systems,
 		assets $assets
 	)
 	{
 		$this->predis = $predis;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->url_generator = $url_generator;
 		$this->systems = $systems;
 		$this->assets = $assets;
@@ -145,7 +145,7 @@ class typeahead
 		{
 			$thumbprint = 'renew-' . crc32(microtime());
 
-			$this->monolog->debug('typeahead thumbprint ' .
+			$this->logger->debug('typeahead thumbprint ' .
 				$thumbprint . ' for ' . $key,
 				$this->get_log_params($params_context)
 			);
@@ -172,7 +172,7 @@ class typeahead
 	{
 		$this->predis->del($key);
 
-		$this->monolog->debug('typeahead delete thumbprint for '
+		$this->logger->debug('typeahead delete thumbprint for '
 			. $key, $this->get_log_params($params_context));
 	}
 
@@ -241,7 +241,7 @@ class typeahead
 				$log_params['schema'] = $schema;
 			}
 
-			$this->monolog->debug('typeahead: new thumbprint ' .
+			$this->logger->debug('typeahead: new thumbprint ' .
 				$new_thumbprint .
 				' for ' . $key,
 				$log_params

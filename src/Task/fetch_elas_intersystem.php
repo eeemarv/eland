@@ -5,7 +5,7 @@ namespace App\Task;
 use service\cache;
 use Predis\Client as Predis;
 use service\typeahead;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use App\Cnst\CacheKeyCnst;
 
 class fetch_elas_intersystem
@@ -13,7 +13,7 @@ class fetch_elas_intersystem
 	protected $cache;
 	protected $predis;
 	protected $typeahead;
-	protected $monolog;
+	protected $logger;
 	protected $client;
 	protected $url;
 	protected $domain;
@@ -27,13 +27,13 @@ class fetch_elas_intersystem
 		cache $cache,
 		Predis $predis,
 		typeahead $typeahead,
-		Logger $monolog
+		LoggerInterface $logger
 	)
 	{
 		$this->cache = $cache;
 		$this->predis = $predis;
 		$this->typeahead = $typeahead;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	/**

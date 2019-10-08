@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /*
                             Table "xdb.events"
@@ -52,12 +52,12 @@ class xdb
 	protected $user_schema = '';
 	protected $user_id = 0;
 	protected $db;
-	protected $monolog;
+	protected $logger;
 
-	public function __construct(db $db, Logger $monolog)
+	public function __construct(db $db, LoggerInterface $logger)
 	{
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 
 		if (php_sapi_name() === 'cli')
 		{
@@ -168,7 +168,7 @@ class xdb
 
 		if (!$agg_version)
 		{
-			$this->monolog->debug('Id ' . $agg_id . ' not found for xdb::del',
+			$this->logger->debug('Id ' . $agg_id . ' not found for xdb::del',
 				['schema' => $agg_schema]);
 			$agg_version = 0;
 		}

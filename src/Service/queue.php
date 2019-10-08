@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /*
                                         Table "xdb.queue"
@@ -23,19 +23,19 @@ Indexes:
 class queue
 {
 	protected $db;
-	protected $monolog;
+	protected $logger;
 
-	public function __construct(db $db, Logger $monolog)
+	public function __construct(db $db, LoggerInterface $logger)
 	{
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	public function set(string $topic, array $data, int $priority):void
 	{
 		if (!strlen($topic))
 		{
-			$this->monolog->error('queue: no topic. ' . json_encode($data));
+			$this->logger->error('queue: no topic. ' . json_encode($data));
 			return;
 		}
 

@@ -5,7 +5,7 @@ namespace App\SchemaTask;
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
 use service\cache;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use queue\geocode as geocode_queue;
 use service\schedule;
 use service\systems;
@@ -14,7 +14,7 @@ use render\account_str;
 class geocode extends schema_task
 {
 	protected $queue;
-	protected $monolog;
+	protected $logger;
 	protected $cache;
 	protected $db;
 	protected $curl;
@@ -25,7 +25,7 @@ class geocode extends schema_task
 	public function __construct(
 		db $db,
 		cache $cache,
-		Logger $monolog,
+		LoggerInterface $logger,
 		geocode_queue $geocode_queue,
 		schedule $schedule,
 		systems $systems,
@@ -33,7 +33,7 @@ class geocode extends schema_task
 	)
 	{
 		parent::__construct($schedule, $systems);
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
@@ -97,7 +97,7 @@ class geocode extends schema_task
 
 		if (count($log_ary))
 		{
-			$this->monolog->info('Addresses queued for geocoding: ' .
+			$this->logger->info('Addresses queued for geocoding: ' .
 				implode(', ', $log_ary),
 				['schema' => $this->schema]);
 		}

@@ -6,14 +6,14 @@ use queue\queue_interface;
 use Doctrine\DBAL\Connection as db;
 use service\cache;
 use service\queue;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use service\geocode as geocode_service;
 use render\account_str;
 
 class geocode implements queue_interface
 {
 	protected $queue;
-	protected $monolog;
+	protected $logger;
 	protected $cache;
 	protected $db;
 	protected $geocode_service;
@@ -23,13 +23,13 @@ class geocode implements queue_interface
 		db $db,
 		cache $cache,
 		queue $queue,
-		Logger $monolog,
+		LoggerInterface $logger,
 		geocode_service $geocode_service,
 		account_str $account_str
 	)
 	{
 		$this->queue = $queue;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->geocode_service = $geocode_service;
@@ -44,7 +44,7 @@ class geocode implements queue_interface
 
 		if (!$adr || !$uid || !$sch)
 		{
-			$this->monolog->debug('geocoding process data missing: ' .
+			$this->logger->debug('geocoding process data missing: ' .
 				json_encode($data),
 				['schema' => $sch]);
 			return;
@@ -52,7 +52,7 @@ class geocode implements queue_interface
 
 		if ($this->cache->exists('geo_sleep'))
 		{
-			$this->monolog->debug('geocoding task is at sleep.',
+			$this->logger->debug('geocoding task is at sleep.',
 				['schema' => $sch]);
 			return;
 		}
@@ -65,7 +65,7 @@ class geocode implements queue_interface
 
 		if (!$this->cache->exists($geo_status_key))
 		{
-			$this->monolog->debug('geocoding proces geo_status_key missing: ' .
+			$this->logger->debug('geocoding proces geo_status_key missing: ' .
 				$geo_status_key . ' for data ' . json_encode($data),
 				['schema' => $sch]);
 			return;
@@ -91,14 +91,14 @@ class geocode implements queue_interface
 
 			$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $coords);
 
-			$this->monolog->info($log . ' ' . $log_user,
+			$this->logger->info($log . ' ' . $log_user,
 				['schema' => $sch]);
 
 			return;
 		}
 
 		$log = 'Geocode return NULL for: ' . $adr;
-		$this->monolog->info('cron geocode: ' . $log .
+		$this->logger->info('cron geocode: ' . $log .
 			' ' . $log_user, ['schema' => $sch]);
 
 		return;
@@ -133,14 +133,14 @@ class geocode implements queue_interface
 
 		if ($this->cache->exists($key))
 		{
-			$this->monolog->info('Geocoding: key already exists for ' .
+			$this->logger->info('Geocoding: key already exists for ' .
 				json_encode($data), ['schema' => $data['schema']]);
 			return;
 		}
 
 		if ($this->cache->get($status_key) == ['value' => 'error'])
 		{
-			$this->monolog->info('Geocoding: Error status exists for ' .
+			$this->logger->info('Geocoding: Error status exists for ' .
 				json_encode($data), ['schema' => $data['schema']]);
 			return;
 		}
@@ -156,27 +156,27 @@ class geocode implements queue_interface
 		$log .= ', ';
 		$log .= $data['adr'];
 
-		$this->monolog->info($log, ['schema' => $data['schema']]);
+		$this->logger->info($log, ['schema' => $data['schema']]);
 	}
 
 	public function check_data(array $data):bool
 	{
 		if (!isset($data['schema']))
 		{
-			$this->monolog->debug('no schema set for geocode task');
+			$this->logger->debug('no schema set for geocode task');
 			return false;
 		}
 
 		if (!isset($data['uid']))
 		{
-			$this->monolog->debug('no uid set for geocode task',
+			$this->logger->debug('no uid set for geocode task',
 				['schema' => $data['schema']]);
 			return false;
 		}
 
 		if (!isset($data['adr']))
 		{
-			$this->monolog->debug('no adr set for geocode task',
+			$this->logger->debug('no adr set for geocode task',
 				['schema' => $data['schema']]);
 			return false;
 		}

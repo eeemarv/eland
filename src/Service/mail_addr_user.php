@@ -3,17 +3,17 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 class mail_addr_user
 {
 	protected $db;
-	protected $monolog;
+	protected $logger;
 
-	public function __construct(db $db, Logger $monolog)
+	public function __construct(db $db, LoggerInterface $logger)
 	{
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	public function get(int $user_id, string $schema):array
@@ -51,7 +51,7 @@ class mail_addr_user
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{
-				$this->monolog->error('Mail Addr User: invalid address : ' .
+				$this->logger->error('Mail Addr User: invalid address : ' .
 					$mail . ' for user: ' . $name,
 					['schema' => $schema]);
 				continue;

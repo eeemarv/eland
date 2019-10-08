@@ -2,27 +2,27 @@
 
 namespace App\Service;
 
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class alert
 {
 	protected $request;
-	protected $monolog;
+	protected $logger;
 	protected $session;
 	protected $flashbag;
 	protected $schema;
 
 	public function __construct(
 		Request $request,
-		Logger $monolog,
+		LoggerInterface $logger,
 		Session $session,
 		string $schema
 	)
 	{
 		$this->request = $request;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->session = $session;
 		$this->schema = $schema;
 		$this->flashbag = $this->session->getFlashBag();
@@ -41,12 +41,12 @@ class alert
 		{
 			$log = implode(' -- & ', $message);
 			$message = implode('<br>', $message);
-			$this->monolog->debug('[alert ' . $type . ' ' . $uri . '] ' . $log,
+			$this->logger->debug('[alert ' . $type . ' ' . $uri . '] ' . $log,
 				$log_ary);
 		}
 		else
 		{
-			$this->monolog->debug('[alert ' . $type . ' ' . $uri . '] ' . $message, $log_ary);
+			$this->logger->debug('[alert ' . $type . ' ' . $uri . '] ' . $message, $log_ary);
 		}
 
 		$this->flashbag->add('alert', [

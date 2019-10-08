@@ -5,7 +5,7 @@ namespace App\Service;
 use service\xdb;
 use service\cache;
 use service\token;
-use Monolog\Logger as monolog;
+use Psr\Log\LoggerInterface;
 
 class email_validate
 {
@@ -14,19 +14,19 @@ class email_validate
 	protected $db;
 	protected $xdb;
 	protected $cache;
-	protected $monolog;
+	protected $logger;
 
 	public function __construct(
 		cache $cache,
 		xdb $xdb,
 		token $token,
-		monolog $monolog
+		loggerinterface $logger
 	)
 	{
 		$this->cache = $cache;
 		$this->xdb = $xdb;
 		$this->token = $token;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	public function get_token(string $email, string $schema, string $source):string
@@ -58,7 +58,7 @@ class email_validate
 		$this->xdb->set('email_validated',
 			$data['email'], $data, $data['schema']);
 
-		$this->monolog->debug('email ' . $data['email'] .
+		$this->logger->debug('email ' . $data['email'] .
 			' validated from ' . $data['source'],
 			['schema' => $data['schema']]);
 

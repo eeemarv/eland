@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use service\xdb;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as db;
 use service\config;
 use service\user_cache;
@@ -11,7 +11,7 @@ use render\account;
 
 class autominlimit
 {
-	protected $monolog;
+	protected $logger;
 	protected $xdb;
 	protected $db;
 	protected $config;
@@ -26,7 +26,7 @@ class autominlimit
 	protected $schema;
 
 	public function __construct(
-		Logger $monolog,
+		LoggerInterface $logger,
 		xdb $xdb,
 		db $db,
 		config $config,
@@ -34,7 +34,7 @@ class autominlimit
 		account $account
 	)
 	{
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->xdb = $xdb;
 		$this->db = $db;
 		$this->user_cache = $user_cache;
@@ -82,14 +82,14 @@ class autominlimit
 	{
 		if (!$this->enabled)
 		{
-			$this->monolog->debug('autominlimit not enabled',
+			$this->logger->debug('autominlimit not enabled',
 				['schema' => $this->schema]);
 			return;
 		}
 
 		if (!$this->trans_percentage)
 		{
-			$this->monolog->debug('autominlimit percentage is zero.',
+			$this->logger->debug('autominlimit percentage is zero.',
 				['schema' => $this->schema]);
 			return;
 		}
@@ -98,14 +98,14 @@ class autominlimit
 
 		if (!$user || !is_array($user))
 		{
-			$this->monolog->debug('autominlimit: to user not found',
+			$this->logger->debug('autominlimit: to user not found',
 				['schema' => $this->schema]);
 			return;
 		}
 
 		if ($user['status'] != 1)
 		{
-			$this->monolog->debug('autominlimit: to user not active. ' .
+			$this->logger->debug('autominlimit: to user not active. ' .
 				$this->account->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
@@ -113,7 +113,7 @@ class autominlimit
 
 		if ($user['minlimit'] === '')
 		{
-			$this->monolog->debug('autominlimit: to user has no minlimit. ' .
+			$this->logger->debug('autominlimit: to user has no minlimit. ' .
 				$this->account->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
@@ -121,7 +121,7 @@ class autominlimit
 
 		if ($this->group_minlimit !== '' && $user['minlimit'] < $this->group_minlimit)
 		{
-			$this->monolog->debug('autominlimit: to user minlimit is lower than group minlimit. ' .
+			$this->logger->debug('autominlimit: to user minlimit is lower than group minlimit. ' .
 				$this->account->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
@@ -131,14 +131,14 @@ class autominlimit
 
 		if (!$from_user || !is_array($from_user))
 		{
-			$this->monolog->debug('autominlimit: from user not found.',
+			$this->logger->debug('autominlimit: from user not found.',
 				['schema' => $this->schema]);
 			return;
 		}
 
 		if (!$from_user['letscode'])
 		{
-			$this->monolog->debug('autominlimit: from user has no letscode.',
+			$this->logger->debug('autominlimit: from user has no letscode.',
 				['schema' => $this->schema]);
 			return;
 		}
@@ -150,7 +150,7 @@ class autominlimit
 			$debug = 'autominlimit: (extract = 0) ';
 			$debug .= 'no new minlimit for user ';
 			$debug .= $this->account->str_id($user['id'], $this->schema);
-			$this->monolog->debug($debug, ['schema' => $this->schema]);
+			$this->logger->debug($debug, ['schema' => $this->schema]);
 			return;
 		}
 
@@ -170,7 +170,7 @@ class autominlimit
 			$debug = 'autominlimit: minlimit reached group minlimit, ';
 			$debug .= 'individual minlimit erased for user ';
 			$debug .= $this->account->str_id($user['id'], $this->schema);
-			$this->monolog->debug($debug, ['schema' => $this->schema]);
+			$this->logger->debug($debug, ['schema' => $this->schema]);
 			return;
 		}
 
@@ -184,7 +184,7 @@ class autominlimit
 
 		$this->user_cache->clear($to_id, $this->schema);
 
-		$this->monolog->info('autominlimit: new minlimit : ' .
+		$this->logger->info('autominlimit: new minlimit : ' .
 			$new_minlimit .
 			' for user ' .
 			$this->account->str_id($user['id'], $this->schema),

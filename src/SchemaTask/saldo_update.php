@@ -4,7 +4,7 @@ namespace App\SchemaTask;
 
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 use service\schedule;
 use service\systems;
@@ -12,18 +12,18 @@ use service\systems;
 class saldo_update extends schema_task
 {
 	protected $db;
-	protected $monolog;
+	protected $logger;
 
 	public function __construct(
 		db $db,
-		Logger $monolog,
+		LoggerInterface $logger,
 		schedule $schedule,
 		systems $systems
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 	}
 
 	function process():void
@@ -79,7 +79,7 @@ class saldo_update extends schema_task
 
 			$m = 'User id ' . $id . ' balance updated, old: ' .
 				$balance . ', new: ' . $calculated;
-			$this->monolog->info('(cron) ' . $m, ['schema' => $this->schema]);
+			$this->logger->info('(cron) ' . $m, ['schema' => $this->schema]);
 		}
 	}
 

@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use service\s3;
-use Monolog\Logger as Monolog;
+use Psr\Log\LoggerInterface;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -24,15 +24,15 @@ class image_upload
     const FILENAME_WITH_ID_TPL = '%schema%_%type%_%id%_%hash%.%ext%';
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
 
-	protected $monolog;
+	protected $logger;
     protected $s3;
 
 	public function __construct(
-		Monolog $monolog,
+		LoggerInterface $logger,
 		s3 $s3
 	)
 	{
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->s3 = $s3;
 	}
 
@@ -115,7 +115,7 @@ class image_upload
 
         if ($err)
         {
-            $this->monolog->error('image_upload: ' .  $err . ' -- ' .
+            $this->logger->error('image_upload: ' .  $err . ' -- ' .
 				$filename, ['schema' => $schema]);
 
             throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');

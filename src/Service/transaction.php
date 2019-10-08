@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as db;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use service\user_cache;
 use service\autominlimit;
 use service\config;
@@ -12,7 +12,7 @@ use render\account;
 class transaction
 {
 	protected $db;
-	protected $monolog;
+	protected $logger;
 	protected $user_cache;
 	protected $autominlimit;
 	protected $config;
@@ -20,7 +20,7 @@ class transaction
 
 	public function __construct(
 		db $db,
-		Logger $monolog,
+		LoggerInterface $logger,
 		user_cache $user_cache,
 		autominlimit $autominlimit,
 		config $config,
@@ -28,7 +28,7 @@ class transaction
 	)
 	{
 		$this->db = $db;
-		$this->monolog = $monolog;
+		$this->logger = $logger;
 		$this->user_cache = $user_cache;
 		$this->autominlimit = $autominlimit;
 		$this->config = $config;
@@ -55,7 +55,7 @@ class transaction
 		$amount = round($amount);
 		$to_sign = $shared_secret . $transaction['transid'] . strtolower($transaction['letscode_to']) . $amount;
 		$signature = sha1($to_sign);
-		$this->monolog->debug('Signing ' . $to_sign . ' : ' . $signature,
+		$this->logger->debug('Signing ' . $to_sign . ' : ' . $signature,
 			['schema' => $schema]);
 
 		return $signature;
@@ -91,7 +91,7 @@ class transaction
 				$transaction['id_to'],
 				(int) $transaction['amount']);
 
-		$this->monolog->info('Transaction ' . $transaction['transid'] . ' saved: ' .
+		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$transaction['amount'] . ' ' .
 			$this->config->get('currency', $schema) .
 			' from user ' .

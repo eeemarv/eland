@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Monolog\Logger as monolog;
+use Psr\Log\LoggerInterface;
 use service\alert;
 use service\s3;
 use App\Controller\MessagesShowController;
@@ -619,7 +619,7 @@ class MessagesEditController extends AbstractController
         array $deleted_images,
         int $id,
         db $db,
-        monolog $monolog,
+        loggerinterface $logger,
         string $schema
     ):void
     {
@@ -635,7 +635,7 @@ class MessagesEditController extends AbstractController
                 '"PictureFile"'	    => $img,
             ]))
             {
-                $monolog->info('message-picture ' . $img .
+                $logger->info('message-picture ' . $img .
                     ' deleted from db.', ['schema' => $schema]);
             }
         }
@@ -646,7 +646,7 @@ class MessagesEditController extends AbstractController
         int $id,
         bool $fix_id,
         db $db,
-        monolog $monolog,
+        loggerinterface $logger,
         alert $alert,
         s3 $s3,
         string $schema
@@ -691,13 +691,13 @@ class MessagesEditController extends AbstractController
                     'msgid'			=> $id,
                 ]))
                 {
-                    $monolog->info('message-picture ' . $img .
+                    $logger->info('message-picture ' . $img .
                         ' inserted in db.', ['schema' => $schema]);
 
                     continue;
                 }
 
-                $monolog->error('error message-picture ' . $img .
+                $logger->error('error message-picture ' . $img .
                     ' not inserted in db.', ['schema' => $schema]);
 
                 continue;
@@ -710,12 +710,12 @@ class MessagesEditController extends AbstractController
 
             if (isset($err))
             {
-                $monolog->error('message-picture renaming and storing in db ' . $img .
+                $logger->error('message-picture renaming and storing in db ' . $img .
                     ' not succeeded. ' . $err, ['schema' => $schema]);
             }
             else
             {
-                $monolog->info('renamed ' . $img . ' to ' .
+                $logger->info('renamed ' . $img . ' to ' .
                     $new_filename, ['schema' => $schema]);
 
                 if ($db->insert($schema . '.msgpictures', [
@@ -723,13 +723,13 @@ class MessagesEditController extends AbstractController
                     'msgid'				=> $id,
                 ]))
                 {
-                    $monolog->info('message-picture ' . $new_filename .
+                    $logger->info('message-picture ' . $new_filename .
                         ' inserted in db.', ['schema' => $schema]);
 
                     continue;
                 }
 
-                $monolog->error('error: message-picture ' . $new_filename .
+                $logger->error('error: message-picture ' . $new_filename .
                     ' not inserted in db.', ['schema' => $schema]);
             }
         }
