@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use util\app;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class typeahead_doc_map_names

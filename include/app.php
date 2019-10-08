@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use util\app;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use cnst\assert as cnst_assert;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

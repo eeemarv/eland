@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use util\app;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use service\item_access;

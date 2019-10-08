@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use util\app;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
 use Symfony\Component\HttpFoundation\Request;

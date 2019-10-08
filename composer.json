@@ -29,6 +29,7 @@
 		"php-http/guzzle6-adapter": "^1.1",
 		"php-http/message": "^1.6",
 		"predis/service-provider": "^2.0",
+		"sensio/framework-extra-bundle": "^5.4",
 		"swiftmailer/swiftmailer": "~6",
 		"symfony/asset": "^4",
 		"symfony/config": "^4.2",
