@@ -6,12 +6,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\contact_types;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesEditController extends AbstractController
 {
-    public function contact_types_edit(Request $request, app $app, int $id):Response
+    public function contact_types_edit(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $tc_prefetch = $app['db']->fetchAssoc('select *
+        $tc_prefetch = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.type_contact
             where id = ?', [$id]);
 
@@ -40,7 +46,7 @@ class ContactTypesEditController extends AbstractController
 
             if (!$error)
             {
-                if ($app['db']->update($app['pp_schema'] . '.type_contact',
+                if ($db->update($app['pp_schema'] . '.type_contact',
                     $tc,
                     ['id' => $id]))
                 {

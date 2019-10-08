@@ -4,14 +4,18 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadDocMapNamesController extends AbstractController
 {
-    public function typeahead_doc_map_names(app $app):Response
+    public function typeahead_doc_map_names(
+        app $app,
+        Db $db
+    ):Response
     {
         $map_names = [];
 
-        $st = $app['db']->prepare('select distinct data->>\'map_name\' as map_name
+        $st = $db->prepare('select distinct data->>\'map_name\' as map_name
             from xdb.aggs
             where agg_type = \'doc\'
                 and agg_schema = ?

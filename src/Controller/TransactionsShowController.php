@@ -4,17 +4,22 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TransactionsShowController extends AbstractController
 {
-    public function transactions_show(app $app, int $id):Response
+    public function transactions_show(
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
 
         $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
-        $transaction = $app['db']->fetchAssoc('select t.*
+        $transaction = $db->fetchAssoc('select t.*
             from ' . $app['pp_schema'] . '.transactions t
             where t.id = ?', [$id]);
 
@@ -31,7 +36,7 @@ class TransactionsShowController extends AbstractController
 
         if ($inter_schema)
         {
-            $inter_transaction = $app['db']->fetchAssoc('select t.*
+            $inter_transaction = $db->fetchAssoc('select t.*
                 from ' . $inter_schema . '.transactions t
                 where t.transid = ?', [$transaction['transid']]);
         }
@@ -40,13 +45,13 @@ class TransactionsShowController extends AbstractController
             $inter_transaction = false;
         }
 
-        $next = $app['db']->fetchColumn('select id
+        $next = $db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.transactions
             where id > ?
             order by id asc
             limit 1', [$id]);
 
-        $prev = $app['db']->fetchColumn('select id
+        $prev = $db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.transactions
             where id < ?
             order by id desc

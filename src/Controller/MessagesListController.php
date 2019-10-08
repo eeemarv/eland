@@ -11,7 +11,7 @@ use render\btn_nav;
 use cnst\access as cnst_access;
 use cnst\message_type as cnst_message_type;
 use cnst\bulk as cnst_bulk;
-use controller\messages_show;
+use App\Controller\MessagesShowController;
 use controller\messages_edit;
 
 class MessagesListController extends AbstractController
@@ -838,7 +838,7 @@ class MessagesListController extends AbstractController
         while ($msg = $st->fetch())
         {
             $msg['type'] = cnst_message_type::FROM_DB[$msg['msg_type']];
-            $msg['label'] = messages_show::get_label($msg['type']);
+            $msg['label'] = MessagesShowController::get_label($msg['type']);
 
             $messages[] = $msg;
         }

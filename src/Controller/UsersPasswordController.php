@@ -5,15 +5,25 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersPasswordController extends AbstractController
 {
-    public function users_password(Request $request, app $app):Response
+    public function users_password(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
-        return $this->users_password_admin($request, $app, $app['s_id']);
+        return $this->users_password_admin($request, $app, $app['s_id'], $db);
     }
 
-    public function users_password_admin(Request $request, app $app, int $id):Response
+    public function users_password_admin(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         $password = trim($request->request->get('password', ''));
         $notify = $request->request->get('notify', '');
@@ -43,7 +53,7 @@ class UsersPasswordController extends AbstractController
                     'mdate'		=> gmdate('Y-m-d H:i:s'),
                 ];
 
-                if ($app['db']->update($app['pp_schema'] . '.users',
+                if ($db->update($app['pp_schema'] . '.users',
                     $update,
                     ['id' => $id]))
                 {
@@ -54,7 +64,7 @@ class UsersPasswordController extends AbstractController
                     if (($user['status'] === 1 || $user['status'] === 2)
                         && $notify)
                     {
-                        $to = $app['db']->fetchColumn('select c.value
+                        $to = $db->fetchColumn('select c.value
                             from ' . $app['pp_schema'] . '.contact c, ' .
                                 $app['pp_schema'] . '.type_contact tc
                             where tc.id = c.id_type_contact

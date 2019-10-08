@@ -6,13 +6,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use controller\messages_show;
+use App\Controller\MessagesShowController;
+use Doctrine\DBAL\Connection as Db;
 
 class MessagesDelController extends AbstractController
 {
-    public function messages_del(Request $request, app $app, int $id):Response
+    public function messages_del(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
+        $message = messages_show::get_message($db, $id, $app['pp_schema']);
 
         $s_owner = !$app['pp_guest']
             && $app['s_system_self']
@@ -32,14 +38,14 @@ class MessagesDelController extends AbstractController
                 $app['alert']->error($error_token);
             }
 
-            $app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
+            $db->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
 
-            if ($app['db']->delete($app['pp_schema'] . '.messages', ['id' => $id]))
+            if ($db->delete($app['pp_schema'] . '.messages', ['id' => $id]))
             {
                 $column = 'stat_msgs_';
                 $column .= $message['msg_type'] ? 'offers' : 'wanted';
 
-                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
+                $db->executeUpdate('update ' . $app['pp_schema'] . '.categories
                     set ' . $column . ' = ' . $column . ' - 1
                     where id = ?', [$message['id_category']]);
 

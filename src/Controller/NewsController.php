@@ -4,10 +4,11 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class NewsController extends AbstractController
 {
-    public function news_list(app $app):Response
+    public function news_list(app $app, Db $db):Response
     {
         $news = $this->get_data($app);
 

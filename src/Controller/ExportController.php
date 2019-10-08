@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ExportController extends AbstractController
 {
-    public function export(Request $request, app $app):Response
+    public function export(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         set_time_limit(60);
 
@@ -196,7 +201,7 @@ class ExportController extends AbstractController
 
                 $sql_bind = $export['sql_bind'] ?? [];
 
-                $data = $app['db']->fetchAll($export['sql'], $sql_bind);
+                $data = $db->fetchAll($export['sql'], $sql_bind);
 
                 foreach($export['columns'] as $key => $name)
                 {

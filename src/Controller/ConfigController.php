@@ -5,11 +5,17 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 use cnst\config as cnst_config;
 
 class ConfigController extends AbstractController
 {
-    public function config(Request $request, app $app, string $tab):Response
+    public function config(
+        Request $request,
+        app $app,
+        string $tab,
+        Db $db
+    ):Response
     {
         $pane = cnst_config::TAB_PANES[$tab];
 
@@ -283,7 +289,7 @@ class ConfigController extends AbstractController
 
                 $posted_value = substr($posted_value, 0, 60);
 
-                $app['db']->update($app['pp_schema'] . '.config',
+                $db->update($app['pp_schema'] . '.config',
                     ['value' => $posted_value, '"default"' => 'f'],
                     ['setting' => $input_name]);
 

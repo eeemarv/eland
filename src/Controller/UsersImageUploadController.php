@@ -7,20 +7,30 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersImageUploadController extends AbstractController
 {
-    public function users_image_upload(Request $request, app $app):Response
+    public function users_image_upload(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         if ($app['s_id'] < 1)
         {
             throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
         }
 
-        return $this->users_image_upload_admin($request, $app, $app['s_id']);
+        return $this->users_image_upload_admin($request, $app, $app['s_id'], $db);
     }
 
-    public function users_image_upload_admin(Request $request, app $app, int $id):Response
+    public function users_image_upload_admin(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         $uploaded_file = $request->files->get('image');
 
@@ -32,7 +42,7 @@ class UsersImageUploadController extends AbstractController
         $filename = $app['image_upload']->upload($uploaded_file,
             'u', $id, 400, 400, $app['pp_schema']);
 
-        $app['db']->update($app['pp_schema'] . '.users', [
+        $db->update($app['pp_schema'] . '.users', [
             '"PictureFile"'	=> $filename
         ],['id' => $id]);
 

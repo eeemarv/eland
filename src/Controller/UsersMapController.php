@@ -5,21 +5,32 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\users_list;
+use Controller\UsersListController;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersMapController extends AbstractController
 {
-    public function users_map_admin(Request $request, app $app, string $status):Response
+    public function users_map_admin(
+        Request $request,
+        app $app,
+        string $status,
+        Db $db
+    ):Response
     {
-        return $this->users_map($request, $app, $status);
+        return $this->users_map($request, $app, $status, $db);
     }
 
-    public function users_map(Request $request, app $app, string $status):Response
+    public function users_map(
+        Request $request,
+        app $app,
+        string $status,
+        Db $db
+    ):Response
     {
         $ref_geo = [];
         $params = ['status' => $status];
 
-        $status_def_ary = users_list::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
+        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
 
         $sql_bind = [];
 
@@ -28,14 +39,14 @@ class UsersMapController extends AbstractController
             $sql_bind[] = $status_def_ary[$status]['sql_bind'];
         }
 
-        $users = $app['db']->fetchAll('select u.*
+        $users = $db->fetchAll('select u.*
             from ' . $app['pp_schema'] . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
         $adr_ary = [];
 
-        $rs = $app['db']->prepare('select
+        $rs = $db->prepare('select
                 c.id, c.id_user as user_id, c.value, c.flag_public
             from ' . $app['pp_schema'] . '.contact c, ' .
                 $app['pp_schema'] . '.type_contact tc
@@ -53,7 +64,7 @@ class UsersMapController extends AbstractController
         {
             if ($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
             {
-                $my_adr = $app['db']->fetchColumn('select c.value
+                $my_adr = $db->fetchColumn('select c.value
                     from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc
                     where c.id_user = ?
                         and c.id_type_contact = tc.id

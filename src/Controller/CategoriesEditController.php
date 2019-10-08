@@ -5,14 +5,20 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class CategoriesEditController extends AbstractController
 {
-    public function categories_edit(Request $request, app $app, int $id):Response
+    public function categories_edit(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         $cats = [];
 
-        $rs = $app['db']->prepare('select *
+        $rs = $db->prepare('select *
             from ' . $app['pp_schema'] . '.categories
             order by fullname');
 
@@ -62,7 +68,7 @@ class CategoriesEditController extends AbstractController
 
                 if ($cat['id_parent'])
                 {
-                    $prefix .= $app['db']->fetchColumn('select name
+                    $prefix .= $db->fetchColumn('select name
                         from ' . $app['pp_schema'] . '.categories
                         where id = ?', [$cat['id_parent']]) . ' - ';
                 }
@@ -70,10 +76,10 @@ class CategoriesEditController extends AbstractController
                 $cat['fullname'] = $prefix . $cat['name'];
                 unset($cat['id']);
 
-                if ($app['db']->update($app['pp_schema'] . '.categories', $cat, ['id' => $id]))
+                if ($db->update($app['pp_schema'] . '.categories', $cat, ['id' => $id]))
                 {
                     $app['alert']->success('Categorie aangepast.');
-                    $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.categories
+                    $db->executeUpdate('update ' . $app['pp_schema'] . '.categories
                         set fullname = ? || \' - \' || name
                         where id_parent = ?', [$cat['name'], $id]);
 
@@ -86,7 +92,7 @@ class CategoriesEditController extends AbstractController
 
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
-        $rs = $app['db']->prepare('select id, name
+        $rs = $db->prepare('select id, name
             from ' . $app['pp_schema'] . '.categories
             where leafnote = 0
             order by name');

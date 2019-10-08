@@ -5,12 +5,18 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsDelController extends AbstractController
 {
-    public function intersystems_del(Request $request, app $app, int $id):Response
+    public function intersystems_del(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $group = $app['db']->fetchAssoc('select *
+        $group = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$id]);
 
@@ -28,7 +34,7 @@ class IntersystemsDelController extends AbstractController
                 $app['link']->redirect('intersystems', $app['pp_ary'], []);
             }
 
-            if($app['db']->delete($app['pp_schema'] . '.letsgroups', ['id' => $id]))
+            if($db->delete($app['pp_schema'] . '.letsgroups', ['id' => $id]))
             {
                 $app['alert']->success('InterSysteem verwijderd.');
 

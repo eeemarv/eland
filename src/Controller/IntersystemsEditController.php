@@ -6,23 +6,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\intersystems;
+use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsEditController extends AbstractController
 {
-    public function intersystems_add(Request $request, app $app):Response
+    public function intersystems_add(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         if ($request->isMethod('POST'))
         {
             [$group, $errors] = self::get_post_errors($request, $app);
 
-            if ($app['db']->fetchColumn('select id
+            if ($db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.letsgroups
                 where url = ?', [$group['url']]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze URL.';
             }
 
-            if ($app['db']->fetchColumn('select id
+            if ($db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.letsgroups
                 where localletscode = ?', [$group['localletscode']]))
             {
@@ -31,11 +36,11 @@ class IntersystemsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if ($app['db']->insert($app['pp_schema'] . '.letsgroups', $group))
+                if ($db->insert($app['pp_schema'] . '.letsgroups', $group))
                 {
                     $app['alert']->success('Intersysteem opgeslagen.');
 
-                    $id = $app['db']->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
+                    $id = $db->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
 
                     $app['intersystems']->clear_cache($app['pp_schema']);
 
@@ -83,13 +88,18 @@ class IntersystemsEditController extends AbstractController
         return self::render_form($app, $group, $btn);
     }
 
-    public function intersystems_edit(Request $request, app $app, int $id):Response
+    public function intersystems_edit(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         if ($request->isMethod('POST'))
         {
             [$group, $errors] = self::get_post_errors($request, $app);
 
-            if ($app['db']->fetchColumn('select id
+            if ($db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.letsgroups
                 where url = ?
                     and id <> ?', [$group['url'], $id]))
@@ -97,7 +107,7 @@ class IntersystemsEditController extends AbstractController
                 $errors[] = 'Er bestaat al een interSysteem met deze url.';
             }
 
-            if ($app['db']->fetchColumn('select id
+            if ($db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.letsgroups
                 where localletscode = ?
                     and id <> ?', [$group['localletscode'], $id]))
@@ -107,7 +117,7 @@ class IntersystemsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if ($app['db']->update($app['pp_schema'] . '.letsgroups',
+                if ($db->update($app['pp_schema'] . '.letsgroups',
                     $group,
                     ['id' => $id]))
                 {
@@ -128,7 +138,7 @@ class IntersystemsEditController extends AbstractController
         }
         else
         {
-            $group = $app['db']->fetchAssoc('select *
+            $group = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$id]);
 

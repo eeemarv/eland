@@ -4,10 +4,11 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadUsernamesController extends AbstractController
 {
-    public function typeahead_usernames(app $app):Response
+    public function typeahead_usernames(app $app, Db $db):Response
     {
         $usernames = [];
 

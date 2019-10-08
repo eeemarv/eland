@@ -4,10 +4,15 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class WeightedBalancesController extends AbstractController
 {
-    public function weighted_balances(app $app, int $days):Response
+    public function weighted_balances(
+        app $app,
+        int $days,
+        Db $db
+    ):Response
     {
         $end_unix = time();
         $begin_unix = $end_unix - ($days * 86400);
@@ -15,7 +20,7 @@ class WeightedBalancesController extends AbstractController
 
         $balance = [];
 
-        $rs = $app['db']->prepare('select id, saldo
+        $rs = $db->prepare('select id, saldo
             from ' . $app['pp_schema'] . '.users');
 
         $rs->execute();
@@ -28,7 +33,7 @@ class WeightedBalancesController extends AbstractController
         $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);
         $acc = array_map(function (){ return 0; }, $balance);
 
-        $trans = $app['db']->fetchAll('select id_to, id_from, amount, date
+        $trans = $db->fetchAll('select id_to, id_from, amount, date
             from ' . $app['pp_schema'] . '.transactions
             where date >= ?
             order by date desc', [$begin]);

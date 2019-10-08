@@ -6,12 +6,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\contact_types;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesDelController extends AbstractController
 {
-    public function contact_types_del(Request $request, app $app, int $id):Response
+    public function contact_types_del(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $ct = $app['db']->fetchAssoc('select *
+        $ct = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.type_contact
             where id = ?', [$id]);
 
@@ -21,7 +27,7 @@ class ContactTypesDelController extends AbstractController
             $app['link']->redirect('contact_types', $app['pp_ary'], []);
         }
 
-        if ($app['db']->fetchColumn('select id
+        if ($db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.contact
             where id_type_contact = ?', [$id]))
         {
@@ -39,7 +45,7 @@ class ContactTypesDelController extends AbstractController
                 $app['link']->redirect('contact_types', $app['pp_ary'], []);
             }
 
-            if ($app['db']->delete($app['pp_schema'] . '.type_contact', ['id' => $id]))
+            if ($db->delete($app['pp_schema'] . '.type_contact', ['id' => $id]))
             {
                 $app['alert']->success('Contact type verwijderd.');
             }

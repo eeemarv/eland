@@ -5,10 +5,11 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class PasswordResetController extends AbstractController
 {
-    public function password_reset(Request $request, app $app):Response
+    public function password_reset(Request $request, app $app, Db $db):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -20,7 +21,7 @@ class PasswordResetController extends AbstractController
             }
             else if($email)
             {
-                $user = $app['db']->fetchAll('select u.id, u.name, u.letscode
+                $user = $db->fetchAll('select u.id, u.name, u.letscode
                     from ' . $app['pp_schema'] . '.contact c, ' .
                         $app['pp_schema'] . '.type_contact tc, ' .
                         $app['pp_schema'] . '.users u

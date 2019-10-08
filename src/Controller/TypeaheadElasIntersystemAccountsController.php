@@ -4,12 +4,17 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadElasIntersystemAccountsController extends AbstractController
 {
-    public function typeahead_elas_intersystem_accounts(app $app, int $group_id):Response
+    public function typeahead_elas_intersystem_accounts(
+        app $app,
+        int $group_id,
+        Db $db
+    ):Response
     {
-        $group = $app['db']->fetchAssoc('select *
+        $group = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$group_id]);
 

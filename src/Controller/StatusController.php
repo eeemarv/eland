@@ -5,14 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class StatusController extends AbstractController
 {
-    public function status(app $app):Response
+    public function status(app $app, Db $db):Response
     {
         $status_msgs = false;
 
-        $non_unique_mail = $app['db']->fetchAll('select c.value, count(c.*)
+        $non_unique_mail = $db->fetchAll('select c.value, count(c.*)
             from ' . $app['pp_schema'] . '.contact c, ' .
                 $app['pp_schema'] . '.type_contact tc, ' .
                 $app['pp_schema'] . '.users u
@@ -25,7 +26,7 @@ class StatusController extends AbstractController
 
         if (count($non_unique_mail))
         {
-            $st = $app['db']->prepare('select id_user
+            $st = $db->prepare('select id_user
                 from ' . $app['pp_schema'] . '.contact c
                 where c.value = ?');
 
@@ -45,7 +46,7 @@ class StatusController extends AbstractController
 
         //
 
-        $non_unique_letscode = $app['db']->fetchAll('select letscode, count(*)
+        $non_unique_letscode = $db->fetchAll('select letscode, count(*)
             from ' . $app['pp_schema'] . '.users
             where letscode <> \'\'
             group by letscode
@@ -53,7 +54,7 @@ class StatusController extends AbstractController
 
         if (count($non_unique_letscode))
         {
-            $st = $app['db']->prepare('select id
+            $st = $db->prepare('select id
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?');
 
@@ -73,7 +74,7 @@ class StatusController extends AbstractController
 
         //
 
-        $non_unique_name = $app['db']->fetchAll('select name, count(*)
+        $non_unique_name = $db->fetchAll('select name, count(*)
             from ' . $app['pp_schema'] . '.users
             where name <> \'\'
             group by name
@@ -81,7 +82,7 @@ class StatusController extends AbstractController
 
         if (count($non_unique_name))
         {
-            $st = $app['db']->prepare('select id
+            $st = $db->prepare('select id
                 from ' . $app['pp_schema'] . '.users
                 where name = ?');
 
@@ -101,7 +102,7 @@ class StatusController extends AbstractController
 
         //
 
-        $unvalid_mail = $app['db']->fetchAll('select c.id, c.value, c.id_user
+        $unvalid_mail = $db->fetchAll('select c.id, c.value, c.id_user
             from ' . $app['pp_schema'] . '.contact c, ' .
                 $app['pp_schema'] . '.type_contact tc
             where c.id_type_contact = tc.id
@@ -111,7 +112,7 @@ class StatusController extends AbstractController
         //
         $no_mail = array();
 
-        $st = $app['db']->prepare(' select u.id
+        $st = $db->prepare(' select u.id
             from ' . $app['pp_schema'] . '.users u
             where u.status in (1, 2)
                 and not exists (select c.id
@@ -129,11 +130,11 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $empty_letscode = $app['db']->fetchAll('select id
+        $empty_letscode = $db->fetchAll('select id
             from ' . $app['pp_schema'] . '.users
             where status in (1, 2) and letscode = \'\'');
 
-        $empty_name = $app['db']->fetchAll('select id
+        $empty_name = $db->fetchAll('select id
             from ' . $app['pp_schema'] . '.users
             where name = \'\'');
 
@@ -142,7 +143,7 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $no_msgs_users = $app['db']->fetchAll('select id, letscode, name, saldo, status
+        $no_msgs_users = $db->fetchAll('select id, letscode, name, saldo, status
             from ' . $app['pp_schema'] . '.users u
             where status in (1, 2)
                 and not exists (select 1

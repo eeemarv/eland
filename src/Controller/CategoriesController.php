@@ -4,12 +4,13 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class CategoriesController extends AbstractController
 {
-    public function categories(app $app):Response
+    public function categories(app $app, Db $db):Response
     {
-        $cats = $app['db']->fetchAll('select *
+        $cats = $db->fetchAll('select *
             from ' . $app['pp_schema'] . '.categories
             order by fullname');
 

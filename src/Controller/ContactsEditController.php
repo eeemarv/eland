@@ -38,12 +38,12 @@ class ContactsEditController extends AbstractController
         ],
     ];
 
-    public function contacts_edit_admin(Request $request, app $app, int $id):Response
+    public function contacts_edit_admin(Request $request, app $app, int $id, Db $db):Response
     {
         $contact = self::get_contact(
-            $app['db'], $id, $app['pp_schema']);
+            $db, $id, $app['pp_schema']);
 
-        return self::form($request, $app, $contact['id_user'], $id, true);
+        return self::form($request, $app, $contact['id_user'], $id, true, $db);
     }
 
     public static function form(
@@ -51,11 +51,12 @@ class ContactsEditController extends AbstractController
         app $app,
         int $user_id,
         int $id,
-        bool $redirect_contacts
+        bool $redirect_contacts,
+        Db $db
     ):Response
     {
         $contact = self::get_contact(
-            $app['db'], $id, $app['pp_schema']);
+            $db, $id, $app['pp_schema']);
 
         if ($user_id !== $contact['id_user'])
         {
@@ -88,7 +89,7 @@ class ContactsEditController extends AbstractController
                 $errors[] = 'Vul een zichtbaarheid in!';
             }
 
-            $abbrev_type = $app['db']->fetchColumn('select abbrev
+            $abbrev_type = $db->fetchColumn('select abbrev
                 from ' . $app['pp_schema'] . '.type_contact
                 where id = ?', [$id_type_contact]);
 
@@ -118,17 +119,17 @@ class ContactsEditController extends AbstractController
                 $errors[] = 'Contact type bestaat niet!';
             }
 
-            $mail_type_id = $app['db']->fetchColumn('select id
+            $mail_type_id = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.type_contact
                 where abbrev = \'mail\'');
 
-            $count_mail = $app['db']->fetchColumn('select count(*)
+            $count_mail = $db->fetchColumn('select count(*)
                 from ' . $app['pp_schema'] . '.contact
                 where id_user = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
 
-            $mail_id = $app['db']->fetchColumn('select id
+            $mail_id = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.contact
                 where id_user = ?
                     and id_type_contact = ?',
@@ -146,7 +147,7 @@ class ContactsEditController extends AbstractController
             {
                 $mailadr = $value;
 
-                $mail_count = $app['db']->fetchColumn('select count(c.*)
+                $mail_count = $db->fetchColumn('select count(c.*)
                     from ' . $app['pp_schema'] . '.contact c, ' .
                         $app['pp_schema'] . '.type_contact tc, ' .
                         $app['pp_schema'] . '.users u
@@ -206,7 +207,7 @@ class ContactsEditController extends AbstractController
                     ], 0);
                 }
 
-                $app['db']->update($app['pp_schema'] . '.contact',
+                $db->update($app['pp_schema'] . '.contact',
                     $update_ary, ['id' => $id]);
 
                 $app['alert']->success('Contact aangepast.');
@@ -228,7 +229,7 @@ class ContactsEditController extends AbstractController
 
         $type_contact_ary = [];
 
-        $rs = $app['db']->prepare('select id, name, abbrev
+        $rs = $db->prepare('select id, name, abbrev
             from ' . $app['pp_schema'] . '.type_contact');
 
         $rs->execute();

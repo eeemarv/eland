@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class RegisterController extends AbstractController
 {
-    public function register(Request $request, app $app):Response
+    public function register(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         if (!$app['config']->get('registration_en', $app['pp_schema']))
         {
@@ -42,7 +47,7 @@ class RegisterController extends AbstractController
             {
                 $app['alert']->error('Geen geldig E-mail adres.');
             }
-            else if ($app['db']->fetchColumn('select c.id_user
+            else if ($db->fetchColumn('select c.id_user
                 from ' . $app['pp_schema'] . '.contact c, ' .
                     $app['pp_schema'] . '.type_contact tc
                 where c. value = ?

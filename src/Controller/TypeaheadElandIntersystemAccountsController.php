@@ -4,10 +4,15 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadElandIntersystemAccountsController extends AbstractController
 {
-    public function typeahead_eland_intersystem_accounts(app $app, string $remote_schema):Response
+    public function typeahead_eland_intersystem_accounts(
+        app $app,
+        string $remote_schema,
+        Db $db
+    ):Response
     {
         $eland_intersystems = $app['intersystems']->get_eland($app['pp_schema']);
 
@@ -20,7 +25,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             return $app->json([], 404);
         }
 
-        $fetched_users = $app['db']->fetchAll(
+        $fetched_users = $db->fetchAll(
             'select letscode as c,
                 name as n,
                 extract(epoch from adate) as a,

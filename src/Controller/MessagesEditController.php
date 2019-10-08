@@ -8,31 +8,41 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Doctrine\DBAL\Connection as db;
 use Monolog\Logger as monolog;
 use service\alert;
 use service\s3;
-use controller\messages_show;
+use App\Controller\MessagesShowController;
 use cnst\message_type as cnst_message_type;
 use cnst\access as cnst_access;
+use Doctrine\DBAL\Connection as Db;
 
 class MessagesEditController extends AbstractController
 {
-    public function messages_add(Request $request, app $app):Response
+    public function messages_add(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
-        return $this->messages_form($request, $app, 0, 'add');
+        return $this->messages_form($request, $app, 0, 'add', $db);
     }
 
-    public function messages_edit(Request $request, app $app, int $id):Response
+    public function messages_edit(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        return $this->messages_form($request, $app, $id, 'edit');
+        return $this->messages_form($request, $app, $id, 'edit', $db);
     }
 
     public function messages_form(
         Request $request,
         app $app,
         int $id,
-        string $mode
+        string $mode,
+        Db $db
     ):Response
     {
         $edit_mode = $mode === 'edit';
@@ -54,7 +64,7 @@ class MessagesEditController extends AbstractController
 
         if ($edit_mode)
         {
-            $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
+            $message = messages_show::get_message($db, $id, $app['pp_schema']);
 
             $s_owner = !$app['pp_guest']
                 && $app['s_system_self']
@@ -98,7 +108,7 @@ class MessagesEditController extends AbstractController
                 {
                     [$account_code_expl] = explode(' ', trim($account_code));
                     $account_code_expl = trim($account_code_expl);
-                    $user_id = $app['db']->fetchColumn('select id
+                    $user_id = $db->fetchColumn('select id
                         from ' . $app['pp_schema'] . '.users
                         where letscode = ?
                             and status in (1, 2)', [$account_code_expl]);
@@ -143,7 +153,7 @@ class MessagesEditController extends AbstractController
             {
                 $errors[] = 'Geieve een categorie te selecteren.';
             }
-            else if(!$app['db']->fetchColumn('select id
+            else if(!$db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.categories
                 where id = ?', [$id_category]))
             {
@@ -170,7 +180,7 @@ class MessagesEditController extends AbstractController
                 $errors[] = '"Per (uur, stuk, ...)" mag maximaal 15 tekens lang zijn.';
             }
 
-            if(!($app['db']->fetchColumn('select id
+            if(!($db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.users
                 where id = ? and status in (1, 2)', [$user_id])))
             {
@@ -201,15 +211,15 @@ class MessagesEditController extends AbstractController
             {
                 $post_message['cdate'] = gmdate('Y-m-d H:i:s');
 
-                $app['db']->insert($app['pp_schema'] . '.messages', $post_message);
+                $db->insert($app['pp_schema'] . '.messages', $post_message);
 
-                $id = (int) $app['db']->lastInsertId($app['pp_schema'] . '.messages_id_seq');
+                $id = (int) $db->lastInsertId($app['pp_schema'] . '.messages_id_seq');
 
                 self::adjust_category_stats($type,
-                    (int) $id_category, 1, $app['db'], $app['pp_schema']);
+                    (int) $id_category, 1, $db, $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, true,
-                    $app['db'], $app['monolog'], $app['alert'],
+                    $db, $app['monolog'], $app['alert'],
                     $app['s3'], $app['pp_schema']);
 
                 $app['alert']->success('Nieuw vraag of aanbod toegevoegd.');
@@ -219,28 +229,28 @@ class MessagesEditController extends AbstractController
             {
                 $post_message['mdate'] = gmdate('Y-m-d H:i:s');
 
-                $app['db']->beginTransaction();
+                $db->beginTransaction();
 
-                $app['db']->update($app['pp_schema'] . '.messages', $post_message, ['id' => $id]);
+                $db->update($app['pp_schema'] . '.messages', $post_message, ['id' => $id]);
 
                 if ($type !== $message['type']
                     || $id_category !== $message['id_category'])
                 {
                     self::adjust_category_stats($message['type'],
-                        $message['id_category'], -1, $app['db'], $app['pp_schema']);
+                        $message['id_category'], -1, $db, $app['pp_schema']);
 
                     self::adjust_category_stats($type,
-                        (int) $id_category, 1, $app['db'], $app['pp_schema']);
+                        (int) $id_category, 1, $db, $app['pp_schema']);
                 }
 
                 self::delete_images_from_db($deleted_images, $id,
-                    $app['db'], $app['monolog'], $app['pp_schema']);
+                    $db, $app['monolog'], $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, false,
-                    $app['db'], $app['monolog'], $app['alert'],
+                    $db, $app['monolog'], $app['alert'],
                     $app['s3'], $app['pp_schema']);
 
-                $app['db']->commit();
+                $db->commit();
                 $app['alert']->success('Vraag/aanbod aangepast');
                 $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
             }
@@ -295,7 +305,7 @@ class MessagesEditController extends AbstractController
 
         if ($edit_mode)
         {
-            $st = $app['db']->prepare('select "PictureFile"
+            $st = $db->prepare('select "PictureFile"
                 from ' . $app['pp_schema'] . '.msgpictures
                 where msgid = ?', [$id]);
 
@@ -320,7 +330,7 @@ class MessagesEditController extends AbstractController
 
         $cat_list = ['' => ''];
 
-        $rs = $app['db']->prepare('select id, fullname, id_parent
+        $rs = $db->prepare('select id, fullname, id_parent
             from ' . $app['pp_schema'] . '.categories
             where leafnote = 1
             order by fullname');

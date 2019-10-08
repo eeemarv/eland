@@ -5,12 +5,17 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use controller\intersystems;
+use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsShowController extends AbstractController
 {
-    public function intersystems_show(app $app, int $id):Response
+    public function intersystems_show(
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $group = $app['db']->fetchAssoc('select *
+        $group = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.letsgroups
             where id = ?', [$id]);
 
@@ -26,7 +31,7 @@ class IntersystemsShowController extends AbstractController
         }
         else
         {
-            $user = $app['db']->fetchAssoc('select *
+            $user = $db->fetchAssoc('select *
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$group['localletscode']]);
         }

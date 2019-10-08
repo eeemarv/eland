@@ -4,13 +4,19 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use controller\messages_show;
+use App\Controller\MessagesShowController;
+use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendController extends AbstractController
 {
-    public function messages_extend(app $app, int $id, int $days):Response
+    public function messages_extend(
+        app $app,
+        int $id,
+        int $days,
+        Db $db
+    ):Response
     {
-        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
+        $message = messages_show::get_message($db, $id, $app['pp_schema']);
 
         $s_owner = $app['s_id']
             && $message['id_user']
@@ -32,7 +38,7 @@ class MessagesExtendController extends AbstractController
             'exp_user_warn'	=> 'f',
         ];
 
-        if (!$app['db']->update($app['pp_schema'] . '.messages', $m, ['id' => $id]))
+        if (!$db->update($app['pp_schema'] . '.messages', $m, ['id' => $id]))
         {
             $app['alert']->error('Fout: ' . $message['label']['type_the'] . ' is niet verlengd.');
             $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);

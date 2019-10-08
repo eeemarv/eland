@@ -23,7 +23,6 @@ class DocsAddController extends AbstractController
             }
             else
             {
-//                $ext = $f_file->guessExtension();
                 $ext = $f_file->getClientOriginalExtension();
                 $original_filename = $f_file->getClientOriginalName();
                 $file_size = $f_file->getSize();

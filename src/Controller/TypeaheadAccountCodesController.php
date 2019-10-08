@@ -4,14 +4,15 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadAccountCodesController extends AbstractController
 {
-    public function typeahead_account_codes(app $app):Response
+    public function typeahead_account_codes(app $app, Db $db):Response
     {
         $account_codes = [];
 
-        $st = $app['db']->prepare('select letscode
+        $st = $db->prepare('select letscode
             from ' . $app['pp_schema'] . '.users
             order by letscode asc');
 

@@ -5,10 +5,16 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class PasswordResetToken extends AbstractController
 {
-    public function password_reset_token(Request $request, app $app, string $token):Response
+    public function password_reset_token(
+        Request $request,
+        app $app,
+        string $token,
+        Db $db
+    ):Response
     {
         $data = $app['data_token']->retrieve($token, 'password_reset', $app['pp_schema']);
         $password = $request->request->get('password', '');
@@ -29,7 +35,7 @@ class PasswordResetToken extends AbstractController
             }
             else if (!($app['password_strength']->get($password) < 50))
             {
-                $app['db']->update($app['pp_schema'] . '.users',
+                $db->update($app['pp_schema'] . '.users',
                     ['password' => hash('sha512', $password)],
                     ['id' => $user_id]);
 

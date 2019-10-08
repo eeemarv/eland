@@ -4,14 +4,15 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadLogTypesController extends AbstractController
 {
-    public function typeahead_log_types(app $app):Response
+    public function typeahead_log_types(app $app, Db $db):Response
     {
         $log_types = [];
 
-        $st = $app['db']->prepare('select distinct type
+        $st = $db->prepare('select distinct type
             from xdb.logs
             where schema = ?
             order by type asc');

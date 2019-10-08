@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use render\link;
 use cnst\access as cnst_access;
 use cnst\message_type as cnst_message_type;
@@ -16,9 +16,14 @@ use controller\users_show;
 
 class MessagesShowController extends AbstractController
 {
-    public function messages_show(Request $request, app $app, int $id):Response
+    public function messages_show(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $message = self::get_message($app['db'], $id, $app['pp_schema']);
+        $message = self::get_message($db, $id, $app['pp_schema']);
 
         $user_mail_content = $request->request->get('user_mail_content', '');
         $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
@@ -86,7 +91,7 @@ class MessagesShowController extends AbstractController
 
             if (!count($errors))
             {
-                $from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+                $from_contacts = $db->fetchAll('select c.value, tc.abbrev
                     from ' . $app['s_schema'] . '.contact c, ' .
                         $app['s_schema'] . '.type_contact tc
                     where c.flag_public >= ?
@@ -148,7 +153,7 @@ class MessagesShowController extends AbstractController
             'files'         => [],
         ];
 
-        $st = $app['db']->prepare('select "PictureFile"
+        $st = $db->prepare('select "PictureFile"
             from ' . $app['pp_schema'] . '.msgpictures
             where msgid = ?');
         $st->bindValue(1, $id);
@@ -161,14 +166,14 @@ class MessagesShowController extends AbstractController
 
         $and_local = $app['pp_guest'] ? ' and local = \'f\' ' : '';
 
-        $prev = $app['db']->fetchColumn('select id
+        $prev = $db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.messages
             where id > ?
             ' . $and_local . '
             order by id asc
             limit 1', [$id]);
 
-        $next = $app['db']->fetchColumn('select id
+        $next = $db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.messages
             where id < ?
             ' . $and_local . '
@@ -422,7 +427,7 @@ class MessagesShowController extends AbstractController
             ]);
     }
 
-    public static function get_message(db $db, int $id, string $pp_schema):array
+    public static function get_message(Db $db, int $id, string $pp_schema):array
     {
         $message = $db->fetchAssoc('select m.*,
                 c.id as cid,

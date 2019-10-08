@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\access as cnst_access;
+use Doctrine\DBAL\Connection as Db;
 
 class RegisterTokenController extends AbstractController
 {
-    public function register_token(app $app, string $token):Response
+    public function register_token(
+        app $app,
+        string $token,
+        Db $db
+    ):Response
     {
         if (!$app['config']->get('registration_en', $app['pp_schema']))
         {
@@ -64,7 +69,7 @@ class RegisterTokenController extends AbstractController
                 }
             }
 
-            if (!$app['db']->fetchColumn('select name
+            if (!$db->fetchColumn('select name
                 from ' . $app['pp_schema'] . '.users
                 where name = ?', [$name]))
             {
@@ -94,17 +99,17 @@ class RegisterTokenController extends AbstractController
             'cdate'			=> gmdate('Y-m-d H:i:s'),
         ];
 
-        $app['db']->beginTransaction();
+        $db->beginTransaction();
 
         try
         {
-            $app['db']->insert($app['pp_schema'] . '.users', $user);
+            $db->insert($app['pp_schema'] . '.users', $user);
 
-            $user_id = $app['db']->lastInsertId($app['pp_schema'] . '.users_id_seq');
+            $user_id = $db->lastInsertId($app['pp_schema'] . '.users_id_seq');
 
             $tc = [];
 
-            $rs = $app['db']->prepare('select abbrev, id
+            $rs = $db->prepare('select abbrev, id
                 from ' . $app['pp_schema'] . '.type_contact');
 
             $rs->execute();
@@ -123,7 +128,7 @@ class RegisterTokenController extends AbstractController
                 'id_type_contact'	=> $tc['mail'],
             ];
 
-            $app['db']->insert($app['pp_schema'] . '.contact', $mail);
+            $db->insert($app['pp_schema'] . '.contact', $mail);
 
             if ($data['gsm'] || $data['tel'])
             {
@@ -136,7 +141,7 @@ class RegisterTokenController extends AbstractController
                         'id_type_contact'	=> $tc['gsm'],
                     ];
 
-                    $app['db']->insert($app['pp_schema'] . '.contact', $gsm);
+                    $db->insert($app['pp_schema'] . '.contact', $gsm);
                 }
 
                 if ($data['tel'])
@@ -148,14 +153,14 @@ class RegisterTokenController extends AbstractController
                         'id_type_contact'	=> $tc['tel'],
                     ];
 
-                    $app['db']->insert($app['pp_schema'] . '.contact', $tel);
+                    $db->insert($app['pp_schema'] . '.contact', $tel);
                 }
             }
-            $app['db']->commit();
+            $db->commit();
         }
         catch (\Exception $e)
         {
-            $app['db']->rollback();
+            $db->rollback();
             throw $e;
         }
 

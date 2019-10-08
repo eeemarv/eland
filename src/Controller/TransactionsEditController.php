@@ -5,17 +5,23 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TransactionsEditController extends AbstractController
 {
-    public function transactions_edit(Request $request, app $app, int $id):Response
+    public function transactions_edit(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
 
         $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
-        $transaction = $app['db']->fetchAssoc('select t.*
+        $transaction = $db->fetchAssoc('select t.*
             from ' . $app['pp_schema'] . '.transactions t
             where t.id = ?', [$id]);
 
@@ -32,7 +38,7 @@ class TransactionsEditController extends AbstractController
 
         if ($inter_schema)
         {
-            $inter_transaction = $app['db']->fetchAssoc('select t.*
+            $inter_transaction = $db->fetchAssoc('select t.*
                 from ' . $inter_schema . '.transactions t
                 where t.transid = ?', [$transaction['transid']]);
         }
@@ -71,13 +77,13 @@ class TransactionsEditController extends AbstractController
 
             if (!count($errors))
             {
-                $app['db']->update($app['pp_schema'] . '.transactions',
+                $db->update($app['pp_schema'] . '.transactions',
                     ['description' => $description],
                     ['id' => $id]);
 
                 if ($inter_transaction)
                 {
-                    $app['db']->update($inter_schema . '.transactions',
+                    $db->update($inter_schema . '.transactions',
                         ['description' => $description],
                         ['id' => $inter_transaction['id']]);
                 }

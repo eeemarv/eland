@@ -5,10 +5,11 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Doctrine\DBAL\Connection as Db;
 
 class NewsShowController extends AbstractController
 {
-    public function news_show(app $app, int $id):Response
+    public function news_show(app $app, int $id, Db $db):Response
     {
         $show_visibility = ($app['pp_user']
                 && $app['intersystem_en'])

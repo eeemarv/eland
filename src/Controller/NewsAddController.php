@@ -6,10 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\access as cnst_access;
+use Doctrine\DBAL\Connection as Db;
 
 class NewsAddController extends AbstractController
 {
-    public function news_add(Request $request, app $app):Response
+    public function news_add(Request $request, app $app, Db $db):Response
     {
         $news = [];
 
@@ -75,9 +76,9 @@ class NewsAddController extends AbstractController
                 $news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
                 $news['cdate'] = gmdate('Y-m-d H:i:s');
 
-                if ($app['db']->insert($app['pp_schema'] . '.news', $news))
+                if ($db->insert($app['pp_schema'] . '.news', $news))
                 {
-                    $id = $app['db']->lastInsertId($app['pp_schema'] . '.news_id_seq');
+                    $id = $db->lastInsertId($app['pp_schema'] . '.news_id_seq');
 
                     $app['xdb']->set('news_access', (string) $id, [
                         'access' => cnst_access::TO_XDB[$access],

@@ -14,17 +14,28 @@ use cnst\status as cnst_status;
 use cnst\role as cnst_role;
 use cnst\bulk as cnst_bulk;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersListController extends AbstractController
 {
     const TPL_CHECKBOX_ITEM = '<label for="su[%1$s]">&nbsp;<input type="checkbox" name="su[%1$s]" id="su[%1$s]" value="1"%2$s>&nbsp;&nbsp;';
 
-    public function users_list_admin(Request $request, app $app, string $status):Response
+    public function users_list_admin(
+        Request $request,
+        app $app,
+        string $status,
+        Db $db
+    ):Response
     {
-        return $this->users_list($request, $app, $status);
+        return $this->users_list($request, $app, $status, $db);
     }
 
-    public function users_list(Request $request, app $app, string $status):Response
+    public function users_list(
+        Request $request,
+        app $app,
+        string $status,
+        Db $db
+    ):Response
     {
         $q = $request->get('q', '');
         $show_columns = $request->query->get('sh', []);

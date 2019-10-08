@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class LogsController extends AbstractController
 {
-    public function logs(Request $request, app $app):Response
+    public function logs(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -87,7 +92,7 @@ class LogsController extends AbstractController
                 where schema = ?' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
-        $row_count = $app['db']->fetchColumn('select count(*)
+        $row_count = $db->fetchColumn('select count(*)
             from xdb.logs
             where schema = ?' . $where_sql, $params_sql);
 
@@ -95,7 +100,7 @@ class LogsController extends AbstractController
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $rows = $app['db']->fetchAll($query, $params_sql);
+        $rows = $db->fetchAll($query, $params_sql);
 
         $app['pagination']->init('logs', $app['pp_ary'],
             $row_count, $params);

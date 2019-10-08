@@ -5,12 +5,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ApikeysController extends AbstractController
 {
-    public function apikeys(app $app):Response
+    public function apikeys(app $app, Db $db):Response
     {
-        $apikeys = $app['db']->fetchAll('select *
+        $apikeys = $db->fetchAll('select *
             from ' . $app['pp_schema'] . '.apikeys');
 
         $app['btn_top']->add('apikeys_add', $app['pp_ary'], [], 'Apikey toevoegen');
@@ -64,7 +65,7 @@ class ApikeysController extends AbstractController
         ]);
     }
 
-    public function apikeys_add(Request $request, app $app):Response
+    public function apikeys_add(Request $request, app $app, Db $db):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -80,7 +81,7 @@ class ApikeysController extends AbstractController
                 'type'		=> 'interlets',
             ];
 
-            if($app['db']->insert($app['pp_schema'] . '.apikeys', $apikey))
+            if($db->insert($app['pp_schema'] . '.apikeys', $apikey))
             {
                 $app['alert']->success('Apikey opgeslagen.');
                 $app['link']->redirect('apikeys', $app['pp_ary'], []);
@@ -165,7 +166,11 @@ class ApikeysController extends AbstractController
         return $out;
     }
 
-    public function apikeys_del(Request $request, app $app, int $id):Response
+    public function apikeys_del(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db):Response
     {
         if($request->isMethod('POST'))
         {
@@ -175,7 +180,7 @@ class ApikeysController extends AbstractController
                 $app['link']->redirect('apikeys', $app['pp_ary'], []);
             }
 
-            if ($app['db']->delete($app['pp_schema'] . '.apikeys',
+            if ($db->delete($app['pp_schema'] . '.apikeys',
                 ['id' => $id]))
             {
                 $app['alert']->success('Apikey verwijderd.');
@@ -184,7 +189,7 @@ class ApikeysController extends AbstractController
 
             $app['alert']->error('Apikey niet verwijderd.');
         }
-        $apikey = $app['db']->fetchAssoc('select *
+        $apikey = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.apikeys
             where id = ?', [$id]);
 

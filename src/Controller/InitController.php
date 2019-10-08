@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class InitController extends AbstractController
 {
@@ -56,13 +57,17 @@ class InitController extends AbstractController
         ]);
     }
 
-    public function elas_db_upgrade(Request $request, app $app):Response
+    public function elas_db_upgrade(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
         $schemaversion = 31000;
 
-        $currentversion = $dbversion = $app['db']->fetchColumn('select value
+        $currentversion = $dbversion = $db->fetchColumn('select value
             from ' . $app['pp_schema'] . '.parameters
             where parameter = \'schemaversion\'');
 
@@ -96,13 +101,18 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function sync_users_images(Request $request, app $app, int $start):Response
+    public function sync_users_images(
+        Request $request,
+        app $app,
+        int $start,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
         $found = false;
 
-        $rs = $app['db']->prepare('select id, "PictureFile"
+        $rs = $db->prepare('select id, "PictureFile"
             from ' . $app['pp_schema'] . '.users
             where "PictureFile" is not null
             order by id asc
@@ -136,7 +146,7 @@ class InitController extends AbstractController
 
             if (!$found)
             {
-                $app['db']->update($app['pp_schema'] . '.users',
+                $db->update($app['pp_schema'] . '.users',
                     ['"PictureFile"' => null], ['id' => $user_id]);
 
                 error_log(' -- Profile image not present,
@@ -164,7 +174,7 @@ class InitController extends AbstractController
                     continue;
                 }
 
-                $app['db']->update($app['pp_schema'] . '.users',
+                $db->update($app['pp_schema'] . '.users',
                     ['"PictureFile"' => $new_filename],
                     ['id' => $user_id]);
 
@@ -192,11 +202,16 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function sync_messages_images(Request $request, app $app, int $start):Response
+    public function sync_messages_images(
+        Request $request,
+        app $app,
+        int $start,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
-        $message_images = $app['db']->fetchAll('select id, msgid, "PictureFile"
+        $message_images = $db->fetchAll('select id, msgid, "PictureFile"
             from ' . $app['pp_schema'] . '.msgpictures
             order by id asc
             limit 50 offset ' . $start);
@@ -232,7 +247,7 @@ class InitController extends AbstractController
 
             if (!$found)
             {
-                $app['db']->delete($app['pp_schema'] . '.msgpictures',
+                $db->delete($app['pp_schema'] . '.msgpictures',
                     ['id' => $id]);
 
                 error_log(' -- Message image not present,
@@ -259,7 +274,7 @@ class InitController extends AbstractController
                     continue;
                 }
 
-                $app['db']->update($app['pp_schema'] . '.msgpictures',
+                $db->update($app['pp_schema'] . '.msgpictures',
                     ['"PictureFile"' => $new_filename], ['id' => $id]);
 
                 error_log('Profile image renamed, old: ' .
@@ -280,13 +295,17 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function clear_users_cache(Request $request, app $app):Response
+    public function clear_users_cache(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
         error_log('*** clear users cache ***');
 
-        $users = $app['db']->fetchAll('select id
+        $users = $db->fetchAll('select id
             from ' . $app['pp_schema'] . '.users');
 
         foreach ($users as $u)
@@ -300,11 +319,15 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function empty_elas_tokens(Request $request, app $app):Response
+    public function empty_elas_tokens(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
-        $app['db']->executeQuery('delete from ' .
+        $db->executeQuery('delete from ' .
         $app['pp_schema'] . '.tokens');
 
         error_log('*** empty tokens table from elas (is not used anymore) *** ');
@@ -315,11 +338,15 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function empty_city_distance(Request $request, app $app):Response
+    public function empty_city_distance(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
-        $app['db']->executeQuery('delete from ' .
+        $db->executeQuery('delete from ' .
         $app['pp_schema'] . '.city_distance');
 
         error_log('*** empty city_distance table (is not used anymore) *** ');
@@ -330,13 +357,18 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function queue_geocoding(Request $request, app $app, int $start):Response
+    public function queue_geocoding(
+        Request $request,
+        app $app,
+        int $start,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
         error_log('*** Queue for Geocoding, start: ' . $start . ' ***');
 
-        $rs = $app['db']->prepare('select c.id_user, c.value
+        $rs = $db->prepare('select c.id_user, c.value
             from ' . $app['pp_schema'] . '.contact c, ' .
                 $app['pp_schema'] . '.type_contact tc
             where c.id_type_contact = tc.id
@@ -373,13 +405,17 @@ class InitController extends AbstractController
         return new Response('');
     }
 
-    public function copy_config(Request $request, app $app):Response
+    public function copy_config(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         set_time_limit(300);
 
         error_log('** Copy config **');
 
-        $config_ary = $app['db']->fetchAll('select value, setting
+        $config_ary = $db->fetchAll('select value, setting
             from ' . $app['pp_schema'] . '.config');
 
         foreach($config_ary as $rec)

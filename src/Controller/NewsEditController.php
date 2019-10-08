@@ -6,10 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\access as cnst_access;
+use Doctrine\DBAL\Connection as Db;
 
 class NewsEditController extends AbstractController
 {
-    public function news_edit(Request $request, app $app, int $id):Response
+    public function news_edit(Request $request, app $app, int $id, Db $db):Response
     {
         $news = [];
 
@@ -68,7 +69,7 @@ class NewsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if($app['db']->update($app['pp_schema'] . '.news', $news, ['id' => $id]))
+                if($db->update($app['pp_schema'] . '.news', $news, ['id' => $id]))
                 {
                     $app['xdb']->set('news_access', (string) $id, [
                         'access' => cnst_access::TO_XDB[$access]
@@ -85,7 +86,7 @@ class NewsEditController extends AbstractController
         }
         else
         {
-            $news = $app['db']->fetchAssoc('select *
+            $news = $db->fetchAssoc('select *
                 from ' . $app['pp_schema'] . '.news
                 where id = ?', [$id]);
 

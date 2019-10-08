@@ -6,10 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use cnst\role as cnst_role;
+use Doctrine\DBAL\Connection as Db;
 
 class LoginController extends AbstractController
 {
-    public function login(Request $request, app $app):Response
+    public function login(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         $location = $request->query->get('location', '');
 
@@ -66,7 +71,7 @@ class LoginController extends AbstractController
 
             if (!count($errors) && filter_var($lc_login, FILTER_VALIDATE_EMAIL))
             {
-                $count_email = $app['db']->fetchColumn('select count(c.*)
+                $count_email = $db->fetchColumn('select count(c.*)
                     from ' . $app['pp_schema'] . '.contact c, ' .
                         $app['pp_schema'] . '.type_contact tc, ' .
                         $app['pp_schema'] . '.users u
@@ -78,7 +83,7 @@ class LoginController extends AbstractController
 
                 if ($count_email == 1)
                 {
-                    $user_id = $app['db']->fetchColumn('select u.id
+                    $user_id = $db->fetchColumn('select u.id
                         from ' . $app['pp_schema'] . '.contact c, ' .
                             $app['pp_schema'] . '.type_contact tc, ' .
                             $app['pp_schema'] . '.users u
@@ -100,7 +105,7 @@ class LoginController extends AbstractController
 
             if (!$user_id && !count($errors))
             {
-                $count_letscode = $app['db']->fetchColumn('select count(u.*)
+                $count_letscode = $db->fetchColumn('select count(u.*)
                     from ' . $app['pp_schema'] . '.users u
                     where lower(letscode) = ?', [$lc_login]);
 
@@ -114,7 +119,7 @@ class LoginController extends AbstractController
                 }
                 else if ($count_letscode == 1)
                 {
-                    $user_id = $app['db']->fetchColumn('select id
+                    $user_id = $db->fetchColumn('select id
                         from ' . $app['pp_schema'] . '.users
                         where lower(letscode) = ?', [$lc_login]);
                 }
@@ -122,7 +127,7 @@ class LoginController extends AbstractController
 
             if (!$user_id && !count($errors))
             {
-                $count_name = $app['db']->fetchColumn('select count(u.*)
+                $count_name = $db->fetchColumn('select count(u.*)
                     from ' . $app['pp_schema'] . '.users u
                     where lower(name) = ?', [$lc_login]);
 
@@ -136,7 +141,7 @@ class LoginController extends AbstractController
                 }
                 else if ($count_name == 1)
                 {
-                    $user_id = $app['db']->fetchColumn('select id
+                    $user_id = $db->fetchColumn('select id
                         from ' . $app['pp_schema'] . '.users
                         where lower(name) = ?', [$lc_login]);
                 }
@@ -173,7 +178,7 @@ class LoginController extends AbstractController
                     }
                     else if ($user['password'] !== $sha512)
                     {
-                        $app['db']->update($app['pp_schema'] . '.users',
+                        $db->update($app['pp_schema'] . '.users',
                             ['password' => hash('sha512', $password)],
                             ['id' => $user_id]);
 
@@ -213,7 +218,7 @@ class LoginController extends AbstractController
                     $app['account']->str_id($user_id, $app['pp_schema']) .
                     ' logged in, agent: ' . $agent, $log_ary);
 
-                $app['db']->update($app['pp_schema'] . '.users',
+                $db->update($app['pp_schema'] . '.users',
                     ['lastlogin' => gmdate('Y-m-d H:i:s')],
                     ['id' => $user_id]);
 

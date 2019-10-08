@@ -8,15 +8,25 @@ use Symfony\Component\HttpFoundation\Response;
 use controller\contacts_edit;
 use cnst\access as cnst_access;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactsAddController extends AbstractController
 {
-    public function contacts_add_admin(Request $request, app $app):Response
+    public function contacts_add_admin(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
-        return self::form($request, $app, 0, true);
+        return self::form($request, $app, 0, true, $db);
     }
 
-    public static function form(Request $request, app $app, int $user_id, bool $redirect_contacts):Response
+    public static function form(
+        Request $request,
+        app $app,
+        int $user_id,
+        bool $redirect_contacts,
+        Db $db):Response
     {
         $account_code = $request->request->get('account_code', '');
         $id_type_contact = (int) $request->request->get('id_type_contact', '');
@@ -37,7 +47,7 @@ class ContactsAddController extends AbstractController
             {
                [$code] = explode(' ', trim($account_code));
 
-                $user_id = $app['db']->fetchColumn('select id
+                $user_id = $db->fetchColumn('select id
                     from ' . $app['pp_schema'] . '.users
                     where letscode = ?', [$code]);
 
@@ -62,7 +72,7 @@ class ContactsAddController extends AbstractController
                 throw new BadRequestHttpException('Ongeldige waarde zichtbaarheid');
             }
 
-            $abbrev_type = $app['db']->fetchColumn('select abbrev
+            $abbrev_type = $db->fetchColumn('select abbrev
                 from ' . $app['pp_schema'] . '.type_contact
                 where id = ?', [$id_type_contact]);
 
@@ -87,7 +97,7 @@ class ContactsAddController extends AbstractController
                 $errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
             }
 
-            $mail_type_id = $app['db']->fetchColumn('select id
+            $mail_type_id = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.type_contact
                 where abbrev = \'mail\'');
 
@@ -95,7 +105,7 @@ class ContactsAddController extends AbstractController
             {
                 $mailadr = $value;
 
-                $mail_count = $app['db']->fetchColumn('select count(c.*)
+                $mail_count = $db->fetchColumn('select count(c.*)
                     from ' . $app['pp_schema'] . '.contact c, ' .
                         $app['pp_schema'] . '.type_contact tc, ' .
                         $app['pp_schema'] . '.users u
@@ -156,7 +166,7 @@ class ContactsAddController extends AbstractController
                     'id_user'				=> $user_id,
                 ];
 
-                if ($app['db']->insert($app['pp_schema'] . '.contact', $insert_ary))
+                if ($db->insert($app['pp_schema'] . '.contact', $insert_ary))
                 {
                     $app['alert']->success('Contact opgeslagen.');
 
@@ -182,7 +192,7 @@ class ContactsAddController extends AbstractController
 
         $tc = [];
 
-        $rs = $app['db']->prepare('select id, name, abbrev
+        $rs = $db->prepare('select id, name, abbrev
             from ' . $app['pp_schema'] . '.type_contact');
 
         $rs->execute();

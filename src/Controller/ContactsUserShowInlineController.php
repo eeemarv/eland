@@ -4,17 +4,22 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactsUserShowInlineController extends AbstractController
 {
-    public function contacts_user_show_inline(app $app, int $uid):Response
+    public function contacts_user_show_inline(
+        app $app,
+        int $uid,
+        Db $db
+    ):Response
     {
         $s_owner = $app['s_id'] === $uid
             && !$app['pp_guest']
             && !$app['s_elas_guest']
             && $app['s_system_self'];
 
-        $contacts = $app['db']->fetchAll('select c.*, tc.abbrev
+        $contacts = $db->fetchAll('select c.*, tc.abbrev
             from ' . $app['pp_schema'] . '.contact c, ' .
                 $app['pp_schema'] . '.type_contact tc
             where c.id_type_contact = tc.id

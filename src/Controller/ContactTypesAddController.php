@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesAddController extends AbstractController
 {
-    public function contact_types_add(Request $request, app $app):Response
+    public function contact_types_add(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -28,7 +33,7 @@ class ContactTypesAddController extends AbstractController
 
             if (!$error)
             {
-                if ($app['db']->insert($app['pp_schema'] . '.type_contact', $tc))
+                if ($db->insert($app['pp_schema'] . '.type_contact', $tc))
                 {
                     $app['alert']->success('Contact type toegevoegd.');
                 }

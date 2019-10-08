@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersImageDelController extends AbstractController
 {
-    public function users_image_del(Request $request, app $app):Response
+    public function users_image_del(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         if ($app['s_id'] < 1)
         {

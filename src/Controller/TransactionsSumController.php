@@ -3,23 +3,41 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TransactionsSumController extends AbstractController
 {
-    public function transactions_sum_in(app $app, int $days):Response
+    public function transactions_sum_in(
+        Request $request,
+        app $app,
+        int $days,
+        Db $db
+    ):Response
     {
-        return $this->calc($app, $days, true);
+        return $this->calc($request, $app, $days, true, $db);
     }
 
-    public function transactions_sum_out(app $app, int $days):Response
+    public function transactions_sum_out(
+        Request $request,
+        app $app,
+        int $days,
+        Db $db
+    ):Response
     {
-        return $this->calc($app, $days, false);
+        return $this->calc($request, $app, $days, false, $db);
     }
 
-    private function calc(app $app, int $days, bool $in):Response
+    private function calc(
+        Request $request,
+        app $app,
+        int $days,
+        bool $in,
+        Db $db
+    ):Response
     {
-        $ex_letscodes = $app['request']->query->get('ex', []);
+        $ex_letscodes = $request->query->get('ex', []);
 
         if (!is_array($ex_letscodes))
         {
@@ -43,7 +61,7 @@ class TransactionsSumController extends AbstractController
         {
             $sql_where[] = 'u.letscode not in (?)';
             $sql_params[] = $ex_letscodes;
-            $sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
+            $sql_types[] = Db::PARAM_STR_ARRAY;
         }
 
         $query = 'select sum(t.amount), t.id_' . $res . ' as uid
@@ -59,7 +77,7 @@ class TransactionsSumController extends AbstractController
 
         $query .= ' group by t.id_' . $res;
 
-        $stmt = $app['db']->executeQuery($query, $sql_params, $sql_types);
+        $stmt = $db->executeQuery($query, $sql_params, $sql_types);
 
         $ary = [];
 

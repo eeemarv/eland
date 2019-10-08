@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class MassTransactionController extends AbstractController
 {
@@ -65,7 +66,11 @@ class MassTransactionController extends AbstractController
         123 => 'without-new-and-leaving',
     ];
 
-    public function mass_transaction(Request $request, app $app):Response
+    public function mass_transaction(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '096024');
@@ -77,7 +82,7 @@ class MassTransactionController extends AbstractController
 
         $users = [];
 
-        $rs = $app['db']->prepare(
+        $rs = $db->prepare(
             'select id, name, letscode,
                 accountrole, status, saldo,
                 minlimit, maxlimit, adate,
@@ -145,7 +150,7 @@ class MassTransactionController extends AbstractController
                 $to_one = $to_letscode ? true : false;
                 $letscode = $to_one ? $to_letscode : $from_letscode;
 
-                $one_uid = $app['db']->fetchColumn('select id
+                $one_uid = $db->fetchColumn('select id
                     from ' . $app['pp_schema'] . '.users
                     where letscode = ?', [$letscode]);
 
@@ -201,7 +206,7 @@ class MassTransactionController extends AbstractController
                 $errors[] = 'Geen geldig transactie id';
             }
 
-            if ($app['db']->fetchColumn('select id
+            if ($db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.transactions
                 where transid = ?', [$transid]))
             {
@@ -221,7 +226,7 @@ class MassTransactionController extends AbstractController
             {
                 $transactions = [];
 
-                $app['db']->beginTransaction();
+                $db->beginTransaction();
 
                 $cdate = gmdate('Y-m-d H:i:s');
 
@@ -268,10 +273,10 @@ class MassTransactionController extends AbstractController
                             'creator'		=> $app['s_master'] ? 0 : $app['s_id'],
                         ];
 
-                        $app['db']->insert($app['pp_schema'] . '.transactions', $transaction);
-                        $transaction['id'] = $app['db']->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
+                        $db->insert($app['pp_schema'] . '.transactions', $transaction);
+                        $transaction['id'] = $db->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
 
-                        $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
+                        $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                             set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
                             where id = ?', [$amo, $many_uid]);
 
@@ -282,16 +287,16 @@ class MassTransactionController extends AbstractController
                         $transactions[] = $transaction;
                     }
 
-                    $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
+                    $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                         set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
                         where id = ?', [$total_amount, $one_uid]);
 
-                    $app['db']->commit();
+                    $db->commit();
                 }
                 catch (Exception $e)
                 {
                     $app['alert']->error('Fout bij het opslaan.');
-                    $app['db']->rollback();
+                    $db->rollback();
                     throw $e;
                 }
 
@@ -408,7 +413,7 @@ class MassTransactionController extends AbstractController
 
         if ($to_letscode)
         {
-            if ($to_name = $app['db']->fetchColumn('select name
+            if ($to_name = $db->fetchColumn('select name
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$to_letscode]))
             {
@@ -417,7 +422,7 @@ class MassTransactionController extends AbstractController
         }
         if ($from_letscode)
         {
-            if ($from_name = $app['db']->fetchColumn('select name
+            if ($from_name = $db->fetchColumn('select name
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$from_letscode]))
             {

@@ -6,10 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\messages_list;
+use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendedController extends AbstractController
 {
-    public function messages_extended(Request $request, app $app):Response
+    public function messages_extended(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         $fetch_and_filter = messages_list::fetch_and_filter($request, $app);
 
@@ -24,7 +29,7 @@ class MessagesExtendedController extends AbstractController
             $ids[] = $msg['id'];
         }
 
-        $_imgs = $app['db']->executeQuery('select mp.msgid, mp."PictureFile"
+        $_imgs = $db->executeQuery('select mp.msgid, mp."PictureFile"
             from ' . $app['pp_schema'] . '.msgpictures mp
             where msgid in (?)',
             [$ids],

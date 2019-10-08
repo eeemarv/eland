@@ -7,24 +7,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use controller\messages_show;
+use App\Controller\MessagesShowController;
+use Doctrine\DBAL\Connection as Db;
 
 class MessagesImagesUploadController extends AbstractController
 {
     public function messages_add_images_upload(
         Request $request,
         app $app,
-        string $form_token
+        string $form_token,
+        Db $db
     ):Response
     {
-        return $this->messages_edit_images_upload($request, $app, 0, $form_token);
+        return $this->messages_edit_images_upload($request, $app, 0, $form_token, $db);
     }
 
     public function messages_edit_images_upload(
         Request $request,
         app $app,
         int $id,
-        string $form_token
+        string $form_token,
+        Db $db
     ):Response
     {
         if ($error = $app['form_token']->get_ajax_error($form_token))
@@ -32,13 +35,14 @@ class MessagesImagesUploadController extends AbstractController
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
 
-        return $this->messages_images_upload($request, $app, $id);
+        return $this->messages_images_upload($request, $app, $id, $db);
     }
 
     public function messages_images_upload(
         Request $request,
         app $app,
-        int $id
+        int $id,
+        Db $db
     ):Response
     {
         $uploaded_files = $request->files->get('images', []);
@@ -53,7 +57,7 @@ class MessagesImagesUploadController extends AbstractController
 
         if ($id)
         {
-            $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
+            $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
 
             $s_owner = !$app['pp_guest']
                 && $app['s_system_self']
@@ -69,7 +73,7 @@ class MessagesImagesUploadController extends AbstractController
         }
         else
         {
-            $id = $app['db']->fetchColumn('select max(id)
+            $id = $db->fetchColumn('select max(id)
                 from ' . $app['pp_schema'] . '.messages');
             $id++;
         }
@@ -81,7 +85,7 @@ class MessagesImagesUploadController extends AbstractController
 
             if ($insert_in_db)
             {
-                $app['db']->insert($app['pp_schema'] . '.msgpictures', [
+                $db->insert($app['pp_schema'] . '.msgpictures', [
                     'msgid'			=> $id,
                     '"PictureFile"'	=> $filename]);
 

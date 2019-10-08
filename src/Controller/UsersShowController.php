@@ -11,15 +11,28 @@ use cnst\status as cnst_status;
 use cnst\access as cnst_access;
 use cnst\role as cnst_role;
 use controller\users_list;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersShowController extends AbstractController
 {
-    public function users_show(Request $request, app $app, string $status, int $id):Response
+    public function users_show(
+        Request $request,
+        app $app,
+        string $status,
+        int $id,
+        Db $db
+    ):Response
     {
-        return $this->users_show_admin($request, $app, $status, $id);
+        return $this->users_show_admin($request, $app, $status, $id, $db);
     }
 
-    public function users_show_admin(Request $request, app $app, string $status, int $id):Response
+    public function users_show_admin(
+        Request $request,
+        app $app,
+        string $status,
+        int $id,
+        Db $db
+    ):Response
     {
         $tdays = $request->query->get('tdays', '365');
 
@@ -87,7 +100,7 @@ class UsersShowController extends AbstractController
 
             if (!count($errors))
             {
-                $from_contacts = $app['db']->fetchAll('select c.value, tc.abbrev
+                $from_contacts = $db->fetchAll('select c.value, tc.abbrev
                     from ' . $app['s_schema'] . '.contact c, ' .
                         $app['s_schema'] . '.type_contact tc
                     where c.flag_public >= ?
@@ -143,11 +156,11 @@ class UsersShowController extends AbstractController
             $app['alert']->error($errors);
         }
 
-        $count_messages = $app['db']->fetchColumn('select count(*)
+        $count_messages = $db->fetchColumn('select count(*)
             from ' . $app['pp_schema'] . '.messages
             where id_user = ?', [$id]);
 
-        $count_transactions = $app['db']->fetchColumn('select count(*)
+        $count_transactions = $db->fetchColumn('select count(*)
             from ' . $app['pp_schema'] . '.transactions
             where id_from = ?
                 or id_to = ?', [$id, $id]);
@@ -170,14 +183,14 @@ class UsersShowController extends AbstractController
             $and_status = $app['pp_admin'] ? '' : ' and u.status in (1, 2) ';
         }
 
-        $next = $app['db']->fetchColumn('select id
+        $next = $db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.users u
             where u.letscode > ?
             ' . $and_status . '
             order by u.letscode asc
             limit 1', $sql_bind);
 
-        $prev = $app['db']->fetchColumn('select id
+        $prev = $db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.users u
             where u.letscode < ?
             ' . $and_status . '
@@ -190,7 +203,7 @@ class UsersShowController extends AbstractController
             && $user['accountrole'] === 'interlets'
             && $app['intersystem_en'])
         {
-            $intersystem_id = $app['db']->fetchColumn('select id
+            $intersystem_id = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.letsgroups
                 where localletscode = ?', [$user['letscode']]);
 

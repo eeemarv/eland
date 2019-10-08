@@ -4,10 +4,15 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadAccountsController extends AbstractController
 {
-    public function typeahead_accounts(app $app, string $status):Response
+    public function typeahead_accounts(
+        app $app,
+        string $status,
+        Db $db
+    ):Response
     {
         if ($app['pp_guest'] && $status !== 'active')
         {
@@ -43,7 +48,7 @@ class TypeaheadAccountsController extends AbstractController
                 break;
         }
 
-        $fetched_users = $app['db']->fetchAll(
+        $fetched_users = $db->fetchAll(
             'select letscode as c,
                 name as n,
                 extract(epoch from adate) as a,

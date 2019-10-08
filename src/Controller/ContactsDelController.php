@@ -7,19 +7,32 @@ use controller\contacts_edit;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactsDelController extends AbstractController
 {
-    public function contacts_del_admin(Request $request, app $app, int $id):Response
+    public function contacts_del_admin(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        $contact = contacts_edit::get_contact($app['db'], $id,  $app['pp_schema']);
+        $contact = contacts_edit::get_contact($db, $id,  $app['pp_schema']);
 
-        return self::form($request, $app, $contact['id_user'], $id, true);
+        return self::form($request, $app, $contact['id_user'], $id, true, $db);
     }
 
-    public static function form(Request $request, app $app, int $user_id, int $id, bool $redirect_contacts):Response
+    public static function form(
+        Request $request,
+        app $app,
+        int $user_id,
+        int $id,
+        bool $redirect_contacts,
+        Db $db
+    ):Response
     {
-        $contact = contacts_edit::get_contact($app['db'], $id,  $app['pp_schema']);
+        $contact = contacts_edit::get_contact($db, $id,  $app['pp_schema']);
 
         if ($user_id !== $contact['id_user'])
         {
@@ -32,7 +45,7 @@ class ContactsDelController extends AbstractController
             if ($contact['abbrev'] === 'mail'
                 && $app['user_cache']->is_active_user($user_id, $app['pp_schema']))
             {
-                $count_mail = $app['db']->fetchColumn('select count(c.*)
+                $count_mail = $db->fetchColumn('select count(c.*)
                     from ' . $app['pp_schema'] . '.contact c
                     where c.id_type_contact = ?
                         and c.id_user = ?', [
@@ -67,7 +80,7 @@ class ContactsDelController extends AbstractController
 
             if (!count($errors))
             {
-                $app['db']->delete($app['pp_schema'] . '.contact', ['id' => $id]);
+                $db->delete($app['pp_schema'] . '.contact', ['id' => $id]);
 
                 $app['alert']->success('Contact verwijderd.');
 

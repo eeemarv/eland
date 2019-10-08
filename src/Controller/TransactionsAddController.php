@@ -6,10 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\transactions;
+use Doctrine\DBAL\Connection as Db;
 
 class TransactionsAddController extends AbstractController
 {
-    public function transactions_add(Request $request, app $app):Response
+    public function transactions_add(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         $errors = [];
 
@@ -49,7 +54,7 @@ class TransactionsAddController extends AbstractController
                 $errors[] = 'Fout transactie id.';
             }
 
-            if ($app['db']->fetchColumn('select transid
+            if ($db->fetchColumn('select transid
                 from ' . $app['pp_schema'] . '.transactions
                 where transid = ?', [$stored_transid]))
             {
@@ -63,7 +68,7 @@ class TransactionsAddController extends AbstractController
 
             if ($group_id != 'self')
             {
-                $group = $app['db']->fetchAssoc('select *
+                $group = $db->fetchAssoc('select *
                     from ' . $app['pp_schema'] . '.letsgroups
                     where id = ?', [$group_id]);
 
@@ -79,20 +84,20 @@ class TransactionsAddController extends AbstractController
 
             if ($app['pp_user'] && !$app['s_master'])
             {
-                $fromuser = $app['db']->fetchAssoc('select *
+                $fromuser = $db->fetchAssoc('select *
                     from ' . $app['pp_schema'] . '.users
                     where id = ?', [$app['s_id']]);
             }
             else
             {
-                $fromuser = $app['db']->fetchAssoc('select *
+                $fromuser = $db->fetchAssoc('select *
                     from ' . $app['pp_schema'] . '.users
                     where letscode = ?', [$letscode_from]);
             }
 
             $letscode_touser = $group_id == 'self' ? $letscode_to : $group['localletscode'];
 
-            $touser = $app['db']->fetchAssoc('select *
+            $touser = $db->fetchAssoc('select *
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$letscode_touser]);
 
@@ -501,7 +506,7 @@ class TransactionsAddController extends AbstractController
 
                 $remote_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
 
-                $to_remote_user = $app['db']->fetchAssoc('select *
+                $to_remote_user = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
                     where letscode = ?', [$letscode_to]);
 
@@ -516,7 +521,7 @@ class TransactionsAddController extends AbstractController
 
                 $legacy_eland_origin = $app['systems']->get_legacy_eland_origin($app['pp_schema']);
 
-                $remote_group = $app['db']->fetchAssoc('select *
+                $remote_group = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.letsgroups
                     where url = ?', [$legacy_eland_origin]);
 
@@ -533,7 +538,7 @@ class TransactionsAddController extends AbstractController
                     $errors[] = 'Er is geen interSysteem Account gedefiniëerd in het andere Systeem.';
                 }
 
-                $remote_interlets_account = $app['db']->fetchAssoc('select *
+                $remote_interlets_account = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
                     where letscode = ?', [$remote_group['localletscode']]);
 
@@ -684,16 +689,16 @@ class TransactionsAddController extends AbstractController
                     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
                     $transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
-                    $app['db']->beginTransaction();
+                    $db->beginTransaction();
 
                     try
                     {
-                        $app['db']->insert($app['pp_schema'] . '.transactions', $transaction);
-                        $id = $app['db']->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
-                        $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
+                        $db->insert($app['pp_schema'] . '.transactions', $transaction);
+                        $id = $db->lastInsertId($app['pp_schema'] . '.transactions_id_seq');
+                        $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                             set saldo = saldo + ? where id = ?',
                             [$transaction['amount'], $transaction['id_to']]);
-                        $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
+                        $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                             set saldo = saldo - ? where id = ?',
                             [$transaction['amount'], $transaction['id_from']]);
 
@@ -708,22 +713,22 @@ class TransactionsAddController extends AbstractController
 
                         unset($transaction['real_to']);
 
-                        $app['db']->insert($remote_schema . '.transactions', $transaction);
-                        $id = $app['db']->lastInsertId($remote_schema . '.transactions_id_seq');
-                        $app['db']->executeUpdate('update ' . $remote_schema . '.users
+                        $db->insert($remote_schema . '.transactions', $transaction);
+                        $id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
+                        $db->executeUpdate('update ' . $remote_schema . '.users
                             set saldo = saldo + ? where id = ?',
                             [$remote_amount, $transaction['id_to']]);
-                        $app['db']->executeUpdate('update ' . $remote_schema . '.users
+                        $db->executeUpdate('update ' . $remote_schema . '.users
                             set saldo = saldo - ? where id = ?',
                             [$transaction['amount'], $transaction['id_from']]);
                         $transaction['id'] = $id;
 
-                        $app['db']->commit();
+                        $db->commit();
 
                     }
                     catch(Exception $e)
                     {
-                        $app['db']->rollback();
+                        $db->rollback();
                         $app['alert']->error('Transactie niet gelukt.');
                         throw $e;
                         exit;
@@ -789,13 +794,13 @@ class TransactionsAddController extends AbstractController
                 {
                     $origin_from_tus = $app['systems']->get_legacy_eland_origin($tus);
 
-                    $group_id = $app['db']->fetchColumn('select id
+                    $group_id = $db->fetchColumn('select id
                         from ' . $app['pp_schema'] . '.letsgroups
                         where url = ?', [$origin_from_tus]);
 
                     if ($mid)
                     {
-                        $row = $app['db']->fetchAssoc('select
+                        $row = $db->fetchAssoc('select
                                 m.content, m.amount, m.id_user,
                                 u.letscode, u.name
                             from ' . $tus . '.messages m,
@@ -827,7 +832,7 @@ class TransactionsAddController extends AbstractController
             }
             else if ($mid)
             {
-                $row = $app['db']->fetchAssoc('select
+                $row = $db->fetchAssoc('select
                         m.content, m.amount, m.id_user,
                         u.letscode, u.name, u.status
                     from ' . $app['pp_schema'] . '.messages m,
@@ -904,7 +909,7 @@ class TransactionsAddController extends AbstractController
                 $map_eland_schema_url[$eland_url] = $remote_eland_schema;
             }
 
-            $eland_systems = $app['db']->executeQuery('select id, url
+            $eland_systems = $db->executeQuery('select id, url
                 from ' . $app['pp_schema'] . '.letsgroups
                 where apimethod = \'elassoap\'
                     and url in (?)',
@@ -929,7 +934,7 @@ class TransactionsAddController extends AbstractController
                 $ids[] = $key;
             }
 
-            $elas_systems = $app['db']->executeQuery('select id, groupname
+            $elas_systems = $db->executeQuery('select id, groupname
                 from ' . $app['pp_schema'] . '.letsgroups
                 where apimethod = \'elassoap\'
                     and id in (?)',
@@ -945,7 +950,7 @@ class TransactionsAddController extends AbstractController
 
         if ($app['intersystem_en'])
         {
-            $mail_systems = $app['db']->executeQuery('select l.id, l.groupname
+            $mail_systems = $db->executeQuery('select l.id, l.groupname
                 from ' . $app['pp_schema'] . '.letsgroups l, ' .
                     $app['pp_schema'] . '.users u
                 where l.apimethod = \'mail\'

@@ -4,10 +4,16 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class PlotUserTransactions extends AbstractController
 {
-    public function plot_user_transactions(app $app, int $user_id, int $days):Response
+    public function plot_user_transactions(
+        app $app,
+        int $user_id,
+        int $days,
+        Db $db
+    ):Response
     {
         $user = $app['user_cache']->get($user_id, $app['pp_schema']);
 
@@ -18,7 +24,7 @@ class PlotUserTransactions extends AbstractController
 
         $intersystem_names = $transactions = [];
 
-        $st = $app['db']->prepare('select url, apimethod,
+        $st = $db->prepare('select url, apimethod,
             localletscode as code, groupname as name
             from ' . $app['pp_schema'] . '.letsgroups');
 
@@ -68,7 +74,7 @@ class PlotUserTransactions extends AbstractController
                 and t.cdate <= ?
             order by t.cdate asc';
 
-        $fetched_transactions = $app['db']->fetchAll($query,
+        $fetched_transactions = $db->fetchAll($query,
             [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
         foreach ($fetched_transactions as $t)

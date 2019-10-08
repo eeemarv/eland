@@ -5,10 +5,11 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class CategoriesAddController extends AbstractController
 {
-    public function categories_add(Request $request, app $app):Response
+    public function categories_add(Request $request, app $app, Db $db):Response
     {
         $cat = [];
 
@@ -41,7 +42,7 @@ class CategoriesAddController extends AbstractController
 
                 if ($cat['leafnote'])
                 {
-                    $cat['fullname'] .= $app['db']->fetchColumn('select name
+                    $cat['fullname'] .= $db->fetchColumn('select name
                         from ' . $app['pp_schema'] . '.categories
                         where id = ?', [(int) $cat['id_parent']]);
                     $cat['fullname'] .= ' - ';
@@ -49,7 +50,7 @@ class CategoriesAddController extends AbstractController
 
                 $cat['fullname'] .= $cat['name'];
 
-                if ($app['db']->insert($app['pp_schema'] . '.categories', $cat))
+                if ($db->insert($app['pp_schema'] . '.categories', $cat))
                 {
                     $app['alert']->success('Categorie toegevoegd.');
                     $app['link']->redirect('categories', $app['pp_ary'], []);
@@ -65,7 +66,7 @@ class CategoriesAddController extends AbstractController
 
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
-        $rs = $app['db']->prepare('select id, name
+        $rs = $db->prepare('select id, name
             from ' . $app['pp_schema'] . '.categories
             where leafnote = 0 order by name');
 

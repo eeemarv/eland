@@ -8,10 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use cnst\status as cnst_status;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersDelAdminController extends AbstractController
 {
-    public function users_del_admin(Request $request, app $app, int $id):Response
+    public function users_del_admin(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         if ($app['s_id'] === $id)
         {
@@ -19,7 +25,7 @@ class UsersDelAdminController extends AbstractController
                 'Je kan je eigen account niet verwijderen.');
         }
 
-        if ($app['db']->fetchColumn('select id
+        if ($db->fetchColumn('select id
             from ' . $app['pp_schema'] . '.transactions
             where id_to = ? or id_from = ?', [$id, $id]))
         {
@@ -58,7 +64,7 @@ class UsersDelAdminController extends AbstractController
             }
             else
             {
-                $this->remove_user($app, $id);
+                $this->remove_user($app, $id, $db);
 
                 $status = cnst_status::THUMBPINT_ARY[$user['status']];
 
@@ -112,7 +118,7 @@ class UsersDelAdminController extends AbstractController
         ]);
     }
 
-    private function remove_user(app $app, int $id):void
+    private function remove_user(app $app, int $id, Db $db):void
     {
         $user = $app['user_cache']->get($id, $app['pp_schema']);
 
@@ -120,7 +126,7 @@ class UsersDelAdminController extends AbstractController
 
         $usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $id . ']';
         $msgs = '';
-        $st = $app['db']->prepare('select id, content,
+        $st = $db->prepare('select id, content,
                 id_category, msg_type
             from ' . $app['pp_schema'] . '.messages
             where id_user = ?');
@@ -140,13 +146,13 @@ class UsersDelAdminController extends AbstractController
                 ', deleted Messages ' . $msgs,
                 ['schema' => $app['pp_schema']]);
 
-            $app['db']->delete($app['pp_schema'] . '.messages',
+            $db->delete($app['pp_schema'] . '.messages',
                 ['id_user' => $id]);
         }
 
         // remove orphaned images.
 
-        $rs = $app['db']->prepare('select mp.id, mp."PictureFile"
+        $rs = $db->prepare('select mp.id, mp."PictureFile"
             from ' . $app['pp_schema'] . '.msgpictures mp
                 left join ' . $app['pp_schema'] . '.messages m on mp.msgid = m.id
             where m.id is null');
@@ -155,14 +161,14 @@ class UsersDelAdminController extends AbstractController
 
         while ($row = $rs->fetch())
         {
-            $app['db']->delete($app['pp_schema'] . '.msgpictures', ['id' => $row['id']]);
+            $db->delete($app['pp_schema'] . '.msgpictures', ['id' => $row['id']]);
         }
 
         // update counts for each category
 
         $offer_count = $want_count = [];
 
-        $rs = $app['db']->prepare('select m.id_category, count(m.*)
+        $rs = $db->prepare('select m.id_category, count(m.*)
             from ' . $app['pp_schema'] . '.messages m, ' .
                 $app['pp_schema'] . '.users u
             where  m.id_user = u.id
@@ -177,7 +183,7 @@ class UsersDelAdminController extends AbstractController
             $offer_count[$row['id_category']] = $row['count'];
         }
 
-        $rs = $app['db']->prepare('select m.id_category, count(m.*)
+        $rs = $db->prepare('select m.id_category, count(m.*)
             from ' . $app['pp_schema'] . '.messages m, ' .
                 $app['pp_schema'] . '.users u
             where m.id_user = u.id
@@ -192,7 +198,7 @@ class UsersDelAdminController extends AbstractController
             $want_count[$row['id_category']] = $row['count'];
         }
 
-        $all_cat = $app['db']->fetchAll('select id,
+        $all_cat = $db->fetchAll('select id,
                 stat_msgs_offers, stat_msgs_wanted
             from ' . $app['pp_schema'] . '.categories
             where id_parent is not null');
@@ -216,14 +222,14 @@ class UsersDelAdminController extends AbstractController
                 'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
             ];
 
-            $app['db']->update($app['pp_schema'] . '.categories',
+            $db->update($app['pp_schema'] . '.categories',
                 $stats,
                 ['id' => $cat_id]);
         }
 
         //delete contacts
 
-        $app['db']->delete($app['pp_schema'] . '.contact',
+        $db->delete($app['pp_schema'] . '.contact',
             ['id_user' => $id]);
 
         //delete fullname access record.
@@ -232,7 +238,7 @@ class UsersDelAdminController extends AbstractController
 
         //finally, the user
 
-        $app['db']->delete($app['pp_schema'] . '.users',
+        $db->delete($app['pp_schema'] . '.users',
             ['id' => $id]);
         $app['predis']->expire($app['pp_schema'] . '_user_' . $id, 0);
 

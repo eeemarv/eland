@@ -5,10 +5,15 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactsController extends AbstractController
 {
-    public function contacts(Request $request, app $app):Response
+    public function contacts(
+        Request $request,
+        app $app,
+        Db $db
+    ):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -37,7 +42,7 @@ class ContactsController extends AbstractController
         {
             [$code] = explode(' ', trim($filter['code']));
 
-            $fuid = $app['db']->fetchColumn('select id
+            $fuid = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$code]);
 
@@ -157,7 +162,7 @@ class ContactsController extends AbstractController
                 $app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
             where c.id_type_contact = tc.id' . $where_sql;
 
-        $row_count = $app['db']->fetchColumn('select count(c.*)
+        $row_count = $db->fetchColumn('select count(c.*)
             from ' . $app['pp_schema'] . '.contact c, ' .
                 $app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
             where c.id_type_contact = tc.id' . $where_sql, $params_sql);
@@ -167,7 +172,7 @@ class ContactsController extends AbstractController
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $contacts = $app['db']->fetchAll($query, $params_sql);
+        $contacts = $db->fetchAll($query, $params_sql);
 
         $app['pagination']->init('contacts', $app['pp_ary'],
             $row_count, $params);
@@ -205,7 +210,7 @@ class ContactsController extends AbstractController
 
         $abbrev_ary = [];
 
-        $rs = $app['db']->prepare('select abbrev
+        $rs = $db->prepare('select abbrev
             from ' . $app['pp_schema'] . '.type_contact');
 
         $rs->execute();

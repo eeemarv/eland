@@ -8,7 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use controller\messages_show;
+use App\Controller\MessagesShowController;
+use Doctrine\DBAL\Connection as Db;
 
 class MessagesImagesDel extends AbstractController
 {
@@ -17,7 +18,8 @@ class MessagesImagesDel extends AbstractController
         int $id,
         string $img,
         string $ext,
-        string $form_token
+        string $form_token,
+        Db $db
     ):Response
     {
         $img .= '.' . $ext;
@@ -27,7 +29,7 @@ class MessagesImagesDel extends AbstractController
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
 
-        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
+        $message = messages_show::get_message($db, $id, $app['pp_schema']);
 
         if (!$message)
         {
@@ -41,7 +43,7 @@ class MessagesImagesDel extends AbstractController
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }
 
-        $image = $app['db']->fetchAssoc('select p."PictureFile"
+        $image = $db->fetchAssoc('select p."PictureFile"
             from ' . $app['pp_schema'] . '.msgpictures p
             where p.msgid = ?
                 and p."PictureFile" = ?', [$id, $img]);
@@ -51,16 +53,21 @@ class MessagesImagesDel extends AbstractController
             throw new NotFoundHttpException('Afbeelding niet gevonden');
         }
 
-        $app['db']->delete($app['pp_schema'] . '.msgpictures', ['"PictureFile"' => $img]);
+        $db->delete($app['pp_schema'] . '.msgpictures', ['"PictureFile"' => $img]);
 
         return $app->json(['success' => true]);
     }
 
-    public function messages_images_del(Request $request, app $app, int $id):Response
+    public function messages_images_del(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         $errors = [];
 
-        $message = messages_show::get_message($app['db'], $id, $app['pp_schema']);
+        $message = messages_show::get_message($db, $id, $app['pp_schema']);
 
         $s_owner = $app['s_id'] && $app['s_id'] === $message['id_user'];
 
@@ -79,7 +86,7 @@ class MessagesImagesDel extends AbstractController
 
             if (!count($errors))
             {
-                $app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
+                $db->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
 
                 $app['alert']->success('De afbeeldingen voor ' . $message['label']['type_this'] .
                     ' zijn verwijderd.');
@@ -92,7 +99,7 @@ class MessagesImagesDel extends AbstractController
 
         $images = [];
 
-        $st = $app['db']->prepare('select "PictureFile"
+        $st = $db->prepare('select "PictureFile"
             from ' . $app['pp_schema'] . '.msgpictures
             where msgid = ?');
         $st->bindValue(1, $id);

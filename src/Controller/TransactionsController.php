@@ -6,10 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use service\config;
+use Doctrine\DBAL\Connection as Db;
 
 class TransactionsController extends AbstractController
 {
-    public function transactions(Request $request, app $app):Response
+    public function transactions(Request $request, app $app, Db $db):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -63,7 +64,7 @@ class TransactionsController extends AbstractController
             [$fcode] = explode(' ', trim($filter['fcode']));
             $fcode = trim($fcode);
 
-            $fuid = $app['db']->fetchColumn('select id
+            $fuid = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$fcode]);
 
@@ -89,7 +90,7 @@ class TransactionsController extends AbstractController
         {
             [$tcode] = explode(' ', trim($filter['tcode']));
 
-            $tuid = $app['db']->fetchColumn('select id
+            $tuid = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.users
                 where letscode = \'' . $tcode . '\'');
 
@@ -168,7 +169,7 @@ class TransactionsController extends AbstractController
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $transactions = $app['db']->fetchAll($query, $params_sql);
+        $transactions = $db->fetchAll($query, $params_sql);
 
         foreach ($transactions as $key => $t)
         {
@@ -190,7 +191,7 @@ class TransactionsController extends AbstractController
 
             if ($inter_schema)
             {
-                $inter_transaction = $app['db']->fetchAssoc('select t.*
+                $inter_transaction = $db->fetchAssoc('select t.*
                     from ' . $inter_schema . '.transactions t
                     where t.transid = ?', [$t['transid']]);
 
@@ -202,7 +203,7 @@ class TransactionsController extends AbstractController
             }
         }
 
-        $row = $app['db']->fetchAssoc('select count(t.*), sum(t.amount)
+        $row = $db->fetchAssoc('select count(t.*), sum(t.amount)
             from ' . $app['pp_schema'] . '.transactions t ' .
             $where_sql, $params_sql);
 

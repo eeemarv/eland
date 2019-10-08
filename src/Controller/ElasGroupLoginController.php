@@ -4,10 +4,14 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ElasGroupLoginController extends AbstractController
 {
-    public function elas_group_login(app $app, int $group_id):Response
+    public function elas_group_login(
+        app $app,
+        int $group_id,
+        Db $db):Response
     {
         if (!$app['s_schema'] || $app['s_elas_guest'])
         {
@@ -32,7 +36,7 @@ class ElasGroupLoginController extends AbstractController
             ], 404);
         }
 
-        $group = $app['db']->fetchAssoc('select *
+        $group = $db->fetchAssoc('select *
             from ' . $app['s_schema'] . '.letsgroups
             where id = ?', [$group_id]);
 

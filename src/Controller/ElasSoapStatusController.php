@@ -5,10 +5,14 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ElasSoapStatusController extends AbstractController
 {
-    public function elas_soap_status(app $app, int $group_id):Response
+    public function elas_soap_status(
+        app $app,
+        int $group_id,
+        Db $db):Response
     {
         $response = new Response();
         $response->headers->set('Content-Type', 'text/plain');
@@ -20,7 +24,7 @@ class ElasSoapStatusController extends AbstractController
             return $response;
         }
 
-        $group = $app['db']->fetchAssoc('select *
+        $group = $db->fetchAssoc('select *
             from ' . $app['s_schema'] . '.letsgroups
             where id = ?', [$group_id]);
 

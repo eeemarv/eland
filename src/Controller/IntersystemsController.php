@@ -4,12 +4,13 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsController extends AbstractController
 {
-    public function intersystems(app $app):Response
+    public function intersystems(app $app, Db $db):Response
     {
-        $intersystems = $app['db']->fetchAll('select *
+        $intersystems = $db->fetchAll('select *
             from ' . $app['pp_schema'] . '.letsgroups');
 
         $letscodes = [];
@@ -27,13 +28,13 @@ class IntersystemsController extends AbstractController
                 $intersystems[$key]['eland'] = true;
                 $intersystems[$key]['schema'] = $sys_schema;
 
-                $intersystems[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
+                $intersystems[$key]['user_count'] = $db->fetchColumn('select count(*)
                     from ' . $sys_schema . '.users
                     where status in (1, 2)');
             }
             else if ($sys['apimethod'] == 'internal')
             {
-                $intersystems[$key]['user_count'] = $app['db']->fetchColumn('select count(*)
+                $intersystems[$key]['user_count'] = $db->fetchColumn('select count(*)
                     from ' . $app['pp_schema'] . '.users
                     where status in (1, 2)');
             }
@@ -45,7 +46,7 @@ class IntersystemsController extends AbstractController
 
         $users_letscode = [];
 
-        $intersystem_users = $app['db']->executeQuery('select id, status, letscode, accountrole
+        $intersystem_users = $db->executeQuery('select id, status, letscode, accountrole
             from ' . $app['pp_schema'] . '.users
             where letscode in (?)',
             [$letscodes],
@@ -198,7 +199,7 @@ class IntersystemsController extends AbstractController
             $out .= '</div></div>';
         }
 
-        $out .= self::get_schemas_groups($app);
+        $out .= self::get_schemas_groups($app, $db);
 
         $app['menu']->set('intersystems');
 
@@ -208,7 +209,7 @@ class IntersystemsController extends AbstractController
         ]);
     }
 
-    public static function get_schemas_groups(app $app):string
+    public static function get_schemas_groups(app $app, Db $db):string
     {
         $out = '<div class="panel panel-default"><div class="panel-heading">';
         $out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
@@ -270,7 +271,7 @@ class IntersystemsController extends AbstractController
         $rem_group_ary =  $rem_account_ary = $group_user_count_ary = [];
         $loc_letscode_ary = [];
 
-        $groups = $app['db']->executeQuery('select localletscode, url, id
+        $groups = $db->executeQuery('select localletscode, url, id
             from ' . $app['pp_schema'] . '.letsgroups
             where url in (?)',
             [$url_ary],
@@ -283,7 +284,7 @@ class IntersystemsController extends AbstractController
             $loc_group_ary[$h] = $group;
         }
 
-        $interlets_accounts = $app['db']->executeQuery('select id, letscode, status, accountrole
+        $interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
             from ' . $app['pp_schema'] . '.users
             where letscode in (?)',
             [$loc_letscode_ary],
@@ -296,11 +297,11 @@ class IntersystemsController extends AbstractController
 
         foreach ($app['systems']->get_schemas() as $rem_schema)
         {
-            $rem_group = $app['db']->fetchAssoc('select localletscode, url, id
+            $rem_group = $db->fetchAssoc('select localletscode, url, id
                 from ' . $rem_schema . '.letsgroups
                 where url = ?', [$app['systems']->get_legacy_eland_origin($rem_schema)]);
 
-            $group_user_count_ary[$rem_schema] = $app['db']->fetchColumn('select count(*)
+            $group_user_count_ary[$rem_schema] = $db->fetchColumn('select count(*)
                 from ' . $rem_schema . '.users
                 where status in (1, 2)');
 
@@ -312,7 +313,7 @@ class IntersystemsController extends AbstractController
 
                 if ($rem_group['localletscode'])
                 {
-                    $rem_account = $app['db']->fetchAssoc('select id, letscode, status, accountrole
+                    $rem_account = $db->fetchAssoc('select id, letscode, status, accountrole
                         from ' . $rem_schema . '.users where letscode = ?', [$rem_group['localletscode']]);
 
                     if ($rem_account)

@@ -5,10 +5,16 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class CategoriesDelController extends AbstractController
 {
-    public function categories_del(Request $request, app $app, int $id):Response
+    public function categories_del(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
         if($request->isMethod('POST'))
         {
@@ -18,7 +24,7 @@ class CategoriesDelController extends AbstractController
                 $app['link']->redirect('categories', $app['pp_ary'], []);
             }
 
-            if ($app['db']->delete($app['pp_schema'] . '.categories', ['id' => $id]))
+            if ($db->delete($app['pp_schema'] . '.categories', ['id' => $id]))
             {
                 $app['alert']->success('Categorie verwijderd.');
                 $app['link']->redirect('categories', $app['pp_ary'], []);
@@ -27,7 +33,7 @@ class CategoriesDelController extends AbstractController
             $app['alert']->error('Categorie niet verwijderd.');
         }
 
-        $fullname = $app['db']->fetchColumn('select fullname
+        $fullname = $db->fetchColumn('select fullname
             from ' . $app['pp_schema'] . '.categories
             where id = ?', [$id]);
 

@@ -12,15 +12,27 @@ use cnst\contact_input as cnst_contact_input;
 use queue\mail as queue_mail;
 use service\mail_addr_system;
 use service\mail_addr_user;
+use Doctrine\DBAL\Connection as Db;
 
 class UsersEditAdminController extends AbstractController
 {
-    public function users_edit_admin(Request $request, app $app, int $id):Response
+    public function users_edit_admin(
+        Request $request,
+        app $app,
+        int $id,
+        Db $db
+    ):Response
     {
-        return self::form($request, $app, $id, true);
+        return self::form($request, $app, $id, true, $db);
     }
 
-    public static function form(Request $request, app $app, int $id, bool $is_edit):Response
+    public static function form(
+        Request $request,
+        app $app,
+        int $id,
+        bool $is_edit,
+        Db $db
+    ):Response
     {
         $errors = [];
         $contact = [];
@@ -96,7 +108,7 @@ class UsersEditAdminController extends AbstractController
 
                 $mailadr = false;
 
-                $st = $app['db']->prepare($mail_unique_check_sql);
+                $st = $db->prepare($mail_unique_check_sql);
 
                 foreach ($contact as $key => $c)
                 {
@@ -222,7 +234,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Vul gebruikersnaam in!';
                 }
-                else if ($app['db']->fetchColumn($name_sql, $name_sql_params))
+                else if ($db->fetchColumn($name_sql, $name_sql_params))
                 {
                     $errors[] = 'Deze gebruikersnaam is al in gebruik!';
                 }
@@ -239,7 +251,7 @@ class UsersEditAdminController extends AbstractController
                     $errors[] = 'Vul de Volledige Naam in!';
                 }
 
-                if ($app['db']->fetchColumn($fullname_sql, $fullname_sql_params))
+                if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
                 {
                     $errors[] = 'Deze Volledige Naam is al in gebruik!';
                 }
@@ -256,7 +268,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Vul een Account Code in!';
                 }
-                else if ($app['db']->fetchColumn($letscode_sql, $letscode_sql_params))
+                else if ($db->fetchColumn($letscode_sql, $letscode_sql_params))
                 {
                     $errors[] = 'De Account Code bestaat al!';
                 }
@@ -340,7 +352,7 @@ class UsersEditAdminController extends AbstractController
             {
                 $contact_types = [];
 
-                $rs = $app['db']->prepare('select abbrev, id
+                $rs = $db->prepare('select abbrev, id
                     from ' . $app['pp_schema'] . '.type_contact');
 
                 $rs->execute();
@@ -366,9 +378,9 @@ class UsersEditAdminController extends AbstractController
                         $user['password'] = hash('sha512', sha1(microtime()));
                     }
 
-                    if ($app['db']->insert($app['pp_schema'] . '.users', $user))
+                    if ($db->insert($app['pp_schema'] . '.users', $user))
                     {
-                        $id = (int) $app['db']->lastInsertId($app['pp_schema'] . '.users_id_seq');
+                        $id = (int) $db->lastInsertId($app['pp_schema'] . '.users_id_seq');
 
                         $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
 
@@ -404,7 +416,7 @@ class UsersEditAdminController extends AbstractController
                                 'id_user'			=> $id,
                             ];
 
-                            $app['db']->insert($app['pp_schema'] . '.contact', $insert);
+                            $db->insert($app['pp_schema'] . '.contact', $insert);
                         }
 
                         if ($user['status'] == 1)
@@ -478,7 +490,7 @@ class UsersEditAdminController extends AbstractController
                         }
                     }
 
-                    if ($app['db']->update($app['pp_schema'] . '.users', $user, ['id' => $id]))
+                    if ($db->update($app['pp_schema'] . '.users', $user, ['id' => $id]))
                     {
 
                         $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
@@ -496,7 +508,7 @@ class UsersEditAdminController extends AbstractController
                         {
                             $stored_contacts = [];
 
-                            $rs = $app['db']->prepare('select c.id,
+                            $rs = $db->prepare('select c.id,
                                     tc.abbrev, c.value, c.flag_public
                                 from ' . $app['pp_schema'] . '.type_contact tc, ' .
                                     $app['pp_schema'] . '.contact c
@@ -519,7 +531,7 @@ class UsersEditAdminController extends AbstractController
                                 {
                                     if ($stored_contact)
                                     {
-                                        $app['db']->delete($app['pp_schema'] . '.contact',
+                                        $db->delete($app['pp_schema'] . '.contact',
                                             ['id_user' => $id, 'id' => $contact_ary['id']]);
                                     }
                                     continue;
@@ -550,7 +562,7 @@ class UsersEditAdminController extends AbstractController
                                         'id_user'			=> $id,
                                     ];
 
-                                    $app['db']->insert($app['pp_schema'] . '.contact', $insert);
+                                    $db->insert($app['pp_schema'] . '.contact', $insert);
                                     continue;
                                 }
 
@@ -559,7 +571,7 @@ class UsersEditAdminController extends AbstractController
                                 unset($contact_update['id'], $contact_update['abbrev'],
                                     $contact_update['access']);
 
-                                $app['db']->update($app['pp_schema'] . '.contact',
+                                $db->update($app['pp_schema'] . '.contact',
                                     $contact_update,
                                     ['id' => $contact_ary['id'], 'id_user' => $id]);
                             }
@@ -650,7 +662,7 @@ class UsersEditAdminController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $contact = $app['db']->fetchAll('select name, abbrev,
+                $contact = $db->fetchAll('select name, abbrev,
                     \'\' as value, 0 as id
                     from ' . $app['pp_schema'] . '.type_contact
                     where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
@@ -665,7 +677,7 @@ class UsersEditAdminController extends AbstractController
                     $contact_keys[$c['abbrev']] = $key;
                 }
 
-                $st = $app['db']->prepare('select tc.abbrev, c.value, tc.name, c.flag_public, c.id
+                $st = $db->prepare('select tc.abbrev, c.value, tc.name, c.flag_public, c.id
                     from ' . $app['pp_schema'] . '.type_contact tc, ' .
                         $app['pp_schema'] . '.contact c
                     where tc.id = c.id_type_contact
@@ -698,7 +710,7 @@ class UsersEditAdminController extends AbstractController
 
                 if ($intersystem_code)
                 {
-                    if ($group = $app['db']->fetchAssoc('select *
+                    if ($group = $db->fetchAssoc('select *
                         from ' . $app['pp_schema'] . '.letsgroups
                         where localletscode = ?
                             and apimethod <> \'internal\'', [$intersystem_code]))

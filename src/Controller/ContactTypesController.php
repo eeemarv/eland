@@ -4,19 +4,20 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesController extends AbstractController
 {
     const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];
 
-    public function contact_types(app $app):Response
+    public function contact_types(app $app, Db $db):Response
     {
-        $types = $app['db']->fetchAll('select *
+        $types = $db->fetchAll('select *
             from ' . $app['pp_schema'] . '.type_contact tc');
 
         $contact_count = [];
 
-        $rs = $app['db']->prepare('select distinct id_type_contact, count(id)
+        $rs = $db->prepare('select distinct id_type_contact, count(id)
             from ' . $app['pp_schema'] . '.contact
             group by id_type_contact');
         $rs->execute();

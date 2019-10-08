@@ -5,10 +5,11 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection as Db;
 
 class NewsDelController extends AbstractController
 {
-    public function news_del(Request $request, app $app, int $id):Response
+    public function news_del(Request $request, app $app, int $id, Db $db):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -18,7 +19,7 @@ class NewsDelController extends AbstractController
                 $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
             }
 
-            if($app['db']->delete($app['pp_schema'] . '.news', ['id' => $id]))
+            if($db->delete($app['pp_schema'] . '.news', ['id' => $id]))
             {
                 $app['xdb']->del('news_access', (string) $id, $app['pp_schema']);
 
@@ -29,7 +30,7 @@ class NewsDelController extends AbstractController
             $app['alert']->error('Nieuwsbericht niet verwijderd.');
         }
 
-        $news = $app['db']->fetchAssoc('select n.*
+        $news = $db->fetchAssoc('select n.*
             from ' . $app['pp_schema'] . '.news n
             where n.id = ?', [$id]);
 
