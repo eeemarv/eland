@@ -2,17 +2,17 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class process_log extends Command
+class ProcessMailCommand extends Command
 {
-    protected static $defaultName = 'process:log';
+    protected static $defaultName = 'process:mail';
 
     protected function configure()
     {
-        $this->setDescription('Process to pipe logs from Redis to db.');
+        $this->setDescription('Send emails from queue');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -20,7 +20,9 @@ class process_log extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('log');
+//        error_log($app->url('contact', ['system' => 'x']));
+
+        $app['monitor_process']->boot('mail');
 
         while (true)
         {
@@ -29,7 +31,13 @@ class process_log extends Command
                 continue;
             }
 
-            $app['log_db']->update();
+            $record = $app['queue']->get(['mail']);
+
+            if (count($record))
+            {
+                $app['queue.mail']->process($record['data']);
+            }
+
             $app['monitor_process']->periodic_log();
         }
     }

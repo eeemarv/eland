@@ -2,17 +2,17 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class process_fetch_elas_intersystem extends Command
+class ProcessCleanupImagesCommand extends Command
 {
-    protected static $defaultName = 'process:fetch_elas_intersystem';
+    protected static $defaultName = 'process:cleanup_images';
 
     protected function configure()
     {
-        $this->setDescription('Process to fetch data from eLAS interSystems.');
+        $this->setDescription('Process to cleanup old image files.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -20,7 +20,7 @@ class process_fetch_elas_intersystem extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('fetch_elas_intersystem');
+        $app['monitor_process']->boot('cleanup_images');
 
         while (true)
         {
@@ -29,11 +29,7 @@ class process_fetch_elas_intersystem extends Command
                 continue;
             }
 
-            $app['task.get_elas_intersystem_domains']->process();
-
-            sleep(450);
-
-            $app['task.fetch_elas_intersystem']->process();
+            $app['task.cleanup_images']->process();
             $app['monitor_process']->periodic_log();
         }
     }

@@ -2,12 +2,12 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use util\task_container;
 
-class process_worker extends Command
+class ProcessWorkerCommand extends Command
 {
     protected static $defaultName = 'process:worker';
 

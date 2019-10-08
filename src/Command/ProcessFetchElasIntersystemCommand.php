@@ -2,17 +2,17 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class process_mail extends Command
+class ProcessFetchElasIntersystemCommand extends Command
 {
-    protected static $defaultName = 'process:mail';
+    protected static $defaultName = 'process:fetch_elas_intersystem';
 
     protected function configure()
     {
-        $this->setDescription('Send emails from queue');
+        $this->setDescription('Process to fetch data from eLAS interSystems.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -20,9 +20,7 @@ class process_mail extends Command
 
         $app = $this->getSilexApplication();
 
-//        error_log($app->url('contact', ['system' => 'x']));
-
-        $app['monitor_process']->boot('mail');
+        $app['monitor_process']->boot('fetch_elas_intersystem');
 
         while (true)
         {
@@ -31,13 +29,11 @@ class process_mail extends Command
                 continue;
             }
 
-            $record = $app['queue']->get(['mail']);
+            $app['task.get_elas_intersystem_domains']->process();
 
-            if (count($record))
-            {
-                $app['queue.mail']->process($record['data']);
-            }
+            sleep(450);
 
+            $app['task.fetch_elas_intersystem']->process();
             $app['monitor_process']->periodic_log();
         }
     }

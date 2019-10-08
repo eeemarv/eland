@@ -2,11 +2,11 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class process_geocode extends Command
+class ProcessGeocodeCommand extends Command
 {
     protected static $defaultName = 'process:geocode';
 

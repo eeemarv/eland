@@ -2,11 +2,11 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class process_cleanup_logs extends Command
+class ProcessCleanupLogsCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_logs';
 

@@ -2,17 +2,17 @@
 
 namespace App\Command;
 
-use Knp\Command\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class process_cleanup_images extends Command
+class ProcessLogCommand extends Command
 {
-    protected static $defaultName = 'process:cleanup_images';
+    protected static $defaultName = 'process:log';
 
     protected function configure()
     {
-        $this->setDescription('Process to cleanup old image files.');
+        $this->setDescription('Process to pipe logs from Redis to db.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -20,7 +20,7 @@ class process_cleanup_images extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('cleanup_images');
+        $app['monitor_process']->boot('log');
 
         while (true)
         {
@@ -29,7 +29,7 @@ class process_cleanup_images extends Command
                 continue;
             }
 
-            $app['task.cleanup_images']->process();
+            $app['log_db']->update();
             $app['monitor_process']->periodic_log();
         }
     }
