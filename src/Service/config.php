@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace service;
+namespace App\Service;
 
 use service\xdb;
 use cnst\config as cnst_config;

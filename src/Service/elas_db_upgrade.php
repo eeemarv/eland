@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace service;
+namespace App\Service;
 
 use Doctrine\DBAL\Connection as db;
 

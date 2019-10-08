@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace service;
+namespace App\Service;
 
 use Geocoder\Query\GeocodeQuery;
 use Http\Adapter\Guzzle6\Client as HttpClient;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace twig;
+namespace App\Twig;
 
 use render\btn_nav as render_btn_nav;
 

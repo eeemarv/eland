@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace service;
+namespace App\Service;
 
 use Symfony\Component\Finder\Finder;
 use service\cache;

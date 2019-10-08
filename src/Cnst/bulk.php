@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace cnst;
+namespace App\Cnst;
 
 use cnst\role as cnst_role;
 use cnst\status as cnst_status;

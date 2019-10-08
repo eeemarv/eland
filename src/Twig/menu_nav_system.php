@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace twig;
+namespace App\Twig;
 
 use service\menu_nav_system as service_menu_nav_system;
 

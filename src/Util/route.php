@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace util;
+namespace App\Util;
 
 use Silex\Route as silex_route;
 

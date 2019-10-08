@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace render;
+namespace App\Render;
 
 use render\select;
 use render\link;

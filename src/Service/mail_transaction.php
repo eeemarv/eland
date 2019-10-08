@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace service;
+namespace App\Service;
 
 use service\user_cache;
 use service\config;

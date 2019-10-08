@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace queue;
+namespace App\Queue;
 
 use queue\queue_interface;
 use League\HTMLToMarkdown\HtmlConverter;

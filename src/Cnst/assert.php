@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace cnst;
+namespace App\Cnst;
 
 class assert
 {

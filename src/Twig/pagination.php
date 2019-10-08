@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace twig;
+namespace App\Twig;
 
 use render\pagination as render_pagination;
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace service;
+namespace App\Service;
 
 use Predis\Client as Predis;
 use service\token as token_gen;

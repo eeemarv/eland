@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace render;
+namespace App\Render;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 

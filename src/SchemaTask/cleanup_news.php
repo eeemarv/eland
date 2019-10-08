@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace schema_task;
+namespace App\SchemaTask;
 
 use model\schema_task;
 use Doctrine\DBAL\Connection as db;

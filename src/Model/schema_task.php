@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace model;
+namespace App\Model;
 
 use model\task_interface;
 use model\task;

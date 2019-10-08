@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace service;
+namespace App\Service;
 
 class uuid
 {
@@ -18,4 +18,3 @@ class uuid
 		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($rnd), 4));
 	}
 }
-

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace twig;
+namespace App\Twig;
 
 use service\date_format as dt_frmt;
 

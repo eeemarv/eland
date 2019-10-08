@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace render;
+namespace App\Render;
 
 use service\user_cache;
 

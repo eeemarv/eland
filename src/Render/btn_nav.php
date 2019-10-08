@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace render;
+namespace App\Render;
 
 use render\link as render_link;
 use render\tag as render_tag;

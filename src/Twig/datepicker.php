@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace twig;
+namespace App\Twig;
 
 use service\date_format_cache;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,11 +19,11 @@ class datepicker
 
 	public function __construct(
 		web_date $web_date,
-		TranslatorInterface $translator	
+		TranslatorInterface $translator
 	)
 	{
 		$this->web_date = $web_date;
-		$this->translator = $translator;	
+		$this->translator = $translator;
 	}
 
 	public function get_placeholder():string

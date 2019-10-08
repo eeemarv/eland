@@ -46,6 +46,7 @@
 		"symfony/security-csrf": "^4",
 		"symfony/translation": "^4",
 		"symfony/twig-bridge": "^4",
+		"symfony/twig-bundle": "4.3.*",
 		"symfony/validator": "^4",
 		"symfony/var-dumper": "^4.3",
 		"symfony/yaml": "4.3.*",
@@ -66,18 +67,7 @@
 
 	"autoload": {
 		"psr-4": {
-			"App\\": "src/",
-			"service\\": "service/",
-			"model\\": "model/",
-			"queue\\": "queue/",
-			"task\\": "task/",
-			"schema_task\\": "schema_task/",
-			"util\\": "util/",
-			"twig\\": "twig/",
-			"render\\": "render/",
-			"cnst\\": "cnst/",
-			"command\\": "command/",
-			"controller\\": "controller"
+			"App\\": "src/"
         }
 	},
 

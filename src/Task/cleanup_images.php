@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace task;
+namespace App\Task;
 
 use service\cache;
 use Doctrine\DBAL\Connection as db;
