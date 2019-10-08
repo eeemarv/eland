@@ -12,7 +12,7 @@ $dot_count = substr_count($server_name, '.');
 
 if ($dot_count !== 2)
 {
-	NotFoundHttpException('Deze pagina bestaat niet.');
+	throw new NotFoundHttpException('Deze pagina bestaat niet.');
 }
 
 [$system] = explode('.', $server_name);
