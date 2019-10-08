@@ -158,6 +158,10 @@ class config
             'default'	=> '',
         ],
 
+        'logo'  => [
+            'default'   => '',
+        ],
+
         'currency'	=> [
             'lbl'		=> 'Naam van Munt (meervoud)',
             'required'	=> true,
