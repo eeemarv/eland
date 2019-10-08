@@ -1,25 +1,7 @@
-info.php
-vendor
-composer.phar
-components
-.sass-cache
-.jekyll-metadata
-_site
-_posts
-_pages
 _book
 node_modules
-.grunt
-*.epub
-*.mobi
-*.pdf
-assets
-.env*
 .env_m
-cache
-.local
 .dist
-var
 
 ###> symfony/framework-bundle ###
 /.env.local
