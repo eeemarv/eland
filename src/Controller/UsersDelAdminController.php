@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use cnst\status as cnst_status;
+use app\cnst\statuscnst;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersDelAdminController extends AbstractController
@@ -66,7 +66,7 @@ class UsersDelAdminController extends AbstractController
             {
                 $this->remove_user($app, $id, $db);
 
-                $status = cnst_status::THUMBPINT_ARY[$user['status']];
+                $status = statuscnst::THUMBPINT_ARY[$user['status']];
 
                 $app['link']->redirect($app['r_users'], $app['pp_ary'],
                     ['status' => $status]);
@@ -244,7 +244,7 @@ class UsersDelAdminController extends AbstractController
 
         $app['alert']->success('De gebruiker is verwijderd.');
 
-        $thumbprint_status = cnst_status::THUMBPINT_ARY[$user['status']];
+        $thumbprint_status = statuscnst::THUMBPINT_ARY[$user['status']];
         $app['thumbprint_accounts']->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
 
         $app['intersystems']->clear_cache($app['pp_schema']);

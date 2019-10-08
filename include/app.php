@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use cnst\assert as cnst_assert;
+use App\Cnst\AssertCnst;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -132,11 +132,11 @@ $fn_before_system_init = function(Request $request, app $app){
 };
 
 $app['controllers']
-	->assert('id', cnst_assert::NUMBER)
-	->assert('days', cnst_assert::NUMBER)
-	->assert('locale', cnst_assert::LOCALE)
-	->assert('role_short', cnst_assert::GUEST)
-	->assert('system', cnst_assert::SYSTEM);
+	->assert('id', AssertCnst::NUMBER)
+	->assert('days', AssertCnst::NUMBER)
+	->assert('locale', AssertCnst::LOCALE)
+	->assert('role_short', AssertCnst::GUEST)
+	->assert('system', AssertCnst::SYSTEM);
 
 $c_locale = $app['controllers_factory'];
 $c_system_anon = $app['controllers_factory'];
@@ -145,25 +145,25 @@ $c_system_user = $app['controllers_factory'];
 $c_system_admin = $app['controllers_factory'];
 $c_system_init = $app['controllers_factory'];
 
-$c_locale->assert('_locale', cnst_assert::LOCALE)
+$c_locale->assert('_locale', AssertCnst::LOCALE)
 	->after($fn_after_locale)
 	->before($fn_before_locale);
 
-$c_system_anon->assert('_locale', cnst_assert::LOCALE)
-	->assert('system', cnst_assert::SYSTEM)
-	->assert('token', cnst_assert::TOKEN)
+$c_system_anon->assert('_locale', AssertCnst::LOCALE)
+	->assert('system', AssertCnst::SYSTEM)
+	->assert('token', AssertCnst::TOKEN)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
 	->before($fn_before_system);
 
-$c_system_guest->assert('_locale', cnst_assert::LOCALE)
-	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::GUEST)
-	->assert('id', cnst_assert::NUMBER)
-	->assert('user_id', cnst_assert::NUMBER)
-	->assert('contact_id', cnst_assert::NUMBER)
-	->assert('days', cnst_assert::NUMBER)
-	->assert('view', cnst_assert::VIEW)
+$c_system_guest->assert('_locale', AssertCnst::LOCALE)
+	->assert('system', AssertCnst::SYSTEM)
+	->assert('role_short', AssertCnst::GUEST)
+	->assert('id', AssertCnst::NUMBER)
+	->assert('user_id', AssertCnst::NUMBER)
+	->assert('contact_id', AssertCnst::NUMBER)
+	->assert('days', AssertCnst::NUMBER)
+	->assert('view', AssertCnst::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
 	->before($fn_before_system)
@@ -172,14 +172,14 @@ $c_system_guest->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_system_user)
 	->before($fn_before_system_admin);
 
-$c_system_user->assert('_locale', cnst_assert::LOCALE)
-	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::USER)
-	->assert('id', cnst_assert::NUMBER)
-	->assert('user_id', cnst_assert::NUMBER)
-	->assert('contact_id', cnst_assert::NUMBER)
-	->assert('days', cnst_assert::NUMBER)
-	->assert('view', cnst_assert::VIEW)
+$c_system_user->assert('_locale', AssertCnst::LOCALE)
+	->assert('system', AssertCnst::SYSTEM)
+	->assert('role_short', AssertCnst::USER)
+	->assert('id', AssertCnst::NUMBER)
+	->assert('user_id', AssertCnst::NUMBER)
+	->assert('contact_id', AssertCnst::NUMBER)
+	->assert('days', AssertCnst::NUMBER)
+	->assert('view', AssertCnst::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
 	->before($fn_before_system)
@@ -187,23 +187,23 @@ $c_system_user->assert('_locale', cnst_assert::LOCALE)
 	->before($fn_before_system_user)
 	->before($fn_before_system_admin);
 
-$c_system_admin->assert('_locale', cnst_assert::LOCALE)
-	->assert('system', cnst_assert::SYSTEM)
-	->assert('role_short', cnst_assert::ADMIN)
-	->assert('id', cnst_assert::NUMBER)
-	->assert('user_id', cnst_assert::NUMBER)
-	->assert('contact_id', cnst_assert::NUMBER)
-	->assert('days', cnst_assert::NUMBER)
-	->assert('view', cnst_assert::VIEW)
+$c_system_admin->assert('_locale', AssertCnst::LOCALE)
+	->assert('system', AssertCnst::SYSTEM)
+	->assert('role_short', AssertCnst::ADMIN)
+	->assert('id', AssertCnst::NUMBER)
+	->assert('user_id', AssertCnst::NUMBER)
+	->assert('contact_id', AssertCnst::NUMBER)
+	->assert('days', AssertCnst::NUMBER)
+	->assert('view', AssertCnst::VIEW)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
 	->before($fn_before_system)
 	->before($fn_before_system_auth)
 	->before($fn_before_system_admin);
 
-$c_system_init->assert('_locale', cnst_assert::LOCALE)
-	->assert('system', cnst_assert::SYSTEM)
-	->assert('start', cnst_assert::NUMBER)
+$c_system_init->assert('_locale', AssertCnst::LOCALE)
+	->assert('system', AssertCnst::SYSTEM)
+	->assert('start', AssertCnst::NUMBER)
 	->after($fn_after_locale)
 	->before($fn_before_locale)
 	->before($fn_before_system)
@@ -217,7 +217,7 @@ $c_locale->match('/contact', 'controller\\index_contact::index_contact')
 
 $c_system_anon->match('/login-elas/{elas_token}',
 		'controller\\login_elas_token::login_elas_token')
-	->assert('elas_token', cnst_assert::ELAS_TOKEN)
+	->assert('elas_token', AssertCnst::ELAS_TOKEN)
 	->bind('login_elas_token');
 
 $c_system_anon->match('/login',
@@ -330,7 +330,7 @@ $c_system_user->match('/users/contacts/add',
 
 $c_system_admin->match('/config/{tab}',
 		'controller\\config::config')
-	->assert('tab', cnst_assert::CONFIG_TAB)
+	->assert('tab', AssertCnst::CONFIG_TAB)
 	->value('tab', 'system-name')
 	->bind('config');
 
@@ -388,9 +388,9 @@ $c_system_user->match('/support',
 
 $c_system_user->post('/messages/{id}/images/{img}/{ext}/del/{form_token}',
 	'controller\\messages_images_del::messages_images_instant_del')
-	->assert('img', cnst_assert::MESSAGE_IMAGE)
-	->assert('ext', cnst_assert::MESSAGE_IMAGE_EXT)
-	->assert('form_token', cnst_assert::TOKEN)
+	->assert('img', AssertCnst::MESSAGE_IMAGE)
+	->assert('ext', AssertCnst::MESSAGE_IMAGE_EXT)
+	->assert('form_token', AssertCnst::TOKEN)
 	->bind('messages_images_instant_del');
 
 $c_system_user->match('/messages/{id}/images/del',
@@ -399,12 +399,12 @@ $c_system_user->match('/messages/{id}/images/del',
 
 $c_system_user->post('/messages/{id}/images/upload/{form_token}',
 	'controller\\messages_images_upload::messages_edit_images_upload')
-	->assert('form_token', cnst_assert::TOKEN)
+	->assert('form_token', AssertCnst::TOKEN)
 	->bind('messages_edit_images_upload');
 
 $c_system_user->post('/messages/images/upload/{form_token}',
 	'controller\\messages_images_upload::messages_add_images_upload')
-	->assert('form_token', cnst_assert::TOKEN)
+	->assert('form_token', AssertCnst::TOKEN)
 	->bind('messages_add_images_upload');
 
 $c_system_user->post('/messages/{id}/images/upload',
@@ -465,19 +465,19 @@ $c_system_user->match('/users/password',
 
 $c_system_guest->match('/users/{id}/{status}',
 		'controller\\users_show::users_show')
-	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
+	->assert('status', AssertCnst::USER_ACTIVE_STATUS)
 	->value('status', 'active')
 	->bind('users_show');
 
 $c_system_admin->match('/users/{id}/{status}',
 		'controller\\users_show::users_show_admin')
-	->assert('status', cnst_assert::USER_STATUS)
+	->assert('status', AssertCnst::USER_STATUS)
 	->value('status', 'active')
 	->bind('users_show_admin');
 
 $c_system_guest->get('/users/map/{status}',
 		'controller\\users_map::users_map')
-	->assert('status', cnst_assert::USER_STATUS)
+	->assert('status', AssertCnst::USER_STATUS)
 	->value('status', 'active')
 	->bind('users_map');
 
@@ -499,25 +499,25 @@ $c_system_admin->match('/users/add',
 
 $c_system_admin->get('/users/tiles/{status}',
 		'controller\\users_tiles::users_tiles_admin')
-	->assert('status', cnst_assert::USER_STATUS)
+	->assert('status', AssertCnst::USER_STATUS)
 	->value('status', 'active')
 	->bind('users_tiles_admin');
 
 $c_system_admin->match('/users/{status}',
 		'controller\\users_list::users_list_admin')
-	->assert('status', cnst_assert::USER_STATUS)
+	->assert('status', AssertCnst::USER_STATUS)
 	->value('status', 'active')
 	->bind('users_list_admin');
 
 $c_system_guest->get('/users/tiles/{status}',
 		'controller\\users_tiles::users_tiles')
-	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
+	->assert('status', AssertCnst::USER_ACTIVE_STATUS)
 	->value('status', 'active')
 	->bind('users_tiles');
 
 $c_system_guest->get('/users/{status}',
 		'controller\\users_list::users_list')
-	->assert('status', cnst_assert::USER_ACTIVE_STATUS)
+	->assert('status', AssertCnst::USER_ACTIVE_STATUS)
 	->value('status', 'active')
 	->bind('users_list');
 
@@ -567,28 +567,28 @@ $c_system_guest->get('/news',
 
 $c_system_admin->match('/docs/{doc_id}/edit',
 		'controller\\docs_edit::docs_edit')
-	->assert('doc_id', cnst_assert::DOC_ID)
+	->assert('doc_id', AssertCnst::DOC_ID)
 	->bind('docs_edit');
 
 $c_system_admin->match('/docs/{doc_id}/del',
 		'controller\\docs_del::docs_del')
-	->assert('doc_id', cnst_assert::DOC_ID)
+	->assert('doc_id', AssertCnst::DOC_ID)
 	->bind('docs_del');
 
 $c_system_admin->match('/docs/add/{map_id}',
 		'controller\\docs_add::docs_add')
-	->assert('map_id', cnst_assert::DOC_MAP_ID)
+	->assert('map_id', AssertCnst::DOC_MAP_ID)
 	->value('map_id', '')
 	->bind('docs_add');
 
 $c_system_admin->match('/docs/map/{map_id}/edit',
 		'controller\\docs_map_edit::docs_map_edit')
-	->assert('map_id', cnst_assert::DOC_MAP_ID)
+	->assert('map_id', AssertCnst::DOC_MAP_ID)
 	->bind('docs_map_edit');
 
 $c_system_guest->get('/docs/map/{map_id}',
 		'controller\\docs_map::docs_map')
-	->assert('map_id', cnst_assert::DOC_MAP_ID)
+	->assert('map_id', AssertCnst::DOC_MAP_ID)
 	->bind('docs_map');
 
 $c_system_guest->get('/docs',
@@ -597,17 +597,17 @@ $c_system_guest->get('/docs',
 
 $c_system_user->match('/forum/{forum_id}/edit',
 		'controller\\forum_edit::forum_edit')
-	->assert('forum_id', cnst_assert::FORUM_ID)
+	->assert('forum_id', AssertCnst::FORUM_ID)
 	->bind('forum_edit');
 
 $c_system_user->match('/forum/{forum_id}/del',
 		'controller\\forum_del::forum_del')
-	->assert('forum_id', cnst_assert::FORUM_ID)
+	->assert('forum_id', AssertCnst::FORUM_ID)
 	->bind('forum_del');
 
 $c_system_guest->match('/forum/{topic_id}',
 		'controller\\forum_topic::forum_topic')
-	->assert('topic_id', cnst_assert::FORUM_ID)
+	->assert('topic_id', AssertCnst::FORUM_ID)
 	->bind('forum_topic');
 
 $c_system_user->match('/forum/add-topic',
@@ -624,7 +624,7 @@ $c_system_user->get('/typeahead-account-codes',
 
 $c_system_guest->get('/typeahead-accounts/{status}',
 		'controller\\typeahead_accounts::typeahead_accounts')
-	->assert('status', cnst_assert::USER_PRIMARY_STATUS)
+	->assert('status', AssertCnst::USER_PRIMARY_STATUS)
 	->bind('typeahead_accounts');
 
 $c_system_admin->get('/typeahead-doc-map-names',
@@ -633,12 +633,12 @@ $c_system_admin->get('/typeahead-doc-map-names',
 
 $c_system_user->get('/typeahead-eland-intersystem-accounts/{remote_schema}',
 		'controller\\typeahead_eland_intersystem_accounts::typeahead_eland_intersystem_accounts')
-	->assert('remote_schema', cnst_assert::SCHEMA)
+	->assert('remote_schema', AssertCnst::SCHEMA)
 	->bind('typeahead_eland_intersystem_accounts');
 
 $c_system_user->get('/typeahead-elas-intersystem-accounts/{group_id}',
 		'controller\\typeahead_elas_intersystem_accounts::typeahead_elas_intersystem_accounts')
-	->assert('group_id', cnst_assert::NUMBER)
+	->assert('group_id', AssertCnst::NUMBER)
 	->bind('typeahead_elas_intersystem_accounts');
 
 $c_system_admin->get('/typeahead-log-types',
@@ -655,12 +655,12 @@ $c_system_admin->get('/typeahead-usernames',
 
 $c_system_guest->get('/elas-group-login/{group_id}',
 		'controller\\elas_group_login::elas_group_login')
-	->assert('group_id', cnst_assert::NUMBER)
+	->assert('group_id', AssertCnst::NUMBER)
 	->bind('elas_group_login');
 
 $c_system_admin->get('/elas-soap-status/{group_id}',
 		'controller\\elas_soap_status::elas_soap_status')
-	->assert('group_id', cnst_assert::NUMBER)
+	->assert('group_id', AssertCnst::NUMBER)
 	->bind('elas_soap_status');
 
 $c_system_guest->get('/plot-user-transactions/{user_id}/{days}',

@@ -2,10 +2,10 @@
 
 namespace App\Cnst;
 
-use cnst\role as cnst_role;
-use cnst\status as cnst_status;
+use app\cnst\rolecnst;
+use app\cnst\statuscnst;
 
-class bulk
+class BulkCnst
 {
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
@@ -43,13 +43,13 @@ class bulk
         ],
         'accountrole'		=> [
             'lbl'		=> 'Rechten',
-            'options'	=> cnst_role::LABEL_ARY,
+            'options'	=> rolecnst::LABEL_ARY,
             'string'	=> true,
             'fa'		=> 'hand-paper-o',
         ],
         'status'			=> [
             'lbl'		=> 'Status',
-            'options'	=> cnst_status::LABEL_ARY,
+            'options'	=> statuscnst::LABEL_ARY,
             'fa'		=> 'star-o',
         ],
         'admincomment'		=> [

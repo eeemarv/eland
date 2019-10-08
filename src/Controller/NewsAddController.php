@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsAddController extends AbstractController
@@ -81,7 +81,7 @@ class NewsAddController extends AbstractController
                     $id = $db->lastInsertId($app['pp_schema'] . '.news_id_seq');
 
                     $app['xdb']->set('news_access', (string) $id, [
-                        'access' => cnst_access::TO_XDB[$access],
+                        'access' => AccessCnst::TO_XDB[$access],
                     ], $app['pp_schema']);
 
                     $app['alert']->success('Nieuwsbericht opgeslagen.');

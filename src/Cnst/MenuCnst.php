@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class menu
+class MenuCnst
 {
     const SIDEBAR = [
         'login'     => [

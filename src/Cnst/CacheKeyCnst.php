@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class cache_key
+class CacheKeyCnst
 {
     const ELAS_FETCH = [
         'last'              => 'elas_interlets_last_fetch',

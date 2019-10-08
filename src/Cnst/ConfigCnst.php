@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class config
+class ConfigCnst
 {
     const TAG = [
         'input'    => [

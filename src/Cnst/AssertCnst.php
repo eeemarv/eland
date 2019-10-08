@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class assert
+class AssertCnst
 {
     const ADMIN = 'a';
     const CONFIG_TAB = 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|messages|users|news|forum|system';

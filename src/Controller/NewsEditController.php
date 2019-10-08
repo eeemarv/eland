@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsEditController extends AbstractController
@@ -72,7 +72,7 @@ class NewsEditController extends AbstractController
                 if($db->update($app['pp_schema'] . '.news', $news, ['id' => $id]))
                 {
                     $app['xdb']->set('news_access', (string) $id, [
-                        'access' => cnst_access::TO_XDB[$access]
+                        'access' => AccessCnst::TO_XDB[$access]
                     ], $app['pp_schema']);
 
                     $app['alert']->success('Nieuwsbericht aangepast.');
@@ -93,7 +93,7 @@ class NewsEditController extends AbstractController
             $access = $app['xdb']->get('news_access', (string) $id,
                 $app['pp_schema'])['data']['access'];
 
-            $access = cnst_access::FROM_XDB[$access];
+            $access = AccessCnst::FROM_XDB[$access];
         }
 
         $app['assets']->add(['datepicker']);

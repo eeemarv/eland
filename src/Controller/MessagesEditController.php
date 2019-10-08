@@ -12,8 +12,8 @@ use Monolog\Logger as monolog;
 use service\alert;
 use service\s3;
 use App\Controller\MessagesShowController;
-use cnst\message_type as cnst_message_type;
-use cnst\access as cnst_access;
+use App\Cnst\MessageTypeCnst;
+use App\Cnst\AccessCnst;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesEditController extends AbstractController
@@ -85,7 +85,7 @@ class MessagesEditController extends AbstractController
                 $errors[] = $error_form;
             }
 
-            if (!isset(cnst_message_type::TO_DB[$type]))
+            if (!isset(MessageTypeCnst::TO_DB[$type]))
             {
                 throw new BadRequestHttpException('Ongeldig bericht type.');
             }
@@ -136,7 +136,7 @@ class MessagesEditController extends AbstractController
                 $access = 'user';
             }
 
-            if (!isset(cnst_access::TO_LOCAL[$access]))
+            if (!isset(AccessCnst::TO_LOCAL[$access]))
             {
                 throw new BadRequestHttpException('Ongeldige zichtbaarheid.');
             }
@@ -193,12 +193,12 @@ class MessagesEditController extends AbstractController
                     'validity'          => $validity,
                     'content'           => $content,
                     '"Description"'     => $description,
-                    'msg_type'          => cnst_message_type::TO_DB[$type],
+                    'msg_type'          => MessageTypeCnst::TO_DB[$type],
                     'id_user'           => $user_id,
                     'id_category'       => $id_category,
                     'amount'            => $amount,
                     'units'             => $units,
-                    'local'             => cnst_access::TO_LOCAL[$access],
+                    'local'             => AccessCnst::TO_LOCAL[$access],
                 ];
 
                 if (empty($amount))
@@ -279,7 +279,7 @@ class MessagesEditController extends AbstractController
 
                 $account_code = $user['letscode'] . ' ' . $user['name'];
 
-                $access = cnst_access::FROM_LOCAL[$message['local']] ?? 'user';
+                $access = AccessCnst::FROM_LOCAL[$message['local']] ?? 'user';
             }
 
             if ($add_mode)
@@ -393,7 +393,7 @@ class MessagesEditController extends AbstractController
         }
 
         $out .= '<div class="form-group">';
-        $out .= self::get_radio(cnst_message_type::TO_LABEL, 'type', $type, true);
+        $out .= self::get_radio(MessageTypeCnst::TO_LABEL, 'type', $type, true);
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
@@ -608,7 +608,7 @@ class MessagesEditController extends AbstractController
 
         $adj_str = $adj < 0 ? '- ' . abs($adj) : '+ ' . $adj;
 
-        $column = cnst_message_type::TO_CAT_STAT_COLUMN[$message_type];
+        $column = MessageTypeCnst::TO_CAT_STAT_COLUMN[$message_type];
 
         $db->executeUpdate('update ' . $schema . '.categories
             set ' . $column . ' = ' . $column . ' ' . $adj_str . '

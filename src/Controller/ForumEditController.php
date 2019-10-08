@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 
 class ForumEditController extends AbstractController
 {
@@ -101,7 +101,7 @@ class ForumEditController extends AbstractController
                 }
                 else
                 {
-                    $forum_post['access'] = cnst_access::TO_XDB[$access];
+                    $forum_post['access'] = AccessCnst::TO_XDB[$access];
                 }
             }
 
@@ -135,7 +135,7 @@ class ForumEditController extends AbstractController
         }
         else if ($is_topic)
         {
-            $access = cnst_access::FROM_XDB[$forum_post['access']];
+            $access = AccessCnst::FROM_XDB[$forum_post['access']];
         }
 
         $app['assets']->add(['summernote', 'summernote_forum_post.js']);

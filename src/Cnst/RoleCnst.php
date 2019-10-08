@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class role
+class RoleCnst
 {
     const LABEL_ARY = [
         'admin'         => 'Admin',

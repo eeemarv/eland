@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use service\xdb;
-use cnst\config as cnst_config;
+use App\Cnst\ConfigCnst;
 use Predis\Client as Predis;
 use service\config as config;
 
@@ -69,9 +69,9 @@ class static_content
 		{
 			$value = (string) $row['data']['value'];
 		}
-		else if (isset(cnst_config::INPUTS[$key]['default']))
+		else if (isset(ConfigCnst::INPUTS[$key]['default']))
 		{
-			$value = cnst_config::INPUTS[$key]['default'];
+			$value = ConfigCnst::INPUTS[$key]['default'];
 		}
 
 		if (isset($value))

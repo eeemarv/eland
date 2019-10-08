@@ -5,10 +5,10 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
-use cnst\status as cnst_status;
-use cnst\role as cnst_role;
-use cnst\contact_input as cnst_contact_input;
+use App\Cnst\AccessCnst;
+use app\cnst\statuscnst;
+use app\cnst\rolecnst;
+use App\Cnst\ContactInputCnst;
 use queue\mail as queue_mail;
 use service\mail_addr_system;
 use service\mail_addr_user;
@@ -118,7 +118,7 @@ class UsersEditAdminController extends AbstractController
                         continue;
                     }
 
-                    $contact[$key]['flag_public'] = cnst_access::TO_FLAG_PUBLIC[$c['access']];
+                    $contact[$key]['flag_public'] = AccessCnst::TO_FLAG_PUBLIC[$c['access']];
                 }
 
                 foreach ($contact as $key => $c)
@@ -382,7 +382,7 @@ class UsersEditAdminController extends AbstractController
                     {
                         $id = (int) $db->lastInsertId($app['pp_schema'] . '.users_id_seq');
 
-                        $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
+                        $fullname_access_role = AccessCnst::TO_XDB[$fullname_access];
 
                         $app['xdb']->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
@@ -493,7 +493,7 @@ class UsersEditAdminController extends AbstractController
                     if ($db->update($app['pp_schema'] . '.users', $user, ['id' => $id]))
                     {
 
-                        $fullname_access_role = cnst_access::TO_XDB[$fullname_access];
+                        $fullname_access_role = AccessCnst::TO_XDB[$fullname_access];
 
                         $app['xdb']->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
@@ -657,7 +657,7 @@ class UsersEditAdminController extends AbstractController
             if ($is_edit)
             {
                 $user = $app['user_cache']->get($id, $app['pp_schema']);
-                $fullname_access = cnst_access::FROM_XDB[$user['fullname_access']];
+                $fullname_access = AccessCnst::FROM_XDB[$user['fullname_access']];
             }
 
             if ($app['pp_admin'])
@@ -990,7 +990,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="fa fa-hand-paper-o"></span></span>';
             $out .= '<select id="accountrole" name="accountrole" ';
             $out .= 'class="form-control">';
-            $out .= $app['select']->get_options(cnst_role::LABEL_ARY, $user['accountrole']);
+            $out .= $app['select']->get_options(rolecnst::LABEL_ARY, $user['accountrole']);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';
@@ -1020,7 +1020,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-star-o"></span></span>';
             $out .= '<select id="status" name="status" class="form-control">';
-            $out .= $app['select']->get_options(cnst_status::LABEL_ARY, $user['status']);
+            $out .= $app['select']->get_options(statuscnst::LABEL_ARY, $user['status']);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';
@@ -1236,12 +1236,12 @@ class UsersEditAdminController extends AbstractController
                 $out .= '<label for="';
                 $out .= $name;
                 $out .= '" class="control-label">';
-                $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['lbl'] ?? $c['abbrev'];
+                $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['lbl'] ?? $c['abbrev'];
                 $out .= '</label>';
                 $out .= '<div class="input-group">';
                 $out .= '<span class="input-group-addon">';
                 $out .= '<i class="fa fa-';
-                $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['fa'] ?? 'question-mark';
+                $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['fa'] ?? 'question-mark';
                 $out .= '"></i>';
                 $out .= '</span>';
                 $out .= '<input class="form-control" id="';
@@ -1252,18 +1252,18 @@ class UsersEditAdminController extends AbstractController
                 $out .= 'value="';
                 $out .= $c['value'] ?? '';
                 $out .= '" type="';
-                $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['type'] ?? 'text';
+                $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['type'] ?? 'text';
                 $out .= '" ';
-                $out .= isset(cnst_contact_input::FORMAT_ARY[$c['abbrev']]['disabled']) ? 'disabled ' : '';
+                $out .= isset(ContactInputCnst::FORMAT_ARY[$c['abbrev']]['disabled']) ? 'disabled ' : '';
                 $out .= 'data-access="';
                 $out .= $access_name;
                 $out .= '">';
                 $out .= '</div>';
 
-                if (isset(cnst_contact_input::FORMAT_ARY[$abbrev]['explain']))
+                if (isset(ContactInputCnst::FORMAT_ARY[$abbrev]['explain']))
                 {
                     $out .= '<p>';
-                    $out .= cnst_contact_input::FORMAT_ARY[$abbrev]['explain'];
+                    $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['explain'];
                     $out .= '</p>';
                 }
 

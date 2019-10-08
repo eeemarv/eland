@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\role as cnst_role;
+use app\cnst\rolecnst;
 use Doctrine\DBAL\Connection as Db;
 
 class LoginController extends AbstractController
@@ -238,7 +238,7 @@ class LoginController extends AbstractController
 
                 $pp_ary = [
                     'system'        => $app['pp_system'],
-                    'role_short'    => cnst_role::SHORT[$user['accountrole']],
+                    'role_short'    => rolecnst::SHORT[$user['accountrole']],
                 ];
 
                 $app['link']->redirect($app['r_default'], $pp_ary, []);

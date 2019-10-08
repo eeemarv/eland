@@ -9,10 +9,10 @@ use service\item_access;
 use render\btn_nav;
 use render\link;
 use render\heading;
-use cnst\access as cnst_access;
-use cnst\status as cnst_status;
-use cnst\role as cnst_role;
-use cnst\bulk as cnst_bulk;
+use App\Cnst\AccessCnst;
+use app\cnst\statuscnst;
+use app\cnst\rolecnst;
+use App\Cnst\BulkCnst;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 
@@ -173,7 +173,7 @@ class UsersListController extends AbstractController
 
             if (!count($errors) && $bulk_submit_action === 'fullname_access')
             {
-                $bulk_fullname_access_xdb = cnst_access::TO_XDB[$bulk_field_value];
+                $bulk_fullname_access_xdb = AccessCnst::TO_XDB[$bulk_field_value];
 
                 foreach ($user_ids as $user_id)
                 {
@@ -193,7 +193,7 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
-                && cnst_bulk::USER_TABS[$bulk_submit_action]['item_access'])
+                && BulkCnst::USER_TABS[$bulk_submit_action]['item_access'])
             {
                 [$abbrev] = explode('_', $bulk_field_action);
 
@@ -201,7 +201,7 @@ class UsersListController extends AbstractController
                     from ' . $app['pp_schema'] . '.type_contact
                     where abbrev = ?', [$abbrev]);
 
-                $flag_public = cnst_access::TO_FLAG_PUBLIC[$bulk_field_value];
+                $flag_public = AccessCnst::TO_FLAG_PUBLIC[$bulk_field_value];
 
                 $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.contact
                     set flag_public = ?
@@ -245,7 +245,7 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
-                && cnst_bulk::USER_TABS[$bulk_submit_action])
+                && BulkCnst::USER_TABS[$bulk_submit_action])
             {
                 $store_value = $bulk_field_value;
 
@@ -259,7 +259,7 @@ class UsersListController extends AbstractController
                     $store_value = $store_value === '' ? 999999999 : $store_value;
                 }
 
-                $field_type = cnst_bulk::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
+                $field_type = BulkCnst::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
                 $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
@@ -333,7 +333,7 @@ class UsersListController extends AbstractController
                         'subject'	=> $bulk_mail_subject,
                     ];
 
-                    foreach (cnst_bulk::USER_TPL_VARS as $key => $val)
+                    foreach (BulkCnst::USER_TPL_VARS as $key => $val)
                     {
                         $vars[$key] = $sel_user[$val];
                     }
@@ -394,7 +394,7 @@ class UsersListController extends AbstractController
                         'subject'	=> 'Kopie: ' . $bulk_mail_subject,
                     ];
 
-                    foreach (cnst_bulk::USER_TPL_VARS as $key => $trans)
+                    foreach (BulkCnst::USER_TPL_VARS as $key => $trans)
                     {
                         $vars[$key] = '{{ ' . $key . ' }}';
                     }
@@ -1239,10 +1239,10 @@ class UsersListController extends AbstractController
 
             $out .= '<tr';
 
-            if (isset(cnst_status::CLASS_ARY[$row_stat]))
+            if (isset(statuscnst::CLASS_ARY[$row_stat]))
             {
                 $out .= ' class="';
-                $out .= cnst_status::CLASS_ARY[$row_stat];
+                $out .= statuscnst::CLASS_ARY[$row_stat];
                 $out .= '"';
             }
 
@@ -1307,7 +1307,7 @@ class UsersListController extends AbstractController
                     }
                     else if ($key === 'accountrole')
                     {
-                        $td .= cnst_role::LABEL_ARY[$u['accountrole']];
+                        $td .= rolecnst::LABEL_ARY[$u['accountrole']];
                     }
                     else
                     {
@@ -1316,7 +1316,7 @@ class UsersListController extends AbstractController
 
                     if ($app['pp_admin'] && $first)
                     {
-                        $out .= strtr(cnst_bulk::TPL_CHECKBOX_ITEM, [
+                        $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                             '%id%'      => $id,
                             '%attr%'    => isset($selected_users[$id]) ? ' checked' : '',
                             '%label%'   => $td,
@@ -1486,7 +1486,7 @@ class UsersListController extends AbstractController
 
         if ($app['pp_admin'] & isset($show_columns['u']))
         {
-            $out .= cnst_bulk::TPL_SELECT_BUTTONS;
+            $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerde gebruikers</h3>';
             $out .= '<div class="panel panel-info">';
@@ -1502,7 +1502,7 @@ class UsersListController extends AbstractController
             $out .= '<span class="caret"></span></a>';
             $out .= '<ul class="dropdown-menu">';
 
-            foreach (cnst_bulk::USER_TABS as $k => $t)
+            foreach (BulkCnst::USER_TABS as $k => $t)
             {
                 $out .= '<li>';
                 $out .= '<a href="#' . $k . '_tab" data-toggle="tab">';
@@ -1534,20 +1534,20 @@ class UsersListController extends AbstractController
             $out .= 'class="form-control summernote" ';
             $out .= 'id="bulk_mail_content" rows="8" ';
             $out .= 'data-template-vars="';
-            $out .= implode(',', array_keys(cnst_bulk::USER_TPL_VARS));
+            $out .= implode(',', array_keys(BulkCnst::USER_TPL_VARS));
             $out .= '" ';
             $out .= 'required>';
             $out .= $bulk_mail_content;
             $out .= '</textarea>';
             $out .= '</div>';
 
-            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'bulk_mail_cc',
                 '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
                 '%attr%'    => $bulk_mail_cc ? ' checked' : '',
             ]);
 
-            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'bulk_verify[mail]',
                 '%label%'   => 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.',
                 '%attr%'    => ' required',
@@ -1562,7 +1562,7 @@ class UsersListController extends AbstractController
             $out .= '</form>';
             $out .= '</div>';
 
-            foreach(cnst_bulk::USER_TABS as $k => $t)
+            foreach(BulkCnst::USER_TABS as $k => $t)
             {
                 $out .= '<div role="tabpanel" class="tab-pane" id="';
                 $out .= $k;
@@ -1584,17 +1584,17 @@ class UsersListController extends AbstractController
 
                     if (isset($t['options']))
                     {
-                        $tpl = cnst_bulk::TPL_SELECT;
+                        $tpl = BulkCnst::TPL_SELECT;
                         $options = $app['select']->get_options($t['options'], '');
                     }
                     else if (isset($t['type'])
                         && $t['type'] === 'checkbox')
                     {
-                        $tpl = cnst_bulk::TPL_CHECKBOX;
+                        $tpl = BulkCnst::TPL_CHECKBOX;
                     }
                     else
                     {
-                        $tpl = cnst_bulk::TPL_INPUT;
+                        $tpl = BulkCnst::TPL_INPUT;
                     }
 
                     $out .= strtr($tpl, [
@@ -1608,7 +1608,7 @@ class UsersListController extends AbstractController
                     ]);
                 }
 
-                $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[' . $k  . ']',
                     '%label%'   => 'Ik heb de ingevulde waarde nagekeken en dat de juiste gebruikers geselecteerd zijn.',
                     '%attr%'    => ' required',

@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\UsersListController;
-use cnst\status as cnst_status;
+use app\cnst\statuscnst;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersTilesController extends AbstractController
@@ -96,10 +96,10 @@ class UsersTilesController extends AbstractController
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
             $out .= '<div';
 
-            if (isset(cnst_status::CLASS_ARY[$row_stat]))
+            if (isset(statuscnst::CLASS_ARY[$row_stat]))
             {
                 $out .= ' class="bg-';
-                $out .= cnst_status::CLASS_ARY[$row_stat];
+                $out .= statuscnst::CLASS_ARY[$row_stat];
                 $out .= '"';
             }
 

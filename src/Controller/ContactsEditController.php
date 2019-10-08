@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as db;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 
 class ContactsEditController extends AbstractController
 {
@@ -193,7 +193,7 @@ class ContactsEditController extends AbstractController
                 'id_type_contact'   => $id_type_contact,
                 'value'             => $value,
                 'comments'          => $comments,
-                'flag_public'       => cnst_access::TO_FLAG_PUBLIC[$access],
+                'flag_public'       => AccessCnst::TO_FLAG_PUBLIC[$access],
             ];
 
             if(!count($errors))
@@ -364,7 +364,7 @@ class ContactsEditController extends AbstractController
                 'Het contact met id ' . $contact_id . ' bestaat niet.');
         }
 
-        $contact['access'] = cnst_access::FROM_FLAG_PUBLIC[$contact['flag_public']];
+        $contact['access'] = AccessCnst::FROM_FLAG_PUBLIC[$contact['flag_public']];
 
         return $contact;
     }

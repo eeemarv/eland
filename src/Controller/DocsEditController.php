@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 
 class DocsEditController extends AbstractController
 {
@@ -17,7 +17,7 @@ class DocsEditController extends AbstractController
         {
             $doc = $row['data'];
 
-            $access = cnst_access::FROM_XDB[$doc['access']];
+            $access = AccessCnst::FROM_XDB[$doc['access']];
             $doc['ts'] = $row['event_time'];
         }
         else
@@ -39,7 +39,7 @@ class DocsEditController extends AbstractController
             }
             else
             {
-                $access_xdb = cnst_access::TO_XDB[$access];
+                $access_xdb = AccessCnst::TO_XDB[$access];
             }
 
             $update = [

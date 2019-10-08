@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class status
+class StatusCnst
 {
     const LABEL_ARY = [
         0	=> 'Gedesactiveerd',

@@ -7,9 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use cnst\status as cnst_status;
-use cnst\access as cnst_access;
-use cnst\role as cnst_role;
+use app\cnst\statuscnst;
+use App\Cnst\AccessCnst;
+use app\cnst\rolecnst;
 use controller\users_list;
 use Doctrine\DBAL\Connection as Db;
 
@@ -106,7 +106,7 @@ class UsersShowController extends AbstractController
                     where c.flag_public >= ?
                         and c.id_user = ?
                         and c.id_type_contact = tc.id',
-                        [cnst_access::TO_FLAG_PUBLIC[$user['accountrole']], $app['s_id']]);
+                        [AccessCnst::TO_FLAG_PUBLIC[$user['accountrole']], $app['s_id']]);
 
                 $from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
@@ -293,7 +293,7 @@ class UsersShowController extends AbstractController
             $status_id = ($app['new_user_treshold'] < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
         }
 
-        $h_status_ary = cnst_status::LABEL_ARY;
+        $h_status_ary = statuscnst::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
 
         if ($s_owner && !$app['pp_admin'])
@@ -306,7 +306,7 @@ class UsersShowController extends AbstractController
         if ($status_id != 1)
         {
             $app['heading']->add_raw(' <small><span class="text-');
-            $app['heading']->add_raw(cnst_status::CLASS_ARY[$status_id]);
+            $app['heading']->add_raw(statuscnst::CLASS_ARY[$status_id]);
             $app['heading']->add_raw('">');
             $app['heading']->add_raw($h_status_ary[$status_id]);
             $app['heading']->add_raw('</span></small>');
@@ -535,12 +535,12 @@ class UsersShowController extends AbstractController
             $out .= '<dt>';
             $out .= 'Rechten / rol';
             $out .= '</dt>';
-            $out .= $this->get_dd(cnst_role::LABEL_ARY[$user['accountrole']]);
+            $out .= $this->get_dd(rolecnst::LABEL_ARY[$user['accountrole']]);
 
             $out .= '<dt>';
             $out .= 'Status';
             $out .= '</dt>';
-            $out .= $this->get_dd(cnst_status::LABEL_ARY[$user['status']]);
+            $out .= $this->get_dd(statuscnst::LABEL_ARY[$user['status']]);
 
             $out .= '<dt>';
             $out .= 'Commentaar van de admin';

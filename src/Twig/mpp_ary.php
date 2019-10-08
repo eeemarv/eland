@@ -4,7 +4,7 @@ namespace App\Twig;
 
 use service\user_cache;
 use service\systems;
-use cnst\role as cnst_role;
+use app\cnst\rolecnst;
 
 class mpp_ary
 {
@@ -48,7 +48,7 @@ class mpp_ary
 	public function get(array $context, int $id, string $schema):array
 	{
 		$role = $this->user_cache->get($id, $schema)['accountrole'];
-		$role_short = cnst_role::SHORT[$role] ?? '';
+		$role_short = rolecnst::SHORT[$role] ?? '';
 
 		return $this->get_ary($role_short, $context['et'] ?? '', $schema);
 	}

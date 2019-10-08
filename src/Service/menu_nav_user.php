@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use cnst\menu as cnst_menu;
+use App\Cnst\MenuCnst;
 
 class menu_nav_user
 {
@@ -28,7 +28,7 @@ class menu_nav_user
 
 	public function get_nav_user():array
 	{
-		$m_ary = cnst_menu::NAV_USER;
+		$m_ary = MenuCnst::NAV_USER;
 
 		$m_ary['users_show']['params']['id'] = $this->s_id;
 		$m_ary['users_show']['route'] = $this->r_users_show;
@@ -36,13 +36,13 @@ class menu_nav_user
 		$m_ary['messages']['route'] = $this->r_messages;
 		$m_ary['transactions']['params']['f']['uid'] = $this->s_id;
 
-		$m_ary += cnst_menu::NAV_LOGOUT;
+		$m_ary += MenuCnst::NAV_LOGOUT;
 
 		return $m_ary;
 	}
 
 	public function get_nav_logout():array
 	{
-		return cnst_menu::NAV_LOGOUT;
+		return MenuCnst::NAV_LOGOUT;
 	}
 }

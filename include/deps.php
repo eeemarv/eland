@@ -4,8 +4,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
-use cnst\pages as cnst_pages;
-use cnst\role as cnst_role;
+use app\cnst\pagescnst;
+use app\cnst\rolecnst;
 
 $app = new app();
 
@@ -307,7 +307,7 @@ $app['pp_role_short'] = function ($app):string{
 };
 
 $app['pp_role'] =  function ($app):string{
-	return cnst_role::LONG[$app['pp_role_short']] ?? 'anonymous';
+	return rolecnst::LONG[$app['pp_role_short']] ?? 'anonymous';
 };
 
 $app['pp_system'] = function ($app):string{
@@ -340,7 +340,7 @@ $app['pp_ary'] = function ($app):array{
 
 		if ($app['pp_role_short'] !== '')
 		{
-			if (!isset(cnst_role::LONG[$app['pp_role_short']]))
+			if (!isset(rolecnst::LONG[$app['pp_role_short']]))
 			{
 				return [];
 			}

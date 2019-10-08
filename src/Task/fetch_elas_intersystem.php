@@ -6,7 +6,7 @@ use service\cache;
 use Predis\Client as Predis;
 use service\typeahead;
 use Monolog\Logger;
-use cnst\cache_key as cnst_cache_key;
+use App\Cnst\CacheKeyCnst;
 
 class fetch_elas_intersystem
 {
@@ -44,9 +44,9 @@ class fetch_elas_intersystem
 		$this->now = time();
 		$this->now_gmdate = gmdate('Y-m-d H:i:s', $this->now);
 
-		$this->elas_domains = $this->cache->get(cnst_cache_key::ELAS_FETCH['domains']);
-		$this->last_fetch = $this->cache->get(cnst_cache_key::ELAS_FETCH['last']);
-		$this->apikeys_fails = $this->cache->get(cnst_cache_key::ELAS_FETCH['apikey_fails']);
+		$this->elas_domains = $this->cache->get(CacheKeyCnst::ELAS_FETCH['domains']);
+		$this->last_fetch = $this->cache->get(CacheKeyCnst::ELAS_FETCH['last']);
+		$this->apikeys_fails = $this->cache->get(CacheKeyCnst::ELAS_FETCH['apikey_fails']);
 
 		error_log('-- Last fetch --');
 		error_log(json_encode($this->last_fetch));
@@ -239,8 +239,8 @@ class fetch_elas_intersystem
 	*/
 	protected function update_cache():void
 	{
-		$this->cache->set(cnst_cache_key::ELAS_FETCH['last'], $this->last_fetch);
-		$this->cache->set(cnst_cache_key::ELAS_FETCH['apikey_fails'], $this->apikeys_fails);
+		$this->cache->set(CacheKeyCnst::ELAS_FETCH['last'], $this->last_fetch);
+		$this->cache->set(CacheKeyCnst::ELAS_FETCH['apikey_fails'], $this->apikeys_fails);
 		error_log('update cache');
 	}
 

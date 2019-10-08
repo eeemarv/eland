@@ -4,7 +4,7 @@ namespace App\Service;
 
 use service\config;
 use service\item_access;
-use cnst\menu as cnst_menu;
+use App\Cnst\MenuCnst;
 
 class menu
 {
@@ -73,7 +73,7 @@ class menu
 
 	public function get_nav_admin():array
 	{
-		$m_ary = cnst_menu::NAV_ADMIN;
+		$m_ary = MenuCnst::NAV_ADMIN;
 
 		$m_ary['user_mode']['params']['system'] = $this->pp_system;
 		$m_ary['guest_mode']['params']['system'] = $this->pp_system;
@@ -100,7 +100,7 @@ class menu
 	{
 		$menu_ary = [];
 
-		foreach (cnst_menu::SIDEBAR as $m_route => $item)
+		foreach (MenuCnst::SIDEBAR as $m_route => $item)
 		{
 			if (!$this->item_access->is_visible($item['access']))
 			{

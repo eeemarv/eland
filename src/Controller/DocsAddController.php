@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 
 class DocsAddController extends AbstractController
 {
@@ -69,7 +69,7 @@ class DocsAddController extends AbstractController
                     $doc = [
                         'filename'		=> $filename,
                         'org_filename'	=> $original_filename,
-                        'access'		=> cnst_access::TO_XDB[$access],
+                        'access'		=> AccessCnst::TO_XDB[$access],
                         'user_id'		=> $app['s_id'],
                     ];
 

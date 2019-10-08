@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use service\assets;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 
 class item_access
 {
@@ -61,22 +61,22 @@ class item_access
 
 	public function is_visible_xdb(string $access_xdb):bool
 	{
-		if (!isset(cnst_access::FROM_XDB[$access_xdb]))
+		if (!isset(AccessCnst::FROM_XDB[$access_xdb]))
 		{
 			return false;
 		}
 
-		return $this->is_visible(cnst_access::FROM_XDB[$access_xdb]);
+		return $this->is_visible(AccessCnst::FROM_XDB[$access_xdb]);
 	}
 
 	public function is_visible_flag_public(int $access_flag_public):bool
 	{
-		if (!isset(cnst_access::FROM_FLAG_PUBLIC[$access_flag_public]))
+		if (!isset(AccessCnst::FROM_FLAG_PUBLIC[$access_flag_public]))
 		{
 			return false;
 		}
 
-		return $this->is_visible(cnst_access::FROM_FLAG_PUBLIC[$access_flag_public]);
+		return $this->is_visible(AccessCnst::FROM_FLAG_PUBLIC[$access_flag_public]);
 	}
 
 	public function is_visible_local(bool $local):bool
@@ -86,7 +86,7 @@ class item_access
 
 	public function get_visible_ary():array
 	{
-		$ary = cnst_access::ARY;
+		$ary = AccessCnst::ARY;
 
 		if (!isset($ary[$this->pp_role]))
 		{
@@ -112,7 +112,7 @@ class item_access
 
 		foreach ($this->get_visible_ary() as $role)
 		{
-			$ary[] = cnst_access::TO_XDB[$role];
+			$ary[] = AccessCnst::TO_XDB[$role];
 		}
 
 		return $ary;
@@ -124,7 +124,7 @@ class item_access
 
 		foreach ($this->get_visible_ary() as $role)
 		{
-			$ary[] = cnst_access::TO_FLAG_PUBLIC[$role];
+			$ary[] = AccessCnst::TO_FLAG_PUBLIC[$role];
 		}
 
 		return $ary;
@@ -137,9 +137,9 @@ class item_access
 		$access = $access === 'guest' && !$this->intersystem_en ? 'user' : $access;
 
 		$out = '<span class="btn btn-';
-		$out .= cnst_access::LABEL[$access]['class'];
+		$out .= AccessCnst::LABEL[$access]['class'];
 		$out .= '">';
-		$out .= cnst_access::LABEL[$access]['lbl'];
+		$out .= AccessCnst::LABEL[$access]['lbl'];
 		$out .= '</span>';
 
 		return $out;
@@ -147,22 +147,22 @@ class item_access
 
 	public function get_label_xdb(string $access_xdb):string
 	{
-		return $this->get_label(cnst_access::FROM_XDB[$access_xdb]);
+		return $this->get_label(AccessCnst::FROM_XDB[$access_xdb]);
 	}
 
 	public function get_label_flag_public(int $flag_public):string
 	{
-		return $this->get_label(cnst_access::FROM_FLAG_PUBLIC[$flag_public]);
+		return $this->get_label(AccessCnst::FROM_FLAG_PUBLIC[$flag_public]);
 	}
 
 	public function get_value_from_flag_public($flag_public):string
 	{
-		if (!isset($flag_public) || !isset(cnst_access::FROM_FLAG_PUBLIC[$flag_public]))
+		if (!isset($flag_public) || !isset(AccessCnst::FROM_FLAG_PUBLIC[$flag_public]))
 		{
 			return '';
 		}
 
-		return cnst_access::FROM_FLAG_PUBLIC[$flag_public];
+		return AccessCnst::FROM_FLAG_PUBLIC[$flag_public];
 	}
 
 	public function get_radio_buttons(
@@ -173,7 +173,7 @@ class item_access
 		string $label = 'Zichtbaarheid'
 	):string
 	{
-		$ary = cnst_access::ARY;
+		$ary = AccessCnst::ARY;
 
 		if (!$this->intersystem_en)
 		{

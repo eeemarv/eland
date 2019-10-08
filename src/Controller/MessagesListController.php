@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use render\btn_nav;
-use cnst\access as cnst_access;
-use cnst\message_type as cnst_message_type;
-use cnst\bulk as cnst_bulk;
+use App\Cnst\AccessCnst;
+use App\Cnst\MessageTypeCnst;
+use App\Cnst\BulkCnst;
 use App\Controller\MessagesShowController;
 use controller\messages_edit;
 
@@ -140,7 +140,7 @@ class MessagesListController extends AbstractController
             if ($bulk_submit_action === 'access' && !count($errors))
             {
                 $msg_update = [
-                    'local' => cnst_access::TO_LOCAL[$bulk_field_value],
+                    'local' => AccessCnst::TO_LOCAL[$bulk_field_value],
                     'mdate' => gmdate('Y-m-d H:i:s'),
                 ];
 
@@ -192,7 +192,7 @@ class MessagesListController extends AbstractController
                 {
                     $app['db']->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
 
-                    $type = cnst_message_type::FROM_DB[$row['msg_type']];
+                    $type = MessageTypeCnst::FROM_DB[$row['msg_type']];
                     $id_category = $row['id_category'];
 
                     if ($id_category === $to_id_category)
@@ -324,7 +324,7 @@ class MessagesListController extends AbstractController
 
             if ($app['pp_admin'] || $s_owner)
             {
-                $out .= strtr(cnst_bulk::TPL_CHECKBOX_ITEM, [
+                $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
                     '%attr%'    => isset($selected_messages[$msg['id']]) ? ' checked' : '',
                     '%label%'   => ucfirst($msg['label']['type']),
@@ -399,7 +399,7 @@ class MessagesListController extends AbstractController
                 '1825'	=> '5 jaar',
             ];
 
-            $out .= cnst_bulk::TPL_SELECT_BUTTONS;
+            $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
@@ -438,7 +438,7 @@ class MessagesListController extends AbstractController
             $out .= "</select>";
             $out .= '</div>';
 
-            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'bulk_verify[extend]',
                 '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                 '%attr%'    => ' required',
@@ -461,7 +461,7 @@ class MessagesListController extends AbstractController
 
                 $out .= $app['item_access']->get_radio_buttons('bulk_field[access]', '', '', true);
 
-                $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[access]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                     '%attr%'    => ' required',
@@ -478,7 +478,7 @@ class MessagesListController extends AbstractController
             $out .= '<h3>Verhuizen naar categorie</h3>';
             $out .= '<form method="post">';
 
-            $out .= strtr(cnst_bulk::TPL_SELECT, [
+            $out .= strtr(BulkCnst::TPL_SELECT, [
                 '%options%' => $app['select']->get_options($categories_move_options, ''),
                 '%name%'    => 'bulk_field[category]',
                 '%label%'   => 'Categorie',
@@ -486,7 +486,7 @@ class MessagesListController extends AbstractController
                 '%fa%'      => 'clone',
             ]);
 
-            $out .= strtr(cnst_bulk::TPL_CHECKBOX, [
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'bulk_verify[category]',
                 '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                 '%attr%'    => ' required',
@@ -837,7 +837,7 @@ class MessagesListController extends AbstractController
 
         while ($msg = $st->fetch())
         {
-            $msg['type'] = cnst_message_type::FROM_DB[$msg['msg_type']];
+            $msg['type'] = MessageTypeCnst::FROM_DB[$msg['msg_type']];
             $msg['label'] = MessagesShowController::get_label($msg['type']);
 
             $messages[] = $msg;

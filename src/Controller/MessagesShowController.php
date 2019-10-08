@@ -9,8 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use render\link;
-use cnst\access as cnst_access;
-use cnst\message_type as cnst_message_type;
+use App\Cnst\AccessCnst;
+use App\Cnst\MessageTypeCnst;
 use controller\contacts_user_show_inline;
 use controller\users_show;
 
@@ -97,7 +97,7 @@ class MessagesShowController extends AbstractController
                     where c.flag_public >= ?
                         and c.id_user = ?
                         and c.id_type_contact = tc.id',
-                        [cnst_access::TO_FLAG_PUBLIC[$to_user['accountrole']], $app['s_id']]);
+                        [AccessCnst::TO_FLAG_PUBLIC[$to_user['accountrole']], $app['s_id']]);
 
                 $from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
 
@@ -442,9 +442,9 @@ class MessagesShowController extends AbstractController
             throw new NotFoundHttpException('Dit bericht bestaat niet of werd verwijderd.');
         }
 
-        $message['access'] = cnst_access::FROM_LOCAL[$message['local']];
+        $message['access'] = AccessCnst::FROM_LOCAL[$message['local']];
 
-        $message['type'] = cnst_message_type::FROM_DB[$message['msg_type']];
+        $message['type'] = MessageTypeCnst::FROM_DB[$message['msg_type']];
         $message['is_offer'] = $message['type'] === 'offer';
         $message['is_want'] = $message['type'] === 'want';
 
@@ -456,9 +456,9 @@ class MessagesShowController extends AbstractController
     public static function get_label(string $type):array
     {
         return [
-            'type'  => cnst_message_type::TO_LABEL[$type],
-            'type_the'  => cnst_message_type::TO_THE_LABEL[$type],
-            'type_this' => cnst_message_type::TO_THIS_LABEL[$type],
+            'type'  => MessageTypeCnst::TO_LABEL[$type],
+            'type_the'  => MessageTypeCnst::TO_THE_LABEL[$type],
+            'type_this' => MessageTypeCnst::TO_THIS_LABEL[$type],
         ];
     }
 }

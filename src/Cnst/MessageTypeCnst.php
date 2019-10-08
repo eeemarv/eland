@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class message_type
+class MessageTypeCnst
 {
     const TO_DB = [
         'offer'     => 1,

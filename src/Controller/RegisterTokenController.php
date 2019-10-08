@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 use Doctrine\DBAL\Connection as Db;
 
 class RegisterTokenController extends AbstractController
@@ -123,7 +123,7 @@ class RegisterTokenController extends AbstractController
 
             $mail = [
                 'id_user'			=> $user_id,
-                'flag_public'		=> cnst_access::TO_FLAG_PUBLIC['admin'],
+                'flag_public'		=> AccessCnst::TO_FLAG_PUBLIC['admin'],
                 'value'				=> $data['email'],
                 'id_type_contact'	=> $tc['mail'],
             ];
@@ -136,7 +136,7 @@ class RegisterTokenController extends AbstractController
                 {
                     $gsm = [
                         'id_user'			=> $user_id,
-                        'flag_public'		=> cnst_access::TO_FLAG_PUBLIC['admin'],
+                        'flag_public'		=> AccessCnst::TO_FLAG_PUBLIC['admin'],
                         'value'				=> $data['gsm'],
                         'id_type_contact'	=> $tc['gsm'],
                     ];
@@ -148,7 +148,7 @@ class RegisterTokenController extends AbstractController
                 {
                     $tel = [
                         'id_user'			=> $user_id,
-                        'flag_public'		=> cnst_access::TO_FLAG_PUBLIC['admin'],
+                        'flag_public'		=> AccessCnst::TO_FLAG_PUBLIC['admin'],
                         'value'				=> $data['tel'],
                         'id_type_contact'	=> $tc['tel'],
                     ];

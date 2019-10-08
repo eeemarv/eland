@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use cnst\config as cnst_config;
+use App\Cnst\ConfigCnst;
 
 class ConfigController extends AbstractController
 {
@@ -17,13 +17,13 @@ class ConfigController extends AbstractController
         Db $db
     ):Response
     {
-        $pane = cnst_config::TAB_PANES[$tab];
+        $pane = ConfigCnst::TAB_PANES[$tab];
 
         $cond_ary = [
             'config_template_lets'	=> true,
         ];
 
-        $block_ary = cnst_config::BLOCK_ARY;
+        $block_ary = ConfigCnst::BLOCK_ARY;
 
         if (!$app['config']->get('forum_en', $app['pp_schema']))
         {
@@ -38,7 +38,7 @@ class ConfigController extends AbstractController
 
         $select_options = [
             'date_format'	=> $app['date_format']->get_options(),
-            'landing_page'	=> cnst_config::LANDING_PAGE_OPTIONS,
+            'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
         ];
 
         $explain_replace_ary = [
@@ -51,7 +51,7 @@ class ConfigController extends AbstractController
         ];
 
         $attr_replace_ary = [
-            '%map_template_vars%'	=> implode(',', array_keys(cnst_config::MAP_TEMPLATE_VARS)),
+            '%map_template_vars%'	=> implode(',', array_keys(ConfigCnst::MAP_TEMPLATE_VARS)),
         ];
 
         $config = [];
@@ -90,7 +90,7 @@ class ConfigController extends AbstractController
             foreach ($config as $input_name => $loaded_value)
             {
                 $posted_value = trim($request->request->get($input_name, ''));
-                $input_data = cnst_config::INPUTS[$input_name];
+                $input_data = ConfigCnst::INPUTS[$input_name];
 
                 if (isset($input_data['cond']) &&
                     !isset($cond_ary[$input_data['cond']]))
@@ -280,8 +280,8 @@ class ConfigController extends AbstractController
 
                 // prevent string too long error for eLAS database
 
-                if (isset(cnst_config::INPUTS[$input_name]['max_inputs'])
-                    && cnst_config::INPUTS[$input_name]['max_inputs'] > 1)
+                if (isset(ConfigCnst::INPUTS[$input_name]['max_inputs'])
+                    && ConfigCnst::INPUTS[$input_name]['max_inputs'] > 1)
                 {
                     [$posted_value] = explode(',', $posted_value);
                     $posted_value = trim($posted_value);
@@ -293,7 +293,7 @@ class ConfigController extends AbstractController
                     ['value' => $posted_value, '"default"' => 'f'],
                     ['setting' => $input_name]);
 
-                $post_actions = cnst_config::INPUTS[$input_name]['post_actions'] ?? [];
+                $post_actions = ConfigCnst::INPUTS[$input_name]['post_actions'] ?? [];
 
                 foreach($post_actions as $post_action)
                 {
@@ -319,9 +319,9 @@ class ConfigController extends AbstractController
                 ['tab' => $tab]);
         }
 
-        if (isset(cnst_config::TAB_PANES[$tab]['assets']))
+        if (isset(ConfigCnst::TAB_PANES[$tab]['assets']))
         {
-            $app['assets']->add(cnst_config::TAB_PANES[$tab]['assets']);
+            $app['assets']->add(ConfigCnst::TAB_PANES[$tab]['assets']);
         }
 
         $app['heading']->add('Instellingen');
@@ -331,7 +331,7 @@ class ConfigController extends AbstractController
 
         $out .= '<ul class="nav nav-pills">';
 
-        foreach (cnst_config::TAB_PANES as $tab_id => $tab_pane_data)
+        foreach (ConfigCnst::TAB_PANES as $tab_id => $tab_pane_data)
         {
             $out .= '<li role="presentation"';
             $out .= $tab_id === $tab ? ' class="active"' : '';
@@ -376,7 +376,7 @@ class ConfigController extends AbstractController
             }
             else
             {
-                $input = cnst_config::INPUTS[$pane_input_name];
+                $input = ConfigCnst::INPUTS[$pane_input_name];
                 $input_name = $pane_input_name;
             }
 
@@ -416,7 +416,7 @@ class ConfigController extends AbstractController
 
                 foreach ($inline_input_names as $inline_input_name)
                 {
-                    $inline_input_data = cnst_config::INPUTS[$inline_input_name];
+                    $inline_input_data = ConfigCnst::INPUTS[$inline_input_name];
 
                     $str = '<input type="';
                     $str .= $inline_input_data['type'] ?? 'text';
@@ -459,9 +459,9 @@ class ConfigController extends AbstractController
 
                     $str .= '>';
 
-                    $search_inline = cnst_config::TAG['input']['open'];
+                    $search_inline = ConfigCnst::TAG['input']['open'];
                     $search_inline .= $inline_input_name;
-                    $search_inline .= cnst_config::TAG['input']['close'];
+                    $search_inline .= ConfigCnst::TAG['input']['close'];
 
                     $replace_inline_ary[$search_inline] = $str;
                 }
@@ -747,8 +747,8 @@ class ConfigController extends AbstractController
     {
         $return_ary = [];
 
-        $open = cnst_config::TAG[$tag_name]['open'];
-        $close = cnst_config::TAG[$tag_name]['close'];
+        $open = ConfigCnst::TAG[$tag_name]['open'];
+        $close = ConfigCnst::TAG[$tag_name]['close'];
 
         $start = 0;
 

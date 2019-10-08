@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class process
+class ProcessCnst
 {
     const INTERVAL = [
         'cleanup_cache'    => [

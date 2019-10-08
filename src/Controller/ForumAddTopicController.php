@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use cnst\access as cnst_access;
+use App\Cnst\AccessCnst;
 
 class ForumAddTopicController extends AbstractController
 {
@@ -52,7 +52,7 @@ class ForumAddTopicController extends AbstractController
             }
             else
             {
-                $topic['access'] = cnst_access::TO_XDB[$access];
+                $topic['access'] = AccessCnst::TO_XDB[$access];
             }
 
             if ($token_error = $app['form_token']->get_error())

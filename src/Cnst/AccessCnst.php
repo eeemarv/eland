@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class access
+class AccessCnst
 {
     const LABEL = [
         'admin'		=> [

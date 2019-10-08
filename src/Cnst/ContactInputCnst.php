@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class contact_input
+class ContactInputCnst
 {
     const FORMAT_ARY = [
         'adr'	=> [

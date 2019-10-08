@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-class pages
+class PagesCnst
 {
     const INTERSYSTEM_LANDING = [
         'messages'		=> true,
