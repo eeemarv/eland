@@ -25,17 +25,17 @@ class ProcessCleanupCacheCommand extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('cleanup_cache');
+        $monitor_process_service->boot('cleanup_cache');
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
 
             $this->cache_service->cleanup();
-            $app['monitor_process']->periodic_log();
+            $monitor_process_service->periodic_log();
         }
     }
 }

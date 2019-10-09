@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
 use app\cnst\statuscnst;
-use app\cnst\rolecnst;
+use App\Cnst\RoleCnst;
 use App\Cnst\ContactInputCnst;
 use App\Queue\mail as queue_mail;
 use App\Service\MailAddrSystemService;
@@ -990,7 +990,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="fa fa-hand-paper-o"></span></span>';
             $out .= '<select id="accountrole" name="accountrole" ';
             $out .= 'class="form-control">';
-            $out .= $select_render->get_options(rolecnst::LABEL_ARY, $user['accountrole']);
+            $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $user['accountrole']);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';

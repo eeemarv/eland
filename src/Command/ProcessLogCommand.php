@@ -20,17 +20,17 @@ class ProcessLogCommand extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('log');
+        $monitor_process_service->boot('log');
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
 
-            $app['log_db']->update();
-            $app['monitor_process']->periodic_log();
+            $log_db_service->update();
+            $monitor_process_service->periodic_log();
         }
     }
 }

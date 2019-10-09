@@ -39,7 +39,7 @@ class UsersImageUploadController extends AbstractController
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        $filename = $app['image_upload']->upload($uploaded_file,
+        $filename = $image_upload_service->upload($uploaded_file,
             'u', $id, 400, 400, $app['pp_schema']);
 
         $db->update($app['pp_schema'] . '.users', [

@@ -12,7 +12,7 @@ class TypeaheadUsernamesController extends AbstractController
     {
         $usernames = [];
 
-        $st = $app['db']->prepare('select name
+        $st = $db->prepare('select name
             from ' . $app['pp_schema'] . '.users
             order by name asc');
 

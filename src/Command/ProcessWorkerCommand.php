@@ -21,7 +21,7 @@ class ProcessWorkerCommand extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('worker');
+        $monitor_process_service->boot('worker');
 
         error_log(' --- ');
         error_log('schemas: ' . json_encode($systems_service->get_schemas()));
@@ -37,7 +37,7 @@ class ProcessWorkerCommand extends Command
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -47,7 +47,7 @@ class ProcessWorkerCommand extends Command
                 $schema_task->run();
             }
 
-            $app['monitor_process']->periodic_log();
+            $monitor_process_service->periodic_log();
         }
     }
 }

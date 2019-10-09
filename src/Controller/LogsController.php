@@ -2,6 +2,17 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Render\PaginationRender;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\LogDbService;
+use App\Service\MenuService;
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,15 +22,26 @@ class LogsController extends AbstractController
 {
     public function logs(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        PaginationRender $pagination_render,
+        MenuService $menu_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        LogDbService $log_db_service,
+        BtnNavRender $btn_nav_render,
+        AssetsService $assets_service,
+        TypeaheadService $typeahead_service,
+        AccountRender $account_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service
+
     ):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $app['log_db']->update();
+        $log_db_service->update();
 
         $params = [
             's'	=> [
@@ -135,7 +157,7 @@ class LogsController extends AbstractController
 
         $btn_nav_render->csv();
 
-        $assets_service->add(['datepicker', 'csv.js']);
+        $assets_service->add(['datepicker']);
 
         $filtered = (isset($filter['q']) && $filter['q'] !== '')
             || (isset($filter['type']) && $filter['type'] !== '')
@@ -288,16 +310,10 @@ class LogsController extends AbstractController
                     'asc' 		=> $data['asc'],
                 ];
 
-                $out .= '<a href="';
-                $out .= $app->path('logs', array_merge($app['pp_ary'], $th_params));
-                $out .= '">';
-                $out .= $data['lbl'];
-                $out .= '&nbsp;';
-                $out .= '<i class="fa fa-sort';
-                $out .= $data['indicator'];
-                $out .= '"></i>';
-                $out .= '</a>';
+                $out .= $link_render->link_fa('logs', $app['pp_ary'], $th_params,
+                    $data['lbl'], [], 'sort' . $data['indicator']);
             }
+
             $out .= '</th>';
         }
 

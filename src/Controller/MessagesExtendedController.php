@@ -5,18 +5,26 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\messages_list;
+use App\Controller\MessagesListController;
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\LinkRender;
+use App\Render\PaginationRender;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendedController extends AbstractController
 {
     public function messages_extended(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        BtnNavRender $btn_nav_render,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        PaginationRender $pagination_render
     ):Response
     {
-        $fetch_and_filter = messages_list::fetch_and_filter($request, $app);
+        $fetch_and_filter = MessagesListController::fetch_and_filter($request, $app);
 
         $messages = $fetch_and_filter['messages'];
         $params = $fetch_and_filter['params'];

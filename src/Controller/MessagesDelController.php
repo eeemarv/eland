@@ -7,18 +7,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Controller\MessagesShowController;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesDelController extends AbstractController
 {
     public function messages_del(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
-        $message = messages_show::get_message($db, $id, $app['pp_schema']);
+        $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
 
         $s_owner = !$app['pp_guest']
             && $app['s_system_self']

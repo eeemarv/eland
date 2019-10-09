@@ -20,11 +20,11 @@ class ProcessCleanupLogsCommand extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('cleanup_logs');
+        $monitor_process_service->boot('cleanup_logs');
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -33,10 +33,10 @@ class ProcessCleanupLogsCommand extends Command
 
             $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
 
-            $app['db']->executeQuery('delete from xdb.logs
+            $db->executeQuery('delete from xdb.logs
                 where ts < ?', [$treshold]);
 
-            $app['monitor_process']->periodic_log();
+            $monitor_process_service->periodic_log();
         }
     }
 }

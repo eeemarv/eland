@@ -240,7 +240,7 @@ class UsersDelAdminController extends AbstractController
 
         $db->delete($app['pp_schema'] . '.users',
             ['id' => $id]);
-        $app['predis']->expire($app['pp_schema'] . '_user_' . $id, 0);
+        $predis->expire($app['pp_schema'] . '_user_' . $id, 0);
 
         $alert_service->success('De gebruiker is verwijderd.');
 

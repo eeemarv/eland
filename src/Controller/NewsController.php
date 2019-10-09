@@ -268,7 +268,7 @@ class NewsController extends AbstractController
         $query .= ' order by itemdate ';
         $query .= $config_service->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
 
-        $st = $app['db']->prepare($query);
+        $st = $db->prepare($query);
         $st->execute();
 
         while ($row = $st->fetch())

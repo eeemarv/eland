@@ -2,6 +2,11 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,7 +14,14 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class LogoDelController extends AbstractController
 {
-    public function logo_del(Request $request, app $app):Response
+    public function logo_del(
+        Request $request,
+        ConfigService $config_service,
+        AlertService $alert_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MenuService $menu_service
+    ):Response
     {
         $logo = $config_service->get('logo', $app['pp_schema']);
 

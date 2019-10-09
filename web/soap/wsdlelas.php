@@ -111,8 +111,8 @@ function gettoken($apikey)
 
 		$key = $schema . '_token_' . $token;
 
-		$app['predis']->set($key, $apikey);
-		$app['predis']->expire($key, 600);
+		$predis->set($key, $apikey);
+		$predis->expire($key, 600);
 
 		$logger->debug('elas-soap: Token ' . $token .
 			' generated', ['schema' => $schema]);
@@ -145,7 +145,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		' description: "' . $description . '" amount: ' .
 		$amount . ' transid: ' . $transid, ['schema' => $schema]);
 
-	if ($app['db']->fetchColumn('select *
+	if ($db->fetchColumn('select *
 		from ' . $schema . '.transactions
 		where transid = ?', [$transid]))
 	{
@@ -334,7 +334,7 @@ function userbyname($apikey, $name)
 		return '---';
 	}
 
-	$letscode = $app['db']->fetchColumn('select letscode
+	$letscode = $db->fetchColumn('select letscode
 		from ' . $schema . '.users
 		where status in (1, 2)
 			and name ilike ?', ['%' . $name . '%']);
@@ -386,7 +386,7 @@ function check_apikey($apikey, $type)
 {
 	global $app, $schema;
 
-	return $app['db']->fetchColumn('select apikey
+	return $db->fetchColumn('select apikey
 		from ' . $schema . '.apikeys
 		where apikey = ?
 		and type = ?', [trim($apikey), trim($type)]) ? true : false;
@@ -399,7 +399,7 @@ function get_user_by_letscode(string $letscode)
 	$letscode = trim($letscode);
 	[$letscode] = explode(' ', $letscode);
 
-	return $app['db']->fetchAssoc('select *
+	return $db->fetchAssoc('select *
 		from ' . $schema . '.users
 		where letscode = ?', [$letscode]);
 }

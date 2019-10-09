@@ -2,10 +2,20 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Predis\Client as Predis;
+use Psr\Log\LoggerInterface;
 
 class MassTransactionController extends AbstractController
 {
@@ -67,9 +77,19 @@ class MassTransactionController extends AbstractController
     ];
 
     public function mass_transaction(
+        Predis $predis,
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        ConfigService $config_service,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        MailQueue $mail_queue,
+        TypeaheadService $typeahead_service,
+        AssetsService $assets_service
     ):Response
     {
         $q = $request->get('q', '');
@@ -311,19 +331,19 @@ class MassTransactionController extends AbstractController
                 {
                     foreach ($transactions as $t)
                     {
-                        $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_from']);
+                        $predis->del($app['pp_schema'] . '_user_' . $t['id_from']);
                     }
 
-                    $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_to']);
+                    $predis->del($app['pp_schema'] . '_user_' . $t['id_to']);
                 }
                 else
                 {
                     foreach ($transactions as $t)
                     {
-                        $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_to']);
+                        $predis->del($app['pp_schema'] . '_user_' . $t['id_to']);
                     }
 
-                    $app['predis']->del($app['pp_schema'] . '_user_' . $t['id_from']);
+                    $predis->del($app['pp_schema'] . '_user_' . $t['id_from']);
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';

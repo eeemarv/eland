@@ -22,11 +22,11 @@ class ProcessMailCommand extends Command
 
 //        error_log($app->url('contact', ['system' => 'x']));
 
-        $app['monitor_process']->boot('mail');
+        $monitor_process_service->boot('mail');
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -38,7 +38,7 @@ class ProcessMailCommand extends Command
                 $mail_queue->process($record['data']);
             }
 
-            $app['monitor_process']->periodic_log();
+            $monitor_process_service->periodic_log();
         }
     }
 }

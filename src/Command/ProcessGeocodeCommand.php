@@ -20,11 +20,11 @@ class ProcessGeocodeCommand extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('geocode');
+        $monitor_process_service->boot('geocode');
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -36,7 +36,7 @@ class ProcessGeocodeCommand extends Command
                 $geocode_queue->process($record['data']);
             }
 
-            $app['monitor_process']->periodic_log();
+            $monitor_process_service->periodic_log();
         }
     }
 }

@@ -44,7 +44,7 @@ class UsersImageDelController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $app['db']->update($app['pp_schema'] . '.users',
+            $db->update($app['pp_schema'] . '.users',
                 ['"PictureFile"' => ''],
                 ['id' => $id]);
 

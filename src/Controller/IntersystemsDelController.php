@@ -26,7 +26,7 @@ class IntersystemsDelController extends AbstractController
             $link_render->redirect('intersystems', $app['pp_ary'], []);
         }
 
-        if ($app['request']->isMethod('POST'))
+        if ($request->isMethod('POST'))
         {
             if ($error_token = $form_token_service->get_error())
             {

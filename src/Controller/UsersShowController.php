@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use app\cnst\statuscnst;
 use App\Cnst\AccessCnst;
-use app\cnst\rolecnst;
+use App\Cnst\RoleCnst;
 use controller\users_list;
 use Doctrine\DBAL\Connection as Db;
 
@@ -535,7 +535,7 @@ class UsersShowController extends AbstractController
             $out .= '<dt>';
             $out .= 'Rechten / rol';
             $out .= '</dt>';
-            $out .= $this->get_dd(rolecnst::LABEL_ARY[$user['accountrole']]);
+            $out .= $this->get_dd(RoleCnst::LABEL_ARY[$user['accountrole']]);
 
             $out .= '<dt>';
             $out .= 'Status';

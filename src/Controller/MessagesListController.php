@@ -2,21 +2,54 @@
 
 namespace App\Controller;
 
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Render\btn_nav;
 use App\Cnst\AccessCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Cnst\BulkCnst;
 use App\Controller\MessagesShowController;
-use controller\messages_edit;
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Render\PaginationRender;
+use App\Render\SelectRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\TypeaheadService;
 
 class MessagesListController extends AbstractController
 {
-    public function messages_list(Request $request, app $app):Response
+    public function messages_list(
+        Request $request,
+        Db $db,
+        FormTokenService $form_token_service,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        DateFormatService $date_format_service,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        PaginationRender $pagination_render,
+        SelectRender $select_render,
+        ConfigService $config_service,
+        HeadingRender $heading_render
+    ):Response
     {
         $selected_messages = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
@@ -89,7 +122,7 @@ class MessagesListController extends AbstractController
 
             $update_msgs_ary  = [];
 
-            $rows = $app['db']->executeQuery('select id_user, id, validity,
+            $rows = $db->executeQuery('select id_user, id, validity,
                 id_category, msg_type
                 from ' . $app['pp_schema'] . '.messages
                 where id in (?)',
@@ -121,7 +154,7 @@ class MessagesListController extends AbstractController
                         'exp_user_warn'	=> 'f',
                     ];
 
-                    $app['db']->update($app['pp_schema'] . '.messages',
+                    $db->update($app['pp_schema'] . '.messages',
                         $msg_update, ['id' => $id]);
                 }
 
@@ -146,7 +179,7 @@ class MessagesListController extends AbstractController
 
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $app['db']->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
+                    $db->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
                 }
 
                 if (count($selected_messages) > 1)
@@ -165,7 +198,7 @@ class MessagesListController extends AbstractController
             {
                 $to_id_category = (int) $bulk_field_value;
 
-                $test_id_category = $app['db']->fetchColumn('select id
+                $test_id_category = $db->fetchColumn('select id
                     from ' . $app['pp_schema'] . '.categories
                     where id_parent <> 0
                         and leafnote = 1
@@ -190,7 +223,7 @@ class MessagesListController extends AbstractController
 
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $app['db']->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
+                    $db->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
 
                     $type = MessageTypeCnst::FROM_DB[$row['msg_type']];
                     $id_category = $row['id_category'];
@@ -238,7 +271,23 @@ class MessagesListController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $fetch_and_filter = messages_list::fetch_and_filter($request, $app);
+        $fetch_and_filter = self::fetch_and_filter(
+            $request,
+            $db,
+            $account_render,
+            $assets_service,
+            $btn_top_render,
+            $config_service,
+            $heading_render,
+            $link_render,
+            $pagination_render,
+            $select_render,
+            $typeahead_service
+
+
+
+
+        );
 
         $messages = $fetch_and_filter['messages'];
         $params = $fetch_and_filter['params'];
@@ -262,7 +311,7 @@ class MessagesListController extends AbstractController
 
         if (!count($messages))
         {
-            return self::no_messages($app);
+            return self::no_messages($pagination_render, $menu_service);
         }
 
         $out .= $pagination_render->get();
@@ -514,7 +563,10 @@ class MessagesListController extends AbstractController
         ]);
     }
 
-    static public function no_messages(app $app):Response
+    static public function no_messages(
+        PaginationRender $pagination_render,
+        MenuService $menu_service
+    ):Response
     {
         $out = $pagination_render->get();
 
@@ -634,7 +686,19 @@ class MessagesListController extends AbstractController
         return $table_header_ary;
     }
 
-    public static function fetch_and_filter(Request $request, app $app):array
+    public static function fetch_and_filter(
+        Request $request,
+        Db $db,
+        AccountRender $account_render,
+        AssetsService $assets_service,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        PaginationRender $pagination_render,
+        SelectRender $select_render,
+        TypeaheadService $typeahead_service
+    ):array
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -686,7 +750,7 @@ class MessagesListController extends AbstractController
             [$fcode] = explode(' ', trim($filter['fcode']));
             $fcode = trim($fcode);
 
-            $fuid = $app['db']->fetchColumn('select id
+            $fuid = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.users
                 where letscode = ?', [$fcode]);
 
@@ -709,7 +773,7 @@ class MessagesListController extends AbstractController
         {
             $cat_ary = [];
 
-            $st = $app['db']->prepare('select id
+            $st = $db->prepare('select id
                 from ' . $app['pp_schema'] . '.categories
                 where id_parent = ?');
             $st->bindValue(1, $filter['cid']);
@@ -822,7 +886,7 @@ class MessagesListController extends AbstractController
                     and m.id_category = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
-        $row_count = $app['db']->fetchColumn('select count(m.*)
+        $row_count = $db->fetchColumn('select count(m.*)
             from ' . $app['pp_schema'] . '.messages m, ' .
                 $app['pp_schema'] . '.users u
             where m.id_user = u.id' . $where_sql, $params_sql);
@@ -833,7 +897,7 @@ class MessagesListController extends AbstractController
 
         $messages = [];
 
-        $st = $app['db']->executeQuery($query, $params_sql);
+        $st = $db->executeQuery($query, $params_sql);
 
         while ($msg = $st->fetch())
         {
@@ -860,7 +924,7 @@ class MessagesListController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $st = $app['db']->executeQuery('select c.*
+            $st = $db->executeQuery('select c.*
                 from ' . $app['pp_schema'] . '.categories c, ' .
                     $app['pp_schema'] . '.messages m
                 where m.id_category = c.id
@@ -869,7 +933,7 @@ class MessagesListController extends AbstractController
         }
         else
         {
-            $st = $app['db']->executeQuery('select *
+            $st = $db->executeQuery('select *
                 from ' . $app['pp_schema'] . '.categories
                 order by fullname');
         }

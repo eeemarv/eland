@@ -9,40 +9,117 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
-use App\Service\alert;
-use App\Service\S3;
 use App\Controller\MessagesShowController;
 use App\Cnst\MessageTypeCnst;
 use App\Cnst\AccessCnst;
+use App\Render\HeadingRender;
+use App\Render\SelectRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\S3Service;
+use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesEditController extends AbstractController
 {
     public function messages_add(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        SelectRender $select_render,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service
     ):Response
     {
-        return $this->messages_form($request, $app, 0, 'add', $db);
+        return $this->messages_form(
+            $request,
+            0,
+            'add',
+            $db,
+            $alert_service,
+            $assets_service,
+            $config_service,
+            $form_token_service,
+            $heading_render,
+            $intersystems_service,
+            $item_access_service,
+            $select_render,
+            $link_render,
+            $menu_service,
+            $typeahead_service,
+            $user_cache_service
+        );
     }
 
     public function messages_edit(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        SelectRender $select_render,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service
     ):Response
     {
-        return $this->messages_form($request, $app, $id, 'edit', $db);
+        return $this->messages_form(
+            $request,
+            $id,
+            'edit',
+            $db,
+            $alert_service,
+            $assets_service,
+            $config_service,
+            $form_token_service,
+            $heading_render,
+            $intersystems_service,
+            $item_access_service,
+            $select_render,
+            $link_render,
+            $menu_service,
+            $typeahead_service,
+            $user_cache_service
+        );
     }
 
     public function messages_form(
         Request $request,
-        app $app,
         int $id,
         string $mode,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        SelectRender $select_render,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service
     ):Response
     {
         $edit_mode = $mode === 'edit';
@@ -64,7 +141,7 @@ class MessagesEditController extends AbstractController
 
         if ($edit_mode)
         {
-            $message = messages_show::get_message($db, $id, $app['pp_schema']);
+            $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
 
             $s_owner = !$app['pp_guest']
                 && $app['s_system_self']
@@ -597,8 +674,11 @@ class MessagesEditController extends AbstractController
     }
 
     public static function adjust_category_stats(
-        string $message_type, int $id_category, int $adj,
-        Db $db, string $schema
+        string $message_type,
+        int $id_category,
+        int $adj,
+        Db $db,
+        string $schema
     ):void
     {
         if ($adj === 0)
@@ -619,7 +699,7 @@ class MessagesEditController extends AbstractController
         array $deleted_images,
         int $id,
         Db $db,
-        loggerinterface $logger,
+        LoggerInterface $logger,
         string $schema
     ):void
     {
@@ -646,9 +726,9 @@ class MessagesEditController extends AbstractController
         int $id,
         bool $fix_id,
         Db $db,
-        loggerinterface $logger,
-        alert $alert,
-        S3 $s3,
+        LoggerInterface $logger,
+        AlertService $alert_service,
+        S3Service $s3_service,
         string $schema
     ):void
     {
@@ -679,7 +759,7 @@ class MessagesEditController extends AbstractController
 
             if (count($img_errors))
             {
-                $alert->error($img_errors);
+                $alert_service->error($img_errors);
 
                 continue;
             }
@@ -706,7 +786,7 @@ class MessagesEditController extends AbstractController
             $new_filename = $schema . '_m_' . $id . '_';
             $new_filename .= sha1(random_bytes(16)) . '.jpg';
 
-            $err = $s3->copy($img, $new_filename);
+            $err = $s3_service->copy($img, $new_filename);
 
             if (isset($err))
             {
@@ -739,7 +819,8 @@ class MessagesEditController extends AbstractController
         array $radio_ary,
         string $name,
         string $selected,
-        bool $required):string
+        bool $required
+    ):string
     {
         $out = '';
 

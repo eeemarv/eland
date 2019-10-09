@@ -310,7 +310,7 @@ class InitController extends AbstractController
 
         foreach ($users as $u)
         {
-            $app['predis']->del($app['pp_schema'] . '_user_' . $u['id']);
+            $predis->del($app['pp_schema'] . '_user_' . $u['id']);
         }
 
         $link_render->redirect('init', $app['pp_ary'],

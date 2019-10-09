@@ -2,14 +2,17 @@
 
 namespace App\Controller;
 
+use App\Service\MonitorProcessService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class MonitorController extends AbstractController
 {
-    public function monitor(app $app):Response
+    public function monitor(
+        MonitorProcessService $monitor_process_service
+    ):Response
     {
-        $out = $app['monitor_process']->monitor();
+        $out = $monitor_process_service->monitor();
 
         return $this->render('base/minimal.html.twig', [
             'content'   => $out,

@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use app\cnst\rolecnst;
+use App\Cnst\RoleCnst;
 use Doctrine\DBAL\Connection as Db;
 
 class LoginController extends AbstractController
@@ -49,7 +49,7 @@ class LoginController extends AbstractController
                 $s_logins = array_merge($app['s_logins'], [
                     $app['pp_schema'] 	=> 'master',
                 ]);
-                $app['session']->set('logins', $s_logins);
+                $session->set('logins', $s_logins);
 
                 $alert_service->success('OK - Gebruiker ingelogd als master.');
 
@@ -210,7 +210,7 @@ class LoginController extends AbstractController
                     $app['pp_schema'] 	=> $user_id,
                 ]);
 
-                $app['session']->set('logins', $s_logins);
+                $session->set('logins', $s_logins);
 
                 $agent = $request->server->get('HTTP_USER_AGENT');
 
@@ -238,7 +238,7 @@ class LoginController extends AbstractController
 
                 $pp_ary = [
                     'system'        => $app['pp_system'],
-                    'role_short'    => rolecnst::SHORT[$user['accountrole']],
+                    'role_short'    => RoleCnst::SHORT[$user['accountrole']],
                 ];
 
                 $link_render->redirect($app['r_default'], $pp_ary, []);

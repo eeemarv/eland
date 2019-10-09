@@ -8,26 +8,41 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Controller\MessagesShowController;
+use App\Service\FormTokenService;
+use App\Service\ImageUploadService;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class MessagesImagesUploadController extends AbstractController
 {
     public function messages_add_images_upload(
         Request $request,
-        app $app,
         string $form_token,
-        Db $db
+        Db $db,
+        FormTokenService $form_token_service,
+        LoggerInterface $logger,
+        ImageUploadService $image_upload_service
     ):Response
     {
-        return $this->messages_edit_images_upload($request, $app, 0, $form_token, $db);
+        return $this->messages_edit_images_upload(
+            $request,
+            0,
+            $form_token,
+            $db,
+            $form_token_service,
+            $logger,
+            $image_upload_service
+        );
     }
 
     public function messages_edit_images_upload(
         Request $request,
-        app $app,
         int $id,
         string $form_token,
-        Db $db
+        Db $db,
+        FormTokenService $form_token_service,
+        LoggerInterface $logger,
+        ImageUploadService $image_upload_service
     ):Response
     {
         if ($error = $form_token_service->get_ajax_error($form_token))
@@ -35,14 +50,21 @@ class MessagesImagesUploadController extends AbstractController
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
 
-        return $this->messages_images_upload($request, $app, $id, $db);
+        return $this->messages_images_upload(
+            $request,
+            $id,
+            $db,
+            $logger,
+            $image_upload_service
+        );
     }
 
     public function messages_images_upload(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        ImageUploadService $image_upload_service
     ):Response
     {
         $uploaded_files = $request->files->get('images', []);
@@ -80,7 +102,7 @@ class MessagesImagesUploadController extends AbstractController
 
         foreach ($uploaded_files as $uploaded_file)
         {
-            $filename = $app['image_upload']->upload($uploaded_file,
+            $filename = $image_upload_service->upload($uploaded_file,
                 'm', $id, 400, 400, $app['pp_schema']);
 
             if ($insert_in_db)

@@ -40,7 +40,7 @@ class IntersystemsController extends AbstractController
             }
             else
             {
-                $intersystems[$key]['user_count'] = $app['predis']->get($sys_host . '_active_user_count');
+                $intersystems[$key]['user_count'] = $predis->get($sys_host . '_active_user_count');
             }
         }
 

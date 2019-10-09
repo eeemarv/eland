@@ -4,8 +4,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
-use app\cnst\pagescnst;
-use app\cnst\rolecnst;
+use App\Cnst\PagesCnst;
+use App\Cnst\RoleCnst;
 
 $app = new app();
 
@@ -229,17 +229,17 @@ $app['new_user_treshold'] = function ($app):int{
 
 $app['s_view'] = function ($app):array{
 
-	$s_view = $app['session']->get('view') ?? cnst_pages::DEFAULT_VIEW;
+	$s_view = $session->get('view') ?? PagesCnst::DEFAULT_VIEW;
 	$route = $app['request']->attributes->get('_route');
 
-	if (isset(cnst_pages::ROUTE_TO_VIEW[$route]))
+	if (isset(PagesCnst::ROUTE_TO_VIEW[$route]))
 	{
-		[$menu, $view] = cnst_pages::ROUTE_TO_VIEW[$route];
+		[$menu, $view] = PagesCnst::ROUTE_TO_VIEW[$route];
 
 		if ($s_view[$menu] !== $view)
 		{
 			$s_view[$menu] = $view;
-			$app['session']->set('view', $s_view);
+			$session->set('view', $s_view);
 		}
 	}
 
@@ -307,7 +307,7 @@ $app['pp_role_short'] = function ($app):string{
 };
 
 $app['pp_role'] =  function ($app):string{
-	return rolecnst::LONG[$app['pp_role_short']] ?? 'anonymous';
+	return RoleCnst::LONG[$app['pp_role_short']] ?? 'anonymous';
 };
 
 $app['pp_system'] = function ($app):string{
@@ -340,7 +340,7 @@ $app['pp_ary'] = function ($app):array{
 
 		if ($app['pp_role_short'] !== '')
 		{
-			if (!isset(rolecnst::LONG[$app['pp_role_short']]))
+			if (!isset(RoleCnst::LONG[$app['pp_role_short']]))
 			{
 				return [];
 			}
@@ -401,7 +401,7 @@ $app['s_system_self'] = function ($app):bool{
 };
 
 $app['s_logins'] = function ($app):array{
-	return $app['session']->get('logins') ?? [];
+	return $session->get('logins') ?? [];
 };
 
 $app['s_id'] = function ($app):int{

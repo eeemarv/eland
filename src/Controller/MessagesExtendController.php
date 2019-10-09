@@ -5,18 +5,21 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\MessagesShowController;
+use App\Render\LinkRender;
+use App\Service\AlertService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendController extends AbstractController
 {
     public function messages_extend(
-        app $app,
         int $id,
         int $days,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        LinkRender $link_render
     ):Response
     {
-        $message = messages_show::get_message($db, $id, $app['pp_schema']);
+        $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
 
         $s_owner = $app['s_id']
             && $message['id_user']

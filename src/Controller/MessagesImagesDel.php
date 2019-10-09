@@ -9,17 +9,24 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Controller\MessagesShowController;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesImagesDel extends AbstractController
 {
     public function messages_images_instant_del(
-        app $app,
         int $id,
         string $img,
         string $ext,
         string $form_token,
-        Db $db
+        Db $db,
+        FormTokenService $form_token_service
     ):Response
     {
         $img .= '.' . $ext;
@@ -29,7 +36,7 @@ class MessagesImagesDel extends AbstractController
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
 
-        $message = messages_show::get_message($db, $id, $app['pp_schema']);
+        $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
 
         if (!$message)
         {
@@ -60,9 +67,15 @@ class MessagesImagesDel extends AbstractController
 
     public function messages_images_del(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
         $errors = [];

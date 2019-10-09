@@ -20,17 +20,17 @@ class ProcessCleanupImagesCommand extends Command
 
         $app = $this->getSilexApplication();
 
-        $app['monitor_process']->boot('cleanup_images');
+        $monitor_process_service->boot('cleanup_images');
 
         while (true)
         {
-            if (!$app['monitor_process']->wait_most_recent())
+            if (!$monitor_process_service->wait_most_recent())
             {
                 continue;
             }
 
             $app['task.cleanup_images']->process();
-            $app['monitor_process']->periodic_log();
+            $monitor_process_service->periodic_log();
         }
     }
 }

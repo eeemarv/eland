@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Service\ConfigService;
+use App\Service\ImageUploadService;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,7 +12,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class LogoUploadController extends AbstractController
 {
-    public function logo_upload(Request $request, app $app):Response
+    public function logo_upload(
+        Request $request,
+        LoggerInterface $logger,
+        ConfigService $config_service,
+        ImageUploadService $image_upload_service
+
+    ):Response
     {
         $uploaded_file = $request->files->get('image');
 
@@ -18,7 +27,7 @@ class LogoUploadController extends AbstractController
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        $filename = $app['image_upload']->upload($uploaded_file,
+        $filename = $image_upload_service->upload($uploaded_file,
             'l', 0, 400, 100, $app['pp_schema']);
 
         $config_service->set('logo', $app['pp_schema'], $filename);

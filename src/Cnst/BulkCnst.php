@@ -2,7 +2,7 @@
 
 namespace App\Cnst;
 
-use app\cnst\rolecnst;
+use App\Cnst\RoleCnst;
 use app\cnst\statuscnst;
 
 class BulkCnst
@@ -43,7 +43,7 @@ class BulkCnst
         ],
         'accountrole'		=> [
             'lbl'		=> 'Rechten',
-            'options'	=> rolecnst::LABEL_ARY,
+            'options'	=> RoleCnst::LABEL_ARY,
             'string'	=> true,
             'fa'		=> 'hand-paper-o',
         ],

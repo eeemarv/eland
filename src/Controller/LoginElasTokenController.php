@@ -2,22 +2,38 @@
 
 namespace App\Controller;
 
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\XdbService;
+use Predis\Client as Predis;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class LoginElasTokenController extends AbstractController
 {
-    public function login_elas_token(app $app, string $elas_token):Response
+    public function login_elas_token(
+        string $elas_token,
+        Request $request,
+        Predis $predis,
+        LoggerInterface $logger,
+        Session $session,
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        LinkRender $link_render
+    ):Response
     {
-        if($apikey = $app['predis']->get($app['pp_schema'] . '_token_' . $elas_token))
+        if($apikey = $predis->get($app['pp_schema'] . '_token_' . $elas_token))
         {
             $s_logins = array_merge($app['s_logins'], [
                 $app['pp_schema'] 	=> 'elas',
             ]);
 
-            $app['session']->set('logins', $s_logins);
+            $session->set('logins', $s_logins);
 
-            $referrer = $app['request']->server->get('HTTP_REFERER');
+            $referrer = $request->server->get('HTTP_REFERER');
 
             if ($referrer !== null)
             {

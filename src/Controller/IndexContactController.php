@@ -52,7 +52,7 @@ class IndexContactController extends AbstractController
             if (!count($errors))
             {
                 $text = $message . "\r\n\r\n\r\n" . 'browser: ';
-                $text .= $app['request']->headers->get('User-Agent') . "\n";
+                $text .= $request->headers->get('User-Agent') . "\n";
                 $text .= 'form_token: ' . $form_token_service->get();
 
                 $enc = getenv('SMTP_ENC') ?: 'tls';
@@ -76,7 +76,7 @@ class IndexContactController extends AbstractController
 
             foreach ($errors as $error)
             {
-                $app['session']->getFlashBag()->add('alert', [
+                $session->getFlashBag()->add('alert', [
                     'type'      => 'error',
                     'message'	=> $error,
                 ]);

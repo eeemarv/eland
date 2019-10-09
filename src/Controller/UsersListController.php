@@ -11,7 +11,7 @@ use App\Render\LinkRender;
 use App\Render\heading;
 use App\Cnst\AccessCnst;
 use app\cnst\statuscnst;
-use app\cnst\rolecnst;
+use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
@@ -155,7 +155,7 @@ class UsersListController extends AbstractController
 
                 $users_log = '';
 
-                $rows = $app['db']->executeQuery('select letscode, name, id
+                $rows = $db->executeQuery('select letscode, name, id
                     from ' . $app['pp_schema'] . '.users
                     where id in (?)',
                     [$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
@@ -180,7 +180,7 @@ class UsersListController extends AbstractController
                     $xdb_service->set('user_fullname_access', (string) $user_id, [
                         'fullname_access' => $bulk_fullname_access_xdb,
                     ], $app['pp_schema']);
-                    $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
+                    $predis->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
                 $logger->info('bulk: Set fullname_access to ' .
@@ -197,13 +197,13 @@ class UsersListController extends AbstractController
             {
                 [$abbrev] = explode('_', $bulk_field_action);
 
-                $id_type_contact = $app['db']->fetchColumn('select id
+                $id_type_contact = $db->fetchColumn('select id
                     from ' . $app['pp_schema'] . '.type_contact
                     where abbrev = ?', [$abbrev]);
 
                 $flag_public = AccessCnst::TO_FLAG_PUBLIC[$bulk_field_value];
 
-                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.contact
+                $db->executeUpdate('update ' . $app['pp_schema'] . '.contact
                     set flag_public = ?
                     where id_user in (?) and id_type_contact = ?',
                         [$flag_public, $user_ids, $id_type_contact],
@@ -220,7 +220,7 @@ class UsersListController extends AbstractController
             else if (!count($errors)
                 && $bulk_submit_action === 'cron_saldo')
             {
-                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
+                $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                     set cron_saldo = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
@@ -228,7 +228,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
+                    $predis->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
@@ -261,14 +261,14 @@ class UsersListController extends AbstractController
 
                 $field_type = BulkCnst::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-                $app['db']->executeUpdate('update ' . $app['pp_schema'] . '.users
+                $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
                     [$store_value, $user_ids],
                     [$field_type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
 
                 foreach ($user_ids as $user_id)
                 {
-                    $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
+                    $predis->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
                 if ($bulk_field == 'status')
@@ -309,7 +309,7 @@ class UsersListController extends AbstractController
                 $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
                 $bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
 
-                $sel_users = $app['db']->executeQuery('select u.*, c.value as mail
+                $sel_users = $db->executeQuery('select u.*, c.value as mail
                     from ' . $app['pp_schema'] . '.users u, ' .
                         $app['pp_schema'] . '.contact c, ' .
                         $app['pp_schema'] . '.type_contact tc
@@ -453,7 +453,7 @@ class UsersListController extends AbstractController
 
         $ref_geo = [];
 
-        $type_contact = $app['db']->fetchAll('select id, abbrev, name
+        $type_contact = $db->fetchAll('select id, abbrev, name
             from ' . $app['pp_schema'] . '.type_contact');
 
         $columns = [
@@ -542,7 +542,7 @@ class UsersListController extends AbstractController
         {
             $show_columns = array_intersect_key_recursive($show_columns, $columns);
 
-            $app['session']->set($session_users_columns_key, $show_columns);
+            $session->set($session_users_columns_key, $show_columns);
         }
         else
         {
@@ -582,7 +582,7 @@ class UsersListController extends AbstractController
                 unset($columns['d']['distance']);
             }
 
-            $show_columns = $app['session']->get($session_users_columns_key) ?? $preset_columns;
+            $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
 
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
@@ -592,7 +592,7 @@ class UsersListController extends AbstractController
         $saldo_date = $show_columns['p']['u']['saldo_date'] ?? '';
         $saldo_date = trim($saldo_date);
 
-        $users = $app['db']->fetchAll('select u.*
+        $users = $db->fetchAll('select u.*
             from ' . $app['pp_schema'] . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
@@ -642,7 +642,7 @@ class UsersListController extends AbstractController
                 $trans_in = $trans_out = [];
                 $datetime = new \DateTime($saldo_date_rev);
 
-                $rs = $app['db']->prepare('select id_to, sum(amount)
+                $rs = $db->prepare('select id_to, sum(amount)
                     from ' . $app['pp_schema'] . '.transactions
                     where date <= ?
                     group by id_to');
@@ -656,7 +656,7 @@ class UsersListController extends AbstractController
                     $trans_in[$row['id_to']] = $row['sum'];
                 }
 
-                $rs = $app['db']->prepare('select id_from, sum(amount)
+                $rs = $db->prepare('select id_from, sum(amount)
                     from ' . $app['pp_schema'] . '.transactions
                     where date <= ?
                     group by id_from');
@@ -679,7 +679,7 @@ class UsersListController extends AbstractController
 
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$app['s_master']))
         {
-            $c_ary = $app['db']->fetchAll('select tc.abbrev,
+            $c_ary = $db->fetchAll('select tc.abbrev,
                     c.id_user, c.value, c.flag_public
                 from ' . $app['pp_schema'] . '.contact c, ' .
                     $app['pp_schema'] . '.type_contact tc, ' .
@@ -705,7 +705,7 @@ class UsersListController extends AbstractController
             if (($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
                 || !isset($contacts[$app['s_id']]['adr']))
             {
-                $my_adr = $app['db']->fetchColumn('select c.value
+                $my_adr = $db->fetchColumn('select c.value
                     from ' . $app['s_schema'] . '.contact c, ' .
                         $app['s_schema'] . '.type_contact tc
                     where c.id_user = ?
@@ -730,7 +730,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['offers']))
             {
-                $ary = $app['db']->fetchAll('select count(m.id), m.id_user
+                $ary = $db->fetchAll('select count(m.id), m.id_user
                     from ' . $app['pp_schema'] . '.messages m, ' .
                         $app['pp_schema'] . '.users u
                     where msg_type = 1
@@ -746,7 +746,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['wants']))
             {
-                $ary = $app['db']->fetchAll('select count(m.id), m.id_user
+                $ary = $db->fetchAll('select count(m.id), m.id_user
                     from ' . $app['pp_schema'] . '.messages m, ' .
                         $app['pp_schema'] . '.users u
                     where msg_type = 0
@@ -762,7 +762,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['total']))
             {
-                $ary = $app['db']->fetchAll('select count(m.id), m.id_user
+                $ary = $db->fetchAll('select count(m.id), m.id_user
                     from ' . $app['pp_schema'] . '.messages m, ' .
                         $app['pp_schema'] . '.users u
                     where m.id_user = u.id
@@ -796,7 +796,7 @@ class UsersListController extends AbstractController
                 $and = ' and 1 = 1 ';
             }
 
-            $trans_in_ary = $app['db']->fetchAll('select sum(t.amount),
+            $trans_in_ary = $db->fetchAll('select sum(t.amount),
                     count(t.id), t.id_to
                 from ' . $app['pp_schema'] . '.transactions t, ' .
                     $app['pp_schema'] . '.users u
@@ -804,7 +804,7 @@ class UsersListController extends AbstractController
                     and t.cdate > ?' . $and . '
                 group by t.id_to', $sql_bind);
 
-            $trans_out_ary = $app['db']->fetchAll('select sum(t.amount),
+            $trans_out_ary = $db->fetchAll('select sum(t.amount),
                     count(t.id), t.id_from
                 from ' . $app['pp_schema'] . '.transactions t, ' .
                     $app['pp_schema'] . '.users u
@@ -1307,7 +1307,7 @@ class UsersListController extends AbstractController
                     }
                     else if ($key === 'accountrole')
                     {
-                        $td .= rolecnst::LABEL_ARY[$u['accountrole']];
+                        $td .= RoleCnst::LABEL_ARY[$u['accountrole']];
                     }
                     else
                     {

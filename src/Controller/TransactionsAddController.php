@@ -30,7 +30,7 @@ class TransactionsAddController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $stored_transid = $app['predis']->get($redis_transid_key);
+            $stored_transid = $predis->get($redis_transid_key);
 
             if (!$stored_transid)
             {
@@ -774,8 +774,8 @@ class TransactionsAddController extends AbstractController
             $transid = $app['transaction']->generate_transid(
                 $app['s_id'], $app['pp_system']);
 
-            $app['predis']->set($redis_transid_key, $transid);
-            $app['predis']->expire($redis_transid_key, 3600);
+            $predis->set($redis_transid_key, $transid);
+            $predis->expire($redis_transid_key, 3600);
 
             $transaction = [
                 'date'			=> gmdate('Y-m-d H:i:s'),

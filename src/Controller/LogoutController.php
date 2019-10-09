@@ -2,19 +2,30 @@
 
 namespace App\Controller;
 
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\XdbService;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class LogoutController extends AbstractController
 {
-    public function logout(app $app):Response
+    public function logout(
+        XdbService $xdb_service,
+        Session $session,
+        LoggerInterface $logger,
+        AlertService $alert_service,
+        LinkRender $link_render
+    ):Response
     {
         foreach($app['s_logins'] as $sch => $uid)
         {
             $xdb_service->set('logout', (string) $uid, ['time' => time()], $sch);
         }
 
-        $app['session']->invalidate();
+        $session->invalidate();
 
         $logger->info('user logged out',
             ['schema' => $app['pp_schema']]);
