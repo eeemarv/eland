@@ -5,7 +5,7 @@ namespace App\Util;
 use Silex\Application;
 use Symfony\Component\Finder\Finder;
 
-abstract class job_container
+abstract class JobContainerUtil
 {
 	protected $app;
 	protected $job_type;

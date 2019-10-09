@@ -2,9 +2,9 @@
 
 namespace App\Util;
 
-use util\job_container;
+use Util\JobContainerUtil;
 
-class task_container extends job_container
+class TaskContainerUtil extends JobContainerUtil
 {
 	private $task;
 
