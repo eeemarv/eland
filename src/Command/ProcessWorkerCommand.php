@@ -24,10 +24,10 @@ class ProcessWorkerCommand extends Command
         $app['monitor_process']->boot('worker');
 
         error_log(' --- ');
-        error_log('schemas: ' . json_encode($app['systems']->get_schemas()));
+        error_log('schemas: ' . json_encode($systems_service->get_schemas()));
         error_log(' --- ');
 
-        $app['assets']->write_file_hash_ary();
+        $assets_service->write_file_hash_ary();
 
         error_log('+-----------------+');
         error_log('| Worker Tasks    |');

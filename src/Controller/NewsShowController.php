@@ -152,7 +152,7 @@ class NewsShowController extends AbstractController
 
         if ($news_item['itemdate'])
         {
-            $out .= $date_format_serviceget($news_item['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($news_item['itemdate'], 'day', $app['pp_schema']);
         }
         else
         {
@@ -195,7 +195,7 @@ class NewsShowController extends AbstractController
 
         $out .= '<dt>Ingegeven door</dt>';
         $out .= '<dd>';
-        $out .= $app['account']->link($news_item['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($news_item['id_user'], $app['pp_ary']);
         $out .= '</dd>';
 
         $out .= '</dl>';

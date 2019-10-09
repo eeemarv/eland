@@ -361,7 +361,7 @@ class MassTransactionController extends AbstractController
                             'user_id'		=> $user_id,
                         ];
 
-                        $app['queue.mail']->queue([
+                        $mail_queue->queue([
                             'schema'	=> $app['pp_schema'],
                             'to'		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
                             'template'	=> 'transaction/transaction',
@@ -387,7 +387,7 @@ class MassTransactionController extends AbstractController
                     $mail_template = 'mass_transaction/';
                     $mail_template .= $to_one ? 'many_to_one' : 'one_to_many';
 
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
                         'to' 		=> array_merge(
                             $app['mail_addr_system']->get_admin($app['pp_schema']),
@@ -433,7 +433,7 @@ class MassTransactionController extends AbstractController
         $system_minlimit = $config_service->get('minlimit', $app['pp_schema']);
         $system_maxlimit = $config_service->get('maxlimit', $app['pp_schema']);
 
-        $app['assets']->add([
+        $assets_service->add([
             'mass_transaction.js',
             'combined_filter.js',
         ]);

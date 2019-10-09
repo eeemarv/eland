@@ -5,7 +5,7 @@ namespace App\Service;
 use Symfony\Component\Finder\Finder;
 use App\Service\CacheService;
 
-class assetsService
+class AssetsService
 {
 	protected $cache_service;
 	protected $file_hash_ary = [];

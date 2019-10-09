@@ -16,7 +16,7 @@ class PasswordResetTokenController extends AbstractController
         Db $db
     ):Response
     {
-        $data = $app['data_token']->retrieve($token, 'password_reset', $app['pp_schema']);
+        $data = $data_token_service->retrieve($token, 'password_reset', $app['pp_schema']);
         $password = $request->request->get('password', '');
 
         if (!$data)
@@ -39,10 +39,10 @@ class PasswordResetTokenController extends AbstractController
                     ['password' => hash('sha512', $password)],
                     ['id' => $user_id]);
 
-                $app['user_cache']->clear($user_id, $app['pp_schema']);
+                $user_cache_service->clear($user_id, $app['pp_schema']);
                 $alert_service->success('Paswoord opgeslagen.');
 
-                $app['queue.mail']->queue([
+                $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
                     'to' 		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
                     'template'	=> 'password_reset/user',
@@ -52,7 +52,7 @@ class PasswordResetTokenController extends AbstractController
                     ],
                 ], 10000);
 
-                $data = $app['data_token']->del($token, 'password_reset', $app['pp_schema']);
+                $data = $data_token_service->del($token, 'password_reset', $app['pp_schema']);
                 $link_render->redirect('login', $app['pp_ary'], []);
             }
             else
@@ -64,7 +64,7 @@ class PasswordResetTokenController extends AbstractController
         $heading_render->add('Nieuw paswoord ingeven.');
         $heading_render->fa('key');
 
-        $app['assets']->add([
+        $assets_service->add([
             'generate_password.js',
         ]);
 

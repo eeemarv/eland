@@ -17,7 +17,7 @@ if ($dot_count !== 2)
 
 [$system] = explode('.', $server_name);
 
-$schema = $app['systems']->get_schema($system);
+$schema = $systems_service->get_schema($system);
 
 if (!$schema)
 {

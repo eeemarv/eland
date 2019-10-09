@@ -28,7 +28,7 @@ class TestPeriodicMailCommand extends Command
 
         $schema = $input->getArgument('schema');
 
-        $app['systems']->get_schemas();
+        $systems_service->get_schemas();
         $app['schema_task.saldo']->set_schema($schema);
         $app['schema_task.saldo']->process();
 

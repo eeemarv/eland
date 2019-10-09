@@ -71,7 +71,7 @@ class MessagesDelController extends AbstractController
 
         $out .= '<dt>Wie</dt>';
         $out .= '<dd>';
-        $out .= $app['account']->link($message['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($message['id_user'], $app['pp_ary']);
         $out .= '</dd>';
 
         $out .= '<dt>Categorie</dt>';

@@ -41,7 +41,7 @@ class MessagesShowController extends AbstractController
             && $app['s_id'] === $message['id_user']
             && $message['id_user'] > 0;
 
-        $user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
+        $user = $user_cache_service->get($message['id_user'], $app['pp_schema']);
 
         // process mail form
 
@@ -99,7 +99,7 @@ class MessagesShowController extends AbstractController
                         and c.id_type_contact = tc.id',
                         [AccessCnst::TO_FLAG_PUBLIC[$to_user['accountrole']], $app['s_id']]);
 
-                $from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+                $from_user = $user_cache_service->get($app['s_id'], $app['s_schema']);
 
                 $vars = [
                     'from_contacts'		=> $from_contacts,
@@ -116,7 +116,7 @@ class MessagesShowController extends AbstractController
                     ? 'message_msg/msg'
                     : 'message_msg/msg_intersystem';
 
-                $app['queue.mail']->queue([
+                $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
                     'to'		=> $app['mail_addr_user']->get_active($to_user['id'], $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
@@ -130,7 +130,7 @@ class MessagesShowController extends AbstractController
                         ? 'message_msg/copy'
                         : 'message_msg/copy_intersystem';
 
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
                         'to'		=> $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']),
                         'template'	=> $mail_template,
@@ -184,14 +184,14 @@ class MessagesShowController extends AbstractController
         $contacts_response = $contacts_user_show_inline->contacts_user_show_inline($app, $user['id']);
         $contacts_content = $contacts_response->getContent();
 
-        $app['assets']->add([
+        $assets_service->add([
             'jssor',
             'messages_show_images_slider.js',
         ]);
 
         if ($app['pp_admin'] || $s_owner)
         {
-            $app['assets']->add([
+            $assets_service->add([
                 'fileupload',
                 'messages_show_images_upload.js',
             ]);
@@ -353,7 +353,7 @@ class MessagesShowController extends AbstractController
         $out .= '<dt>Van gebruiker: ';
         $out .= '</dt>';
         $out .= '<dd>';
-        $out .= $app['account']->link($message['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($message['id_user'], $app['pp_ary']);
         $out .= '</dd>';
 
         $out .= '<dt>Plaats</dt>';
@@ -363,12 +363,12 @@ class MessagesShowController extends AbstractController
 
         $out .= '<dt>Aangemaakt op</dt>';
         $out .= '<dd>';
-        $out .= $date_format_serviceget($message['cdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($message['cdate'], 'day', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Geldig tot</dt>';
         $out .= '<dd>';
-        $out .= $date_format_serviceget($message['validity'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($message['validity'], 'day', $app['pp_schema']);
         $out .= '</dd>';
 
         if ($app['pp_admin'] || $s_owner)

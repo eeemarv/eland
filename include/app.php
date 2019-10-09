@@ -25,12 +25,12 @@ $fn_before_locale = function (Request $request, app $app){
 	setlocale(LC_TIME, 'nl_NL.UTF-8');
 	date_default_timezone_set((getenv('TIMEZONE')) ?: 'Europe/Brussels');
 
-	$app['assets']->add([
+	$assets_service->add([
 		'jquery', 'bootstrap', 'fontawesome',
 		'footable', 'base.css', 'base.js',
 	]);
 
-	$app['assets']->add_print_css(['print.css']);
+	$assets_service->add_print_css(['print.css']);
 
 	error_log('LOGINS: ' . json_encode($app['s_logins']));
 };

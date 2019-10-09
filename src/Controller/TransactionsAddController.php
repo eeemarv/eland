@@ -323,7 +323,7 @@ class TransactionsAddController extends AbstractController
                     $group['groupname'] . '. ' . $contact_admin);
                 $link_render->redirect('transactions', $app['pp_ary'], []);
             }
-            else if (!$app['systems']->get_schema_from_legacy_eland_origin($group['url']))
+            else if (!$systems_service->get_schema_from_legacy_eland_origin($group['url']))
             {
                 // The interSysteem group uses eLAS or is on another server
 
@@ -408,7 +408,7 @@ class TransactionsAddController extends AbstractController
                 $result = $client->call('dopayment', [
                     'apikey' 		=> $group['remoteapikey'],
                     'from' 			=> $group['myremoteletscode'],
-                    'real_from' 	=> $app['account']->str($fromuser['id'], $app['pp_schema']),
+                    'real_from' 	=> $account_render->str($fromuser['id'], $app['pp_schema']),
                     'to' 			=> $letscode_to,
                     'description' 	=> $trans['description'],
                     'amount' 		=> $trans['amount'],
@@ -475,7 +475,7 @@ class TransactionsAddController extends AbstractController
 
                 if (!$id)
                 {
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'		=> $app['pp_schema'],
                         'to' 			=> $app['mail_addr_system']->get_admin($app['pp_schema']),
                         'template'		=> 'transaction/intersystem_fail',
@@ -504,7 +504,7 @@ class TransactionsAddController extends AbstractController
             {
                 // the interSystem group is on the same server (eLAND)
 
-                $remote_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
+                $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
                 $to_remote_user = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
@@ -519,7 +519,7 @@ class TransactionsAddController extends AbstractController
                     $errors[] = 'Het bestemmings Account ("Aan Account Code") in het andere Systeem is niet actief.';
                 }
 
-                $legacy_eland_origin = $app['systems']->get_legacy_eland_origin($app['pp_schema']);
+                $legacy_eland_origin = $systems_service->get_legacy_eland_origin($app['pp_schema']);
 
                 $remote_group = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.letsgroups
@@ -709,7 +709,7 @@ class TransactionsAddController extends AbstractController
                         $transaction['amount'] = $remote_amount;
                         $transaction['id_from'] = $remote_interlets_account['id'];
                         $transaction['id_to'] = $to_remote_user['id'];
-                        $transaction['real_from'] = $app['account']->str($fromuser['id'], $app['pp_schema']);
+                        $transaction['real_from'] = $account_render->str($fromuser['id'], $app['pp_schema']);
 
                         unset($transaction['real_to']);
 
@@ -734,19 +734,19 @@ class TransactionsAddController extends AbstractController
                         exit;
                     }
 
-                    $app['user_cache']->clear($fromuser['id'], $app['pp_schema']);
-                    $app['user_cache']->clear($touser['id'], $app['pp_schema']);
+                    $user_cache_service->clear($fromuser['id'], $app['pp_schema']);
+                    $user_cache_service->clear($touser['id'], $app['pp_schema']);
 
-                    $app['user_cache']->clear($remote_interlets_account['id'], $remote_schema);
-                    $app['user_cache']->clear($to_remote_user['id'], $remote_schema);
+                    $user_cache_service->clear($remote_interlets_account['id'], $remote_schema);
+                    $user_cache_service->clear($to_remote_user['id'], $remote_schema);
 
                     // to eLAND interSystem
                     $app['mail_transaction']->queue($trans_org, $app['pp_schema']);
                     $app['mail_transaction']->queue($transaction, $remote_schema);
 
                     $logger->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
-                        $amount . ' from user: ' .  $app['account']->str_id($fromuser['id'], $app['pp_schema']) .
-                        ' to user: ' . $app['account']->str_id($touser['id'], $app['pp_schema']),
+                        $amount . ' from user: ' .  $account_render->str_id($fromuser['id'], $app['pp_schema']) .
+                        ' to user: ' . $account_render->str_id($touser['id'], $app['pp_schema']),
                         ['schema' => $app['pp_schema']]);
 
                     $logger->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
@@ -765,7 +765,7 @@ class TransactionsAddController extends AbstractController
             $transaction['letscode_to'] = $request->request->get('letscode_to', '');
             $transaction['letscode_from'] = $app['pp_admin'] || $app['s_master']
                 ? $request->request->get('letscode_from', '')
-                : $app['account']->str($app['s_id'], $app['pp_schema']);
+                : $account_render->str($app['s_id'], $app['pp_schema']);
         }
         else
         {
@@ -779,7 +779,7 @@ class TransactionsAddController extends AbstractController
 
             $transaction = [
                 'date'			=> gmdate('Y-m-d H:i:s'),
-                'letscode_from'	=> $app['s_master'] ? '' : $app['account']->str($app['s_id'], $app['pp_schema']),
+                'letscode_from'	=> $app['s_master'] ? '' : $account_render->str($app['s_id'], $app['pp_schema']),
                 'letscode_to'	=> '',
                 'amount'		=> '',
                 'description'	=> '',
@@ -790,9 +790,9 @@ class TransactionsAddController extends AbstractController
 
             if ($tus)
             {
-                if ($app['systems']->get_legacy_eland_origin($tus))
+                if ($systems_service->get_legacy_eland_origin($tus))
                 {
-                    $origin_from_tus = $app['systems']->get_legacy_eland_origin($tus);
+                    $origin_from_tus = $systems_service->get_legacy_eland_origin($tus);
 
                     $group_id = $db->fetchColumn('select id
                         from ' . $app['pp_schema'] . '.letsgroups
@@ -821,11 +821,11 @@ class TransactionsAddController extends AbstractController
                     }
                     else if ($tuid)
                     {
-                        $to_user = $app['user_cache']->get($tuid, $tus);
+                        $to_user = $user_cache_service->get($tuid, $tus);
 
                         if (in_array($to_user['status'], [1, 2]))
                         {
-                            $transaction['letscode_to'] = $app['account']->str($tuid, $tus);
+                            $transaction['letscode_to'] = $account_render->str($tuid, $tus);
                         }
                     }
                 }
@@ -866,11 +866,11 @@ class TransactionsAddController extends AbstractController
             }
             else if ($tuid)
             {
-                $to_user = $app['user_cache']->get($tuid, $app['pp_schema']);
+                $to_user = $user_cache_service->get($tuid, $app['pp_schema']);
 
                 if (in_array($to_user['status'], [1, 2]) || $app['pp_admin'])
                 {
-                    $transaction['letscode_to'] = $app['account']->str($tuid, $app['pp_schema']);
+                    $transaction['letscode_to'] = $account_render->str($tuid, $app['pp_schema']);
                 }
 
                 if ($tuid === $app['s_id'])
@@ -887,7 +887,7 @@ class TransactionsAddController extends AbstractController
             }
         }
 
-        $app['assets']->add([
+        $assets_service->add([
             'transaction_add.js',
         ]);
 
@@ -904,7 +904,7 @@ class TransactionsAddController extends AbstractController
 
             foreach ($intersystems_service->get_eland($app['pp_schema']) as $remote_eland_schema => $host)
             {
-                $eland_url = $app['systems']->get_legacy_eland_origin($remote_eland_schema);
+                $eland_url = $systems_service->get_legacy_eland_origin($remote_eland_schema);
                 $eland_urls[] = $eland_url;
                 $map_eland_schema_url[$eland_url] = $remote_eland_schema;
             }

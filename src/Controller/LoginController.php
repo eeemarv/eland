@@ -153,7 +153,7 @@ class LoginController extends AbstractController
             }
             else if ($user_id && !count($errors))
             {
-                $user = $app['user_cache']->get($user_id, $app['pp_schema']);
+                $user = $user_cache_service->get($user_id, $app['pp_schema']);
 
                 if (!$user)
                 {
@@ -215,14 +215,14 @@ class LoginController extends AbstractController
                 $agent = $request->server->get('HTTP_USER_AGENT');
 
                 $logger->info('User ' .
-                    $app['account']->str_id($user_id, $app['pp_schema']) .
+                    $account_render->str_id($user_id, $app['pp_schema']) .
                     ' logged in, agent: ' . $agent, $log_ary);
 
                 $db->update($app['pp_schema'] . '.users',
                     ['lastlogin' => gmdate('Y-m-d H:i:s')],
                     ['id' => $user_id]);
 
-                $app['user_cache']->clear($user_id, $app['pp_schema']);
+                $user_cache_service->clear($user_id, $app['pp_schema']);
 
                 $xdb_service->set('login', (string) $user_id, [
                     'browser' => $agent, 'time' => time()

@@ -58,7 +58,7 @@ class NewsController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= $date_format_serviceget_td($n['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get_td($n['itemdate'], 'day', $app['pp_schema']);
 
             if ($app['pp_admin'])
             {
@@ -139,7 +139,7 @@ class NewsController extends AbstractController
 
             if ($n['itemdate'])
             {
-                $out .=  $date_format_serviceget($n['itemdate'], 'day', $app['pp_schema']);
+                $out .=  $date_format_service->get($n['itemdate'], 'day', $app['pp_schema']);
 
                 $out .=  '<br><i>';
 
@@ -206,7 +206,7 @@ class NewsController extends AbstractController
             $out .=  '<div class="panel-footer">';
             $out .=  '<p><i class="fa fa-user"></i> ';
 
-            $out .=  $app['account']->link($n['id_user'], $app['pp_ary']);
+            $out .=  $account_render->link($n['id_user'], $app['pp_ary']);
 
             if ($app['pp_admin'])
             {

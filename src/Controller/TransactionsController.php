@@ -46,7 +46,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $filter['fcode'] = $app['account']->str($filter['uid'], $app['pp_schema']);
+            $filter['fcode'] = $account_render->str($filter['uid'], $app['pp_schema']);
             $filter['tcode'] = $filter['fcode'];
             $filter['andor'] = 'or';
             $params['f']['uid'] = $filter['uid'];
@@ -76,7 +76,7 @@ class TransactionsController extends AbstractController
                 $where_code_sql[] = $fuid_sql;
                 $params_sql[] = $fuid;
 
-                $fcode = $app['account']->str($fuid, $app['pp_schema']);
+                $fcode = $account_render->str($fuid, $app['pp_schema']);
             }
             else if ($filter['andor'] !== 'nor')
             {
@@ -102,7 +102,7 @@ class TransactionsController extends AbstractController
                 $where_code_sql[] = $tuid_sql;
                 $params_sql[] = $tuid;
 
-                $tcode = $app['account']->str($tuid, $app['pp_schema']);
+                $tcode = $account_render->str($tuid, $app['pp_schema']);
             }
             else if ($filter['andor'] !== 'nor')
             {
@@ -121,7 +121,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
-            $fdate_sql = $date_format_servicereverse($filter['fdate'], $app['pp_schema']);
+            $fdate_sql = $date_format_service->reverse($filter['fdate'], $app['pp_schema']);
 
             if ($fdate_sql === '')
             {
@@ -137,7 +137,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['tdate']) && $filter['tdate'])
         {
-            $tdate_sql = $date_format_servicereverse($filter['tdate'], $app['pp_schema']);
+            $tdate_sql = $date_format_service->reverse($filter['tdate'], $app['pp_schema']);
 
             if ($tdate_sql === '')
             {
@@ -210,7 +210,7 @@ class TransactionsController extends AbstractController
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
 
-        $app['pagination']->init('transactions', $app['pp_ary'],
+        $pagination_render->init('transactions', $app['pp_ary'],
             $row_count, $params);
 
         $asc_preset_ary = [
@@ -259,8 +259,8 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $user = $app['user_cache']->get($filter['uid'], $app['pp_schema']);
-            $user_str = $app['account']->str($user['id'], $app['pp_schema']);
+            $user = $user_cache_service->get($filter['uid'], $app['pp_schema']);
+            $user_str = $account_render->str($user['id'], $app['pp_schema']);
         }
 
         if ($app['pp_admin'] || $app['pp_user'])
@@ -310,7 +310,7 @@ class TransactionsController extends AbstractController
             else
             {
                 $heading_render->add('Transacties van ');
-                $heading_render->add_raw($app['account']->link($filter['uid'], $app['pp_ary']));
+                $heading_render->add_raw($account_render->link($filter['uid'], $app['pp_ary']));
             }
 
             $heading_render->add_sub_raw('Huidig saldo: <span class="label label-info">');
@@ -330,7 +330,7 @@ class TransactionsController extends AbstractController
 
         $heading_render->btn_filter();
 
-        $app['assets']->add(['datepicker']);
+        $assets_service->add(['datepicker']);
 
         $out .= '<div class="panel panel-info';
         $out .= $filtered ? '' : ' collapse';
@@ -404,7 +404,7 @@ class TransactionsController extends AbstractController
 
         $out .= '<div class="col-sm-2">';
         $out .= '<select class="form-control margin-bottom" name="f[andor]">';
-        $out .= $app['select']->get_options($andor_options, $filter['andor'] ?? 'and');
+        $out .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
         $out .= '</select>';
         $out .= '</div>';
 
@@ -439,7 +439,7 @@ class TransactionsController extends AbstractController
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
+        $out .= $date_format_service->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-default-view-date="-1y" ';
         $out .= 'data-date-end-date="0d" ';
@@ -449,7 +449,7 @@ class TransactionsController extends AbstractController
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_service->datepicker_placeholder($app['pp_schema']);
         $out .= '">';
 
         $out .= '</div>';
@@ -468,7 +468,7 @@ class TransactionsController extends AbstractController
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
+        $out .= $date_format_service->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-end-date="0d" ';
         $out .= 'data-date-language="nl" ';
@@ -477,7 +477,7 @@ class TransactionsController extends AbstractController
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_service->datepicker_placeholder($app['pp_schema']);
         $out .= '">';
 
         $out .= '</div>';
@@ -520,7 +520,7 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
 
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         if (!count($transactions))
         {
@@ -529,7 +529,7 @@ class TransactionsController extends AbstractController
             $out .= '<div class="panel-body">';
             $out .= '<p>Er zijn geen resultaten.</p>';
             $out .= '</div></div>';
-            $out .= $app['pagination']->get();
+            $out .= $pagination_render->get();
 
             $menu_service->set('transactions');
 
@@ -619,7 +619,7 @@ class TransactionsController extends AbstractController
                 $out .= '</span></td>';
 
                 $out .= '<td>';
-                $out .= $date_format_serviceget($t['cdate'], 'min', $app['pp_schema']);
+                $out .= $date_format_service->get($t['cdate'], 'min', $app['pp_schema']);
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -635,12 +635,12 @@ class TransactionsController extends AbstractController
                         {
                             if ($s_inter_schema_check[$t['inter_schema']])
                             {
-                                $out .= $app['account']->inter_link($t['inter_transaction']['id_to'],
+                                $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
                                     $t['inter_schema']);
                             }
                             else
                             {
-                                $out .= $app['account']->str($t['inter_transaction']['id_to'],
+                                $out .= $account_render->str($t['inter_transaction']['id_to'],
                                     $t['inter_schema']);
                             }
                         }
@@ -653,7 +653,7 @@ class TransactionsController extends AbstractController
                     }
                     else
                     {
-                        $out .= $app['account']->link($t['id_to'], $app['pp_ary']);
+                        $out .= $account_render->link($t['id_to'], $app['pp_ary']);
                     }
                 }
                 else
@@ -667,12 +667,12 @@ class TransactionsController extends AbstractController
                         {
                             if ($s_inter_schema_check[$t['inter_schema']])
                             {
-                                $out .= $app['account']->inter_link($t['inter_transaction']['id_from'],
+                                $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
                                     $t['inter_schema']);
                             }
                             else
                             {
-                                $out .= $app['account']->str($t['inter_transaction']['id_from'],
+                                $out .= $account_render->str($t['inter_transaction']['id_from'],
                                     $t['inter_schema']);
                             }
                         }
@@ -685,7 +685,7 @@ class TransactionsController extends AbstractController
                     }
                     else
                     {
-                        $out .= $app['account']->link($t['id_from'], $app['pp_ary']);
+                        $out .= $account_render->link($t['id_from'], $app['pp_ary']);
                     }
                 }
 
@@ -715,7 +715,7 @@ class TransactionsController extends AbstractController
                 $out .= '</td>';
 
                 $out .= '<td>';
-                $out .= $date_format_serviceget($t['cdate'], 'min', $app['pp_schema']);
+                $out .= $date_format_service->get($t['cdate'], 'min', $app['pp_schema']);
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -729,12 +729,12 @@ class TransactionsController extends AbstractController
                     {
                         if ($s_inter_schema_check[$t['inter_schema']])
                         {
-                            $out .= $app['account']->inter_link($t['inter_transaction']['id_from'],
+                            $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
                                 $t['inter_schema']);
                         }
                         else
                         {
-                            $out .= $app['account']->str($t['inter_transaction']['id_from'],
+                            $out .= $account_render->str($t['inter_transaction']['id_from'],
                                 $t['inter_schema']);
                         }
                     }
@@ -747,7 +747,7 @@ class TransactionsController extends AbstractController
                 }
                 else
                 {
-                    $out .= $app['account']->link($t['id_from'], $app['pp_ary']);
+                    $out .= $account_render->link($t['id_from'], $app['pp_ary']);
                 }
 
                 $out .= '</td>';
@@ -763,12 +763,12 @@ class TransactionsController extends AbstractController
                     {
                         if ($s_inter_schema_check[$t['inter_schema']])
                         {
-                            $out .= $app['account']->inter_link($t['inter_transaction']['id_to'],
+                            $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
                                 $t['inter_schema']);
                         }
                         else
                         {
-                            $out .= $app['account']->str($t['inter_transaction']['id_to'],
+                            $out .= $account_render->str($t['inter_transaction']['id_to'],
                                 $t['inter_schema']);
                         }
                     }
@@ -781,7 +781,7 @@ class TransactionsController extends AbstractController
                 }
                 else
                 {
-                    $out .= $app['account']->link($t['id_to'], $app['pp_ary']);
+                    $out .= $account_render->link($t['id_to'], $app['pp_ary']);
                 }
 
                 $out .= '</td>';
@@ -791,7 +791,7 @@ class TransactionsController extends AbstractController
 
         $out .= '</table></div></div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $out .= '<ul>';
         $out .= '<li>';

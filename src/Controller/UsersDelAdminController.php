@@ -33,7 +33,7 @@ class UsersDelAdminController extends AbstractController
                 kan niet worden verwijderd.');
         }
 
-        $user = $app['user_cache']->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -74,13 +74,13 @@ class UsersDelAdminController extends AbstractController
         }
 
         $heading_render->add('Gebruiker ');
-        $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
+        $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
         $heading_render->add(' verwijderen?');
         $heading_render->fa('user');
 
         $out = '<p><font color="red">Alle Gegevens, Vraag en aanbod, ';
         $out .= 'Contacten en Afbeeldingen van ';
-        $out .= $app['account']->link($id, $app['pp_ary']);
+        $out .= $account_render->link($id, $app['pp_ary']);
         $out .= ' worden verwijderd.</font></p>';
 
         $out .= '<div class="panel panel-info">';
@@ -120,7 +120,7 @@ class UsersDelAdminController extends AbstractController
 
     private function remove_user(app $app, int $id, Db $db):void
     {
-        $user = $app['user_cache']->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $app['pp_schema']);
 
         // remove messages
 

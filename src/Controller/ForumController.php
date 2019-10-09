@@ -146,10 +146,10 @@ class ForumController extends AbstractController
             $out .= '</td>';
 
             $out .= '<td>';
-            $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
+            $out .= $account_render->link((int) $p['uid'], $app['pp_ary']);
             $out .= '</td>';
 
-            $out .= $date_format_serviceget_td($p['ts'], 'min', $app['pp_schema']);
+            $out .= $date_format_service->get_td($p['ts'], 'min', $app['pp_schema']);
 
             if ($show_visibility)
             {

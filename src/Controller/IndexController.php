@@ -2,17 +2,23 @@
 
 namespace App\Controller;
 
+use App\Service\MenuNavUserService;
+use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends AbstractController
 {
-    public function index(Request $request, app $app):Response
+    public function index(
+        Request $request,
+        MenuNavUserService $menu_service,
+        SystemsService $systems_service
+    ):Response
     {
         $menu_service->set('index');
 
-        $schemas = $app['systems']->get_schemas();
+        $schemas = $systems_service->get_schemas();
 
         asort($schemas);
 

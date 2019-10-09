@@ -21,7 +21,7 @@ class IntersystemsController extends AbstractController
 
             $letscodes[] = $sys['localletscode'];
 
-            $sys_schema = $app['systems']->get_schema_from_legacy_eland_origin($sys['url']);
+            $sys_schema = $systems_service->get_schema_from_legacy_eland_origin($sys['url']);
 
             if ($sys_schema)
             {
@@ -262,9 +262,9 @@ class IntersystemsController extends AbstractController
 
         $url_ary = [];
 
-        foreach ($app['systems']->get_schemas() as $sys_schema)
+        foreach ($systems_service->get_schemas() as $sys_schema)
         {
-            $url_ary[] = $app['systems']->get_legacy_eland_origin($sys_schema);
+            $url_ary[] = $systems_service->get_legacy_eland_origin($sys_schema);
         }
 
         $loc_group_ary = $loc_account_ary = [];
@@ -295,11 +295,11 @@ class IntersystemsController extends AbstractController
             $loc_account_ary[$u['letscode']] = $u;
         }
 
-        foreach ($app['systems']->get_schemas() as $rem_schema)
+        foreach ($systems_service->get_schemas() as $rem_schema)
         {
             $rem_group = $db->fetchAssoc('select localletscode, url, id
                 from ' . $rem_schema . '.letsgroups
-                where url = ?', [$app['systems']->get_legacy_eland_origin($rem_schema)]);
+                where url = ?', [$systems_service->get_legacy_eland_origin($rem_schema)]);
 
             $group_user_count_ary[$rem_schema] = $db->fetchColumn('select count(*)
                 from ' . $rem_schema . '.users
@@ -307,7 +307,7 @@ class IntersystemsController extends AbstractController
 
             if ($rem_group)
             {
-                $rem_origin = $app['systems']->get_legacy_eland_origin($rem_schema);
+                $rem_origin = $systems_service->get_legacy_eland_origin($rem_schema);
 
                 $rem_group_ary[$rem_origin] = $rem_group;
 
@@ -346,9 +346,9 @@ class IntersystemsController extends AbstractController
 
         $unavailable_explain = false;
 
-        foreach($app['systems']->get_schemas() as $rem_schema)
+        foreach($systems_service->get_schemas() as $rem_schema)
         {
-            $rem_origin = $app['systems']->get_legacy_eland_origin($rem_schema);
+            $rem_origin = $systems_service->get_legacy_eland_origin($rem_schema);
 
             $out .= '<tr';
 

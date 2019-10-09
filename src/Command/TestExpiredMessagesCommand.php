@@ -26,7 +26,7 @@ class TestExpiredMessagesCommand extends Command
 
         $schema = $input->getArgument('schema');
 
-        $app['systems']->get_schemas();
+        $systems_service->get_schemas();
         $app['schema_task.user_exp_msgs']->set_schema($schema);
         $app['schema_task.user_exp_msgs']->process(false);
 

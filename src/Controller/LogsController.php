@@ -102,7 +102,7 @@ class LogsController extends AbstractController
 
         $rows = $db->fetchAll($query, $params_sql);
 
-        $app['pagination']->init('logs', $app['pp_ary'],
+        $pagination_render->init('logs', $app['pp_ary'],
             $row_count, $params);
 
         $asc_preset_ary = [
@@ -135,7 +135,7 @@ class LogsController extends AbstractController
 
         $btn_nav_render->csv();
 
-        $app['assets']->add(['datepicker', 'csv.js']);
+        $assets_service->add(['datepicker', 'csv.js']);
 
         $filtered = (isset($filter['q']) && $filter['q'] !== '')
             || (isset($filter['type']) && $filter['type'] !== '')
@@ -254,7 +254,7 @@ class LogsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $out .= '<div class="panel panel-default printview">';
 
@@ -310,7 +310,7 @@ class LogsController extends AbstractController
         {
             $td = [];
 
-            $td[] = $date_format_serviceget($value['ts'], 'sec', $app['pp_schema']);
+            $td[] = $date_format_service->get($value['ts'], 'sec', $app['pp_schema']);
             $td[] = $value['type'];
             $td[] .= $value['ip'];
 
@@ -321,11 +321,11 @@ class LogsController extends AbstractController
             {
                 if ($value['user_schema'] === $app['pp_schema'])
                 {
-                    $td[] = $app['account']->link($value['user_id'], $app['pp_ary']);
+                    $td[] = $account_render->link($value['user_id'], $app['pp_ary']);
                 }
                 else
                 {
-                    $td[] = $app['account']->inter_link($value['user_id'], $value['user_schema']);
+                    $td[] = $account_render->inter_link($value['user_id'], $value['user_schema']);
                 }
             }
             else
@@ -344,7 +344,7 @@ class LogsController extends AbstractController
         $out .= '</table>';
         $out .= '</div></div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $menu_service->set('logs');
 

@@ -50,7 +50,7 @@ class UsersImageUploadController extends AbstractController
             ' uploaded. User: ' . $id,
             ['schema' => $app['pp_schema']]);
 
-        $app['user_cache']->clear($id, $app['pp_schema']);
+        $user_cache_service->clear($id, $app['pp_schema']);
 
         return $this->json([$filename]);
     }

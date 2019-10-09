@@ -6,20 +6,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Render\PaginationRender;
+use App\Render\SelectRender;
+use App\Service\ConfigService;
+use App\Service\ItemAccessService;
+use App\Service\TypeaheadService;
 
 class ContactsController extends AbstractController
 {
     public function contacts(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        HeadingRender $heading_render,
+        PaginationRender $pagination_render,
+        SelectRender $select_render,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        TypeaheadService $typeahead_service,
+        ConfigService $config_service,
+        ItemAccessService $item_access_service
     ):Response
     {
         $filter = $request->query->get('f', []);
@@ -42,7 +54,7 @@ class ContactsController extends AbstractController
         if (isset($filter['uid']))
         {
             $params['f']['uid'] = $filter['uid'];
-            $filter['code'] = $app['account']->str($filter['uid'], $app['pp_schema']);
+            $filter['code'] = $account_render->str($filter['uid'], $app['pp_schema']);
         }
 
         if (isset($filter['code']) && $filter['code'])
@@ -57,7 +69,7 @@ class ContactsController extends AbstractController
             {
                 $where_sql[] = 'c.id_user = ?';
                 $params_sql[] = $fuid;
-                $params['f']['code'] = $app['account']->str($fuid, $app['pp_schema']);
+                $params['f']['code'] = $account_render->str($fuid, $app['pp_schema']);
             }
             else
             {
@@ -181,7 +193,7 @@ class ContactsController extends AbstractController
 
         $contacts = $db->fetchAll($query, $params_sql);
 
-        $app['pagination']->init('contacts', $app['pp_ary'],
+        $pagination_render->init('contacts', $app['pp_ary'],
             $row_count, $params);
 
         $asc_preset_ary = [
@@ -275,7 +287,7 @@ class ContactsController extends AbstractController
         $out .= 'Type';
         $out .= '</span>';
         $out .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
-        $out .= $app['select']->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
+        $out .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
         $out .= '</select>';
         $out .= '</div>';
         $out .= '</div>';
@@ -298,7 +310,7 @@ class ContactsController extends AbstractController
         $out .= 'Zichtbaar';
         $out .= '</span>';
         $out .= '<select class="form-control" id="access" name="f[access]">';
-        $out .= $app['select']->get_options($access_options, $filter['access'] ?? 'all');
+        $out .= $select_render->get_options($access_options, $filter['access'] ?? 'all');
         $out .= '</select>';
         $out .= '</div>';
         $out .= '</div>';
@@ -327,7 +339,7 @@ class ContactsController extends AbstractController
         $out .= '<select class="form-control" ';
         $out .= 'id="ustatus" name="f[ustatus]">';
 
-        $out .= $app['select']->get_options($user_status_options, $filter['ustatus'] ?? 'all');
+        $out .= $select_render->get_options($user_status_options, $filter['ustatus'] ?? 'all');
 
         $out .= '</select>';
         $out .= '</div>';
@@ -397,7 +409,7 @@ class ContactsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         if (!count($contacts))
         {
@@ -407,7 +419,7 @@ class ContactsController extends AbstractController
             $out .= '<p>Er zijn geen resultaten.</p>';
             $out .= '</div></div>';
 
-            $out .= $app['pagination']->get();
+            $out .= $pagination_render->get();
 
             $menu_service->set('contacts');
 
@@ -478,7 +490,7 @@ class ContactsController extends AbstractController
                 $td[] = '&nbsp;';
             }
 
-            $td[] = $app['account']->link($c['id_user'], $app['pp_ary']);
+            $td[] = $account_render->link($c['id_user'], $app['pp_ary']);
 
             if (isset($c['comments']))
             {
@@ -508,7 +520,7 @@ class ContactsController extends AbstractController
 
         $out .= '</div></div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $menu_service->set('contacts');
 

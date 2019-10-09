@@ -45,7 +45,7 @@ class IntersystemsShowController extends AbstractController
         $btn_nav_render->nav_list('intersystems', $app['pp_ary'],
             [], 'Lijst', 'share-alt');
 
-        $app['assets']->add(['elas_soap_status.js']);
+        $assets_service->add(['elas_soap_status.js']);
 
         $heading_render->add('InterSysteem: ');
         $heading_render->add($group['groupname']);
@@ -57,7 +57,7 @@ class IntersystemsShowController extends AbstractController
         $out .= '<dl class="dl-horizontal">';
         $out .= '<dt>Status</dt>';
 
-        $group_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
+        $group_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
         if ($group_schema)
         {

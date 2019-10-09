@@ -158,7 +158,7 @@ class ForumTopicController extends AbstractController
         $btn_nav_render->nav_list('forum', $app['pp_ary'],
             [], 'Forum onderwerpen', 'comments');
 
-        $app['assets']->add(['summernote', 'summernote_forum_post.js']);
+        $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
         $heading_render->add($topic_post['subject']);
         $heading_render->fa('comments-o');
@@ -189,9 +189,9 @@ class ForumTopicController extends AbstractController
 
             $out .= '<div class="panel-footer">';
             $out .= '<p>';
-            $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
+            $out .= $account_render->link((int) $p['uid'], $app['pp_ary']);
             $out .= ' @';
-            $out .= $date_format_serviceget($p['ts'], 'min', $app['pp_schema']);
+            $out .= $date_format_service->get($p['ts'], 'min', $app['pp_schema']);
             $out .= isset($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
 
             if ($app['pp_admin'] || $s_owner)

@@ -13,27 +13,40 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 
 class ContactsAddController extends AbstractController
 {
     public function contacts_add_admin(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ConfigService $config_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render
     ):Response
     {
-        return self::form($request, $app, 0, true, $db);
+        return self::form($request, 0, true, $db,
+            $alert_service, $form_token_service, $menu_service,
+            $config_service, $link_render, $heading_render
+        );
     }
 
     public static function form(
         Request $request,
-        app $app,
         int $user_id,
         bool $redirect_contacts,
-        Db $db):Response
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ConfigService $config_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render
+    ):Response
     {
         $account_code = $request->request->get('account_code', '');
         $id_type_contact = (int) $request->request->get('id_type_contact', '');
@@ -158,7 +171,7 @@ class ContactsAddController extends AbstractController
             {
                 if ($abbrev_type === 'adr')
                 {
-                    $app['queue.geocode']->cond_queue([
+                    $geocode_queue->cond_queue([
                         'adr'		=> $value,
                         'uid'		=> $user_id,
                         'schema'	=> $app['pp_schema'],
@@ -216,7 +229,7 @@ class ContactsAddController extends AbstractController
             $id_type_contact = $row['id'];
         }
 
-        $app['assets']->add(['contacts_edit.js']);
+        $assets_service->add(['contacts_edit.js']);
 
         $abbrev = $tc[$id_type_contact]['abbrev'];
 
@@ -225,7 +238,7 @@ class ContactsAddController extends AbstractController
         if ($app['pp_admin'] && !$redirect_contacts)
         {
             $heading_render->add(' voor ');
-            $heading_render->add_raw($app['account']->link($user_id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($user_id, $app['pp_ary']));
         }
 
         $out = '<div class="panel panel-info">';

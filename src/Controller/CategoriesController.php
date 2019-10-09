@@ -15,7 +15,12 @@ use App\Render\LinkRender;
 
 class CategoriesController extends AbstractController
 {
-    public function categories(app $app, Db $db):Response
+    public function categories(
+        Db $db,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render
+    ):Response
     {
         $cats = $db->fetchAll('select *
             from ' . $app['pp_schema'] . '.categories

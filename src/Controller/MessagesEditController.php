@@ -275,7 +275,7 @@ class MessagesEditController extends AbstractController
                 $validity_days = (int) round((strtotime($message['validity'] . ' UTC') - time()) / 86400);
                 $validity_days = $validity_days < 1 ? 0 : $validity_days;
 
-                $user = $app['user_cache']->get($message['id_user'], $app['pp_schema']);
+                $user = $user_cache_service->get($message['id_user'], $app['pp_schema']);
 
                 $account_code = $user['letscode'] . ' ' . $user['name'];
 
@@ -342,7 +342,7 @@ class MessagesEditController extends AbstractController
             $cat_list[$row['id']] = $row['fullname'];
         }
 
-        $app['assets']->add([
+        $assets_service->add([
             'fileupload',
             'messages_edit_images_upload.js',
         ]);
@@ -422,7 +422,7 @@ class MessagesEditController extends AbstractController
         $out .= '<i class="fa fa-clone"></i>';
         $out .= '</span>';
         $out .= '<select name="id_category" id="id_category" class="form-control" required>';
-        $out .= $app['select']->get_options($cat_list, (string) $id_category);
+        $out .= $select_render->get_options($cat_list, (string) $id_category);
         $out .= "</select>";
         $out .= '</div>';
         $out .= '</div>';

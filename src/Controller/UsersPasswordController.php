@@ -57,8 +57,8 @@ class UsersPasswordController extends AbstractController
                     $update,
                     ['id' => $id]))
                 {
-                    $app['user_cache']->clear($id, $app['pp_schema']);
-                    $user = $app['user_cache']->get($id, $app['pp_schema']);
+                    $user_cache_service->clear($id, $app['pp_schema']);
+                    $user = $user_cache_service->get($id, $app['pp_schema']);
                     $alert_service->success('Paswoord opgeslagen.');
 
                     if (($user['status'] === 1 || $user['status'] === 2)
@@ -78,7 +78,7 @@ class UsersPasswordController extends AbstractController
                                 'password'		=> $password,
                             ];
 
-                            $app['queue.mail']->queue([
+                            $mail_queue->queue([
                                 'schema'	=> $app['pp_schema'],
                                 'to' 		=> $app['mail_addr_user']->get_active($id, $app['pp_schema']),
                                 'reply_to'	=> $app['mail_addr_system']->get_support($app['pp_schema']),
@@ -108,9 +108,9 @@ class UsersPasswordController extends AbstractController
 
         }
 
-        $user = $app['user_cache']->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $app['pp_schema']);
 
-        $app['assets']->add([
+        $assets_service->add([
             'generate_password.js',
         ]);
 
@@ -119,7 +119,7 @@ class UsersPasswordController extends AbstractController
         if ($app['pp_admin'] && $id !== $app['s_id'])
         {
             $heading_render->add(' voor ');
-            $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
         }
 
         $heading_render->fa('key');

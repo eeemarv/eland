@@ -11,17 +11,20 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 
 class ConfigController extends AbstractController
 {
     public function config(
         Request $request,
-        app $app,
         string $tab,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        SelectRender $select_render
     ):Response
     {
         $pane = ConfigCnst::TAB_PANES[$tab];
@@ -44,7 +47,7 @@ class ConfigController extends AbstractController
         }
 
         $select_options = [
-            'date_format'	=> $date_format_serviceget_options(),
+            'date_format'	=> $date_format_service->get_options(),
             'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
         ];
 
@@ -146,7 +149,7 @@ class ConfigController extends AbstractController
 
                 if ($input_name === 'date_format')
                 {
-                    $error = $date_format_serviceget_error($posted_value);
+                    $error = $date_format_service->get_error($posted_value);
 
                     if ($error)
                     {
@@ -328,7 +331,7 @@ class ConfigController extends AbstractController
 
         if (isset(ConfigCnst::TAB_PANES[$tab]['assets']))
         {
-            $app['assets']->add(ConfigCnst::TAB_PANES[$tab]['assets']);
+            $assets_service->add(ConfigCnst::TAB_PANES[$tab]['assets']);
         }
 
         $heading_render->add('Instellingen');
@@ -632,7 +635,7 @@ class ConfigController extends AbstractController
                     $out .= isset($input['required']) ? ' required' : '';
                     $out .= '>';
 
-                    $out .= $app['select']->get_options($select_options[$input['options']],
+                    $out .= $select_render->get_options($select_options[$input['options']],
                         $config[$input_name]);
 
                     $out .= '</select>';
@@ -899,7 +902,7 @@ class ConfigController extends AbstractController
         }
         else
         {
-            $out .= $app['assets']->get('1.gif');
+            $out .= $assets_service->get('1.gif');
         }
 
         $out .= '" ';

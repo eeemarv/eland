@@ -5,20 +5,20 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\AlertService;
-use App\Service\MenuService;
-use App\Service\FormTokenService;
-use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\ItemAccessService;
 
 class ContactsUserShowInlineController extends AbstractController
 {
     public function contacts_user_show_inline(
-        app $app,
         int $uid,
-        Db $db
+        Db $db,
+        AssetsService $assets_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        AccountRender $account_render
+
     ):Response
     {
         $s_owner = $app['s_id'] === $uid
@@ -32,7 +32,7 @@ class ContactsUserShowInlineController extends AbstractController
             where c.id_type_contact = tc.id
                 and c.id_user = ?', [$uid]);
 
-        $app['assets']->add([
+        $assets_service->add([
             'leaflet',
             'contacts_user_map.js',
         ]);
@@ -43,7 +43,7 @@ class ContactsUserShowInlineController extends AbstractController
 		$out .= '<h3>';
 		$out .= '<i class="fa fa-map-marker"></i>';
 		$out .= ' Contactinfo van ';
-		$out .= $app['account']->link($uid, $app['pp_ary']);
+		$out .= $account_render->link($uid, $app['pp_ary']);
         $out .= ' ';
 
         if ($app['pp_admin'])
@@ -225,7 +225,7 @@ class ContactsUserShowInlineController extends AbstractController
             $out .= '<div class="panel panel-danger">';
             $out .= '<div class="panel-body">';
             $out .= '<p>Er is geen contactinfo voor ';
-            $out .= $app['account']->str($uid, $app['pp_schema']);
+            $out .= $account_render->str($uid, $app['pp_schema']);
             $out .= '.</p>';
         }
 

@@ -199,7 +199,7 @@ class StatusController extends AbstractController
 
                     foreach($ary['users'] as $user_id => $dummy)
                     {
-                        $user_ary[] = $app['account']->link($user_id, $app['pp_ary']);
+                        $user_ary[] = $account_render->link($user_id, $app['pp_ary']);
                     }
 
                     $out .= implode(', ', $user_ary);
@@ -243,7 +243,7 @@ class StatusController extends AbstractController
 
                     foreach($ary['users'] as $user_id => $dummy)
                     {
-                        $user_ary[] = $app['account']->link($user_id, $app['pp_ary']);
+                        $user_ary[] = $account_render->link($user_id, $app['pp_ary']);
                     }
 
                     $out .= implode(', ', $user_ary);
@@ -282,7 +282,7 @@ class StatusController extends AbstractController
 
                     foreach($ary['users'] as $user_id => $dummy)
                     {
-                        $user_ary[] = $app['account']->link($user_id, $app['pp_ary']);
+                        $user_ary[] = $account_render->link($user_id, $app['pp_ary']);
                     }
 
                     $out .= implode(', ', $user_ary);
@@ -326,7 +326,7 @@ class StatusController extends AbstractController
                         ['class' => 'btn btn-danger btn-xs']);
                     $out .= ' : ';
 
-                    $out .= $app['account']->link($ary['id_user'], $app['pp_ary']);
+                    $out .= $account_render->link($ary['id_user'], $app['pp_ary']);
 
                     $out .= '</li>';
                 }
@@ -352,7 +352,7 @@ class StatusController extends AbstractController
                 foreach ($no_mail as $user_id)
                 {
                     $out .= '<li>';
-                    $out .= $app['account']->link($user_id, $app['pp_ary']);
+                    $out .= $account_render->link($user_id, $app['pp_ary']);
                     $out .= '</li>';
                 }
 
@@ -376,7 +376,7 @@ class StatusController extends AbstractController
                 foreach ($empty_name as $ary)
                 {
                     $out .= '<li>';
-                    $out .= $app['account']->link($ary['id'], $app['pp_ary']);
+                    $out .= $account_render->link($ary['id'], $app['pp_ary']);
                     $out .= '</li>';
                 }
 
@@ -400,7 +400,7 @@ class StatusController extends AbstractController
                 foreach ($empty_letscode as $ary)
                 {
                     $out .= '<li>';
-                    $out .= $app['account']->link($ary['id'], $app['pp_ary']);
+                    $out .= $account_render->link($ary['id'], $app['pp_ary']);
                     $out .= '</li>';
                 }
 
@@ -427,7 +427,7 @@ class StatusController extends AbstractController
                 foreach ($no_msgs_users as $u)
                 {
                     $out .= '<li>';
-                    $out .= $app['account']->link($u['id'], $app['pp_ary']);
+                    $out .= $account_render->link($u['id'], $app['pp_ary']);
                     $out .= $u['status'] == 2 ? ' <span class="text-danger">Uitstapper</span>' : '';
                     $out .= ', saldo: ';
                     $out .= $u['saldo'];

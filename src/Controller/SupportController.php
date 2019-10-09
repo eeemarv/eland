@@ -58,7 +58,7 @@ class SupportController extends AbstractController
 
                 if ($cc && $can_reply)
                 {
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
                         'template'	=> 'support/copy',
                         'vars'		=> $vars,
@@ -66,7 +66,7 @@ class SupportController extends AbstractController
                     ], 8500);
                 }
 
-                $app['queue.mail']->queue([
+                $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
                     'template'	=> 'support/support',
                     'vars'		=> $vars,

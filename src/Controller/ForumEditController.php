@@ -138,7 +138,7 @@ class ForumEditController extends AbstractController
             $access = AccessCnst::FROM_XDB[$forum_post['access']];
         }
 
-        $app['assets']->add(['summernote', 'summernote_forum_post.js']);
+        $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
         if ($is_topic)
         {

@@ -92,7 +92,7 @@ class TransactionsShowController extends AbstractController
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $date_format_serviceget($transaction['cdate'], 'min', $app['pp_schema']);
+        $out .= $date_format_service->get($transaction['cdate'], 'min', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';
@@ -107,11 +107,11 @@ class TransactionsShowController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_from'], $app['pp_schema']);
+                $out .= $account_render->str($transaction['id_from'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -125,12 +125,12 @@ class TransactionsShowController extends AbstractController
             {
                 if ($s_inter_schema_check[$inter_schema])
                 {
-                    $user_from = $app['account']->inter_link($inter_transaction['id_from'],
+                    $user_from = $account_render->inter_link($inter_transaction['id_from'],
                         $inter_schema);
                 }
                 else
                 {
-                    $user_from = $app['account']->str($inter_transaction['id_from'],
+                    $user_from = $account_render->str($inter_transaction['id_from'],
                         $inter_schema);
                 }
             }
@@ -147,7 +147,7 @@ class TransactionsShowController extends AbstractController
         {
             $out .= '<dt>Van Account</dt>';
             $out .= '<dd>';
-            $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
+            $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
             $out .= '</dd>';
         }
 
@@ -158,11 +158,11 @@ class TransactionsShowController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_to'], $app['pp_schema']);
+                $out .= $account_render->str($transaction['id_to'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -176,12 +176,12 @@ class TransactionsShowController extends AbstractController
             {
                 if ($s_inter_schema_check[$inter_schema])
                 {
-                    $user_to = $app['account']->inter_link($inter_transaction['id_to'],
+                    $user_to = $account_render->inter_link($inter_transaction['id_to'],
                         $inter_schema);
                 }
                 else
                 {
-                    $user_to = $app['account']->str($inter_transaction['id_to'],
+                    $user_to = $account_render->str($inter_transaction['id_to'],
                         $inter_schema);
                 }
             }
@@ -198,7 +198,7 @@ class TransactionsShowController extends AbstractController
         {
             $out .= '<dt>Naar Account</dt>';
             $out .= '<dd>';
-            $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
+            $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
             $out .= '</dd>';
         }
 
@@ -245,11 +245,11 @@ class TransactionsShowController extends AbstractController
 
             if ($real_from)
             {
-                $out .= $app['assets']->get('there-from-inter.png');
+                $out .= $assets_service->get('there-from-inter.png');
             }
             else
             {
-                $out .= $app['assets']->get('here-from-inter.png');
+                $out .= $assets_service->get('here-from-inter.png');
             }
 
             $out .= '">';
@@ -272,7 +272,7 @@ class TransactionsShowController extends AbstractController
             }
             else
             {
-                $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
             }
 
             $out .= ')';
@@ -290,7 +290,7 @@ class TransactionsShowController extends AbstractController
                     && isset($app['intersystem_ary']['eland'][$inter_schema]))
                 {
                     $out .= $link_render->link_no_attr('transactions', [
-                            'system'		=> $app['systems']->get_system($inter_schema),
+                            'system'		=> $systems_service->get_system($inter_schema),
                             'role_short'	=> 'g',
                         ], ['id' => $inter_transaction['id']], $str);
                 }
@@ -327,12 +327,12 @@ class TransactionsShowController extends AbstractController
 
                 if ($app['pp_admin'])
                 {
-                    $out .= $app['account']->link($transaction['id_to'],
+                    $out .= $account_render->link($transaction['id_to'],
                         $app['pp_ary']);
                 }
                 else
                 {
-                    $out .= $app['account']->str($transaction['id_to'],
+                    $out .= $account_render->str($transaction['id_to'],
                         $app['pp_schema']);
                 }
 
@@ -350,11 +350,11 @@ class TransactionsShowController extends AbstractController
 
             if ($real_from)
             {
-                $out .= $app['assets']->get('here-from-inter.png');
+                $out .= $assets_service->get('here-from-inter.png');
             }
             else
             {
-                $out .= $app['assets']->get('there-from-inter.png');
+                $out .= $assets_service->get('there-from-inter.png');
             }
 
             $out .= '">';
@@ -373,12 +373,12 @@ class TransactionsShowController extends AbstractController
 
                 if ($app['pp_admin'])
                 {
-                    $out .= $app['account']->link($transaction['id_from'],
+                    $out .= $account_render->link($transaction['id_from'],
                         $app['pp_ary']);
                 }
                 else
                 {
-                    $out .= $app['account']->str($transaction['id_from'],
+                    $out .= $account_render->str($transaction['id_from'],
                         $app['pp_schema']);
                 }
 
@@ -415,7 +415,7 @@ class TransactionsShowController extends AbstractController
                     && isset($app['intersystem_ary']['eland'][$inter_schema]))
                 {
                     $out .= $link_render->link_no_attr('transactions', [
-                            'system'	=> $app['systems']->get_system($inter_schema),
+                            'system'	=> $systems_service->get_system($inter_schema),
                             'role_short'	=> 'g',
                         ], ['id' => $inter_transaction['id']], $str);
                 }
@@ -433,7 +433,7 @@ class TransactionsShowController extends AbstractController
             {
                 $out .= 'Het bestemmings Account in dit Systeem ';
                 $out .= '(';
-                $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
                 $out .= ').';
             }
             else

@@ -149,7 +149,7 @@ class DocsMapController extends AbstractController
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $date_format_serviceget($d['ts'], 'min', $app['pp_schema']);
+                $td[] = $date_format_service->get($d['ts'], 'min', $app['pp_schema']);
 
                 if ($show_visibility)
                 {

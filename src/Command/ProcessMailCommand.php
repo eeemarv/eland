@@ -35,7 +35,7 @@ class ProcessMailCommand extends Command
 
             if (count($record))
             {
-                $app['queue.mail']->process($record['data']);
+                $mail_queue->process($record['data']);
             }
 
             $app['monitor_process']->periodic_log();

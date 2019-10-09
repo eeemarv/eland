@@ -9,13 +9,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\AccessCnst;
+use App\Queue\GeocodeQueue;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\assetsService;
+use App\Service\ItemAccessService;
 
 class ContactsEditController extends AbstractController
 {
@@ -45,21 +46,44 @@ class ContactsEditController extends AbstractController
         ],
     ];
 
-    public function contacts_edit_admin(Request $request, app $app, int $id, Db $db):Response
+    public function contacts_edit_admin(
+        Request $request,
+        int $id,
+        Db $db,
+        FormTokenService $form_token_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        GeocodeQueue $geocode_queue
+    ):Response
     {
         $contact = self::get_contact(
             $db, $id, $app['pp_schema']);
 
-        return self::form($request, $app, $contact['id_user'], $id, true, $db);
+        return self::form($request, $contact['id_user'], $id, true, $db,
+            $form_token_service, $alert_service, $assets_service,
+            $menu_service, $item_access_service, $link_render,
+            $heading_render, $geocode_queue
+        );
     }
 
     public static function form(
         Request $request,
-        app $app,
         int $user_id,
         int $id,
         bool $redirect_contacts,
-        Db $db
+        Db $db,
+        FormTokenService $form_token_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        GeocodeQueue $geocode_queue
     ):Response
     {
         $contact = self::get_contact(
@@ -207,7 +231,7 @@ class ContactsEditController extends AbstractController
             {
                 if ($abbrev_type === 'adr')
                 {
-                    $app['queue.geocode']->cond_queue([
+                    $geocode_queue->cond_queue([
                         'adr'		=> $value,
                         'uid'		=> $user_id,
                         'schema'	=> $app['pp_schema'],
@@ -246,7 +270,7 @@ class ContactsEditController extends AbstractController
             $type_contact_ary[$row['id']] = $row;
         }
 
-        $app['assets']->add(['contacts_edit.js']);
+        $assets_service->add(['contacts_edit.js']);
 
         $abbrev = $type_contact_ary[$id_type_contact]['abbrev'];
 
@@ -255,7 +279,7 @@ class ContactsEditController extends AbstractController
         if ($app['pp_admin'])
         {
             $heading_render->add(' voor ');
-            $heading_render->add_raw($app['account']->link($user_id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($user_id, $app['pp_ary']));
         }
 
         $out = '<div class="panel panel-info">';

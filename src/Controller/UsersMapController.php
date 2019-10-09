@@ -141,7 +141,7 @@ class UsersMapController extends AbstractController
             $ref_geo['lng'] = $lng_add / $shown_count;
         }
 
-        $app['assets']->add(['leaflet', 'users_map.js']);
+        $assets_service->add(['leaflet', 'users_map.js']);
 
         if ($app['pp_admin'])
         {
@@ -249,7 +249,7 @@ class UsersMapController extends AbstractController
                             $not_geocoded['value']);
 
                         $out .= ' gebruiker: ';
-                        $out .= $app['account']->link($not_geocoded['user_id'], $app['pp_ary']);
+                        $out .= $account_render->link($not_geocoded['user_id'], $app['pp_ary']);
                         $out .= '</li>';
                     }
 
@@ -270,7 +270,7 @@ class UsersMapController extends AbstractController
                 foreach ($not_present_ary as $not_present_addres_uid)
                 {
                     $out .= '<li>';
-                    $out .= $app['account']->link($not_present_addres_uid, $app['pp_ary']);
+                    $out .= $account_render->link($not_present_addres_uid, $app['pp_ary']);
                     $out .= '</li>';
                 }
 

@@ -26,7 +26,7 @@ class UsersImageDelController extends AbstractController
 
     public function users_image_del_admin(Request $request, app $app, int $id):Response
     {
-        $user = $app['user_cache']->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -48,7 +48,7 @@ class UsersImageDelController extends AbstractController
                 ['"PictureFile"' => ''],
                 ['id' => $id]);
 
-            $app['user_cache']->clear($id, $app['pp_schema']);
+            $user_cache_service->clear($id, $app['pp_schema']);
 
             $alert_service->success('Profielfoto verwijderd.');
             $link_render->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
@@ -59,7 +59,7 @@ class UsersImageDelController extends AbstractController
         if ($app['pp_admin'])
         {
             $heading_render->add('van ');
-            $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
             $heading_render->add(' ');
         }
 

@@ -69,9 +69,9 @@ class IntersystemsEditController extends AbstractController
 
             if ($add_schema = $request->query->get('add_schema'))
             {
-                if ($app['systems']->get_system($add_schema))
+                if ($systems_service->get_system($add_schema))
                 {
-                    $group['url'] = $app['systems']->get_legacy_eland_origin($add_schema);
+                    $group['url'] = $systems_service->get_legacy_eland_origin($add_schema);
                     $group['groupname'] = $config_service->get('systemname', $add_schema);
                     $group['localletscode'] = $config_service->get('systemtag', $add_schema);
                 }
@@ -271,7 +271,7 @@ class IntersystemsEditController extends AbstractController
         $out .= 'API</span>';
         $out .= '<select class="form-control" id="apimethod" name="apimethod" >';
 
-        $out .= $app['select']->get_options([
+        $out .= $select_render->get_options([
             'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
             'internal'	=> 'Intern (eigen Systeem - niet gebruiken)',
             'mail'		=> 'E-mail',

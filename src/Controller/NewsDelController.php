@@ -58,7 +58,7 @@ class NewsDelController extends AbstractController
 
         if ($news['itemdate'])
         {
-            $out .= $date_format_serviceget($news['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($news['itemdate'], 'day', $app['pp_schema']);
         }
         else
         {
@@ -98,7 +98,7 @@ class NewsDelController extends AbstractController
 
         $out .= '<dt>Ingegeven door</dt>';
         $out .= '<dd>';
-        $out .= $app['account']->link($news['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($news['id_user'], $app['pp_ary']);
         $out .= '</dd>';
 
         $out .= '</dl>';

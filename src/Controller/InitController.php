@@ -382,7 +382,7 @@ class InitController extends AbstractController
 
         while ($row = $rs->fetch())
         {
-            $app['queue.geocode']->cond_queue([
+            $geocode_queue->cond_queue([
                 'adr'		=> $row['value'],
                 'uid'		=> $row['id_user'],
                 'schema'	=> $app['pp_schema'],

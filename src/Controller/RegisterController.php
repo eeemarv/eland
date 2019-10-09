@@ -39,7 +39,7 @@ class RegisterController extends AbstractController
             {
                 $alert_service->error('Vul een E-mail adres in.');
             }
-            else if (!$app['captcha']->validate())
+            else if (!$captcha_service->validate())
             {
                 $alert_service->error('De anti-spam verifiactiecode is niet juist ingevuld.');
             }
@@ -75,10 +75,10 @@ class RegisterController extends AbstractController
             }
             else
             {
-                $token = $app['data_token']->store($reg,
+                $token = $data_token_service->store($reg,
                     'register', $app['pp_schema'], 604800); // 1 week
 
-                $app['queue.mail']->queue([
+                $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
                     'to' 		=> [$reg['email'] => $reg['first_name'] . ' ' . $reg['last_name']],
                     'vars'		=> ['token' => $token],
@@ -183,7 +183,7 @@ class RegisterController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['captcha']->get_form_field();
+        $out .= $captcha_service->get_form_field();
 
         $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Inschrijven" name="zend">';
         $out .= $form_token_service->get_hidden_input();

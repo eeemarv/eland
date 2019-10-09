@@ -12,6 +12,7 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\DateFormatService;
 
 class ApikeysController extends AbstractController
 {
@@ -20,7 +21,8 @@ class ApikeysController extends AbstractController
         MenuService $menu_service,
         HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
-        LinkRender $link_render
+        LinkRender $link_render,
+        DateFormatService $date_format_service
     ):Response
     {
         $apikeys = $db->fetchAll('select *
@@ -55,7 +57,7 @@ class ApikeysController extends AbstractController
             $td[] = $a['id'];
             $td[] = $a['comment'];
             $td[] = $a['apikey'];
-            $td[] = $date_format_serviceget_td($a['created'], 'min', $app['pp_schema']);
+            $td[] = $date_format_service->get_td($a['created'], 'min', $app['pp_schema']);
             $td[] = $link_render->link_fa('apikeys_del', $app['pp_ary'],
                 ['id' => $a['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'], 'times');
@@ -214,6 +216,7 @@ class ApikeysController extends AbstractController
 
             $alert_service->error('Apikey niet verwijderd.');
         }
+
         $apikey = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.apikeys
             where id = ?', [$id]);

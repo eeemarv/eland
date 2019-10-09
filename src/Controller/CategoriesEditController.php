@@ -18,9 +18,14 @@ class CategoriesEditController extends AbstractController
 {
     public function categories_edit(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        SelectRender $select_render
     ):Response
     {
         $cats = [];
@@ -140,7 +145,7 @@ class CategoriesEditController extends AbstractController
         $out .= '<label for="id_parent" class="control-label">';
         $out .= 'Hoofdcategorie of deelcategorie van</label>';
         $out .= '<select class="form-control" id="id_parent" name="id_parent">';
-        $out .= $app['select']->get_options($parent_cats, (string) $id_parent);
+        $out .= $select_render->get_options($parent_cats, (string) $id_parent);
         $out .= '</select>';
         $out .= '</div>';
 

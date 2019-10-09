@@ -256,7 +256,7 @@ class MessagesListController extends AbstractController
             $btn_nav_render->csv();
         }
 
-        $app['assets']->add(['table_sel.js']);
+        $assets_service->add(['table_sel.js']);
 
         $show_visibility_column = !$app['pp_guest'] && $intersystems_service->get_count($app['pp_schema']);
 
@@ -265,7 +265,7 @@ class MessagesListController extends AbstractController
             return self::no_messages($app);
         }
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $out .= '<div class="panel panel-info printview">';
 
@@ -347,7 +347,7 @@ class MessagesListController extends AbstractController
             if (!isset($params['f']['uid']))
             {
                 $out .= '<td>';
-                $out .= $app['account']->link($msg['id_user'], $app['pp_ary']);
+                $out .= $account_render->link($msg['id_user'], $app['pp_ary']);
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -365,7 +365,7 @@ class MessagesListController extends AbstractController
             }
 
             $out .= '<td>';
-            $out .= $date_format_serviceget($msg['validity'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($msg['validity'], 'day', $app['pp_schema']);
             $out .= '</td>';
 
             if ($show_visibility_column)
@@ -384,7 +384,7 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         if (($app['pp_admin'] || $s_owner) && count($messages))
         {
@@ -434,7 +434,7 @@ class MessagesListController extends AbstractController
             $out .= '<label for="buld_field[extend]" class="control-label">';
             $out .= 'Verlengen met</label>';
             $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
-            $out .= $app['select']->get_options($extend_options, '30');
+            $out .= $select_render->get_options($extend_options, '30');
             $out .= "</select>";
             $out .= '</div>';
 
@@ -479,7 +479,7 @@ class MessagesListController extends AbstractController
             $out .= '<form method="post">';
 
             $out .= strtr(BulkCnst::TPL_SELECT, [
-                '%options%' => $app['select']->get_options($categories_move_options, ''),
+                '%options%' => $select_render->get_options($categories_move_options, ''),
                 '%name%'    => 'bulk_field[category]',
                 '%label%'   => 'Categorie',
                 '%attr%'    => ' required',
@@ -516,14 +516,14 @@ class MessagesListController extends AbstractController
 
     static public function no_messages(app $app):Response
     {
-        $out = $app['pagination']->get();
+        $out = $pagination_render->get();
 
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body">';
         $out .= '<p>Er zijn geen resultaten.</p>';
         $out .= '</div></div>';
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $menu_service->set('messages');
 
@@ -663,7 +663,7 @@ class MessagesListController extends AbstractController
             && $filter['uid']
             && !isset($filter['s']))
         {
-            $filter['fcode'] = $app['account']->str((int) $filter['uid'], $app['pp_schema']);
+            $filter['fcode'] = $account_render->str((int) $filter['uid'], $app['pp_schema']);
         }
 
         if (isset($filter['uid']))
@@ -695,7 +695,7 @@ class MessagesListController extends AbstractController
                 $where_sql[] = 'u.id = ?';
                 $params_sql[] = $fuid;
 
-                $fcode = $app['account']->str((int) $fuid, $app['pp_schema']);
+                $fcode = $account_render->str((int) $fuid, $app['pp_schema']);
                 $params['f']['fcode'] = $fcode;
             }
             else
@@ -843,7 +843,7 @@ class MessagesListController extends AbstractController
             $messages[] = $msg;
         }
 
-        $app['pagination']->init($app['r_messages'], $app['pp_ary'],
+        $pagination_render->init($app['r_messages'], $app['pp_ary'],
             $row_count, $params);
 
         $categories_filter_options = ['' => '-- alle categorieën --'];
@@ -909,7 +909,7 @@ class MessagesListController extends AbstractController
                 if ($app['pp_admin'] && !$s_owner)
                 {
                     $str = 'Vraag of aanbod voor ';
-                    $str .= $app['account']->str((int) $filter['uid'], $app['pp_schema']);
+                    $str .= $account_render->str((int) $filter['uid'], $app['pp_schema']);
 
                     $btn_top_render->add('messages_add', $app['pp_ary'],
                         ['uid' => $filter['uid']], $str);
@@ -917,7 +917,7 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $app['assets']->add(['messages_filter.js']);
+        $assets_service->add(['messages_filter.js']);
 
         $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
             || $filter_type
@@ -939,7 +939,7 @@ class MessagesListController extends AbstractController
                     'Vraag en aanbod'));
 
                 $heading_render->add(' van ');
-                $heading_render->add_raw($app['account']->link((int) $filter['uid'], $app['pp_ary']));
+                $heading_render->add_raw($account_render->link((int) $filter['uid'], $app['pp_ary']));
             }
         }
         else
@@ -982,7 +982,7 @@ class MessagesListController extends AbstractController
 
         $cid = (string) ($filter['cid'] ?? '');
 
-        $out .= $app['select']->get_options($categories_filter_options, $cid);
+        $out .= $select_render->get_options($categories_filter_options, $cid);
 
         $out .= '</select>';
         $out .= '</div>';

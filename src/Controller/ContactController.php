@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,13 +10,27 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\CaptchaService;
+use App\Service\ConfigService;
+use App\Service\DataTokenService;
+use Psr\Log\LoggerInterface;
 
 class ContactController extends AbstractController
 {
-    public function contact(Request $request, app $app):Response
+    public function contact(
+        Request $request,
+        LoggerInterface $logger,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ConfigService $config_service,
+        CaptchaService $captcha_service,
+        DataTokenService $data_token_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        MailQueue $mail_queue
+    ):Response
     {
         if (!$config_service->get('contact_form_en', $app['pp_schema']))
         {
@@ -25,7 +40,7 @@ class ContactController extends AbstractController
 
         if($request->isMethod('POST'))
         {
-            if (!$app['captcha']->validate())
+            if (!$captcha_service->validate())
             {
                 $errors[] = 'De anti-spam verifiactiecode is niet juist ingevuld.';
             }
@@ -67,7 +82,7 @@ class ContactController extends AbstractController
                     'ip'		=> $request->getClientIp(),
                 ];
 
-                $token = $app['data_token']->store($contact,
+                $token = $data_token_service->store($contact,
                     'contact', $app['pp_schema'], 86400);
 
                 $logger->info('Contact form filled in with address ' .
@@ -75,7 +90,7 @@ class ContactController extends AbstractController
                     json_encode($contact),
                     ['schema' => $app['pp_schema']]);
 
-                $app['queue.mail']->queue([
+                $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
                     'to' 		=> [
                         $email => $email
@@ -164,7 +179,7 @@ class ContactController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $app['captcha']->get_form_field();
+        $out .= $captcha_service->get_form_field();
 
         $out .= '<input type="submit" name="zend" ';
         $out .= $form_disabled ? 'disabled ' : '';

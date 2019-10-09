@@ -85,7 +85,7 @@ class ForumAddTopicController extends AbstractController
             ];
         }
 
-        $app['assets']->add(['summernote', 'summernote_forum_post.js']);
+        $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
         $heading_render->add('Nieuw forum onderwerp');
         $heading_render->fa('comments-o');

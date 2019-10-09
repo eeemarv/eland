@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use controller\contacts_edit;
+use App\Controller\ContactsEditController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -12,34 +12,49 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ItemAccessService;
+use App\Service\UserCacheService;
 
 class ContactsDelController extends AbstractController
 {
     public function contacts_del_admin(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        UserCacheService $user_cache_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render
     ):Response
     {
         $contact = contacts_edit::get_contact($db, $id,  $app['pp_schema']);
 
-        return self::form($request, $app, $contact['id_user'], $id, true, $db);
+        return self::form($request, $contact['id_user'], $id, true, $db,
+            $alert_service, $user_cache_service, $form_token_service,
+            $menu_service, $item_access_service, $heading_render,
+            $link_render);
     }
 
     public static function form(
         Request $request,
-        app $app,
         int $user_id,
         int $id,
         bool $redirect_contacts,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        UserCacheService $user_cache_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render
     ):Response
     {
-        $contact = contacts_edit::get_contact($db, $id,  $app['pp_schema']);
+        $contact = ContactsEditController::get_contact($db, $id,  $app['pp_schema']);
 
         if ($user_id !== $contact['id_user'])
         {
@@ -50,7 +65,7 @@ class ContactsDelController extends AbstractController
         if ($request->isMethod('GET'))
         {
             if ($contact['abbrev'] === 'mail'
-                && $app['user_cache']->is_active_user($user_id, $app['pp_schema']))
+                && $user_cache_service->is_active_user($user_id, $app['pp_schema']))
             {
                 $count_mail = $db->fetchColumn('select count(c.*)
                     from ' . $app['pp_schema'] . '.contact c
@@ -108,7 +123,7 @@ class ContactsDelController extends AbstractController
         if ($app['pp_admin'])
         {
             $heading_render->add('Contact verwijderen voor ');
-            $heading_render->add_raw($app['account']->link($user_id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($user_id, $app['pp_ary']));
             $heading_render->add('?');
         }
         else
@@ -124,7 +139,7 @@ class ContactsDelController extends AbstractController
         $out .= '<dt>Gebruiker</dt>';
         $out .= '<dd>';
 
-        $out .= $app['account']->link($user_id, $app['pp_ary']);
+        $out .= $account_render->link($user_id, $app['pp_ary']);
 
         $out .= '</dd>';
 

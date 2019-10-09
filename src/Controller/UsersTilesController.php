@@ -47,7 +47,7 @@ class UsersTilesController extends AbstractController
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
-        $app['assets']->add(['isotope', 'users_tiles.js']);
+        $assets_service->add(['isotope', 'users_tiles.js']);
 
         if ($app['pp_admin'])
         {

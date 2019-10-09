@@ -220,7 +220,7 @@ class UsersEditAdminController extends AbstractController
                 $fullname_sql .= 'and id <> ?';
                 $fullname_sql_params[] = $id;
 
-                $user_prefetch = $app['user_cache']->get($id, $app['pp_schema']);
+                $user_prefetch = $user_cache_service->get($id, $app['pp_schema']);
             }
 
             if (!$fullname_access)
@@ -305,7 +305,7 @@ class UsersEditAdminController extends AbstractController
 
             if ($user['birthday'])
             {
-                $user['birthday'] = $date_format_servicereverse($user['birthday'], $app['pp_schema']);
+                $user['birthday'] = $date_format_service->reverse($user['birthday'], $app['pp_schema']);
 
                 if ($user['birthday'] === '')
                 {
@@ -390,8 +390,8 @@ class UsersEditAdminController extends AbstractController
 
                         $alert_service->success('Gebruiker opgeslagen.');
 
-                        $app['user_cache']->clear($id, $app['pp_schema']);
-                        $user = $app['user_cache']->get($id, $app['pp_schema']);
+                        $user_cache_service->clear($id, $app['pp_schema']);
+                        $user = $user_cache_service->get($id, $app['pp_schema']);
 
                         foreach ($contact as $contact_ary)
                         {
@@ -402,7 +402,7 @@ class UsersEditAdminController extends AbstractController
 
                             if ($contact_ary['abbrev'] === 'adr')
                             {
-                                $app['queue.geocode']->cond_queue([
+                                $geocode_queue->cond_queue([
                                     'adr'		=> $contact_ary['value'],
                                     'uid'		=> $id,
                                     'schema'	=> $app['pp_schema'],
@@ -476,7 +476,7 @@ class UsersEditAdminController extends AbstractController
                 }
                 else if ($is_edit)
                 {
-                    $user_stored = $app['user_cache']->get($id, $app['pp_schema']);
+                    $user_stored = $user_cache_service->get($id, $app['pp_schema']);
 
                     $user['mdate'] = gmdate('Y-m-d H:i:s');
 
@@ -499,8 +499,8 @@ class UsersEditAdminController extends AbstractController
                             'fullname_access' => $fullname_access_role,
                         ], $app['pp_schema']);
 
-                        $app['user_cache']->clear($id, $app['pp_schema']);
-                        $user = $app['user_cache']->get($id, $app['pp_schema']);
+                        $user_cache_service->clear($id, $app['pp_schema']);
+                        $user = $user_cache_service->get($id, $app['pp_schema']);
 
                         $alert_service->success('Gebruiker aangepast.');
 
@@ -546,7 +546,7 @@ class UsersEditAdminController extends AbstractController
 
                                 if ($contact_ary['abbrev'] === 'adr')
                                 {
-                                    $app['queue.geocode']->cond_queue([
+                                    $geocode_queue->cond_queue([
                                         'adr'		=> $contact_ary['value'],
                                         'uid'		=> $id,
                                         'schema'	=> $app['pp_schema'],
@@ -656,7 +656,7 @@ class UsersEditAdminController extends AbstractController
         {
             if ($is_edit)
             {
-                $user = $app['user_cache']->get($id, $app['pp_schema']);
+                $user = $user_cache_service->get($id, $app['pp_schema']);
                 $fullname_access = AccessCnst::FROM_XDB[$user['fullname_access']];
             }
 
@@ -718,9 +718,9 @@ class UsersEditAdminController extends AbstractController
                         $user['name'] = $user['fullname'] = $group['groupname'];
 
                         if ($group['url']
-                            && ($app['systems']->get_schema_from_legacy_eland_origin($group['url'])))
+                            && ($systems_service->get_schema_from_legacy_eland_origin($group['url'])))
                         {
-                            $remote_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
+                            $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
                             $admin_mail = $config_service->get('admin', $remote_schema);
 
@@ -754,13 +754,13 @@ class UsersEditAdminController extends AbstractController
 
         if ($is_edit)
         {
-            $edit_user_cached = $app['user_cache']->get($id, $app['pp_schema']);
+            $edit_user_cached = $user_cache_service->get($id, $app['pp_schema']);
         }
 
         array_walk($user, function(&$value){ $value = trim(htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')); });
         array_walk($contact, function(&$value){ $value['value'] = trim(htmlspecialchars((string) $value['value'], ENT_QUOTES, 'UTF-8')); });
 
-        $app['assets']->add([
+        $assets_service->add([
             'datepicker',
             'generate_password.js',
             'user_edit.js',
@@ -777,7 +777,7 @@ class UsersEditAdminController extends AbstractController
             if ($is_edit)
             {
                 $heading_render->add('aanpassen: ');
-                $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
+                $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
             }
             else
             {
@@ -934,17 +934,17 @@ class UsersEditAdminController extends AbstractController
 
         if (isset($user['birthday']) && !empty($user['birtday']))
         {
-            $out .= $date_format_serviceget($user['birthday'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($user['birthday'], 'day', $app['pp_schema']);
         }
 
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
+        $out .= $date_format_service->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-default-view="2" ';
         $out .= 'data-date-end-date="';
-        $out .= $date_format_serviceget('', 'day', $app['pp_schema']);
+        $out .= $date_format_service->get('', 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-start-view="2" ';
@@ -953,7 +953,7 @@ class UsersEditAdminController extends AbstractController
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_service->datepicker_placeholder($app['pp_schema']);
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';
@@ -990,7 +990,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="fa fa-hand-paper-o"></span></span>';
             $out .= '<select id="accountrole" name="accountrole" ';
             $out .= 'class="form-control">';
-            $out .= $app['select']->get_options(rolecnst::LABEL_ARY, $user['accountrole']);
+            $out .= $select_render->get_options(rolecnst::LABEL_ARY, $user['accountrole']);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';
@@ -1020,7 +1020,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-star-o"></span></span>';
             $out .= '<select id="status" name="status" class="form-control">';
-            $out .= $app['select']->get_options(statuscnst::LABEL_ARY, $user['status']);
+            $out .= $select_render->get_options(statuscnst::LABEL_ARY, $user['status']);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';

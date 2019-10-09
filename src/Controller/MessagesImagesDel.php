@@ -124,12 +124,12 @@ class MessagesImagesDel extends AbstractController
 
         $heading_render->fa('newspaper-o');
 
-        $app['assets']->add(['messages_images_del.js']);
+        $assets_service->add(['messages_images_del.js']);
 
         if ($app['pp_admin'])
         {
             $heading_render->add_sub('Gebruiker: ');
-            $heading_render->add_sub_raw($app['account']->link($message['id_user'], $app['pp_ary']));
+            $heading_render->add_sub_raw($account_render->link($message['id_user'], $app['pp_ary']));
         }
 
         $out = '<div class="row">';

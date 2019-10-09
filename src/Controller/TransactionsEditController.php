@@ -125,7 +125,7 @@ class TransactionsEditController extends AbstractController
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $date_format_serviceget($transaction['cdate'], 'min', $app['pp_schema']);
+        $out .= $date_format_service->get($transaction['cdate'], 'min', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';
@@ -140,11 +140,11 @@ class TransactionsEditController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_from'], $app['pp_schema']);
+                $out .= $account_render->str($transaction['id_from'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -158,12 +158,12 @@ class TransactionsEditController extends AbstractController
             {
                 if (isset($s_inter_schema_check[$inter_schema]))
                 {
-                    $out .= $app['account']->inter_link($inter_transaction['id_from'],
+                    $out .= $account_render->inter_link($inter_transaction['id_from'],
                         $inter_schema);
                 }
                 else
                 {
-                    $out .= $app['account']->str($inter_transaction['id_from'],
+                    $out .= $account_render->str($inter_transaction['id_from'],
                         $inter_schema);
                 }
             }
@@ -178,7 +178,7 @@ class TransactionsEditController extends AbstractController
         {
             $out .= '<dt>Van gebruiker</dt>';
             $out .= '<dd>';
-            $out .= $app['account']->link($transaction['id_from'], $app['pp_ary']);
+            $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
             $out .= '</dd>';
         }
 
@@ -189,11 +189,11 @@ class TransactionsEditController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
             }
             else
             {
-                $out .= $app['account']->str($transaction['id_to'], $app['pp_schema']);
+                $out .= $account_render->str($transaction['id_to'], $app['pp_schema']);
             }
 
             $out .= '</dd>';
@@ -206,12 +206,12 @@ class TransactionsEditController extends AbstractController
             {
                 if (isset($s_inter_schema_check[$inter_schema]))
                 {
-                    $out .= $app['account']->inter_link($inter_transaction['id_to'],
+                    $out .= $account_render->inter_link($inter_transaction['id_to'],
                         $inter_schema);
                 }
                 else
                 {
-                    $out .= $app['account']->str($inter_transaction['id_to'],
+                    $out .= $account_render->str($inter_transaction['id_to'],
                         $inter_schema);
                 }
             }
@@ -226,7 +226,7 @@ class TransactionsEditController extends AbstractController
         {
             $out .= '<dt>Naar gebruiker</dt>';
             $out .= '<dd>';
-            $out .= $app['account']->link($transaction['id_to'], $app['pp_ary']);
+            $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
             $out .= '</dd>';
         }
 

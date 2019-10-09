@@ -39,12 +39,12 @@ class PasswordResetController extends AbstractController
                     {
                         $user_id = $user['id'];
 
-                        $token = $app['data_token']->store([
+                        $token = $data_token_service->store([
                             'user_id'	=> $user_id,
                             'email'		=> $email,
                         ], 'password_reset', $app['pp_schema'], 86400);
 
-                        $app['queue.mail']->queue([
+                        $mail_queue->queue([
                             'schema'	=> $app['pp_schema'],
                             'to' 		=> [$email => $user['letscode'] . ' ' . $user['name']],
                             'template'	=> 'password_reset/confirm',

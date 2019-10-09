@@ -47,7 +47,7 @@ class UsersShowController extends AbstractController
             && $app['s_id'] === $id
             && $id;
 
-        $user = $app['user_cache']->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -108,7 +108,7 @@ class UsersShowController extends AbstractController
                         and c.id_type_contact = tc.id',
                         [AccessCnst::TO_FLAG_PUBLIC[$user['accountrole']], $app['s_id']]);
 
-                $from_user = $app['user_cache']->get($app['s_id'], $app['s_schema']);
+                $from_user = $user_cache_service->get($app['s_id'], $app['s_schema']);
 
                 $vars = [
                     'from_contacts'     => $from_contacts,
@@ -124,7 +124,7 @@ class UsersShowController extends AbstractController
                     ? 'user_msg/msg'
                     : 'user_msg/msg_intersystem';
 
-                $app['queue.mail']->queue([
+                $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
                     'to'		=> $app['mail_addr_user']->get($id, $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
@@ -138,7 +138,7 @@ class UsersShowController extends AbstractController
                         ? 'user_msg/copy'
                         : 'user_msg/copy_intersystem';
 
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
                         'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
                         'template' 	=> $mail_template,
@@ -221,14 +221,14 @@ class UsersShowController extends AbstractController
         $contacts_response = $contacts_user_show_inline->contacts_user_show_inline($app, $user['id']);
         $contacts_content = $contacts_response->getContent();
 
-        $app['assets']->add([
+        $assets_service->add([
             'jqplot',
             'plot_user_transactions.js',
         ]);
 
         if ($app['pp_admin'] || $s_owner)
         {
-            $app['assets']->add([
+            $assets_service->add([
                 'fileupload',
                 'upload_image.js',
             ]);
@@ -271,7 +271,7 @@ class UsersShowController extends AbstractController
             }
 
             $btn_top_render->add_trans('transactions_add', $app['s_ary'],
-                $tus, 'Transactie naar ' . $app['account']->str($id, $app['pp_schema']));
+                $tus, 'Transactie naar ' . $account_render->str($id, $app['pp_schema']));
         }
 
         $pp_status_ary = $app['pp_ary'];
@@ -301,7 +301,7 @@ class UsersShowController extends AbstractController
             $heading_render->add('Mijn gegevens: ');
         }
 
-        $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
+        $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
 
         if ($status_id != 1)
         {
@@ -354,7 +354,7 @@ class UsersShowController extends AbstractController
         }
         else
         {
-            $out .= $app['assets']->get('1.gif');
+            $out .= $assets_service->get('1.gif');
         }
 
         $out .= '" ';
@@ -473,7 +473,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['birthday']))
             {
-                $out .= $date_format_serviceget($user['birthday'], 'day', $app['pp_schema']);
+                $out .= $date_format_service->get($user['birthday'], 'day', $app['pp_schema']);
             }
             else
             {
@@ -499,7 +499,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['cdate']))
             {
-                $out .= $this->get_dd($date_format_serviceget($user['cdate'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_service->get($user['cdate'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -512,7 +512,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['adate']))
             {
-                $out .= $this->get_dd($date_format_serviceget($user['adate'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_service->get($user['adate'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -525,7 +525,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['lastlogin']))
             {
-                $out .= $this->get_dd($date_format_serviceget($user['lastlogin'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_service->get($user['lastlogin'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -628,7 +628,7 @@ class UsersShowController extends AbstractController
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body">';
 
-        $account_str = $app['account']->str($id, $app['pp_schema']);
+        $account_str = $account_render->str($id, $app['pp_schema']);
 
         $attr_link_messages = $attr_link_transactions = [
             'class'     => 'btn btn-default btn-lg btn-block',
@@ -731,7 +731,7 @@ class UsersShowController extends AbstractController
 
         $out = '<h3><i class="fa fa-envelop-o"></i> ';
         $out .= 'Stuur een bericht naar ';
-        $out .=  $app['account']->link($user_id, $app['pp_ary']);
+        $out .=  $account_render->link($user_id, $app['pp_ary']);
         $out .= '</h3>';
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

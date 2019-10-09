@@ -18,9 +18,13 @@ class CategoriesDelController extends AbstractController
 {
     public function categories_del(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render
     ):Response
     {
         if($request->isMethod('POST'))

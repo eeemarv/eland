@@ -163,7 +163,7 @@ class UsersListController extends AbstractController
                 foreach ($rows as $row)
                 {
                     $users_log .= ', ';
-                    $users_log .= $app['account']->str_id($row['id'], $app['pp_schema'], false, true);
+                    $users_log .= $account_render->str_id($row['id'], $app['pp_schema'], false, true);
                 }
 
                 $users_log = ltrim($users_log, ', ');
@@ -338,7 +338,7 @@ class UsersListController extends AbstractController
                         $vars[$key] = $sel_user[$val];
                     }
 
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'			=> $app['pp_schema'],
                         'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['pp_schema']),
                         'pre_html_template' => $bulk_mail_content,
@@ -347,8 +347,8 @@ class UsersListController extends AbstractController
                         'template'			=> 'skeleton',
                     ], random_int(1000, 4000));
 
-                    $alert_users_sent_ary[] = $app['account']->link($sel_user['id'], $app['pp_ary']);
-                    $mail_users_sent_ary[] = $app['account']->link_url($sel_user['id'], $app['pp_ary']);
+                    $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $app['pp_ary']);
+                    $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $app['pp_ary']);
                 }
 
                 if (count($alert_users_sent_ary))
@@ -378,10 +378,10 @@ class UsersListController extends AbstractController
 
                     foreach ($sel_ary as $warning_user_id => $dummy)
                     {
-                        $alert_missing_users .= $app['account']->link($warning_user_id, $app['pp_ary']);
+                        $alert_missing_users .= $account_render->link($warning_user_id, $app['pp_ary']);
                         $alert_missing_users .= '<br>';
 
-                        $mail_missing_users .= $app['account']->link_url($warning_user_id, $app['pp_ary']);
+                        $mail_missing_users .= $account_render->link_url($warning_user_id, $app['pp_ary']);
                         $mail_missing_users .= '<br />';
                     }
 
@@ -411,7 +411,7 @@ class UsersListController extends AbstractController
 
                     $mail_users_info .= '<hr /><br />';
 
-                    $app['queue.mail']->queue([
+                    $mail_queue->queue([
                         'schema'			=> $app['pp_schema'],
                         'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
                         'template'			=> 'skeleton',
@@ -626,12 +626,12 @@ class UsersListController extends AbstractController
         {
             if ($saldo_date)
             {
-                $saldo_date_rev = $date_format_servicereverse($saldo_date, 'min', $app['pp_schema']);
+                $saldo_date_rev = $date_format_service->reverse($saldo_date, 'min', $app['pp_schema']);
             }
 
             if ($saldo_date_rev === '' || $saldo_date == '')
             {
-                $saldo_date = $date_format_serviceget('', 'day', $app['pp_schema']);
+                $saldo_date = $date_format_service->get('', 'day', $app['pp_schema']);
 
                 array_walk($users, function(&$user, $user_id){
                     $user['saldo_date'] = $user['saldo'];
@@ -860,7 +860,7 @@ class UsersListController extends AbstractController
         self::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_list');
         self::heading($heading_render);
 
-        $app['assets']->add([
+        $assets_service->add([
             'calc_sum.js',
             'users_distance.js',
             'datepicker',
@@ -868,7 +868,7 @@ class UsersListController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['assets']->add([
+            $assets_service->add([
                 'codemirror',
                 'summernote',
                 'summernote_email.js',
@@ -1050,7 +1050,7 @@ class UsersListController extends AbstractController
                     $f_col .= 'name="sh[p][u][saldo_date]" ';
                     $f_col .= 'data-provide="datepicker" ';
                     $f_col .= 'data-date-format="';
-                    $f_col .= $date_format_servicedatepicker_format($app['pp_schema']);
+                    $f_col .= $date_format_service->datepicker_format($app['pp_schema']);
                     $f_col .= '" ';
                     $f_col .= 'data-date-language="nl" ';
                     $f_col .= 'data-date-today-highlight="true" ';
@@ -1059,7 +1059,7 @@ class UsersListController extends AbstractController
                     $f_col .= 'data-date-end-date="0d" ';
                     $f_col .= 'data-date-orientation="bottom" ';
                     $f_col .= 'placeholder="';
-                    $f_col .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
+                    $f_col .= $date_format_service->datepicker_placeholder($app['pp_schema']);
                     $f_col .= '" ';
                     $f_col .= 'value="';
                     $f_col .= $saldo_date;
@@ -1276,7 +1276,7 @@ class UsersListController extends AbstractController
                     {
                         if ($u[$key])
                         {
-                            $td .= $date_format_serviceget($u[$key], 'day', $app['pp_schema']);
+                            $td .= $date_format_service->get($u[$key], 'day', $app['pp_schema']);
                         }
                         else
                         {
@@ -1437,7 +1437,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['a']))
             {
-                $from_date = $date_format_serviceget_from_unix(time() - ($activity_days * 86400), 'day', $app['pp_schema']);
+                $from_date = $date_format_service->get_from_unix(time() - ($activity_days * 86400), 'day', $app['pp_schema']);
 
                 foreach($show_columns['a'] as $a_key => $a_ary)
                 {
@@ -1585,7 +1585,7 @@ class UsersListController extends AbstractController
                     if (isset($t['options']))
                     {
                         $tpl = BulkCnst::TPL_SELECT;
-                        $options = $app['select']->get_options($t['options'], '');
+                        $options = $select_render->get_options($t['options'], '');
                     }
                     else if (isset($t['type'])
                         && $t['type'] === 'checkbox')

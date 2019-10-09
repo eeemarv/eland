@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
@@ -11,10 +12,19 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
+use App\Service\DataTokenService;
 
 class ContactTokenController extends AbstractController
 {
-    public function contact_token(app $app, string $token):Response
+    public function contact_token(
+        string $token,
+        ConfigService $config_service,
+        LinkRender $link_render,
+        AlertService $alert_service,
+        DataTokenService $data_token_service,
+        MailQueue $mail_queue
+    ):Response
     {
         if (!$config_service->get('contact_form_en', $app['pp_schema']))
         {
@@ -22,7 +32,7 @@ class ContactTokenController extends AbstractController
             $link_render->redirect('login', $app['pp_ary'], []);
         }
 
-        $data = $app['data_token']->retrieve($token, 'contact', $app['pp_schema']);
+        $data = $data_token_service->retrieve($token, 'contact', $app['pp_schema']);
 
         if (!$data)
         {
@@ -37,14 +47,14 @@ class ContactTokenController extends AbstractController
             'email'			=> $data['email'],
         ];
 
-        $app['queue.mail']->queue([
+        $mail_queue->queue([
             'schema'	=> $app['pp_schema'],
             'template'	=> 'contact/copy',
             'vars'		=> $vars,
             'to'		=> [$data['email'] => $data['email']],
         ], 9000);
 
-        $app['queue.mail']->queue([
+        $mail_queue->queue([
             'schema'	=> $app['pp_schema'],
             'template'	=> 'contact/support',
             'vars'		=> $vars,
@@ -52,7 +62,7 @@ class ContactTokenController extends AbstractController
             'reply_to'	=> [$data['email']],
         ], 8000);
 
-        $app['data_token']->del($token, 'contact', $app['pp_schema']);
+        $data_token_service->del($token, 'contact', $app['pp_schema']);
 
         $alert_service->success('Je bericht werd succesvol verzonden.');
         $link_render->redirect('contact', $app['pp_ary'], []);

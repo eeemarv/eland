@@ -10,13 +10,21 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Render\SelectRender;
 
 class CategoriesAddController extends AbstractController
 {
-    public function categories_add(Request $request, app $app, Db $db):Response
+    public function categories_add(
+        Request $request,
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        SelectRender $select_render
+    ):Response
     {
         $cat = [];
 
@@ -112,7 +120,7 @@ class CategoriesAddController extends AbstractController
         $out .= '<label for="id_parent" class="control-label">';
         $out .= 'Hoofdcategorie of deelcategorie van</label>';
         $out .= '<select name="id_parent" id="id_parent" class="form-control">';
-        $out .= $app['select']->get_options($parent_cats, (string) ($id_parent ?? 0));
+        $out .= $select_render->get_options($parent_cats, (string) ($id_parent ?? 0));
         $out .= '</select>';
         $out .= '</div>';
 

@@ -210,7 +210,7 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
         return;
 	}
 
-	$app['assets']->add(['bootstrap', 'base.css']);
+	$assets_service->add(['bootstrap', 'base.css']);
 
 	return $this->render('exception/general.html.twig', [
 		'code'		=> $code,
@@ -322,7 +322,7 @@ $app['pp_org_system'] = function ($app):string{
 		return '';
 	}
 
-	if (!$app['systems']->get_schema($pp_org_system))
+	if (!$systems_service->get_schema($pp_org_system))
 	{
 		return '';
 	}
@@ -358,7 +358,7 @@ $app['pp_ary'] = function ($app):array{
 };
 
 $app['pp_schema'] = function ($app):string{
-	return $app['systems']->get_schema($app['pp_system']);
+	return $systems_service->get_schema($app['pp_system']);
 };
 
 $app['request'] = function ($app):Request{
@@ -369,14 +369,14 @@ $app['s_schema'] = function ($app):string{
 
 	if ($app['pp_org_system'])
 	{
-		return $app['systems']->get_schema($app['pp_org_system']);
+		return $systems_service->get_schema($app['pp_org_system']);
 	}
 
 	return $app['pp_schema'];
 };
 
 $app['s_system'] = function ($app){
-	return $app['systems']->get_system($app['s_schema']);
+	return $systems_service->get_system($app['s_schema']);
 };
 
 $app['s_ary'] = function ($app){
@@ -423,7 +423,7 @@ $app['session_user'] = function ($app):array{
 		return [];
 	}
 
-	return $app['user_cache']->get($app['s_id'], $app['s_schema']);
+	return $user_cache_service->get($app['s_id'], $app['s_schema']);
 };
 
 $app['s_role'] = function ($app):string{

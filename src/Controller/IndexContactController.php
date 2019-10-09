@@ -27,7 +27,7 @@ class IndexContactController extends AbstractController
 
             $errors = [];
 
-            if (!$app['captcha']->validate())
+            if (!$captcha_service->validate())
             {
                 $errors[] = 'De anti-spam verifiactiecode is niet juist ingevuld.';
             }
@@ -90,7 +90,7 @@ class IndexContactController extends AbstractController
             'mail'          => $mail,
             'message'       => $message,
             'form_token'    => $form_token_service->get(),
-            'captcha'       => $app['captcha']->get_form_field(),
+            'captcha'       => $captcha_service->get_form_field(),
         ]);
     }
 }

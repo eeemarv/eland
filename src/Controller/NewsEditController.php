@@ -35,7 +35,7 @@ class NewsEditController extends AbstractController
 
             if ($news['itemdate'])
             {
-                $news['itemdate'] = $date_format_servicereverse($news['itemdate'], $app['pp_schema']);
+                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $app['pp_schema']);
 
                 if ($news['itemdate'] === '')
                 {
@@ -96,7 +96,7 @@ class NewsEditController extends AbstractController
             $access = AccessCnst::FROM_XDB[$access];
         }
 
-        $app['assets']->add(['datepicker']);
+        $assets_service->add(['datepicker']);
 
         $heading_render->add('Nieuwsbericht aanpassen');
         $heading_render->fa('calendar-o');
@@ -126,17 +126,17 @@ class NewsEditController extends AbstractController
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
+        $out .= $date_format_service->datepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-today-highlight="true" ';
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_serviceget($news['itemdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($news['itemdate'], 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'placeholder="';
-        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_service->datepicker_placeholder($app['pp_schema']);
         $out .= '" ';
         $out .= 'required>';
         $out .= '</div>';

@@ -55,7 +55,7 @@ class MessagesExtendedController extends AbstractController
         }
 
         $time = time();
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         foreach ($messages as $msg)
         {
@@ -111,7 +111,7 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '<div class="panel-footer">';
             $out .= '<p><i class="fa fa-user"></i> ';
-            $out .= $app['account']->link($msg['id_user'], $app['pp_ary']);
+            $out .= $account_render->link($msg['id_user'], $app['pp_ary']);
             $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
             if ($app['pp_admin'] || $sf_owner)
@@ -136,7 +136,7 @@ class MessagesExtendedController extends AbstractController
             $out .= '</div>';
         }
 
-        $out .= $app['pagination']->get();
+        $out .= $pagination_render->get();
 
         $menu_service->set('messages');
 

@@ -33,7 +33,7 @@ class ProcessGeocodeCommand extends Command
 
             if (count($record))
             {
-                $app['queue.geocode']->process($record['data']);
+                $geocode_queue->process($record['data']);
             }
 
             $app['monitor_process']->periodic_log();

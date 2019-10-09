@@ -15,7 +15,7 @@ class PlotUserTransactionsController extends AbstractController
         Db $db
     ):Response
     {
-        $user = $app['user_cache']->get($user_id, $app['pp_schema']);
+        $user = $user_cache_service->get($user_id, $app['pp_schema']);
 
         if (!$user)
         {
@@ -37,7 +37,7 @@ class PlotUserTransactionsController extends AbstractController
                 continue;
             }
 
-            $sys_schema = $app['systems']->get_schema_from_legacy_eland_origin($row['url']);
+            $sys_schema = $systems_service->get_schema_from_legacy_eland_origin($row['url']);
             $code = (string) $row['code'];
 
             if ($sys_schema)
@@ -145,7 +145,7 @@ class PlotUserTransactionsController extends AbstractController
             $transactions[] = [
                 'amount' 	        => $amount,
                 'time'              => $time,
-                'fdate'             => $date_format_serviceget_from_unix($time, 'day', $app['pp_schema']),
+                'fdate'             => $date_format_service->get_from_unix($time, 'day', $app['pp_schema']),
                 'link' 		        => $link_render->context_path('transactions_show',
                     $app['pp_ary'], ['id' => $t['id']]),
                 'user'              => $tr_user,

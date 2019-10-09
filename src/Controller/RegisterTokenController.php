@@ -21,7 +21,7 @@ class RegisterTokenController extends AbstractController
             $link_render->redirect('login', $app['pp_ary'], []);
         }
 
-        $data = $app['data_token']->retrieve($token, 'register', $app['pp_schema']);
+        $data = $data_token_service->retrieve($token, 'register', $app['pp_schema']);
 
         if (!$data)
         {
@@ -49,7 +49,7 @@ class RegisterTokenController extends AbstractController
             ]);
         }
 
-        $app['data_token']->del($token, 'register', $app['pp_schema']);
+        $data_token_service->del($token, 'register', $app['pp_schema']);
 
         for ($i = 0; $i < 20; $i++)
         {
@@ -170,7 +170,7 @@ class RegisterTokenController extends AbstractController
             'email'			=> $data['email'],
         ];
 
-        $app['queue.mail']->queue([
+        $mail_queue->queue([
             'schema'		=> $app['pp_schema'],
             'to' 			=> $app['mail_addr_system']->get_admin($app['pp_schema']),
             'vars'			=> $vars,
@@ -192,7 +192,7 @@ class RegisterTokenController extends AbstractController
             '%system_name%'	=> $config_service->get('systemname', $app['pp_schema']),
         ], 'mail');
 
-        $app['queue.mail']->queue([
+        $mail_queue->queue([
             'schema'				=> $app['pp_schema'],
             'to' 					=> [$data['email'] => $user['fullname']],
             'reply_to'				=> $app['mail_addr_system']->get_admin($app['pp_schema']),
