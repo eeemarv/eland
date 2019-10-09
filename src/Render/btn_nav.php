@@ -4,7 +4,7 @@ namespace App\Render;
 
 use App\Render\link as render_link;
 use App\Render\tag as render_tag;
-use App\Service\assets;
+use App\Service\Assets;
 
 class btn_nav
 {
@@ -23,7 +23,7 @@ class btn_nav
 	public function __construct(
 		render_link $link,
 		render_tag $tag,
-		assets $assets
+		Assets $assets
 	)
 	{
 		$this->link = $link;

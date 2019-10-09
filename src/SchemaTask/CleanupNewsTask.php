@@ -5,7 +5,7 @@ namespace App\SchemaTask;
 use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use App\Service\xdb;
+use App\Service\Xdb;
 
 use App\Service\Schedule;
 use App\Service\Systems;
@@ -18,7 +18,7 @@ class CleanupNewsTask extends SchemaTask
 
 	public function __construct(
 		Db $db,
-		xdb $xdb,
+		Xdb $xdb,
 		LoggerInterface $logger,
 		Schedule $schedule,
 		Systems $systems

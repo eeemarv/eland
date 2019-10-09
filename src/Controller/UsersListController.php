@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\item_access;
+use App\Service\ItemAccess;
 use App\Render\btn_nav;
 use App\Render\link;
 use App\Render\heading;
@@ -1804,7 +1804,7 @@ class UsersListController extends AbstractController
     }
 
     public static function get_contacts_str(
-        item_access $item_access,
+        ItemAccess $item_access,
         array $contacts,
         string $abbrev
     ):string

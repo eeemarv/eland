@@ -4,7 +4,7 @@ namespace App\Task;
 
 use App\Service\Cache;
 use Predis\Client as Predis;
-use App\Service\typeahead;
+use App\Service\Typeahead;
 use Psr\Log\LoggerInterface;
 use App\Cnst\CacheKeyCnst;
 
@@ -26,7 +26,7 @@ class FetchElasIntersystemTask
 	public function __construct(
 		Cache $cache,
 		Predis $predis,
-		typeahead $typeahead,
+		Typeahead $typeahead,
 		LoggerInterface $logger
 	)
 	{

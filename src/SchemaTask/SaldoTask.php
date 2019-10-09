@@ -4,13 +4,13 @@ namespace App\SchemaTask;
 
 use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\xdb;
+use App\Service\Xdb;
 use App\Service\Cache;
 use Psr\Log\LoggerInterface;
 use App\Queue\MailQueue;
 use App\Service\Schedule;
 use App\Service\Systems;
-use App\Service\intersystems;
+use App\Service\Intersystems;
 use App\Service\Config;
 use App\Service\MailAddrUser;
 use App\Render\account_str;
@@ -29,13 +29,13 @@ class SaldoTask extends SchemaTask
 
 	public function __construct(
 		Db $db,
-		xdb $xdb,
+		Xdb $xdb,
 		Cache $cache,
 		LoggerInterface $logger,
 		MailQueue $mail_queue,
 		Schedule $schedule,
 		Systems $systems,
-		intersystems $intersystems,
+		Intersystems $intersystems,
 		Config $config,
 		MailAddrUser $mail_addr_user,
 		account_str $account_str
