@@ -10,6 +10,11 @@ class ProcessCleanupCacheCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_cache';
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this->setDescription('Process to cleanup the db cache periodically');

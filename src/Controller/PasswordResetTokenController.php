@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
-class PasswordResetToken extends AbstractController
+class PasswordResetTokenController extends AbstractController
 {
     public function password_reset_token(
         Request $request,

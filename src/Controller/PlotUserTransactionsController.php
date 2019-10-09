@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
-class PlotUserTransactions extends AbstractController
+class PlotUserTransactionsController extends AbstractController
 {
     public function plot_user_transactions(
         app $app,
