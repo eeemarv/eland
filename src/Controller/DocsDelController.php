@@ -10,7 +10,7 @@ class DocsDelController extends AbstractController
 {
     public function docs_del(Request $request, app $app, string $doc_id):Response
     {
-        $row = $app['xdb']->get('doc', $doc_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -18,15 +18,15 @@ class DocsDelController extends AbstractController
         }
         else
         {
-            $app['alert']->error('Document niet gevonden');
-            $app['link']->redirect('docs', $app['pp_ary'], []);
+            $alert_service->error('Document niet gevonden');
+            $link_render->redirect('docs', $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
         {
             $errors = [];
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -43,38 +43,38 @@ class DocsDelController extends AbstractController
 
                 if (isset($doc['map_id']))
                 {
-                    $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+                    $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
                         'agg_type'	=> 'doc',
                         'data->>\'map_id\'' => $doc['map_id']]);
 
                     if (count($rows) < 2)
                     {
-                        $app['xdb']->del('doc', $doc['map_id'], $app['pp_schema']);
+                        $xdb_service->del('doc', $doc['map_id'], $app['pp_schema']);
 
-                        $app['typeahead']->delete_thumbprint('doc_map_names',
+                        $typeahead_service->delete_thumbprint('doc_map_names',
                             $app['pp_ary'], []);
 
                         unset($doc['map_id']);
                     }
                 }
 
-                $app['xdb']->del('doc', $doc_id, $app['pp_schema']);
+                $xdb_service->del('doc', $doc_id, $app['pp_schema']);
 
-                $app['alert']->success('Het document werd verwijderd.');
+                $alert_service->success('Het document werd verwijderd.');
 
                 if (isset($doc['map_id']))
                 {
-                    $app['link']->redirect('docs_map', $app['pp_ary'],
+                    $link_render->redirect('docs_map', $app['pp_ary'],
                         ['map_id' => $doc['map_id']]);
                 }
 
-                $app['link']->redirect('docs', $app['pp_ary'], []);
+                $link_render->redirect('docs', $app['pp_ary'], []);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
-        $app['heading']->add('Document verwijderen?');
+        $heading_render->add('Document verwijderen?');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -90,26 +90,26 @@ class DocsDelController extends AbstractController
 
         if (isset($doc['map_id']))
         {
-            $out .= $app['link']->btn_cancel('docs_map', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('docs_map', $app['pp_ary'],
                 ['map_id' => $doc['map_id']]);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('docs', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('docs', $app['pp_ary'], []);
         }
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
         $out .= 'name="confirm_del" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('docs');
+        $menu_service->set('docs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

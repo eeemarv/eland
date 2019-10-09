@@ -28,7 +28,7 @@ class InitController extends AbstractController
 
         if ($done)
         {
-            $app['alert']->success('Done: ' . self::ROUTES_LABELS[$done]);
+            $alert_service->success('Done: ' . self::ROUTES_LABELS[$done]);
         }
 
         $out = '<div class="panel panel-info">';
@@ -42,16 +42,16 @@ class InitController extends AbstractController
         foreach (self::ROUTES_LABELS as $route => $lbl)
         {
             $class_done = $done === $route ? ' list-group-item-success' : '';
-            $out .= $app['link']->link($route, $app['pp_ary'],
+            $out .= $link_render->link($route, $app['pp_ary'],
                 [], $lbl, ['class' => 'list-group-item' . $class_done]);
         }
         $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('init');
+        $menu_service->set('init');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -95,7 +95,7 @@ class InitController extends AbstractController
             $app['monolog']->info('DB: ' . $m, ['schema' => $app['pp_schema']]);
         }
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -192,11 +192,11 @@ class InitController extends AbstractController
             error_log(' found img ');
             $start += 50;
 
-            $app['link']->redirect('init_sync_users_images', $app['pp_ary'],
+            $link_render->redirect('init_sync_users_images', $app['pp_ary'],
                 ['start' => $start]);
         }
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -218,7 +218,7 @@ class InitController extends AbstractController
 
         if (!count($message_images))
         {
-            $app['link']->redirect('init', $app['pp_ary'],
+            $link_render->redirect('init', $app['pp_ary'],
                 ['ok' => $request->attributes->get('_route')]);
         }
 
@@ -289,7 +289,7 @@ class InitController extends AbstractController
 
         $start += 50;
 
-        $app['link']->redirect('init_sync_messages_images', $app['pp_ary'],
+        $link_render->redirect('init_sync_messages_images', $app['pp_ary'],
             ['start' => $start]);
 
         return new Response('');
@@ -313,7 +313,7 @@ class InitController extends AbstractController
             $app['predis']->del($app['pp_schema'] . '_user_' . $u['id']);
         }
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -332,7 +332,7 @@ class InitController extends AbstractController
 
         error_log('*** empty tokens table from elas (is not used anymore) *** ');
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -351,7 +351,7 @@ class InitController extends AbstractController
 
         error_log('*** empty city_distance table (is not used anymore) *** ');
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -395,11 +395,11 @@ class InitController extends AbstractController
         {
             $start += 50;
 
-            $app['link']->redirect('init_queue_geocoding', $app['pp_ary'],
+            $link_render->redirect('init_queue_geocoding', $app['pp_ary'],
                 ['start' => $start]);
         }
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -420,14 +420,14 @@ class InitController extends AbstractController
 
         foreach($config_ary as $rec)
         {
-            if (!$app['config']->exists($rec['setting'], $app['pp_schema']))
+            if (!$config_service->exists($rec['setting'], $app['pp_schema']))
             {
-                $app['config']->set($rec['setting'], $app['pp_schema'], $rec['value']);
+                $config_service->set($rec['setting'], $app['pp_schema'], $rec['value']);
                 error_log('Config value copied: ' . $rec['setting'] . ' ' . $rec['value']);
             }
         }
 
-        $app['link']->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $app['pp_ary'],
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');

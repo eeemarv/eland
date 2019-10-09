@@ -21,17 +21,17 @@ class PasswordResetTokenController extends AbstractController
 
         if (!$data)
         {
-            $app['alert']->error('Het reset-token is niet meer geldig.');
-            $app['link']->redirect('password_reset', $app['pp_ary'], []);
+            $alert_service->error('Het reset-token is niet meer geldig.');
+            $link_render->redirect('password_reset', $app['pp_ary'], []);
         }
 
         $user_id = $data['user_id'];
 
         if ($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
+                $alert_service->error($error_token);
             }
             else if (!($app['password_strength']->get($password) < 50))
             {
@@ -40,7 +40,7 @@ class PasswordResetTokenController extends AbstractController
                     ['id' => $user_id]);
 
                 $app['user_cache']->clear($user_id, $app['pp_schema']);
-                $app['alert']->success('Paswoord opgeslagen.');
+                $alert_service->success('Paswoord opgeslagen.');
 
                 $app['queue.mail']->queue([
                     'schema'	=> $app['pp_schema'],
@@ -53,16 +53,16 @@ class PasswordResetTokenController extends AbstractController
                 ], 10000);
 
                 $data = $app['data_token']->del($token, 'password_reset', $app['pp_schema']);
-                $app['link']->redirect('login', $app['pp_ary'], []);
+                $link_render->redirect('login', $app['pp_ary'], []);
             }
             else
             {
-                $app['alert']->error('Het paswoord is te zwak.');
+                $alert_service->error('Het paswoord is te zwak.');
             }
         }
 
-        $app['heading']->add('Nieuw paswoord ingeven.');
-        $app['heading']->fa('key');
+        $heading_render->add('Nieuw paswoord ingeven.');
+        $heading_render->fa('key');
 
         $app['assets']->add([
             'generate_password.js',
@@ -91,15 +91,15 @@ class PasswordResetTokenController extends AbstractController
         $out .= '</div>';
 
         $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Bewaar paswoord" name="zend">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('login');
+        $menu_service->set('login');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

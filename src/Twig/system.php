@@ -2,21 +2,21 @@
 
 namespace App\Twig;
 
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class system
 {
-	protected $systems;
+	protected $systems_service;
 
 	public function __construct(
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
-		$this->systems = $systems;
+		$this->systems_service = $systems_service;
 	}
 
 	public function get(string $schema):string
 	{
-		return $this->systems->get_system($schema);
+		return $this->systems_service->get_system($schema);
 	}
 }

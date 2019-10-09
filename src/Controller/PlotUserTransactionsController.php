@@ -42,7 +42,7 @@ class PlotUserTransactionsController extends AbstractController
 
             if ($sys_schema)
             {
-                $name = $app['config']->get('systemname', $sys_schema);
+                $name = $config_service->get('systemname', $sys_schema);
             }
             else
             {
@@ -97,7 +97,7 @@ class PlotUserTransactionsController extends AbstractController
 
                 if ($app['pp_admin'])
                 {
-                    $user_link = $app['link']->context_path($app['r_users_show'],
+                    $user_link = $link_render->context_path($app['r_users_show'],
                         $app['pp_ary'], ['id' => $t['user_id']]);
                 }
 
@@ -121,7 +121,7 @@ class PlotUserTransactionsController extends AbstractController
                 if ($app['pp_admin']
                     || ($t['status'] === 1 || $t['status'] === 2))
                 {
-                    $user_link = $app['link']->context_path($app['r_users_show'],
+                    $user_link = $link_render->context_path($app['r_users_show'],
                         $app['pp_ary'], ['id' => $t['user_id']]);
                 }
             }
@@ -146,7 +146,7 @@ class PlotUserTransactionsController extends AbstractController
                 'amount' 	        => $amount,
                 'time'              => $time,
                 'fdate'             => $app['date_format']->get_from_unix($time, 'day', $app['pp_schema']),
-                'link' 		        => $app['link']->context_path('transactions_show',
+                'link' 		        => $link_render->context_path('transactions_show',
                     $app['pp_ary'], ['id' => $t['id']]),
                 'user'              => $tr_user,
             ];
@@ -157,7 +157,7 @@ class PlotUserTransactionsController extends AbstractController
         return $app->json([
             'user_id' 		=> $user_id,
             'ticks' 		=> $days === 365 ? 12 : 4,
-            'currency' 		=> $app['config']->get('currency', $app['pp_schema']),
+            'currency' 		=> $config_service->get('currency', $app['pp_schema']),
             'transactions' 	=> $transactions,
             'begin_balance' => $begin_balance,
             'begin_unix' 	=> $begin_unix,

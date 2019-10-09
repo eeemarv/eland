@@ -46,21 +46,21 @@ class CategoriesEditController extends AbstractController
 
             if (!$cat['name'])
             {
-                $app['alert']->error('Vul naam in!');
+                $alert_service->error('Vul naam in!');
             }
             else if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
             {
-                $app['alert']->error('Hoofdcategoriën kunnen
+                $alert_service->error('Hoofdcategoriën kunnen
                     geen berichten bevatten.');
             }
             else if ($cat['leafnote'] && $child_count_ary[$id])
             {
-                $app['alert']->error('Subcategoriën kunnen
+                $alert_service->error('Subcategoriën kunnen
                     geen categoriën bevatten.');
             }
-            else if ($token_error = $app['form_token']->get_error())
+            else if ($token_error = $form_token_service->get_error())
             {
-                $app['alert']->error($token_error);
+                $alert_service->error($token_error);
             }
             else
             {
@@ -78,15 +78,15 @@ class CategoriesEditController extends AbstractController
 
                 if ($db->update($app['pp_schema'] . '.categories', $cat, ['id' => $id]))
                 {
-                    $app['alert']->success('Categorie aangepast.');
+                    $alert_service->success('Categorie aangepast.');
                     $db->executeUpdate('update ' . $app['pp_schema'] . '.categories
                         set fullname = ? || \' - \' || name
                         where id_parent = ?', [$cat['name'], $id]);
 
-                    $app['link']->redirect('categories', $app['pp_ary'], []);
+                    $link_render->redirect('categories', $app['pp_ary'], []);
                 }
 
-                $app['alert']->error('Categorie niet aangepast.');
+                $alert_service->error('Categorie niet aangepast.');
             }
         }
 
@@ -106,9 +106,9 @@ class CategoriesEditController extends AbstractController
 
         $id_parent = $cat['id_parent'] ?? 0;
 
-        $app['heading']->add('Categorie aanpassen : ');
-        $app['heading']->add($cat['name']);
-        $app['heading']->fa('clone');
+        $heading_render->add('Categorie aanpassen : ');
+        $heading_render->add($cat['name']);
+        $heading_render->fa('clone');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -137,21 +137,21 @@ class CategoriesEditController extends AbstractController
         $out .= '</select>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('categories', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('categories', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" ';
         $out .= 'name="zend" class="btn btn-primary btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('categories');
+        $menu_service->set('categories');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

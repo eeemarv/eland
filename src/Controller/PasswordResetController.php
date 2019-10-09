@@ -15,9 +15,9 @@ class PasswordResetController extends AbstractController
         {
             $email = $request->request->get('email');
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
+                $alert_service->error($error_token);
             }
             else if($email)
             {
@@ -54,29 +54,29 @@ class PasswordResetController extends AbstractController
                             ],
                         ], 10000);
 
-                        $app['alert']->success('Een link om je paswoord te resetten werd
+                        $alert_service->success('Een link om je paswoord te resetten werd
                             naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
-                        $app['link']->redirect('login', $app['pp_ary'], []);
+                        $link_render->redirect('login', $app['pp_ary'], []);
                     }
                     else
                     {
-                        $app['alert']->error('E-Mail adres niet bekend');
+                        $alert_service->error('E-Mail adres niet bekend');
                     }
                 }
                 else
                 {
-                    $app['alert']->error('Het E-Mail adres is niet uniek in dit Systeem.');
+                    $alert_service->error('Het E-Mail adres is niet uniek in dit Systeem.');
                 }
             }
             else
             {
-                $app['alert']->error('Geef een E-mail adres op');
+                $alert_service->error('Geef een E-mail adres op');
             }
         }
 
-        $app['heading']->add('Paswoord vergeten');
-        $app['heading']->fa('key');
+        $heading_render->add('Paswoord vergeten');
+        $heading_render->fa('key');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -101,15 +101,15 @@ class PasswordResetController extends AbstractController
         $out .= '</div>';
 
         $out .= '<input type="submit" class="btn btn-info btn-lg" value="Reset paswoord" name="zend">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('login');
+        $menu_service->set('login');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

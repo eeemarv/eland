@@ -30,7 +30,7 @@ class TypeaheadPostcodesController extends AbstractController
 
         $crc = (string) crc32(json_encode($postcodes));
 
-        $app['typeahead']->set_thumbprint('postcodes', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('postcodes', $app['pp_ary'], [], $crc);
 
         return $app->json($postcodes);
     }

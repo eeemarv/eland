@@ -48,7 +48,7 @@ $app->extend('twig', function($twig, $app) {
 	$twig->addExtension(new twig\extension());
 	$twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader([
 		twig\config::class => function() use ($app){
-			return new twig\config($app['config']);
+			return new twig\config($config_service);
 		},
 		twig\date_format::class => function() use ($app){
 			return new twig\date_format($app['date_format']);
@@ -81,17 +81,17 @@ $app->extend('twig', function($twig, $app) {
 		},
 		twig\heading::class => function() use ($app){
 			return new twig\heading(
-				$app['heading']
+				$heading_render
 			);
 		},
 		twig\btn_nav::class => function() use ($app){
 			return new twig\btn_nav(
-				$app['btn_nav']
+				$btn_nav_render
 			);
 		},
 		twig\btn_top::class => function() use ($app){
 			return new twig\btn_top(
-				$app['btn_top']
+				$btn_top_render
 			);
 		},
 		twig\pagination::class => function() use ($app){
@@ -122,7 +122,7 @@ $app->extend('twig', function($twig, $app) {
 			return new twig\r_default($app['r_default']);
 		},
 		twig\menu::class => function() use ($app){
-			return new twig\menu($app['menu']);
+			return new twig\menu($menu_service);
 		},
 		twig\menu_nav_user::class => function() use ($app){
 			return new twig\menu_nav_user($app['menu_nav_user']);
@@ -212,7 +212,7 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
 
 	$app['assets']->add(['bootstrap', 'base.css']);
 
-	return $app->render('exception/general.html.twig', [
+	return $this->render('exception/general.html.twig', [
 		'code'		=> $code,
 		'message'	=> $e->getMessage(),
 	]);
@@ -223,7 +223,7 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
  */
 
 $app['new_user_treshold'] = function ($app):int{
-	$new_user_days = (int) $app['config']->get('newuserdays', $app['pp_schema']);
+	$new_user_days = (int) $config_service->get('newuserdays', $app['pp_schema']);
 	return time() -  ($new_user_days * 86400);
 };
 
@@ -282,7 +282,7 @@ $app['r_news'] = function ($app):string{
 
 $app['r_default'] = function ($app):string{
 
-	$route = $app['config']->get('default_landing_page', $app['pp_schema']);
+	$route = $config_service->get('default_landing_page', $app['pp_schema']);
 
 	switch ($route)
 	{
@@ -298,8 +298,8 @@ $app['r_default'] = function ($app):string{
 };
 
 $app['intersystem_en'] = function($app):bool{
-	return $app['config']->get('template_lets', $app['pp_schema'])
-		&& $app['config']->get('interlets_en', $app['pp_schema']);
+	return $config_service->get('template_lets', $app['pp_schema'])
+		&& $config_service->get('interlets_en', $app['pp_schema']);
 };
 
 $app['pp_role_short'] = function ($app):string{
@@ -510,16 +510,16 @@ $app['s_elas_guest'] = function ($app):bool{
 
 $app['welcome_msg'] = function (app $app):string{
 	$msg = '<strong>Welkom bij ';
-	$msg .= $app['config']->get('systemname', $app['pp_schema']);
+	$msg .= $config_service->get('systemname', $app['pp_schema']);
 	$msg .= '</strong><br>';
 	$msg .= 'Waardering bij ';
-	$msg .= $app['config']->get('systemname', $app['pp_schema']);
+	$msg .= $config_service->get('systemname', $app['pp_schema']);
 	$msg .= ' gebeurt met \'';
-	$msg .= $app['config']->get('currency', $app['pp_schema']);
+	$msg .= $config_service->get('currency', $app['pp_schema']);
 	$msg .= '\'. ';
-	$msg .= $app['config']->get('currencyratio', $app['pp_schema']);
+	$msg .= $config_service->get('currencyratio', $app['pp_schema']);
 	$msg .= ' ';
-	$msg .= $app['config']->get('currency', $app['pp_schema']);
+	$msg .= $config_service->get('currency', $app['pp_schema']);
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($app['s_elas_guest'])
@@ -585,7 +585,7 @@ $app['transaction'] = function($app){
 		$app['monolog'],
 		$app['user_cache'],
 		$app['autominlimit'],
-		$app['config'],
+		$config_service,
 		$app['account']
 	);
 };
@@ -593,7 +593,7 @@ $app['transaction'] = function($app){
 $app['mail_transaction'] = function($app){
 	return new service\mail_transaction(
 		$app['user_cache'],
-		$app['config'],
+		$config_service,
 		$app['mail_addr_system'],
 		$app['mail_addr_user'],
 		$app['queue.mail']
@@ -611,7 +611,7 @@ $app['systems'] = function ($app){
 	);
 };
 
-$app['xdb'] = function ($app){
+$xdb_service = function ($app){
 	return new service\xdb(
 		$app['db'],
 		$app['monolog']
@@ -635,14 +635,14 @@ $app['queue'] = function ($app){
 
 $app['date_format'] = function($app){
 	return new service\date_format(
-		$app['config']
+		$config_service
 	);
 };
 
 $app['mail_addr_system'] = function ($app){
 	return new service\mail_addr_system(
 		$app['monolog'],
-		$app['config']
+		$config_service
 	);
 };
 
@@ -658,7 +658,7 @@ $app['intersystems'] = function ($app){
 		$app['db'],
 		$app['predis'],
 		$app['systems'],
-		$app['config']
+		$config_service
 	);
 };
 
@@ -669,10 +669,10 @@ $app['distance'] = function ($app){
 	);
 };
 
-$app['config'] = function ($app){
+$config_service = function ($app){
 	return new service\config(
 		$app['db'],
-		$app['xdb'],
+		$xdb_service,
 		$app['predis']
 	);
 };
@@ -680,7 +680,7 @@ $app['config'] = function ($app){
 $app['user_cache'] = function ($app){
 	return new service\user_cache(
 		$app['db'],
-		$app['xdb'],
+		$xdb_service,
 		$app['predis']
 	);
 };
@@ -692,7 +692,7 @@ $app['token'] = function ($app){
 $app['email_validate'] = function ($app){
 	return new service\email_validate(
 		$app['cache'],
-		$app['xdb'],
+		$xdb_service,
 		$app['token'],
 		$app['monolog']
 	);
@@ -705,7 +705,7 @@ $app['queue.mail'] = function ($app){
 		$app['queue'],
 		$app['monolog'],
 		$app['twig'],
-		$app['config'],
+		$config_service,
 		$app['mail_addr_system'],
 		$app['email_validate'],
 		$app['systems']
@@ -749,14 +749,14 @@ $app['schema_task.cleanup_messages'] = function ($app){
 		$app['monolog'],
 		$app['schedule'],
 		$app['systems'],
-		$app['config']
+		$config_service
 	);
 };
 
 $app['schema_task.cleanup_news'] = function ($app){
 	return new schema_task\cleanup_news(
 		$app['db'],
-		$app['xdb'],
+		$xdb_service,
 		$app['monolog'],
 		$app['schedule'],
 		$app['systems']
@@ -799,7 +799,7 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 		$app['queue.mail'],
 		$app['schedule'],
 		$app['systems'],
-		$app['config'],
+		$config_service,
 		$app['user_cache'],
 		$app['mail_addr_user']
 	);
@@ -808,14 +808,14 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 $app['schema_task.saldo'] = function ($app){
 	return new schema_task\saldo(
 		$app['db'],
-		$app['xdb'],
+		$xdb_service,
 		$app['cache'],
 		$app['monolog'],
 		$app['queue.mail'],
 		$app['schedule'],
 		$app['systems'],
 		$app['intersystems'],
-		$app['config'],
+		$config_service,
 		$app['mail_addr_user'],
 		$app['account_str']
 	);
@@ -877,7 +877,7 @@ $app['assets'] = function($app){
 	);
 };
 
-$app['alert'] = function ($app){
+$alert_service = function ($app){
 	return new service\alert(
 		$app['request'],
 		$app['monolog'],
@@ -885,9 +885,9 @@ $app['alert'] = function ($app){
 		$app['pp_schema']);
 };
 
-$app['menu'] = function($app){
+$menu_service = function($app){
 	return new service\menu(
-		$app['config'],
+		$config_service,
 		$app['item_access'],
 		$app['pp_schema'],
 		$app['pp_system'],
@@ -915,8 +915,8 @@ $app['menu_nav_system'] = function($app){
 		$app['s_schema'],
 		$app['pp_schema'],
 		$app['intersystem_en'],
-		$app['menu'],
-		$app['config'],
+		$menu_service,
+		$config_service,
 		$app['user_cache'],
 		$app['s_elas_guest']
 	);
@@ -938,9 +938,9 @@ $app['password_strength'] = function (){
 $app['autominlimit'] = function ($app){
 	return new service\autominlimit(
 		$app['monolog'],
-		$app['xdb'],
+		$xdb_service,
 		$app['db'],
-		$app['config'],
+		$config_service,
 		$app['user_cache'],
 		$app['account']
 	);
@@ -953,11 +953,11 @@ $app['autominlimit'] = function ($app){
 $app['pagination'] = function ($app){
 	return new render\pagination(
 		$app['select'],
-		$app['link']
+		$link_render
 	);
 };
 
-$app['link'] = function ($app){
+$link_render = function ($app){
 	return new render\link(
 		$app['url_generator']
 	);
@@ -969,20 +969,20 @@ $app['account_str'] = function ($app) {
 
 $app['account'] = function ($app) {
 	return new render\account(
-		$app['link'],
+		$link_render,
 		$app['systems'],
 		$app['user_cache'],
 		$app['r_users_show']
 	);
 };
 
-$app['heading'] = function (){
+$heading_render = function (){
 	return new render\heading();
 };
 
-$app['btn_nav'] = function ($app){
+$btn_nav_render = function ($app){
 	return new render\btn_nav(
-		$app['link'],
+		$link_render,
 		$app['tag'],
 		$app['assets']
 	);
@@ -998,13 +998,13 @@ $app['select'] = function (){
 
 $app['tbl'] = function ($app){
 	return new render\tbl(
-		$app['link'],
+		$link_render,
 	);
 };
 
-$app['btn_top'] = function ($app){
+$btn_top_render = function ($app){
 	return new render\btn_top(
-		$app['link']
+		$link_render
 	);
 };
 
@@ -1018,7 +1018,7 @@ $app['elas_db_upgrade'] = function ($app){
 	return new service\elas_db_upgrade($app['db']);
 };
 
-$app['form_token'] = function ($app){
+$form_token_service = function ($app){
 	return new service\form_token(
 		$app['request'],
 		$app['predis'],
@@ -1030,7 +1030,7 @@ $app['captcha'] = function ($app){
 	return new service\captcha(
 		$app['request'],
 		$app['predis'],
-		$app['form_token']
+		$form_token_service
 	);
 };
 

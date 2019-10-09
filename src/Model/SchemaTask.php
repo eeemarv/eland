@@ -6,28 +6,28 @@ use App\Model\TaskInterface;
 use App\Model\Task;
 
 use App\Service\Schedule;
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 abstract class SchemaTask extends Task implements TaskInterface
 {
-	protected $systems;
+	protected $systems_service;
 	protected $schema;
 
 	public function __construct(
 		Schedule $schedule,
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
 		parent::__construct($schedule);
 
-		$this->systems = $systems;
+		$this->systems_service = $systems_service;
 	}
 
 	public function should_run():bool
 	{
 		$this->schedule->set_time();
 
-		foreach ($this->systems->get_schemas() as $schema)
+		foreach ($this->systems_service->get_schemas() as $schema)
 		{
 			$this->schema = $schema;
 

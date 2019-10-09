@@ -2,25 +2,25 @@
 
 namespace App\Twig;
 
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class base_url
 {
-	protected $systems;
+	protected $systems_service;
 	protected $protocol;
 
 	public function __construct(
-		Systems $systems,
+		SystemsService $systems_service,
 		string $protocol
 	)
 	{
-		$this->systems = $systems;
+		$this->systems_service = $systems_service;
 		$this->protocol = $protocol;
 	}
 
 	public function get(string $schema)
 	{
-		return $this->protocol . $this->systems->get_host($schema);
+		return $this->protocol . $this->systems_service->get_host($schema);
 	}
 
 	public function get_link_open(string $schema)

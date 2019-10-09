@@ -29,7 +29,7 @@ class CategoriesAddController extends AbstractController
                 $errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
@@ -52,15 +52,15 @@ class CategoriesAddController extends AbstractController
 
                 if ($db->insert($app['pp_schema'] . '.categories', $cat))
                 {
-                    $app['alert']->success('Categorie toegevoegd.');
-                    $app['link']->redirect('categories', $app['pp_ary'], []);
+                    $alert_service->success('Categorie toegevoegd.');
+                    $link_render->redirect('categories', $app['pp_ary'], []);
                 }
 
-                $app['alert']->error('Categorie niet toegevoegd.');
+                $alert_service->error('Categorie niet toegevoegd.');
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
         }
 
@@ -79,8 +79,8 @@ class CategoriesAddController extends AbstractController
 
         $id_parent = $cat['id_parent'] ?? 0;
 
-        $app['heading']->add('Categorie toevoegen');
-        $app['heading']->fa('clone');
+        $heading_render->add('Categorie toevoegen');
+        $heading_render->fa('clone');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -109,20 +109,20 @@ class CategoriesAddController extends AbstractController
         $out .= '</select>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('categories', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('categories', $app['pp_ary'], []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Toevoegen" ';
         $out .= 'class="btn btn-success btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('categories');
+        $menu_service->set('categories');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

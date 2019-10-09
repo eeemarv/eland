@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\Config;
+use App\Service\ConfigService;
 use Doctrine\DBAL\Connection as Db;
 
 class TransactionsController extends AbstractController
@@ -21,9 +21,9 @@ class TransactionsController extends AbstractController
             $filter['uid'] = (int) $filter['uid'];
         }
 
-        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
+        $intersystem_account_schemas = $this->intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
+        $s_inter_schema_check = array_merge($this->intersystems_service->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $s_owner = !$app['pp_guest']
@@ -125,7 +125,7 @@ class TransactionsController extends AbstractController
 
             if ($fdate_sql === '')
             {
-                $app['alert']->warning('De begindatum is fout geformateerd.');
+                $alert_service->warning('De begindatum is fout geformateerd.');
             }
             else
             {
@@ -141,7 +141,7 @@ class TransactionsController extends AbstractController
 
             if ($tdate_sql === '')
             {
-                $app['alert']->warning('De einddatum is fout geformateerd.');
+                $alert_service->warning('De einddatum is fout geformateerd.');
             }
             else
             {
@@ -222,7 +222,7 @@ class TransactionsController extends AbstractController
             'description' => array_merge($asc_preset_ary, [
                 'lbl' => 'Omschrijving']),
             'amount' => array_merge($asc_preset_ary, [
-                'lbl' => $app['config']->get('currency', $app['pp_schema'])]),
+                'lbl' => $config_service->get('currency', $app['pp_schema'])]),
             'cdate'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Tijdstip',
                 'data_hide' => 'phone'])
@@ -271,12 +271,12 @@ class TransactionsController extends AbstractController
                 {
                     if ($s_owner)
                     {
-                        $app['btn_top']->add('transactions_add', $app['pp_ary'],
+                        $btn_top_render->add('transactions_add', $app['pp_ary'],
                             ['add' => 1], 'Transactie toevoegen');
                     }
                     else
                     {
-                        $app['btn_top']->add_trans('transactions_add', $app['pp_ary'],
+                        $btn_top_render->add_trans('transactions_add', $app['pp_ary'],
                             ['tuid' => $user['id']],
                             'Transactie naar ' . $user_str);
                     }
@@ -284,14 +284,14 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $app['btn_top']->add('transactions_add', $app['pp_ary'],
+                $btn_top_render->add('transactions_add', $app['pp_ary'],
                     [], 'Transactie toevoegen');
             }
         }
 
         if ($app['pp_admin'])
         {
-            $app['btn_nav']->csv();
+            $btn_nav_render->csv();
         }
 
         $filtered = !isset($filter['uid']) && (
@@ -305,30 +305,30 @@ class TransactionsController extends AbstractController
         {
             if ($s_owner)
             {
-                $app['heading']->add('Mijn transacties');
+                $heading_render->add('Mijn transacties');
             }
             else
             {
-                $app['heading']->add('Transacties van ');
-                $app['heading']->add_raw($app['account']->link($filter['uid'], $app['pp_ary']));
+                $heading_render->add('Transacties van ');
+                $heading_render->add_raw($app['account']->link($filter['uid'], $app['pp_ary']));
             }
 
-            $app['heading']->add_sub_raw('Huidig saldo: <span class="label label-info">');
-            $app['heading']->add_sub((string) $user['saldo']);
-            $app['heading']->add_sub_raw('</span>&nbsp;');
-            $app['heading']->add_sub($app['config']->get('currency', $app['pp_schema']));
+            $heading_render->add_sub_raw('Huidig saldo: <span class="label label-info">');
+            $heading_render->add_sub((string) $user['saldo']);
+            $heading_render->add_sub_raw('</span>&nbsp;');
+            $heading_render->add_sub($config_service->get('currency', $app['pp_schema']));
         }
         else
         {
-            $app['heading']->add('Transacties');
-            $app['heading']->add_filtered($filtered);
+            $heading_render->add('Transacties');
+            $heading_render->add_filtered($filtered);
         }
 
-        $app['heading']->fa('exchange');
+        $heading_render->fa('exchange');
 
         $out = '';
 
-        $app['heading']->btn_filter();
+        $heading_render->btn_filter();
 
         $app['assets']->add(['datepicker']);
 
@@ -361,19 +361,19 @@ class TransactionsController extends AbstractController
         $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
         $out .= '<span class="fa fa-user"></span></span>';
 
-        $app['typeahead']->ini($app['pp_ary'])
+        $typeahead_service->ini($app['pp_ary'])
             ->add('accounts', ['status' => 'active']);
 
         if (!$app['pp_guest'])
         {
-            $app['typeahead']->add('accounts', ['status' => 'extern']);
+            $typeahead_service->add('accounts', ['status' => 'extern']);
         }
 
         if ($app['pp_admin'])
         {
-            $app['typeahead']->add('accounts', ['status' => 'inactive']);
-            $app['typeahead']->add('accounts', ['status' => 'ip']);
-            $app['typeahead']->add('accounts', ['status' => 'im']);
+            $typeahead_service->add('accounts', ['status' => 'inactive']);
+            $typeahead_service->add('accounts', ['status' => 'ip']);
+            $typeahead_service->add('accounts', ['status' => 'im']);
         }
 
         $out .= '<input type="text" class="form-control" ';
@@ -381,9 +381,9 @@ class TransactionsController extends AbstractController
 
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->str([
+        $out .= $typeahead_service->str([
             'filter'		=> 'accounts',
-            'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
+            'newuserdays'	=> $config_service->get('newuserdays', $app['pp_schema']),
         ]);
 
         $out .= '" ';
@@ -531,9 +531,9 @@ class TransactionsController extends AbstractController
             $out .= '</div></div>';
             $out .= $app['pagination']->get();
 
-            $app['menu']->set('transactions');
+            $menu_service->set('transactions');
 
-            return $app->render('base/navbar.html.twig', [
+            return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
                 'schema'    => $app['pp_schema'],
             ]);
@@ -573,7 +573,7 @@ class TransactionsController extends AbstractController
                     'asc'		=> $data['asc'],
                 ];
 
-                $out .= $app['link']->link_fa('transactions', $app['pp_ary'],
+                $out .= $link_render->link_fa('transactions', $app['pp_ary'],
                     $h_params, $data['lbl'], [], $data['fa']);
             }
 
@@ -598,7 +598,7 @@ class TransactionsController extends AbstractController
                 $out .= '>';
                 $out .= '<td>';
 
-                $out .= $app['link']->link_no_attr('transactions_show', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('transactions_show', $app['pp_ary'],
                     ['id' => $t['id']], $t['description']);
 
                 $out .= '</td>';
@@ -706,7 +706,7 @@ class TransactionsController extends AbstractController
 
                 $out .= '>';
                 $out .= '<td>';
-                $out .= $app['link']->link_no_attr('transactions_show', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('transactions_show', $app['pp_ary'],
                     ['id' => $t['id']], $t['description']);
                 $out .= '</td>';
 
@@ -799,20 +799,20 @@ class TransactionsController extends AbstractController
         $out .= '<strong>';
         $out .= $amount_sum;
         $out .= '</strong> ';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</li>';
-        $out .= self::get_valuation($app['config'], $app['pp_schema']);
+        $out .= self::get_valuation($config_service, $app['pp_schema']);
         $out .= '</ul>';
 
-        $app['menu']->set('transactions');
+        $menu_service->set('transactions');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
     }
 
-    static public function get_valuation(Config $config, string $schema):string
+    static public function get_valuation(ConfigService $config_service, string $schema):string
     {
         $out = '';
 

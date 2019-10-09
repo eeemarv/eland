@@ -55,7 +55,7 @@ $fn_before_system_auth = function(Request $request, app $app){
 	if (!isset($app['s_logins'][$app['s_schema']]))
 	{
 		$location = $request->getRequestUri();
-		$app['link']->redirect('login', ['system' => $app['pp_system']],
+		$link_render->redirect('login', ['system' => $app['pp_system']],
 			['location' => $location]);
 	}
 };
@@ -70,7 +70,7 @@ $fn_before_system_guest = function(Request $request, app $app){
 
 		if (!$app['s_system_self'])
 		{
-			$eland_intersystems = $app['intersystems']->get_eland($app['s_schema']);
+			$eland_intersystems = $this->intersystems_service->get_eland($app['s_schema']);
 
 			if (!isset($eland_intersystems[$app['pp_schema']]))
 			{
@@ -86,7 +86,7 @@ $fn_before_system_guest = function(Request $request, app $app){
 		if ($request->query->get('welcome', '')
 			&& (!$app['s_system_self'] || $app['s_elas_guest']))
 		{
-			$app['alert']->info($app['welcome_msg']);
+			$alert_service->info($app['welcome_msg']);
 		}
 	}
 };

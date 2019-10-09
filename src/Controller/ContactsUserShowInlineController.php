@@ -41,14 +41,14 @@ class ContactsUserShowInlineController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $out .= $app['link']->link('users_contacts_add_admin', $app['pp_ary'],
+            $out .= $link_render->link('users_contacts_add_admin', $app['pp_ary'],
                 ['user_id' => $uid], 'Toevoegen', [
                 'class'	=> 'btn btn-success',
             ], 'plus');
         }
         else if ($s_owner)
         {
-            $out .= $app['link']->link('users_contacts_add', $app['pp_ary'],
+            $out .= $link_render->link('users_contacts_add', $app['pp_ary'],
                 [], 'Toevoegen', [
                     'class'	=> 'btn btn-success',
                 ], 'plus');
@@ -99,12 +99,12 @@ class ContactsUserShowInlineController extends AbstractController
                 {
                     if ($app['pp_admin'])
                     {
-                        $tr_c = $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                        $tr_c = $link_render->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
                             ['contact_id' => $c['id'], 'user_id' => $uid], $c['value']);
                     }
                     else
                     {
-                        $tr_c = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
+                        $tr_c = $link_render->link_no_attr('users_contacts_edit', $app['pp_ary'],
                             ['contact_id' => $c['id']], $c['value']);
                     }
 
@@ -126,12 +126,12 @@ class ContactsUserShowInlineController extends AbstractController
                     {
                         if ($app['pp_admin'])
                         {
-                            $tr[] = $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                            $tr[] = $link_render->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
                                 ['contact_id' => $c['id'], 'user_id' => $uid], $c['comments']);
                         }
                         else
                         {
-                            $tr[] = $app['link']->link_no_attr('users_contacts_edit', $app['pp_ary'],
+                            $tr[] = $link_render->link_no_attr('users_contacts_edit', $app['pp_ary'],
                                 ['contact_id' => $c['id']], $c['comments']);
                         }
                     }
@@ -181,13 +181,13 @@ class ContactsUserShowInlineController extends AbstractController
 
                     if ($app['pp_admin'])
                     {
-                        $tr[] = $app['link']->link_fa('users_contacts_del_admin', $app['pp_ary'],
+                        $tr[] = $link_render->link_fa('users_contacts_del_admin', $app['pp_ary'],
                             ['contact_id' => $c['id'], 'user_id' => $uid], 'Verwijderen',
                             ['class' => 'btn btn-danger'], 'times');
                     }
                     else
                     {
-                        $tr[] = $app['link']->link_fa('users_contacts_del', $app['pp_ary'],
+                        $tr[] = $link_render->link_fa('users_contacts_del', $app['pp_ary'],
                             ['contact_id' => $c['id']], 'Verwijderen',
                             ['class' => 'btn btn-danger'], 'times');
                     }

@@ -2,42 +2,42 @@
 
 namespace App\Task;
 
-use App\Service\Cache;
+use App\Service\CacheService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\S3;
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class CleanupImagesTask
 {
 	const DAYS = 365;
 
-	protected $cache;
+	protected $cache_service;
 	protected $db;
 	protected $logger;
 	protected $s3;
-	protected $systems;
+	protected $systems_service;
 
 	public function __construct(
-		Cache $cache,
+		CacheService $cache_service,
 		Db $db,
 		LoggerInterface $logger,
 		S3 $s3,
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
-		$this->cache = $cache;
+		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->logger = $logger;
 		$this->s3 = $s3;
-		$this->systems = $systems;
+		$this->systems_service = $systems_service;
 	}
 
 	public function process():void
 	{
 		// $schema is not used, files of all schemas are scanned
 
-		$cached = $this->cache->get('cleanup_image_files_marker');
+		$cached = $this->cache_service->get('cleanup_image_files_marker');
 
 		$marker = $cached['marker'] ?? '0';
 
@@ -47,12 +47,12 @@ class CleanupImagesTask
 
 		if (!$object)
 		{
-			$this->cache->set('cleanup_image_files_marker', ['marker' => '0']);
+			$this->cache_service->set('cleanup_image_files_marker', ['marker' => '0']);
 			error_log('-- no image file found --- reset marker --');
 			return;
 		}
 
-		$this->cache->set('cleanup_image_files_marker',
+		$this->cache_service->set('cleanup_image_files_marker',
 			['marker' => $object['Key']]);
 
 		$object_time = strtotime($object['LastModified'] . ' UTC');
@@ -77,7 +77,7 @@ class CleanupImagesTask
 			return;
 		}
 
-		if (!$this->systems->get_system($sch))
+		if (!$this->systems_service->get_system($sch))
 		{
 			error_log('-> unknown schema. ' . $sch . ' (no delete)');
 			return;

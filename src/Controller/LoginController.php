@@ -51,7 +51,7 @@ class LoginController extends AbstractController
                 ]);
                 $app['session']->set('logins', $s_logins);
 
-                $app['alert']->success('OK - Gebruiker ingelogd als master.');
+                $alert_service->success('OK - Gebruiker ingelogd als master.');
 
                 if ($location)
                 {
@@ -64,7 +64,7 @@ class LoginController extends AbstractController
                     'role_short'    => 'a',
                 ];
 
-                $app['link']->redirect($app['r_default'], $pp_ary, []);
+                $link_render->redirect($app['r_default'], $pp_ary, []);
             }
 
             $user_id = false;
@@ -198,7 +198,7 @@ class LoginController extends AbstractController
             }
 
             if (!count($errors)
-                && $app['config']->get('maintenance', $app['pp_schema'])
+                && $config_service->get('maintenance', $app['pp_schema'])
                 && $user['accountrole'] != 'admin')
             {
                 $errors[] = 'De website is in onderhoud, probeer later opnieuw';
@@ -224,11 +224,11 @@ class LoginController extends AbstractController
 
                 $app['user_cache']->clear($user_id, $app['pp_schema']);
 
-                $app['xdb']->set('login', (string) $user_id, [
+                $xdb_service->set('login', (string) $user_id, [
                     'browser' => $agent, 'time' => time()
                 ], $app['s_schema']);
 
-                $app['alert']->success('Je bent ingelogd.');
+                $alert_service->success('Je bent ingelogd.');
 
                 if ($location)
                 {
@@ -241,20 +241,20 @@ class LoginController extends AbstractController
                     'role_short'    => rolecnst::SHORT[$user['accountrole']],
                 ];
 
-                $app['link']->redirect($app['r_default'], $pp_ary, []);
+                $link_render->redirect($app['r_default'], $pp_ary, []);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
-        if($app['config']->get('maintenance', $app['pp_schema']))
+        if($config_service->get('maintenance', $app['pp_schema']))
         {
-            $app['alert']->warning('De website is niet beschikbaar
+            $alert_service->warning('De website is niet beschikbaar
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen');
         }
 
-        $app['heading']->add('Login');
-        $app['heading']->fa('sign-in');
+        $heading_render->add('Login');
+        $heading_render->fa('sign-in');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -289,7 +289,7 @@ class LoginController extends AbstractController
         $out .= 'value="" required>';
         $out .= '</div>';
         $out .= '<p>';
-        $out .= $app['link']->link_no_attr('password_reset',
+        $out .= $link_render->link_no_attr('password_reset',
             $app['pp_ary'], [],
             'Klik hier als je je paswoord vergeten bent.');
         $out .= '</p>';
@@ -303,9 +303,9 @@ class LoginController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('login');
+        $menu_service->set('login');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

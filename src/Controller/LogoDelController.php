@@ -11,7 +11,7 @@ class LogoDelController extends AbstractController
 {
     public function logo_del(Request $request, app $app):Response
     {
-        $logo = $app['config']->get('logo', $app['pp_schema']);
+        $logo = $config_service->get('logo', $app['pp_schema']);
 
         if ($logo == '' || !$logo)
         {
@@ -20,14 +20,14 @@ class LogoDelController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $app['config']->set('logo', $app['pp_schema'], '');
-            $app['config']->set('logo_width', $app['pp_schema'], '0');
+            $config_service->set('logo', $app['pp_schema'], '');
+            $config_service->set('logo_width', $app['pp_schema'], '0');
 
-            $app['alert']->success('Logo verwijderd.');
-            $app['link']->redirect('config', $app['pp_ary'], ['tab' => 'logo']);
+            $alert_service->success('Logo verwijderd.');
+            $link_render->redirect('config', $app['pp_ary'], ['tab' => 'logo']);
         }
 
-        $app['heading']->add('Logo verwijderen?');
+        $heading_render->add('Logo verwijderen?');
 
         $out = '<div class="row">';
         $out .= '<div class="col-xs-6">';
@@ -45,7 +45,7 @@ class LogoDelController extends AbstractController
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= $app['link']->btn_cancel('config', $app['pp_ary'], ['tab' => 'logo']);
+        $out .= $link_render->btn_cancel('config', $app['pp_ary'], ['tab' => 'logo']);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
@@ -55,9 +55,9 @@ class LogoDelController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('config');
+        $menu_service->set('config');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

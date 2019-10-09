@@ -10,10 +10,10 @@ class ContactController extends AbstractController
 {
     public function contact(Request $request, app $app):Response
     {
-        if (!$app['config']->get('contact_form_en', $app['pp_schema']))
+        if (!$config_service->get('contact_form_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De contactpagina is niet ingeschakeld.');
-            $app['link']->redirect('login', $app['pp_ary'], []);
+            $alert_service->warning('De contactpagina is niet ingeschakeld.');
+            $link_render->redirect('login', $app['pp_ary'], []);
         }
 
         if($request->isMethod('POST'))
@@ -41,12 +41,12 @@ class ContactController extends AbstractController
                 $errors[] = 'Geef een bericht in.';
             }
 
-            if (!trim($app['config']->get('support', $app['pp_schema'])))
+            if (!trim($config_service->get('support', $app['pp_schema'])))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
@@ -79,15 +79,15 @@ class ContactController extends AbstractController
                     ],
                 ], 10000);
 
-                $app['alert']->success('Open je E-mailbox en klik
+                $alert_service->success('Open je E-mailbox en klik
                     de link aan die we je zonden om je
                     bericht te bevestigen.');
 
-                $app['link']->redirect('contact', $app['pp_ary'], []);
+                $link_render->redirect('contact', $app['pp_ary'], []);
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
         }
         else
@@ -98,27 +98,27 @@ class ContactController extends AbstractController
 
         $form_disabled = false;
 
-        if (!$app['config']->get('mailenabled', $app['pp_schema']))
+        if (!$config_service->get('mailenabled', $app['pp_schema']))
         {
-            $app['alert']->warning('E-mail functies zijn
+            $alert_service->warning('E-mail functies zijn
                 uitgeschakeld door de beheerder.
                 Je kan dit formulier niet gebruiken');
 
             $form_disabled = true;
         }
-        else if (!$app['config']->get('support', $app['pp_schema']))
+        else if (!$config_service->get('support', $app['pp_schema']))
         {
-            $app['alert']->warning('Er is geen support E-mail adres
+            $alert_service->warning('Er is geen support E-mail adres
                 ingesteld door de beheerder.
                 Je kan dit formulier niet gebruiken.');
 
             $form_disabled = true;
         }
 
-        $app['heading']->add('Contact');
-        $app['heading']->fa('comment-o');
+        $heading_render->add('Contact');
+        $heading_render->fa('comment-o');
 
-        $top_text = $app['config']->get('contact_form_top_text', $app['pp_schema']);
+        $top_text = $config_service->get('contact_form_top_text', $app['pp_schema']);
 
         $out = $top_text ?: '';
 
@@ -162,14 +162,14 @@ class ContactController extends AbstractController
         $out .= '<input type="submit" name="zend" ';
         $out .= $form_disabled ? 'disabled ' : '';
         $out .= 'value="Verzenden" class="btn btn-info btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $app['config']->get('contact_form_bottom_text', $app['pp_schema']);
+        $bottom_text = $config_service->get('contact_form_bottom_text', $app['pp_schema']);
 
         if ($bottom_text)
         {
@@ -183,9 +183,9 @@ class ContactController extends AbstractController
         $out .= 'aanvragen met je E-mail adres ';
         $out .= 'vanuit de login-pagina!</i></p>';
 
-        $app['menu']->set('contact');
+        $menu_service->set('contact');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

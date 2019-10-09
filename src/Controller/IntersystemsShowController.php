@@ -21,8 +21,8 @@ class IntersystemsShowController extends AbstractController
 
         if (!$group)
         {
-            $app['alert']->error('Systeem niet gevonden.');
-            $app['link']->redirect('intersystems', $app['pp_ary'], []);
+            $alert_service->error('Systeem niet gevonden.');
+            $link_render->redirect('intersystems', $app['pp_ary'], []);
         }
 
         if ($group['localletscode'] === '')
@@ -36,20 +36,20 @@ class IntersystemsShowController extends AbstractController
                 where letscode = ?', [$group['localletscode']]);
         }
 
-        $app['btn_top']->edit('intersystems_edit', $app['pp_ary'],
+        $btn_top_render->edit('intersystems_edit', $app['pp_ary'],
             ['id' => $id], 'Intersysteem aanpassen');
 
-        $app['btn_top']->del('intersystems_del', $app['pp_ary'],
+        $btn_top_render->del('intersystems_del', $app['pp_ary'],
             ['id' => $id], 'Intersysteem verwijderen');
 
-        $app['btn_nav']->nav_list('intersystems', $app['pp_ary'],
+        $btn_nav_render->nav_list('intersystems', $app['pp_ary'],
             [], 'Lijst', 'share-alt');
 
         $app['assets']->add(['elas_soap_status.js']);
 
-        $app['heading']->add('InterSysteem: ');
-        $app['heading']->add($group['groupname']);
-        $app['heading']->fa('share-alt');
+        $heading_render->add('InterSysteem: ');
+        $heading_render->add($group['groupname']);
+        $heading_render->fa('share-alt');
 
         $out = '<div class="panel panel-default printview">';
         $out .= '<div class="panel-heading">';
@@ -63,14 +63,14 @@ class IntersystemsShowController extends AbstractController
         {
             $out .= '<dd><span class="btn btn-info">eLAND server</span>';
 
-            if (!$app['config']->get('template_lets', $group_schema))
+            if (!$config_service->get('template_lets', $group_schema))
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
                 $out .= 'Niet geconfigureerd als Tijdsbank</span>';
             }
 
-            if (!$app['config']->get('interlets_en', $group_schema))
+            if (!$config_service->get('interlets_en', $group_schema))
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
@@ -84,7 +84,7 @@ class IntersystemsShowController extends AbstractController
         {
             $out .= '<dd><i><span data-elas-soap-status="';
 
-            $out .= htmlspecialchars($app['link']->context_path('elas_soap_status',
+            $out .= htmlspecialchars($link_render->context_path('elas_soap_status',
                 $app['pp_ary'], ['group_id' => $group['id']]));
 
             $out .= '">';
@@ -113,7 +113,7 @@ class IntersystemsShowController extends AbstractController
 
         if ($user)
         {
-            $out .= $app['link']->link('users_show_admin', $app['pp_ary'],
+            $out .= $link_render->link('users_show_admin', $app['pp_ary'],
                 ['id' => $user['id']], $group['localletscode'],
                 [
                     'class' => 'btn btn-default',
@@ -124,7 +124,7 @@ class IntersystemsShowController extends AbstractController
             {
                 $out .= ' ';
 
-                $out .= $app['link']->link_fa('users_edit_admin', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_edit_admin', $app['pp_ary'],
                     ['id' => $user['id']], 'Status!',
                     [
                         'class'	=> 'btn btn-danger',
@@ -135,7 +135,7 @@ class IntersystemsShowController extends AbstractController
             if ($user['accountrole'] != 'interlets')
             {
                 $out .= ' ';
-                $out .= $app['link']->link_fa('users_edit_admin', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_edit_admin', $app['pp_ary'],
                     ['id' => $user['id']], 'Rol!',
                     [
                         'class'	=> 'btn btn-danger',
@@ -177,9 +177,9 @@ class IntersystemsShowController extends AbstractController
 
         $out .= intersystems::get_schemas_groups($app);
 
-        $app['menu']->set('intersystems');
+        $menu_service->set('intersystems');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

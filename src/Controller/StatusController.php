@@ -155,8 +155,8 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $app['heading']->add('Status');
-        $app['heading']->fa('exclamation-triangle');
+        $heading_render->add('Status');
+        $heading_render->fa('exclamation-triangle');
 
         $out = '';
 
@@ -315,13 +315,13 @@ class StatusController extends AbstractController
                     $out .= '<li>';
                     $out .= $ary['value'] .  ' ';
 
-                    $out .= $app['link']->link('contacts', $app['pp_ary'],
+                    $out .= $link_render->link('contacts', $app['pp_ary'],
                         ['edit' => $ary['id']], 'Aanpassen',
                         ['class' => 'btn btn-default']);
 
                     $out .= ' ';
 
-                    $out .= $app['link']->link('contacts', $app['pp_ary'],
+                    $out .= $link_render->link('contacts', $app['pp_ary'],
                         ['del' => $ary['id']], 'Verwijderen',
                         ['class' => 'btn btn-danger btn-xs']);
                     $out .= ' : ';
@@ -422,7 +422,7 @@ class StatusController extends AbstractController
 
                 $out .= '<ul>';
 
-                $currency = $app['config']->get('currency', $app['pp_schema']);
+                $currency = $config_service->get('currency', $app['pp_schema']);
 
                 foreach ($no_msgs_users as $u)
                 {
@@ -452,9 +452,9 @@ class StatusController extends AbstractController
             $out .= '</div>';
         }
 
-        $app['menu']->set('status');
+        $menu_service->set('status');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

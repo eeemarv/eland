@@ -11,7 +11,7 @@ class LogoutController extends AbstractController
     {
         foreach($app['s_logins'] as $sch => $uid)
         {
-            $app['xdb']->set('logout', (string) $uid, ['time' => time()], $sch);
+            $xdb_service->set('logout', (string) $uid, ['time' => time()], $sch);
         }
 
         $app['session']->invalidate();
@@ -19,9 +19,9 @@ class LogoutController extends AbstractController
         $app['monolog']->info('user logged out',
             ['schema' => $app['pp_schema']]);
 
-        $app['alert']->success('Je bent uitgelogd');
+        $alert_service->success('Je bent uitgelogd');
 
-        $app['link']->redirect('login', ['system' => $app['pp_system']], []);
+        $link_render->redirect('login', ['system' => $app['pp_system']], []);
 
         return new Response('');
     }

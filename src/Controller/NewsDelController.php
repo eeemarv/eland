@@ -13,32 +13,32 @@ class NewsDelController extends AbstractController
     {
         if ($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
-                $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
+                $alert_service->error($error_token);
+                $link_render->redirect($app['r_news'], $app['pp_ary'], []);
             }
 
             if($db->delete($app['pp_schema'] . '.news', ['id' => $id]))
             {
-                $app['xdb']->del('news_access', (string) $id, $app['pp_schema']);
+                $xdb_service->del('news_access', (string) $id, $app['pp_schema']);
 
-                $app['alert']->success('Nieuwsbericht verwijderd.');
-                $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
+                $alert_service->success('Nieuwsbericht verwijderd.');
+                $link_render->redirect($app['r_news'], $app['pp_ary'], []);
             }
 
-            $app['alert']->error('Nieuwsbericht niet verwijderd.');
+            $alert_service->error('Nieuwsbericht niet verwijderd.');
         }
 
         $news = $db->fetchAssoc('select n.*
             from ' . $app['pp_schema'] . '.news n
             where n.id = ?', [$id]);
 
-        $news_access = $app['xdb']->get('news_access', (string) $id,
+        $news_access = $xdb_service->get('news_access', (string) $id,
             $app['pp_schema'])['data']['access'];
 
-        $app['heading']->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
-        $app['heading']->fa('calendar-o');
+        $heading_render->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
+        $heading_render->fa('calendar-o');
 
         $out = '<div class="panel panel-default printview">';
         $out .= '<div class="panel-body';
@@ -113,19 +113,19 @@ class NewsDelController extends AbstractController
         $out .= 'moet verwijderd worden?</strong></p>';
 
         $out .= '<form method="post">';
-        $out .= $app['link']->btn_cancel('news_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('news_show', $app['pp_ary'], ['id' => $id]);
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
         $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('news');
+        $menu_service->set('news');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

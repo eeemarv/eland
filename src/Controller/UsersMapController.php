@@ -77,7 +77,7 @@ class UsersMapController extends AbstractController
 
             if (isset($my_adr) && $my_adr)
             {
-                $ref_geo = $app['cache']->get('geo_' . $my_adr);
+                $ref_geo = $this->cache_service->get('geo_' . $my_adr);
             }
         }
 
@@ -93,12 +93,12 @@ class UsersMapController extends AbstractController
 
                 if ($app['item_access']->is_visible_flag_public($adr['flag_public']))
                 {
-                    $geo = $app['cache']->get('geo_' . $adr['value']);
+                    $geo = $this->cache_service->get('geo_' . $adr['value']);
 
                     if ($geo)
                     {
                         $data_users[$user['id']] = [
-                            'link'      => $app['link']->context_url(
+                            'link'      => $link_render->context_url(
                                 $app['r_users_show'],
                                 $app['pp_ary'],
                                 ['id' => $user['id']]),
@@ -145,12 +145,12 @@ class UsersMapController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['btn_top']->add('users_add', $app['pp_ary'],
+            $btn_top_render->add('users_add', $app['pp_ary'],
                 [], 'Gebruiker toevoegen');
         }
 
-        users_list::btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'users_map');
-        users_list::heading($app['heading']);
+        users_list::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_map');
+        users_list::heading($heading_render);
 
         $data_map = json_encode([
             'users' => $data_users,
@@ -244,7 +244,7 @@ class UsersMapController extends AbstractController
                     {
                         $out .= '<li>';
 
-                        $out .= $app['link']->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                        $out .= $link_render->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
                             ['contact_id' => $not_geocoded['id'], 'user_id' => $not_geocoded['user_id']],
                             $not_geocoded['value']);
 
@@ -282,9 +282,9 @@ class UsersMapController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

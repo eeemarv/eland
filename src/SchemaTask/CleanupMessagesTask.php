@@ -7,33 +7,33 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
 use App\Service\Schedule;
-use App\Service\Systems;
-use App\Service\Config;
+use App\Service\SystemsService;
+use App\Service\ConfigService;
 
 class CleanupMessagesTask extends SchemaTask
 {
 	protected $db;
 	protected $logger;
-	protected $config;
+	protected $config_service;
 
 	public function __construct(
 		Db $db,
 		LoggerInterface $logger,
 		Schedule $schedule,
-		Systems $systems,
-		Config $config
+		SystemsService $systems_service,
+		ConfigService $config_service
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->logger = $logger;
-		$this->config = $config;
+		$this->config_service = $config_service;
 	}
 
 	function process():void
 	{
 		$msgs = '';
-		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config->get('msgexpcleanupdays', $this->schema) * 86400);
+		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('msgexpcleanupdays', $this->schema) * 86400);
 
 		$st = $this->db->prepare('select id, content, id_category, msg_type
 			from ' . $this->schema . '.messages

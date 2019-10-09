@@ -11,10 +11,10 @@ class ForumAddTopicController extends AbstractController
 {
     public function forum_add_topic(Request $request, app $app):Response
     {
-        if (!$app['config']->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De forum pagina is niet ingeschakeld.');
-            $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
+            $alert_service->warning('De forum pagina is niet ingeschakeld.');
+            $link_render->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
@@ -55,24 +55,24 @@ class ForumAddTopicController extends AbstractController
                 $topic['access'] = AccessCnst::TO_XDB[$access];
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
             if (count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
             else
             {
                 $topic_id = substr(sha1(random_bytes(16)), 0, 24);
 
-                $app['xdb']->set('forum', $topic_id, $topic, $app['pp_schema']);
+                $xdb_service->set('forum', $topic_id, $topic, $app['pp_schema']);
 
-                $app['alert']->success('Onderwerp toegevoegd.');
+                $alert_service->success('Onderwerp toegevoegd.');
 
-                $app['link']->redirect('forum_topic', $app['pp_ary'],
+                $link_render->redirect('forum_topic', $app['pp_ary'],
                     ['topic_id' => $topic_id]);
             }
         }
@@ -87,8 +87,8 @@ class ForumAddTopicController extends AbstractController
 
         $app['assets']->add(['summernote', 'summernote_forum_post.js']);
 
-        $app['heading']->add('Nieuw forum onderwerp');
-        $app['heading']->fa('comments-o');
+        $heading_render->add('Nieuw forum onderwerp');
+        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -114,22 +114,22 @@ class ForumAddTopicController extends AbstractController
 
         $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
 
-        $out .= $app['link']->btn_cancel('forum', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('forum', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Onderwerp toevoegen" ';
         $out .= 'class="btn btn-success btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('forum');
+        $menu_service->set('forum');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

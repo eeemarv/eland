@@ -45,7 +45,7 @@ class UsersDelAdminController extends AbstractController
         {
             $errors = [];
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -60,7 +60,7 @@ class UsersDelAdminController extends AbstractController
 
             if (count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
             else
             {
@@ -68,15 +68,15 @@ class UsersDelAdminController extends AbstractController
 
                 $status = statuscnst::THUMBPINT_ARY[$user['status']];
 
-                $app['link']->redirect($app['r_users'], $app['pp_ary'],
+                $link_render->redirect($app['r_users'], $app['pp_ary'],
                     ['status' => $status]);
             }
         }
 
-        $app['heading']->add('Gebruiker ');
-        $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
-        $app['heading']->add(' verwijderen?');
-        $app['heading']->fa('user');
+        $heading_render->add('Gebruiker ');
+        $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
+        $heading_render->add(' verwijderen?');
+        $heading_render->fa('user');
 
         $out = '<p><font color="red">Alle Gegevens, Vraag en aanbod, ';
         $out .= 'Contacten en Afbeeldingen van ';
@@ -97,22 +97,22 @@ class UsersDelAdminController extends AbstractController
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel($app['r_users_show'],
+        $out .= $link_render->btn_cancel($app['r_users_show'],
             $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
         $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -234,7 +234,7 @@ class UsersDelAdminController extends AbstractController
 
         //delete fullname access record.
 
-        $app['xdb']->del('user_fullname_access', (string) $id, $app['pp_schema']);
+        $xdb_service->del('user_fullname_access', (string) $id, $app['pp_schema']);
 
         //finally, the user
 
@@ -242,11 +242,11 @@ class UsersDelAdminController extends AbstractController
             ['id' => $id]);
         $app['predis']->expire($app['pp_schema'] . '_user_' . $id, 0);
 
-        $app['alert']->success('De gebruiker is verwijderd.');
+        $alert_service->success('De gebruiker is verwijderd.');
 
         $thumbprint_status = statuscnst::THUMBPINT_ARY[$user['status']];
         $app['thumbprint_accounts']->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
 
-        $app['intersystems']->clear_cache($app['pp_schema']);
+        $this->intersystems_service->clear_cache($app['pp_schema']);
     }
 }

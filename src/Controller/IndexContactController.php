@@ -32,7 +32,7 @@ class IndexContactController extends AbstractController
                 $errors[] = 'De anti-spam verifiactiecode is niet juist ingevuld.';
             }
 
-            $form_error = $app['form_token']->get_error();
+            $form_error = $form_token_service->get_error();
 
             if ($form_error)
             {
@@ -53,7 +53,7 @@ class IndexContactController extends AbstractController
             {
                 $text = $message . "\r\n\r\n\r\n" . 'browser: ';
                 $text .= $app['request']->headers->get('User-Agent') . "\n";
-                $text .= 'form_token: ' . $app['form_token']->get();
+                $text .= 'form_token: ' . $form_token_service->get();
 
                 $enc = getenv('SMTP_ENC') ?: 'tls';
                 $transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
@@ -71,7 +71,7 @@ class IndexContactController extends AbstractController
 
                 $mailer->send($message);
 
-                $app['link']->redirect('index_contact', [], ['form_ok' => '1']);
+                $link_render->redirect('index_contact', [], ['form_ok' => '1']);
             }
 
             foreach ($errors as $error)
@@ -83,13 +83,13 @@ class IndexContactController extends AbstractController
             }
         }
 
-        $app['menu']->set('index_contact');
+        $menu_service->set('index_contact');
 
-        return $app->render('index/contact.html.twig', [
+        return $this->render('index/contact.html.twig', [
             'form_ok'       => $form_ok !== '',
             'mail'          => $mail,
             'message'       => $message,
-            'form_token'    => $app['form_token']->get(),
+            'form_token'    => $form_token_service->get(),
             'captcha'       => $app['captcha']->get_form_field(),
         ]);
     }

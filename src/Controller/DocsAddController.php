@@ -41,14 +41,14 @@ class DocsAddController extends AbstractController
                 $errors[] = 'Vul een zichtbaarheid in';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
             if (count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
             else
             {
@@ -61,7 +61,7 @@ class DocsAddController extends AbstractController
                 if ($error)
                 {
                     $app['monolog']->error('doc upload fail: ' . $error);
-                    $app['alert']->error('Bestand opladen mislukt.',
+                    $alert_service->error('Bestand opladen mislukt.',
                         ['schema' => $app['pp_schema']]);
                 }
                 else
@@ -77,7 +77,7 @@ class DocsAddController extends AbstractController
 
                     if (strlen($map_name))
                     {
-                        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+                        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
                             'agg_type' => 'doc',
                             'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -93,9 +93,9 @@ class DocsAddController extends AbstractController
 
                             $map = ['map_name' => $map_name];
 
-                            $app['xdb']->set('doc', $map_id, $map, $app['pp_schema']);
+                            $xdb_service->set('doc', $map_id, $map, $app['pp_schema']);
 
-                            $app['typeahead']->delete_thumbprint('doc_map_names',
+                            $typeahead_service->delete_thumbprint('doc_map_names',
                                 $app['pp_ary'], []);
                         }
 
@@ -109,25 +109,25 @@ class DocsAddController extends AbstractController
                         $doc['name'] = $name;
                     }
 
-                    $app['xdb']->set('doc', $doc_id, $doc, $app['pp_schema']);
+                    $xdb_service->set('doc', $doc_id, $doc, $app['pp_schema']);
 
 
-                    $app['alert']->success('Het bestand is opgeladen.');
+                    $alert_service->success('Het bestand is opgeladen.');
 
                     if (isset($doc['map_id']))
                     {
-                        $app['link']->redirect('docs_map', $app['pp_ary'],
+                        $link_render->redirect('docs_map', $app['pp_ary'],
                             ['map_id' => $doc['map_id']]);
                     }
 
-                    $app['link']->redirect('docs', $app['pp_ary'], []);
+                    $link_render->redirect('docs', $app['pp_ary'], []);
                 }
             }
         }
 
         if ($map_id)
         {
-            $row = $app['xdb']->get('doc', $map_id, $app['pp_schema']);
+            $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
 
             if ($row)
             {
@@ -135,8 +135,8 @@ class DocsAddController extends AbstractController
             }
         }
 
-        $app['heading']->add('Nieuw document opladen');
-        $app['heading']->fa('files-o');
+        $heading_render->add('Nieuw document opladen');
+        $heading_render->fa('files-o');
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -180,7 +180,7 @@ class DocsAddController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('doc_map_names', [])
             ->str();
 
@@ -192,27 +192,27 @@ class DocsAddController extends AbstractController
 
         if ($map_id)
         {
-            $out .= $app['link']->btn_cancel('docs_map', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('docs_map', $app['pp_ary'],
                 ['map_id' => $map_id]);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('docs', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('docs', $app['pp_ary'], []);
         }
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Document opladen" class="btn btn-success btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('docs');
+        $menu_service->set('docs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

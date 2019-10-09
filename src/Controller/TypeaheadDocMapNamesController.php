@@ -33,7 +33,7 @@ class TypeaheadDocMapNamesController extends AbstractController
 
         $crc = (string) crc32(json_encode($map_names));
 
-        $app['typeahead']->set_thumbprint('doc_map_names', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('doc_map_names', $app['pp_ary'], [], $crc);
 
         return $app->json($map_names);
     }

@@ -4,25 +4,25 @@ namespace App\SchemaTask;
 
 use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\UserCache;
+use App\Service\UserCacheService;
 use App\Service\Schedule;
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class SyncUserCacheTask extends SchemaTask
 {
 	protected $db;
-	protected $user_cache;
+	protected $user_cache_service;
 
 	public function __construct(
 		Db $db,
-		UserCache $user_cache,
+		UserCacheService $user_cache_service,
 		Schedule $schedule,
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
-		$this->user_cache = $user_cache;
+		$this->user_cache_service = $user_cache_service;
 	}
 
 	function process():void

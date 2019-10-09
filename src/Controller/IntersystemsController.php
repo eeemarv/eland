@@ -61,11 +61,11 @@ class IntersystemsController extends AbstractController
             ];
         }
 
-        $app['btn_top']->add('intersystems_add', $app['pp_ary'],
+        $btn_top_render->add('intersystems_add', $app['pp_ary'],
             [], 'InterSysteem toevoegen');
 
-        $app['heading']->add('eLAS/eLAND InterSysteem');
-        $app['heading']->fa('share-alt');
+        $heading_render->add('eLAS/eLAND InterSysteem');
+        $heading_render->fa('share-alt');
 
         $out = '<p>';
         $out .= 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
@@ -104,7 +104,7 @@ class IntersystemsController extends AbstractController
 
                     if ($user)
                     {
-                        $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
+                        $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
                             ['id' => $user['id']], $sys['localletscode'],
                             [
                                 'class'	=> 'btn btn-default',
@@ -114,7 +114,7 @@ class IntersystemsController extends AbstractController
                         if (!in_array($user['status'], [1, 2, 7]))
                         {
                             $out .= ' ';
-                            $out .= $app['link']->link_fa($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link_fa($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $user['id']], 'Status!',
                                 [
                                     'class'	=> 'btn btn-danger',
@@ -125,7 +125,7 @@ class IntersystemsController extends AbstractController
                         if ($user['accountrole'] != 'interlets')
                         {
                             $out .= ' ';
-                            $out .= $app['link']->link_fa($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link_fa($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $user['id']], 'Rol!',
                                 [
                                     'class'	=> 'btn btn-danger',
@@ -149,7 +149,7 @@ class IntersystemsController extends AbstractController
 
                 $out .= '<td>';
 
-                $out .= $app['link']->link_no_attr('intersystems_show', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('intersystems_show', $app['pp_ary'],
                     ['id' => $sys['id']], $sys['groupname']);
 
                 if (isset($sys['eland']))
@@ -157,7 +157,7 @@ class IntersystemsController extends AbstractController
                     $out .= ' <span class="btn btn-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
                     $out .= 'eLAND</span>';
 
-                    if (!$app['config']->get('template_lets', $sys['schema']))
+                    if (!$config_service->get('template_lets', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdsbank.">';
@@ -165,7 +165,7 @@ class IntersystemsController extends AbstractController
                         $out .= 'geen Tijdsbank</span>';
                     }
 
-                    if (!$app['config']->get('interlets_en', $sys['schema']))
+                    if (!$config_service->get('interlets_en', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="InterSysteem-mogelijkheid is niet ';
@@ -201,9 +201,9 @@ class IntersystemsController extends AbstractController
 
         $out .= self::get_schemas_groups($app, $db);
 
-        $app['menu']->set('intersystems');
+        $menu_service->set('intersystems');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -352,8 +352,8 @@ class IntersystemsController extends AbstractController
 
             $out .= '<tr';
 
-            if (!$app['config']->get('template_lets', $rem_schema)
-                || !$app['config']->get('interlets_en', $rem_schema))
+            if (!$config_service->get('template_lets', $rem_schema)
+                || !$config_service->get('interlets_en', $rem_schema))
             {
                 $out .= ' class="danger"';
 
@@ -363,9 +363,9 @@ class IntersystemsController extends AbstractController
             $out .= '>';
 
             $out .= '<td>';
-            $out .= $app['config']->get('systemname', $rem_schema);
+            $out .= $config_service->get('systemname', $rem_schema);
 
-            if (!$app['config']->get('template_lets', $rem_schema))
+            if (!$config_service->get('template_lets', $rem_schema))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="Dit Systeem is niet ';
@@ -374,7 +374,7 @@ class IntersystemsController extends AbstractController
                 $out .= '</i></span>';
             }
 
-            if (!$app['config']->get('interlets_en', $rem_schema))
+            if (!$config_service->get('interlets_en', $rem_schema))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="interSysteem is niet ';
@@ -408,16 +408,16 @@ class IntersystemsController extends AbstractController
                 {
                     $loc_group = $loc_group_ary[$rem_origin];
 
-                    $out .= $app['link']->link('intersystems_show', $app['pp_ary'],
+                    $out .= $link_render->link('intersystems_show', $app['pp_ary'],
                         ['id' => $loc_group['id']], 'OK',
                         ['class'	=> 'btn btn-success']);
                 }
                 else
                 {
-                    if ($app['config']->get('template_lets', $rem_schema)
-                        && $app['config']->get('interlets_en', $rem_schema))
+                    if ($config_service->get('template_lets', $rem_schema)
+                        && $config_service->get('interlets_en', $rem_schema))
                     {
-                        $out .= $app['link']->link('intersystems_add', $app['pp_ary'],
+                        $out .= $link_render->link('intersystems_add', $app['pp_ary'],
                             ['add_schema' => $rem_schema], 'Creëer',
                             ['class' => 'btn btn-default']);
                     }
@@ -438,7 +438,7 @@ class IntersystemsController extends AbstractController
                     {
                         if ($loc_acc['accountrole'] != 'interlets')
                         {
-                            $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $loc_acc['id']], 'rol',
                                 [
                                     'class'	=> 'btn btn-warning',
@@ -447,7 +447,7 @@ class IntersystemsController extends AbstractController
                         }
                         else if (!in_array($loc_acc['status'], [1, 2, 7]))
                         {
-                            $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
                                 ['edit' => $loc_acc['id']], 'status',
                                 [
                                     'class'	=> 'btn btn-warning',
@@ -456,14 +456,14 @@ class IntersystemsController extends AbstractController
                         }
                         else
                         {
-                            $out .= $app['link']->link($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
                                 ['id' => $loc_acc['id']], 'OK',
                                 ['class' => 'btn btn-success']);
                         }
                     }
                     else
                     {
-                        $out .= $app['link']->link('users_add', $app['pp_ary'],
+                        $out .= $link_render->link('users_add', $app['pp_ary'],
                             ['intersystem_code' => $loc_group['localletscode']],
                             'Creëer',
                             [

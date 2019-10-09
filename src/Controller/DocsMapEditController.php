@@ -10,7 +10,7 @@ class DocsMapEditController extends AbstractController
 {
     public function docs_map_edit(Request $request, app $app, string $map_id):Response
     {
-        $row = $app['xdb']->get('doc', $map_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -19,17 +19,17 @@ class DocsMapEditController extends AbstractController
 
         if (!$map_name)
         {
-            $app['alert']->error('Map niet gevonden.');
-            $app['link']->redirect('docs', $app['pp_ary'], []);
+            $alert_service->error('Map niet gevonden.');
+            $link_render->redirect('docs', $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
+                $alert_service->error($error_token);
 
-                $app['link']->redirect('docs_map', $app['pp_ary'],
+                $link_render->redirect('docs_map', $app['pp_ary'],
                     ['map_id' => $map_id]);
             }
 
@@ -43,7 +43,7 @@ class DocsMapEditController extends AbstractController
             if (!count($errors))
             {
 
-                $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+                $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
                     'agg_type' => 'doc',
                     'eland_id' => ['<>' => $map_id],
                     'data->>\'map_name\'' => $posted_map_name]);
@@ -56,24 +56,24 @@ class DocsMapEditController extends AbstractController
 
             if (!count($errors))
             {
-                $app['xdb']->set('doc', $map_id, [
+                $xdb_service->set('doc', $map_id, [
                         'map_name' => $posted_map_name
                     ], $app['pp_schema']);
 
-                $app['alert']->success('Map naam aangepast.');
+                $alert_service->success('Map naam aangepast.');
 
-                $app['typeahead']->delete_thumbprint('doc_map_names',
+                $typeahead_service->delete_thumbprint('doc_map_names',
                     $app['pp_ary'], []);
 
-                $app['link']->redirect('docs_map', $app['pp_ary'],
+                $link_render->redirect('docs_map', $app['pp_ary'],
                     ['map_id' => $map_id]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
-        $app['heading']->add('Map aanpassen: ');
-        $app['heading']->add_raw($app['link']->link_no_attr('docs_map', $app['pp_ary'],
+        $heading_render->add('Map aanpassen: ');
+        $heading_render->add_raw($link_render->link_no_attr('docs_map', $app['pp_ary'],
             ['map_id' => $map_id], $map_name));
 
         $out = '<div class="panel panel-info" id="add">';
@@ -91,7 +91,7 @@ class DocsMapEditController extends AbstractController
         $out .= 'id="map_name" name="map_name" ';
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('doc_map_names', [])
             ->str();
 
@@ -102,20 +102,20 @@ class DocsMapEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('docs_map', $app['pp_ary'], ['map_id' => $map_id]);
+        $out .= $link_render->btn_cancel('docs_map', $app['pp_ary'], ['map_id' => $map_id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('docs');
+        $menu_service->set('docs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

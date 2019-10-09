@@ -80,7 +80,7 @@ class UsersShowController extends AbstractController
                     rechten om een E-mail bericht te versturen.');
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -146,14 +146,14 @@ class UsersShowController extends AbstractController
                     ], 8000);
                 }
 
-                $app['alert']->success('E-mail bericht verzonden.');
+                $alert_service->success('E-mail bericht verzonden.');
 
-                $app['link']->redirect($app['r_users_show'], $app['pp_ary'],
+                $link_render->redirect($app['r_users_show'], $app['pp_ary'],
                     ['id' => $id]);
 
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         $count_messages = $db->fetchColumn('select count(*)
@@ -238,24 +238,24 @@ class UsersShowController extends AbstractController
         {
             $title = $app['pp_admin'] ? 'Gebruiker' : 'Mijn gegevens';
 
-            $app['btn_top']->edit($app['r_users_edit'], $app['pp_ary'],
+            $btn_top_render->edit($app['r_users_edit'], $app['pp_ary'],
                 ['id' => $id], $title . ' aanpassen');
 
             if ($app['pp_admin'])
             {
-                $app['btn_top']->edit_pw('users_password_admin', $app['pp_ary'],
+                $btn_top_render->edit_pw('users_password_admin', $app['pp_ary'],
                 ['id' => $id], 'Paswoord aanpassen');
             }
             else if ($s_owner)
             {
-                $app['btn_top']->edit_pw('users_password', $app['pp_ary'],
+                $btn_top_render->edit_pw('users_password', $app['pp_ary'],
                     [], 'Paswoord aanpassen');
             }
         }
 
         if ($app['pp_admin'] && !$count_transactions && !$s_owner)
         {
-            $app['btn_top']->del('users_del_admin', $app['pp_ary'],
+            $btn_top_render->del('users_del_admin', $app['pp_ary'],
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
@@ -270,7 +270,7 @@ class UsersShowController extends AbstractController
                 $tus['tus'] = $app['pp_schema'];
             }
 
-            $app['btn_top']->add_trans('transactions_add', $app['s_ary'],
+            $btn_top_render->add_trans('transactions_add', $app['s_ary'],
                 $tus, 'Transactie naar ' . $app['account']->str($id, $app['pp_schema']));
         }
 
@@ -280,10 +280,10 @@ class UsersShowController extends AbstractController
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $app['btn_nav']->nav($app['r_users_show'], $pp_status_ary,
+        $btn_nav_render->nav($app['r_users_show'], $pp_status_ary,
             $prev_ary, $next_ary, false);
 
-        $app['btn_nav']->nav_list($app['r_users'], $pp_status_ary,
+        $btn_nav_render->nav_list($app['r_users'], $pp_status_ary,
             [], 'Overzicht', 'users');
 
         $status_id = $user['status'];
@@ -298,38 +298,38 @@ class UsersShowController extends AbstractController
 
         if ($s_owner && !$app['pp_admin'])
         {
-            $app['heading']->add('Mijn gegevens: ');
+            $heading_render->add('Mijn gegevens: ');
         }
 
-        $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
+        $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
 
         if ($status_id != 1)
         {
-            $app['heading']->add_raw(' <small><span class="text-');
-            $app['heading']->add_raw(statuscnst::CLASS_ARY[$status_id]);
-            $app['heading']->add_raw('">');
-            $app['heading']->add_raw($h_status_ary[$status_id]);
-            $app['heading']->add_raw('</span></small>');
+            $heading_render->add_raw(' <small><span class="text-');
+            $heading_render->add_raw(statuscnst::CLASS_ARY[$status_id]);
+            $heading_render->add_raw('">');
+            $heading_render->add_raw($h_status_ary[$status_id]);
+            $heading_render->add_raw('</span></small>');
         }
 
         if ($app['pp_admin'])
         {
             if ($intersystem_missing)
             {
-                $app['heading']->add_raw(' <span class="label label-warning label-sm">');
-                $app['heading']->add_raw('<i class="fa fa-exclamation-triangle"></i> ');
-                $app['heading']->add_raw('De interSysteem-verbinding ontbreekt</span>');
+                $heading_render->add_raw(' <span class="label label-warning label-sm">');
+                $heading_render->add_raw('<i class="fa fa-exclamation-triangle"></i> ');
+                $heading_render->add_raw('De interSysteem-verbinding ontbreekt</span>');
             }
             else if ($intersystem_id)
             {
-                $app['heading']->add(' ');
-                $app['heading']->add_raw($app['link']->link_fa('intersystems_show', $app['pp_ary'],
+                $heading_render->add(' ');
+                $heading_render->add_raw($link_render->link_fa('intersystems_show', $app['pp_ary'],
                     ['id' => $intersystem_id], 'Gekoppeld interSysteem',
                     ['class' => 'btn btn-default'], 'share-alt'));
             }
         }
 
-        $app['heading']->fa('user');
+        $heading_render->fa('user');
 
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
@@ -385,12 +385,12 @@ class UsersShowController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $out .= $app['link']->context_path('users_image_upload_admin', $app['pp_ary'],
+                $out .= $link_render->context_path('users_image_upload_admin', $app['pp_ary'],
                     ['id' => $id]);
             }
             else
             {
-                $out .= $app['link']->context_path('users_image_upload', $app['pp_ary'], []);
+                $out .= $link_render->context_path('users_image_upload', $app['pp_ary'], []);
             }
 
             $out .= '" ';
@@ -406,14 +406,14 @@ class UsersShowController extends AbstractController
 
             if ($app['pp_admin'])
             {
-                $out .= $app['link']->link_fa('users_image_del_admin', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_image_del_admin', $app['pp_ary'],
                     ['id' => $id], 'Foto verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
             else
             {
-                $out .= $app['link']->link_fa('users_image_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_image_del', $app['pp_ary'],
                     [], 'Foto verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
@@ -553,7 +553,7 @@ class UsersShowController extends AbstractController
         $out .= '<span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span>&nbsp;';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
         if ($user['minlimit'] !== '')
@@ -563,7 +563,7 @@ class UsersShowController extends AbstractController
             $out .= '<span class="label label-danger">';
             $out .= $user['minlimit'];
             $out .= '</span>&nbsp;';
-            $out .= $app['config']->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $app['pp_schema']);
             $out .= '</dd>';
         }
 
@@ -574,7 +574,7 @@ class UsersShowController extends AbstractController
             $out .= '<span class="label label-success">';
             $out .= $user['maxlimit'];
             $out .= '</span>&nbsp;';
-            $out .= $app['config']->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $app['pp_schema']);
             $out .= '</dd>';
         }
 
@@ -599,7 +599,7 @@ class UsersShowController extends AbstractController
         $out .= '<h3>Huidig saldo: <span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span> ';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</h3>';
         $out .= '</div></div>';
 
@@ -608,7 +608,7 @@ class UsersShowController extends AbstractController
         $out .= '<div id="chartdiv" data-height="480px" data-width="960px" ';
 
         $out .= 'data-plot-user-transactions="';
-        $out .= htmlspecialchars($app['link']->context_path('plot_user_transactions',
+        $out .= htmlspecialchars($link_render->context_path('plot_user_transactions',
             $app['pp_ary'], ['user_id' => $id, 'days' => $tdays]));
 
         $out .= '">';
@@ -645,7 +645,7 @@ class UsersShowController extends AbstractController
             unset($attr_link_transactions['disabled']);
         }
 
-        $out .= $app['link']->link_fa($app['r_messages'],
+        $out .= $link_render->link_fa($app['r_messages'],
             $app['pp_ary'],
             ['f' => ['uid' => $id]],
             'Vraag en aanbod van ' . $account_str .
@@ -653,7 +653,7 @@ class UsersShowController extends AbstractController
             $attr_link_messages,
             'newspaper-o');
 
-        $out .= $app['link']->link_fa('transactions',
+        $out .= $link_render->link_fa('transactions',
             $app['pp_ary'],
             ['f' => ['uid' => $id]],
             'Transacties van ' . $account_str .
@@ -665,9 +665,9 @@ class UsersShowController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -758,7 +758,7 @@ class UsersShowController extends AbstractController
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';
         $out .= 'value="Versturen" class="btn btn-info btn-lg"';
         $out .= $user_mail_disabled ? ' disabled' : '';

@@ -26,11 +26,11 @@ class CategoriesController extends AbstractController
             $child_count_ary[$cat['id_parent']]++;
         }
 
-        $app['btn_top']->add('categories_add',
+        $btn_top_render->add('categories_add',
             $app['pp_ary'], [], 'Categorie toevoegen');
 
-        $app['heading']->add('Categorieën');
-        $app['heading']->fa('clone');
+        $heading_render->add('Categorieën');
+        $heading_render->fa('clone');
 
         $out = '<div class="panel panel-default printview">';
 
@@ -74,7 +74,7 @@ class CategoriesController extends AbstractController
                 $out .= '<tr class="info"><td>';
 
                 $str = '<strong>';
-                $str .= $app['link']->link_no_attr('categories_edit', $app['pp_ary'],
+                $str .= $link_render->link_no_attr('categories_edit', $app['pp_ary'],
                     ['id' => $cat['id']], $cat['name']);
                 $td[] = $str . '</strong>';
             }
@@ -82,7 +82,7 @@ class CategoriesController extends AbstractController
             {
                 $out .= '<tr><td>';
                 $str = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                $str .= $app['link']->link_no_attr('categories_edit', $app['pp_ary'],
+                $str .= $link_render->link_no_attr('categories_edit', $app['pp_ary'],
                     ['id' => $cat['id']], $cat['name']);
                 $td[] = $str;
             }
@@ -98,7 +98,7 @@ class CategoriesController extends AbstractController
                     ],
                 ]);
 
-                $td[] = $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
+                $td[] = $link_render->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
                     (string) $count_wanted);
             }
             else
@@ -117,7 +117,7 @@ class CategoriesController extends AbstractController
                     ],
                 ]);
 
-                $td[] = $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
+                $td[] = $link_render->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
                     (string) $count_offers);
             }
             else
@@ -127,7 +127,7 @@ class CategoriesController extends AbstractController
 
             if (!$count)
             {
-                $td[] = $app['link']->link_fa('categories_del', $app['pp_ary'],
+                $td[] = $link_render->link_fa('categories_del', $app['pp_ary'],
                     ['id' => $cat['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'], 'times');
             }
@@ -149,9 +149,9 @@ class CategoriesController extends AbstractController
         $out .= '<li>Enkel subcategorieën kunnen berichten bevatten.</li></ul>';
         $out .= '</p>';
 
-        $app['menu']->set('categories');
+        $menu_service->set('categories');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

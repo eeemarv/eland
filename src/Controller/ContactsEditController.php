@@ -79,7 +79,7 @@ class ContactsEditController extends AbstractController
             $comments = $request->request->get('comments', '');
             $access = $request->request->get('access', '');
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -139,7 +139,7 @@ class ContactsEditController extends AbstractController
                 && $count_mail === 1
                 && $id_type_contact !== $mail_type_id)
             {
-                $app['alert']->warning('Waarschuwing: de gebruiker heeft
+                $alert_service->warning('Waarschuwing: de gebruiker heeft
                     geen E-mail adres.');
             }
 
@@ -165,7 +165,7 @@ class ContactsEditController extends AbstractController
                     $warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
                     $warning .= 'of kunnen inloggen met ';
                     $warning .= 'E-mail adres. Zie ';
-                    $warning .= $app['link']->link_no_attr('status',
+                    $warning .= $link_render->link_no_attr('status',
                         $app['pp_ary'], [], 'Status');
 
                     if ($mail_count === 1)
@@ -180,7 +180,7 @@ class ContactsEditController extends AbstractController
                         $warning_2 .= ' maal onder de actieve gebruikers.';
                     }
 
-                    $app['alert']->warning($warning_2 . ' ' . $warning);
+                    $alert_service->warning($warning_2 . ' ' . $warning);
                 }
                 else if ($mail_count)
                 {
@@ -210,21 +210,21 @@ class ContactsEditController extends AbstractController
                 $db->update($app['pp_schema'] . '.contact',
                     $update_ary, ['id' => $id]);
 
-                $app['alert']->success('Contact aangepast.');
+                $alert_service->success('Contact aangepast.');
 
                 if ($redirect_contacts)
                 {
-                    $app['link']->redirect('contacts', $app['pp_ary'], []);
+                    $link_render->redirect('contacts', $app['pp_ary'], []);
                 }
                 else
                 {
-                    $app['link']->redirect('users_show', $app['pp_ary'],
+                    $link_render->redirect('users_show', $app['pp_ary'],
                         ['id' => $user_id]);
                 }
 
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         $type_contact_ary = [];
@@ -243,12 +243,12 @@ class ContactsEditController extends AbstractController
 
         $abbrev = $type_contact_ary[$id_type_contact]['abbrev'];
 
-        $app['heading']->add('Contact aanpassen');
+        $heading_render->add('Contact aanpassen');
 
         if ($app['pp_admin'])
         {
-            $app['heading']->add(' voor ');
-            $app['heading']->add_raw($app['account']->link($user_id, $app['pp_ary']));
+            $heading_render->add(' voor ');
+            $heading_render->add_raw($app['account']->link($user_id, $app['pp_ary']));
         }
 
         $out = '<div class="panel panel-info">';
@@ -318,11 +318,11 @@ class ContactsEditController extends AbstractController
 
         if ($redirect_contacts)
         {
-            $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('contacts', $app['pp_ary'], []);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('users_show', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('users_show', $app['pp_ary'],
                 ['id' => $user_id]);
         }
 
@@ -331,16 +331,16 @@ class ContactsEditController extends AbstractController
         $out .= '<input type="submit" value="Aanpassen" ';
         $out .= 'name="zend" class="btn btn-primary btn-lg">';
 
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set($redirect_contacts ? 'contacts' : 'users');
+        $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

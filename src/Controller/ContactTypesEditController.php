@@ -23,16 +23,16 @@ class ContactTypesEditController extends AbstractController
 
         if (in_array($tc_prefetch['abbrev'], contact_types::PROTECTED))
         {
-            $app['alert']->warning('Beschermd contact type.');
-            $app['link']->redirect('contact_types', $app['pp_ary'], []);
+            $alert_service->warning('Beschermd contact type.');
+            $link_render->redirect('contact_types', $app['pp_ary'], []);
         }
 
         if($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
-                $app['link']->redirect('contact_types', $app['pp_ary'], []);
+                $alert_service->error($error_token);
+                $link_render->redirect('contact_types', $app['pp_ary'], []);
             }
 
             $tc = [
@@ -50,17 +50,17 @@ class ContactTypesEditController extends AbstractController
                     $tc,
                     ['id' => $id]))
                 {
-                    $app['alert']->success('Contact type aangepast.');
-                    $app['link']->redirect('contact_types', $app['pp_ary'], []);
+                    $alert_service->success('Contact type aangepast.');
+                    $link_render->redirect('contact_types', $app['pp_ary'], []);
                 }
                 else
                 {
-                    $app['alert']->error('Fout bij het opslaan.');
+                    $alert_service->error('Fout bij het opslaan.');
                 }
             }
             else
             {
-                $app['alert']->error('Fout in één of meer velden. ' . $error);
+                $alert_service->error('Fout in één of meer velden. ' . $error);
             }
         }
         else
@@ -68,8 +68,8 @@ class ContactTypesEditController extends AbstractController
             $tc = $tc_prefetch;
         }
 
-        $app['heading']->add('Contact type aanpassen');
-        $app['heading']->fa('circle-o-notch');
+        $heading_render->add('Contact type aanpassen');
+        $heading_render->fa('circle-o-notch');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -97,20 +97,20 @@ class ContactTypesEditController extends AbstractController
         $out .= '" required>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('contact_types', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('contact_types', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Opslaan" class="btn btn-primary btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('contact_types');
+        $menu_service->set('contact_types');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

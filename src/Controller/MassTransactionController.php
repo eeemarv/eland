@@ -213,14 +213,14 @@ class MassTransactionController extends AbstractController
                 $errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
 
             if (count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
             else
             {
@@ -257,7 +257,7 @@ class MassTransactionController extends AbstractController
                         $alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
                         $alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
                         $alert_success .= '  met bedrag ' . $amo .' ';
-                        $alert_success .= $app['config']->get('currency', $app['pp_schema']);
+                        $alert_success .= $config_service->get('currency', $app['pp_schema']);
                         $alert_success .= ' uitgevoerd.<br>';
 
                         $log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
@@ -295,7 +295,7 @@ class MassTransactionController extends AbstractController
                 }
                 catch (Exception $e)
                 {
-                    $app['alert']->error('Fout bij het opslaan.');
+                    $alert_service->error('Fout bij het opslaan.');
                     $db->rollback();
                     throw $e;
                 }
@@ -327,13 +327,13 @@ class MassTransactionController extends AbstractController
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';
-                $alert_success .= $app['config']->get('currency', $app['pp_schema']);
-                $app['alert']->success($alert_success);
+                $alert_success .= $config_service->get('currency', $app['pp_schema']);
+                $alert_service->success($alert_success);
 
                 $log_one = $users[$one_uid]['letscode'] . ' ';
                 $log_one .= $users[$one_uid]['name'];
                 $log_one .= '(Total amount: ' . $total_amount . ' ';
-                $log_one .= $app['config']->get('currency', $app['pp_schema']);
+                $log_one .= $config_service->get('currency', $app['pp_schema']);
                 $log_one .= ')';
 
                 $log_many = rtrim($log_many, ', ');
@@ -346,7 +346,7 @@ class MassTransactionController extends AbstractController
 
                 if ($app['s_master'])
                 {
-                    $app['alert']->warning('Master account: geen mails verzonden.');
+                    $alert_service->warning('Master account: geen mails verzonden.');
                 }
                 else if ($mail_en)
                 {
@@ -398,10 +398,10 @@ class MassTransactionController extends AbstractController
                         'vars'		=> $vars,
                     ], 8000);
 
-                    $app['alert']->success('Notificatie mails verzonden.');
+                    $alert_service->success('Notificatie mails verzonden.');
                 }
 
-                $app['link']->redirect('mass_transaction', $app['pp_ary'], []);
+                $link_render->redirect('mass_transaction', $app['pp_ary'], []);
             }
         }
         else
@@ -430,16 +430,16 @@ class MassTransactionController extends AbstractController
             }
         }
 
-        $system_minlimit = $app['config']->get('minlimit', $app['pp_schema']);
-        $system_maxlimit = $app['config']->get('maxlimit', $app['pp_schema']);
+        $system_minlimit = $config_service->get('minlimit', $app['pp_schema']);
+        $system_maxlimit = $config_service->get('maxlimit', $app['pp_schema']);
 
         $app['assets']->add([
             'mass_transaction.js',
             'combined_filter.js',
         ]);
 
-        $app['heading']->add('Massa transactie');
-        $app['heading']->fa('exchange');
+        $heading_render->add('Massa transactie');
+        $heading_render->fa('exchange');
 
         $out = '<div class="panel panel-warning">';
         $out .= '<div class="panel-heading">';
@@ -460,17 +460,17 @@ class MassTransactionController extends AbstractController
         $out .= '<form class="form" id="fill_in_aid" ';
 
         $out .= 'data-transactions-sum-in="';
-        $out .= htmlspecialchars($app['link']->context_path('transactions_sum_in',
+        $out .= htmlspecialchars($link_render->context_path('transactions_sum_in',
             $app['pp_ary'], ['days' => 365]));
         $out .= '" ';
 
         $out .= 'data-transactions-sum-out="';
-        $out .= htmlspecialchars($app['link']->context_path('transactions_sum_out',
+        $out .= htmlspecialchars($link_render->context_path('transactions_sum_out',
             $app['pp_ary'], ['days' => 365]));
         $out .= '" ';
 
         $out .= 'data-weighted-balances="';
-        $out .= htmlspecialchars($app['link']->context_path('weighted_balances',
+        $out .= htmlspecialchars($link_render->context_path('weighted_balances',
             $app['pp_ary'], ['days' => 365]));
         $out .= '"';
 
@@ -483,7 +483,7 @@ class MassTransactionController extends AbstractController
         $out .= 'Vast bedrag</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
         $out .= 'min="0">';
@@ -528,7 +528,7 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= ': basis';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_base">';
@@ -604,7 +604,7 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= ': min';
         $out .= '</span>';
 
@@ -616,7 +616,7 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= ': max';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_max">';
@@ -634,26 +634,26 @@ class MassTransactionController extends AbstractController
         $out .= ' Respecteer minimum limieten</label>';
         $out .= '</div>';
 
-        if ($app['config']->get('minlimit', $app['pp_schema']) !== ''
-            || $app['config']->get('maxlimit', $app['pp_schema']) !== '')
+        if ($config_service->get('minlimit', $app['pp_schema']) !== ''
+            || $config_service->get('maxlimit', $app['pp_schema']) !== '')
         {
             $out .= '<ul>';
 
-            if ($app['config']->get('minlimit', $app['pp_schema']) !== '')
+            if ($config_service->get('minlimit', $app['pp_schema']) !== '')
             {
                 $out .= '<li>Minimum Systeemslimiet: ';
-                $out .= $app['config']->get('minlimit', $app['pp_schema']);
+                $out .= $config_service->get('minlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['pp_schema']);
+                $out .= $config_service->get('currency', $app['pp_schema']);
                 $out .= '</li>';
             }
 
-            if ($app['config']->get('maxlimit', $app['pp_schema']) !== '')
+            if ($config_service->get('maxlimit', $app['pp_schema']) !== '')
             {
                 $out .= '<li>Maximum Systeemslimiet: ';
-                $out .= $app['config']->get('maxlimit', $app['pp_schema']);
+                $out .= $config_service->get('maxlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['pp_schema']);
+                $out .= $config_service->get('currency', $app['pp_schema']);
                 $out .= '</li>';
             }
 
@@ -733,7 +733,7 @@ class MassTransactionController extends AbstractController
         $out .= '" ';
 
         $out .= 'data-typeahead="';
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -741,7 +741,7 @@ class MassTransactionController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
+                'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
             ]);
         $out .= '">';
 
@@ -797,14 +797,14 @@ class MassTransactionController extends AbstractController
 
             $out .= '<td>';
 
-            $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
+            $out .= $link_render->link_no_attr($app['r_users_show'], $app['pp_ary'],
                 ['id' => $user_id], $user['letscode']);
 
             $out .= '</td>';
 
             $out .= '<td>';
 
-            $out .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
+            $out .= $link_render->link_no_attr($app['r_users_show'], $app['pp_ary'],
                 ['id' => $user_id], $user['name']);
 
             $out .= '</td>';
@@ -859,7 +859,7 @@ class MassTransactionController extends AbstractController
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="total" readonly>';
         $out .= '</div>';
@@ -917,12 +917,12 @@ class MassTransactionController extends AbstractController
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('transactions', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('transactions', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Massa transactie uitvoeren" ';
         $out .= 'name="zend" class="btn btn-success btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</div>';
         $out .= '</div>';
@@ -935,9 +935,9 @@ class MassTransactionController extends AbstractController
 
         $out .= '</form>';
 
-        $app['menu']->set('mass_transaction');
+        $menu_service->set('mass_transaction');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

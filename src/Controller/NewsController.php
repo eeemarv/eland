@@ -20,7 +20,7 @@ class NewsController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['btn_nav']->csv();
+            $btn_nav_render->csv();
         }
 
         if (!count($news))
@@ -53,7 +53,7 @@ class NewsController extends AbstractController
 
             $out .= '<td>';
 
-            $out .= $app['link']->link_no_attr('news_show', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('news_show', $app['pp_ary'],
                 ['id' => $n['id']], $n['headline']);
 
             $out .= '</td>';
@@ -80,9 +80,9 @@ class NewsController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table></div></div>';
 
-        $app['menu']->set('news');
+        $menu_service->set('news');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -116,7 +116,7 @@ class NewsController extends AbstractController
             $out .=  '<div class="media-body">';
             $out .=  '<h2 class="media-heading">';
 
-            $out .=  $app['link']->link_no_attr('news_show', $app['pp_ary'],
+            $out .=  $link_render->link_no_attr('news_show', $app['pp_ary'],
                 ['id' => $n['id']], $n['headline']);
 
             $out .=  '</h2>';
@@ -214,16 +214,16 @@ class NewsController extends AbstractController
 
                 if (!$n['approved'])
                 {
-                    $out .=  $app['link']->link_fa('news_approve', $app['pp_ary'],
+                    $out .=  $link_render->link_fa('news_approve', $app['pp_ary'],
                         ['id' => $n['id']], 'Goedkeuren en publiceren',
                         ['class' => 'btn btn-warning'], 'check');
                 }
 
-                $out .=  $app['link']->link_fa('news_edit', $app['pp_ary'],
+                $out .=  $link_render->link_fa('news_edit', $app['pp_ary'],
                     ['id' => $n['id']], 'Aanpassen',
                     ['class' => 'btn btn-primary'], 'pencil');
 
-                $out .=  $app['link']->link_fa('news_del', $app['pp_ary'],
+                $out .=  $link_render->link_fa('news_del', $app['pp_ary'],
                     ['id' => $n['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'], 'times');
 
@@ -235,9 +235,9 @@ class NewsController extends AbstractController
             $out .=  '</div>';
         }
 
-        $app['menu']->set('news');
+        $menu_service->set('news');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -247,7 +247,7 @@ class NewsController extends AbstractController
     {
         $news = $news_access_ary = [];
 
-        $rows = $app['xdb']->get_many([
+        $rows = $xdb_service->get_many([
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'news_access',
         ]);
@@ -266,7 +266,7 @@ class NewsController extends AbstractController
         }
 
         $query .= ' order by itemdate ';
-        $query .= $app['config']->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
+        $query .= $config_service->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
 
         $st = $app['db']->prepare($query);
         $st->execute();
@@ -278,7 +278,7 @@ class NewsController extends AbstractController
 
             if (!isset($news_access_ary[$news_id]))
             {
-                $app['xdb']->set('news_access', (string) $news_id, [
+                $xdb_service->set('news_access', (string) $news_id, [
                     'access' => 'interlets',
                 ], $app['pp_schema']);
 
@@ -302,17 +302,17 @@ class NewsController extends AbstractController
     {
         if($app['pp_user'] || $app['pp_admin'])
         {
-            $app['btn_top']->add('news_add', $app['pp_ary'],
+            $btn_top_render->add('news_add', $app['pp_ary'],
                 [], 'Nieuws toevoegen');
         }
 
-        $app['heading']->add('Nieuws');
-        $app['heading']->fa('calendar-o');
+        $heading_render->add('Nieuws');
+        $heading_render->fa('calendar-o');
 
-        $app['btn_nav']->view('news_list', $app['pp_ary'],
+        $btn_nav_render->view('news_list', $app['pp_ary'],
             [], 'Lijst', 'align-justify', $is_list);
 
-        $app['btn_nav']->view('news_extended', $app['pp_ary'],
+        $btn_nav_render->view('news_extended', $app['pp_ary'],
             [], 'Lijst met omschrijvingen', 'th-list', !$is_list);
     }
 
@@ -323,9 +323,9 @@ class NewsController extends AbstractController
         $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
         $out .= '</div></div>';
 
-        $app['menu']->set('news');
+        $menu_service->set('news');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

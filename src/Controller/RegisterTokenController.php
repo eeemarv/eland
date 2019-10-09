@@ -15,17 +15,17 @@ class RegisterTokenController extends AbstractController
         Db $db
     ):Response
     {
-        if (!$app['config']->get('registration_en', $app['pp_schema']))
+        if (!$config_service->get('registration_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $app['link']->redirect('login', $app['pp_ary'], []);
+            $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
+            $link_render->redirect('login', $app['pp_ary'], []);
         }
 
         $data = $app['data_token']->retrieve($token, 'register', $app['pp_schema']);
 
         if (!$data)
         {
-            $app['alert']->error('Geen geldig token.');
+            $alert_service->error('Geen geldig token.');
 
             $out = '<div class="panel panel-danger">';
             $out .= '<div class="panel-heading">';
@@ -35,15 +35,15 @@ class RegisterTokenController extends AbstractController
             $out .= '</div>';
             $out .= '<div class="panel-body">';
 
-            $out .= $app['link']->link('register', $app['pp_ary'],
+            $out .= $link_render->link('register', $app['pp_ary'],
                 [], 'Opnieuw proberen', ['class' => 'btn btn-default']);
 
             $out .= '</div>';
             $out .= '</div>';
 
-            $app['menu']->set('register');
+            $menu_service->set('register');
 
-            return $app->render('base/navbar.html.twig', [
+            return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
                 'schema'    => $app['pp_schema'],
             ]);
@@ -77,10 +77,10 @@ class RegisterTokenController extends AbstractController
             }
         }
 
-        $minlimit = $app['config']->get('preset_minlimit', $app['pp_schema']);
+        $minlimit = $config_service->get('preset_minlimit', $app['pp_schema']);
         $minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-        $maxlimit = $app['config']->get('preset_maxlimit', $app['pp_schema']);
+        $maxlimit = $config_service->get('preset_maxlimit', $app['pp_schema']);
         $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
         $user = [
@@ -189,25 +189,25 @@ class RegisterTokenController extends AbstractController
         }
 
         $vars['subject'] = $app['translator']->trans('register_success.subject', [
-            '%system_name%'	=> $app['config']->get('systemname', $app['pp_schema']),
+            '%system_name%'	=> $config_service->get('systemname', $app['pp_schema']),
         ], 'mail');
 
         $app['queue.mail']->queue([
             'schema'				=> $app['pp_schema'],
             'to' 					=> [$data['email'] => $user['fullname']],
             'reply_to'				=> $app['mail_addr_system']->get_admin($app['pp_schema']),
-            'pre_html_template'		=> $app['config']->get('registration_success_mail', $app['pp_schema']),
+            'pre_html_template'		=> $config_service->get('registration_success_mail', $app['pp_schema']),
             'template'				=> 'skeleton',
             'vars'					=> $vars,
         ], 8500);
 
-        $app['alert']->success('Inschrijving voltooid.');
+        $alert_service->success('Inschrijving voltooid.');
 
-        $registration_success_text = $app['config']->get('registration_success_text', $app['pp_schema']);
+        $registration_success_text = $config_service->get('registration_success_text', $app['pp_schema']);
 
-        $app['menu']->set('register');
+        $menu_service->set('register');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $registration_success_text ?: '',
             'schema'    => $app['pp_schema'],
         ]);

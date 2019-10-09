@@ -12,7 +12,7 @@ class DocsMapController extends AbstractController
     {
         $q = $request->query->get('q', '');
 
-        $row = $app['xdb']->get('doc', $map_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -21,11 +21,11 @@ class DocsMapController extends AbstractController
 
         if (!$map_name)
         {
-            $app['alert']->error('Onbestaande map id.');
-            $app['link']->redirect('docs', $app['pp_ary'], []);
+            $alert_service->error('Onbestaande map id.');
+            $link_render->redirect('docs', $app['pp_ary'], []);
         }
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_id\'' => $map_id,
             'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -50,17 +50,17 @@ class DocsMapController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['btn_top']->add('docs_add', $app['pp_ary'],
+            $btn_top_render->add('docs_add', $app['pp_ary'],
                 ['map_id' => $map_id], 'Document opladen');
 
-            $app['btn_top']->edit('docs_map_edit', $app['pp_ary'],
+            $btn_top_render->edit('docs_map_edit', $app['pp_ary'],
                 ['map_id' => $map_id], 'Map aanpassen');
 
-            $app['btn_nav']->csv();
+            $btn_nav_render->csv();
         }
 
-        $app['heading']->add_raw($app['link']->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
-        $app['heading']->add(': map "' . $map_name . '"');
+        $heading_render->add_raw($link_render->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
+        $heading_render->add(': map "' . $map_name . '"');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -138,11 +138,11 @@ class DocsMapController extends AbstractController
 
                 if ($app['pp_admin'])
                 {
-                    $td_c = $app['link']->link_fa('docs_edit', $app['pp_ary'],
+                    $td_c = $link_render->link_fa('docs_edit', $app['pp_ary'],
                         ['doc_id' => $did], 'Aanpassen',
                         ['class' => 'btn btn-primary'], 'pencil');
                     $td_c .= '&nbsp;';
-                    $td_c .= $app['link']->link_fa('docs_del', $app['pp_ary'],
+                    $td_c .= $link_render->link_fa('docs_del', $app['pp_ary'],
                         ['doc_id' => $did], 'Verwijderen',
                         ['class' => 'btn btn-danger'], 'times');
                     $td[] = $td_c;
@@ -167,9 +167,9 @@ class DocsMapController extends AbstractController
             $out .= '</div></div>';
         }
 
-        $app['menu']->set('docs');
+        $menu_service->set('docs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

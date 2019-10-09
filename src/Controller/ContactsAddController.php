@@ -38,7 +38,7 @@ class ContactsAddController extends AbstractController
         {
             $errors = [];
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -123,7 +123,7 @@ class ContactsAddController extends AbstractController
                     $warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
                     $warning .= 'of kunnen inloggen met ';
                     $warning .= 'E-mail adres. Zie ';
-                    $warning .= $app['link']->link_no_attr('status',
+                    $warning .= $link_render->link_no_attr('status',
                         $app['pp_ary'], [], 'Status');
 
                     if ($mail_count == 1)
@@ -138,7 +138,7 @@ class ContactsAddController extends AbstractController
                         $warning_2 .= ' maal onder de actieve gebruikers.';
                     }
 
-                    $app['alert']->warning($warning_2 . ' ' . $warning);
+                    $alert_service->warning($warning_2 . ' ' . $warning);
                 }
                 else if ($mail_count)
                 {
@@ -168,25 +168,25 @@ class ContactsAddController extends AbstractController
 
                 if ($db->insert($app['pp_schema'] . '.contact', $insert_ary))
                 {
-                    $app['alert']->success('Contact opgeslagen.');
+                    $alert_service->success('Contact opgeslagen.');
 
                     if ($redirect_contacts)
                     {
-                        $app['link']->redirect('contacts', $app['pp_ary'], []);
+                        $link_render->redirect('contacts', $app['pp_ary'], []);
                     }
 
-                    $app['link']->redirect('users_show', $app['pp_ary'],
+                    $link_render->redirect('users_show', $app['pp_ary'],
                         ['id' => $user_id]);
 
                 }
                 else
                 {
-                    $app['alert']->error('Fout bij het opslaan');
+                    $alert_service->error('Fout bij het opslaan');
                 }
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
         }
 
@@ -213,12 +213,12 @@ class ContactsAddController extends AbstractController
 
         $abbrev = $tc[$id_type_contact]['abbrev'];
 
-        $app['heading']->add('Contact toevoegen');
+        $heading_render->add('Contact toevoegen');
 
         if ($app['pp_admin'] && !$redirect_contacts)
         {
-            $app['heading']->add(' voor ');
-            $app['heading']->add_raw($app['account']->link($user_id, $app['pp_ary']));
+            $heading_render->add(' voor ');
+            $heading_render->add_raw($app['account']->link($user_id, $app['pp_ary']));
         }
 
         $out = '<div class="panel panel-info">';
@@ -236,7 +236,7 @@ class ContactsAddController extends AbstractController
             $out .= '<input type="text" class="form-control" id="account_code" name="account_code" ';
 
             $out .= 'data-typeahead="';
-            $out .= $app['typeahead']->ini($app['pp_ary'])
+            $out .= $typeahead_service->ini($app['pp_ary'])
                 ->add('accounts', ['status' => 'active'])
                 ->add('accounts', ['status' => 'inactive'])
                 ->add('accounts', ['status' => 'ip'])
@@ -244,7 +244,7 @@ class ContactsAddController extends AbstractController
                 ->add('accounts', ['status' => 'extern'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
+                    'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
                 ]);
             $out .= '" ';
 
@@ -318,11 +318,11 @@ class ContactsAddController extends AbstractController
 
         if ($redirect_contacts)
         {
-           $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+           $out .= $link_render->btn_cancel('contacts', $app['pp_ary'], []);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('users_show', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('users_show', $app['pp_ary'],
                 ['id' => $user_id]);
         }
 
@@ -331,16 +331,16 @@ class ContactsAddController extends AbstractController
         $out .= '<input type="submit" value="Opslaan" ';
         $out .= 'name="zend" class="btn btn-success btn-lg">';
 
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set($redirect_contacts ? 'contacts' : 'users');
+        $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

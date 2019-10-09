@@ -244,8 +244,8 @@ class ExportController extends AbstractController
             $buttons .= '</form>';
         }
 
-        $app['heading']->add('Export');
-        $app['heading']->fa('download');
+        $heading_render->add('Export');
+        $heading_render->fa('download');
 
         if ($exec_en)
         {
@@ -309,9 +309,9 @@ class ExportController extends AbstractController
 
         $out .= '</div></div>';
 
-        $app['menu']->set('export');
+        $menu_service->set('export');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

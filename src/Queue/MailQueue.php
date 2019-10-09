@@ -7,10 +7,10 @@ use League\HTMLToMarkdown\HtmlConverter;
 use App\Service\Queue;
 use Psr\Log\LoggerInterface;
 use Twig_Environment as Twig;
-use App\Service\Config;
-use App\Service\MailAddrSystem;
+use App\Service\ConfigService;
+use App\Service\MailAddrSystemService;
 use App\Service\EmailValidate;
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class MailQueue implements QueueInterface
 {
@@ -19,28 +19,28 @@ class MailQueue implements QueueInterface
 	protected $queue;
 	protected $logger;
 	protected $twig;
-	protected $config;
-	protected $mail_addr_system;
+	protected $config_service;
+	protected $mail_addr_system_service;
 	protected $email_validate;
-	protected $systems;
+	protected $systems_service;
 
 	public function __construct(
 		Queue $queue,
 		LoggerInterface $logger,
 		Twig $twig,
-		Config $config,
-		MailAddrSystem $mail_addr_system,
+		ConfigService $config_service,
+		MailAddrSystemService $mail_addr_system_service,
 		EmailValidate $email_validate,
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
 		$this->queue = $queue;
 		$this->logger = $logger;
 		$this->twig = $twig;
-		$this->config = $config;
-		$this->mail_addr_system = $mail_addr_system;
+		$this->config_service = $config_service;
+		$this->mail_addr_system_service = $mail_addr_system_service;
 		$this->email_validate = $email_validate;
-		$this->systems = $systems;
+		$this->systems_service = $systems_service;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
 		$transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
@@ -72,7 +72,7 @@ class MailQueue implements QueueInterface
 
 		$data['vars']['schema'] = $schema;
 
-		$system = $this->systems->get_system($schema);
+		$system = $this->systems_service->get_system($schema);
 
 		$data['vars']['system'] = $system;
 
@@ -264,7 +264,7 @@ class MailQueue implements QueueInterface
 			return true;
 		}
 
-		if (!$this->config->get('mailenabled', $schema))
+		if (!$this->config_service->get('mailenabled', $schema))
 		{
 			$this->logger->info($log_prefix .
 				': mail functions are not enabled in config. ' .

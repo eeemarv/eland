@@ -4,18 +4,18 @@ namespace App\SchemaTask;
 
 use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\Cache;
+use App\Service\CacheService;
 use Psr\Log\LoggerInterface;
 use App\Queue\geocode as geocode_queue;
 use App\Service\Schedule;
-use App\Service\Systems;
+use App\Service\SystemsService;
 use App\Render\account_str;
 
 class GeocodeTask extends SchemaTask
 {
 	protected $queue;
 	protected $logger;
-	protected $cache;
+	protected $cache_service;
 	protected $db;
 	protected $curl;
 	protected $geocoder;
@@ -24,17 +24,17 @@ class GeocodeTask extends SchemaTask
 
 	public function __construct(
 		Db $db,
-		Cache $cache,
+		CacheService $cache_service,
 		LoggerInterface $logger,
 		geocode_queue $geocode_queue,
 		Schedule $schedule,
-		Systems $systems,
+		SystemsService $systems_service,
 		account_str $account_str
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->logger = $logger;
-		$this->cache = $cache;
+		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
 		$this->account_str = $account_str;
@@ -72,12 +72,12 @@ class GeocodeTask extends SchemaTask
 			$key = 'geo_' . $data['adr'];
 			$status_key = 'geo_status_' . $data['adr'];
 
-			if ($this->cache->exists($key))
+			if ($this->cache_service->exists($key))
 			{
 				continue;
 			}
 
-			if ($this->cache->get($status_key) == ['value' => 'error'])
+			if ($this->cache_service->get($status_key) == ['value' => 'error'])
 			{
 				continue;
 			}
@@ -90,7 +90,7 @@ class GeocodeTask extends SchemaTask
 
 			$log_ary[] = $log;
 
-			$this->cache->set($status_key,
+			$this->cache_service->set($status_key,
 				['value' => 'queue'],
 				2592000);  // 30 days
 		}

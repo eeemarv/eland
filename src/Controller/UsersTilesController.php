@@ -51,15 +51,15 @@ class UsersTilesController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['btn_top']->add('users_add', $app['pp_ary'],
+            $btn_top_render->add('users_add', $app['pp_ary'],
                 [], 'Gebruiker toevoegen');
         }
 
-        users_list::btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'users_tiles');
-        users_list::heading($app['heading']);
+        users_list::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_tiles');
+        users_list::heading($heading_render);
 
         $out = users_list::get_filter_and_tab_selector(
-            $users_route, $app['pp_ary'], $params, $app['link'],
+            $users_route, $app['pp_ary'], $params, $link_render,
             $app['pp_admin'], '', $q, $app['new_user_treshold']
         );
 
@@ -90,7 +90,7 @@ class UsersTilesController extends AbstractController
                 $row_stat = 3;
             }
 
-            $url = $app['link']->context_path($app['r_users_show'], $app['pp_ary'],
+            $url = $link_render->context_path($app['r_users_show'], $app['pp_ary'],
                 ['id' => $u['id'], 'link' => $status]);
 
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
@@ -134,9 +134,9 @@ class UsersTilesController extends AbstractController
 
         $out .= '</div>';
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -4,34 +4,34 @@ namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use App\Service\UserCache;
-use App\Service\AutoMinLimit;
-use App\Service\Config;
+use App\Service\UserCacheService;
+use App\Service\AutoMinLimitService;
+use App\Service\ConfigService;
 use App\Render\AccountRender;
 
 class TransactionService
 {
 	protected $db;
 	protected $logger;
-	protected $user_cache;
-	protected $autominlimit;
-	protected $config;
+	protected $user_cache_service;
+	protected $autominlimit_service;
+	protected $config_service;
 	protected $account_render;
 
 	public function __construct(
 		Db $db,
 		LoggerInterface $logger,
-		UserCache $user_cache,
-		AutoMinLimit $autominlimit,
-		Config $config,
+		UserCacheService $user_cache_service,
+		AutoMinLimitSerivce $autominlimit_service,
+		ConfigService $config_service,
 		AccountRender $account_render
 	)
 	{
 		$this->db = $db;
 		$this->logger = $logger;
-		$this->user_cache = $user_cache;
-		$this->autominlimit = $autominlimit;
-		$this->config = $config;
+		$this->user_cache_service = $user_cache_service;
+		$this->autominlimit_service = $autominlimit_service;
+		$this->config_service = $config_service;
 		$this->account_render = $account_render;
 	}
 
@@ -86,14 +86,14 @@ class TransactionService
 		$this->user_cache->clear($transaction['id_to'], $schema);
 		$this->user_cache->clear($transaction['id_from'], $schema);
 
-		$this->autominlimit->init($schema)
+		$this->autominlimit_service->init($schema)
 			->process($transaction['id_from'],
 				$transaction['id_to'],
 				(int) $transaction['amount']);
 
 		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$transaction['amount'] . ' ' .
-			$this->config->get('currency', $schema) .
+			$this->config_service->get('currency', $schema) .
 			' from user ' .
 			$this->account_render->str_id($transaction['id_from'], $schema) .
 			' to user ' .

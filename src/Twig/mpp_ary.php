@@ -2,22 +2,22 @@
 
 namespace App\Twig;
 
-use App\Service\UserCache;
-use App\Service\Systems;
+use App\Service\UserCacheService;
+use App\Service\SystemsService;
 use app\cnst\rolecnst;
 
 class mpp_ary
 {
-	protected $user_cache;
-	protected $systems;
+	protected $user_cache_service;
+	protected $systems_service;
 
 	public function __construct(
-		UserCache $user_cache,
-		Systems $systems
+		UserCacheService $user_cache_service,
+		SystemsService $systems_service
 	)
 	{
-		$this->user_cache = $user_cache;
-		$this->systems = $systems;
+		$this->user_cache_service = $user_cache_service;
+		$this->systems_service = $systems_service;
 	}
 
 	private function get_ary(
@@ -26,7 +26,7 @@ class mpp_ary
 		string $schema
 	):array
 	{
-		$system = $this->systems->get_system($schema);
+		$system = $this->systems_service->get_system($schema);
 
 		$mpp_ary = [
 			'system'	=> $system,

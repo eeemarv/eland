@@ -7,35 +7,35 @@ use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 
 use App\Service\Schedule;
-use App\Service\Systems;
-use App\Service\Config;
-use App\Service\UserCache;
-use App\Service\MailAddrUser;
+use App\Service\SystemsService;
+use App\Service\ConfigService;
+use App\Service\UserCacheService;
+use App\Service\MailAddrUserService;
 
 class UserExpMsgsTask extends SchemaTask
 {
 	protected $db;
 	protected $mail_queue;
-	protected $config;
-	protected $user_cache;
-	protected $mail_addr_user;
+	protected $config_service;
+	protected $user_cache_service;
+	protected $mail_addr_user_service;
 
 	public function __construct(
 		Db $db,
 		MailQueue $mail_queue,
 		Schedule $schedule,
-		Systems $systems,
-		Config $config,
-		UserCache $user_cache,
-		MailAddrUser $mail_addr_user
+		SystemsService $systems_service,
+		ConfigService $config_service,
+		UserCacheService $user_cache_service,
+		MailAddrUserService $mail_addr_user_service
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
 		$this->mail_queue = $mail_queue;
-		$this->config = $config;
-		$this->user_cache = $user_cache;
-		$this->mail_addr_user = $mail_addr_user;
+		$this->config_service = $config_service;
+		$this->user_cache_service = $user_cache_service;
+		$this->mail_addr_user_service = $mail_addr_user_service;
 	}
 
 	function process(bool $update = true):void
@@ -90,7 +90,7 @@ class UserExpMsgsTask extends SchemaTask
 
 	public function is_enabled():bool
 	{
-		return $this->config->get('msgexpwarnenabled', $this->schema) ? true : false;
+		return $this->config_service->get('msgexpwarnenabled', $this->schema) ? true : false;
 	}
 
 	public function get_interval():int

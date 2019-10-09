@@ -90,7 +90,7 @@ class TypeaheadAccountsController extends AbstractController
 
         $crc = (string) crc32(json_encode($accounts));
 
-        $app['typeahead']->set_thumbprint('accounts', $app['pp_ary'], $params, $crc);
+        $typeahead_service->set_thumbprint('accounts', $app['pp_ary'], $params, $crc);
 
         return $app->json($accounts);
     }

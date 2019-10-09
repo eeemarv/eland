@@ -11,7 +11,7 @@ class DocsEditController extends AbstractController
 {
     public function docs_edit(Request $request, app $app, string $doc_id):Response
     {
-        $row = $app['xdb']->get('doc', $doc_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -22,8 +22,8 @@ class DocsEditController extends AbstractController
         }
         else
         {
-            $app['alert']->error('Document niet gevonden');
-            $app['link']->redirect('docs', $app['pp_ary'], []);
+            $alert_service->error('Document niet gevonden');
+            $link_render->redirect('docs', $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
@@ -56,7 +56,7 @@ class DocsEditController extends AbstractController
 
                 if (strlen($map_name))
                 {
-                    $rows = $app['xdb']->get_many(['agg_type' => 'doc',
+                    $rows = $xdb_service->get_many(['agg_type' => 'doc',
                         'agg_schema' => $app['pp_schema'],
                         'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -71,7 +71,7 @@ class DocsEditController extends AbstractController
 
                         $mid = substr(sha1(random_bytes(16)), 0, 24);
 
-                        $app['xdb']->set('doc', $mid, $map, $app['pp_schema']);
+                        $xdb_service->set('doc', $mid, $map, $app['pp_schema']);
 
                         $map['id'] = $mid;
                     }
@@ -87,44 +87,44 @@ class DocsEditController extends AbstractController
                     && ((isset($update['map_id']) && $update['map_id'] !== $doc['map_id'])
                         || !strlen($map_name)))
                 {
-                    $rows = $app['xdb']->get_many(['agg_type' => 'doc',
+                    $rows = $xdb_service->get_many(['agg_type' => 'doc',
                         'agg_schema' => $app['pp_schema'],
                         'data->>\'map_id\'' => $doc['map_id']]);
 
                     if (count($rows) < 2)
                     {
-                        $app['xdb']->del('doc', $doc['map_id'], $app['pp_schema']);
+                        $xdb_service->del('doc', $doc['map_id'], $app['pp_schema']);
                     }
                 }
 
-                $app['xdb']->set('doc', $doc_id, $update, $app['pp_schema']);
+                $xdb_service->set('doc', $doc_id, $update, $app['pp_schema']);
 
-                $app['typeahead']->delete_thumbprint('doc_map_names',
+                $typeahead_service->delete_thumbprint('doc_map_names',
                     $app['pp_ary'], []);
 
-                $app['alert']->success('Document aangepast');
+                $alert_service->success('Document aangepast');
 
                 if (!$update['map_id'])
                 {
-                    $app['link']->redirect('docs', $app['pp_ary'], []);
+                    $link_render->redirect('docs', $app['pp_ary'], []);
                 }
 
-                $app['link']->redirect('docs_map', $app['pp_ary'],
+                $link_render->redirect('docs_map', $app['pp_ary'],
                     ['map_id' => $update['map_id']]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         if (isset($doc['map_id']) && $doc['map_id'] != '')
         {
             $map_id = $doc['map_id'];
 
-            $map = $app['xdb']->get('doc', $map_id,
+            $map = $xdb_service->get('doc', $map_id,
                 $app['pp_schema'])['data'];
         }
 
-        $app['heading']->add('Document aanpassen');
+        $heading_render->add('Document aanpassen');
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -186,7 +186,7 @@ class DocsEditController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('doc_map_names', [])
             ->str();
 
@@ -196,7 +196,7 @@ class DocsEditController extends AbstractController
         $out .= 'of selecteer een bestaande.</p>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('docs', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('docs', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
@@ -206,9 +206,9 @@ class DocsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('docs');
+        $menu_service->set('docs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -22,32 +22,32 @@ class IntersystemsDelController extends AbstractController
 
         if (!$group)
         {
-            $app['alert']->error('Systeem niet gevonden.');
-            $app['link']->redirect('intersystems', $app['pp_ary'], []);
+            $alert_service->error('Systeem niet gevonden.');
+            $link_render->redirect('intersystems', $app['pp_ary'], []);
         }
 
         if ($app['request']->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
-                $app['link']->redirect('intersystems', $app['pp_ary'], []);
+                $alert_service->error($error_token);
+                $link_render->redirect('intersystems', $app['pp_ary'], []);
             }
 
             if($db->delete($app['pp_schema'] . '.letsgroups', ['id' => $id]))
             {
-                $app['alert']->success('InterSysteem verwijderd.');
+                $alert_service->success('InterSysteem verwijderd.');
 
-                $app['intersystems']->clear_cache($app['pp_schema']);
+                $this->intersystems_service->clear_cache($app['pp_schema']);
 
-                $app['link']->redirect('intersystems', $app['pp_ary'], []);
+                $link_render->redirect('intersystems', $app['pp_ary'], []);
             }
 
-            $app['alert']->error('InterSysteem niet verwijderd.');
+            $alert_service->error('InterSysteem niet verwijderd.');
         }
 
-        $app['heading']->add('InterSysteem verwijderen: ' . $group['groupname']);
-        $app['heading']->fa('share-alt');
+        $heading_render->add('InterSysteem verwijderen: ' . $group['groupname']);
+        $heading_render->fa('share-alt');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -57,11 +57,11 @@ class IntersystemsDelController extends AbstractController
         $out .= '<div><p>';
         $out .= '<form method="post">';
 
-        $out .= $app['link']->btn_cancel('intersystems', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('intersystems', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form></p>';
         $out .= '</div>';
@@ -69,9 +69,9 @@ class IntersystemsDelController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('intersystems');
+        $menu_service->set('intersystems');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -9,18 +9,18 @@ class ContactTokenController extends AbstractController
 {
     public function contact_token(app $app, string $token):Response
     {
-        if (!$app['config']->get('contact_form_en', $app['pp_schema']))
+        if (!$config_service->get('contact_form_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De contactpagina is niet ingeschakeld.');
-            $app['link']->redirect('login', $app['pp_ary'], []);
+            $alert_service->warning('De contactpagina is niet ingeschakeld.');
+            $link_render->redirect('login', $app['pp_ary'], []);
         }
 
         $data = $app['data_token']->retrieve($token, 'contact', $app['pp_schema']);
 
         if (!$data)
         {
-            $app['alert']->error('Ongeldig of verlopen token.');
-            $app['link']->redirect('contact', $app['pp_ary'], []);
+            $alert_service->error('Ongeldig of verlopen token.');
+            $link_render->redirect('contact', $app['pp_ary'], []);
         }
 
         $vars = [
@@ -47,8 +47,8 @@ class ContactTokenController extends AbstractController
 
         $app['data_token']->del($token, 'contact', $app['pp_schema']);
 
-        $app['alert']->success('Je bericht werd succesvol verzonden.');
-        $app['link']->redirect('contact', $app['pp_ary'], []);
+        $alert_service->success('Je bericht werd succesvol verzonden.');
+        $link_render->redirect('contact', $app['pp_ary'], []);
 
         return new Response();
     }

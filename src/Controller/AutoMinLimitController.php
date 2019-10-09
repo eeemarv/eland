@@ -12,10 +12,10 @@ class AutoMinLimitController extends AbstractController
     {
         if ($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
-                $app['link']->redirect('autominlimit', $app['pp_ary'], []);
+                $alert_service->error($error_token);
+                $link_render->redirect('autominlimit', $app['pp_ary'], []);
             }
 
             $data = [
@@ -25,14 +25,14 @@ class AutoMinLimitController extends AbstractController
                 'trans_exclusive'	=> $request->request->get('trans_exclusive', ''),
             ];
 
-            $app['xdb']->set('setting', 'autominlimit', $data, $app['pp_schema']);
+            $xdb_service->set('setting', 'autominlimit', $data, $app['pp_schema']);
 
-            $app['alert']->success('De automatische minimum limiet instellingen zijn aangepast.');
-            $app['link']->redirect('autominlimit', $app['pp_ary'], []);
+            $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
+            $link_render->redirect('autominlimit', $app['pp_ary'], []);
         }
         else
         {
-            $row = $app['xdb']->get('setting', 'autominlimit', $app['pp_schema']);
+            $row = $xdb_service->get('setting', 'autominlimit', $app['pp_schema']);
 
             if ($row)
             {
@@ -49,8 +49,8 @@ class AutoMinLimitController extends AbstractController
             }
         }
 
-        $app['heading']->add('Automatische minimum limiet');
-        $app['heading']->fa('arrows-v');
+        $heading_render->add('Automatische minimum limiet');
+        $heading_render->fa('arrows-v');
 
         $out = '<div class="panel panel-info">';
 
@@ -59,11 +59,11 @@ class AutoMinLimitController extends AbstractController
         $out .= 'De individuele Minimum Limiet van Accounts zal zo automatisch lager ';
         $out .= 'worden door ontvangen transacties ';
         $out .= 'tot de ';
-        $out .= $app['link']->link_no_attr('config',
+        $out .= $link_render->link_no_attr('config',
             $app['pp_ary'], ['tab' => 'balance'], 'Minimum Systeemslimiet');
         $out .= ' bereikt wordt. ';
         $out .= 'De individuele Account Minimum Limiet wordt gewist wanneer de ';
-        $out .= $app['link']->link_no_attr('config',
+        $out .= $link_render->link_no_attr('config',
             $app['pp_ary'], ['tab' => 'balance'], 'Minimum Systeemslimiet');
         $out .= ' bereikt of onderschreden wordt.</p>';
         $out .= '<p>Wanneer geen Minimum Systeemslimiet is ingesteld, ';
@@ -76,7 +76,7 @@ class AutoMinLimitController extends AbstractController
         $out .= '<p>Wanneer de Automatische Minimum Limiet systematisch ';
         $out .= 'voor instappende leden gebruikt wordt, is het ';
         $out .= 'nuttig de ';
-        $out .= $app['link']->link_no_attr('config',
+        $out .= $link_render->link_no_attr('config',
             $app['pp_ary'], ['tab' => 'balance'],
             'Preset Individuele Account Minimum Limiet');
         $out .= ' ';
@@ -152,16 +152,16 @@ class AutoMinLimitController extends AbstractController
         $out .= '</div>';
 
         $out .= '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('autominlimit');
+        $menu_service->set('autominlimit');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

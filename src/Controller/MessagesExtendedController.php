@@ -46,7 +46,7 @@ class MessagesExtendedController extends AbstractController
         }
 
         messages_list::set_view_btn_nav(
-            $app['btn_nav'], $app['pp_ary'],
+            $btn_nav_render, $app['pp_ary'],
             $params, 'extended');
 
         if (!count($messages))
@@ -76,7 +76,7 @@ class MessagesExtendedController extends AbstractController
                 $out .= '<div class="media-left">';
                 $out .= '<a href="';
 
-                $out .= $app['link']->context_path('messages_show', $app['pp_ary'],
+                $out .= $link_render->context_path('messages_show', $app['pp_ary'],
                     ['id' => $msg['id']]);
 
                 $out .= '">';
@@ -90,7 +90,7 @@ class MessagesExtendedController extends AbstractController
             $out .= '<div class="media-body">';
             $out .= '<h3 class="media-heading">';
 
-            $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('messages_show', $app['pp_ary'],
                 ['id' => $msg['id']],
                 ucfirst($msg['label']['type']) . ': ' . $msg['content']);
 
@@ -118,12 +118,12 @@ class MessagesExtendedController extends AbstractController
             {
                 $out .= '<span class="inline-buttons pull-right hidden-xs">';
 
-                $out .= $app['link']->link_fa('messages_edit', $app['pp_ary'],
+                $out .= $link_render->link_fa('messages_edit', $app['pp_ary'],
                     ['id' => $msg['id']], 'Aanpassen',
                     ['class'	=> 'btn btn-primary'],
                     'pencil');
 
-                $out .= $app['link']->link_fa('messages_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('messages_del', $app['pp_ary'],
                     ['id' => $msg['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'],
                     'times');
@@ -138,9 +138,9 @@ class MessagesExtendedController extends AbstractController
 
         $out .= $app['pagination']->get();
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

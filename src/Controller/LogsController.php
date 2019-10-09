@@ -133,7 +133,7 @@ class LogsController extends AbstractController
         $tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;
         $tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '-asc' : '-desc';
 
-        $app['btn_nav']->csv();
+        $btn_nav_render->csv();
 
         $app['assets']->add(['datepicker', 'csv.js']);
 
@@ -143,9 +143,9 @@ class LogsController extends AbstractController
             || (isset($filter['fdate']) && $filter['fdate'] !== '')
             || (isset($filter['tdate']) && $filter['tdate'] !== '');
 
-        $app['heading']->add('Logs');
-        $app['heading']->add_filtered($filtered);
-        $app['heading']->fa('history');
+        $heading_render->add('Logs');
+        $heading_render->add_filtered($filtered);
+        $heading_render->fa('history');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -177,7 +177,7 @@ class LogsController extends AbstractController
         $out .= 'aria-describedby="type_addon" ';
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('log_types', [])
             ->str();
 
@@ -198,7 +198,7 @@ class LogsController extends AbstractController
         $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -206,7 +206,7 @@ class LogsController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
+                'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
             ]);
         $out .= '" ';
 
@@ -346,9 +346,9 @@ class LogsController extends AbstractController
 
         $out .= $app['pagination']->get();
 
-        $app['menu']->set('logs');
+        $menu_service->set('logs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

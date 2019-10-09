@@ -4,7 +4,7 @@ namespace App\Queue;
 
 use App\Queue\QueueInterface;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\Cache;
+use App\Service\CacheService;
 use App\Service\Queue;
 use Psr\Log\LoggerInterface;
 use App\Service\Geocode;
@@ -14,14 +14,14 @@ class GeocodeQueue implements QueueInterface
 {
 	protected $queue;
 	protected $logger;
-	protected $cache;
+	protected $cache_service;
 	protected $db;
 	protected $geocode;
 	protected $account_str;
 
 	public function __construct(
 		Db $db,
-		Cache $cache,
+		CacheService $cache_service,
 		Queue $queue,
 		LoggerInterface $logger,
 		Geocode $geocode,
@@ -30,7 +30,7 @@ class GeocodeQueue implements QueueInterface
 	{
 		$this->queue = $queue;
 		$this->logger = $logger;
-		$this->cache = $cache;
+		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->geocode = $geocode;
 		$this->account_str = $account_str;
@@ -50,7 +50,7 @@ class GeocodeQueue implements QueueInterface
 			return;
 		}
 
-		if ($this->cache->exists('geo_sleep'))
+		if ($this->cache_service->exists('geo_sleep'))
 		{
 			$this->logger->debug('geocoding task is at sleep.',
 				['schema' => $sch]);
@@ -63,7 +63,7 @@ class GeocodeQueue implements QueueInterface
 		$geo_status_key = 'geo_status_' . $adr;
 		$key = 'geo_' . $adr;
 
-		if (!$this->cache->exists($geo_status_key))
+		if (!$this->cache_service->exists($geo_status_key))
 		{
 			$this->logger->debug('geocoding proces geo_status_key missing: ' .
 				$geo_status_key . ' for data ' . json_encode($data),
@@ -71,7 +71,7 @@ class GeocodeQueue implements QueueInterface
 			return;
 		}
 
-		$this->cache->set($geo_status_key, ['value' => 'error'], 31536000); // 1 year
+		$this->cache_service->set($geo_status_key, ['value' => 'error'], 31536000); // 1 year
 
 		if (getenv('GEO_BLOCK') === '1')
 		{
@@ -85,9 +85,9 @@ class GeocodeQueue implements QueueInterface
 
 		if (count($coords))
 		{
-			$this->cache->set($key, $coords);
-			$this->cache->del($geo_status_key);
-			$this->cache->del('geo_sleep');
+			$this->cache_service->set($key, $coords);
+			$this->cache_service->del($geo_status_key);
+			$this->cache_service->del('geo_sleep');
 
 			$log = 'Geocoded: ' . $adr . ' : ' . implode('|', $coords);
 
@@ -131,21 +131,21 @@ class GeocodeQueue implements QueueInterface
 		$key = 'geo_' . $data['adr'];
 		$status_key = 'geo_status_' . $data['adr'];
 
-		if ($this->cache->exists($key))
+		if ($this->cache_service->exists($key))
 		{
 			$this->logger->info('Geocoding: key already exists for ' .
 				json_encode($data), ['schema' => $data['schema']]);
 			return;
 		}
 
-		if ($this->cache->get($status_key) == ['value' => 'error'])
+		if ($this->cache_service->get($status_key) == ['value' => 'error'])
 		{
 			$this->logger->info('Geocoding: Error status exists for ' .
 				json_encode($data), ['schema' => $data['schema']]);
 			return;
 		}
 
-		$this->cache->set($status_key,
+		$this->cache_service->set($status_key,
 			['value' => 'queue'],
 			2592000);  // 30 days
 

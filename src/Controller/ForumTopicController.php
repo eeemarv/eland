@@ -10,10 +10,10 @@ class ForumTopicController extends AbstractController
 {
     public function forum_topic(Request $request, app $app, string $topic_id):Response
     {
-        if (!$app['config']->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De forum pagina is niet ingeschakeld.');
-            $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
+            $alert_service->warning('De forum pagina is niet ingeschakeld.');
+            $link_render->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
         $show_visibility = ($app['pp_user']
@@ -22,7 +22,7 @@ class ForumTopicController extends AbstractController
 
         $forum_posts = [];
 
-        $row = $app['xdb']->get('forum', $topic_id, $app['pp_schema']);
+        $row = $xdb_service->get('forum', $topic_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -36,8 +36,8 @@ class ForumTopicController extends AbstractController
         }
         else
         {
-            $app['alert']->error('Dit forum onderwerp bestaat niet');
-            $app['link']->redirect('forum', $app['pp_ary'], []);
+            $alert_service->error('Dit forum onderwerp bestaat niet');
+            $link_render->redirect('forum', $app['pp_ary'], []);
         }
 
         $topic_post['id'] = $topic_id;
@@ -48,8 +48,8 @@ class ForumTopicController extends AbstractController
 
         if (!$app['item_access']->is_visible_xdb($topic_post['access']) && !$s_owner)
         {
-            $app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
-            $app['link']->redirect('forum', $app['pp_ary'], []);
+            $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
+            $link_render->redirect('forum', $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
@@ -58,8 +58,8 @@ class ForumTopicController extends AbstractController
 
             if (!($app['pp_user'] || $app['pp_admin']))
             {
-                $app['alert']->error('Actie niet toegelaten.');
-                $app['link']->redirect('forum', $app['pp_ary'], []);
+                $alert_service->error('Actie niet toegelaten.');
+                $link_render->redirect('forum', $app['pp_ary'], []);
             }
 
             $content = $request->request->get('content', '');
@@ -83,7 +83,7 @@ class ForumTopicController extends AbstractController
                 $errors[] = 'De inhoud van je bericht is te kort.';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
@@ -92,19 +92,19 @@ class ForumTopicController extends AbstractController
             {
                 $new_id = substr(sha1(microtime() . $app['pp_schema']), 0, 24);
 
-                $app['xdb']->set('forum', $new_id, $reply, $app['pp_schema']);
+                $xdb_service->set('forum', $new_id, $reply, $app['pp_schema']);
 
-                $app['alert']->success('Reactie toegevoegd.');
-                $app['link']->redirect('forum_topic', $app['pp_ary'],
+                $alert_service->success('Reactie toegevoegd.');
+                $link_render->redirect('forum_topic', $app['pp_ary'],
                     ['topic_id' => $topic_id]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         $forum_posts[] = $topic_post;
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'data->>\'parent_id\'' => $topic_id], 'order by event_time asc');
 
@@ -123,7 +123,7 @@ class ForumTopicController extends AbstractController
             }
         }
 
-        $rows = $app['xdb']->get_many([
+        $rows = $xdb_service->get_many([
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'event_time' => ['>' => $topic_post['ts']],
@@ -132,7 +132,7 @@ class ForumTopicController extends AbstractController
 
         $prev = count($rows) ? reset($rows)['eland_id'] : false;
 
-        $rows = $app['xdb']->get_many([
+        $rows = $xdb_service->get_many([
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'event_time' => ['<' => $topic_post['ts']],
@@ -143,25 +143,25 @@ class ForumTopicController extends AbstractController
 
         if ($app['pp_admin'] || $s_owner)
         {
-            $app['btn_top']->edit('forum_edit', $app['pp_ary'],
+            $btn_top_render->edit('forum_edit', $app['pp_ary'],
                 ['forum_id' => $topic_id], 'Onderwerp aanpassen');
-            $app['btn_top']->del('forum_del', $app['pp_ary'],
+            $btn_top_render->del('forum_del', $app['pp_ary'],
                 ['forum_id' => $topic_id], 'Onderwerp verwijderen');
         }
 
         $prev_ary = $prev ? ['topic_id' => $prev] : [];
         $next_ary = $next ? ['topic_id' => $next] : [];
 
-        $app['btn_nav']->nav('forum_topic', $app['pp_ary'],
+        $btn_nav_render->nav('forum_topic', $app['pp_ary'],
             $prev_ary, $next_ary, false);
 
-        $app['btn_nav']->nav_list('forum', $app['pp_ary'],
+        $btn_nav_render->nav_list('forum', $app['pp_ary'],
             [], 'Forum onderwerpen', 'comments');
 
         $app['assets']->add(['summernote', 'summernote_forum_post.js']);
 
-        $app['heading']->add($topic_post['subject']);
-        $app['heading']->fa('comments-o');
+        $heading_render->add($topic_post['subject']);
+        $heading_render->fa('comments-o');
 
         $out = '';
 
@@ -197,10 +197,10 @@ class ForumTopicController extends AbstractController
             if ($app['pp_admin'] || $s_owner)
             {
                 $out .= '<span class="inline-buttons pull-right">';
-                $out .= $app['link']->link_fa('forum_edit', $app['pp_ary'],
+                $out .= $link_render->link_fa('forum_edit', $app['pp_ary'],
                     ['forum_id' => $pid], 'Aanpassen',
                     ['class' => 'btn btn-primary'], 'pencil');
-                $out .= $app['link']->link_fa('forum_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('forum_del', $app['pp_ary'],
                     ['forum_id' => $pid], 'Verwijderen',
                     ['class' => 'btn btn-danger'], 'times');
                 $out .= '</span>';
@@ -231,7 +231,7 @@ class ForumTopicController extends AbstractController
             $out .= '<input type="submit" name="zend" ';
             $out .= 'value="Reactie toevoegen" ';
             $out .= 'class="btn btn-success btn-lg">';
-            $out .= $app['form_token']->get_hidden_input();
+            $out .= $form_token_service->get_hidden_input();
 
             $out .= '</form>';
 
@@ -239,9 +239,9 @@ class ForumTopicController extends AbstractController
             $out .= '</div>';
         }
 
-        $app['menu']->set('forum');
+        $menu_service->set('forum');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

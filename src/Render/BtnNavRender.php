@@ -4,7 +4,7 @@ namespace App\Render;
 
 use App\Render\LinkRender;
 use App\Render\TagRender;
-use App\Service\Assets;
+use App\Service\AssetsService;
 
 class BtnNavRender
 {
@@ -17,18 +17,18 @@ class BtnNavRender
 
 	protected $link_render;
 	protected $tag_render;
-	protected $assets;
+	protected $assets_service;
 	protected $out = [];
 
 	public function __construct(
 		LinkRender $link_render,
 		TagRender $tag_render,
-		Assets $assets
+		AssetsService $assets_service
 	)
 	{
 		$this->link_render = $link_render;
 		$this->tag_render = $tag_render;
-		$this->assets = $assets;
+		$this->assets_service = $assets_service;
 	}
 
 	public function get():string
@@ -154,7 +154,7 @@ class BtnNavRender
 
 	public function csv():void
 	{
-		$this->assets->add(['csv.js']);
+		$this->assets_service->add(['csv.js']);
 
 		$this->out['csv'] = $this->tag_render->get('a', [
 				'class'	=> 'csv btn btn-info btn-lg',

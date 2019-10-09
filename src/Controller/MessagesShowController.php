@@ -69,7 +69,7 @@ class MessagesShowController extends AbstractController
                     om een E-mail bericht te versturen.');
             }
 
-            $token_error = $app['form_token']->get_error();
+            $token_error = $form_token_service->get_error();
 
             if ($token_error)
             {
@@ -138,12 +138,12 @@ class MessagesShowController extends AbstractController
                     ], 8000);
                 }
 
-                $app['alert']->success('Mail verzonden.');
-                $app['link']->redirect('messages_show', $app['pp_ary'],
+                $alert_service->success('Mail verzonden.');
+                $link_render->redirect('messages_show', $app['pp_ary'],
                     ['id' => $id]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         $balance = $user['saldo'];
@@ -199,10 +199,10 @@ class MessagesShowController extends AbstractController
 
         if ($app['pp_admin'] || $s_owner)
         {
-            $app['btn_top']->edit('messages_edit', $app['pp_ary'],
+            $btn_top_render->edit('messages_edit', $app['pp_ary'],
                 ['id' => $id],	ucfirst($message['label']['type']) . ' aanpassen');
 
-            $app['btn_top']->del('messages_del', $app['pp_ary'],
+            $btn_top_render->del('messages_del', $app['pp_ary'],
                 ['id' => $id], ucfirst($message['label']['type']) . ' verwijderen');
         }
 
@@ -219,29 +219,29 @@ class MessagesShowController extends AbstractController
                 $tus['tus'] = $app['pp_schema'];
             }
 
-            $app['btn_top']->add_trans('transactions_add', $app['s_ary'],
+            $btn_top_render->add_trans('transactions_add', $app['s_ary'],
                 $tus, 'Transactie voor dit aanbod');
         }
 
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $app['btn_nav']->nav('messages_show', $app['pp_ary'],
+        $btn_nav_render->nav('messages_show', $app['pp_ary'],
             $prev_ary, $next_ary, false);
 
-        $app['btn_nav']->nav_list($app['r_messages'], $app['pp_ary'],
+        $btn_nav_render->nav_list($app['r_messages'], $app['pp_ary'],
             [], 'Lijst', 'newspaper-o');
 
-        $app['heading']->add(ucfirst($message['label']['type']));
-        $app['heading']->add(': ' . $message['content']);
-        $app['heading']->add_raw(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
-        $app['heading']->fa('newspaper-o');
+        $heading_render->add(ucfirst($message['label']['type']));
+        $heading_render->add(': ' . $message['content']);
+        $heading_render->add_raw(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+        $heading_render->fa('newspaper-o');
 
         if ($message['cid'])
         {
             $out = '<p>Categorie: ';
 
-            $out .= $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
+            $out .= $link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
                 ['f' => ['cid' => $message['cid']]], $message['catname']);
 
             $out .= '</p>';
@@ -277,7 +277,7 @@ class MessagesShowController extends AbstractController
             $out .= '<input id="fileupload" type="file" name="images[]" ';
             $out .= 'data-url="';
 
-            $out .= $app['link']->context_path('messages_images_upload',
+            $out .= $link_render->context_path('messages_images_upload',
                 $app['pp_ary'], ['id' => $id]);
 
             $out .= '" ';
@@ -290,7 +290,7 @@ class MessagesShowController extends AbstractController
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
-            $out .= $app['link']->link_fa('messages_images_del', $app['pp_ary'],
+            $out .= $link_render->link_fa('messages_images_del', $app['pp_ary'],
                 ['id'		=> $id],
                 'Afbeeldingen verwijderen', [
                     'class'	=> 'btn btn-danger btn-lg btn-block',
@@ -344,7 +344,7 @@ class MessagesShowController extends AbstractController
         else
         {
             $out .= $message['amount'] . ' ';
-            $out .= $app['config']->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $app['pp_schema']);
             $out .= $message['units'] ? ' per ' . $message['units'] : '';
         }
 
@@ -375,15 +375,15 @@ class MessagesShowController extends AbstractController
         {
             $out .= '<dt>Verlengen</dt>';
             $out .= '<dd>';
-            $out .= self::btn_extend($app['link'], $app['pp_ary'], $id, 30, '1 maand');
+            $out .= self::btn_extend($link_render, $app['pp_ary'], $id, 30, '1 maand');
             $out .= '&nbsp;';
-            $out .= self::btn_extend($app['link'], $app['pp_ary'], $id, 180, '6 maanden');
+            $out .= self::btn_extend($link_render, $app['pp_ary'], $id, 180, '6 maanden');
             $out .= '&nbsp;';
-            $out .= self::btn_extend($app['link'], $app['pp_ary'], $id, 365, '1 jaar');
+            $out .= self::btn_extend($link_render, $app['pp_ary'], $id, 365, '1 jaar');
             $out .= '</dd>';
         }
 
-        if ($app['intersystems']->get_count($app['pp_schema']))
+        if ($this->intersystems_service->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
@@ -403,9 +403,9 @@ class MessagesShowController extends AbstractController
 
         $out .= $contacts_content;
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

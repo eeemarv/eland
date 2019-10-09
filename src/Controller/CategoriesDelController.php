@@ -18,28 +18,28 @@ class CategoriesDelController extends AbstractController
     {
         if($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
-                $app['link']->redirect('categories', $app['pp_ary'], []);
+                $alert_service->error($error_token);
+                $link_render->redirect('categories', $app['pp_ary'], []);
             }
 
             if ($db->delete($app['pp_schema'] . '.categories', ['id' => $id]))
             {
-                $app['alert']->success('Categorie verwijderd.');
-                $app['link']->redirect('categories', $app['pp_ary'], []);
+                $alert_service->success('Categorie verwijderd.');
+                $link_render->redirect('categories', $app['pp_ary'], []);
             }
 
-            $app['alert']->error('Categorie niet verwijderd.');
+            $alert_service->error('Categorie niet verwijderd.');
         }
 
         $fullname = $db->fetchColumn('select fullname
             from ' . $app['pp_schema'] . '.categories
             where id = ?', [$id]);
 
-        $app['heading']->add('Categorie verwijderen : ');
-        $app['heading']->add($fullname);
-        $app['heading']->fa('clone');
+        $heading_render->add('Categorie verwijderen : ');
+        $heading_render->add($fullname);
+        $heading_render->fa('clone');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -48,20 +48,20 @@ class CategoriesDelController extends AbstractController
         $out .= " moet verwijderd worden?</strong></font></p>";
         $out .= '<form method="post">';
 
-        $out .= $app['link']->btn_cancel('categories', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('categories', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
         $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('categories');
+        $menu_service->set('categories');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

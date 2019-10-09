@@ -25,7 +25,7 @@ class ConfigController extends AbstractController
 
         $block_ary = ConfigCnst::BLOCK_ARY;
 
-        if (!$app['config']->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $app['pp_schema']))
         {
             unset($block_ary['periodic_mail']['forum']);
         }
@@ -42,12 +42,12 @@ class ConfigController extends AbstractController
         ];
 
         $explain_replace_ary = [
-            '%path_register%'	=> $app['link']->path('register', ['system' => $app['pp_system']]),
-            '%path_contact%'	=> $app['link']->path('contact', ['system' => $app['pp_system']]),
+            '%path_register%'	=> $link_render->path('register', ['system' => $app['pp_system']]),
+            '%path_contact%'	=> $link_render->path('contact', ['system' => $app['pp_system']]),
         ];
 
         $addon_replace_ary = [
-            '%config_currency%'	=> $app['config']->get('currency', $app['pp_schema']),
+            '%config_currency%'	=> $config_service->get('currency', $app['pp_schema']),
         ];
 
         $attr_replace_ary = [
@@ -64,13 +64,13 @@ class ConfigController extends AbstractController
 
                 foreach ($inline_input_names as $inline_input_name)
                 {
-                    $config[$inline_input_name] = $app['config']->get($inline_input_name, $app['pp_schema']);
+                    $config[$inline_input_name] = $config_service->get($inline_input_name, $app['pp_schema']);
                 }
 
                 continue;
             }
 
-            $config[$input_name] = $app['config']->get($input_name, $app['pp_schema']);
+            $config[$input_name] = $config_service->get($input_name, $app['pp_schema']);
         }
 
         if ($request->isMethod('POST'))
@@ -80,7 +80,7 @@ class ConfigController extends AbstractController
                 $errors[] = 'Form submit error';
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -258,17 +258,17 @@ class ConfigController extends AbstractController
 
             if (!count($posted_configs))
             {
-                $app['alert']->warning('Geen gewijzigde waarden.');
+                $alert_service->warning('Geen gewijzigde waarden.');
 
-                $app['link']->redirect('config', $app['pp_ary'],
+                $link_render->redirect('config', $app['pp_ary'],
                     ['tab' => $tab]);
             }
 
             if (count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
 
-                $app['link']->redirect('config', $app['pp_ary'],
+                $link_render->redirect('config', $app['pp_ary'],
                     ['tab' => $tab]);
             }
 
@@ -276,7 +276,7 @@ class ConfigController extends AbstractController
 
             foreach ($posted_configs as $input_name => $posted_value)
             {
-                $app['config']->set($input_name, $app['pp_schema'], $posted_value);
+                $config_service->set($input_name, $app['pp_schema'], $posted_value);
 
                 // prevent string too long error for eLAS database
 
@@ -303,19 +303,19 @@ class ConfigController extends AbstractController
 
             if (isset($execute_post_actions['clear_eland_intersystem_cache']))
             {
-                $app['intersystems']->clear_eland_cache();
+                $this->intersystems_service->clear_eland_cache();
             }
 
             if (count($posted_configs) > 1)
             {
-                $app['alert']->success('De instellingen zijn aangepast.');
+                $alert_service->success('De instellingen zijn aangepast.');
             }
             else
             {
-                $app['alert']->success('De instelling is aangepast.');
+                $alert_service->success('De instelling is aangepast.');
             }
 
-            $app['link']->redirect('config', $app['pp_ary'],
+            $link_render->redirect('config', $app['pp_ary'],
                 ['tab' => $tab]);
         }
 
@@ -324,8 +324,8 @@ class ConfigController extends AbstractController
             $app['assets']->add(ConfigCnst::TAB_PANES[$tab]['assets']);
         }
 
-        $app['heading']->add('Instellingen');
-        $app['heading']->fa('gears');
+        $heading_render->add('Instellingen');
+        $heading_render->fa('gears');
 
         $out = '<div>';
 
@@ -336,7 +336,7 @@ class ConfigController extends AbstractController
             $out .= '<li role="presentation"';
             $out .= $tab_id === $tab ? ' class="active"' : '';
             $out .= '>';
-            $out .= $app['link']->link_no_attr('config',
+            $out .= $link_render->link_no_attr('config',
                 $app['pp_ary'],
                 ['tab' => $tab_id],
                 $tab_pane_data['lbl']);
@@ -725,7 +725,7 @@ class ConfigController extends AbstractController
             $out .= 'value="Aanpassen" name="' . $tab . '_submit">';
         }
 
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</div>';
 
@@ -735,9 +735,9 @@ class ConfigController extends AbstractController
 
         $out .= '</div>';
 
-        $app['menu']->set('config');
+        $menu_service->set('config');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -871,7 +871,7 @@ class ConfigController extends AbstractController
 
     static function render_logo(app $app)
     {
-        $logo = $app['config']->get('logo', $app['pp_schema']);
+        $logo = $config_service->get('logo', $app['pp_schema']);
 
         $out = '<div class="panel-body bg-info">';
         $out .= '<div class="col-md-6">';
@@ -919,7 +919,7 @@ class ConfigController extends AbstractController
         $out .= '<input id="fileupload" type="file" name="image" ';
         $out .= 'data-url="';
 
-        $out .= $app['link']->context_path('logo_upload', $app['pp_ary'], []);
+        $out .= $link_render->context_path('logo_upload', $app['pp_ary'], []);
 
         $out .= '" ';
         $out .= 'data-data-type="json" data-auto-upload="true" ';
@@ -937,7 +937,7 @@ class ConfigController extends AbstractController
         $out .= '(bvb. <a href="https://gimp.org">GIMP</a>") om te positioneren';
         $out .= '</p>';
 
-        $out .= $app['link']->link_fa('logo_del', $app['pp_ary'],
+        $out .= $link_render->link_fa('logo_del', $app['pp_ary'],
             [], 'Logo verwijderen',
             array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
             'times');

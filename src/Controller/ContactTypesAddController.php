@@ -17,11 +17,11 @@ class ContactTypesAddController extends AbstractController
     {
         if ($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
+                $alert_service->error($error_token);
 
-                $app['link']->redirect('contact_types', $app['pp_ary'], []);
+                $link_render->redirect('contact_types', $app['pp_ary'], []);
             }
 
             $tc = [];
@@ -35,21 +35,21 @@ class ContactTypesAddController extends AbstractController
             {
                 if ($db->insert($app['pp_schema'] . '.type_contact', $tc))
                 {
-                    $app['alert']->success('Contact type toegevoegd.');
+                    $alert_service->success('Contact type toegevoegd.');
                 }
                 else
                 {
-                    $app['alert']->error('Fout bij het opslaan');
+                    $alert_service->error('Fout bij het opslaan');
                 }
 
-                $app['link']->redirect('contact_types', $app['pp_ary'], []);
+                $link_render->redirect('contact_types', $app['pp_ary'], []);
             }
 
-            $app['alert']->error('Corrigeer één of meerdere velden.');
+            $alert_service->error('Corrigeer één of meerdere velden.');
         }
 
-        $app['heading']->add('Contact type toevoegen');
-        $app['heading']->fa('circle-o-notch');
+        $heading_render->add('Contact type toevoegen');
+        $heading_render->fa('circle-o-notch');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -79,20 +79,20 @@ class ContactTypesAddController extends AbstractController
         $out .= '" required>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('contact_types', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('contact_types', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Opslaan" class="btn btn-success btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('contact_types');
+        $menu_service->set('contact_types');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

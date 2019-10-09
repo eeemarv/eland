@@ -68,7 +68,7 @@ class UsersListController extends AbstractController
                 throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -112,7 +112,7 @@ class UsersListController extends AbstractController
 
             if (in_array($bulk_submit_action, ['mail', 'mail_test']))
             {
-                if (!$app['config']->get('mailenabled', $app['pp_schema']))
+                if (!$config_service->get('mailenabled', $app['pp_schema']))
                 {
                     $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
                 }
@@ -147,7 +147,7 @@ class UsersListController extends AbstractController
 
             if (count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
             else
             {
@@ -177,7 +177,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $app['xdb']->set('user_fullname_access', (string) $user_id, [
+                    $xdb_service->set('user_fullname_access', (string) $user_id, [
                         'fullname_access' => $bulk_fullname_access_xdb,
                     ], $app['pp_schema']);
                     $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
@@ -187,7 +187,7 @@ class UsersListController extends AbstractController
                     $bulk_field_value . ' for users ' .
                     $users_log, ['schema' => $app['pp_schema']]);
 
-                $app['alert']->success('De zichtbaarheid van de
+                $alert_service->success('De zichtbaarheid van de
                     volledige naam werd aangepast.');
 
                 $redirect = true;
@@ -213,7 +213,7 @@ class UsersListController extends AbstractController
                     ' to ' . $bulk_field_value .
                     ' for users ' . $users_log,
                     ['schema' => $app['pp_schema']]);
-                $app['alert']->success('Het veld werd aangepast.');
+                $alert_service->success('Het veld werd aangepast.');
 
                 $redirect = true;
             }
@@ -238,9 +238,9 @@ class UsersListController extends AbstractController
                     $users_log,
                     ['schema' => $app['pp_schema']]);
 
-                $app['intersystems']->clear_cache($app['s_schema']);
+                $this->intersystems_service->clear_cache($app['s_schema']);
 
-                $app['alert']->success('Het veld werd aangepast.');
+                $alert_service->success('Het veld werd aangepast.');
 
                 $redirect = true;
             }
@@ -282,9 +282,9 @@ class UsersListController extends AbstractController
                     ' for users ' . $users_log,
                     ['schema' => $app['pp_schema']]);
 
-                $app['intersystems']->clear_cache($app['pp_schema']);
+                $this->intersystems_service->clear_cache($app['pp_schema']);
 
-                $app['alert']->success('Het veld werd aangepast.');
+                $alert_service->success('Het veld werd aangepast.');
 
                 $redirect = true;
             }
@@ -361,11 +361,11 @@ class UsersListController extends AbstractController
                     $alert_users_sent = $msg_users_sent . '<br>';
                     $alert_users_sent .= implode('<br>', $alert_users_sent_ary);
 
-                    $app['alert']->success($alert_users_sent);
+                    $alert_service->success($alert_users_sent);
                 }
                 else
                 {
-                    $app['alert']->warning('Geen E-mails verzonden.');
+                    $alert_service->warning('Geen E-mails verzonden.');
                 }
 
                 if (count($sel_ary))
@@ -385,7 +385,7 @@ class UsersListController extends AbstractController
                         $mail_missing_users .= '<br />';
                     }
 
-                    $app['alert']->warning($alert_missing_users);
+                    $alert_service->warning($alert_missing_users);
                 }
 
                 if ($bulk_mail_cc)
@@ -432,7 +432,7 @@ class UsersListController extends AbstractController
 
             if ($redirect)
             {
-                $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
+                $link_render->redirect($app['r_users'], $app['pp_ary'], []);
             }
         }
 
@@ -515,9 +515,9 @@ class UsersListController extends AbstractController
                 'total'	=> 'Transacties totaal',
             ],
             'amount'	=> [
-                'in'	=> $app['config']->get('currency', $app['pp_schema']) . ' in',
-                'out'	=> $app['config']->get('currency', $app['pp_schema']) . ' uit',
-                'total'	=> $app['config']->get('currency', $app['pp_schema']) . ' totaal',
+                'in'	=> $config_service->get('currency', $app['pp_schema']) . ' in',
+                'out'	=> $config_service->get('currency', $app['pp_schema']) . ' uit',
+                'total'	=> $config_service->get('currency', $app['pp_schema']) . ' totaal',
             ],
         ];
 
@@ -612,7 +612,7 @@ class UsersListController extends AbstractController
         {
             foreach ($users as &$user)
             {
-                $user['fullname_access'] = $app['xdb']->get(
+                $user['fullname_access'] = $xdb_service->get(
                     'user_fullname_access',
                     (string) $user['id'],
                     $app['pp_schema']
@@ -720,7 +720,7 @@ class UsersListController extends AbstractController
 
             if (isset($my_adr))
             {
-                $ref_geo = $app['cache']->get('geo_' . $my_adr);
+                $ref_geo = $this->cache_service->get('geo_' . $my_adr);
             }
         }
 
@@ -847,18 +847,18 @@ class UsersListController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['btn_nav']->csv();
+            $btn_nav_render->csv();
 
-            $app['btn_top']->add('users_add', $app['pp_ary'],
+            $btn_top_render->add('users_add', $app['pp_ary'],
                 [], 'Gebruiker toevoegen');
 
-            $app['btn_top']->local('#bulk_actions', 'Bulk acties', 'envelope-o');
+            $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
         }
 
-        $app['btn_nav']->columns_show();
+        $btn_nav_render->columns_show();
 
-        self::btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'users_list');
-        self::heading($app['heading']);
+        self::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_list');
+        self::heading($heading_render);
 
         $app['assets']->add([
             'calc_sum.js',
@@ -936,17 +936,17 @@ class UsersListController extends AbstractController
                 $f_col .= '</div>';
                 $f_col .= '</div>';
 
-                $app['typeahead']->ini($app['pp_ary'])
+                $typeahead_service->ini($app['pp_ary'])
                     ->add('accounts', ['status' => 'active']);
 
                 if (!$app['pp_guest'])
                 {
-                    $app['typeahead']->add('accounts', ['status' => 'extern']);
+                    $typeahead_service->add('accounts', ['status' => 'extern']);
                 }
 
                 if ($app['pp_admin'])
                 {
-                    $app['typeahead']->add('accounts', ['status' => 'inactive'])
+                    $typeahead_service->add('accounts', ['status' => 'inactive'])
                         ->add('accounts', ['status' => 'ip'])
                         ->add('accounts', ['status' => 'im']);
                 }
@@ -970,9 +970,9 @@ class UsersListController extends AbstractController
                 $f_col .= 'class="form-control" ';
                 $f_col .= 'data-typeahead="';
 
-                $f_col .= $app['typeahead']->str([
+                $f_col .= $typeahead_service->str([
                     'filter'		=> 'accounts',
-                    'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
+                    'newuserdays'	=> $config_service->get('newuserdays', $app['pp_schema']),
                 ]);
 
                 $f_col .= '">';
@@ -1086,7 +1086,7 @@ class UsersListController extends AbstractController
         $f_col .= '</div>';
 
         $out = self::get_filter_and_tab_selector(
-            $app['r_users'], $app['pp_ary'], $params, $app['link'],
+            $app['r_users'], $app['pp_ary'], $params, $link_render,
             $app['pp_admin'], $f_col, $q, $app['new_user_treshold']
         );
 
@@ -1264,7 +1264,7 @@ class UsersListController extends AbstractController
                     {
                         if ($can_link)
                         {
-                            $td .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
+                            $td .= $link_render->link_no_attr($app['r_users_show'], $app['pp_ary'],
                                 ['id' => $u['id'], 'status' => $status], $u[$key] ?: '**leeg**');
                         }
                         else
@@ -1291,7 +1291,7 @@ class UsersListController extends AbstractController
                         {
                             if ($can_link)
                             {
-                                $td .= $app['link']->link_no_attr($app['r_users_show'], $app['pp_ary'],
+                                $td .= $link_render->link_no_attr($app['r_users_show'], $app['pp_ary'],
                                     ['id' => $u['id'], 'status' => $status], $u['fullname']);
                             }
                             else
@@ -1386,7 +1386,7 @@ class UsersListController extends AbstractController
                     {
                         if (count($adr_ary) && $adr_ary['value'])
                         {
-                            $geo = $app['cache']->get('geo_' . $adr_ary['value']);
+                            $geo = $this->cache_service->get('geo_' . $adr_ary['value']);
 
                             if ($geo)
                             {
@@ -1421,7 +1421,7 @@ class UsersListController extends AbstractController
 
                     if (isset($msgs_count[$id][$key]))
                     {
-                        $out .= $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
+                        $out .= $link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
                             [
                                 'f'	=> [
                                     'uid' 	=> $id,
@@ -1453,7 +1453,7 @@ class UsersListController extends AbstractController
                             }
                             else
                             {
-                                $out .= $app['link']->link_no_attr('transactions', $app['pp_ary'],
+                                $out .= $link_render->link_no_attr('transactions', $app['pp_ary'],
                                     [
                                         'f' => [
                                             'fcode'	=> $key === 'in' ? '' : $u['letscode'],
@@ -1480,7 +1480,7 @@ class UsersListController extends AbstractController
 
         $out .= '<div class="row"><div class="col-md-12">';
         $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</span></p>';
         $out .= '</div></div>';
 
@@ -1558,7 +1558,7 @@ class UsersListController extends AbstractController
             $out .= '<input type="submit" value="Verzend" name="bulk_submit[mail]" ';
             $out .= 'class="btn btn-info btn-lg">';
 
-            $out .= $app['form_token']->get_hidden_input();
+            $out .= $form_token_service->get_hidden_input();
             $out .= '</form>';
             $out .= '</div>';
 
@@ -1616,7 +1616,7 @@ class UsersListController extends AbstractController
 
                 $out .= '<input type="submit" value="Veld aanpassen" ';
                 $out .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary btn-lg">';
-                $out .= $app['form_token']->get_hidden_input();
+                $out .= $form_token_service->get_hidden_input();
                 $out .= '</form>';
 
                 $out .= '</div>';
@@ -1628,9 +1628,9 @@ class UsersListController extends AbstractController
             $out .= '</div>';
         }
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

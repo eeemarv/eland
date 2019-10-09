@@ -30,7 +30,7 @@ class MessagesImagesUploadController extends AbstractController
         Db $db
     ):Response
     {
-        if ($error = $app['form_token']->get_ajax_error($form_token))
+        if ($error = $form_token_service->get_ajax_error($form_token))
         {
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }

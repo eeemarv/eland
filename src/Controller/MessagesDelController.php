@@ -33,9 +33,9 @@ class MessagesDelController extends AbstractController
 
         if($request->isMethod('POST'))
         {
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
+                $alert_service->error($error_token);
             }
 
             $db->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
@@ -49,20 +49,20 @@ class MessagesDelController extends AbstractController
                     set ' . $column . ' = ' . $column . ' - 1
                     where id = ?', [$message['id_category']]);
 
-                $app['alert']->success(ucfirst($message['label']['type_this']) . ' is verwijderd.');
-                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+                $alert_service->success(ucfirst($message['label']['type_this']) . ' is verwijderd.');
+                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
             }
 
-            $app['alert']->error(ucfirst($message['label']['type_this']) . ' is niet verwijderd.');
+            $alert_service->error(ucfirst($message['label']['type_this']) . ' is niet verwijderd.');
         }
 
-        $app['heading']->add(ucfirst($message['label']['type_this']) . ' ');
+        $heading_render->add(ucfirst($message['label']['type_this']) . ' ');
 
-        $app['heading']->add_raw($app['link']->link_no_attr('messages_show', $app['pp_ary'],
+        $heading_render->add_raw($link_render->link_no_attr('messages_show', $app['pp_ary'],
             ['id' => $id], $message['content']));
 
-        $app['heading']->add(' verwijderen?');
-        $app['heading']->fa('newspaper-o');
+        $heading_render->add(' verwijderen?');
+        $heading_render->fa('newspaper-o');
 
         $out = '<div class="panel panel-info printview">';
         $out .= '<div class="panel-heading">';
@@ -84,7 +84,7 @@ class MessagesDelController extends AbstractController
         $out .= $message['validity'];
         $out .= '</dd>';
 
-        if ($app['intersystem_en'] && $app['intersystems']->get_count($app['pp_schema']))
+        if ($app['intersystem_en'] && $this->intersystems_service->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
@@ -110,19 +110,19 @@ class MessagesDelController extends AbstractController
 
         $out .= '<form method="post">';
 
-        $out .= $app['link']->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form></p>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

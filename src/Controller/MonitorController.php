@@ -11,7 +11,7 @@ class MonitorController extends AbstractController
     {
         $out = $app['monitor_process']->monitor();
 
-        return $app->render('base/minimal.html.twig', [
+        return $this->render('base/minimal.html.twig', [
             'content'   => $out,
         ]);
     }

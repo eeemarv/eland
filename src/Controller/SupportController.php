@@ -33,7 +33,7 @@ class SupportController extends AbstractController
                 $errors[] = 'Het bericht is leeg.';
             }
 
-            if (!trim($app['config']->get('support', $app['pp_schema'])))
+            if (!trim($config_service->get('support', $app['pp_schema'])))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
             }
@@ -43,7 +43,7 @@ class SupportController extends AbstractController
                 $errors[] = 'Het master account kan geen E-mail berichten versturen.';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
@@ -74,12 +74,12 @@ class SupportController extends AbstractController
                     'reply_to'	=> $user_email_ary,
                 ], 8000);
 
-                $app['alert']->success('De Support E-mail is verzonden.');
-                $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
+                $alert_service->success('De Support E-mail is verzonden.');
+                $link_render->redirect($app['r_default'], $app['pp_ary'], []);
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
         }
         else
@@ -88,13 +88,13 @@ class SupportController extends AbstractController
 
             if ($app['s_master'])
             {
-                $app['alert']->warning('Het master account kan geen E-mail berichten versturen.');
+                $alert_service->warning('Het master account kan geen E-mail berichten versturen.');
             }
             else
             {
                 if (!$can_reply)
                 {
-                    $app['alert']->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
+                    $alert_service->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
                 }
             }
 
@@ -106,17 +106,17 @@ class SupportController extends AbstractController
             $cc = false;
         }
 
-        if (!$app['config']->get('mailenabled', $app['pp_schema']))
+        if (!$config_service->get('mailenabled', $app['pp_schema']))
         {
-            $app['alert']->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+            $alert_service->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }
-        else if (!$app['config']->get('support', $app['pp_schema']))
+        else if (!$config_service->get('support', $app['pp_schema']))
         {
-            $app['alert']->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+            $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
 
-        $app['heading']->add('Help / Probleem melden');
-        $app['heading']->fa('ambulance');
+        $heading_render->add('Help / Probleem melden');
+        $heading_render->fa('ambulance');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -160,16 +160,16 @@ class SupportController extends AbstractController
         $out .= '</div>';
 
         $out .= '<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('support');
+        $menu_service->set('support');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

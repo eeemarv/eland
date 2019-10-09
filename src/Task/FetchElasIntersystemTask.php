@@ -2,17 +2,17 @@
 
 namespace App\Task;
 
-use App\Service\Cache;
+use App\Service\CacheService;
 use Predis\Client as Predis;
-use App\Service\Typeahead;
+use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
 use App\Cnst\CacheKeyCnst;
 
 class FetchElasIntersystemTask
 {
-	protected $cache;
+	protected $cache_service;
 	protected $predis;
-	protected $typeahead;
+	protected $typeahead_service;
 	protected $logger;
 	protected $client;
 	protected $url;
@@ -24,15 +24,15 @@ class FetchElasIntersystemTask
 	protected $elas_domains;
 
 	public function __construct(
-		Cache $cache,
+		CacheService $cache_service,
 		Predis $predis,
-		Typeahead $typeahead,
+		TypeaheadService $typeahead_service,
 		LoggerInterface $logger
 	)
 	{
-		$this->cache = $cache;
+		$this->cache_service = $cache_service;
 		$this->predis = $predis;
-		$this->typeahead = $typeahead;
+		$this->typeahead_service = $typeahead_service;
 		$this->logger = $logger;
 	}
 
@@ -44,9 +44,9 @@ class FetchElasIntersystemTask
 		$this->now = time();
 		$this->now_gmdate = gmdate('Y-m-d H:i:s', $this->now);
 
-		$this->elas_domains = $this->cache->get(CacheKeyCnst::ELAS_FETCH['domains']);
-		$this->last_fetch = $this->cache->get(CacheKeyCnst::ELAS_FETCH['last']);
-		$this->apikeys_fails = $this->cache->get(CacheKeyCnst::ELAS_FETCH['apikey_fails']);
+		$this->elas_domains = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['domains']);
+		$this->last_fetch = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['last']);
+		$this->apikeys_fails = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['apikey_fails']);
 
 		error_log('-- Last fetch --');
 		error_log(json_encode($this->last_fetch));
@@ -239,8 +239,8 @@ class FetchElasIntersystemTask
 	*/
 	protected function update_cache():void
 	{
-		$this->cache->set(CacheKeyCnst::ELAS_FETCH['last'], $this->last_fetch);
-		$this->cache->set(CacheKeyCnst::ELAS_FETCH['apikey_fails'], $this->apikeys_fails);
+		$this->cache_service->set(CacheKeyCnst::ELAS_FETCH['last'], $this->last_fetch);
+		$this->cache_service->set(CacheKeyCnst::ELAS_FETCH['apikey_fails'], $this->apikeys_fails);
 		error_log('update cache');
 	}
 
@@ -251,7 +251,7 @@ class FetchElasIntersystemTask
 	{
 		$msgs = [];
 
-		$cached = $this->cache->get($this->domain . '_elas_interlets_msgs');
+		$cached = $this->cache_service->get($this->domain . '_elas_interlets_msgs');
 
 		$crawler = $this->client->request('GET', $this->url . '/renderindex.php');
 
@@ -315,7 +315,7 @@ class FetchElasIntersystemTask
 
 			error_log($this->domain . ' : fetched ' . count($msgs) . ' messages');
 
-			$this->cache->set($this->domain . '_elas_interlets_msgs', $msgs);
+			$this->cache_service->set($this->domain . '_elas_interlets_msgs', $msgs);
 			$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;
 
 			return;
@@ -398,7 +398,7 @@ class FetchElasIntersystemTask
 
 		error_log($this->domain . ' : fetched ' . count($msgs) . ' messages');
 
-		$this->cache->set($this->domain . '_elas_interlets_msgs', $msgs);
+		$this->cache_service->set($this->domain . '_elas_interlets_msgs', $msgs);
 		$this->last_fetch['msgs'][$this->domain] = $this->now_gmdate;
 
 		return;
@@ -511,7 +511,7 @@ class FetchElasIntersystemTask
 				'group_id'	=> $ary['group_id'],
 			];
 
-			$this->typeahead->set_thumbprint_by_schema(
+			$this->typeahead_service->set_thumbprint_by_schema(
 				'elas_intersystem_accounts',
 				$schema,
 				$params,
@@ -519,7 +519,7 @@ class FetchElasIntersystemTask
 			);
 		}
 
-		$this->cache->set($this->domain . '_typeahead_data', $users);
+		$this->cache_service->set($this->domain . '_typeahead_data', $users);
 
 		$this->last_fetch['users'][$this->domain] = $this->now_gmdate;
 

@@ -30,7 +30,7 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
 
         $domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-        $accounts = $app['cache']->get($domain . '_typeahead_data');
+        $accounts = $this->cache_service->get($domain . '_typeahead_data');
 
         if (!$accounts)
         {
@@ -47,7 +47,7 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
 
         $crc = (string) crc32(json_encode($accounts));
 
-        $app['typeahead']->set_thumbprint(
+        $typeahead_service->set_thumbprint(
             'elas_intersystem_accounts', $app['pp_ary'], $params, $crc);
 
         return $app->json($accounts);

@@ -10,8 +10,8 @@ use app\cnst\statuscnst;
 use app\cnst\rolecnst;
 use App\Cnst\ContactInputCnst;
 use App\Queue\mail as queue_mail;
-use App\Service\MailAddrSystem;
-use App\Service\MailAddrUser;
+use App\Service\MailAddrSystemService;
+use App\Service\MailAddrUserService;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersEditAdminController extends AbstractController
@@ -49,8 +49,8 @@ class UsersEditAdminController extends AbstractController
         }
         else if ($s_owner)
         {
-            $username_edit = $app['config']->get('users_can_edit_username', $app['pp_schema']);
-            $fullname_edit = $app['config']->get('users_can_edit_fullname', $app['pp_schema']);
+            $username_edit = $config_service->get('users_can_edit_username', $app['pp_schema']);
+            $fullname_edit = $config_service->get('users_can_edit_fullname', $app['pp_schema']);
         }
         else
         {
@@ -148,7 +148,7 @@ class UsersEditAdminController extends AbstractController
                             $warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
                             $warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
                             $warning .= 'E-mail adres. Zie ';
-                            $warning .= $app['link']->link_no_attr('status', $app['pp_ary'], [], 'Status');
+                            $warning .= $link_render->link_no_attr('status', $app['pp_ary'], [], 'Status');
 
                             $warning_2 = '';
 
@@ -166,7 +166,7 @@ class UsersEditAdminController extends AbstractController
 
                             if ($warning_2)
                             {
-                                $app['alert']->warning($warning_2 . $warning);
+                                $alert_service->warning($warning_2 . $warning);
                             }
                         }
                     }
@@ -179,7 +179,7 @@ class UsersEditAdminController extends AbstractController
                         $err = 'Waarschuwing: Geen E-mail adres ingevuld. ';
                         $err .= 'De gebruiker kan geen berichten en notificaties ';
                         $err .= 'ontvangen en zijn/haar paswoord niet resetten.';
-                        $app['alert']->warning($err);
+                        $alert_service->warning($err);
                     }
                 }
 
@@ -343,7 +343,7 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -384,11 +384,11 @@ class UsersEditAdminController extends AbstractController
 
                         $fullname_access_role = AccessCnst::TO_XDB[$fullname_access];
 
-                        $app['xdb']->set('user_fullname_access', (string) $id, [
+                        $xdb_service->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
                         ], $app['pp_schema']);
 
-                        $app['alert']->success('Gebruiker opgeslagen.');
+                        $alert_service->success('Gebruiker opgeslagen.');
 
                         $app['user_cache']->clear($id, $app['pp_schema']);
                         $user = $app['user_cache']->get($id, $app['pp_schema']);
@@ -423,16 +423,16 @@ class UsersEditAdminController extends AbstractController
                         {
                             if ($notify && $password)
                             {
-                                if ($app['config']->get('mailenabled', $app['pp_schema']))
+                                if ($config_service->get('mailenabled', $app['pp_schema']))
                                 {
                                     if ($mailadr)
                                     {
-                                        $app['alert']->success('Een E-mail met paswoord is
+                                        $alert_service->success('Een E-mail met paswoord is
                                             naar de gebruiker verstuurd.');
                                     }
                                     else
                                     {
-                                        $app['alert']->warning('Er is geen E-mail met paswoord
+                                        $alert_service->warning('Er is geen E-mail met paswoord
                                             naar de gebruiker verstuurd want er is geen E-mail
                                             adres ingesteld voor deze gebruiker.');
                                     }
@@ -444,13 +444,13 @@ class UsersEditAdminController extends AbstractController
                                 }
                                 else
                                 {
-                                    $app['alert']->warning('De E-mail functies zijn uitgeschakeld.
+                                    $alert_service->warning('De E-mail functies zijn uitgeschakeld.
                                         Geen E-mail met paswoord naar de gebruiker verstuurd.');
                                 }
                             }
                             else
                             {
-                                $app['alert']->warning('Geen E-mail met paswoord naar
+                                $alert_service->warning('Geen E-mail met paswoord naar
                                     de gebruiker verstuurd.');
                             }
                         }
@@ -465,13 +465,13 @@ class UsersEditAdminController extends AbstractController
                             $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                         }
 
-                        $app['intersystems']->clear_cache($app['s_schema']);
+                        $this->intersystems_service->clear_cache($app['s_schema']);
 
-                        $app['link']->redirect($app['r_users'], $app['pp_ary'], ['id' => $id]);
+                        $link_render->redirect($app['r_users'], $app['pp_ary'], ['id' => $id]);
                     }
                     else
                     {
-                        $app['alert']->error('Gebruiker niet opgeslagen.');
+                        $alert_service->error('Gebruiker niet opgeslagen.');
                     }
                 }
                 else if ($is_edit)
@@ -495,14 +495,14 @@ class UsersEditAdminController extends AbstractController
 
                         $fullname_access_role = AccessCnst::TO_XDB[$fullname_access];
 
-                        $app['xdb']->set('user_fullname_access', (string) $id, [
+                        $xdb_service->set('user_fullname_access', (string) $id, [
                             'fullname_access' => $fullname_access_role,
                         ], $app['pp_schema']);
 
                         $app['user_cache']->clear($id, $app['pp_schema']);
                         $user = $app['user_cache']->get($id, $app['pp_schema']);
 
-                        $app['alert']->success('Gebruiker aangepast.');
+                        $alert_service->success('Gebruiker aangepast.');
 
                         if ($app['pp_admin'])
                         {
@@ -580,16 +580,16 @@ class UsersEditAdminController extends AbstractController
                             {
                                 if ($notify && $password)
                                 {
-                                    if ($app['config']->get('mailenabled', $app['pp_schema']))
+                                    if ($config_service->get('mailenabled', $app['pp_schema']))
                                     {
                                         if ($mailadr)
                                         {
-                                            $app['alert']->success('E-mail met paswoord
+                                            $alert_service->success('E-mail met paswoord
                                                 naar de gebruiker verstuurd.');
                                         }
                                         else
                                         {
-                                            $app['alert']->warning('Er werd geen E-mail
+                                            $alert_service->warning('Er werd geen E-mail
                                                 met passwoord naar de gebruiker verstuurd
                                                 want er is geen E-mail adres voor deze
                                                 gebruiker ingesteld.');
@@ -602,13 +602,13 @@ class UsersEditAdminController extends AbstractController
                                     }
                                     else
                                     {
-                                        $app['alert']->warning('De E-mail functies zijn uitgeschakeld.
+                                        $alert_service->warning('De E-mail functies zijn uitgeschakeld.
                                             Geen E-mail met paswoord naar de gebruiker verstuurd.');
                                     }
                                 }
                                 else
                                 {
-                                    $app['alert']->warning('Geen E-mail met
+                                    $alert_service->warning('Geen E-mail met
                                         paswoord naar de gebruiker verstuurd.');
                                 }
                             }
@@ -627,21 +627,21 @@ class UsersEditAdminController extends AbstractController
                                 $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                             }
 
-                            $app['intersystems']->clear_cache($app['s_schema']);
+                            $this->intersystems_service->clear_cache($app['s_schema']);
                         }
 
-                        $app['link']->redirect($app['r_users_show'], $app['pp_ary'],
+                        $link_render->redirect($app['r_users_show'], $app['pp_ary'],
                             ['id' => $id]);
                     }
                     else
                     {
-                        $app['alert']->error('Gebruiker niet aangepast.');
+                        $alert_service->error('Gebruiker niet aangepast.');
                     }
                 }
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
 
                 if ($is_edit)
                 {
@@ -701,8 +701,8 @@ class UsersEditAdminController extends AbstractController
             else if ($app['pp_admin'])
             {
                 $user = [
-                    'minlimit'		=> $app['config']->get('preset_minlimit', $app['pp_schema']),
-                    'maxlimit'		=> $app['config']->get('preset_maxlimit', $app['pp_schema']),
+                    'minlimit'		=> $config_service->get('preset_minlimit', $app['pp_schema']),
+                    'maxlimit'		=> $config_service->get('preset_maxlimit', $app['pp_schema']),
                     'accountrole'	=> 'user',
                     'status'		=> '1',
                     'cron_saldo'	=> 1,
@@ -722,7 +722,7 @@ class UsersEditAdminController extends AbstractController
                         {
                             $remote_schema = $app['systems']->get_schema_from_legacy_eland_origin($group['url']);
 
-                            $admin_mail = $app['config']->get('admin', $remote_schema);
+                            $admin_mail = $config_service->get('admin', $remote_schema);
 
                             foreach ($contact as $k => $c)
                             {
@@ -734,7 +734,7 @@ class UsersEditAdminController extends AbstractController
                             }
 
                             // name from source is preferable
-                            $user['name'] = $user['fullname'] = $app['config']->get('systemname', $remote_schema);
+                            $user['name'] = $user['fullname'] = $config_service->get('systemname', $remote_schema);
                         }
                     }
 
@@ -768,24 +768,24 @@ class UsersEditAdminController extends AbstractController
 
         if ($s_owner && !$app['pp_admin'] && $is_edit)
         {
-            $app['heading']->add('Je profiel aanpassen');
+            $heading_render->add('Je profiel aanpassen');
         }
         else
         {
-            $app['heading']->add('Gebruiker ');
+            $heading_render->add('Gebruiker ');
 
             if ($is_edit)
             {
-                $app['heading']->add('aanpassen: ');
-                $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
+                $heading_render->add('aanpassen: ');
+                $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
             }
             else
             {
-                $app['heading']->add('toevoegen');
+                $heading_render->add('toevoegen');
             }
         }
 
-        $app['heading']->fa('user');
+        $heading_render->fa('user');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -808,7 +808,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '" required maxlength="20" ';
             $out .= 'data-typeahead="';
 
-            $out .= $app['typeahead']->ini($app['pp_ary'])
+            $out .= $typeahead_service->ini($app['pp_ary'])
                 ->add('account_codes', [])
                 ->str([
                     'render'	=> [
@@ -845,7 +845,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '" required maxlength="50" ';
             $out .= 'data-typeahead="';
 
-            $out .= $app['typeahead']->ini($app['pp_ary'])
+            $out .= $typeahead_service->ini($app['pp_ary'])
                 ->add('usernames', [])
                 ->str([
                     'render'	=> [
@@ -914,7 +914,7 @@ class UsersEditAdminController extends AbstractController
         $out .= 'required maxlength="6" ';
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('postcodes', [])
             ->str();
 
@@ -1104,7 +1104,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-arrow-down"></span> ';
-            $out .= $app['config']->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $app['pp_schema']);
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="minlimit" name="minlimit" ';
@@ -1116,12 +1116,12 @@ class UsersEditAdminController extends AbstractController
             $out .= 'afwijkende minimum limiet wil instellen ';
             $out .= 'voor dit account. Als dit veld leeg is, ';
             $out .= 'dan is de algemeen geldende ';
-            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'], 'Minimum Systeemslimiet');
             $out .= ' ';
             $out .= 'van toepassing. ';
 
-            if ($app['config']->get('minlimit', $app['pp_schema']) === '')
+            if ($config_service->get('minlimit', $app['pp_schema']) === '')
             {
                 $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
                 $out .= 'geledende Minimum Systeemslimiet ingesteld. ';
@@ -1130,24 +1130,24 @@ class UsersEditAdminController extends AbstractController
             {
                 $out .= 'De algemeen geldende ';
                 $out .= 'Minimum Systeemslimiet bedraagt <strong>';
-                $out .= $app['config']->get('minlimit', $app['pp_schema']);
+                $out .= $config_service->get('minlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['pp_schema']);
+                $out .= $config_service->get('currency', $app['pp_schema']);
                 $out .= '</strong>. ';
             }
 
             $out .= 'Dit veld wordt bij aanmaak van een ';
             $out .= 'gebruiker vooraf ingevuld met de "';
-            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'],
                 'Preset Individuele Minimum Account Limiet');
             $out .= '" ';
             $out .= 'die gedefiniëerd is in de instellingen.';
 
-            if ($app['config']->get('preset_minlimit', $app['pp_schema']) !== '')
+            if ($config_service->get('preset_minlimit', $app['pp_schema']) !== '')
             {
                 $out .= ' De Preset bedraagt momenteel <strong>';
-                $out .= $app['config']->get('preset_minlimit', $app['pp_schema']);
+                $out .= $config_service->get('preset_minlimit', $app['pp_schema']);
                 $out .= '</strong>.';
             }
 
@@ -1160,7 +1160,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-arrow-up"></span> ';
-            $out .= $app['config']->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $app['pp_schema']);
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="maxlimit" name="maxlimit" ';
@@ -1173,13 +1173,13 @@ class UsersEditAdminController extends AbstractController
             $out .= 'afwijkende maximum limiet wil instellen ';
             $out .= 'voor dit account. Als dit veld leeg is, ';
             $out .= 'dan is de algemeen geldende ';
-            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'],
                 'Maximum Systeemslimiet');
             $out .= ' ';
             $out .= 'van toepassing. ';
 
-            if ($app['config']->get('maxlimit', $app['pp_schema']) === '')
+            if ($config_service->get('maxlimit', $app['pp_schema']) === '')
             {
                 $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
                 $out .= 'geledende Maximum Systeemslimiet ingesteld. ';
@@ -1188,24 +1188,24 @@ class UsersEditAdminController extends AbstractController
             {
                 $out .= 'De algemeen geldende Maximum ';
                 $out .= 'Systeemslimiet bedraagt <strong>';
-                $out .= $app['config']->get('maxlimit', $app['pp_schema']);
+                $out .= $config_service->get('maxlimit', $app['pp_schema']);
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['pp_schema']);
+                $out .= $config_service->get('currency', $app['pp_schema']);
                 $out .= '</strong>. ';
             }
 
             $out .= 'Dit veld wordt bij aanmaak van een gebruiker ';
             $out .= 'vooraf ingevuld wanneer "';
-            $out .= $app['link']->link_no_attr('config', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('config', $app['pp_ary'],
                 ['tab' => 'balance'],
                 'Preset Individuele Maximum Account Limiet');
             $out .= '" ';
             $out .= 'is ingevuld in de instellingen.';
 
-            if ($app['config']->get('preset_maxlimit', $app['pp_schema']) !== '')
+            if ($config_service->get('preset_maxlimit', $app['pp_schema']) !== '')
             {
                 $out .= ' De Preset bedraagt momenteel <strong>';
-                $out .= $app['config']->get('preset_maxlimit', $app['pp_schema']);
+                $out .= $config_service->get('preset_maxlimit', $app['pp_schema']);
                 $out .= '</strong>.';
             }
 
@@ -1297,12 +1297,12 @@ class UsersEditAdminController extends AbstractController
 
         if ($is_edit)
         {
-            $out .= $app['link']->btn_cancel($app['r_users_show'], $app['pp_ary'],
+            $out .= $link_render->btn_cancel($app['r_users_show'], $app['pp_ary'],
                 ['id' => $id]);
         }
         else
         {
-            $out .= $app['link']->btn_cancel($app['r_users'], $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel($app['r_users'], $app['pp_ary'], []);
         }
 
         $out .= '&nbsp;';
@@ -1310,16 +1310,16 @@ class UsersEditAdminController extends AbstractController
         $out .= 'value="Opslaan" class="btn btn-';
         $out .= $is_edit ? 'primary' : 'success';
         $out .= ' btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -1327,8 +1327,8 @@ class UsersEditAdminController extends AbstractController
 
     private static function send_activation_mail(
         queue_mail $queue_mail,
-        MailAddrSystem $mail_addr_system,
-        MailAddrUser $mail_addr_user,
+        MailAddrSystemService $mail_addr_system_service,
+        MailAddrUserService $mail_addr_user_service,
         bool $to_user_en,
         string $password,
         int $user_id,

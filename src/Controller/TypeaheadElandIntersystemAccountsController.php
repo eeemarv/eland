@@ -14,7 +14,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
         Db $db
     ):Response
     {
-        $eland_intersystems = $app['intersystems']->get_eland($app['pp_schema']);
+        $eland_intersystems = $this->intersystems_service->get_eland($app['pp_schema']);
 
         if (!isset($eland_intersystems[$remote_schema]))
         {
@@ -67,7 +67,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
 
         $crc = (string) crc32(json_encode($accounts));
 
-        $app['typeahead']->set_thumbprint(
+        $typeahead_service->set_thumbprint(
             'eland_intersystem_accounts', $app['pp_ary'], $params, $crc);
 
         return $app->json($accounts);

@@ -56,13 +56,13 @@ class ContactsDelController extends AbstractController
                 {
                     if ($app['pp_admin'])
                     {
-                        $app['alert']->warning(
+                        $alert_service->warning(
                             'Waarschuwing: dit is het enige E-mail adres
                             van een actieve gebruiker');
                     }
                     else
                     {
-                        $app['alert']->warning(
+                        $alert_service->warning(
                             'Waarschuwing: dit is je enige E-mail adres.');
                     }
                 }
@@ -73,7 +73,7 @@ class ContactsDelController extends AbstractController
         {
             $errors = [];
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -82,31 +82,31 @@ class ContactsDelController extends AbstractController
             {
                 $db->delete($app['pp_schema'] . '.contact', ['id' => $id]);
 
-                $app['alert']->success('Contact verwijderd.');
+                $alert_service->success('Contact verwijderd.');
 
                 if ($redirect_contacts)
                 {
-                    $app['link']->redirect('contacts', $app['pp_ary'], []);
+                    $link_render->redirect('contacts', $app['pp_ary'], []);
                 }
                 else
                 {
-                    $app['link']->redirect('users_show', $app['pp_ary'],
+                    $link_render->redirect('users_show', $app['pp_ary'],
                         ['id' => $user_id]);
                 }
             }
 
-            $app['alert']->error($error_token);
+            $alert_service->error($error_token);
         }
 
         if ($app['pp_admin'])
         {
-            $app['heading']->add('Contact verwijderen voor ');
-            $app['heading']->add_raw($app['account']->link($user_id, $app['pp_ary']));
-            $app['heading']->add('?');
+            $heading_render->add('Contact verwijderen voor ');
+            $heading_render->add_raw($app['account']->link($user_id, $app['pp_ary']));
+            $heading_render->add('?');
         }
         else
         {
-            $app['heading']->add('Contact verwijderen?');
+            $heading_render->add('Contact verwijderen?');
         }
 
         $out = '<div class="panel panel-info">';
@@ -145,26 +145,26 @@ class ContactsDelController extends AbstractController
 
         if ($redirect_contacts)
         {
-            $out .= $app['link']->btn_cancel('contacts', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('contacts', $app['pp_ary'], []);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('users_show', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('users_show', $app['pp_ary'],
                 ['id' => $user_id]);
         }
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set($redirect_contacts ? 'contacts' : 'users');
+        $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

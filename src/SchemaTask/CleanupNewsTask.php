@@ -5,28 +5,28 @@ namespace App\SchemaTask;
 use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use App\Service\Xdb;
+use App\Service\XdbService;
 
 use App\Service\Schedule;
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class CleanupNewsTask extends SchemaTask
 {
 	protected $db;
-	protected $xdb;
+	protected $xdb_service;
 	protected $logger;
 
 	public function __construct(
 		Db $db,
-		Xdb $xdb,
+		XdbService $xdb_service,
 		LoggerInterface $logger,
 		Schedule $schedule,
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
-		$this->xdb = $xdb;
+		$this->xdb_service = $xdb_service;
 		$this->logger = $logger;
 	}
 
@@ -41,7 +41,7 @@ class CleanupNewsTask extends SchemaTask
 
 		foreach ($news as $n)
 		{
-			$this->xdb->del('news_access', (string) $n['id'], $this->schema);
+			$this->xdb_service->del('news_access', (string) $n['id'], $this->schema);
 			$this->db->delete($this->schema . '.news', ['id' => $n['id']]);
 			$this->logger->info('removed news item ' . $n['headline'],
 				['schema' => $this->schema]);

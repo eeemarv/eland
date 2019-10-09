@@ -3,34 +3,34 @@
 namespace App\Task;
 
 use Doctrine\DBAL\Connection as Db;
-use App\Service\Cache;
-use App\Service\Systems;
+use App\Service\CacheService;
+use App\Service\SystemsService;
 use App\Cnst\CacheKeyCnst;
 
 class GetElasIntersystemDomainsTask
 {
-	protected $cache;
+	protected $cache_service;
 	protected $db;
-	protected $systems;
+	protected $systems_service;
 
 	public function __construct(
 		Db $db,
-		Cache $cache,
-		Systems $systems
+		CacheService $cache_service,
+		SystemsService $systems_service
 	)
 	{
 		$this->db = $db;
-		$this->cache = $cache;
-		$this->systems = $systems;
+		$this->cache_service = $cache_service;
+		$this->systems_service = $systems_service;
 	}
 
 	function process():void
 	{
-		$elas_intersystem_domains = $this->cache->get(CacheKeyCnst::ELAS_FETCH['domains']);
+		$elas_intersystem_domains = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['domains']);
 
 		$domains = [];
 
-		foreach ($this->systems->get_schemas() as $sch)
+		foreach ($this->systems_service->get_schemas() as $sch)
 		{
 			$groups = $this->db->fetchAll('select url, remoteapikey, id
 				from ' . $sch . '.letsgroups
@@ -40,7 +40,7 @@ class GetElasIntersystemDomainsTask
 
 			foreach ($groups as $group)
 			{
-				if ($this->systems->get_schema_from_legacy_eland_origin($group['url']))
+				if ($this->systems_service->get_schema_from_legacy_eland_origin($group['url']))
 				{
 					continue;
 				}
@@ -64,7 +64,7 @@ class GetElasIntersystemDomainsTask
 			return;
 		}
 
-		$this->cache->set(CacheKeyCnst::ELAS_FETCH['domains'], $domains);
+		$this->cache_service->set(CacheKeyCnst::ELAS_FETCH['domains'], $domains);
 
 		return;
 	}

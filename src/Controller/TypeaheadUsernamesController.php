@@ -30,7 +30,7 @@ class TypeaheadUsernamesController extends AbstractController
 
         $crc = (string) crc32(json_encode($usernames));
 
-        $app['typeahead']->set_thumbprint('usernames', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('usernames', $app['pp_ary'], [], $crc);
 
         return $app->json($usernames);
     }

@@ -11,13 +11,13 @@ class ForumEditController extends AbstractController
 {
     public function forum_edit(Request $request, app $app, string $forum_id):Response
     {
-        if (!$app['config']->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De forum pagina is niet ingeschakeld.');
-            $app['link']->redirect($app['r_default'], $app['pp_ary'], []);
+            $alert_service->warning('De forum pagina is niet ingeschakeld.');
+            $link_render->redirect($app['r_default'], $app['pp_ary'], []);
         }
 
-        $row = $app['xdb']->get('forum', $forum_id, $app['pp_schema']);
+        $row = $xdb_service->get('forum', $forum_id, $app['pp_schema']);
 
         if ($row)
         {
@@ -26,8 +26,8 @@ class ForumEditController extends AbstractController
 
         if (!isset($forum_post))
         {
-            $app['alert']->error('Post niet gevonden.');
-            $app['link']->redirect('forum', $app['pp_ary'], []);
+            $alert_service->error('Post niet gevonden.');
+            $link_render->redirect('forum', $app['pp_ary'], []);
         }
 
         $s_owner = $forum_post['uid']
@@ -44,19 +44,19 @@ class ForumEditController extends AbstractController
         {
             if ($is_topic)
             {
-                $app['alert']->error('Je hebt onvoldoende rechten om dit onderwerp aan te passen.');
-                $app['link']->redirect('forum_topic', $app['pp_ary'],
+                $alert_service->error('Je hebt onvoldoende rechten om dit onderwerp aan te passen.');
+                $link_render->redirect('forum_topic', $app['pp_ary'],
                     ['topic_id' => $forum_id]);
             }
 
-            $app['alert']->error('Je hebt onvoldoende rechten om deze reactie aan te passen.');
-            $app['link']->redirect('forum_topic', $app['pp_ary'],
+            $alert_service->error('Je hebt onvoldoende rechten om deze reactie aan te passen.');
+            $link_render->redirect('forum_topic', $app['pp_ary'],
                 ['topic_id' => $topic_id]);
         }
 
         if (!$is_topic)
         {
-            $row = $app['xdb']->get('forum', $topic_id, $app['pp_schema']);
+            $row = $xdb_service->get('forum', $topic_id, $app['pp_schema']);
 
             if ($row)
             {
@@ -65,8 +65,8 @@ class ForumEditController extends AbstractController
 
             if (!$app['item_access']->is_visible_xdb($topic_post['access']))
             {
-                $app['alert']->error('Je hebt geen toegang tot dit forum onderwerp.');
-                $app['link']->redirect('forum', $app['pp_ary'], []);
+                $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
+                $link_render->redirect('forum', $app['pp_ary'], []);
             }
         }
 
@@ -110,28 +110,28 @@ class ForumEditController extends AbstractController
                 $errors[] = 'De inhoud van je bericht is te kort.';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
             if (!count($errors))
             {
-                $app['xdb']->set('forum', $forum_id, $forum_post, $app['pp_schema']);
+                $xdb_service->set('forum', $forum_id, $forum_post, $app['pp_schema']);
 
                 if ($is_topic)
                 {
-                    $app['alert']->success('Onderwerp aangepast.');
-                    $app['link']->redirect('forum_topic', $app['pp_ary'],
+                    $alert_service->success('Onderwerp aangepast.');
+                    $link_render->redirect('forum_topic', $app['pp_ary'],
                         ['topic_id' => $forum_id]);
                 }
 
-                $app['alert']->success('Reactie aangepast.');
-                $app['link']->redirect('forum_topic', $app['pp_ary'],
+                $alert_service->success('Reactie aangepast.');
+                $link_render->redirect('forum_topic', $app['pp_ary'],
                     ['topic_id' => $topic_id]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
         else if ($is_topic)
         {
@@ -142,14 +142,14 @@ class ForumEditController extends AbstractController
 
         if ($is_topic)
         {
-            $app['heading']->add('Forum onderwerp aanpassen');
+            $heading_render->add('Forum onderwerp aanpassen');
         }
         else
         {
-            $app['heading']->add('Reactie aanpassen');
+            $heading_render->add('Reactie aanpassen');
         }
 
-        $app['heading']->fa('comments-o');
+        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -180,12 +180,12 @@ class ForumEditController extends AbstractController
         {
             $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
 
-            $out .= $app['link']->btn_cancel('forum_topic',
+            $out .= $link_render->btn_cancel('forum_topic',
                 $app['pp_ary'], ['topic_id' => $forum_id]);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('forum_topic',
+            $out .= $link_render->btn_cancel('forum_topic',
                 $app['pp_ary'], ['topic_id' => $topic_id]);
         }
 
@@ -193,16 +193,16 @@ class ForumEditController extends AbstractController
         $out .= '<input type="submit" name="zend" value="Aanpassen" ';
         $out .= 'class="btn btn-primary btn-lg">';
 
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('forum');
+        $menu_service->set('forum');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -10,11 +10,11 @@ class config
 
 	public function __construct(cnfg $config)
 	{
-		$this->config = $config;
+		$this->config_service = $config_service;
 	}
 
 	public function get(string $key, string $schema)
 	{
-		return $this->config->get($key, $schema);
+		return $this->config_service->get($key, $schema);
 	}
 }

@@ -10,13 +10,13 @@ class IndexController extends AbstractController
 {
     public function index(Request $request, app $app):Response
     {
-        $app['menu']->set('index');
+        $menu_service->set('index');
 
         $schemas = $app['systems']->get_schemas();
 
         asort($schemas);
 
-        $response = $app->render('index/index.html.twig', [
+        $response = $this->render('index/index.html.twig', [
             'schemas'       => $schemas,
         ]);
 

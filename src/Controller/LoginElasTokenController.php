@@ -23,7 +23,7 @@ class LoginElasTokenController extends AbstractController
             {
                 // record logins to link the apikeys to domains and systems
                 $domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
-                $app['xdb']->set('apikey_login', $apikey, [
+                $xdb_service->set('apikey_login', $apikey, [
                     'domain' => $domain_referrer
                 ], $app['pp_schema']);
             }
@@ -32,15 +32,15 @@ class LoginElasTokenController extends AbstractController
                 $elas_token . ' succeeded. referrer: ' . $referrer,
                 ['schema' => $app['pp_schema']]);
 
-            return $app['link']->redirect($app['r_default'], [
+            return $link_render->redirect($app['r_default'], [
                 'role_short'	=> 'g',
                 'system'	    => $app['pp_system'],
                 'welcome'	    => '1',
             ], []);
         }
 
-        $app['alert']->error('De interSysteem login is mislukt.');
-        $app['link']->redirect('login', $app['pp_ary'], []);
+        $alert_service->error('De interSysteem login is mislukt.');
+        $link_render->redirect('login', $app['pp_ary'], []);
 
         return new Response('');
     }

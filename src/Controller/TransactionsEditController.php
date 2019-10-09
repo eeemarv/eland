@@ -16,9 +16,9 @@ class TransactionsEditController extends AbstractController
         Db $db
     ):Response
     {
-        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
+        $intersystem_account_schemas = $this->intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
+        $s_inter_schema_check = array_merge($this->intersystems_service->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $transaction = $db->fetchAssoc('select t.*
@@ -50,17 +50,17 @@ class TransactionsEditController extends AbstractController
 
         if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
         {
-            $app['alert']->error('De omschrijving van een transactie
+            $alert_service->error('De omschrijving van een transactie
                 naar een interSysteem dat draait op eLAS kan
                 niet aangepast worden.');
-            $app['link']->redirect('transactions_show', $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect('transactions_show', $app['pp_ary'], ['id' => $id]);
         }
 
         if ($request->isMethod('POST'))
         {
             $description = trim($request->request->get('description', ''));
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -92,16 +92,16 @@ class TransactionsEditController extends AbstractController
                     '" to "' . $description . '", transid: ' .
                     $transaction['transid'], ['schema' => $app['pp_schema']]);
 
-                $app['alert']->success('Omschrijving transactie aangepast.');
+                $alert_service->success('Omschrijving transactie aangepast.');
 
-                $app['link']->redirect('transactions_show', $app['pp_ary'], ['id' => $id]);
+                $link_render->redirect('transactions_show', $app['pp_ary'], ['id' => $id]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
-        $app['heading']->add('Omschrijving transactie aanpassen');
-        $app['heading']->fa('exchange');
+        $heading_render->add('Omschrijving transactie aanpassen');
+        $heading_render->fa('exchange');
 
         $out = '<i><ul>';
         $out .= '<li>Enkel Admins kunnen de omschrijving van ';
@@ -233,7 +233,7 @@ class TransactionsEditController extends AbstractController
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -258,12 +258,12 @@ class TransactionsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('transactions_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('transactions_show', $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Aanpassen" class="btn btn-primary btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="hidden" name="transid" ';
         $out .= 'value="';
         $out .= $transaction['transid'];
@@ -273,9 +273,9 @@ class TransactionsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('transactions');
+        $menu_service->set('transactions');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

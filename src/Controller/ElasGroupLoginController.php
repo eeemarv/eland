@@ -27,7 +27,7 @@ class ElasGroupLoginController extends AbstractController
             ], 404);
         }
 
-        $elas_intersystems = $app['intersystems']->get_elas($app['s_schema']);
+        $elas_intersystems = $this->intersystems_service->get_elas($app['s_schema']);
 
         if (!isset($elas_intersystems[$group_id]))
         {

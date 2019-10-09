@@ -22,7 +22,7 @@ class TransactionsAddController extends AbstractController
         $tuid = (int) $request->query->get('tuid', 0);
         $tus = $request->query->get('tus', '');
 
-        $currency = $app['config']->get('currency', $app['pp_schema']);
+        $currency = $config_service->get('currency', $app['pp_schema']);
 
         $transaction = [];
 
@@ -158,7 +158,7 @@ class TransactionsAddController extends AbstractController
             {
                 if ($fromuser['minlimit'] === -999999999)
                 {
-                    $minlimit = $app['config']->get('minlimit', $app['pp_schema']);
+                    $minlimit = $config_service->get('minlimit', $app['pp_schema']);
 
                     if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
                     {
@@ -191,7 +191,7 @@ class TransactionsAddController extends AbstractController
             {
                 if ($touser['maxlimit'] === 999999999)
                 {
-                    $maxlimit = $app['config']->get('maxlimit', $app['pp_schema']);
+                    $maxlimit = $config_service->get('maxlimit', $app['pp_schema']);
 
                     if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
                     {
@@ -229,14 +229,14 @@ class TransactionsAddController extends AbstractController
 
             if ($app['pp_user'] && !count($errors))
             {
-                $balance_eq = $app['config']->get('balance_equilibrium', $app['pp_schema']);
+                $balance_eq = $config_service->get('balance_equilibrium', $app['pp_schema']);
 
                 if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
                 {
                     $err = 'Als Uitstapper kan je geen ';
                     $err .= $amount;
                     $err .= ' ';
-                    $err .= $app['config']->get('currency', $app['pp_schema']);
+                    $err .= $config_service->get('currency', $app['pp_schema']);
                     $err .= ' uitgeven.';
                     $errors[] = $err;
                 }
@@ -247,13 +247,13 @@ class TransactionsAddController extends AbstractController
                     $err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
                     $err .= ' heeft de status \'Uitstapper\' en kan geen ';
                     $err .= $amount . ' ';
-                    $err .= $app['config']->get('currency', $app['pp_schema']);
+                    $err .= $config_service->get('currency', $app['pp_schema']);
                     $err .= ' ontvangen.';
                     $errors[] = $err;
                 }
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -271,7 +271,7 @@ class TransactionsAddController extends AbstractController
 
             if(count($errors))
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
             else if ($group_id == 'self')
             {
@@ -279,14 +279,14 @@ class TransactionsAddController extends AbstractController
                 {
                     $transaction['id'] = $id;
                     $app['mail_transaction']->queue($transaction, $app['pp_schema']);
-                    $app['alert']->success('Transactie opgeslagen');
+                    $alert_service->success('Transactie opgeslagen');
                 }
                 else
                 {
-                    $app['alert']->error('Gefaalde transactie');
+                    $alert_service->error('Gefaalde transactie');
                 }
 
-                $app['link']->redirect('transactions', $app['pp_ary'], []);
+                $link_render->redirect('transactions', $app['pp_ary'], []);
             }
             else if ($group['apimethod'] == 'mail')
             {
@@ -299,29 +299,29 @@ class TransactionsAddController extends AbstractController
 
                     $app['mail_transaction']->queue_mail_type($transaction, $app['pp_schema']);
 
-                    $app['alert']->success('InterSysteem transactie opgeslagen. Een E-mail werd
+                    $alert_service->success('InterSysteem transactie opgeslagen. Een E-mail werd
                         verstuurd naar de administratie van het andere Systeem om de transactie aldaar
                         manueel te verwerken.');
                 }
                 else
                 {
-                    $app['alert']->error('Gefaalde interSysteem transactie');
+                    $alert_service->error('Gefaalde interSysteem transactie');
                 }
 
-                $app['link']->redirect('transactions', $app['pp_ary'], []);
+                $link_render->redirect('transactions', $app['pp_ary'], []);
             }
             else if ($group['apimethod'] != 'elassoap')
             {
-                $app['alert']->error('InterSysteem ' .
+                $alert_service->error('InterSysteem ' .
                     $group['groupname'] .
                     ' heeft geen geldige Api Methode.' . $contact_admin);
-                $app['link']->redirect('transactions', $app['pp_ary'], []);
+                $link_render->redirect('transactions', $app['pp_ary'], []);
             }
             else if (!$group_domain)
             {
-                $app['alert']->error('Geen URL ingesteld voor interSysteem ' .
+                $alert_service->error('Geen URL ingesteld voor interSysteem ' .
                     $group['groupname'] . '. ' . $contact_admin);
-                $app['link']->redirect('transactions', $app['pp_ary'], []);
+                $link_render->redirect('transactions', $app['pp_ary'], []);
             }
             else if (!$app['systems']->get_schema_from_legacy_eland_origin($group['url']))
             {
@@ -342,7 +342,7 @@ class TransactionsAddController extends AbstractController
                     $errors[] = 'Geen Remote Account Code ingesteld voor dit interSysteem.' . $contact_admin;
                 }
 
-                $currencyratio = $app['config']->get('currencyratio', $app['pp_schema']);
+                $currencyratio = $config_service->get('currencyratio', $app['pp_schema']);
 
                 if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
                 {
@@ -351,7 +351,7 @@ class TransactionsAddController extends AbstractController
 
                 if (strlen($letscode_to))
                 {
-                    $active_users = $app['cache']->get($group['domain'] . '_typeahead_data');
+                    $active_users = $this->cache_service->get($group['domain'] . '_typeahead_data');
 
                     $user_letscode_found = false;
 
@@ -380,8 +380,8 @@ class TransactionsAddController extends AbstractController
 
                 if (count($errors))
                 {
-                    $app['alert']->error($errors);
-                    $app['link']->redirect('transactions', $app['pp_ary'], []);
+                    $alert_service->error($errors);
+                    $link_render->redirect('transactions', $app['pp_ary'], []);
                 }
 
                 $trans = $transaction;
@@ -401,8 +401,8 @@ class TransactionsAddController extends AbstractController
 
                 if ($error)
                 {
-                    $app['alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-                    $app['link']->redirect('transactions', $app['pp_ary'], []);
+                    $alert_service->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+                    $link_render->redirect('transactions', $app['pp_ary'], []);
                 }
 
                 $result = $client->call('dopayment', [
@@ -420,8 +420,8 @@ class TransactionsAddController extends AbstractController
 
                 if ($error)
                 {
-                    $app['alert']->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-                    $app['link']->redirect('transactions', $app['pp_ary'], []);
+                    $alert_service->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
+                    $link_render->redirect('transactions', $app['pp_ary'], []);
                 }
 
                 if ($result == 'OFFLINE')
@@ -461,8 +461,8 @@ class TransactionsAddController extends AbstractController
 
                 if (count($errors))
                 {
-                    $app['alert']->error($errors);
-                    $app['link']->redirect('transactions', $app['pp_ary'], []);
+                    $alert_service->error($errors);
+                    $link_render->redirect('transactions', $app['pp_ary'], []);
                 }
 
                 $transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
@@ -485,11 +485,11 @@ class TransactionsAddController extends AbstractController
                         ],
                     ], 9000);
 
-                    $app['alert']->error('De lokale commit van de interSysteem
+                    $alert_service->error('De lokale commit van de interSysteem
                         transactie is niet geslaagd. ' .
                         $contact_admin);
 
-                    $app['link']->redirect('transactions', $app['pp_ary'], []);
+                    $link_render->redirect('transactions', $app['pp_ary'], []);
                 }
 
                 $transaction['id'] = $id;
@@ -497,8 +497,8 @@ class TransactionsAddController extends AbstractController
                 // to eLAS intersystem
                 $app['mail_transaction']->queue($transaction, $app['pp_schema']);
 
-                $app['alert']->success('De interSysteem transactie werd verwerkt.');
-                $app['link']->redirect('transactions', $app['pp_ary'], []);
+                $alert_service->success('De interSysteem transactie werd verwerkt.');
+                $link_render->redirect('transactions', $app['pp_ary'], []);
             }
             else
             {
@@ -528,7 +528,7 @@ class TransactionsAddController extends AbstractController
                 if (!$remote_group && !count($errors))
                 {
                     $err = 'Het andere Systeem heeft dit Systeem (';
-                    $err .= $app['config']->get('systemname', $app['pp_schema']);
+                    $err .= $config_service->get('systemname', $app['pp_schema']);
                     $err .= ') niet geconfigureerd als interSysteem.';
                     $errors[] = $err;
                 }
@@ -557,10 +557,10 @@ class TransactionsAddController extends AbstractController
                     $errors[] = 'Het interSysteem Account in het andere Systeem heeft geen actieve status.';
                 }
 
-                $remote_currency = $app['config']->get('currency', $remote_schema);
-                $remote_currencyratio = $app['config']->get('currencyratio', $remote_schema);
-                $remote_balance_eq = $app['config']->get('balance_equilibrium', $remote_schema);
-                $currencyratio = $app['config']->get('currencyratio', $app['pp_schema']);
+                $remote_currency = $config_service->get('currency', $remote_schema);
+                $remote_currencyratio = $config_service->get('currencyratio', $remote_schema);
+                $remote_balance_eq = $config_service->get('balance_equilibrium', $remote_schema);
+                $currencyratio = $config_service->get('currencyratio', $app['pp_schema']);
 
                 if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
                     && !count($errors))
@@ -586,7 +586,7 @@ class TransactionsAddController extends AbstractController
                 {
                     if ($remote_interlets_account['minlimit'] === -999999999)
                     {
-                        $minlimit = $app['config']->get('minlimit', $remote_schema);
+                        $minlimit = $config_service->get('minlimit', $remote_schema);
 
                         if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
                         {
@@ -627,7 +627,7 @@ class TransactionsAddController extends AbstractController
                     $err .= $remote_amount . ' ';
                     $err .= $remote_currency . ' uitgeven ';
                     $err .= '(' . $amount . ' ';
-                    $err .= $app['config']->get('currency', $app['pp_schema']);
+                    $err .= $config_service->get('currency', $app['pp_schema']);
                     $err .= ').';
                     $errors[] = $err;
                 }
@@ -636,7 +636,7 @@ class TransactionsAddController extends AbstractController
                 {
                     if ($to_remote_user['maxlimit'] === 999999999)
                     {
-                        $maxlimit = $app['config']->get('maxlimit', $remote_schema);
+                        $maxlimit = $config_service->get('maxlimit', $remote_schema);
 
                         if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
                         {
@@ -674,14 +674,14 @@ class TransactionsAddController extends AbstractController
                     $err .= 'en kan geen ' . $remote_amount . ' ';
                     $err .= $remote_currency . ' ontvangen (';
                     $err .= $amount . ' ';
-                    $err .= $app['config']->get('currency', $app['pp_schema']);
+                    $err .= $config_service->get('currency', $app['pp_schema']);
                     $err .= ').';
                     $errors[] = $err;
                 }
 
                 if (count($errors))
                 {
-                    $app['alert']->error($errors);
+                    $alert_service->error($errors);
                 }
                 else
                 {
@@ -729,7 +729,7 @@ class TransactionsAddController extends AbstractController
                     catch(Exception $e)
                     {
                         $db->rollback();
-                        $app['alert']->error('Transactie niet gelukt.');
+                        $alert_service->error('Transactie niet gelukt.');
                         throw $e;
                         exit;
                     }
@@ -757,8 +757,8 @@ class TransactionsAddController extends AbstractController
                     $app['autominlimit']->init($app['pp_schema'])
                         ->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
-                    $app['alert']->success('InterSysteem transactie uitgevoerd.');
-                    $app['link']->redirect('transactions', $app['pp_ary'], []);
+                    $alert_service->success('InterSysteem transactie uitgevoerd.');
+                    $link_render->redirect('transactions', $app['pp_ary'], []);
                 }
             }
 
@@ -814,7 +814,7 @@ class TransactionsAddController extends AbstractController
                             $transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
                             $transaction['description'] =  substr($row['content'], 0, 60);
                             $amount = $row['amount'];
-                            $amount = ($app['config']->get('currencyratio', $app['pp_schema']) * $amount) / $app['config']->get('currencyratio', $tus);
+                            $amount = ($config_service->get('currencyratio', $app['pp_schema']) * $amount) / $config_service->get('currencyratio', $tus);
                             $amount = (int) round($amount);
                             $transaction['amount'] = $amount;
                         }
@@ -894,15 +894,15 @@ class TransactionsAddController extends AbstractController
         $systems = [];
 
         $systems[] = [
-            'groupname' => $app['config']->get('systemname', $app['pp_schema']),
+            'groupname' => $config_service->get('systemname', $app['pp_schema']),
             'id'		=> 'self',
         ];
 
-        if ($app['intersystems']->get_eland_count($app['pp_schema']))
+        if ($this->intersystems_service->get_eland_count($app['pp_schema']))
         {
             $eland_urls = [];
 
-            foreach ($app['intersystems']->get_eland($app['pp_schema']) as $remote_eland_schema => $host)
+            foreach ($this->intersystems_service->get_eland($app['pp_schema']) as $remote_eland_schema => $host)
             {
                 $eland_url = $app['systems']->get_legacy_eland_origin($remote_eland_schema);
                 $eland_urls[] = $eland_url;
@@ -920,16 +920,16 @@ class TransactionsAddController extends AbstractController
             {
                 $sys['eland'] = true;
                 $sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
-                $sys['groupname'] = $app['config']->get('systemname', $sys['remote_schema']);
+                $sys['groupname'] = $config_service->get('systemname', $sys['remote_schema']);
                 $systems[] = $sys;
             }
         }
 
-        if ($app['intersystems']->get_elas_count($app['pp_schema']))
+        if ($this->intersystems_service->get_elas_count($app['pp_schema']))
         {
             $ids = [];
 
-            foreach ($app['intersystems']->get_elas($app['pp_schema']) as $key => $name)
+            foreach ($this->intersystems_service->get_elas($app['pp_schema']) as $key => $name)
             {
                 $ids[] = $key;
             }
@@ -965,10 +965,10 @@ class TransactionsAddController extends AbstractController
         }
 
         $systems_en = count($systems) > 1
-            && $app['config']->get('currencyratio', $app['pp_schema']) > 0;
+            && $config_service->get('currencyratio', $app['pp_schema']) > 0;
 
-        $app['heading']->add('Nieuwe transactie');
-        $app['heading']->fa('exchange');
+        $heading_render->add('Nieuwe transactie');
+        $heading_render->fa('exchange');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -1017,17 +1017,17 @@ class TransactionsAddController extends AbstractController
                 $out .= $sys['id'];
                 $out .= '" ';
 
-                $app['typeahead']->ini($app['pp_ary']);
+                $typeahead_service->ini($app['pp_ary']);
 
                 if ($sys['id'] == 'self')
                 {
                     $out .= 'id="group_self" ';
 
-                    $app['typeahead']->add('accounts', ['status' => 'active']);
+                    $typeahead_service->add('accounts', ['status' => 'active']);
 
                     if ($app['pp_admin'])
                     {
-                        $app['typeahead']->add('accounts', ['status' => 'inactive'])
+                        $typeahead_service->add('accounts', ['status' => 'inactive'])
                             ->add('accounts', ['status' => 'ip'])
                             ->add('accounts', ['status' => 'im']);
                     }
@@ -1038,7 +1038,7 @@ class TransactionsAddController extends AbstractController
                 {
                     $remote_schema = $sys['remote_schema'];
 
-                    $app['typeahead']->add('eland_intersystem_accounts', [
+                    $typeahead_service->add('eland_intersystem_accounts', [
                         'remote_schema'	=> $remote_schema,
                     ]);
 
@@ -1046,7 +1046,7 @@ class TransactionsAddController extends AbstractController
                 }
                 else if (isset($sys['elas']))
                 {
-                    $app['typeahead']->add('elas_intersystem_accounts', [
+                    $typeahead_service->add('elas_intersystem_accounts', [
                         'group_id'	=> $sys['id'],
                     ]);
 
@@ -1062,20 +1062,20 @@ class TransactionsAddController extends AbstractController
                 if (isset($config_schema))
                 {
                     $out .= ' data-minlimit="';
-                    $out .= $app['config']->get('minlimit', $config_schema) . '"';
+                    $out .= $config_service->get('minlimit', $config_schema) . '"';
                     $out .= ' data-maxlimit="';
-                    $out .= $app['config']->get('maxlimit', $config_schema) . '"';
+                    $out .= $config_service->get('maxlimit', $config_schema) . '"';
                     $out .= ' data-currency="';
-                    $out .= $app['config']->get('currency', $config_schema) . '"';
+                    $out .= $config_service->get('currency', $config_schema) . '"';
                     $out .= ' data-currencyratio="';
-                    $out .= $app['config']->get('currencyratio', $config_schema) . '"';
+                    $out .= $config_service->get('currencyratio', $config_schema) . '"';
                     $out .= ' data-balance-equilibrium="';
-                    $out .= $app['config']->get('balance_equilibrium', $config_schema) . '"';
+                    $out .= $config_service->get('balance_equilibrium', $config_schema) . '"';
 
-                    $typeahead_process_ary['newuserdays'] = $app['config']->get('newuserdays', $config_schema);
+                    $typeahead_process_ary['newuserdays'] = $config_service->get('newuserdays', $config_schema);
                 }
 
-                $typeahead = $app['typeahead']->str($typeahead_process_ary);
+                $typeahead = $typeahead_service->str($typeahead_process_ary);
 
                 if ($typeahead)
                 {
@@ -1131,19 +1131,19 @@ class TransactionsAddController extends AbstractController
         {
             $out .= 'data-typeahead="';
 
-            $app['typeahead']->ini($app['pp_ary'])
+            $typeahead_service->ini($app['pp_ary'])
                 ->add('accounts', ['status' => 'active']);
 
             if ($app['pp_admin'])
             {
-                $app['typeahead']->add('accounts', ['status' => 'inactive'])
+                $typeahead_service->add('accounts', ['status' => 'inactive'])
                     ->add('accounts', ['status' => 'ip'])
                     ->add('accounts', ['status' => 'im']);
             }
 
-            $out .= $app['typeahead']->str([
+            $out .= $typeahead_service->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
+                'newuserdays'	=> $config_service->get('newuserdays', $app['pp_schema']),
             ]);
 
             $out .= '" ';
@@ -1185,7 +1185,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" ';
@@ -1196,7 +1196,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<ul>';
 
-        $out .= transactions::get_valuation($app['config'], $app['pp_schema']);
+        $out .= transactions::get_valuation($config_service, $app['pp_schema']);
 
         $out .= '<li id="info_remote_amount_unknown" ';
         $out .= 'class="hidden">De omrekening ';
@@ -1235,8 +1235,8 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<ul>';
 
-        if ($app['config']->get('template_lets', $app['pp_schema'])
-            && $app['config']->get('currencyratio', $app['pp_schema']) > 0)
+        if ($config_service->get('template_lets', $app['pp_schema'])
+            && $config_service->get('currencyratio', $app['pp_schema']) > 0)
         {
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
             $out .= '</span> per uur</li>';
@@ -1262,12 +1262,12 @@ class TransactionsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel('transactions', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('transactions', $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Overschrijven" class="btn btn-success btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="hidden" name="transid" ';
         $out .= 'value="';
         $out .= $transaction['transid'];
@@ -1277,9 +1277,9 @@ class TransactionsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('transactions');
+        $menu_service->set('transactions');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

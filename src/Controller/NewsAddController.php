@@ -64,7 +64,7 @@ class NewsAddController extends AbstractController
                 $errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
             }
 
-            if ($token_error = $app['form_token']->get_error())
+            if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
@@ -80,11 +80,11 @@ class NewsAddController extends AbstractController
                 {
                     $id = $db->lastInsertId($app['pp_schema'] . '.news_id_seq');
 
-                    $app['xdb']->set('news_access', (string) $id, [
+                    $xdb_service->set('news_access', (string) $id, [
                         'access' => AccessCnst::TO_XDB[$access],
                     ], $app['pp_schema']);
 
-                    $app['alert']->success('Nieuwsbericht opgeslagen.');
+                    $alert_service->success('Nieuwsbericht opgeslagen.');
 
                     $news['id'] = $id;
 
@@ -102,12 +102,12 @@ class NewsAddController extends AbstractController
                             'vars'		=> $vars,
                         ], 7000);
 
-                        $app['alert']->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
-                        $app['link']->redirect($app['r_news'], $app['pp_ary'], []);
+                        $alert_service->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
+                        $link_render->redirect($app['r_news'], $app['pp_ary'], []);
 
                     }
 
-                    $app['link']->redirect('news_show', $app['pp_ary'],
+                    $link_render->redirect('news_show', $app['pp_ary'],
                         ['id' => $id]);
                 }
                 else
@@ -116,7 +116,7 @@ class NewsAddController extends AbstractController
                 }
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
         else
         {
@@ -126,8 +126,8 @@ class NewsAddController extends AbstractController
 
         $app['assets']->add(['datepicker']);
 
-        $app['heading']->add('Nieuwsbericht toevoegen');
-        $app['heading']->fa('calendar-o');
+        $heading_render->add('Nieuwsbericht toevoegen');
+        $heading_render->fa('calendar-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -206,21 +206,21 @@ class NewsAddController extends AbstractController
 
         $out .= $app['item_access']->get_radio_buttons('access', $access, 'news', $app['pp_user']);
 
-        $out .= $app['link']->btn_cancel($app['r_news'], $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel($app['r_news'], $app['pp_ary'], []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Opslaan" class="btn btn-lg btn-success">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('news');
+        $menu_service->set('news');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

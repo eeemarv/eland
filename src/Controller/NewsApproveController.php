@@ -18,14 +18,14 @@ class NewsApproveController extends AbstractController
         if ($db->update($app['pp_schema'] . '.news',
             $data, ['id' => $id]))
         {
-            $app['alert']->success('Nieuwsbericht goedgekeurd en gepubliceerd.');
+            $alert_service->success('Nieuwsbericht goedgekeurd en gepubliceerd.');
         }
         else
         {
-            $app['alert']->error('Goedkeuren en publiceren nieuwsbericht mislukt.');
+            $alert_service->error('Goedkeuren en publiceren nieuwsbericht mislukt.');
         }
 
-        $app['link']->redirect($app['r_news'], $app['pp_ary'], ['id' => $id]);
+        $link_render->redirect($app['r_news'], $app['pp_ary'], ['id' => $id]);
 
         return new Response('');
     }

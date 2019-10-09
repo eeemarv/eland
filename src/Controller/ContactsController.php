@@ -220,9 +220,9 @@ class ContactsController extends AbstractController
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }
 
-        $app['btn_nav']->csv();
+        $btn_nav_render->csv();
 
-        $app['btn_top']->add('contacts_add_admin', $app['pp_ary'],
+        $btn_top_render->add('contacts_add_admin', $app['pp_ary'],
             [], 'Contact toevoegen');
 
         $filtered = !isset($filter['uid']) && (
@@ -236,10 +236,10 @@ class ContactsController extends AbstractController
 
         $panel_collapse = !$filtered;
 
-        $app['heading']->add('Contacten');
-        $app['heading']->add_filtered($filtered);
-        $app['heading']->btn_filter();
-        $app['heading']->fa('map-marker');
+        $heading_render->add('Contacten');
+        $heading_render->add_filtered($filtered);
+        $heading_render->btn_filter();
+        $heading_render->fa('map-marker');
 
         $out = '<div id="filter" class="panel panel-info';
         $out .= $panel_collapse ? ' collapse' : '';
@@ -334,7 +334,7 @@ class ContactsController extends AbstractController
         $out .= 'aria-describedby="letscode_addon" ';
 
         $out .= 'data-typeahead="';
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -342,7 +342,7 @@ class ContactsController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
+                'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
             ]);
         $out .= '" ';
 
@@ -402,9 +402,9 @@ class ContactsController extends AbstractController
 
             $out .= $app['pagination']->get();
 
-            $app['menu']->set('contacts');
+            $menu_service->set('contacts');
 
-            return $app->render('base/navbar.html.twig', [
+            return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
                 'schema'    => $app['pp_schema'],
             ]);
@@ -443,7 +443,7 @@ class ContactsController extends AbstractController
                     'asc'		=> $data['asc'],
                 ];
 
-                $out .= $app['link']->link_fa('contacts', $app['pp_ary'],
+                $out .= $link_render->link_fa('contacts', $app['pp_ary'],
                     $th_params, $data['lbl'], [], $data['fa']);
             }
 
@@ -463,7 +463,7 @@ class ContactsController extends AbstractController
 
             if (isset($c['value']))
             {
-                $td[] = $app['link']->link_no_attr('contacts_edit_admin', $app['pp_ary'],
+                $td[] = $link_render->link_no_attr('contacts_edit_admin', $app['pp_ary'],
                     ['id' => $c['id']], $c['value']);
             }
             else
@@ -475,7 +475,7 @@ class ContactsController extends AbstractController
 
             if (isset($c['comments']))
             {
-                $td[] = $app['link']->link_no_attr('contacts_edit_admin', $app['pp_ary'],
+                $td[] = $link_render->link_no_attr('contacts_edit_admin', $app['pp_ary'],
                     ['id' => $c['id']], $c['comments']);
             }
             else
@@ -485,7 +485,7 @@ class ContactsController extends AbstractController
 
             $td[] = $app['item_access']->get_label_flag_public($c['flag_public']);
 
-            $td[] = $app['link']->link_fa('contacts_del_admin', $app['pp_ary'],
+            $td[] = $link_render->link_fa('contacts_del_admin', $app['pp_ary'],
                 ['id' => $c['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'],
                 'times');
@@ -503,9 +503,9 @@ class ContactsController extends AbstractController
 
         $out .= $app['pagination']->get();
 
-        $app['menu']->set('contacts');
+        $menu_service->set('contacts');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -21,7 +21,7 @@ class LogoUploadController extends AbstractController
         $filename = $app['image_upload']->upload($uploaded_file,
             'l', 0, 400, 100, $app['pp_schema']);
 
-        $app['config']->set('logo', $app['pp_schema'], $filename);
+        $config_service->set('logo', $app['pp_schema'], $filename);
 
         $app['monolog']->info('Logo ' . $filename .
             ' uploaded.',

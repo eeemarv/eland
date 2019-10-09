@@ -2,17 +2,17 @@
 
 namespace App\Render;
 
-use App\Service\UserCache;
+use App\Service\UserCacheService;
 
 class AccountStrRender
 {
-	protected $user_cache;
+	protected $user_cache_service;
 
 	public function __construct(
-		UserCache $user_cache
+		UserCacheService $user_cache_service
 	)
 	{
-		$this->user_cache = $user_cache;
+		$this->user_cache_service = $user_cache_service;
 	}
 
 	public function get(int $id, string $schema):string

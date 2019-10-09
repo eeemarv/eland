@@ -14,9 +14,9 @@ class TransactionsShowController extends AbstractController
         Db $db
     ):Response
     {
-        $intersystem_account_schemas = $app['intersystems']->get_eland_accounts_schemas($app['pp_schema']);
+        $intersystem_account_schemas = $this->intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($app['intersystems']->get_eland($app['pp_schema']),
+        $s_inter_schema_check = array_merge($this->intersystems_service->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $transaction = $db->fetchAssoc('select t.*
@@ -62,21 +62,21 @@ class TransactionsShowController extends AbstractController
                 || !($transaction['real_from']
                     || $transaction['real_to'])))
         {
-            $app['btn_top']->edit('transactions_edit', $app['pp_ary'],
+            $btn_top_render->edit('transactions_edit', $app['pp_ary'],
                 ['id' => $id], 'Omschrijving aanpassen');
         }
 
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $app['btn_nav']->nav('transactions_show', $app['pp_ary'],
+        $btn_nav_render->nav('transactions_show', $app['pp_ary'],
             $prev_ary, $next_ary, true);
 
-        $app['btn_nav']->nav_list('transactions', $app['pp_ary'],
+        $btn_nav_render->nav_list('transactions', $app['pp_ary'],
             [], 'Lijst', 'exchange');
 
-        $app['heading']->add('Transactie');
-        $app['heading']->fa('exchange');
+        $heading_render->add('Transactie');
+        $heading_render->fa('exchange');
 
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;
@@ -205,7 +205,7 @@ class TransactionsShowController extends AbstractController
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -289,7 +289,7 @@ class TransactionsShowController extends AbstractController
                 if ($inter_transaction
                     && isset($app['intersystem_ary']['eland'][$inter_schema]))
                 {
-                    $out .= $app['link']->link_no_attr('transactions', [
+                    $out .= $link_render->link_no_attr('transactions', [
                             'system'		=> $app['systems']->get_system($inter_schema),
                             'role_short'	=> 'g',
                         ], ['id' => $inter_transaction['id']], $str);
@@ -307,7 +307,7 @@ class TransactionsShowController extends AbstractController
                 $out .= ' (';
                 $out .= $transaction['amount'];
                 $out .= ' ';
-                $out .= $app['config']->get('currency', $app['pp_schema']);
+                $out .= $config_service->get('currency', $app['pp_schema']);
                 $out .= ').';
             }
 
@@ -400,7 +400,7 @@ class TransactionsShowController extends AbstractController
                 $out .= 'in de eigen tijdsmunt ';
                 $out .= '(';
                 $out .= $transaction['amount'] . ' ';
-                $out .= $app['config']->get('currency', $app['pp_schema']);
+                $out .= $config_service->get('currency', $app['pp_schema']);
                 $out .= ') ';
                 $out .= 'met gelijke tijdswaarde als Tr-1.';
             }
@@ -414,7 +414,7 @@ class TransactionsShowController extends AbstractController
                 if ($inter_transaction
                     && isset($app['intersystem_ary']['eland'][$inter_schema]))
                 {
-                    $out .= $app['link']->link_no_attr('transactions', [
+                    $out .= $link_render->link_no_attr('transactions', [
                             'system'	=> $app['systems']->get_system($inter_schema),
                             'role_short'	=> 'g',
                         ], ['id' => $inter_transaction['id']], $str);
@@ -457,9 +457,9 @@ class TransactionsShowController extends AbstractController
 
         $out .= '</div></div>';
 
-        $app['menu']->set('transactions');
+        $menu_service->set('transactions');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

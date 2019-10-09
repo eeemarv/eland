@@ -38,21 +38,21 @@ class IntersystemsEditController extends AbstractController
             {
                 if ($db->insert($app['pp_schema'] . '.letsgroups', $group))
                 {
-                    $app['alert']->success('Intersysteem opgeslagen.');
+                    $alert_service->success('Intersysteem opgeslagen.');
 
                     $id = $db->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
 
-                    $app['intersystems']->clear_cache($app['pp_schema']);
+                    $this->intersystems_service->clear_cache($app['pp_schema']);
 
-                    $app['link']->redirect('intersystems_show', $app['pp_ary'],
+                    $link_render->redirect('intersystems_show', $app['pp_ary'],
                         ['id' => $id]);
                 }
 
-                $app['alert']->error('InterSysteem niet opgeslagen.');
+                $alert_service->error('InterSysteem niet opgeslagen.');
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
         }
         else
@@ -72,15 +72,15 @@ class IntersystemsEditController extends AbstractController
                 if ($app['systems']->get_system($add_schema))
                 {
                     $group['url'] = $app['systems']->get_legacy_eland_origin($add_schema);
-                    $group['groupname'] = $app['config']->get('systemname', $add_schema);
-                    $group['localletscode'] = $app['config']->get('systemtag', $add_schema);
+                    $group['groupname'] = $config_service->get('systemname', $add_schema);
+                    $group['localletscode'] = $config_service->get('systemtag', $add_schema);
                 }
             }
         }
 
-        $app['heading']->add('InterSysteem toevoegen');
+        $heading_render->add('InterSysteem toevoegen');
 
-        $btn = $app['link']->btn_cancel('intersystems', $app['pp_ary'], []);
+        $btn = $link_render->btn_cancel('intersystems', $app['pp_ary'], []);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-success btn-lg">';
@@ -121,19 +121,19 @@ class IntersystemsEditController extends AbstractController
                     $group,
                     ['id' => $id]))
                 {
-                    $app['alert']->success('InterSysteem aangepast.');
+                    $alert_service->success('InterSysteem aangepast.');
 
-                    $app['intersystems']->clear_cache($app['pp_schema']);
+                    $this->intersystems_service->clear_cache($app['pp_schema']);
 
-                    $app['link']->redirect('intersystems_show', $app['pp_ary'],
+                    $link_render->redirect('intersystems_show', $app['pp_ary'],
                         ['id'	=> $id]);
                 }
 
-                $app['alert']->error('InterSysteem niet aangepast.');
+                $alert_service->error('InterSysteem niet aangepast.');
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
         }
         else
@@ -144,14 +144,14 @@ class IntersystemsEditController extends AbstractController
 
             if (!$group)
             {
-                $app['alert']->error('Systeem niet gevonden.');
-                $app['link']->redirect('intersystems', $app['pp_ary'], []);
+                $alert_service->error('Systeem niet gevonden.');
+                $link_render->redirect('intersystems', $app['pp_ary'], []);
             }
         }
 
-        $app['heading']->add('InterSysteem aanpassen');
+        $heading_render->add('InterSysteem aanpassen');
 
-        $btn = $app['link']->btn_cancel('intersystems_show', $app['pp_ary'],
+        $btn = $link_render->btn_cancel('intersystems_show', $app['pp_ary'],
             ['id' => $id]);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
@@ -223,7 +223,7 @@ class IntersystemsEditController extends AbstractController
             $errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
         }
 
-        if ($error_token = $app['form_token']->get_error())
+        if ($error_token = $form_token_service->get_error())
         {
             $errors[] = $error_token;
         }
@@ -241,7 +241,7 @@ class IntersystemsEditController extends AbstractController
         string $btn
     ):Response
     {
-        $app['heading']->fa('share-alt');
+        $heading_render->fa('share-alt');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -380,7 +380,7 @@ class IntersystemsEditController extends AbstractController
         $out .= '</p>';
         $out .= '</div>';
         $out .= $btn;
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
@@ -389,9 +389,9 @@ class IntersystemsEditController extends AbstractController
 
         $out .= intersystems::get_schemas_groups($app);
 
-        $app['menu']->set('intersystems');
+        $menu_service->set('intersystems');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

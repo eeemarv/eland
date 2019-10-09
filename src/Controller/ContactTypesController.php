@@ -27,11 +27,11 @@ class ContactTypesController extends AbstractController
             $contact_count[$row['id_type_contact']] = $row['count'];
         }
 
-        $app['btn_top']->add('contact_types_add', $app['pp_ary'],
+        $btn_top_render->add('contact_types_add', $app['pp_ary'],
             [], 'Contact type toevoegen');
 
-        $app['heading']->add('Contact types');
-        $app['heading']->fa('circle-o-notch');
+        $heading_render->add('Contact types');
+        $heading_render->fa('circle-o-notch');
 
         $out = '<div class="panel panel-default printview">';
 
@@ -65,7 +65,7 @@ class ContactTypesController extends AbstractController
             }
             else
             {
-                $out .= $app['link']->link_no_attr('contact_types_edit', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('contact_types_edit', $app['pp_ary'],
                     ['id' => $t['id']], $t['abbrev']);
             }
 
@@ -79,7 +79,7 @@ class ContactTypesController extends AbstractController
             }
             else
             {
-                $out .= $app['link']->link_no_attr('contact_types_edit', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('contact_types_edit', $app['pp_ary'],
                     ['id' => $t['id']], $t['name']);
             }
 
@@ -93,7 +93,7 @@ class ContactTypesController extends AbstractController
             }
             else
             {
-                $out .= $app['link']->link_fa('contact_types_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('contact_types_del', $app['pp_ary'],
                     ['id' => $t['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'],
                     'times');
@@ -105,7 +105,7 @@ class ContactTypesController extends AbstractController
 
             if ($count)
             {
-                $out .= $app['link']->link_no_attr('contacts', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('contacts', $app['pp_ary'],
                     ['f' => ['abbrev' => $t['abbrev']]], (string) $count);
             }
             else
@@ -126,9 +126,9 @@ class ContactTypesController extends AbstractController
         $out .= 'contact types waarvan contacten ';
         $out .= 'bestaan en beschermde contact types (*).</p>';
 
-        $app['menu']->set('contact_types');
+        $menu_service->set('contact_types');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

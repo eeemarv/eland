@@ -28,7 +28,7 @@ class TypeaheadLogTypesController extends AbstractController
 
         $crc = (string) crc32(json_encode($log_types));
 
-        $app['typeahead']->set_thumbprint('log_types', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('log_types', $app['pp_ary'], [], $crc);
 
         return $app->json($log_types);
     }

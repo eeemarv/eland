@@ -12,7 +12,7 @@ class DocsController extends AbstractController
     {
         $q = $request->query->get('q', '');
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
 
@@ -33,7 +33,7 @@ class DocsController extends AbstractController
             }
         }
 
-        $rows = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_name\'' => ['is null'],
             'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -77,14 +77,14 @@ class DocsController extends AbstractController
 
         if ($app['pp_admin'])
         {
-            $app['btn_top']->add('docs_add', $app['pp_ary'],
+            $btn_top_render->add('docs_add', $app['pp_ary'],
                 [], 'Document opladen');
 
-            $app['btn_nav']->csv();
+            $btn_nav_render->csv();
         }
 
-        $app['heading']->add('Documenten');
-        $app['heading']->fa('files-o');
+        $heading_render->add('Documenten');
+        $heading_render->fa('files-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -133,12 +133,12 @@ class DocsController extends AbstractController
                 {
                     $td = [];
 
-                    $td[] = $app['link']->link_no_attr('docs_map', $app['pp_ary'],
+                    $td[] = $link_render->link_no_attr('docs_map', $app['pp_ary'],
                         ['map_id' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
 
                     if ($app['pp_admin'])
                     {
-                        $td[] = $app['link']->link_fa('docs_map_edit', $app['pp_ary'],
+                        $td[] = $link_render->link_fa('docs_map_edit', $app['pp_ary'],
                             ['map_id' => $did], 'Aanpassen',
                             ['class' => 'btn btn-primary'], 'pencil');
                     }
@@ -210,11 +210,11 @@ class DocsController extends AbstractController
 
                 if ($app['pp_admin'])
                 {
-                    $td_c = $app['link']->link_fa('docs_edit', $app['pp_ary'],
+                    $td_c = $link_render->link_fa('docs_edit', $app['pp_ary'],
                         ['doc_id' => $did], 'Aanpassen',
                         ['class' => 'btn btn-primary'], 'pencil');
                     $td_c .= '&nbsp;';
-                    $td_c .= $app['link']->link_fa('docs_del', $app['pp_ary'],
+                    $td_c .= $link_render->link_fa('docs_del', $app['pp_ary'],
                         ['doc_id' => $did], 'Verwijderen',
                         ['class' => 'btn btn-danger'], 'times');
                     $td[] = $td_c;
@@ -239,9 +239,9 @@ class DocsController extends AbstractController
             $out .= '</div></div>';
         }
 
-        $app['menu']->set('docs');
+        $menu_service->set('docs');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

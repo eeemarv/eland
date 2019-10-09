@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
 use App\Service\Schedule;
-use App\Service\Systems;
+use App\Service\SystemsService;
 
 class SaldoUpdateTask extends SchemaTask
 {
@@ -18,7 +18,7 @@ class SaldoUpdateTask extends SchemaTask
 		Db $db,
 		LoggerInterface $logger,
 		Schedule $schedule,
-		Systems $systems
+		SystemsService $systems_service
 	)
 	{
 		parent::__construct($schedule, $systems);

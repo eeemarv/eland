@@ -44,7 +44,7 @@ class MessagesListController extends AbstractController
                 throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -127,14 +127,14 @@ class MessagesListController extends AbstractController
 
                 if (count($update_msgs_ary) > 1)
                 {
-                    $app['alert']->success('De berichten zijn verlengd.');
+                    $alert_service->success('De berichten zijn verlengd.');
                 }
                 else
                 {
-                    $app['alert']->success('Het bericht is verlengd.');
+                    $alert_service->success('Het bericht is verlengd.');
                 }
 
-                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
             }
 
             if ($bulk_submit_action === 'access' && !count($errors))
@@ -151,14 +151,14 @@ class MessagesListController extends AbstractController
 
                 if (count($selected_messages) > 1)
                 {
-                    $app['alert']->success('De zichtbaarheid van de berichten is aangepast.');
+                    $alert_service->success('De zichtbaarheid van de berichten is aangepast.');
                 }
                 else
                 {
-                    $app['alert']->success('De zichtbaarheid van het bericht is aangepast.');
+                    $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
                 }
 
-                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
             }
 
             if ($bulk_submit_action === 'category' && !count($errors))
@@ -225,17 +225,17 @@ class MessagesListController extends AbstractController
 
                 if (count($selected_messages) > 1)
                 {
-                    $app['alert']->success('De categorie van de berichten is aangepast.');
+                    $alert_service->success('De categorie van de berichten is aangepast.');
                 }
                 else
                 {
-                    $app['alert']->success('De categorie van het bericht is aangepast.');
+                    $alert_service->success('De categorie van het bericht is aangepast.');
                 }
 
-                $app['link']->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         $fetch_and_filter = messages_list::fetch_and_filter($request, $app);
@@ -248,17 +248,17 @@ class MessagesListController extends AbstractController
         $s_owner = $fetch_and_filter['s_owner'];
         $out = $fetch_and_filter['out'];
 
-        self::set_view_btn_nav($app['btn_nav'], $app['pp_ary'], $params, 'list');
+        self::set_view_btn_nav($btn_nav_render, $app['pp_ary'], $params, 'list');
 
         if ($app['pp_admin'])
         {
-            $app['btn_top']->local('#bulk_actions', 'Bulk acties', 'envelope-o');
-            $app['btn_nav']->csv();
+            $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
+            $btn_nav_render->csv();
         }
 
         $app['assets']->add(['table_sel.js']);
 
-        $show_visibility_column = !$app['pp_guest'] && $app['intersystems']->get_count($app['pp_schema']);
+        $show_visibility_column = !$app['pp_guest'] && $this->intersystems_service->get_count($app['pp_schema']);
 
         if (!count($messages))
         {
@@ -303,7 +303,7 @@ class MessagesListController extends AbstractController
                     'asc' 		=> $data['asc'],
                 ];
 
-                $out .= $app['link']->link_fa($app['r_messages'], $app['pp_ary'],
+                $out .= $link_render->link_fa($app['r_messages'], $app['pp_ary'],
                     $th_params, $data['lbl'], [], $data['fa']);
             }
             $out .= '</th>';
@@ -339,7 +339,7 @@ class MessagesListController extends AbstractController
 
             $out .= '<td>';
 
-            $out .= $app['link']->link_no_attr('messages_show', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('messages_show', $app['pp_ary'],
                 ['id' => $msg['id']], $msg['content']);
 
             $out .= '</td>';
@@ -358,7 +358,7 @@ class MessagesListController extends AbstractController
             if (!($params['f']['cid'] ?? false))
             {
                 $out .= '<td>';
-                $out .= $app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
+                $out .= $link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
                     $cat_params[$msg['id_category']],
                     $categories[$msg['id_category']]);
                 $out .= '</td>';
@@ -447,7 +447,7 @@ class MessagesListController extends AbstractController
             $out .= '<input type="submit" value="Verlengen" ';
             $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
 
-            $out .= $app['form_token']->get_hidden_input();
+            $out .= $form_token_service->get_hidden_input();
 
             $out .= '</form>';
 
@@ -469,7 +469,7 @@ class MessagesListController extends AbstractController
 
                 $out .= '<input type="submit" value="Aanpassen" ';
                 $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
-                $out .= $app['form_token']->get_hidden_input();
+                $out .= $form_token_service->get_hidden_input();
                 $out .= '</form>';
                 $out .= '</div>';
             }
@@ -494,7 +494,7 @@ class MessagesListController extends AbstractController
 
             $out .= '<input type="submit" value="Categorie anpassen" ';
             $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
-            $out .= $app['form_token']->get_hidden_input();
+            $out .= $form_token_service->get_hidden_input();
             $out .= '</form>';
             $out .= '</div>';
 
@@ -506,9 +506,9 @@ class MessagesListController extends AbstractController
             $out .= '</div></div>';
         }
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -525,9 +525,9 @@ class MessagesListController extends AbstractController
 
         $out .= $app['pagination']->get();
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
@@ -900,7 +900,7 @@ class MessagesListController extends AbstractController
         {
             if ($s_owner || !isset($filter['uid']))
             {
-                $app['btn_top']->add('messages_add', $app['pp_ary'],
+                $btn_top_render->add('messages_add', $app['pp_ary'],
                     [], 'Vraag of aanbod toevoegen');
             }
 
@@ -911,7 +911,7 @@ class MessagesListController extends AbstractController
                     $str = 'Vraag of aanbod voor ';
                     $str .= $app['account']->str((int) $filter['uid'], $app['pp_schema']);
 
-                    $app['btn_top']->add('messages_add', $app['pp_ary'],
+                    $btn_top_render->add('messages_add', $app['pp_ary'],
                         ['uid' => $filter['uid']], $str);
                 }
             }
@@ -930,30 +930,30 @@ class MessagesListController extends AbstractController
         {
             if ($s_owner)
             {
-                $app['heading']->add('Mijn vraag en aanbod');
+                $heading_render->add('Mijn vraag en aanbod');
             }
             else
             {
-                $app['heading']->add_raw($app['link']->link_no_attr($app['r_messages'], $app['pp_ary'],
+                $heading_render->add_raw($link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
                     ['f' => ['uid' => $filter['uid']]],
                     'Vraag en aanbod'));
 
-                $app['heading']->add(' van ');
-                $app['heading']->add_raw($app['account']->link((int) $filter['uid'], $app['pp_ary']));
+                $heading_render->add(' van ');
+                $heading_render->add_raw($app['account']->link((int) $filter['uid'], $app['pp_ary']));
             }
         }
         else
         {
-            $app['heading']->add('Vraag en aanbod');
+            $heading_render->add('Vraag en aanbod');
         }
 
         if (isset($filter['cid']) && $filter['cid'])
         {
-            $app['heading']->add(', categorie "' . $categories[$filter['cid']] . '"');
+            $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
         }
 
-        $app['heading']->add_filtered($filtered);
-        $app['heading']->fa('newspaper-o');
+        $heading_render->add_filtered($filtered);
+        $heading_render->fa('newspaper-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -1063,11 +1063,11 @@ class MessagesListController extends AbstractController
         $out .= 'aria-describedby="fcode_addon" ';
         $out .= 'data-typeahead="';
 
-        $out .= $app['typeahead']->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($app['pp_ary'])
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $app['config']->get('newuserdays', $app['pp_schema']),
+                'newuserdays'	=> $config_service->get('newuserdays', $app['pp_schema']),
             ]);
 
         $out .= '" ';

@@ -10,15 +10,15 @@ class ForumController extends AbstractController
 {
     public function forum(Request $request, app $app):Response
     {
-        if (!$app['config']->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De forum pagina is niet ingeschakeld.');
-            $app['link']->redirect($app['default'], $app['pp_ary'], []);
+            $alert_service->warning('De forum pagina is niet ingeschakeld.');
+            $link_render->redirect($app['default'], $app['pp_ary'], []);
         }
 
         $q = $request->query->get('q', '');
 
-        $rows = $app['xdb']->get_many([
+        $rows = $xdb_service->get_many([
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'access' => $app['item_access']->get_visible_ary_xdb()],
@@ -30,7 +30,7 @@ class ForumController extends AbstractController
 
             foreach ($rows as $row)
             {
-                $replies = $app['xdb']->get_many(['agg_schema' => $app['pp_schema'],
+                $replies = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
                     'agg_type' => 'forum',
                     'data->>\'parent_id\'' => $row['eland_id']]);
 
@@ -44,21 +44,21 @@ class ForumController extends AbstractController
 
         if ($app['pp_admin'] || $app['pp_user'])
         {
-            $app['btn_top']->add('forum_add_topic', $app['pp_ary'],
+            $btn_top_render->add('forum_add_topic', $app['pp_ary'],
                 [], 'Onderwerp toevoegen');
         }
 
         if ($app['pp_admin'])
         {
-            $app['btn_nav']->csv();
+            $btn_nav_render->csv();
         }
 
         $show_visibility = (!$app['pp_guest']
                 && $app['intersystem_en'])
             || $app['pp_admin'];
 
-        $app['heading']->add('Forum');
-        $app['heading']->fa('comments-o');
+        $heading_render->add('Forum');
+        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -98,9 +98,9 @@ class ForumController extends AbstractController
             $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
             $out .= '</div></div>';
 
-            $app['menu']->set('forum');
+            $menu_service->set('forum');
 
-            return $app->render('base/navbar.html.twig', [
+            return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
                 'schema'    => $app['pp_schema'],
             ]);
@@ -137,7 +137,7 @@ class ForumController extends AbstractController
             $out .= '<tr>';
 
             $out .= '<td>';
-            $out .= $app['link']->link_no_attr('forum_topic', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('forum_topic', $app['pp_ary'],
                 ['topic_id' => $pid], $p['subject']);
             $out .= '</td>';
 
@@ -166,9 +166,9 @@ class ForumController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('forum');
+        $menu_service->set('forum');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

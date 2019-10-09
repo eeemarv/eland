@@ -80,7 +80,7 @@ class MessagesEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            if ($error_form = $app['form_token']->get_error())
+            if ($error_form = $form_token_service->get_error())
             {
                 $errors[] = $error_form;
             }
@@ -124,7 +124,7 @@ class MessagesEditController extends AbstractController
                 $user_id = $app['s_id'];
             }
 
-            if ($app['intersystems']->get_count($app['pp_schema']))
+            if ($this->intersystems_service->get_count($app['pp_schema']))
             {
                 if (!$access)
                 {
@@ -144,7 +144,7 @@ class MessagesEditController extends AbstractController
             if (!ctype_digit((string) $amount) && $amount !== '')
             {
                 $err = 'De (richt)prijs in ';
-                $err .= $app['config']->get('currency', $app['pp_schema']);
+                $err .= $config_service->get('currency', $app['pp_schema']);
                 $err .= ' moet nul of een positief getal zijn.';
                 $errors[] = $err;
             }
@@ -219,11 +219,11 @@ class MessagesEditController extends AbstractController
                     (int) $id_category, 1, $db, $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, true,
-                    $db, $app['monolog'], $app['alert'],
+                    $db, $app['monolog'], $alert_service,
                     $app['s3'], $app['pp_schema']);
 
-                $app['alert']->success('Nieuw vraag of aanbod toegevoegd.');
-                $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+                $alert_service->success('Nieuw vraag of aanbod toegevoegd.');
+                $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
             }
             else if ($edit_mode && !count($errors))
             {
@@ -247,19 +247,19 @@ class MessagesEditController extends AbstractController
                     $db, $app['monolog'], $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, false,
-                    $db, $app['monolog'], $app['alert'],
+                    $db, $app['monolog'], $alert_service,
                     $app['s3'], $app['pp_schema']);
 
                 $db->commit();
-                $app['alert']->success('Vraag/aanbod aangepast');
-                $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+                $alert_service->success('Vraag/aanbod aangepast');
+                $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
             }
             else if (!count($errors))
             {
                 throw new HttpException(500, 'Onbekende modus');
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
         else if ($request->isMethod('GET'))
         {
@@ -290,7 +290,7 @@ class MessagesEditController extends AbstractController
                 $units = '';
                 $id_category = '';
                 $type = '';
-                $validity_days = (int) $app['config']->get('msgs_days_default', $app['pp_schema']);
+                $validity_days = (int) $config_service->get('msgs_days_default', $app['pp_schema']);
                 $account_code = '';
                 $access = '';
 
@@ -349,14 +349,14 @@ class MessagesEditController extends AbstractController
 
         if ($add_mode)
         {
-            $app['heading']->add('Nieuw Vraag of Aanbod toevoegen');
+            $heading_render->add('Nieuw Vraag of Aanbod toevoegen');
         }
         else
         {
-            $app['heading']->add('Vraag of Aanbod aanpassen');
+            $heading_render->add('Vraag of Aanbod aanpassen');
         }
 
-        $app['heading']->fa('newspaper-o');
+        $heading_render->fa('newspaper-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -377,11 +377,11 @@ class MessagesEditController extends AbstractController
             $out .= 'id="account_code" name="account_code" ';
 
             $out .= 'data-typeahead="';
-            $out .= $app['typeahead']->ini($app['pp_ary'])
+            $out .= $typeahead_service->ini($app['pp_ary'])
                 ->add('accounts', ['status' => 'active'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $app['config']->get('newuserdays', $app['pp_schema']),
+                    'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
                 ]);
             $out .= '" ';
 
@@ -448,7 +448,7 @@ class MessagesEditController extends AbstractController
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $app['config']->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $app['pp_schema']);
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" min="0" ';
@@ -512,7 +512,7 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
 
         $upload_img_param = [
-            'form_token' 	=> $app['form_token']->get(),
+            'form_token' 	=> $form_token_service->get(),
         ];
 
         if ($edit_mode)
@@ -530,7 +530,7 @@ class MessagesEditController extends AbstractController
         $out .= '<input id="fileupload" type="file" name="images[]" ';
         $out .= 'data-url="';
 
-        $out .= $app['link']->context_path($upload_img_route, $app['pp_ary'],
+        $out .= $link_render->context_path($upload_img_route, $app['pp_ary'],
             $upload_img_param);
 
         $out .= '" ';
@@ -544,7 +544,7 @@ class MessagesEditController extends AbstractController
         $out .= 'verslepen.</p>';
         $out .= '</div>';
 
-        if ($app['intersystems']->get_count($app['pp_schema']))
+        if ($this->intersystems_service->get_count($app['pp_schema']))
         {
             $out .= $app['item_access']->get_radio_buttons('access', $access, 'messages', true);
         }
@@ -555,18 +555,18 @@ class MessagesEditController extends AbstractController
 
         if ($add_mode)
         {
-            $out .= $app['link']->btn_cancel($app['r_messages'], $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel($app['r_messages'], $app['pp_ary'], []);
         }
         else
         {
-            $out .= $app['link']->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
+            $out .= $link_render->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
         }
 
         $btn_class = $edit_mode ? 'primary' : 'success';
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . ' btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         foreach ($uploaded_images as $img)
         {
@@ -583,9 +583,9 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

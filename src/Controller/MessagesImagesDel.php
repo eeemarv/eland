@@ -24,7 +24,7 @@ class MessagesImagesDel extends AbstractController
     {
         $img .= '.' . $ext;
 
-        if ($error = $app['form_token']->get_ajax_error($form_token))
+        if ($error = $form_token_service->get_ajax_error($form_token))
         {
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
@@ -79,7 +79,7 @@ class MessagesImagesDel extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            if ($error_form = $app['form_token']->get_error())
+            if ($error_form = $form_token_service->get_error())
             {
                 $errors[] = $error_form;
             }
@@ -88,13 +88,13 @@ class MessagesImagesDel extends AbstractController
             {
                 $db->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
 
-                $app['alert']->success('De afbeeldingen voor ' . $message['label']['type_this'] .
+                $alert_service->success('De afbeeldingen voor ' . $message['label']['type_this'] .
                     ' zijn verwijderd.');
 
-                $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+                $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
             }
 
-            $app['alert']->error($errors);
+            $alert_service->error($errors);
         }
 
         $images = [];
@@ -112,24 +112,24 @@ class MessagesImagesDel extends AbstractController
 
         if (!count($images))
         {
-            $app['alert']->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
-            $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+            $alert_service->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
+            $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
         }
 
-        $app['heading']->add('Afbeeldingen verwijderen voor ');
-        $app['heading']->add($message['label']['type']);
-        $app['heading']->add(' "');
-        $app['heading']->add($message['content']);
-        $app['heading']->add('"');
+        $heading_render->add('Afbeeldingen verwijderen voor ');
+        $heading_render->add($message['label']['type']);
+        $heading_render->add(' "');
+        $heading_render->add($message['content']);
+        $heading_render->add('"');
 
-        $app['heading']->fa('newspaper-o');
+        $heading_render->fa('newspaper-o');
 
         $app['assets']->add(['messages_images_del.js']);
 
         if ($app['pp_admin'])
         {
-            $app['heading']->add_sub('Gebruiker: ');
-            $app['heading']->add_sub_raw($app['account']->link($message['id_user'], $app['pp_ary']));
+            $heading_render->add_sub('Gebruiker: ');
+            $heading_render->add_sub_raw($app['account']->link($message['id_user'], $app['pp_ary']));
         }
 
         $out = '<div class="row">';
@@ -148,11 +148,11 @@ class MessagesImagesDel extends AbstractController
             $out .= '" ';
             $out .= 'data-url="';
 
-            $form_token = $app['form_token']->get();
+            $form_token = $form_token_service->get();
 
             [$img_base, $ext] = explode('.', $img);
 
-            $out .= $app['link']->context_path('messages_images_instant_del', $app['pp_ary'], [
+            $out .= $link_render->context_path('messages_images_instant_del', $app['pp_ary'], [
                 'img'           => $img_base,
                 'ext'           => $ext,
                 'form_token'    => $form_token,
@@ -180,20 +180,20 @@ class MessagesImagesDel extends AbstractController
         $out .= $message['content'];
         $out .= '"?</h3>';
 
-        $out .= $app['link']->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger btn-lg">';
 
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('messages');
+        $menu_service->set('messages');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -15,10 +15,10 @@ class RegisterController extends AbstractController
         Db $db
     ):Response
     {
-        if (!$app['config']->get('registration_en', $app['pp_schema']))
+        if (!$config_service->get('registration_en', $app['pp_schema']))
         {
-            $app['alert']->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $app['link']->redirect('login', $app['pp_ary'], []);
+            $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
+            $link_render->redirect('login', $app['pp_ary'], []);
         }
 
         if ($request->isMethod('POST'))
@@ -37,15 +37,15 @@ class RegisterController extends AbstractController
 
             if(!$reg['email'])
             {
-                $app['alert']->error('Vul een E-mail adres in.');
+                $alert_service->error('Vul een E-mail adres in.');
             }
             else if (!$app['captcha']->validate())
             {
-                $app['alert']->error('De anti-spam verifiactiecode is niet juist ingevuld.');
+                $alert_service->error('De anti-spam verifiactiecode is niet juist ingevuld.');
             }
             else if (!filter_var($reg['email'], FILTER_VALIDATE_EMAIL))
             {
-                $app['alert']->error('Geen geldig E-mail adres.');
+                $alert_service->error('Geen geldig E-mail adres.');
             }
             else if ($db->fetchColumn('select c.id_user
                 from ' . $app['pp_schema'] . '.contact c, ' .
@@ -54,24 +54,24 @@ class RegisterController extends AbstractController
                     AND tc.id = c.id_type_contact
                     AND tc.abbrev = \'mail\'', [$reg['email']]))
             {
-                $app['alert']->error('Er bestaat reeds een inschrijving
+                $alert_service->error('Er bestaat reeds een inschrijving
                     met dit E-mail adres.');
             }
             else if (!$reg['first_name'])
             {
-                $app['alert']->error('Vul een Voornaam in.');
+                $alert_service->error('Vul een Voornaam in.');
             }
             else if (!$reg['last_name'])
             {
-                $app['alert']->error('Vul een Achternaam in.');
+                $alert_service->error('Vul een Achternaam in.');
             }
             else if (!$reg['postcode'])
             {
-                $app['alert']->error('Vul een Postcode in.');
+                $alert_service->error('Vul een Postcode in.');
             }
-            else if ($error_token = $app['form_token']->get_error())
+            else if ($error_token = $form_token_service->get_error())
             {
-                $app['alert']->error($error_token);
+                $alert_service->error($error_token);
             }
             else
             {
@@ -85,18 +85,18 @@ class RegisterController extends AbstractController
                     'template'	=> 'register/confirm',
                 ], 10000);
 
-                $app['alert']->success('Open je E-mailbox en klik op de
+                $alert_service->success('Open je E-mailbox en klik op de
                     bevestigingslink in de E-mail die we naar je gestuurd
                     hebben om je inschrijving te voltooien.');
 
-                $app['link']->redirect('login', $app['pp_ary'], []);
+                $link_render->redirect('login', $app['pp_ary'], []);
             }
         }
 
-        $app['heading']->add('Inschrijven');
-        $app['heading']->fa('check-square-o');
+        $heading_render->add('Inschrijven');
+        $heading_render->fa('check-square-o');
 
-        $top_text = $app['config']->get('registration_top_text', $app['pp_schema']);
+        $top_text = $config_service->get('registration_top_text', $app['pp_schema']);
 
         $out = $top_text ?: '';
 
@@ -186,20 +186,20 @@ class RegisterController extends AbstractController
         $out .= $app['captcha']->get_form_field();
 
         $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Inschrijven" name="zend">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $app['config']->get('registration_bottom_text', $app['pp_schema']);
+        $bottom_text = $config_service->get('registration_bottom_text', $app['pp_schema']);
 
         $out .= $bottom_text ?: '';
 
-        $app['menu']->set('register');
+        $menu_service->set('register');
 
-        return $app->render('base/sidebar.html.twig', [
+        return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);

@@ -41,7 +41,7 @@ class UsersPasswordController extends AbstractController
                 $errors[] = 'Te zwak paswoord.';
             }
 
-            if ($error_token = $app['form_token']->get_error())
+            if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
@@ -59,7 +59,7 @@ class UsersPasswordController extends AbstractController
                 {
                     $app['user_cache']->clear($id, $app['pp_schema']);
                     $user = $app['user_cache']->get($id, $app['pp_schema']);
-                    $app['alert']->success('Paswoord opgeslagen.');
+                    $alert_service->success('Paswoord opgeslagen.');
 
                     if (($user['status'] === 1 || $user['status'] === 2)
                         && $notify)
@@ -86,24 +86,24 @@ class UsersPasswordController extends AbstractController
                                 'vars'		=> $vars,
                             ], 8000);
 
-                            $app['alert']->success('Notificatie mail verzonden');
+                            $alert_service->success('Notificatie mail verzonden');
                         }
                         else
                         {
-                            $app['alert']->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
+                            $alert_service->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
                         }
                     }
 
-                    $app['link']->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+                    $link_render->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
                 }
                 else
                 {
-                    $app['alert']->error('Paswoord niet opgeslagen.');
+                    $alert_service->error('Paswoord niet opgeslagen.');
                 }
             }
             else
             {
-                $app['alert']->error($errors);
+                $alert_service->error($errors);
             }
 
         }
@@ -114,15 +114,15 @@ class UsersPasswordController extends AbstractController
             'generate_password.js',
         ]);
 
-        $app['heading']->add('Paswoord aanpassen');
+        $heading_render->add('Paswoord aanpassen');
 
         if ($app['pp_admin'] && $id !== $app['s_id'])
         {
-            $app['heading']->add(' voor ');
-            $app['heading']->add_raw($app['account']->link($id, $app['pp_ary']));
+            $heading_render->add(' voor ');
+            $heading_render->add_raw($app['account']->link($id, $app['pp_ary']));
         }
 
-        $app['heading']->fa('key');
+        $heading_render->fa('key');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -163,21 +163,21 @@ class UsersPasswordController extends AbstractController
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= $app['link']->btn_cancel($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" ';
         $out .= 'class="btn btn-primary btn-lg">';
-        $out .= $app['form_token']->get_hidden_input();
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $app['menu']->set('users');
+        $menu_service->set('users');
 
-        return $app->render('base/navbar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $app['pp_schema'],
         ]);
