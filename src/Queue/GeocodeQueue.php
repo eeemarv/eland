@@ -2,29 +2,29 @@
 
 namespace App\Queue;
 
-use queue\queue_interface;
-use Doctrine\DBAL\Connection as db;
-use service\cache;
-use service\queue;
+use App\Queue\QueueInterface;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\Cache;
+use App\Service\Queue;
 use Psr\Log\LoggerInterface;
-use service\geocode as geocode_service;
-use render\account_str;
+use App\Service\Geocode;
+use App\Render\account_str;
 
-class geocode implements queue_interface
+class GeocodeQueue implements QueueInterface
 {
 	protected $queue;
 	protected $logger;
 	protected $cache;
 	protected $db;
-	protected $geocode_service;
-	protected $account;
+	protected $geocode;
+	protected $account_str;
 
 	public function __construct(
-		db $db,
-		cache $cache,
-		queue $queue,
+		Db $db,
+		Cache $cache,
+		Queue $queue,
 		LoggerInterface $logger,
-		geocode_service $geocode_service,
+		Geocode $geocode,
 		account_str $account_str
 	)
 	{
@@ -32,7 +32,7 @@ class geocode implements queue_interface
 		$this->logger = $logger;
 		$this->cache = $cache;
 		$this->db = $db;
-		$this->geocode_service = $geocode_service;
+		$this->geocode = $geocode;
 		$this->account_str = $account_str;
 	}
 
@@ -81,7 +81,7 @@ class geocode implements queue_interface
 		}
 
 		// lat, lng
-		$coords = $this->geocode_service->getCoordinates($adr);
+		$coords = $this->geocode->getCoordinates($adr);
 
 		if (count($coords))
 		{

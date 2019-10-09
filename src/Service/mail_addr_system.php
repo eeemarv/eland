@@ -3,14 +3,14 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use service\config;
+use App\Service\Config;
 
 class mail_addr_system
 {
 	protected $config;
 	protected $logger;
 
-	public function __construct(LoggerInterface $logger, config $config)
+	public function __construct(LoggerInterface $logger, Config $config)
 	{
 		$this->logger = $logger;
 		$this->config = $config;

@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Symfony\Component\Finder\Finder;
-use service\cache;
+use App\Service\Cache;
 
 class assets
 {
@@ -143,7 +143,7 @@ class assets
 	];
 
 	public function __construct(
-		cache $cache
+		Cache $cache
 	)
 	{
 		$this->cache = $cache;

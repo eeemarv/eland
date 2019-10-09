@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use service\s3;
+use App\Service\S3;
 use Psr\Log\LoggerInterface;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
@@ -29,7 +29,7 @@ class image_upload
 
 	public function __construct(
 		LoggerInterface $logger,
-		s3 $s3
+		S3 $s3
 	)
 	{
 		$this->logger = $logger;

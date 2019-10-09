@@ -2,23 +2,23 @@
 
 namespace App\SchemaTask;
 
-use model\schema_task;
-use Doctrine\DBAL\Connection as db;
+use App\Model\SchemaTask;
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-use service\schedule;
-use service\systems;
+use App\Service\Schedule;
+use App\Service\Systems;
 
-class saldo_update extends schema_task
+class SaldoUpdateTask extends SchemaTask
 {
 	protected $db;
 	protected $logger;
 
 	public function __construct(
-		db $db,
+		Db $db,
 		LoggerInterface $logger,
-		schedule $schedule,
-		systems $systems
+		Schedule $schedule,
+		Systems $systems
 	)
 	{
 		parent::__construct($schedule, $systems);

@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use service\typeahead;
-use service\intersystems;
+use App\Service\typeahead;
+use App\Service\intersystems;
 
 class thumbprint_accounts
 {

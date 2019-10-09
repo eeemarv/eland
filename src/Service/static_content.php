@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
-use service\xdb;
+use App\Service\xdb;
 use App\Cnst\ConfigCnst;
 use Predis\Client as Predis;
-use service\config as config;
+use App\Service\config as config;
 
 class static_content
 {
@@ -16,7 +16,7 @@ class static_content
 	public function __construct(
 		xdb $xdb,
 		Predis $predis,
-		config $config
+		Config $config
 	)
 	{
 		$this->predis = $predis;

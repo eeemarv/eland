@@ -2,37 +2,37 @@
 
 namespace App\SchemaTask;
 
-use model\schema_task;
-use Doctrine\DBAL\Connection as db;
-use queue\mail;
+use App\Model\SchemaTask;
+use Doctrine\DBAL\Connection as Db;
+use App\Queue\MailQueue;
 
-use service\schedule;
-use service\systems;
-use service\config;
-use service\user_cache;
-use service\mail_addr_user;
+use App\Service\Schedule;
+use App\Service\Systems;
+use App\Service\Config;
+use App\Service\UserCache;
+use App\Service\MailAddrUser;
 
-class user_exp_msgs extends schema_task
+class UserExpMsgsTask extends SchemaTask
 {
 	protected $db;
-	protected $mail;
+	protected $mail_queue;
 	protected $config;
 	protected $user_cache;
 	protected $mail_addr_user;
 
 	public function __construct(
-		db $db,
-		mail $mail,
-		schedule $schedule,
-		systems $systems,
-		config $config,
-		user_cache $user_cache,
-		mail_addr_user $mail_addr_user
+		Db $db,
+		MailQueue $mail_queue,
+		Schedule $schedule,
+		Systems $systems,
+		Config $config,
+		UserCache $user_cache,
+		MailAddrUser $mail_addr_user
 	)
 	{
 		parent::__construct($schedule, $systems);
 		$this->db = $db;
-		$this->mail = $mail;
+		$this->mail_queue = $mail_queue;
 		$this->config = $config;
 		$this->user_cache = $user_cache;
 		$this->mail_addr_user = $mail_addr_user;
@@ -69,7 +69,7 @@ class user_exp_msgs extends schema_task
 			$mail_template = 'message_extend/';
 			$mail_template .= $message['type'] === 'offer' ? 'offer' : 'want';
 
-			$this->mail->queue([
+			$this->mail_queue->queue([
 				'to' 				=> $this->mail_addr_user->get_active($message['id_user'], $this->schema),
 				'schema' 			=> $this->schema,
 				'template' 			=> $mail_template,

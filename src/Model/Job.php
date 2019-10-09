@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-abstract class job
+abstract class Job
 {
 	public function get_class_name():string
 	{

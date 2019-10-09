@@ -2,8 +2,8 @@
 
 namespace App\Render;
 
-use render\select;
-use render\link;
+use App\Render\select;
+use App\Render\link;
 
 class pagination
 {

@@ -2,8 +2,8 @@
 
 namespace App\Twig;
 
-use service\user_cache;
-use service\systems;
+use App\Service\UserCache;
+use App\Service\Systems;
 use app\cnst\rolecnst;
 
 class mpp_ary
@@ -12,8 +12,8 @@ class mpp_ary
 	protected $systems;
 
 	public function __construct(
-		user_cache $user_cache,
-		systems $systems
+		UserCache $user_cache,
+		Systems $systems
 	)
 	{
 		$this->user_cache = $user_cache;

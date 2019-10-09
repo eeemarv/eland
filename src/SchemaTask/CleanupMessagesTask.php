@@ -2,26 +2,26 @@
 
 namespace App\SchemaTask;
 
-use model\schema_task;
-use Doctrine\DBAL\Connection as db;
+use App\Model\SchemaTask;
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-use service\schedule;
-use service\systems;
-use service\config;
+use App\Service\Schedule;
+use App\Service\Systems;
+use App\Service\Config;
 
-class cleanup_messages extends schema_task
+class CleanupMessagesTask extends SchemaTask
 {
 	protected $db;
 	protected $logger;
 	protected $config;
 
 	public function __construct(
-		db $db,
+		Db $db,
 		LoggerInterface $logger,
-		schedule $schedule,
-		systems $systems,
-		config $config
+		Schedule $schedule,
+		Systems $systems,
+		Config $config
 	)
 	{
 		parent::__construct($schedule, $systems);

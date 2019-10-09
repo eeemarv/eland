@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use render\btn_top as render_btn_top;
+use App\Render\btn_top as render_btn_top;
 
 class btn_top
 {

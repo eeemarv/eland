@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use service\cache;
+use App\Service\Cache;
 use Predis\Client as Predis;
 
 class schedule
@@ -16,7 +16,7 @@ class schedule
 	protected $interval;
 	protected $id;
 
-	public function __construct(cache $cache, Predis $predis)
+	public function __construct(Cache $cache, Predis $predis)
 	{
 		$this->cache = $cache;
 		$this->predis = $predis;

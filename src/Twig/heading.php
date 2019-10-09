@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use render\heading as render_heading;
+use App\Render\heading as render_heading;
 
 class heading
 {

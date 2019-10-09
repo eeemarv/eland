@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use service\xdb;
-use service\cache;
-use service\token;
+use App\Service\xdb;
+use App\Service\Cache;
+use App\Service\token;
 use Psr\Log\LoggerInterface;
 
 class email_validate
@@ -17,7 +17,7 @@ class email_validate
 	protected $logger;
 
 	public function __construct(
-		cache $cache,
+		Cache $cache,
 		xdb $xdb,
 		token $token,
 		loggerinterface $logger

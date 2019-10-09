@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
-use service\cache;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\Cache;
 
 class distance
 {
@@ -20,7 +20,7 @@ class distance
 	protected $to_map_data = [];
 	protected $dist;
 
-	public function __construct(db $db, cache $cache)
+	public function __construct(Db $db, Cache $cache)
 	{
 		$this->db = $db;
 		$this->cache = $cache;

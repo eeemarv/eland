@@ -2,20 +2,20 @@
 
 namespace App\Model;
 
-use model\task_interface;
-use model\task;
+use App\Model\TaskInterface;
+use App\Model\Task;
 
-use service\schedule;
-use service\systems;
+use App\Service\Schedule;
+use App\Service\Systems;
 
-abstract class schema_task extends task implements task_interface
+abstract class SchemaTask extends Task implements TaskInterface
 {
 	protected $systems;
 	protected $schema;
 
 	public function __construct(
-		schedule $schedule,
-		systems $systems
+		Schedule $schedule,
+		Systems $systems
 	)
 	{
 		parent::__construct($schedule);

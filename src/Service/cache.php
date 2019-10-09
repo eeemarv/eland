@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 
@@ -26,7 +26,7 @@ class cache
 
 	const PREFIX = 'cache_';
 
-	public function __construct(db $db, Predis $predis, LoggerInterface $logger)
+	public function __construct(Db $db, Predis $predis, LoggerInterface $logger)
 	{
 		$this->db = $db;
 		$this->predis = $predis;

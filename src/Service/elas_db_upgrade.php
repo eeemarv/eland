@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 
 class elas_db_upgrade
 {
-	public function __construct(db $db)
+	public function __construct(Db $db)
 	{
 		$this->db = $db;
 	}

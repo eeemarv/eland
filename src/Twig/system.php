@@ -2,14 +2,14 @@
 
 namespace App\Twig;
 
-use service\systems;
+use App\Service\Systems;
 
 class system
 {
 	protected $systems;
 
 	public function __construct(
-		systems $systems
+		Systems $systems
 	)
 	{
 		$this->systems = $systems;

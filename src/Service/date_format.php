@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use service\config;
+use App\Service\Config;
 
 class date_format
 {
@@ -49,7 +49,7 @@ class date_format
 		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
 	];
 
-	public function __construct(config $config)
+	public function __construct(Config $config)
 	{
 		$this->config = $config;
 	}

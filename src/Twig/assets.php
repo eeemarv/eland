@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\assets as service_assets;
+use App\Service\assets as service_assets;
 
 class assets
 {

@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use service\xdb;
-use Doctrine\DBAL\Connection as db;
+use App\Service\xdb;
+use Doctrine\DBAL\Connection as Db;
 use Predis\Client as predis;
 
 class user_cache
@@ -16,7 +16,7 @@ class user_cache
 
 	protected $local;
 
-	public function __construct(db $db, xdb $xdb, predis $predis)
+	public function __construct(Db $db, xdb $xdb, predis $predis)
 	{
 		$this->db = $db;
 		$this->xdb = $xdb;

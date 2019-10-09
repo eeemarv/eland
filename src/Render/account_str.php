@@ -2,14 +2,14 @@
 
 namespace App\Render;
 
-use service\user_cache;
+use App\Service\UserCache;
 
-class account_str
+class AccountStr
 {
 	protected $user_cache;
 
 	public function __construct(
-		user_cache $user_cache
+		UserCache $user_cache
 	)
 	{
 		$this->user_cache = $user_cache;

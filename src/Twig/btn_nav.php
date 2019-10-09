@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use render\btn_nav as render_btn_nav;
+use App\Render\btn_nav as render_btn_nav;
 
 class btn_nav
 {

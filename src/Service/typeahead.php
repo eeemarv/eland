@@ -5,8 +5,8 @@ namespace App\Service;
 use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use service\systems;
-use service\assets;
+use App\Service\Systems;
+use App\Service\assets;
 
 class typeahead
 {
@@ -24,7 +24,7 @@ class typeahead
 		Predis $predis,
 		LoggerInterface $logger,
 		UrlGeneratorInterface $url_generator,
-		systems $systems,
+		Systems $systems,
 		assets $assets
 	)
 	{

@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-interface task_interface
+interface TaskInterface
 {
 	/*
 	 * if this task should run

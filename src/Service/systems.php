@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 
 class systems
 {
@@ -28,7 +28,7 @@ class systems
 		'letsdendermonde'	=> 'dendermonde',
 	];
 
-	public function __construct(db $db, string $legacy_eland_origin_pattern)
+	public function __construct(Db $db, string $legacy_eland_origin_pattern)
 	{
 		$this->db = $db;
 		$this->legacy_eland_origin_pattern = $legacy_eland_origin_pattern;

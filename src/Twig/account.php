@@ -2,13 +2,13 @@
 
 namespace App\Twig;
 
-use service\user_cache;
+use App\Service\UserCache;
 
 class account
 {
 	protected $user_cache;
 
-	public function __construct(user_cache $user_cache)
+	public function __construct(UserCache $user_cache)
 	{
 		$this->user_cache = $user_cache;
 	}

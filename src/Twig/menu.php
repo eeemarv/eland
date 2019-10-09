@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\menu as service_menu;
+use App\Service\menu as service_menu;
 
 class menu
 {

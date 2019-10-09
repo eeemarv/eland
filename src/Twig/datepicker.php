@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\date_format_cache;
+use App\Service\date_format_cache;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
 use twig\web_date;

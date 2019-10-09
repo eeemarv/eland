@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use service\config;
+use App\Service\Config;
 use Doctrine\DBAL\Connection as Db;
 
 class TransactionsController extends AbstractController
@@ -812,7 +812,7 @@ class TransactionsController extends AbstractController
         ]);
     }
 
-    static public function get_valuation(config $config, string $schema):string
+    static public function get_valuation(Config $config, string $schema):string
     {
         $out = '';
 

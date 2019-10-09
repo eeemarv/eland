@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use App\Cnst\AccessCnst;
 
 class ContactsEditController extends AbstractController
@@ -347,7 +347,7 @@ class ContactsEditController extends AbstractController
     }
 
     public static function get_contact(
-        db $db,
+        Db $db,
         int $contact_id,
         string $schema
     ):array

@@ -2,12 +2,12 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use service\user_cache;
-use service\autominlimit;
-use service\config;
-use render\account;
+use App\Service\UserCache;
+use App\Service\autominlimit;
+use App\Service\Config;
+use App\Render\account;
 
 class transaction
 {
@@ -19,11 +19,11 @@ class transaction
 	protected $account;
 
 	public function __construct(
-		db $db,
+		Db $db,
 		LoggerInterface $logger,
-		user_cache $user_cache,
+		UserCache $user_cache,
 		autominlimit $autominlimit,
-		config $config,
+		Config $config,
 		account $account
 	)
 	{

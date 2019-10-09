@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use service\config;
-use service\item_access;
+use App\Service\Config;
+use App\Service\item_access;
 use App\Cnst\MenuCnst;
 
 class menu
@@ -27,7 +27,7 @@ class menu
 	protected $active_menu;
 
 	public function __construct(
-		config $config,
+		Config $config,
 		item_access $item_access,
 		string $pp_schema,
 		string $pp_system,

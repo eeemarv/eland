@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use render\btn_nav;
+use App\Render\btn_nav;
 use App\Cnst\AccessCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Cnst\BulkCnst;

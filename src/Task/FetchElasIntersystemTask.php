@@ -2,13 +2,13 @@
 
 namespace App\Task;
 
-use service\cache;
+use App\Service\Cache;
 use Predis\Client as Predis;
-use service\typeahead;
+use App\Service\typeahead;
 use Psr\Log\LoggerInterface;
 use App\Cnst\CacheKeyCnst;
 
-class fetch_elas_intersystem
+class FetchElasIntersystemTask
 {
 	protected $cache;
 	protected $predis;
@@ -24,7 +24,7 @@ class fetch_elas_intersystem
 	protected $elas_domains;
 
 	public function __construct(
-		cache $cache,
+		Cache $cache,
 		Predis $predis,
 		typeahead $typeahead,
 		LoggerInterface $logger

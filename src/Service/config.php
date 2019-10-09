@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use service\xdb;
+use App\Service\xdb;
 use App\Cnst\ConfigCnst;
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 
 class config
@@ -15,7 +15,7 @@ class config
 	protected $is_cli;
 
 	public function __construct(
-		db $db,
+		Db $db,
 		xdb $xdb,
 		Predis $predis
 	)

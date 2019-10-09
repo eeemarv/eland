@@ -2,7 +2,7 @@
 
 namespace App\Queue;
 
-interface queue_interface
+interface QueueInterface
 {
 	public function process(array $data);
 	public function queue(array $data, int $priority);

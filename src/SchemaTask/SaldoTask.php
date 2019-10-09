@@ -2,42 +2,42 @@
 
 namespace App\SchemaTask;
 
-use model\schema_task;
-use Doctrine\DBAL\Connection as db;
-use service\xdb;
-use service\cache;
+use App\Model\SchemaTask;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\xdb;
+use App\Service\Cache;
 use Psr\Log\LoggerInterface;
-use queue\mail;
-use service\schedule;
-use service\systems;
-use service\intersystems;
-use service\config;
-use service\mail_addr_user;
-use render\account_str;
+use App\Queue\MailQueue;
+use App\Service\Schedule;
+use App\Service\Systems;
+use App\Service\intersystems;
+use App\Service\Config;
+use App\Service\MailAddrUser;
+use App\Render\account_str;
 
-class saldo extends schema_task
+class SaldoTask extends SchemaTask
 {
 	protected $db;
 	protected $xdb;
 	protected $cache;
 	protected $logger;
-	protected $mail;
+	protected $mail_queue;
 	protected $intersystems;
 	protected $config;
 	protected $mail_addr_user;
 	protected $account_str;
 
 	public function __construct(
-		db $db,
+		Db $db,
 		xdb $xdb,
-		cache $cache,
+		Cache $cache,
 		LoggerInterface $logger,
-		mail $mail,
-		schedule $schedule,
-		systems $systems,
+		MailQueue $mail_queue,
+		Schedule $schedule,
+		Systems $systems,
 		intersystems $intersystems,
-		config $config,
-		mail_addr_user $mail_addr_user,
+		Config $config,
+		MailAddrUser $mail_addr_user,
 		account_str $account_str
 	)
 	{
@@ -46,7 +46,7 @@ class saldo extends schema_task
 		$this->xdb = $xdb;
 		$this->cache = $cache;
 		$this->logger = $logger;
-		$this->mail = $mail;
+		$this->mail_queue = $mail_queue;
 		$this->intersystems = $intersystems;
 		$this->config = $config;
 		$this->mail_addr_user = $mail_addr_user;
@@ -543,7 +543,7 @@ class saldo extends schema_task
 				continue;
 			}
 
-			$this->mail->queue([
+			$this->mail_queue->queue([
 				'schema'			=> $this->schema,
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',

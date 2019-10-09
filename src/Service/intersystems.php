@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
-use service\systems;
-use service\config;
+use App\Service\Systems;
+use App\Service\Config;
 
 class intersystems
 {
@@ -26,10 +26,10 @@ class intersystems
 	protected $eland_intersystems = [];
 
 	public function __construct(
-		db $db,
+		Db $db,
 		Predis $predis,
-		systems $systems,
-		config $config
+		Systems $systems,
+		Config $config
 	)
 	{
 		$this->db = $db;

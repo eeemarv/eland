@@ -2,17 +2,17 @@
 
 namespace App\Queue;
 
-use queue\queue_interface;
+use App\Queue\QueueInterface;
 use League\HTMLToMarkdown\HtmlConverter;
-use service\queue;
+use App\Service\Queue;
 use Psr\Log\LoggerInterface;
 use Twig_Environment as Twig;
-use service\config;
-use service\mail_addr_system;
-use service\email_validate;
-use service\systems;
+use App\Service\Config;
+use App\Service\MailAddrSystem;
+use App\Service\EmailValidate;
+use App\Service\Systems;
 
-class mail implements queue_interface
+class MailQueue implements QueueInterface
 {
 	protected $converter;
 	protected $mailer;
@@ -25,13 +25,13 @@ class mail implements queue_interface
 	protected $systems;
 
 	public function __construct(
-		queue $queue,
+		Queue $queue,
 		LoggerInterface $logger,
 		Twig $twig,
-		config $config,
-		mail_addr_system $mail_addr_system,
-		email_validate $email_validate,
-		systems $systems
+		Config $config,
+		MailAddrSystem $mail_addr_system,
+		EmailValidate $email_validate,
+		Systems $systems
 	)
 	{
 		$this->queue = $queue;

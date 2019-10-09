@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\date_format as dt_frmt;
+use App\Service\date_format as dt_frmt;
 
 class date_format
 {

@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\HttpFoundation\Request;
 use Predis\Client as Predis;
-use service\token as token_gen;
+use App\Service\token as token_gen;
 
 class form_token
 {

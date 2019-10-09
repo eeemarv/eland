@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use service\assets;
+use App\Service\assets;
 use App\Cnst\AccessCnst;
 
 class item_access

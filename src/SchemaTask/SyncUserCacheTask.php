@@ -2,22 +2,22 @@
 
 namespace App\SchemaTask;
 
-use model\schema_task;
-use Doctrine\DBAL\Connection as db;
-use service\user_cache;
-use service\schedule;
-use service\systems;
+use App\Model\SchemaTask;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\UserCache;
+use App\Service\Schedule;
+use App\Service\Systems;
 
-class sync_user_cache extends schema_task
+class SyncUserCacheTask extends SchemaTask
 {
 	protected $db;
 	protected $user_cache;
 
 	public function __construct(
-		db $db,
-		user_cache $user_cache,
-		schedule $schedule,
-		systems $systems
+		Db $db,
+		UserCache $user_cache,
+		Schedule $schedule,
+		Systems $systems
 	)
 	{
 		parent::__construct($schedule, $systems);

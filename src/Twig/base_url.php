@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\systems;
+use App\Service\Systems;
 
 class base_url
 {
@@ -10,7 +10,7 @@ class base_url
 	protected $protocol;
 
 	public function __construct(
-		systems $systems,
+		Systems $systems,
 		string $protocol
 	)
 	{

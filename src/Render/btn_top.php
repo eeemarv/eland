@@ -2,7 +2,7 @@
 
 namespace App\Render;
 
-use render\link as render_link;
+use App\Render\link as render_link;
 
 class btn_top
 {

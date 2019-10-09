@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
 /*
@@ -54,7 +54,7 @@ class xdb
 	protected $db;
 	protected $logger;
 
-	public function __construct(db $db, LoggerInterface $logger)
+	public function __construct(Db $db, LoggerInterface $logger)
 	{
 		$this->db = $db;
 		$this->logger = $logger;

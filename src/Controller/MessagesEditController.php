@@ -9,8 +9,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
-use service\alert;
-use service\s3;
+use App\Service\alert;
+use App\Service\S3;
 use App\Controller\MessagesShowController;
 use App\Cnst\MessageTypeCnst;
 use App\Cnst\AccessCnst;
@@ -598,7 +598,7 @@ class MessagesEditController extends AbstractController
 
     public static function adjust_category_stats(
         string $message_type, int $id_category, int $adj,
-        db $db, string $schema
+        Db $db, string $schema
     ):void
     {
         if ($adj === 0)
@@ -618,7 +618,7 @@ class MessagesEditController extends AbstractController
     public static function delete_images_from_db(
         array $deleted_images,
         int $id,
-        db $db,
+        Db $db,
         loggerinterface $logger,
         string $schema
     ):void
@@ -645,10 +645,10 @@ class MessagesEditController extends AbstractController
         array $uploaded_images,
         int $id,
         bool $fix_id,
-        db $db,
+        Db $db,
         loggerinterface $logger,
         alert $alert,
-        s3 $s3,
+        S3 $s3,
         string $schema
     ):void
     {

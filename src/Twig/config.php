@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\config as cnfg;
+use App\Service\config as cnfg;
 
 class config
 {

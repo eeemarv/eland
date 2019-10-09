@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
-use service\user_cache;
-use service\config;
-use service\mail_addr_system;
-use service\mail_addr_user;
-use queue\mail;
+use App\Service\UserCache;
+use App\Service\Config;
+use App\Service\MailAddrSystem;
+use App\Service\MailAddrUser;
+use App\Queue\MailQueue;
 
 class mail_transaction
 {
@@ -14,21 +14,21 @@ class mail_transaction
 	protected $config;
 	protected $mail_addr_system;
 	protected $mail_addr_user;
-	protected $mail;
+	protected $mail_queue;
 
 	public function __construct(
-		user_cache $user_cache,
-		config $config,
-		mail_addr_system $mail_addr_system,
-		mail_addr_user $mail_addr_user,
-		mail $mail
+		UserCache $user_cache,
+		Config $config,
+		MailAddrSystem $mail_addr_system,
+		MailAddrUser $mail_addr_user,
+		MailQueue $mail_queue
 	)
 	{
 		$this->user_cache = $user_cache;
 		$this->config = $config;
 		$this->mail_addr_system = $mail_addr_system;
 		$this->mail_addr_user = $mail_addr_user;
-		$this->mail = $mail;
+		$this->mail_queue = $mail_queue;
 	}
 
 	public function queue_mail_type(
@@ -60,7 +60,7 @@ class mail_transaction
 			],
 		];
 
-		$this->mail->queue([
+		$this->mail_queue->queue([
 			'schema'	=> $schema,
 			'to' 		=> $this->mail_addr_user->get_active($transaction['id_to'], $schema),
 			'reply_to' 	=> $this->mail_addr_system->get_admin($schema),
@@ -70,14 +70,14 @@ class mail_transaction
 			]),
 		], 9000);
 
-		$this->mail->queue([
+		$this->mail_queue->queue([
 			'schema'	=> $schema,
 			'to' 		=> $this->mail_addr_system->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type_admin',
 			'vars'		=> $vars,
 		], 9000);
 
-		$this->mail->queue([
+		$this->mail_queue->queue([
 			'schema'	=> $schema,
 			'to' 		=> $this->mail_addr_system->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type_user',
@@ -111,7 +111,7 @@ class mail_transaction
 			$tpl = 'transaction/';
 			$tpl .= $to_user['accountrole'] == 'interlets' ? 'to_intersystem' : 'transaction';
 
-			$this->mail->queue([
+			$this->mail_queue->queue([
 				'schema'	=> $schema,
 				'to' 		=> $this->mail_addr_user->get_active($from_user_id, $schema),
 				'template'	=> $tpl,
@@ -129,7 +129,7 @@ class mail_transaction
 			$tpl = 'transaction/';
 			$tpl .= $from_user['accountrole'] == 'interlets' ? 'from_intersystem' : 'transaction';
 
-			$this->mail->queue([
+			$this->mail_queue->queue([
 				'to' 		=> $this->mail_addr_user->get_active($to_user_id, $schema),
 				'schema'	=> $schema,
 				'template'	=> $tpl,

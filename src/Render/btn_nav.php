@@ -2,9 +2,9 @@
 
 namespace App\Render;
 
-use render\link as render_link;
-use render\tag as render_tag;
-use service\assets;
+use App\Render\link as render_link;
+use App\Render\tag as render_tag;
+use App\Service\assets;
 
 class btn_nav
 {

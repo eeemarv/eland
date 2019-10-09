@@ -2,15 +2,15 @@
 
 namespace App\Model;
 
-use model\job;
-use model\task_interface;
-use service\schedule;
+use App\Model\Job;
+use App\Model\TaskInterface;
+use App\Service\Schedule;
 
-abstract class task extends job implements task_interface
+abstract class Task extends Job implements TaskInterface
 {
 	protected $schedule;
 
-	public function __construct(schedule $schedule)
+	public function __construct(Schedule $schedule)
 	{
 		$this->schedule = $schedule;
 	}

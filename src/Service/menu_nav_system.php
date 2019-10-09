@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
-use service\intersystems;
-use service\systems;
-use service\menu;
-use service\config;
-use service\user_cache;
+use App\Service\intersystems;
+use App\Service\Systems;
+use App\Service\menu;
+use App\Service\Config;
+use App\Service\UserCache;
 
 class menu_nav_system
 {
@@ -23,14 +23,14 @@ class menu_nav_system
 
 	public function __construct(
 		intersystems $intersystems,
-		systems $systems,
+		Systems $systems,
 		array $s_logins,
 		string $s_schema,
 		string $pp_schema,
 		bool $intersystem_en,
 		menu $menu,
-		config $config,
-		user_cache $user_cache,
+		Config $config,
+		UserCache $user_cache,
 		bool $s_elas_guest
 	)
 	{

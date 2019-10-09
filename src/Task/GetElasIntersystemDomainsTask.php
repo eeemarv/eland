@@ -2,21 +2,21 @@
 
 namespace App\Task;
 
-use Doctrine\DBAL\Connection as db;
-use service\cache;
-use service\systems;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\Cache;
+use App\Service\Systems;
 use App\Cnst\CacheKeyCnst;
 
-class get_elas_intersystem_domains
+class GetElasIntersystemDomainsTask
 {
 	protected $cache;
 	protected $db;
 	protected $systems;
 
 	public function __construct(
-		db $db,
-		cache $cache,
-		systems $systems
+		Db $db,
+		Cache $cache,
+		Systems $systems
 	)
 	{
 		$this->db = $db;

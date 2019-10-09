@@ -9,9 +9,9 @@ use App\Cnst\AccessCnst;
 use app\cnst\statuscnst;
 use app\cnst\rolecnst;
 use App\Cnst\ContactInputCnst;
-use queue\mail as queue_mail;
-use service\mail_addr_system;
-use service\mail_addr_user;
+use App\Queue\mail as queue_mail;
+use App\Service\MailAddrSystem;
+use App\Service\MailAddrUser;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersEditAdminController extends AbstractController
@@ -1327,8 +1327,8 @@ class UsersEditAdminController extends AbstractController
 
     private static function send_activation_mail(
         queue_mail $queue_mail,
-        mail_addr_system $mail_addr_system,
-        mail_addr_user $mail_addr_user,
+        MailAddrSystem $mail_addr_system,
+        MailAddrUser $mail_addr_user,
         bool $to_user_en,
         string $password,
         int $user_id,

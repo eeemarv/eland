@@ -2,9 +2,9 @@
 
 namespace App\Render;
 
-use render\link;
-use service\systems;
-use service\user_cache;
+use App\Render\link;
+use App\Service\Systems;
+use App\Service\UserCache;
 
 class account
 {
@@ -15,8 +15,8 @@ class account
 
 	public function __construct(
 		link $link,
-		systems $systems,
-		user_cache $user_cache,
+		Systems $systems,
+		UserCache $user_cache,
 		string $r_users_show
 	)
 	{

@@ -2,16 +2,16 @@
 
 namespace App\SchemaTask;
 
-use model\schema_task;
-use Doctrine\DBAL\Connection as db;
-use service\cache;
+use App\Model\SchemaTask;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\Cache;
 use Psr\Log\LoggerInterface;
-use queue\geocode as geocode_queue;
-use service\schedule;
-use service\systems;
-use render\account_str;
+use App\Queue\geocode as geocode_queue;
+use App\Service\Schedule;
+use App\Service\Systems;
+use App\Render\account_str;
 
-class geocode extends schema_task
+class GeocodeTask extends SchemaTask
 {
 	protected $queue;
 	protected $logger;
@@ -23,12 +23,12 @@ class geocode extends schema_task
 	protected $account_str;
 
 	public function __construct(
-		db $db,
-		cache $cache,
+		Db $db,
+		Cache $cache,
 		LoggerInterface $logger,
 		geocode_queue $geocode_queue,
-		schedule $schedule,
-		systems $systems,
+		Schedule $schedule,
+		Systems $systems,
 		account_str $account_str
 	)
 	{

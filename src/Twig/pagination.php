@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use render\pagination as render_pagination;
+use App\Render\pagination as render_pagination;
 
 class pagination
 {

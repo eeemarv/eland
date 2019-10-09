@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use service\menu_nav_user as service_menu_nav_user;
+use App\Service\menu_nav_user as service_menu_nav_user;
 
 class menu_nav_user
 {

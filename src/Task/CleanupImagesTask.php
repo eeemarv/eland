@@ -2,13 +2,13 @@
 
 namespace App\Task;
 
-use service\cache;
-use Doctrine\DBAL\Connection as db;
+use App\Service\Cache;
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use service\s3;
-use service\systems;
+use App\Service\S3;
+use App\Service\Systems;
 
-class cleanup_images
+class CleanupImagesTask
 {
 	const DAYS = 365;
 
@@ -19,11 +19,11 @@ class cleanup_images
 	protected $systems;
 
 	public function __construct(
-		cache $cache,
-		db $db,
+		Cache $cache,
+		Db $db,
 		LoggerInterface $logger,
-		s3 $s3,
-		systems $systems
+		S3 $s3,
+		Systems $systems
 	)
 	{
 		$this->cache = $cache;

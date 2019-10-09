@@ -2,12 +2,12 @@
 
 namespace App\Service;
 
-use service\xdb;
+use App\Service\xdb;
 use Psr\Log\LoggerInterface;
-use Doctrine\DBAL\Connection as db;
-use service\config;
-use service\user_cache;
-use render\account;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\Config;
+use App\Service\UserCache;
+use App\Render\account;
 
 class autominlimit
 {
@@ -28,9 +28,9 @@ class autominlimit
 	public function __construct(
 		LoggerInterface $logger,
 		xdb $xdb,
-		db $db,
-		config $config,
-		user_cache $user_cache,
+		Db $db,
+		Config $config,
+		UserCache $user_cache,
 		account $account
 	)
 	{

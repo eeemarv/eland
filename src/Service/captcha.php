@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\HttpFoundation\Request;
 use Predis\Client as Predis;
-use service\form_token;
+use App\Service\form_token;
 use Gregwar\Captcha\CaptchaBuilder;
 
 class captcha

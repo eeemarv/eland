@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 
 class log_db
@@ -10,7 +10,7 @@ class log_db
 	protected $db;
 	protected $predis;
 
-	public function __construct(db $db, Predis $predis)
+	public function __construct(Db $db, Predis $predis)
 	{
 		$this->db = $db;
 		$this->predis = $predis;

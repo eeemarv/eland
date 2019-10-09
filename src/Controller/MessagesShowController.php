@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
-use render\link;
+use App\Render\link;
 use App\Cnst\AccessCnst;
 use App\Cnst\MessageTypeCnst;
 use controller\contacts_user_show_inline;

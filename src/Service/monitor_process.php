@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Predis\Client as predis;
-use service\cache;
+use App\Service\Cache;
 use App\Cnst\ProcessCnst;
 
 class monitor_process
@@ -19,9 +19,9 @@ class monitor_process
 	protected $loop_count = 1;
 
 	public function __construct(
-		db $db,
+		Db $db,
 		predis $predis,
-		cache $cache
+		Cache $cache
 	)
 	{
 		$this->db = $db;
