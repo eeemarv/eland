@@ -32,6 +32,6 @@ class TypeaheadUsernamesController extends AbstractController
 
         $typeahead_service->set_thumbprint('usernames', $app['pp_ary'], [], $crc);
 
-        return $app->json($usernames);
+        return $this->json($usernames);
     }
 }

@@ -9,6 +9,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\AccessCnst;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class ContactsEditController extends AbstractController
 {
@@ -314,7 +321,7 @@ class ContactsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access);
+        $out .= $item_access_service->get_radio_buttons('access', $access);
 
         if ($redirect_contacts)
         {

@@ -21,7 +21,7 @@ class ForumController extends AbstractController
         $rows = $xdb_service->get_many([
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
-            'access' => $app['item_access']->get_visible_ary_xdb()],
+            'access' => $item_access_service->get_visible_ary_xdb()],
                 'order by event_time desc');
 
         if (count($rows))
@@ -84,7 +84,7 @@ class ForumController extends AbstractController
 
         foreach($forum_posts as $p)
         {
-            if ($app['item_access']->is_visible_xdb($p['access']))
+            if ($item_access_service->is_visible_xdb($p['access']))
             {
                 $forum_empty = false;
                 break;
@@ -127,7 +127,7 @@ class ForumController extends AbstractController
 
         foreach($forum_posts as $p)
         {
-            if (!$app['item_access']->is_visible_xdb($p['access']))
+            if (!$item_access_service->is_visible_xdb($p['access']))
             {
                 continue;
             }
@@ -149,12 +149,12 @@ class ForumController extends AbstractController
             $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
             $out .= '</td>';
 
-            $out .= $app['date_format']->get_td($p['ts'], 'min', $app['pp_schema']);
+            $out .= $date_format_serviceget_td($p['ts'], 'min', $app['pp_schema']);
 
             if ($show_visibility)
             {
                 $out .= '<td>';
-                $out .= $app['item_access']->get_label_xdb($p['access']);
+                $out .= $item_access_service->get_label_xdb($p['access']);
                 $out .= '</td>';
             }
 

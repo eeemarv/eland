@@ -62,7 +62,7 @@ class ElasSoapStatusController extends AbstractController
         {
             $m = 'Kan geen verbinding maken.';
 
-            $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
+            $logger->error('elas-token: ' . $m . ' ' . $err,
                 ['schema' => $app['pp_schema']]);
 
             $response->setContent($m);
@@ -78,7 +78,7 @@ class ElasSoapStatusController extends AbstractController
         {
             $m = 'Kan geen status verkrijgen. ' . $err;
 
-            $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
+            $logger->error('elas-token: ' . $m . ' ' . $err,
                 ['schema' => $app['pp_schema']]);
 
             $response->setContent($m);

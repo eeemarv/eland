@@ -84,11 +84,11 @@ class MessagesDelController extends AbstractController
         $out .= $message['validity'];
         $out .= '</dd>';
 
-        if ($app['intersystem_en'] && $this->intersystems_service->get_count($app['pp_schema']))
+        if ($app['intersystem_en'] && $intersystems_service->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
-            $out .= $app['item_access']->get_label($message['local'] ? 'user' : 'guest');
+            $out .= $item_access_service->get_label($message['local'] ? 'user' : 'guest');
             $out .= '</dd>';
         }
 

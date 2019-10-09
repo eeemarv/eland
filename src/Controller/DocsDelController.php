@@ -5,10 +5,22 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
+use App\Service\XdbService;
 
 class DocsDelController extends AbstractController
 {
-    public function docs_del(Request $request, app $app, string $doc_id):Response
+    public function docs_del(
+        Request $request,
+        string $doc_id,
+        XdbService $xdb_service
+    ):Response
     {
         $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
 
@@ -37,7 +49,7 @@ class DocsDelController extends AbstractController
 
                 if ($err)
                 {
-                    $app['monolog']->error('doc delete file fail: ' . $err,
+                    $logger->error('doc delete file fail: ' . $err,
                         ['schema' => $app['pp_schema']]);
                 }
 

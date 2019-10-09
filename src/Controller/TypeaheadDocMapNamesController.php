@@ -35,6 +35,6 @@ class TypeaheadDocMapNamesController extends AbstractController
 
         $typeahead_service->set_thumbprint('doc_map_names', $app['pp_ary'], [], $crc);
 
-        return $app->json($map_names);
+        return $this->json($map_names);
     }
 }

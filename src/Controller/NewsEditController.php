@@ -35,7 +35,7 @@ class NewsEditController extends AbstractController
 
             if ($news['itemdate'])
             {
-                $news['itemdate'] = $app['date_format']->reverse($news['itemdate'], $app['pp_schema']);
+                $news['itemdate'] = $date_format_servicereverse($news['itemdate'], $app['pp_schema']);
 
                 if ($news['itemdate'] === '')
                 {
@@ -126,17 +126,17 @@ class NewsEditController extends AbstractController
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-today-highlight="true" ';
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_serviceget($news['itemdate'], 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
         $out .= '" ';
         $out .= 'required>';
         $out .= '</div>';
@@ -176,7 +176,7 @@ class NewsEditController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access, 'news', $app['pp_user']);
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $app['pp_user']);
 
         $out .= $link_render->btn_cancel('news_show', $app['pp_ary'],
             ['id' => $id]);

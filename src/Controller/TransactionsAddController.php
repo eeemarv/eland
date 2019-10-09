@@ -467,7 +467,7 @@ class TransactionsAddController extends AbstractController
 
                 $transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
 
-                $app['monolog']->debug('insert transation: --  ' .
+                $logger->debug('insert transation: --  ' .
                     http_build_query($transaction) .
                     ' --', ['schema' => $app['pp_schema']]);
 
@@ -744,12 +744,12 @@ class TransactionsAddController extends AbstractController
                     $app['mail_transaction']->queue($trans_org, $app['pp_schema']);
                     $app['mail_transaction']->queue($transaction, $remote_schema);
 
-                    $app['monolog']->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
+                    $logger->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
                         $amount . ' from user: ' .  $app['account']->str_id($fromuser['id'], $app['pp_schema']) .
                         ' to user: ' . $app['account']->str_id($touser['id'], $app['pp_schema']),
                         ['schema' => $app['pp_schema']]);
 
-                    $app['monolog']->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
+                    $logger->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
                         ' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
                         $remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
                         $to_remote_user['name'], ['schema' => $remote_schema]);
@@ -898,11 +898,11 @@ class TransactionsAddController extends AbstractController
             'id'		=> 'self',
         ];
 
-        if ($this->intersystems_service->get_eland_count($app['pp_schema']))
+        if ($intersystems_service->get_eland_count($app['pp_schema']))
         {
             $eland_urls = [];
 
-            foreach ($this->intersystems_service->get_eland($app['pp_schema']) as $remote_eland_schema => $host)
+            foreach ($intersystems_service->get_eland($app['pp_schema']) as $remote_eland_schema => $host)
             {
                 $eland_url = $app['systems']->get_legacy_eland_origin($remote_eland_schema);
                 $eland_urls[] = $eland_url;
@@ -925,11 +925,11 @@ class TransactionsAddController extends AbstractController
             }
         }
 
-        if ($this->intersystems_service->get_elas_count($app['pp_schema']))
+        if ($intersystems_service->get_elas_count($app['pp_schema']))
         {
             $ids = [];
 
-            foreach ($this->intersystems_service->get_elas($app['pp_schema']) as $key => $name)
+            foreach ($intersystems_service->get_elas($app['pp_schema']) as $key => $name)
             {
                 $ids[] = $key;
             }

@@ -89,13 +89,13 @@ class MessagesImagesUploadController extends AbstractController
                     'msgid'			=> $id,
                     '"PictureFile"'	=> $filename]);
 
-                $app['monolog']->info('Message-Picture ' .
+                $logger->info('Message-Picture ' .
                     $filename . ' uploaded and inserted in db.',
                     ['schema' => $app['pp_schema']]);
             }
             else
             {
-                $app['monolog']->info('Message-Picture ' .
+                $logger->info('Message-Picture ' .
                     $filename . ' uploaded, not (yet) inserted in db.',
                     ['schema' => $app['pp_schema']]);
             }
@@ -103,6 +103,6 @@ class MessagesImagesUploadController extends AbstractController
             $return_ary[] = $filename;
         }
 
-        return $app->json($return_ary);
+        return $this->json($return_ary);
     }
 }

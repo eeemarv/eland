@@ -55,7 +55,7 @@ class MessagesImagesDel extends AbstractController
 
         $db->delete($app['pp_schema'] . '.msgpictures', ['"PictureFile"' => $img]);
 
-        return $app->json(['success' => true]);
+        return $this->json(['success' => true]);
     }
 
     public function messages_images_del(

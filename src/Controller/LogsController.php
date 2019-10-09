@@ -310,7 +310,7 @@ class LogsController extends AbstractController
         {
             $td = [];
 
-            $td[] = $app['date_format']->get($value['ts'], 'sec', $app['pp_schema']);
+            $td[] = $date_format_serviceget($value['ts'], 'sec', $app['pp_schema']);
             $td[] = $value['type'];
             $td[] .= $value['ip'];
 

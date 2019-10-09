@@ -124,7 +124,7 @@ class MessagesEditController extends AbstractController
                 $user_id = $app['s_id'];
             }
 
-            if ($this->intersystems_service->get_count($app['pp_schema']))
+            if ($intersystems_service->get_count($app['pp_schema']))
             {
                 if (!$access)
                 {
@@ -544,9 +544,9 @@ class MessagesEditController extends AbstractController
         $out .= 'verslepen.</p>';
         $out .= '</div>';
 
-        if ($this->intersystems_service->get_count($app['pp_schema']))
+        if ($intersystems_service->get_count($app['pp_schema']))
         {
-            $out .= $app['item_access']->get_radio_buttons('access', $access, 'messages', true);
+            $out .= $item_access_service->get_radio_buttons('access', $access, 'messages', true);
         }
         else if ($edit_mode)
         {

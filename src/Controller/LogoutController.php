@@ -16,7 +16,7 @@ class LogoutController extends AbstractController
 
         $app['session']->invalidate();
 
-        $app['monolog']->info('user logged out',
+        $logger->info('user logged out',
             ['schema' => $app['pp_schema']]);
 
         $alert_service->success('Je bent uitgelogd');

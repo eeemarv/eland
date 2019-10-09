@@ -6,6 +6,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class ContactsController extends AbstractController
 {
@@ -483,7 +490,7 @@ class ContactsController extends AbstractController
                 $td[] = '&nbsp;';
             }
 
-            $td[] = $app['item_access']->get_label_flag_public($c['flag_public']);
+            $td[] = $item_access_service->get_label_flag_public($c['flag_public']);
 
             $td[] = $link_render->link_fa('contacts_del_admin', $app['pp_ary'],
                 ['id' => $c['id']], 'Verwijderen',

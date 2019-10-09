@@ -5,6 +5,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class ContactController extends AbstractController
 {
@@ -63,7 +70,7 @@ class ContactController extends AbstractController
                 $token = $app['data_token']->store($contact,
                     'contact', $app['pp_schema'], 86400);
 
-                $app['monolog']->info('Contact form filled in with address ' .
+                $logger->info('Contact form filled in with address ' .
                     $email . ' ' .
                     json_encode($contact),
                     ['schema' => $app['pp_schema']]);

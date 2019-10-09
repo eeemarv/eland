@@ -112,7 +112,7 @@ class ForumAddTopicController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
 
         $out .= $link_render->btn_cancel('forum', $app['pp_ary'], []);
 

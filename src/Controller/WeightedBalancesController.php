@@ -61,6 +61,6 @@ class WeightedBalancesController extends AbstractController
             $weighted[$user_id] = round($acc[$user_id] / ($days * 86400));
         }
 
-        return $app->json($weighted);
+        return $this->json($weighted);
     }
 }

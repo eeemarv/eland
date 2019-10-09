@@ -42,7 +42,7 @@ class IntersystemsEditController extends AbstractController
 
                     $id = $db->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
 
-                    $this->intersystems_service->clear_cache($app['pp_schema']);
+                    $intersystems_service->clear_cache($app['pp_schema']);
 
                     $link_render->redirect('intersystems_show', $app['pp_ary'],
                         ['id' => $id]);
@@ -123,7 +123,7 @@ class IntersystemsEditController extends AbstractController
                 {
                     $alert_service->success('InterSysteem aangepast.');
 
-                    $this->intersystems_service->clear_cache($app['pp_schema']);
+                    $intersystems_service->clear_cache($app['pp_schema']);
 
                     $link_render->redirect('intersystems_show', $app['pp_ary'],
                         ['id'	=> $id]);

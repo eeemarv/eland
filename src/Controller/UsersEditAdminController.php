@@ -305,7 +305,7 @@ class UsersEditAdminController extends AbstractController
 
             if ($user['birthday'])
             {
-                $user['birthday'] = $app['date_format']->reverse($user['birthday'], $app['pp_schema']);
+                $user['birthday'] = $date_format_servicereverse($user['birthday'], $app['pp_schema']);
 
                 if ($user['birthday'] === '')
                 {
@@ -465,7 +465,7 @@ class UsersEditAdminController extends AbstractController
                             $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                         }
 
-                        $this->intersystems_service->clear_cache($app['s_schema']);
+                        $intersystems_service->clear_cache($app['s_schema']);
 
                         $link_render->redirect($app['r_users'], $app['pp_ary'], ['id' => $id]);
                     }
@@ -627,7 +627,7 @@ class UsersEditAdminController extends AbstractController
                                 $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                             }
 
-                            $this->intersystems_service->clear_cache($app['s_schema']);
+                            $intersystems_service->clear_cache($app['s_schema']);
                         }
 
                         $link_render->redirect($app['r_users_show'], $app['pp_ary'],
@@ -892,7 +892,7 @@ class UsersEditAdminController extends AbstractController
             $fullname_access = !$is_edit && !$intersystem_code ? '' : 'admin';
         }
 
-        $out .= $app['item_access']->get_radio_buttons(
+        $out .= $item_access_service->get_radio_buttons(
             'fullname_access',
             $fullname_access,
             'fullname_access',
@@ -934,17 +934,17 @@ class UsersEditAdminController extends AbstractController
 
         if (isset($user['birthday']) && !empty($user['birtday']))
         {
-            $out .= $app['date_format']->get($user['birthday'], 'day', $app['pp_schema']);
+            $out .= $date_format_serviceget($user['birthday'], 'day', $app['pp_schema']);
         }
 
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-default-view="2" ';
         $out .= 'data-date-end-date="';
-        $out .= $app['date_format']->get('', 'day', $app['pp_schema']);
+        $out .= $date_format_serviceget('', 'day', $app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-start-view="2" ';
@@ -953,7 +953,7 @@ class UsersEditAdminController extends AbstractController
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';
@@ -1269,9 +1269,9 @@ class UsersEditAdminController extends AbstractController
 
                 $out .= '</div>';
 
-                $out .= $app['item_access']->get_radio_buttons(
+                $out .= $item_access_service->get_radio_buttons(
                     $access_name,
-                    $app['item_access']->get_value_from_flag_public($c['flag_public']),
+                    $item_access_service->get_value_from_flag_public($c['flag_public']),
                     $abbrev
                 );
 

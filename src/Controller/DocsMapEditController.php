@@ -5,10 +5,29 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
+use App\Service\TypeaheadService;
+use App\Service\XdbService;
 
 class DocsMapEditController extends AbstractController
 {
-    public function docs_map_edit(Request $request, app $app, string $map_id):Response
+    public function docs_map_edit(
+        Request $request,
+        string $map_id,
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        LinkRender $link_render,
+        TypeaheadService $typeahead_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        HeadingRender $heading_render
+    ):Response
     {
         $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
 

@@ -145,7 +145,7 @@ class PlotUserTransactionsController extends AbstractController
             $transactions[] = [
                 'amount' 	        => $amount,
                 'time'              => $time,
-                'fdate'             => $app['date_format']->get_from_unix($time, 'day', $app['pp_schema']),
+                'fdate'             => $date_format_serviceget_from_unix($time, 'day', $app['pp_schema']),
                 'link' 		        => $link_render->context_path('transactions_show',
                     $app['pp_ary'], ['id' => $t['id']]),
                 'user'              => $tr_user,
@@ -154,7 +154,7 @@ class PlotUserTransactionsController extends AbstractController
 
         $begin_balance = $end_balance - $balance;
 
-        return $app->json([
+        return $this->json([
             'user_id' 		=> $user_id,
             'ticks' 		=> $days === 365 ? 12 : 4,
             'currency' 		=> $config_service->get('currency', $app['pp_schema']),

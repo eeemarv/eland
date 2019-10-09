@@ -342,7 +342,7 @@ class MassTransactionController extends AbstractController
                 $log_str .= ' to ';
                 $log_str .= $to_one ? $log_one : $log_many;
 
-                $app['monolog']->info('trans: ' . $log_str, ['schema' => $app['pp_schema']]);
+                $logger->info('trans: ' . $log_str, ['schema' => $app['pp_schema']]);
 
                 if ($app['s_master'])
                 {

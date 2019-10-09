@@ -91,7 +91,7 @@ class UsersMapController extends AbstractController
             {
                 $adr = $adr_ary[$user['id']];
 
-                if ($app['item_access']->is_visible_flag_public($adr['flag_public']))
+                if ($item_access_service->is_visible_flag_public($adr['flag_public']))
                 {
                     $geo = $this->cache_service->get('geo_' . $adr['value']);
 

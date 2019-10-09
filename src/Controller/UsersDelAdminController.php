@@ -142,7 +142,7 @@ class UsersDelAdminController extends AbstractController
 
         if ($msgs)
         {
-            $app['monolog']->info('Delete user ' . $usr .
+            $logger->info('Delete user ' . $usr .
                 ', deleted Messages ' . $msgs,
                 ['schema' => $app['pp_schema']]);
 
@@ -247,6 +247,6 @@ class UsersDelAdminController extends AbstractController
         $thumbprint_status = statuscnst::THUMBPINT_ARY[$user['status']];
         $app['thumbprint_accounts']->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
 
-        $this->intersystems_service->clear_cache($app['pp_schema']);
+        $intersystems_service->clear_cache($app['pp_schema']);
     }
 }

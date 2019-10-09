@@ -28,7 +28,7 @@ class LoginElasTokenController extends AbstractController
                 ], $app['pp_schema']);
             }
 
-            $app['monolog']->info('eLAS guest login using token ' .
+            $logger->info('eLAS guest login using token ' .
                 $elas_token . ' succeeded. referrer: ' . $referrer,
                 ['schema' => $app['pp_schema']]);
 

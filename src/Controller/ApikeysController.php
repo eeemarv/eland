@@ -10,22 +10,17 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 
 class ApikeysController extends AbstractController
 {
     public function apikeys(
-        app $app,
         Db $db,
-        AlertService $alert_service,
         MenuService $menu_service,
         HeadingRender $heading_render,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
-        LinkRender $link_render,
-        FormTokenService $form_token_service
+        LinkRender $link_render
     ):Response
     {
         $apikeys = $db->fetchAll('select *
@@ -60,7 +55,7 @@ class ApikeysController extends AbstractController
             $td[] = $a['id'];
             $td[] = $a['comment'];
             $td[] = $a['apikey'];
-            $td[] = $app['date_format']->get_td($a['created'], 'min', $app['pp_schema']);
+            $td[] = $date_format_serviceget_td($a['created'], 'min', $app['pp_schema']);
             $td[] = $link_render->link_fa('apikeys_del', $app['pp_ary'],
                 ['id' => $a['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'], 'times');
@@ -82,7 +77,15 @@ class ApikeysController extends AbstractController
         ]);
     }
 
-    public function apikeys_add(Request $request, app $app, Db $db):Response
+    public function apikeys_add(
+        Request $request,
+        Db $db,
+        AlertService $alert_service,
+        MenuService $menu_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        FormTokenService $form_token_service
+    ):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -185,9 +188,14 @@ class ApikeysController extends AbstractController
 
     public function apikeys_del(
         Request $request,
-        app $app,
         int $id,
-        Db $db):Response
+        Db $db,
+        AlertService $alert_service,
+        MenuService $menu_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        FormTokenService $form_token_service
+    ):Response
     {
         if($request->isMethod('POST'))
         {

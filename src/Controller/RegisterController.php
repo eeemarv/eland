@@ -32,7 +32,7 @@ class RegisterController extends AbstractController
                 'gsm'			=> $request->request->get('gsm', ''),
             ];
 
-            $app['monolog']->info('Registration request for ' .
+            $logger->info('Registration request for ' .
                 $reg['email'], ['schema' => $app['pp_schema']]);
 
             if(!$reg['email'])

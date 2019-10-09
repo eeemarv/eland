@@ -21,9 +21,9 @@ class TransactionsController extends AbstractController
             $filter['uid'] = (int) $filter['uid'];
         }
 
-        $intersystem_account_schemas = $this->intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
+        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($this->intersystems_service->get_eland($app['pp_schema']),
+        $s_inter_schema_check = array_merge($intersystems_service->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $s_owner = !$app['pp_guest']
@@ -121,7 +121,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
-            $fdate_sql = $app['date_format']->reverse($filter['fdate'], $app['pp_schema']);
+            $fdate_sql = $date_format_servicereverse($filter['fdate'], $app['pp_schema']);
 
             if ($fdate_sql === '')
             {
@@ -137,7 +137,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['tdate']) && $filter['tdate'])
         {
-            $tdate_sql = $app['date_format']->reverse($filter['tdate'], $app['pp_schema']);
+            $tdate_sql = $date_format_servicereverse($filter['tdate'], $app['pp_schema']);
 
             if ($tdate_sql === '')
             {
@@ -439,7 +439,7 @@ class TransactionsController extends AbstractController
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-default-view-date="-1y" ';
         $out .= 'data-date-end-date="0d" ';
@@ -449,7 +449,7 @@ class TransactionsController extends AbstractController
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
         $out .= '">';
 
         $out .= '</div>';
@@ -468,7 +468,7 @@ class TransactionsController extends AbstractController
         $out .= '" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $app['date_format']->datepicker_format($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_format($app['pp_schema']);
         $out .= '" ';
         $out .= 'data-date-end-date="0d" ';
         $out .= 'data-date-language="nl" ';
@@ -477,7 +477,7 @@ class TransactionsController extends AbstractController
         $out .= 'data-date-immediate-updates="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'placeholder="';
-        $out .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
         $out .= '">';
 
         $out .= '</div>';
@@ -619,7 +619,7 @@ class TransactionsController extends AbstractController
                 $out .= '</span></td>';
 
                 $out .= '<td>';
-                $out .= $app['date_format']->get($t['cdate'], 'min', $app['pp_schema']);
+                $out .= $date_format_serviceget($t['cdate'], 'min', $app['pp_schema']);
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -715,7 +715,7 @@ class TransactionsController extends AbstractController
                 $out .= '</td>';
 
                 $out .= '<td>';
-                $out .= $app['date_format']->get($t['cdate'], 'min', $app['pp_schema']);
+                $out .= $date_format_serviceget($t['cdate'], 'min', $app['pp_schema']);
                 $out .= '</td>';
 
                 $out .= '<td>';

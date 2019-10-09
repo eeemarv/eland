@@ -182,7 +182,7 @@ class LoginController extends AbstractController
                             ['password' => hash('sha512', $password)],
                             ['id' => $user_id]);
 
-                        $app['monolog']->info('Password encryption updated to sha512', $log_ary);
+                        $logger->info('Password encryption updated to sha512', $log_ary);
                     }
                 }
             }
@@ -214,7 +214,7 @@ class LoginController extends AbstractController
 
                 $agent = $request->server->get('HTTP_USER_AGENT');
 
-                $app['monolog']->info('User ' .
+                $logger->info('User ' .
                     $app['account']->str_id($user_id, $app['pp_schema']) .
                     ' logged in, agent: ' . $agent, $log_ary);
 

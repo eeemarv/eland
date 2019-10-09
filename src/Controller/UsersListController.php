@@ -183,7 +183,7 @@ class UsersListController extends AbstractController
                     $app['predis']->del($app['pp_schema'] . '_user_' . $user_id);
                 }
 
-                $app['monolog']->info('bulk: Set fullname_access to ' .
+                $logger->info('bulk: Set fullname_access to ' .
                     $bulk_field_value . ' for users ' .
                     $users_log, ['schema' => $app['pp_schema']]);
 
@@ -209,7 +209,7 @@ class UsersListController extends AbstractController
                         [$flag_public, $user_ids, $id_type_contact],
                         [\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
-                $app['monolog']->info('bulk: Set ' . $bulk_field_action .
+                $logger->info('bulk: Set ' . $bulk_field_action .
                     ' to ' . $bulk_field_value .
                     ' for users ' . $users_log,
                     ['schema' => $app['pp_schema']]);
@@ -233,12 +233,12 @@ class UsersListController extends AbstractController
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
 
-                $app['monolog']->info('bulk: Set periodic mail to ' .
+                $logger->info('bulk: Set periodic mail to ' .
                     $log_value . ' for users ' .
                     $users_log,
                     ['schema' => $app['pp_schema']]);
 
-                $this->intersystems_service->clear_cache($app['s_schema']);
+                $intersystems_service->clear_cache($app['s_schema']);
 
                 $alert_service->success('Het veld werd aangepast.');
 
@@ -277,12 +277,12 @@ class UsersListController extends AbstractController
                     $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
                 }
 
-                $app['monolog']->info('bulk: Set ' . $bulk_submit_action .
+                $logger->info('bulk: Set ' . $bulk_submit_action .
                     ' to ' . $store_value .
                     ' for users ' . $users_log,
                     ['schema' => $app['pp_schema']]);
 
-                $this->intersystems_service->clear_cache($app['pp_schema']);
+                $intersystems_service->clear_cache($app['pp_schema']);
 
                 $alert_service->success('Het veld werd aangepast.');
 
@@ -419,7 +419,7 @@ class UsersListController extends AbstractController
                         'vars'				=> $vars,
                     ], 8000);
 
-                    $app['monolog']->debug('#bulk mail:: ' .
+                    $logger->debug('#bulk mail:: ' .
                         $mail_users_info . $bulk_mail_content,
                         ['schema' => $app['pp_schema']]);
                 }
@@ -626,12 +626,12 @@ class UsersListController extends AbstractController
         {
             if ($saldo_date)
             {
-                $saldo_date_rev = $app['date_format']->reverse($saldo_date, 'min', $app['pp_schema']);
+                $saldo_date_rev = $date_format_servicereverse($saldo_date, 'min', $app['pp_schema']);
             }
 
             if ($saldo_date_rev === '' || $saldo_date == '')
             {
-                $saldo_date = $app['date_format']->get('', 'day', $app['pp_schema']);
+                $saldo_date = $date_format_serviceget('', 'day', $app['pp_schema']);
 
                 array_walk($users, function(&$user, $user_id){
                     $user['saldo_date'] = $user['saldo'];
@@ -1050,7 +1050,7 @@ class UsersListController extends AbstractController
                     $f_col .= 'name="sh[p][u][saldo_date]" ';
                     $f_col .= 'data-provide="datepicker" ';
                     $f_col .= 'data-date-format="';
-                    $f_col .= $app['date_format']->datepicker_format($app['pp_schema']);
+                    $f_col .= $date_format_servicedatepicker_format($app['pp_schema']);
                     $f_col .= '" ';
                     $f_col .= 'data-date-language="nl" ';
                     $f_col .= 'data-date-today-highlight="true" ';
@@ -1059,7 +1059,7 @@ class UsersListController extends AbstractController
                     $f_col .= 'data-date-end-date="0d" ';
                     $f_col .= 'data-date-orientation="bottom" ';
                     $f_col .= 'placeholder="';
-                    $f_col .= $app['date_format']->datepicker_placeholder($app['pp_schema']);
+                    $f_col .= $date_format_servicedatepicker_placeholder($app['pp_schema']);
                     $f_col .= '" ';
                     $f_col .= 'value="';
                     $f_col .= $saldo_date;
@@ -1276,7 +1276,7 @@ class UsersListController extends AbstractController
                     {
                         if ($u[$key])
                         {
-                            $td .= $app['date_format']->get($u[$key], 'day', $app['pp_schema']);
+                            $td .= $date_format_serviceget($u[$key], 'day', $app['pp_schema']);
                         }
                         else
                         {
@@ -1382,7 +1382,7 @@ class UsersListController extends AbstractController
 
                 if (isset($adr_ary['flag_public']))
                 {
-                    if ($app['item_access']->is_visible_flag_public($adr_ary['flag_public']))
+                    if ($item_access_service->is_visible_flag_public($adr_ary['flag_public']))
                     {
                         if (count($adr_ary) && $adr_ary['value'])
                         {
@@ -1437,7 +1437,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['a']))
             {
-                $from_date = $app['date_format']->get_from_unix(time() - ($activity_days * 86400), 'day', $app['pp_schema']);
+                $from_date = $date_format_serviceget_from_unix(time() - ($activity_days * 86400), 'day', $app['pp_schema']);
 
                 foreach($show_columns['a'] as $a_key => $a_ary)
                 {
@@ -1576,7 +1576,7 @@ class UsersListController extends AbstractController
 
                 if (isset($t['item_access']))
                 {
-                    $out .= $app['item_access']->get_radio_buttons($bulk_field_name);
+                    $out .= $item_access_service->get_radio_buttons($bulk_field_name);
                 }
                 else
                 {

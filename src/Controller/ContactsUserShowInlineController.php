@@ -5,6 +5,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class ContactsUserShowInlineController extends AbstractController
 {
@@ -89,7 +96,7 @@ class ContactsUserShowInlineController extends AbstractController
 
                 $tr[] = $c['abbrev'];
 
-                if (!$app['item_access']->is_visible_flag_public($c['flag_public']) && !$s_owner)
+                if (!$item_access_service->is_visible_flag_public($c['flag_public']) && !$s_owner)
                 {
                     $tr_c = '<span class="btn btn-default">verborgen</span>';
                     $tr[] = $tr_c;
@@ -177,7 +184,7 @@ class ContactsUserShowInlineController extends AbstractController
 
                 if ($app['pp_admin'] || $s_owner)
                 {
-                    $tr[] = $app['item_access']->get_label_flag_public($c['flag_public']);
+                    $tr[] = $item_access_service->get_label_flag_public($c['flag_public']);
 
                     if ($app['pp_admin'])
                     {

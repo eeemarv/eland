@@ -86,6 +86,6 @@ class TransactionsSumController extends AbstractController
             $ary[$row['uid']] = $row['sum'];
         }
 
-        return $app->json($ary);
+        return $this->json($ary);
     }
 }

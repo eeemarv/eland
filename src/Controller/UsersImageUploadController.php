@@ -46,12 +46,12 @@ class UsersImageUploadController extends AbstractController
             '"PictureFile"'	=> $filename
         ],['id' => $id]);
 
-        $app['monolog']->info('User image ' . $filename .
+        $logger->info('User image ' . $filename .
             ' uploaded. User: ' . $id,
             ['schema' => $app['pp_schema']]);
 
         $app['user_cache']->clear($id, $app['pp_schema']);
 
-        return $app->json([$filename]);
+        return $this->json([$filename]);
     }
 }

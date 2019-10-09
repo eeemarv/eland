@@ -5,10 +5,24 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class AutoMinLimitController extends AbstractController
 {
-    public function autominlimit(Request $request, app $app):Response
+    public function autominlimit(
+        Request $request,
+        AlertService $alert_service,
+        MenuService $menu_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        FormTokenService $form_token_service
+    ):Response
     {
         if ($request->isMethod('POST'))
         {

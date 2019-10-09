@@ -181,7 +181,7 @@ class ExportController extends AbstractController
             $download_log .= $db_eland_aggs ? 'aggs' : '';
             $download_log .= $db_eland_events ? 'events' : '';
 
-            $app['monolog']->info($download_log . ' downloaded',
+            $logger->info($download_log . ' downloaded',
                 ['schema' => $app['pp_schema']]);
 
             $response = new Response($out);
@@ -224,7 +224,7 @@ class ExportController extends AbstractController
                     $out .= '"' . implode('","', $fields) . '"' . $r;
                 }
 
-                $app['monolog']->info('csv ' . $ex_key . ' exported.',
+                $logger->info('csv ' . $ex_key . ' exported.',
                     ['schema' => $app['pp_schema']]);
 
                 $filename = 'elas-' . $ex_key . '-'.date('Y-m-d-H-i-S').'.csv';

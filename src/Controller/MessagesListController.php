@@ -258,7 +258,7 @@ class MessagesListController extends AbstractController
 
         $app['assets']->add(['table_sel.js']);
 
-        $show_visibility_column = !$app['pp_guest'] && $this->intersystems_service->get_count($app['pp_schema']);
+        $show_visibility_column = !$app['pp_guest'] && $intersystems_service->get_count($app['pp_schema']);
 
         if (!count($messages))
         {
@@ -365,13 +365,13 @@ class MessagesListController extends AbstractController
             }
 
             $out .= '<td>';
-            $out .= $app['date_format']->get($msg['validity'], 'day', $app['pp_schema']);
+            $out .= $date_format_serviceget($msg['validity'], 'day', $app['pp_schema']);
             $out .= '</td>';
 
             if ($show_visibility_column)
             {
                 $out .= '<td>';
-                $out .= $app['item_access']->get_label($msg['local'] ? 'user' : 'guest');
+                $out .= $item_access_service->get_label($msg['local'] ? 'user' : 'guest');
                 $out .= '</td>';
             }
 
@@ -459,7 +459,7 @@ class MessagesListController extends AbstractController
                 $out .= '<h3>Zichtbaarheid instellen</h3>';
                 $out .= '<form method="post">';
 
-                $out .= $app['item_access']->get_radio_buttons('bulk_field[access]', '', '', true);
+                $out .= $item_access_service->get_radio_buttons('bulk_field[access]', '', '', true);
 
                 $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[access]',

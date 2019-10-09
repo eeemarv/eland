@@ -70,7 +70,7 @@ $fn_before_system_guest = function(Request $request, app $app){
 
 		if (!$app['s_system_self'])
 		{
-			$eland_intersystems = $this->intersystems_service->get_eland($app['s_schema']);
+			$eland_intersystems = $intersystems_service->get_eland($app['s_schema']);
 
 			if (!isset($eland_intersystems[$app['pp_schema']]))
 			{

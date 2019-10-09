@@ -438,7 +438,7 @@ class UsersShowController extends AbstractController
 
         if ($app['pp_admin']
             || $s_owner
-            || $app['item_access']->is_visible_xdb($fullname_access))
+            || $item_access_service->is_visible_xdb($fullname_access))
         {
             $out .= $this->get_dd($user['fullname'] ?? '');
         }
@@ -456,7 +456,7 @@ class UsersShowController extends AbstractController
             $out .= 'Zichtbaarheid Volledige Naam';
             $out .= '</dt>';
             $out .= '<dd>';
-            $out .= $app['item_access']->get_label_xdb($fullname_access);
+            $out .= $item_access_service->get_label_xdb($fullname_access);
             $out .= '</dd>';
         }
 
@@ -473,7 +473,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['birthday']))
             {
-                $out .= $app['date_format']->get($user['birthday'], 'day', $app['pp_schema']);
+                $out .= $date_format_serviceget($user['birthday'], 'day', $app['pp_schema']);
             }
             else
             {
@@ -499,7 +499,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['cdate']))
             {
-                $out .= $this->get_dd($app['date_format']->get($user['cdate'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_serviceget($user['cdate'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -512,7 +512,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['adate']))
             {
-                $out .= $this->get_dd($app['date_format']->get($user['adate'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_serviceget($user['adate'], 'min', $app['pp_schema']));
             }
             else
             {
@@ -525,7 +525,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['lastlogin']))
             {
-                $out .= $this->get_dd($app['date_format']->get($user['lastlogin'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_serviceget($user['lastlogin'], 'min', $app['pp_schema']));
             }
             else
             {

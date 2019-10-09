@@ -14,15 +14,15 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
         Db $db
     ):Response
     {
-        $eland_intersystems = $this->intersystems_service->get_eland($app['pp_schema']);
+        $eland_intersystems = $intersystems_service->get_eland($app['pp_schema']);
 
         if (!isset($eland_intersystems[$remote_schema]))
         {
-            $app['monolog']->debug('typeahead/eland_intersystem_accounts: ' .
+            $logger->debug('typeahead/eland_intersystem_accounts: ' .
                 $remote_schema . ' not valid',
                 ['schema' => $app['pp_schema']]);
 
-            return $app->json([], 404);
+            return $this->json([], 404);
         }
 
         $fetched_users = $db->fetchAll(
@@ -70,6 +70,6 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
         $typeahead_service->set_thumbprint(
             'eland_intersystem_accounts', $app['pp_ary'], $params, $crc);
 
-        return $app->json($accounts);
+        return $this->json($accounts);
     }
 }

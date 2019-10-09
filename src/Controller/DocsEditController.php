@@ -6,10 +6,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
+use App\Service\XdbService;
 
 class DocsEditController extends AbstractController
 {
-    public function docs_edit(Request $request, app $app, string $doc_id):Response
+    public function docs_edit(
+        Request $request,
+        string $doc_id,
+        XdbService $xdb_service
+    ):Response
     {
         $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
 
@@ -170,7 +182,7 @@ class DocsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access, 'docs');
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'docs');
 
         $map_name = $map['map_name'] ?? '';
 

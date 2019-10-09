@@ -363,12 +363,12 @@ class MessagesShowController extends AbstractController
 
         $out .= '<dt>Aangemaakt op</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($message['cdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_serviceget($message['cdate'], 'day', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Geldig tot</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($message['validity'], 'day', $app['pp_schema']);
+        $out .= $date_format_serviceget($message['validity'], 'day', $app['pp_schema']);
         $out .= '</dd>';
 
         if ($app['pp_admin'] || $s_owner)
@@ -383,11 +383,11 @@ class MessagesShowController extends AbstractController
             $out .= '</dd>';
         }
 
-        if ($this->intersystems_service->get_count($app['pp_schema']))
+        if ($intersystems_service->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
-            $out .=  $app['item_access']->get_label($message['access']);
+            $out .=  $item_access_service->get_label($message['access']);
             $out .= '</dd>';
         }
 

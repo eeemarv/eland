@@ -63,7 +63,7 @@ class ForumEditController extends AbstractController
                 $topic_post = $row['data'];
             }
 
-            if (!$app['item_access']->is_visible_xdb($topic_post['access']))
+            if (!$item_access_service->is_visible_xdb($topic_post['access']))
             {
                 $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
                 $link_render->redirect('forum', $app['pp_ary'], []);
@@ -178,7 +178,7 @@ class ForumEditController extends AbstractController
 
         if ($is_topic)
         {
-            $out .= $app['item_access']->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
+            $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
 
             $out .= $link_render->btn_cancel('forum_topic',
                 $app['pp_ary'], ['topic_id' => $forum_id]);

@@ -16,12 +16,12 @@ class TypeaheadAccountsController extends AbstractController
     {
         if ($app['pp_guest'] && $status !== 'active')
         {
-            return $app->json(['error' => 'No access.'], 403);
+            return $this->json(['error' => 'No access.'], 403);
         }
 
         if(!$app['pp_admin'] && !in_array($status, ['active', 'extern']))
         {
-            return $app->json(['error' => 'No access.'], 403);
+            return $this->json(['error' => 'No access.'], 403);
         }
 
         switch($status)
@@ -42,7 +42,7 @@ class TypeaheadAccountsController extends AbstractController
                 $status_sql = 'in (1, 2)';
                 break;
             default:
-                return $app->json([
+                return $this->json([
                     'error' => 'Non existing or allowed status code.',
                 ], 404);
                 break;
@@ -92,6 +92,6 @@ class TypeaheadAccountsController extends AbstractController
 
         $typeahead_service->set_thumbprint('accounts', $app['pp_ary'], $params, $crc);
 
-        return $app->json($accounts);
+        return $this->json($accounts);
     }
 }

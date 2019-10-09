@@ -58,7 +58,7 @@ class NewsDelController extends AbstractController
 
         if ($news['itemdate'])
         {
-            $out .= $app['date_format']->get($news['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_serviceget($news['itemdate'], 'day', $app['pp_schema']);
         }
         else
         {
@@ -93,7 +93,7 @@ class NewsDelController extends AbstractController
 
         $out .= '<dt>Zichtbaarheid</dt>';
         $out .= '<dd>';
-        $out .= $app['item_access']->get_label_xdb($news_access);
+        $out .= $item_access_service->get_label_xdb($news_access);
         $out .= '</dd>';
 
         $out .= '<dt>Ingegeven door</dt>';

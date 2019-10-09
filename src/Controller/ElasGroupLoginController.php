@@ -2,36 +2,40 @@
 
 namespace App\Controller;
 
+use App\Service\IntersystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class ElasGroupLoginController extends AbstractController
 {
     public function elas_group_login(
-        app $app,
         int $group_id,
-        Db $db):Response
+        Db $db,
+        LoggerInterface $logger,
+        IntersystemsService $intersystems_service
+    ):Response
     {
         if (!$app['s_schema'] || $app['s_elas_guest'])
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'Onvoldoende rechten.',
             ], 403);
         }
 
         if (!$app['intersystem_en'])
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'InterSysteem verbindingen zijn niet ingeschakeld in het eigen Systeem.',
             ], 404);
         }
 
-        $elas_intersystems = $this->intersystems_service->get_elas($app['s_schema']);
+        $elas_intersystems = $intersystems_service->get_elas($app['s_schema']);
 
         if (!isset($elas_intersystems[$group_id]))
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'Er is geen interSysteem verbinding met dit Systeem.',
             ], 404);
         }
@@ -42,28 +46,28 @@ class ElasGroupLoginController extends AbstractController
 
         if (!$group)
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'InterSysteem niet gevonden.',
             ], 404);
         }
 
         if ($group['apimethod'] != 'elassoap')
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'De Api Methode voor dit interSysteem is niet elassoap.',
             ], 404);
         }
 
         if (!$group['remoteapikey'])
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'De Remote Apikey is niet ingesteld voor dit interSysteem.',
             ], 404);
         }
 
         if (!$group['presharedkey'])
         {
-            return $app->json([
+            return $this->json([
                 'error' => 'De Preshared Key is niet ingesteld voor dit interSysteem.',
             ], 404);
         }
@@ -81,10 +85,10 @@ class ElasGroupLoginController extends AbstractController
         {
             $m = 'Kan geen verbinding maken.';
 
-            $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
+            $logger->error('elas-token: ' . $m . ' ' . $err,
                 ['schema' => $app['pp_schema']]);
 
-            return $app->json([
+            return $this->json([
                 'error' => $m,
             ], 503);
         }
@@ -97,15 +101,15 @@ class ElasGroupLoginController extends AbstractController
         {
             $m = 'Kan geen token krijgen voor dit interSysteem.';
 
-            $app['monolog']->error('elas-token: ' . $m . ' ' . $err,
+            $logger->error('elas-token: ' . $m . ' ' . $err,
                 ['schema' => $app['pp_schema']]);
 
-            return $app->json([
+            return $this->json([
                 'error' => $m,
             ], 503);
         }
 
-        return $app->json([
+        return $this->json([
             'login_url'	=> $group['url'] . '/login.php?token=' . $token,
         ]);
     }

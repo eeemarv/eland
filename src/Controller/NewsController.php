@@ -58,7 +58,7 @@ class NewsController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= $app['date_format']->get_td($n['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_serviceget_td($n['itemdate'], 'day', $app['pp_schema']);
 
             if ($app['pp_admin'])
             {
@@ -70,7 +70,7 @@ class NewsController extends AbstractController
             if ($show_visibility)
             {
                 $out .= '<td>';
-                $out .= $app['item_access']->get_label_xdb($n['access']);
+                $out .= $item_access_service->get_label_xdb($n['access']);
                 $out .= '</td>';
             }
 
@@ -139,7 +139,7 @@ class NewsController extends AbstractController
 
             if ($n['itemdate'])
             {
-                $out .=  $app['date_format']->get($n['itemdate'], 'day', $app['pp_schema']);
+                $out .=  $date_format_serviceget($n['itemdate'], 'day', $app['pp_schema']);
 
                 $out .=  '<br><i>';
 
@@ -193,7 +193,7 @@ class NewsController extends AbstractController
                 $out .=  'Zichtbaarheid';
                 $out .=  '</dt>';
                 $out .=  '<dd>';
-                $out .=  $app['item_access']->get_label_xdb($n['access']);
+                $out .=  $item_access_service->get_label_xdb($n['access']);
                 $out .=  '</dd>';
             }
 
@@ -289,7 +289,7 @@ class NewsController extends AbstractController
                 $news[$news_id]['access'] = $news_access_ary[$news_id];
             }
 
-            if (!$app['item_access']->is_visible_xdb($news[$news_id]['access']))
+            if (!$item_access_service->is_visible_xdb($news[$news_id]['access']))
             {
                 unset($news[$news_id]);
             }

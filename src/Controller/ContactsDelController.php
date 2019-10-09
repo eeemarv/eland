@@ -8,6 +8,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class ContactsDelController extends AbstractController
 {
@@ -136,7 +143,7 @@ class ContactsDelController extends AbstractController
         $out .= '<dt>Zichtbaarheid</dt>';
         $out .= '<dd>';
 
-        $out .= $app['item_access']->get_label($contact['access']);
+        $out .= $item_access_service->get_label($contact['access']);
 
         $out .= '</dd>';
         $out .= '</dl>';

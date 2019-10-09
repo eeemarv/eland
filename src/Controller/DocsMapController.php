@@ -5,10 +5,30 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
+use App\Service\ItemAccessService;
+use App\Service\XdbService;
+
 
 class DocsMapController extends AbstractController
 {
-    public function docs_map(Request $request, app $app, string $map_id):Response
+    public function docs_map(
+        Request $request,
+        string $map_id,
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        LinkRender $link_render,
+        BtnTopRender $btn_top_render,
+        BtnNavRender $btn_nav_render,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service
+    ):Response
     {
         $q = $request->query->get('q', '');
 
@@ -28,7 +48,7 @@ class DocsMapController extends AbstractController
         $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
             'agg_type' => 'doc',
             'data->>\'map_id\'' => $map_id,
-            'access' => $app['item_access']->get_visible_ary_xdb()],
+            'access' => $item_access_service->get_visible_ary_xdb()],
             'order by event_time asc');
 
         $docs = [];
@@ -129,11 +149,11 @@ class DocsMapController extends AbstractController
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $app['date_format']->get($d['ts'], 'min', $app['pp_schema']);
+                $td[] = $date_format_serviceget($d['ts'], 'min', $app['pp_schema']);
 
                 if ($show_visibility)
                 {
-                    $td[] = $app['item_access']->get_label_xdb($d['access']);
+                    $td[] = $item_access_service->get_label_xdb($d['access']);
                 }
 
                 if ($app['pp_admin'])

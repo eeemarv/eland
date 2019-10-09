@@ -7,6 +7,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
 
 class ConfigController extends AbstractController
 {
@@ -37,7 +44,7 @@ class ConfigController extends AbstractController
         }
 
         $select_options = [
-            'date_format'	=> $app['date_format']->get_options(),
+            'date_format'	=> $date_format_serviceget_options(),
             'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
         ];
 
@@ -139,7 +146,7 @@ class ConfigController extends AbstractController
 
                 if ($input_name === 'date_format')
                 {
-                    $error = $app['date_format']->get_error($posted_value);
+                    $error = $date_format_serviceget_error($posted_value);
 
                     if ($error)
                     {
@@ -303,7 +310,7 @@ class ConfigController extends AbstractController
 
             if (isset($execute_post_actions['clear_eland_intersystem_cache']))
             {
-                $this->intersystems_service->clear_eland_cache();
+                $intersystems_service->clear_eland_cache();
             }
 
             if (count($posted_configs) > 1)

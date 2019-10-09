@@ -20,12 +20,12 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
 
         if (!$group || !$group['url'])
         {
-            return $app->json([], 404);
+            return $this->json([], 404);
         }
 
         if ($group['apimethod'] != 'elassoap')
         {
-            return $app->json([], 404);
+            return $this->json([], 404);
         }
 
         $domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
@@ -34,11 +34,11 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
 
         if (!$accounts)
         {
-            $app['monolog']->debug('typeahead/elas_intersystem_accounts: empty for id ' .
+            $logger->debug('typeahead/elas_intersystem_accounts: empty for id ' .
                 $group_id . ', url: ' . $group['url'],
                 ['schema' => $app['pp_schema']]);
 
-            return $app->json([], 404);
+            return $this->json([], 404);
         }
 
         $params = [
@@ -50,6 +50,6 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
         $typeahead_service->set_thumbprint(
             'elas_intersystem_accounts', $app['pp_ary'], $params, $crc);
 
-        return $app->json($accounts);
+        return $this->json($accounts);
     }
 }

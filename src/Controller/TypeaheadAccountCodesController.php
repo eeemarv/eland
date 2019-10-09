@@ -32,6 +32,6 @@ class TypeaheadAccountCodesController extends AbstractController
 
         $typeahead_service->set_thumbprint('account_codes', $app['pp_ary'], [], $crc);
 
-        return $app->json($account_codes);
+        return $this->json($account_codes);
     }
 }

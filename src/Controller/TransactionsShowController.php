@@ -14,9 +14,9 @@ class TransactionsShowController extends AbstractController
         Db $db
     ):Response
     {
-        $intersystem_account_schemas = $this->intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
+        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
 
-        $s_inter_schema_check = array_merge($this->intersystems_service->get_eland($app['pp_schema']),
+        $s_inter_schema_check = array_merge($intersystems_service->get_eland($app['pp_schema']),
             [$app['s_schema'] => true]);
 
         $transaction = $db->fetchAssoc('select t.*
@@ -92,7 +92,7 @@ class TransactionsShowController extends AbstractController
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $app['date_format']->get($transaction['cdate'], 'min', $app['pp_schema']);
+        $out .= $date_format_serviceget($transaction['cdate'], 'min', $app['pp_schema']);
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';

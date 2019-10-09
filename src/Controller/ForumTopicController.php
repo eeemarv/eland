@@ -46,7 +46,7 @@ class ForumTopicController extends AbstractController
             && (int) $topic_post['uid'] === $app['s_id']
             && $app['pp_user'];
 
-        if (!$app['item_access']->is_visible_xdb($topic_post['access']) && !$s_owner)
+        if (!$item_access_service->is_visible_xdb($topic_post['access']) && !$s_owner)
         {
             $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
             $link_render->redirect('forum', $app['pp_ary'], []);
@@ -127,7 +127,7 @@ class ForumTopicController extends AbstractController
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'event_time' => ['>' => $topic_post['ts']],
-            'access' => $app['item_access']->get_visible_ary_xdb(),
+            'access' => $item_access_service->get_visible_ary_xdb(),
         ], 'order by event_time asc limit 1');
 
         $prev = count($rows) ? reset($rows)['eland_id'] : false;
@@ -136,7 +136,7 @@ class ForumTopicController extends AbstractController
             'agg_schema' => $app['pp_schema'],
             'agg_type' => 'forum',
             'event_time' => ['<' => $topic_post['ts']],
-            'access' => $app['item_access']->get_visible_ary_xdb(),
+            'access' => $item_access_service->get_visible_ary_xdb(),
         ], 'order by event_time desc limit 1');
 
         $next = count($rows) ? reset($rows)['eland_id'] : false;
@@ -168,7 +168,7 @@ class ForumTopicController extends AbstractController
         if ($show_visibility)
         {
             $out .= '<p>Zichtbaarheid: ';
-            $out .= $app['item_access']->get_label_xdb($topic_post['access']);
+            $out .= $item_access_service->get_label_xdb($topic_post['access']);
             $out .= '</p>';
         }
 
@@ -191,7 +191,7 @@ class ForumTopicController extends AbstractController
             $out .= '<p>';
             $out .= $app['account']->link((int) $p['uid'], $app['pp_ary']);
             $out .= ' @';
-            $out .= $app['date_format']->get($p['ts'], 'min', $app['pp_schema']);
+            $out .= $date_format_serviceget($p['ts'], 'min', $app['pp_schema']);
             $out .= isset($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
 
             if ($app['pp_admin'] || $s_owner)

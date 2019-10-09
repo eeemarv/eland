@@ -6,10 +6,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
+use App\Service\XdbService;
 
 class DocsAddController extends AbstractController
 {
-    public function docs_add(Request $request, app $app, string $map_id):Response
+    public function docs_add(
+        Request $request,
+        string $map_id,
+        XdbService $xdb_service
+    ):Response
     {
         if ($request->isMethod('POST'))
         {
@@ -60,7 +72,7 @@ class DocsAddController extends AbstractController
 
                 if ($error)
                 {
-                    $app['monolog']->error('doc upload fail: ' . $error);
+                    $logger->error('doc upload fail: ' . $error);
                     $alert_service->error('Bestand opladen mislukt.',
                         ['schema' => $app['pp_schema']]);
                 }
@@ -166,7 +178,7 @@ class DocsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $app['item_access']->get_radio_buttons('access', $access ?? '', 'docs');
+        $out .= $item_access_service->get_radio_buttons('access', $access ?? '', 'docs');
 
         $out .= '<div class="form-group">';
         $out .= '<label for="map_name" class="control-label">';
