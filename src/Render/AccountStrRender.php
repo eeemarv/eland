@@ -4,7 +4,7 @@ namespace App\Render;
 
 use App\Service\UserCache;
 
-class AccountStr
+class AccountStrRender
 {
 	protected $user_cache;
 

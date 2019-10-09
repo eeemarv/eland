@@ -2,18 +2,18 @@
 
 namespace App\Render;
 
-use App\Render\link as render_link;
+use App\Render\LinkRender;
 
-class btn_top
+class BtnTopRender
 {
-	protected $render_link;
+	protected $link_render;
 	protected $out = [];
 
 	public function __construct(
-		render_link $link
+		LinkRender $link_render
 	)
 	{
-		$this->link = $link;
+		$this->link_render = $link_render;
 	}
 
 	public function get():string
@@ -32,7 +32,7 @@ class btn_top
 		array $params,
 		string $title = 'Verwijderen'):void
 	{
-		$this->out[] = $this->link->link_fa_collapse($route,
+		$this->out[] = $this->link_render->link_fa_collapse($route,
 			$context_params, $params,
 			'Verwijderen', [
 				'class' => 'btn btn-danger btn-lg',
@@ -46,7 +46,7 @@ class btn_top
 		array $params,
 		string $title = 'Toevoegen'):void
 	{
-		$this->out[] = $this->link->link_fa_collapse($route,
+		$this->out[] = $this->link_render->link_fa_collapse($route,
 			$context_params, $params,
 			'Toevoegen', [
 				'class'	=> 'btn btn-success btn-lg',
@@ -60,7 +60,7 @@ class btn_top
 		array $params,
 		string $title = 'Aanpassen'):void
 	{
-		$this->out[] = $this->link->link_fa_collapse($route,
+		$this->out[] = $this->link_render->link_fa_collapse($route,
 			$context_params, $params,
 			'Aanpassen', [
 				'class'	=> 'btn btn-primary btn-lg',
@@ -74,7 +74,7 @@ class btn_top
 		array $params,
 		string $title = 'Goedkeuren'):void
 	{
-		$this->out[] = $this->link->link_fa_collapse($route,
+		$this->out[] = $this->link_render->link_fa_collapse($route,
 			$context_params, $params,
 			'Goedkeuren', [
 				'class'	=> 'btn btn-warning btn-lg',
@@ -88,7 +88,7 @@ class btn_top
 		array $params,
 		string $title = 'Transactie'):void
 	{
-		$this->out[] = $this->link->link_fa_collapse($route,
+		$this->out[] = $this->link_render->link_fa_collapse($route,
 			$context_params, $params,
 			'Transactie', [
 				'class'	=> 'btn btn-warning btn-lg',
@@ -102,7 +102,7 @@ class btn_top
 		array $params,
 		string $title = 'Paswoord'):void
 	{
-		$this->out[] = $this->link->link_fa_collapse($route,
+		$this->out[] = $this->link_render->link_fa_collapse($route,
 			$context_params, $params,
 			'Paswoord', [
 				'class'	=> 'btn btn-info btn-lg',

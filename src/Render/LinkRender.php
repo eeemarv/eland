@@ -4,7 +4,7 @@ namespace App\Render;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class link
+class LinkRender
 {
 	protected $url_generator;
 

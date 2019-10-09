@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ItemAccess;
 use App\Render\btn_nav;
-use App\Render\link;
+use App\Render\LinkRender;
 use App\Render\heading;
 use App\Cnst\AccessCnst;
 use app\cnst\statuscnst;

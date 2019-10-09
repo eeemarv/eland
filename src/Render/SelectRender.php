@@ -2,7 +2,7 @@
 
 namespace App\Render;
 
-class select
+class SelectRender
 {
 	public function get_options(
 		array $option_ary,

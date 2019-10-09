@@ -2,7 +2,7 @@
 
 namespace App\Render;
 
-class tag
+class TagRender
 {
 	public function get(
 		string $tag,

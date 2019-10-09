@@ -3,11 +3,11 @@
 namespace App\Render;
 
 use App\Render\select;
-use App\Render\link;
+use App\Render\LinkRender;
 
-class pagination
+class PaginationRender
 {
-	protected $link;
+	protected $link_render;
 	protected $select;
 
 	protected $route;
@@ -35,11 +35,11 @@ class pagination
 
 	public function __construct(
 		select $select,
-		link $link
+		LinkRender $link_render
 	)
 	{
 		$this->select = $select;
-		$this->link = $link;
+		$this->link_render = $link_render;
 	}
 
 	public function init(
@@ -112,7 +112,7 @@ class pagination
 
 		$this->out .= '<div>';
 		$this->out .= '<form action="';
-		$this->out .= $this->link->path($this->route, $this->pp_ary);
+		$this->out .= $this->link_render->path($this->route, $this->pp_ary);
 		$this->out .= '">';
 
 		$this->out .= 'Per pagina: ';
@@ -164,7 +164,7 @@ class pagination
 		$out .= $page == $this->page ? ' class="active"' : '';
 		$out .= '>';
 
-		$out .= $this->link->link_no_attr($this->route, $this->pp_ary,
+		$out .= $this->link_render->link_no_attr($this->route, $this->pp_ary,
 			$params, (string) ($page + 1));
 
 		$out .= '</li>';

@@ -2,7 +2,7 @@
 
 namespace App\Render;
 
-class heading
+class HeadingRender
 {
 	protected $str = '';
 	protected $str_sub = '';

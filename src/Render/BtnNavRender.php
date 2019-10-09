@@ -2,11 +2,11 @@
 
 namespace App\Render;
 
-use App\Render\link as render_link;
-use App\Render\tag as render_tag;
+use App\Render\LinkRender;
+use App\Render\TagRender;
 use App\Service\Assets;
 
-class btn_nav
+class BtnNavRender
 {
 	const ORDER_AND_GROUP = [
 		'csv'				=> false,
@@ -15,19 +15,19 @@ class btn_nav
 		'nav'				=> true,
 	];
 
-	protected $render_link;
-	protected $tag;
+	protected $link_render;
+	protected $tag_render;
 	protected $assets;
 	protected $out = [];
 
 	public function __construct(
-		render_link $link,
-		render_tag $tag,
+		LinkRender $link_render,
+		TagRender $tag_render,
 		Assets $assets
 	)
 	{
-		$this->link = $link;
-		$this->tag = $tag;
+		$this->link_render = $link_render;
+		$this->tag_render = $tag_render;
 		$this->assets = $assets;
 	}
 
@@ -70,12 +70,12 @@ class btn_nav
 	{
 		if (count($params) < 1)
 		{
-			return $this->tag->get('button', [
+			return $this->tag_render->get('button', [
 					'class' 	=> 'btn btn-default btn-lg',
 					'title'		=> $title,
 					'disabled'	=> 'disabled',
 				],
-				$this->tag->fa($fa)
+				$this->tag_render->fa($fa)
 			);
 		}
 
@@ -93,7 +93,7 @@ class btn_nav
 	):string
 	{
 
-		return $this->link->link_fa_only($route, $params_context,
+		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default btn-lg' . ($active ? ' active' : ''),
 				'title'	=> $title,
@@ -109,7 +109,7 @@ class btn_nav
 		string $fa
 	):string
 	{
-		return $this->link->link_fa_only($route, $params_context,
+		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default btn-lg',
 				'title'	=> $title,
@@ -156,23 +156,23 @@ class btn_nav
 	{
 		$this->assets->add(['csv.js']);
 
-		$this->out['csv'] = $this->tag->get('a', [
+		$this->out['csv'] = $this->tag_render->get('a', [
 				'class'	=> 'csv btn btn-info btn-lg',
 				'title'	=> 'Download CSV',
 			],
-			$this->tag->fa('file')
+			$this->tag_render->fa('file')
 		);
 	}
 
 	public function columns_show():void
 	{
-		$this->out['columns_show'] = $this->tag->get('button', [
+		$this->out['columns_show'] = $this->tag_render->get('button', [
 				'class'			=> 'btn btn-default btn-lg',
 				'title'			=> 'Weergave kolommen',
 				'data-toggle'	=> 'collapse',
 				'data-target'	=> '#columns_show',
 			],
-			$this->tag->fa('columns')
+			$this->tag_render->fa('columns')
 		);
 	}
 
