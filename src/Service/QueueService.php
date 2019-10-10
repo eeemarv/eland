@@ -56,7 +56,7 @@ class QueueService
 		{
 			$sql_where[] = 'topic in (?)';
 			$sql_params[] = $topics;
-			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
+			$sql_types[] = Db::PARAM_STR_ARRAY;
 		}
 
 		$sql_where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';

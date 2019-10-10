@@ -5,8 +5,9 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contacts_edit;
 use App\Cnst\AccessCnst;
+use App\Queue\GeocodeQueue;
+use App\Render\AccountRender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
@@ -14,7 +15,10 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\AssetsService;
 use App\Service\ConfigService;
+use App\Service\ItemAccessService;
+use App\Service\TypeaheadService;
 
 class ContactsAddController extends AbstractController
 {
@@ -26,12 +30,30 @@ class ContactsAddController extends AbstractController
         MenuService $menu_service,
         ConfigService $config_service,
         LinkRender $link_render,
+        AccountRender $account_render,
+        AssetsService $assets_service,
+        GeocodeQueue $geocode_queue,
+        ItemAccessService $item_access_service,
+        TypeaheadService $typeahead_service,
         HeadingRender $heading_render
     ):Response
     {
-        return self::form($request, 0, true, $db,
-            $alert_service, $form_token_service, $menu_service,
-            $config_service, $link_render, $heading_render
+        return self::form(
+            $request,
+            0,
+            true,
+            $db,
+            $alert_service,
+            $form_token_service,
+            $menu_service,
+            $config_service,
+            $link_render,
+            $account_render,
+            $assets_service,
+            $geocode_queue,
+            $item_access_service,
+            $typeahead_service,
+            $heading_render
         );
     }
 
@@ -45,6 +67,11 @@ class ContactsAddController extends AbstractController
         MenuService $menu_service,
         ConfigService $config_service,
         LinkRender $link_render,
+        AccountRender $account_render,
+        AssetsService $assets_service,
+        GeocodeQueue $geocode_queue,
+        ItemAccessService $item_access_service,
+        TypeaheadService $typeahead_service,
         HeadingRender $heading_render
     ):Response
     {
@@ -304,7 +331,7 @@ class ContactsAddController extends AbstractController
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon" id="value_addon">';
         $out .= '<i class="fa fa-';
-        $out .= contacts_edit::FORMAT[$abbrev]['fa'] ?? 'circle-o';
+        $out .= ContactsEditController::FORMAT[$abbrev]['fa'] ?? 'circle-o';
         $out .= '"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
@@ -312,7 +339,7 @@ class ContactsAddController extends AbstractController
         $out .= $value;
         $out .= '" required disabled maxlength="130" ';
         $out .= 'data-contacts-format="';
-        $out .= htmlspecialchars(json_encode(contacts_edit::FORMAT));
+        $out .= htmlspecialchars(json_encode(ContactsEditController::FORMAT));
         $out .= '">';
         $out .= '</div>';
         $out .= '<p id="contact-explain">';

@@ -6,10 +6,30 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 
 class ForumAddTopicController extends AbstractController
 {
-    public function forum_add_topic(Request $request, app $app):Response
+    public function forum_add_topic(
+        Request $request,
+        XdbService $xdb_service,
+        ConfigService $config_service,
+        AlertService $alert_service,
+        LinkRender $link_render,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        AssetsService $assets_service,
+        ItemAccessService $item_access_service,
+        MenuService $menu_service
+    ):Response
     {
         if (!$config_service->get('forum_en', $app['pp_schema']))
         {

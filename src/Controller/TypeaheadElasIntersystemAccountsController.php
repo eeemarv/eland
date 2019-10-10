@@ -2,16 +2,21 @@
 
 namespace App\Controller;
 
+use App\Service\CacheService;
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class TypeaheadElasIntersystemAccountsController extends AbstractController
 {
     public function typeahead_elas_intersystem_accounts(
-        app $app,
         int $group_id,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        CacheService $cache_service,
+        TypeaheadService $typeahead_service
     ):Response
     {
         $group = $db->fetchAssoc('select *
@@ -30,7 +35,7 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
 
         $domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
 
-        $accounts = $this->cache_service->get($domain . '_typeahead_data');
+        $accounts = $cache_service->get($domain . '_typeahead_data');
 
         if (!$accounts)
         {

@@ -2,12 +2,17 @@
 
 namespace App\Controller;
 
+use App\Service\ConfigService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class HomeSystemController extends AbstractController
 {
-    public function home_system(app $app):Response
+    public function home_system(
+        ConfigService $config_service,
+        MenuService $menu_service
+    ):Response
     {
         $out = '<div class="jumbotron">';
         $out .= '<h1>';

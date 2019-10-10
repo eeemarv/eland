@@ -2,8 +2,16 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\CacheService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Controller\UsersListController;
 use Doctrine\DBAL\Connection as Db;
@@ -11,20 +19,49 @@ use Doctrine\DBAL\Connection as Db;
 class UsersMapController extends AbstractController
 {
     public function users_map_admin(
-        Request $request,
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        HeadingRender $heading_render,
+        CacheService $cache_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        string $env_mapbox_token
     ):Response
     {
-        return $this->users_map($request, $app, $status, $db);
+        return $this->users_map(
+            $status,
+            $db,
+            $account_render,
+            $assets_service,
+            $btn_nav_render,
+            $btn_top_render,
+            $heading_render,
+            $cache_service,
+            $item_access_service,
+            $link_render,
+            $menu_service,
+            $env_mapbox_token
+        );
     }
 
     public function users_map(
-        Request $request,
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        HeadingRender $heading_render,
+        CacheService $cache_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        string $env_mapbox_token
     ):Response
     {
         $ref_geo = [];
@@ -77,7 +114,7 @@ class UsersMapController extends AbstractController
 
             if (isset($my_adr) && $my_adr)
             {
-                $ref_geo = $this->cache_service->get('geo_' . $my_adr);
+                $ref_geo = $cache_service->get('geo_' . $my_adr);
             }
         }
 
@@ -93,7 +130,7 @@ class UsersMapController extends AbstractController
 
                 if ($item_access_service->is_visible_flag_public($adr['flag_public']))
                 {
-                    $geo = $this->cache_service->get('geo_' . $adr['value']);
+                    $geo = $cache_service->get('geo_' . $adr['value']);
 
                     if ($geo)
                     {
@@ -156,7 +193,7 @@ class UsersMapController extends AbstractController
             'users' => $data_users,
             'lat'   => $ref_geo['lat'] ?? '',
             'lng'   => $ref_geo['lng'] ?? '',
-            'token' => $app['mapbox_token'],
+            'token' => $env_mapbox_token,
         ]);
 
         $out = '<div class="row">';

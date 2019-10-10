@@ -2,13 +2,17 @@
 
 namespace App\Controller;
 
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadPostcodesController extends AbstractController
 {
-    public function typeahead_postcodes(app $app, Db $db):Response
+    public function typeahead_postcodes(
+        Db $db,
+        TypeaheadService $typeahead_service
+    ):Response
     {
         $postcodes = [];
 

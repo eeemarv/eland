@@ -6,10 +6,31 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 
 class ForumEditController extends AbstractController
 {
-    public function forum_edit(Request $request, app $app, string $forum_id):Response
+    public function forum_edit(
+        Request $request,
+        string $forum_id,
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service
+    ):Response
     {
         if (!$config_service->get('forum_en', $app['pp_schema']))
         {

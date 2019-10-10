@@ -2,6 +2,15 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\DataTokenService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
+use App\Service\PasswordStrengthService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,9 +20,18 @@ class PasswordResetTokenController extends AbstractController
 {
     public function password_reset_token(
         Request $request,
-        app $app,
         string $token,
-        Db $db
+        Db $db,
+        DataTokenService $data_token_service,
+        FormTokenService $form_token_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        MailQueue $mail_queue,
+        PasswordStrengthService $password_strength_service,
+        UserCacheService $user_cache_service
     ):Response
     {
         $data = $data_token_service->retrieve($token, 'password_reset', $app['pp_schema']);
@@ -33,7 +51,7 @@ class PasswordResetTokenController extends AbstractController
             {
                 $alert_service->error($error_token);
             }
-            else if (!($app['password_strength']->get($password) < 50))
+            else if (!($password_strength_service->get($password) < 50))
             {
                 $db->update($app['pp_schema'] . '.users',
                     ['password' => hash('sha512', $password)],
@@ -44,7 +62,7 @@ class PasswordResetTokenController extends AbstractController
 
                 $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
-                    'to' 		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
+                    'to' 		=> $mail_addr_user_service->get_active($user_id, $app['pp_schema']),
                     'template'	=> 'password_reset/user',
                     'vars'		=> [
                         'password'		=> $password,

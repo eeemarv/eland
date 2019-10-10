@@ -2,14 +2,23 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Service\ConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
 class StatusController extends AbstractController
 {
-    public function status(app $app, Db $db):Response
+    public function status(
+        Db $db,
+        AccountRender $account_render,
+        HeadingRender $heading_render,
+        ConfigService $config_service,
+        LinkRender $link_render,
+        MenuService $menu_service
+    ):Response
     {
         $status_msgs = false;
 

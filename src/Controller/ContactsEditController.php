@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\AccessCnst;
 use App\Queue\GeocodeQueue;
+use App\Render\AccountRender;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
@@ -57,16 +58,28 @@ class ContactsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
+        AccountRender $account_render,
         GeocodeQueue $geocode_queue
     ):Response
     {
         $contact = self::get_contact(
             $db, $id, $app['pp_schema']);
 
-        return self::form($request, $contact['id_user'], $id, true, $db,
-            $form_token_service, $alert_service, $assets_service,
-            $menu_service, $item_access_service, $link_render,
-            $heading_render, $geocode_queue
+        return self::form(
+            $request,
+            $contact['id_user'],
+            $id,
+            true,
+            $db,
+            $form_token_service,
+            $alert_service,
+            $assets_service,
+            $menu_service,
+            $item_access_service,
+            $link_render,
+            $heading_render,
+            $account_render,
+            $geocode_queue
         );
     }
 
@@ -83,11 +96,15 @@ class ContactsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
+        AccountRender $account_render,
         GeocodeQueue $geocode_queue
     ):Response
     {
         $contact = self::get_contact(
-            $db, $id, $app['pp_schema']);
+            $db,
+            $id,
+            $app['pp_schema']
+        );
 
         if ($user_id !== $contact['id_user'])
         {

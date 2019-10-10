@@ -2,6 +2,17 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -9,7 +20,21 @@ use Doctrine\DBAL\Connection as Db;
 
 class NewsShowController extends AbstractController
 {
-    public function news_show(app $app, int $id, Db $db):Response
+    public function news_show(
+        int $id,
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        XdbService $xdb_service
+    ):Response
     {
         $show_visibility = ($app['pp_user']
                 && $app['intersystem_en'])

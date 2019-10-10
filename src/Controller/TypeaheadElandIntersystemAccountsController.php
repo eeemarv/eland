@@ -2,16 +2,21 @@
 
 namespace App\Controller;
 
+use App\Service\IntersystemsService;
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class TypeaheadElandIntersystemAccountsController extends AbstractController
 {
     public function typeahead_eland_intersystem_accounts(
-        app $app,
         string $remote_schema,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        IntersystemsService $intersystems_service,
+        TypeaheadService $typeahead_service
     ):Response
     {
         $eland_intersystems = $intersystems_service->get_eland($app['pp_schema']);

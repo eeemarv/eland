@@ -2,13 +2,29 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ForumDelController extends AbstractController
 {
-    public function forum_del(Request $request, app $app, string $forum_id):Response
+    public function forum_del(
+        Request $request,
+        string $forum_id,
+        XdbService $xdb_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        FormTokenService $form_token_service,
+        ConfigService $config_service,
+        AlertService $alert_service,
+        MenuService $menu_service
+    ):Response
     {
         if (!$config_service->get('forum_en', $app['pp_schema']))
         {

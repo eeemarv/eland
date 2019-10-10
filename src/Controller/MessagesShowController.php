@@ -81,7 +81,7 @@ class MessagesShowController extends AbstractController
                 $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
             }
 
-            $reply_ary = $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']);
+            $reply_ary = $mail_addr_user_service->get_active($app['s_id'], $app['s_schema']);
 
             if (!count($reply_ary))
             {
@@ -118,7 +118,7 @@ class MessagesShowController extends AbstractController
 
                 $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
-                    'to'		=> $app['mail_addr_user']->get_active($to_user['id'], $app['pp_schema']),
+                    'to'		=> $mail_addr_user_service->get_active($to_user['id'], $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -132,7 +132,7 @@ class MessagesShowController extends AbstractController
 
                     $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
-                        'to'		=> $app['mail_addr_user']->get_active($app['s_id'], $app['s_schema']),
+                        'to'		=> $mail_addr_user_service->get_active($app['s_id'], $app['s_schema']),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);

@@ -2,6 +2,18 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\FormTokenService;
+use App\Service\MailAddrSystemService;
+use App\Service\MailAddrUserService;
+use App\Service\MenuService;
+use App\Service\PasswordStrengthService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,18 +23,56 @@ class UsersPasswordController extends AbstractController
 {
     public function users_password(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MailAddrSystemService $mail_addr_system_service,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        PasswordStrengthService $password_strength_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
-        return $this->users_password_admin($request, $app, $app['s_id'], $db);
+        return $this->users_password_admin(
+            $request,
+            $app['s_id'],
+            $db,
+            $account_render,
+            $alert_service,
+            $assets_service,
+            $form_token_service,
+            $heading_render,
+            $link_render,
+            $mail_addr_system_service,
+            $mail_addr_user_service,
+            $mail_queue,
+            $password_strength_service,
+            $user_cache_service,
+            $menu_service
+        );
     }
 
     public function users_password_admin(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MailAddrSystemService $mail_addr_system_service,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        PasswordStrengthService $password_strength_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
         $password = trim($request->request->get('password', ''));
@@ -36,7 +86,7 @@ class UsersPasswordController extends AbstractController
             }
 
             if (!$app['pp_admin']
-                && $app['password_strength']->get($password) < 50)
+                && $password_strength_service->get($password) < 50)
             {
                 $errors[] = 'Te zwak paswoord.';
             }
@@ -80,8 +130,8 @@ class UsersPasswordController extends AbstractController
 
                             $mail_queue->queue([
                                 'schema'	=> $app['pp_schema'],
-                                'to' 		=> $app['mail_addr_user']->get_active($id, $app['pp_schema']),
-                                'reply_to'	=> $app['mail_addr_system']->get_support($app['pp_schema']),
+                                'to' 		=> $mail_addr_user_service->get_active($id, $app['pp_schema']),
+                                'reply_to'	=> $mail_addr_system_service->get_support($app['pp_schema']),
                                 'template'	=> 'password_reset/user',
                                 'vars'		=> $vars,
                             ], 8000);

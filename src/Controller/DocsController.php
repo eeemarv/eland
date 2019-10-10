@@ -5,21 +5,27 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\DateFormatService;
+use App\Service\ItemAccessService;
 use App\Service\XdbService;
 
 class DocsController extends AbstractController
 {
     public function docs(
         Request $request,
-        XdbService $xdb_service
-
+        XdbService $xdb_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        DateFormatService $date_format_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
         $q = $request->query->get('q', '');

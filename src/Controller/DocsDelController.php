@@ -2,24 +2,31 @@
 
 namespace App\Controller;
 
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
+use App\Service\S3Service;
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
-use App\Service\MenuService;
-use App\Service\FormTokenService;
-use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
-use App\Render\LinkRender;
 use App\Service\XdbService;
+use Psr\Log\LoggerInterface;
 
 class DocsDelController extends AbstractController
 {
     public function docs_del(
         Request $request,
         string $doc_id,
-        XdbService $xdb_service
+        XdbService $xdb_service,
+        LoggerInterface $logger,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        S3Service $s3_service,
+        TypeaheadService $typeahead_service,
+        MenuService $menu_service
     ):Response
     {
         $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
@@ -45,7 +52,7 @@ class DocsDelController extends AbstractController
 
             if (!count($errors))
             {
-                $err = $app['s3']->del($doc['filename']);
+                $err = $s3_service->del($doc['filename']);
 
                 if ($err)
                 {

@@ -12,6 +12,7 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\XdbService;
 
@@ -27,7 +28,9 @@ class DocsMapController extends AbstractController
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
         HeadingRender $heading_render,
-        ItemAccessService $item_access_service
+        ItemAccessService $item_access_service,
+        DateFormatService $date_format_service,
+        MenuService $menu_service
     ):Response
     {
         $q = $request->query->get('q', '');

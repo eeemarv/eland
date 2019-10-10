@@ -5,14 +5,24 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Queue\MailQueue;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\DataTokenService;
+use App\Service\MenuService;
 use Doctrine\DBAL\Connection as Db;
 
 class RegisterTokenController extends AbstractController
 {
     public function register_token(
-        app $app,
         string $token,
-        Db $db
+        Db $db,
+        ConfigService $config_service,
+        AlertService $alert_service,
+        DataTokenService $data_token_service,
+        LinkRender $link_render,
+        MailQueue $mail_queue,
+        MenuService $menu_service
     ):Response
     {
         if (!$config_service->get('registration_en', $app['pp_schema']))
@@ -172,7 +182,7 @@ class RegisterTokenController extends AbstractController
 
         $mail_queue->queue([
             'schema'		=> $app['pp_schema'],
-            'to' 			=> $app['mail_addr_system']->get_admin($app['pp_schema']),
+            'to' 			=> $mail_addr_system_service->get_admin($app['pp_schema']),
             'vars'			=> $vars,
             'template'		=> 'register/admin',
         ], 8000);
@@ -195,7 +205,7 @@ class RegisterTokenController extends AbstractController
         $mail_queue->queue([
             'schema'				=> $app['pp_schema'],
             'to' 					=> [$data['email'] => $user['fullname']],
-            'reply_to'				=> $app['mail_addr_system']->get_admin($app['pp_schema']),
+            'reply_to'				=> $mail_addr_system_service->get_admin($app['pp_schema']),
             'pre_html_template'		=> $config_service->get('registration_success_mail', $app['pp_schema']),
             'template'				=> 'skeleton',
             'vars'					=> $vars,

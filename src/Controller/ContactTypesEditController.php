@@ -2,26 +2,28 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\contact_types;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\AlertService;
-use App\Service\MenuService;
-use App\Service\FormTokenService;
-use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
-use App\Render\LinkRender;
 
 class ContactTypesEditController extends AbstractController
 {
     public function contact_types_edit(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        AlertService $alert_service,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
         $tc_prefetch = $db->fetchAssoc('select *

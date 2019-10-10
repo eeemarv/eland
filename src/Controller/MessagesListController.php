@@ -48,6 +48,7 @@ class MessagesListController extends AbstractController
         PaginationRender $pagination_render,
         SelectRender $select_render,
         ConfigService $config_service,
+        TypeaheadService $typeahead_service,
         HeadingRender $heading_render
     ):Response
     {
@@ -127,7 +128,7 @@ class MessagesListController extends AbstractController
                 from ' . $app['pp_schema'] . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
-                [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+                [Db::PARAM_INT_ARRAY]);
 
             foreach ($rows as $row)
             {
@@ -283,10 +284,6 @@ class MessagesListController extends AbstractController
             $pagination_render,
             $select_render,
             $typeahead_service
-
-
-
-
         );
 
         $messages = $fetch_and_filter['messages'];
@@ -297,7 +294,11 @@ class MessagesListController extends AbstractController
         $s_owner = $fetch_and_filter['s_owner'];
         $out = $fetch_and_filter['out'];
 
-        self::set_view_btn_nav($btn_nav_render, $app['pp_ary'], $params, 'list');
+        self::set_view_btn_nav(
+            $btn_nav_render,
+            $app['pp_ary'],
+            $params, 'list'
+        );
 
         if ($app['pp_admin'])
         {
@@ -588,7 +589,8 @@ class MessagesListController extends AbstractController
     public static function get_checkbox_filter(
         array $checkbox_ary,
         string $filter_id,
-        array $filter_ary):string
+        array $filter_ary
+    ):string
     {
         $out = '';
 
@@ -609,12 +611,17 @@ class MessagesListController extends AbstractController
         return $out;
     }
 
-    public static function set_view_btn_nav(btn_nav $btn_nav, array $pp_ary, array $params, string $view)
+    public static function set_view_btn_nav(
+        BtnNavRender $btn_nav_render,
+        array $pp_ary,
+        array $params,
+        string $view
+    )
     {
-        $btn_nav->view('messages_list', $pp_ary,
+        $btn_nav_render->view('messages_list', $pp_ary,
             $params, 'Lijst', 'align-justify', $view === 'list');
 
-        $btn_nav->view('messages_extended', $pp_ary,
+        $btn_nav_render->view('messages_extended', $pp_ary,
             $params, 'Lijst met omschrijvingen', 'th-list', $view === 'extended');
     }
 

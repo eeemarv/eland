@@ -302,7 +302,7 @@ class MassTransactionController extends AbstractController
 
                         $total_amount += $amo;
 
-                        $transid = $app['transaction']->generate_transid($app['s_id'], $app['pp_system']);
+                        $transid = $transaction_service->generate_transid($app['s_id'], $app['pp_system']);
 
                         $transactions[] = $transaction;
                     }
@@ -383,7 +383,7 @@ class MassTransactionController extends AbstractController
 
                         $mail_queue->queue([
                             'schema'	=> $app['pp_schema'],
-                            'to'		=> $app['mail_addr_user']->get_active($user_id, $app['pp_schema']),
+                            'to'		=> $mail_addr_user_service->get_active($user_id, $app['pp_schema']),
                             'template'	=> 'transaction/transaction',
                             'vars'		=> $vars,
                         ], random_int(0, 5000));
@@ -410,9 +410,9 @@ class MassTransactionController extends AbstractController
                     $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
                         'to' 		=> array_merge(
-                            $app['mail_addr_system']->get_admin($app['pp_schema']),
-                            $app['mail_addr_user']->get_active($app['s_id'], $app['pp_schema']),
-                            $app['mail_addr_user']->get_active($one_uid, $app['pp_schema'])
+                            $mail_addr_system_service->get_admin($app['pp_schema']),
+                            $mail_addr_user_service->get_active($app['s_id'], $app['pp_schema']),
+                            $mail_addr_user_service->get_active($one_uid, $app['pp_schema'])
                         ),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
@@ -429,7 +429,7 @@ class MassTransactionController extends AbstractController
             $mail_en = true;
         }
 
-        $transid = $app['transaction']->generate_transid($app['s_id'], $app['pp_system']);
+        $transid = $transaction_service->generate_transid($app['s_id'], $app['pp_system']);
 
         if ($to_letscode)
         {

@@ -2,10 +2,19 @@
 
 namespace App\Controller;
 
+use App\Queue\GeocodeQueue;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\ElasDbUpgradeService;
+use App\Service\MenuService;
+use App\Service\S3Service;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class InitController extends AbstractController
 {
@@ -22,7 +31,12 @@ class InitController extends AbstractController
         'init_copy_config'          => 'Copy config',
     ];
 
-    public function init(Request $request, app $app):Response
+    public function init(
+        Request $request,
+        AlertService $alert_service,
+        MenuService $menu_service,
+        LinkRender $link_render
+    ):Response
     {
         $done = $request->query->get('ok', '');
 
@@ -59,8 +73,10 @@ class InitController extends AbstractController
 
     public function elas_db_upgrade(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        ElasDbUpgradeService $elas_db_upgrade_service,
+        LoggerInterface $logger,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
@@ -85,7 +101,7 @@ class InitController extends AbstractController
             {
                 $currentversion++;
 
-                $app['elas_db_upgrade']->run($currentversion, $app['pp_schema']);
+                $elas_db_upgrade_service->run($currentversion, $app['pp_schema']);
             }
 
             $m = 'Upgraded database from schema version ' .
@@ -103,9 +119,11 @@ class InitController extends AbstractController
 
     public function sync_users_images(
         Request $request,
-        app $app,
         int $start,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        S3Service $s3_service,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
@@ -137,7 +155,7 @@ class InitController extends AbstractController
             {
                 $filename_bucket = $filename_no_ext . '.' . $extension;
 
-                if ($app['s3']->exists($filename_bucket))
+                if ($s3_service->exists($filename_bucket))
                 {
                     $found = true;
                     break;
@@ -162,7 +180,7 @@ class InitController extends AbstractController
                 $new_filename = $app['pp_schema'] . '_u_' . $user_id .
                     '_' . sha1(time() . $filename) . '.jpg';
 
-                $err = $app['s3']->copy($filename_bucket, $new_filename);
+                $err = $s3_service->copy($filename_bucket, $new_filename);
 
                 if ($err)
                 {
@@ -204,9 +222,11 @@ class InitController extends AbstractController
 
     public function sync_messages_images(
         Request $request,
-        app $app,
         int $start,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        S3Service $s3_service,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
@@ -238,7 +258,7 @@ class InitController extends AbstractController
             {
                 $filename_bucket = $filename_no_ext . '.' . $extension;
 
-                if ($app['s3']->exists($filename_bucket))
+                if ($s3_service->exists($filename_bucket))
                 {
                     $found = true;
                     break;
@@ -263,7 +283,7 @@ class InitController extends AbstractController
                     $msg_id . '_' . sha1(time() .
                     $filename) . '.jpg';
 
-                $err = $app['s3']->copy($filename_bucket, $new_filename);
+                $err = $s3_service->copy($filename_bucket, $new_filename);
 
                 if ($err)
                 {
@@ -297,8 +317,9 @@ class InitController extends AbstractController
 
     public function clear_users_cache(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        LinkRender $link_render,
+        UserCacheService $user_cache_service
     ):Response
     {
         set_time_limit(300);
@@ -310,7 +331,7 @@ class InitController extends AbstractController
 
         foreach ($users as $u)
         {
-            $predis->del($app['pp_schema'] . '_user_' . $u['id']);
+            $user_cache_service->clear($u['id'], $app['pp_schema']);
         }
 
         $link_render->redirect('init', $app['pp_ary'],
@@ -321,14 +342,14 @@ class InitController extends AbstractController
 
     public function empty_elas_tokens(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
 
         $db->executeQuery('delete from ' .
-        $app['pp_schema'] . '.tokens');
+            $app['pp_schema'] . '.tokens');
 
         error_log('*** empty tokens table from elas (is not used anymore) *** ');
 
@@ -341,13 +362,14 @@ class InitController extends AbstractController
     public function empty_city_distance(
         Request $request,
         app $app,
-        Db $db
+        Db $db,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
 
         $db->executeQuery('delete from ' .
-        $app['pp_schema'] . '.city_distance');
+            $app['pp_schema'] . '.city_distance');
 
         error_log('*** empty city_distance table (is not used anymore) *** ');
 
@@ -359,9 +381,10 @@ class InitController extends AbstractController
 
     public function queue_geocoding(
         Request $request,
-        app $app,
         int $start,
-        Db $db
+        Db $db,
+        GeocodeQueue $geocode_queue,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
@@ -407,8 +430,9 @@ class InitController extends AbstractController
 
     public function copy_config(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        ConfigService $config_service,
+        LinkRender $link_render
     ):Response
     {
         set_time_limit(300);

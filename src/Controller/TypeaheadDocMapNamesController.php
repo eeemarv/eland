@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -9,8 +10,8 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadDocMapNamesController extends AbstractController
 {
     public function typeahead_doc_map_names(
-        app $app,
-        Db $db
+        Db $db,
+        TypeaheadService $typeahead_service
     ):Response
     {
         $map_names = [];

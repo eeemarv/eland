@@ -2,6 +2,17 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
+use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -9,9 +20,19 @@ use Doctrine\DBAL\Connection as Db;
 class TransactionsShowController extends AbstractController
 {
     public function transactions_show(
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        HeadingRender $heading_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        BtnTopRender $btn_top_render,
+        BtnNavRender $btn_nav_render,
+        AccountRender $account_render,
+        AssetsService $assets_service,
+        IntersystemsService $intersystems_service,
+        LinkRender $link_render,
+        SystemsService $systems_service,
+        MenuService $menu_service
     ):Response
     {
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($app['pp_schema']);

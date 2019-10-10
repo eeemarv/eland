@@ -2,13 +2,20 @@
 
 namespace App\Controller;
 
+use App\Render\LinkRender;
+use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsApproveController extends AbstractController
 {
-    public function news_approve(app $app, int $id, Db $db):Response
+    public function news_approve(
+        int $id,
+        Db $db,
+        LinkRender $link_render,
+        AlertService $alert_service
+    ):Response
     {
         $data = [
             'approved'  => 't',

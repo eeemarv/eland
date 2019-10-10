@@ -2,13 +2,32 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
+use App\Service\MailAddrSystemService;
+use App\Service\MailAddrUserService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SupportController extends AbstractController
 {
-    public function support(Request $request, app $app):Response
+    public function support(
+        Request $request,
+        AlertService $alert_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MailQueue $mail_queue,
+        MenuService $menu_service,
+        MailAddrUserService $mail_addr_user_service,
+        MailAddrSystemService $mail_addr_system_service
+    ):Response
     {
         if ($app['s_master'])
         {
@@ -16,7 +35,7 @@ class SupportController extends AbstractController
         }
         else
         {
-            $user_email_ary = $app['mail_addr_user']->get_active($app['s_id'], $app['pp_schema']);
+            $user_email_ary = $mail_addr_user_service->get_active($app['s_id'], $app['pp_schema']);
         }
 
         $can_reply = count($user_email_ary) ? true : false;
@@ -70,7 +89,7 @@ class SupportController extends AbstractController
                     'schema'	=> $app['pp_schema'],
                     'template'	=> 'support/support',
                     'vars'		=> $vars,
-                    'to'		=> $app['mail_addr_system']->get_support($app['pp_schema']),
+                    'to'		=> $mail_addr_system_service->get_support($app['pp_schema']),
                     'reply_to'	=> $user_email_ary,
                 ], 8000);
 

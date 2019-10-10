@@ -6,11 +6,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsEditController extends AbstractController
 {
-    public function news_edit(Request $request, app $app, int $id, Db $db):Response
+    public function news_edit(
+        Request $request,
+        int $id,
+        Db $db,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        DateFormatService $date_format_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        XdbService $xdb_service
+    ):Response
     {
         $news = [];
 

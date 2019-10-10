@@ -11,27 +11,34 @@ class TransactionsSumController extends AbstractController
 {
     public function transactions_sum_in(
         Request $request,
-        app $app,
         int $days,
         Db $db
     ):Response
     {
-        return $this->calc($request, $app, $days, true, $db);
+        return $this->calc(
+            $request,
+            $days,
+            true,
+            $db
+        );
     }
 
     public function transactions_sum_out(
         Request $request,
-        app $app,
         int $days,
         Db $db
     ):Response
     {
-        return $this->calc($request, $app, $days, false, $db);
+        return $this->calc(
+            $request,
+            $days,
+            false,
+            $db
+        );
     }
 
     private function calc(
         Request $request,
-        app $app,
         int $days,
         bool $in,
         Db $db
@@ -41,7 +48,9 @@ class TransactionsSumController extends AbstractController
 
         if (!is_array($ex_letscodes))
         {
-            $app->abort(400, 'No array for codes (ex parameter)');
+            return $this->json([
+                'error' => 'No array for codes (ex parameter)',
+            ], 400);
         }
 
         array_walk($ex_letscodes, function(&$value){ $value = trim($value); });

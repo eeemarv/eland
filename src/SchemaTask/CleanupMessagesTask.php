@@ -93,7 +93,7 @@ class CleanupMessagesTask extends SchemaTask
 					from ' . $this->schema . '.messages
 					where id_user in (?)',
 					[$ids],
-					[\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+					[Db::PARAM_INT_ARRAY]);
 			}
 		}
 

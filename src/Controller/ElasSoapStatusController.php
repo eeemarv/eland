@@ -3,16 +3,17 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class ElasSoapStatusController extends AbstractController
 {
     public function elas_soap_status(
-        app $app,
         int $group_id,
-        Db $db):Response
+        Db $db,
+        LoggerInterface $logger
+    ):Response
     {
         $response = new Response();
         $response->headers->set('Content-Type', 'text/plain');
@@ -54,7 +55,7 @@ class ElasSoapStatusController extends AbstractController
 
         $apikey = $group['remoteapikey'];
 
-        $client = new nusoap_client($soapurl, true);
+        $client = new \nusoap_client($soapurl, true);
 
         $err = $client->getError();
 

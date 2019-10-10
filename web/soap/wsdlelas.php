@@ -227,7 +227,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		return 'FAILED';
 	}
 
-	$sigtest = $app['transaction']->sign($transaction, $fromuser['presharedkey'], $schema);
+	$sigtest = $transaction_service->sign($transaction, $fromuser['presharedkey'], $schema);
 
 	if ($sigtest != $signature)
 	{
@@ -257,7 +257,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	unset($transaction['letscode_to']);
 
-	if($id = $app['transaction']->insert($transaction, $schema))
+	if($id = $transaction_service->insert($transaction, $schema))
 	{
 		$logger->debug('elas-soap: Transaction ' . $transid .
 			' processed (success)',
@@ -265,7 +265,7 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 		$transaction['id'] = $id;
 
 		// from eLAS interSystem
-		$app['mail_transaction']->queue($transaction, $schema);
+		$mail_transaction_service->queue($transaction, $schema);
 
 		return 'SUCCESS';
 	}

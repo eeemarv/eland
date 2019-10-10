@@ -2,17 +2,48 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsController extends AbstractController
 {
-    public function news_list(app $app, Db $db):Response
+    public function news_list(
+        Db $db,
+        XdbService $xdb_service,
+        ConfigService $config_service,
+        ItemAccessService $item_access_service,
+        HeadingRender $heading_render,
+        BtnTopRender $btn_top_render,
+        BtnNavRender $btn_nav_render,
+        DateFormatService $date_format_service,
+        LinkRender $link_render,
+        MenuService $menu_service
+    ):Response
     {
-        $news = $this->get_data($app);
+        $news = $this->get_data(
+            $db,
+            $xdb_service,
+            $config_service,
+            $item_access_service
+        );
 
-        $this->set_heading_and_btns($app, true);
+        $this->set_heading_and_btns(
+            true,
+            $heading_render,
+            $btn_top_render,
+            $btn_nav_render
+        );
 
         $show_visibility = ($app['pp_user']
                 && $app['intersystem_en'])
@@ -25,7 +56,7 @@ class NewsController extends AbstractController
 
         if (!count($news))
         {
-            return $this->no_news($app);
+            return $this->no_news($menu_service);
         }
 
         $out = '<div class="panel panel-warning printview">';
@@ -88,11 +119,33 @@ class NewsController extends AbstractController
         ]);
     }
 
-    public function news_extended(app $app):Response
+    public function news_extended(
+        Db $db,
+        XdbService $xdb_service,
+        ConfigService $config_service,
+        ItemAccessService $item_access_service,
+        HeadingRender $heading_render,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        AccountRender $account_render,
+        DateFormatService $date_format_service,
+        LinkRender $link_render,
+        MenuService $menu_service
+    ):Response
     {
-        $news = $this->get_data($app);
+        $news = $this->get_data(
+            $db,
+            $xdb_service,
+            $config_service,
+            $item_access_service
+        );
 
-        $this->set_heading_and_btns($app, false);
+        $this->set_heading_and_btns(
+            false,
+            $heading_render,
+            $btn_top_render,
+            $btn_nav_render
+        );
 
         $show_visibility = ($app['pp_user']
                 && $app['intersystem_en'])
@@ -100,7 +153,7 @@ class NewsController extends AbstractController
 
         if (!count($news))
         {
-            return $this->no_news($app);
+            return $this->no_news($menu_service);
         }
 
         $out = '';
@@ -243,7 +296,12 @@ class NewsController extends AbstractController
         ]);
     }
 
-    private function get_data(app $app):array
+    private function get_data(
+        Db $db,
+        XdbService $xdb_service,
+        ConfigService $config_service,
+        ItemAccessService $item_access_service
+    ):array
     {
         $news = $news_access_ary = [];
 
@@ -298,7 +356,12 @@ class NewsController extends AbstractController
         return $news;
     }
 
-    private function set_heading_and_btns(app $app, bool $is_list):void
+    private function set_heading_and_btns(
+        bool $is_list,
+        HeadingRender $heading_render,
+        BtnTopRender $btn_top_render,
+        BtnNavRender $btn_nav_render
+    ):void
     {
         if($app['pp_user'] || $app['pp_admin'])
         {
@@ -316,7 +379,9 @@ class NewsController extends AbstractController
             [], 'Lijst met omschrijvingen', 'th-list', !$is_list);
     }
 
-    private function no_news(app $app):Response
+    private function no_news(
+        MenuService $menu_service
+    ):Response
     {
         $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';

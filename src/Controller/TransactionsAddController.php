@@ -2,18 +2,53 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\MailAddrSystemService;
+use App\Service\MailTransactionService;
+use App\Service\MenuService;
+use App\Service\SystemsService;
+use App\Service\TransactionService;
+use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
+use Predis\Client as Predis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use controller\transactions;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class TransactionsAddController extends AbstractController
 {
     public function transactions_add(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        Predis $predis,
+        LoggerInterface $logger,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        LinkRender $link_render,
+        MailAddrSystemService $mail_addr_system_service,
+        MailQueue $mail_queue,
+        TransactionService $transaction_service,
+        MailTransactionService $mail_transaction_service,
+        SystemsService $systems_service,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
         $errors = [];
@@ -275,10 +310,10 @@ class TransactionsAddController extends AbstractController
             }
             else if ($group_id == 'self')
             {
-                if ($id = $app['transaction']->insert($transaction, $app['pp_schema']))
+                if ($id = $transaction_service->insert($transaction, $app['pp_schema']))
                 {
                     $transaction['id'] = $id;
-                    $app['mail_transaction']->queue($transaction, $app['pp_schema']);
+                    $mail_transaction_service->queue($transaction, $app['pp_schema']);
                     $alert_service->success('Transactie opgeslagen');
                 }
                 else
@@ -292,12 +327,12 @@ class TransactionsAddController extends AbstractController
             {
                 $transaction['real_to'] = $letscode_to;
 
-                if ($id = $app['transaction']->insert($transaction, $app['pp_schema']))
+                if ($id = $transaction_service->insert($transaction, $app['pp_schema']))
                 {
                     $transaction['id'] = $id;
                     $transaction['letscode_to'] = $letscode_to;
 
-                    $app['mail_transaction']->queue_mail_type($transaction, $app['pp_schema']);
+                    $mail_transaction_service->queue_mail_type($transaction, $app['pp_schema']);
 
                     $alert_service->success('InterSysteem transactie opgeslagen. Een E-mail werd
                         verstuurd naar de administratie van het andere Systeem om de transactie aldaar
@@ -351,7 +386,7 @@ class TransactionsAddController extends AbstractController
 
                 if (strlen($letscode_to))
                 {
-                    $active_users = $this->cache_service->get($group['domain'] . '_typeahead_data');
+                    $active_users = $cache_service->get($group['domain'] . '_typeahead_data');
 
                     $user_letscode_found = false;
 
@@ -413,7 +448,7 @@ class TransactionsAddController extends AbstractController
                     'description' 	=> $trans['description'],
                     'amount' 		=> $trans['amount'],
                     'transid' 		=> $trans['transid'],
-                    'signature' 	=> $app['transaction']->sign($trans, trim($group['presharedkey']), $app['pp_schema']),
+                    'signature' 	=> $transaction_service->sign($trans, trim($group['presharedkey']), $app['pp_schema']),
                 ]);
 
                 $error = $client->getError();
@@ -471,13 +506,13 @@ class TransactionsAddController extends AbstractController
                     http_build_query($transaction) .
                     ' --', ['schema' => $app['pp_schema']]);
 
-                $id = $app['transaction']->insert($transaction, $app['pp_schema']);
+                $id = $transaction_service->insert($transaction, $app['pp_schema']);
 
                 if (!$id)
                 {
                     $mail_queue->queue([
                         'schema'		=> $app['pp_schema'],
-                        'to' 			=> $app['mail_addr_system']->get_admin($app['pp_schema']),
+                        'to' 			=> $mail_addr_system_service->get_admin($app['pp_schema']),
                         'template'		=> 'transaction/intersystem_fail',
                         'vars'			=> [
                             'remote_system_name'	=> $group['groupname'],
@@ -495,7 +530,7 @@ class TransactionsAddController extends AbstractController
                 $transaction['id'] = $id;
 
                 // to eLAS intersystem
-                $app['mail_transaction']->queue($transaction, $app['pp_schema']);
+                $mail_transaction_service->queue($transaction, $app['pp_schema']);
 
                 $alert_service->success('De interSysteem transactie werd verwerkt.');
                 $link_render->redirect('transactions', $app['pp_ary'], []);
@@ -741,8 +776,8 @@ class TransactionsAddController extends AbstractController
                     $user_cache_service->clear($to_remote_user['id'], $remote_schema);
 
                     // to eLAND interSystem
-                    $app['mail_transaction']->queue($trans_org, $app['pp_schema']);
-                    $app['mail_transaction']->queue($transaction, $remote_schema);
+                    $mail_transaction_service->queue($trans_org, $app['pp_schema']);
+                    $mail_transaction_service->queue($transaction, $remote_schema);
 
                     $logger->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
                         $amount . ' from user: ' .  $account_render->str_id($fromuser['id'], $app['pp_schema']) .
@@ -771,7 +806,7 @@ class TransactionsAddController extends AbstractController
         {
             //GET form
 
-            $transid = $app['transaction']->generate_transid(
+            $transid = $transaction_service->generate_transid(
                 $app['s_id'], $app['pp_system']);
 
             $predis->set($redis_transid_key, $transid);
@@ -914,7 +949,7 @@ class TransactionsAddController extends AbstractController
                 where apimethod = \'elassoap\'
                     and url in (?)',
                     [$eland_urls],
-                    [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+                    [Db::PARAM_STR_ARRAY]);
 
             foreach ($eland_systems as $sys)
             {
@@ -939,7 +974,7 @@ class TransactionsAddController extends AbstractController
                 where apimethod = \'elassoap\'
                     and id in (?)',
                     [$ids],
-                    [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+                    [Db::PARAM_INT_ARRAY]);
 
             foreach ($elas_systems as $sys)
             {

@@ -2,14 +2,28 @@
 
 namespace App\Controller;
 
+use App\Render\LinkRender;
+use App\Service\CaptchaService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class IndexContactController extends AbstractController
 {
-    public function index_contact(Request $request, app $app):Response
+    public function index_contact(
+        Request $request,
+        Session $session,
+        FormTokenService $form_token_service,
+        CaptchaService $captcha_service,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        string $env_mail_hoster_address,
+        string $env_mail_from_address
+    ):Response
     {
         $mail = $request->request->get('mail', '');
         $message = $request->request->get('message', '');
@@ -17,8 +31,8 @@ class IndexContactController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $to = getenv('MAIL_HOSTER_ADDRESS');
-            $from = getenv('MAIL_FROM_ADDRESS');
+            $to = $env_mail_hoster_address;
+            $from = $env_mail_from_address;
 
             if (!$to || !$from)
             {

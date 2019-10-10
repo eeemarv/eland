@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Controller\ContactsEditController;
+use App\Render\AccountRender;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -28,15 +29,27 @@ class ContactsDelController extends AbstractController
         MenuService $menu_service,
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
+        AccountRender $account_render,
         LinkRender $link_render
     ):Response
     {
         $contact = contacts_edit::get_contact($db, $id,  $app['pp_schema']);
 
-        return self::form($request, $contact['id_user'], $id, true, $db,
-            $alert_service, $user_cache_service, $form_token_service,
-            $menu_service, $item_access_service, $heading_render,
-            $link_render);
+        return self::form(
+            $request,
+            $contact['id_user'],
+            $id,
+            true,
+            $db,
+            $alert_service,
+            $user_cache_service,
+            $form_token_service,
+            $menu_service,
+            $item_access_service,
+            $heading_render,
+            $account_render,
+            $link_render
+        );
     }
 
     public static function form(
@@ -51,6 +64,7 @@ class ContactsDelController extends AbstractController
         MenuService $menu_service,
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
+        AccountRender $account_render,
         LinkRender $link_render
     ):Response
     {

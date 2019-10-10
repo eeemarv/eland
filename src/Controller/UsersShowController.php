@@ -7,31 +7,94 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use app\cnst\statuscnst;
+use App\Controller\UsersListController;
+use App\Cnst\StatusCnst;
 use App\Cnst\AccessCnst;
 use App\Cnst\RoleCnst;
-use controller\users_list;
+use App\Queue\MailQueue;
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
+use App\Service\MailAddrUserService;
+use App\Service\MenuService;
+use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersShowController extends AbstractController
 {
     public function users_show(
         Request $request,
-        app $app,
         string $status,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        DateFormatService $date_format_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
-        return $this->users_show_admin($request, $app, $status, $id, $db);
+        return $this->users_show_admin(
+            $request,
+            $status,
+            $id,
+            $db,
+            $account_render,
+            $alert_service,
+            $assets_service,
+            $btn_nav_render,
+            $btn_top_render,
+            $config_service,
+            $form_token_service,
+            $heading_render,
+            $item_access_service,
+            $link_render,
+            $mail_addr_user_service,
+            $mail_queue,
+            $date_format_service,
+            $user_cache_service,
+            $menu_service
+        );
     }
 
     public function users_show_admin(
         Request $request,
-        app $app,
         string $status,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        DateFormatService $date_format_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
         $tdays = $request->query->get('tdays', '365');
@@ -60,7 +123,7 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
         }
 
-        $status_def_ary = users_list::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
+        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
 
         // process mail form
 
@@ -90,7 +153,7 @@ class UsersShowController extends AbstractController
                 $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
             }
 
-            $reply_ary = $app['mail_addr_user']->get($app['s_id'], $app['s_schema']);
+            $reply_ary = $mail_addr_user_service->get($app['s_id'], $app['s_schema']);
 
             if (!count($reply_ary))
             {
@@ -126,7 +189,7 @@ class UsersShowController extends AbstractController
 
                 $mail_queue->queue([
                     'schema'	=> $app['pp_schema'],
-                    'to'		=> $app['mail_addr_user']->get($id, $app['pp_schema']),
+                    'to'		=> $mail_addr_user_service->get($id, $app['pp_schema']),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -140,7 +203,7 @@ class UsersShowController extends AbstractController
 
                     $mail_queue->queue([
                         'schema'	=> $app['pp_schema'],
-                        'to' 		=> $app['mail_addr_user']->get($app['s_id'], $app['s_schema']),
+                        'to' 		=> $mail_addr_user_service->get($app['s_id'], $app['s_schema']),
                         'template' 	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);
@@ -293,7 +356,7 @@ class UsersShowController extends AbstractController
             $status_id = ($app['new_user_treshold'] < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
         }
 
-        $h_status_ary = statuscnst::LABEL_ARY;
+        $h_status_ary = StatusCnst::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
 
         if ($s_owner && !$app['pp_admin'])
@@ -306,7 +369,7 @@ class UsersShowController extends AbstractController
         if ($status_id != 1)
         {
             $heading_render->add_raw(' <small><span class="text-');
-            $heading_render->add_raw(statuscnst::CLASS_ARY[$status_id]);
+            $heading_render->add_raw(StatusCnst::CLASS_ARY[$status_id]);
             $heading_render->add_raw('">');
             $heading_render->add_raw($h_status_ary[$status_id]);
             $heading_render->add_raw('</span></small>');
@@ -540,7 +603,7 @@ class UsersShowController extends AbstractController
             $out .= '<dt>';
             $out .= 'Status';
             $out .= '</dt>';
-            $out .= $this->get_dd(statuscnst::LABEL_ARY[$user['status']]);
+            $out .= $this->get_dd(StatusCnst::LABEL_ARY[$user['status']]);
 
             $out .= '<dt>';
             $out .= 'Commentaar van de admin';
@@ -589,7 +652,14 @@ class UsersShowController extends AbstractController
 
         $out .= '</div></div></div></div>';
 
-        $out .= self::get_mail_form($app, $id, $user_mail_content, $user_mail_cc);
+        $out .= self::get_mail_form(
+            $id,
+            $user_mail_content,
+            $user_mail_cc,
+            $account_render,
+            $form_token_service,
+            $mail_addr_user_service
+        );
 
         $out .= $contacts_content;
 
@@ -682,10 +752,12 @@ class UsersShowController extends AbstractController
     }
 
     public static function get_mail_form(
-        app $app,
         int $user_id,
         string $user_mail_content,
-        bool $user_mail_cc
+        bool $user_mail_cc,
+        AccountRender $account_render,
+        FormTokenService $form_token_service,
+        MailAddrUserService $mail_addr_user_service
     ):string
     {
         $s_owner = !$app['pp_guest']
@@ -696,10 +768,10 @@ class UsersShowController extends AbstractController
         $mail_from = $app['s_schema']
             && !$app['s_master']
             && !$app['s_elas_guest']
-                ? $app['mail_addr_user']->get($app['s_id'], $app['s_schema'])
+                ? $mail_addr_user_service->get($app['s_id'], $app['s_schema'])
                 : [];
 
-        $mail_to = $app['mail_addr_user']->get($user_id, $app['pp_schema']);
+        $mail_to = $mail_addr_user_service->get($user_id, $app['pp_schema']);
 
         $user_mail_disabled = true;
 

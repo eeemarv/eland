@@ -10,17 +10,28 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ItemAccessService;
+use App\Service\S3Service;
+use App\Service\TypeaheadService;
 use App\Service\XdbService;
+use Psr\Log\LoggerInterface;
 
 class DocsAddController extends AbstractController
 {
     public function docs_add(
         Request $request,
+        LoggerInterface $logger,
         string $map_id,
-        XdbService $xdb_service
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        S3Service $s3_service,
+        TypeaheadService $typeahead_service,
+        MenuService $menu_service
     ):Response
     {
         if ($request->isMethod('POST'))
@@ -68,7 +79,7 @@ class DocsAddController extends AbstractController
 
                 $filename = $app['pp_schema'] . '_d_' . $doc_id . '.' . $ext;
 
-                $error = $app['s3']->doc_upload($filename, $tmpfile);
+                $error = $s3_service->doc_upload($filename, $tmpfile);
 
                 if ($error)
                 {

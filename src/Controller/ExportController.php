@@ -2,17 +2,22 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class ExportController extends AbstractController
 {
     public function export(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        HeadingRender $heading_render,
+        MenuService $menu_service
     ):Response
     {
         set_time_limit(60);

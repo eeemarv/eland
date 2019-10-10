@@ -6,32 +6,120 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
-use app\cnst\statuscnst;
+use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\ContactInputCnst;
-use App\Queue\mail as queue_mail;
+use App\Queue\GeocodeQueue;
+use App\Queue\MailQueue;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Render\SelectRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
+use App\Service\MenuService;
+use App\Service\PasswordStrengthService;
+use App\Service\SystemsService;
+use App\Service\ThumbprintAccountsService;
+use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
+use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersEditAdminController extends AbstractController
 {
     public function users_edit_admin(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        FormTokenService $form_token_service,
+        GeocodeQueue $geocode_queue,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        PasswordStrengthService $password_strength_service,
+        SelectRender $select_render,
+        SystemsService $systems_service,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service,
+        XdbService $xdb_service,
+        ThumbprintAccountsService $thumbprint_accounts_service,
+        MailAddrUserService $mail_addr_user_service,
+        MailAddrSystemService $mail_addr_system_service,
+        MailQueue $mail_queue,
+        MenuService $menu_service
     ):Response
     {
-        return self::form($request, $app, $id, true, $db);
+        return self::form(
+            $request,
+            $id,
+            true,
+            $db,
+            $account_render,
+            $alert_service,
+            $assets_service,
+            $config_service,
+            $date_format_service,
+            $form_token_service,
+            $geocode_queue,
+            $heading_render,
+            $intersystems_service,
+            $item_access_service,
+            $link_render,
+            $password_strength_service,
+            $select_render,
+            $systems_service,
+            $typeahead_service,
+            $user_cache_service,
+            $xdb_service,
+            $thumbprint_accounts_service,
+            $mail_addr_user_service,
+            $mail_addr_system_service,
+            $mail_queue,
+            $menu_service
+        );
     }
 
     public static function form(
         Request $request,
-        app $app,
         int $id,
         bool $is_edit,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        FormTokenService $form_token_service,
+        GeocodeQueue $geocode_queue,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        PasswordStrengthService $password_strength_service,
+        SelectRender $select_render,
+        SystemsService $systems_service,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service,
+        XdbService $xdb_service,
+        ThumbprintAccountsService $thumbprint_accounts_service,
+        MailAddrUserService $mail_addr_user_service,
+        MailAddrSystemService $mail_addr_system_service,
+        MailQueue $mail_queue,
+        MenuService $menu_service
     ):Response
     {
         $errors = [];
@@ -337,7 +425,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Gelieve een Paswoord in te vullen.';
                 }
-                else if (!$app['password_strength']->get($password))
+                else if (!$password_strength_service->get($password))
                 {
                     $errors[] = 'Het Paswoord is niet sterk genoeg.';
                 }
@@ -437,10 +525,15 @@ class UsersEditAdminController extends AbstractController
                                             adres ingesteld voor deze gebruiker.');
                                     }
 
-                                    self::send_activation_mail($app['queue.mail'],
-                                        $app['mail_addr_system'], $app['mail_addr_user'],
-                                        $mailadr ? true : false, $password,
-                                        $id, $app['pp_schema']);
+                                    self::send_activation_mail(
+                                        $mail_queue,
+                                        $mail_addr_system_service,
+                                        $mail_addr_user_service,
+                                        $mailadr ? true : false,
+                                        $password,
+                                        $id,
+                                        $app['pp_schema']
+                                    );
                                 }
                                 else
                                 {
@@ -457,12 +550,12 @@ class UsersEditAdminController extends AbstractController
 
                         if ($user['status'] == 2 | $user['status'] == 1)
                         {
-                            $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['pp_schema']);
+                            $thumbprint_accounts_service->delete('active', $app['pp_ary'], $app['pp_schema']);
                         }
 
                         if ($user['status'] == 7)
                         {
-                            $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
+                            $thumbprint_accounts_service->delete('extern', $app['pp_ary'], $app['pp_schema']);
                         }
 
                         $intersystems_service->clear_cache($app['s_schema']);
@@ -595,10 +688,15 @@ class UsersEditAdminController extends AbstractController
                                                 gebruiker ingesteld.');
                                         }
 
-                                        self::send_activation_mail($app['queue.mail'],
-                                            $app['mail_addr_system'], $app['mail_addr_user'],
-                                            $mailadr ? true : false, $password,
-                                            $id, $app['pp_schema']);
+                                        self::send_activation_mail(
+                                            $mail_queue,
+                                            $mail_addr_system_service,
+                                            $mail_addr_user_service,
+                                            $mailadr ? true : false,
+                                            $password,
+                                            $id,
+                                            $app['pp_schema']
+                                        );
                                     }
                                     else
                                     {
@@ -618,13 +716,13 @@ class UsersEditAdminController extends AbstractController
                                 || $user_stored['status'] == 1
                                 || $user_stored['status'] == 2)
                             {
-                                $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['pp_schema']);
+                                $thumbprint_accounts_service->delete('active', $app['pp_ary'], $app['pp_schema']);
                             }
 
                             if ($user['status'] == 7
                                 || $user_stored['status'] == 7)
                             {
-                                $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
+                                $thumbprint_accounts_service->delete('extern', $app['pp_ary'], $app['pp_schema']);
                             }
 
                             $intersystems_service->clear_cache($app['s_schema']);
@@ -1020,7 +1118,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-star-o"></span></span>';
             $out .= '<select id="status" name="status" class="form-control">';
-            $out .= $select_render->get_options(statuscnst::LABEL_ARY, $user['status']);
+            $out .= $select_render->get_options(StatusCnst::LABEL_ARY, $user['status']);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';
@@ -1326,7 +1424,7 @@ class UsersEditAdminController extends AbstractController
     }
 
     private static function send_activation_mail(
-        queue_mail $queue_mail,
+        MailQueue $mail_queue,
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         bool $to_user_en,
@@ -1335,13 +1433,13 @@ class UsersEditAdminController extends AbstractController
         string $pp_schema
     ):void
     {
-        $queue_mail->queue([
+        $mail_queue->queue([
             'schema'	=> $pp_schema,
-            'to' 		=> $mail_addr_system->get_admin($pp_schema),
+            'to' 		=> $mail_addr_system_service->get_admin($pp_schema),
             'template'	=> 'account_activation/admin',
             'vars'		=> [
                 'user_id'		=> $user_id,
-                'user_email'	=> $mail_addr_user->get($user_id, $pp_schema),
+                'user_email'	=> $mail_addr_user_service->get($user_id, $pp_schema),
             ],
         ], 5000);
 
@@ -1350,10 +1448,10 @@ class UsersEditAdminController extends AbstractController
             return;
         }
 
-        $queue_mail->queue([
+        $mail_queue->queue([
             'schema'	=> $pp_schema,
-            'to' 		=> $mail_addr_user->get($user_id, $pp_schema),
-            'reply_to' 	=> $mail_addr_system->get_support($pp_schema),
+            'to' 		=> $mail_addr_user_service->get($user_id, $pp_schema),
+            'reply_to' 	=> $mail_addr_system_service->get_support($pp_schema),
             'template'	=> 'account_activation/user',
             'vars'		=> [
                 'user_id'	=> $user_id,

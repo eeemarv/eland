@@ -2,15 +2,47 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Render\PaginationRender;
+use App\Render\SelectRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
+use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 
 class TransactionsController extends AbstractController
 {
-    public function transactions(Request $request, app $app, Db $db):Response
+    public function transactions(
+        Request $request,
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        LinkRender $link_render,
+        PaginationRender $pagination_render,
+        SelectRender $select_render,
+        TypeaheadService $typeahead_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
+    ):Response
     {
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);

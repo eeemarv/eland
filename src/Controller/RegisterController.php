@@ -2,17 +2,36 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\CaptchaService;
+use App\Service\ConfigService;
+use App\Service\DataTokenService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class RegisterController extends AbstractController
 {
     public function register(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        MailQueue $mail_queue,
+        MenuService $menu_service,
+        HeadingRender $heading_render,
+        FormTokenService $form_token_service,
+        DataTokenService $data_token_service,
+        CaptchaService $captcha_service,
+        ConfigService $config_service,
+        AlertService $alert_service,
+        LinkRender $link_render
     ):Response
     {
         if (!$config_service->get('registration_en', $app['pp_schema']))

@@ -58,7 +58,7 @@ class ContactTokenController extends AbstractController
             'schema'	=> $app['pp_schema'],
             'template'	=> 'contact/support',
             'vars'		=> $vars,
-            'to'		=> $app['mail_addr_system']->get_support($app['pp_schema']),
+            'to'		=> $mail_addr_system_service->get_support($app['pp_schema']),
             'reply_to'	=> [$data['email']],
         ], 8000);
 

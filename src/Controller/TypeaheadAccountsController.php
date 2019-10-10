@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -9,9 +10,9 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadAccountsController extends AbstractController
 {
     public function typeahead_accounts(
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        TypeaheadService $typeahead_service
     ):Response
     {
         if ($app['pp_guest'] && $status !== 'active')

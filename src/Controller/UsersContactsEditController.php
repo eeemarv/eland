@@ -5,17 +5,84 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contacts_edit;
+use App\Controller\ContactsEditController;
+use Doctrine\DBAL\Connection as Db;
+use App\Queue\GeocodeQueue;
+use App\Render\AccountRender;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\assetsService;
+use App\Service\ItemAccessService;
 
 class UsersContactsEditController extends AbstractController
 {
-    public function users_contacts_edit(Request $request, app $app, int $contact_id):Response
+    public function users_contacts_edit(
+        Request $request,
+        int $contact_id,
+        Db $db,
+        FormTokenService $form_token_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        AccountRender $account_render,
+        GeocodeQueue $geocode_queue
+    ):Response
     {
-        return contacts_edit::form($request, $app, $app['s_id'], $contact_id, false);
+        return ContactsEditController::form(
+            $request,
+            $app['s_id'],
+            $contact_id,
+            false,
+            $db,
+            $form_token_service,
+            $alert_service,
+            $assets_service,
+            $menu_service,
+            $item_access_service,
+            $link_render,
+            $heading_render,
+            $account_render,
+            $geocode_queue
+        );
     }
 
-    public function users_contacts_edit_admin(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function users_contacts_edit_admin(
+        Request $request,
+        int $user_id,
+        int $contact_id,
+        Db $db,
+        FormTokenService $form_token_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        AccountRender $account_render,
+        GeocodeQueue $geocode_queue
+    ):Response
     {
-        return contacts_edit::form($request, $app, $user_id, $contact_id, false);
+        return ContactsEditController::form(
+            $request,
+            $user_id,
+            $contact_id,
+            false,
+            $db,
+            $form_token_service,
+            $alert_service,
+            $assets_service,
+            $menu_service,
+            $item_access_service,
+            $link_render,
+            $heading_render,
+            $account_render,
+            $geocode_queue
+        );
     }
 }

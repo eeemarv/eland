@@ -8,8 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Controller\MessagesListController;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
+use App\Render\SelectRender;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\MenuService;
+use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendedController extends AbstractController
@@ -18,13 +25,31 @@ class MessagesExtendedController extends AbstractController
         Request $request,
         Db $db,
         AccountRender $account_render,
+        AssetsService $assets_service,
+        BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
+        ConfigService $config_service,
+        HeadingRender $heading_render,
+        SelectRender $select_render,
+        TypeaheadService $typeahead_service,
         LinkRender $link_render,
         MenuService $menu_service,
         PaginationRender $pagination_render
     ):Response
     {
-        $fetch_and_filter = MessagesListController::fetch_and_filter($request, $app);
+        $fetch_and_filter = self::fetch_and_filter(
+            $request,
+            $db,
+            $account_render,
+            $assets_service,
+            $btn_top_render,
+            $config_service,
+            $heading_render,
+            $link_render,
+            $pagination_render,
+            $select_render,
+            $typeahead_service
+        );
 
         $messages = $fetch_and_filter['messages'];
         $params = $fetch_and_filter['params'];
@@ -41,7 +66,7 @@ class MessagesExtendedController extends AbstractController
             from ' . $app['pp_schema'] . '.msgpictures mp
             where msgid in (?)',
             [$ids],
-            [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+            [Db::PARAM_INT_ARRAY]);
 
         foreach ($_imgs as $_img)
         {
@@ -53,13 +78,19 @@ class MessagesExtendedController extends AbstractController
             $imgs[$_img['msgid']] = $_img['PictureFile'];
         }
 
-        messages_list::set_view_btn_nav(
-            $btn_nav_render, $app['pp_ary'],
-            $params, 'extended');
+        MessagesListController::set_view_btn_nav(
+            $btn_nav_render,
+            $app['pp_ary'],
+            $params,
+            'extended'
+        );
 
         if (!count($messages))
         {
-            return messages_list::no_messages($app);
+            return MessagesListController::no_messages(
+                $pagination_render,
+                $menu_service
+            );
         }
 
         $time = time();

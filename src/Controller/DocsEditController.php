@@ -6,13 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
-use App\Service\AlertService;
-use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\TypeaheadService;
 use App\Service\XdbService;
 
 class DocsEditController extends AbstractController
@@ -20,7 +19,13 @@ class DocsEditController extends AbstractController
     public function docs_edit(
         Request $request,
         string $doc_id,
-        XdbService $xdb_service
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        TypeaheadService $typeahead_service,
+        MenuService $menu_service
     ):Response
     {
         $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);

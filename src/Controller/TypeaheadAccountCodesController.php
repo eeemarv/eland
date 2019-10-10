@@ -2,13 +2,17 @@
 
 namespace App\Controller;
 
+use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadAccountCodesController extends AbstractController
 {
-    public function typeahead_account_codes(app $app, Db $db):Response
+    public function typeahead_account_codes(
+        Db $db,
+        TypeaheadService $typeahead_service
+    ):Response
     {
         $account_codes = [];
 

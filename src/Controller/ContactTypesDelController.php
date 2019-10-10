@@ -2,33 +2,35 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contact_types;
+use App\Controller\ContactTypesController;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\AlertService;
-use App\Service\MenuService;
-use App\Service\FormTokenService;
-use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
-use App\Render\LinkRender;
 
 class ContactTypesDelController extends AbstractController
 {
     public function contact_types_del(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
         $ct = $db->fetchAssoc('select *
             from ' . $app['pp_schema'] . '.type_contact
             where id = ?', [$id]);
 
-        if (in_array($ct['abbrev'], contact_types::PROTECTED))
+        if (in_array($ct['abbrev'], ContactTypesController::PROTECTED))
         {
             $alert_service->warning('Beschermd contact type.');
             $link_render->redirect('contact_types', $app['pp_ary'], []);

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class ContactsController extends AbstractController
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
         ConfigService $config_service,
+        AccountRender $account_render,
         ItemAccessService $item_access_service
     ):Response
     {

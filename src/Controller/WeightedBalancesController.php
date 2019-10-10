@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 class WeightedBalancesController extends AbstractController
 {
     public function weighted_balances(
-        app $app,
         int $days,
         Db $db
     ):Response

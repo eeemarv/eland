@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\SystemsService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -9,17 +13,21 @@ use Doctrine\DBAL\Connection as Db;
 class PlotUserTransactionsController extends AbstractController
 {
     public function plot_user_transactions(
-        app $app,
         int $user_id,
         int $days,
-        Db $db
+        Db $db,
+        UserCacheService $user_cache_service,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        LinkRender $link_render,
+        SystemsService $systems_service
     ):Response
     {
         $user = $user_cache_service->get($user_id, $app['pp_schema']);
 
         if (!$user)
         {
-            $app->abort(404, 'User not found');
+            $this->json(['error' => 'User not found'], 404);
         }
 
         $intersystem_names = $transactions = [];

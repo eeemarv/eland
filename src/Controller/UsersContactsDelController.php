@@ -5,17 +5,79 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contacts_del;
+use App\Controller\ContactsDelController;
+use App\Render\AccountRender;
+use Doctrine\DBAL\Connection as Db;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\FormTokenService;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\ItemAccessService;
+use App\Service\UserCacheService;
 
 class UsersContactsDelController extends AbstractController
 {
-    public function users_contacts_del(Request $request, app $app, int $contact_id):Response
+    public function users_contacts_del(
+        Request $request,
+        int $contact_id,
+        Db $db,
+        AlertService $alert_service,
+        UserCacheService $user_cache_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        HeadingRender $heading_render,
+        AccountRender $account_render,
+        LinkRender $link_render
+    ):Response
     {
-        return contacts_del::form($request, $app, $app['s_id'], $contact_id, false);
+        return ContactsDelController::form(
+            $request,
+            $app['s_id'],
+            $contact_id,
+            false,
+            $db,
+            $alert_service,
+            $user_cache_service,
+            $form_token_service,
+            $menu_service,
+            $item_access_service,
+            $heading_render,
+            $account_render,
+            $link_render
+        );
     }
 
-    public function users_contacts_del_admin(Request $request, app $app, int $user_id, int $contact_id):Response
+    public function users_contacts_del_admin(
+        Request $request,
+        int $user_id,
+        int $contact_id,
+        Db $db,
+        AlertService $alert_service,
+        UserCacheService $user_cache_service,
+        FormTokenService $form_token_service,
+        MenuService $menu_service,
+        ItemAccessService $item_access_service,
+        HeadingRender $heading_render,
+        AccountRender $account_render,
+        LinkRender $link_render
+    ):Response
     {
-        return contacts_del::form($request, $app, $user_id, $contact_id, false);
+        return ContactsDelController::form(
+            $request,
+            $user_id,
+            $contact_id,
+            false,
+            $db,
+            $alert_service,
+            $user_cache_service,
+            $form_token_service,
+            $menu_service,
+            $item_access_service,
+            $heading_render,
+            $account_render,
+            $link_render
+        );
     }
 }

@@ -10,31 +10,122 @@ use App\Render\btn_nav;
 use App\Render\LinkRender;
 use App\Render\heading;
 use App\Cnst\AccessCnst;
-use app\cnst\statuscnst;
+use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
+use App\Queue\MailQueue;
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\SelectRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\CacheService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
+use App\Service\MailAddrUserService;
+use App\Service\MenuService;
+use App\Service\ThumbprintAccountsService;
+use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
+use App\Service\XdbService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class UsersListController extends AbstractController
 {
-    const TPL_CHECKBOX_ITEM = '<label for="su[%1$s]">&nbsp;<input type="checkbox" name="su[%1$s]" id="su[%1$s]" value="1"%2$s>&nbsp;&nbsp;';
-
     public function users_list_admin(
         Request $request,
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        Session $session,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        CacheService $cache_service,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        SelectRender $select_render,
+        ThumbprintAccountsService $thumbprint_accounts_service,
+        TypeaheadService $typeahead_service,
+        XdbService  $xdb_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
-        return $this->users_list($request, $app, $status, $db);
+        return $this->users_list(
+            $request,
+            $status,
+            $db,
+            $logger,
+            $session,
+            $account_render,
+            $alert_service,
+            $assets_service,
+            $btn_nav_render,
+            $btn_top_render,
+            $cache_service,
+            $config_service,
+            $date_format_service,
+            $form_token_service,
+            $heading_render,
+            $intersystems_service,
+            $item_access_service,
+            $link_render,
+            $mail_addr_user_service,
+            $mail_queue,
+            $select_render,
+            $thumbprint_accounts_service,
+            $typeahead_service,
+            $xdb_service,
+            $user_cache_service,
+            $menu_service
+        );
     }
 
     public function users_list(
         Request $request,
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        Session $session,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        CacheService $cache_service,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        SelectRender $select_render,
+        ThumbprintAccountsService $thumbprint_accounts_service,
+        TypeaheadService $typeahead_service,
+        XdbService  $xdb_service,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
         $q = $request->get('q', '');
@@ -158,7 +249,7 @@ class UsersListController extends AbstractController
                 $rows = $db->executeQuery('select letscode, name, id
                     from ' . $app['pp_schema'] . '.users
                     where id in (?)',
-                    [$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+                    [$user_ids], [Db::PARAM_INT_ARRAY]);
 
                 foreach ($rows as $row)
                 {
@@ -180,7 +271,8 @@ class UsersListController extends AbstractController
                     $xdb_service->set('user_fullname_access', (string) $user_id, [
                         'fullname_access' => $bulk_fullname_access_xdb,
                     ], $app['pp_schema']);
-                    $predis->del($app['pp_schema'] . '_user_' . $user_id);
+
+                    $user_cache_service->clear($user_id, $app['pp_schema']);
                 }
 
                 $logger->info('bulk: Set fullname_access to ' .
@@ -207,7 +299,7 @@ class UsersListController extends AbstractController
                     set flag_public = ?
                     where id_user in (?) and id_type_contact = ?',
                         [$flag_public, $user_ids, $id_type_contact],
-                        [\PDO::PARAM_INT, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
+                        [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
                 $logger->info('bulk: Set ' . $bulk_field_action .
                     ' to ' . $bulk_field_value .
@@ -224,11 +316,11 @@ class UsersListController extends AbstractController
                     set cron_saldo = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
-                    [\PDO::PARAM_BOOL, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+                    [\PDO::PARAM_BOOL, Db::PARAM_INT_ARRAY]);
 
                 foreach ($user_ids as $user_id)
                 {
-                    $predis->del($app['pp_schema'] . '_user_' . $user_id);
+                    $user_cache_service->clear($user_id, $app['pp_schema']);
                 }
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
@@ -264,17 +356,17 @@ class UsersListController extends AbstractController
                 $db->executeUpdate('update ' . $app['pp_schema'] . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
                     [$store_value, $user_ids],
-                    [$field_type, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+                    [$field_type, Db::PARAM_INT_ARRAY]);
 
                 foreach ($user_ids as $user_id)
                 {
-                    $predis->del($app['pp_schema'] . '_user_' . $user_id);
+                    $user_cache_service->clear($user_id, $app['pp_schema']);
                 }
 
                 if ($bulk_field == 'status')
                 {
-                    $app['thumbprint_accounts']->delete('active', $app['pp_ary'], $app['pp_schema']);
-                    $app['thumbprint_accounts']->delete('extern', $app['pp_ary'], $app['pp_schema']);
+                    $thumbprint_accounts_service->delete('active', $app['pp_ary'], $app['pp_schema']);
+                    $thumbprint_accounts_service->delete('extern', $app['pp_ary'], $app['pp_schema']);
                 }
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
@@ -317,7 +409,7 @@ class UsersListController extends AbstractController
                         and u.id = c.id_user
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'',
-                        [$user_ids], [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+                        [$user_ids], [Db::PARAM_INT_ARRAY]);
 
                 foreach ($sel_users as $sel_user)
                 {
@@ -340,9 +432,9 @@ class UsersListController extends AbstractController
 
                     $mail_queue->queue([
                         'schema'			=> $app['pp_schema'],
-                        'to' 				=> $app['mail_addr_user']->get($sel_user['id'], $app['pp_schema']),
+                        'to' 				=> $mail_addr_user_service->get($sel_user['id'], $app['pp_schema']),
                         'pre_html_template' => $bulk_mail_content,
-                        'reply_to' 			=> $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
+                        'reply_to' 			=> $mail_addr_user_service->get($app['s_id'], $app['pp_schema']),
                         'vars'				=> $vars,
                         'template'			=> 'skeleton',
                     ], random_int(1000, 4000));
@@ -413,7 +505,7 @@ class UsersListController extends AbstractController
 
                     $mail_queue->queue([
                         'schema'			=> $app['pp_schema'],
-                        'to' 				=> $app['mail_addr_user']->get($app['s_id'], $app['pp_schema']),
+                        'to' 				=> $mail_addr_user_service->get($app['s_id'], $app['pp_schema']),
                         'template'			=> 'skeleton',
                         'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
                         'vars'				=> $vars,
@@ -720,7 +812,7 @@ class UsersListController extends AbstractController
 
             if (isset($my_adr))
             {
-                $ref_geo = $this->cache_service->get('geo_' . $my_adr);
+                $ref_geo = $cache_service->get('geo_' . $my_adr);
             }
         }
 
@@ -1239,10 +1331,10 @@ class UsersListController extends AbstractController
 
             $out .= '<tr';
 
-            if (isset(statuscnst::CLASS_ARY[$row_stat]))
+            if (isset(StatusCnst::CLASS_ARY[$row_stat]))
             {
                 $out .= ' class="';
-                $out .= statuscnst::CLASS_ARY[$row_stat];
+                $out .= StatusCnst::CLASS_ARY[$row_stat];
                 $out .= '"';
             }
 
@@ -1386,7 +1478,7 @@ class UsersListController extends AbstractController
                     {
                         if (count($adr_ary) && $adr_ary['value'])
                         {
-                            $geo = $this->cache_service->get('geo_' . $adr_ary['value']);
+                            $geo = $cache_service->get('geo_' . $adr_ary['value']);
 
                             if ($geo)
                             {

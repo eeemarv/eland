@@ -6,32 +6,59 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\UsersListController;
-use app\cnst\statuscnst;
+use App\Cnst\StatusCnst;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\MenuService;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersTilesController extends AbstractController
 {
     public function users_tiles_admin(
         Request $request,
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        HeadingRender $heading_render,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        AssetsService $assets_service,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
-        return $this->users_tiles($request, $app, $status, $db);
+        return $this->users_tiles(
+            $request,
+            $status,
+            $db,
+            $heading_render,
+            $btn_nav_render,
+            $btn_top_render,
+            $assets_service,
+            $link_render,
+            $menu_service
+        );
     }
 
     public function users_tiles(
         Request $request,
-        app $app,
         string $status,
-        Db $db
+        Db $db,
+        HeadingRender $heading_render,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        AssetsService $assets_service,
+        LinkRender $link_render,
+        MenuService $menu_service
     ):Response
     {
         $q = $request->get('q', '');
         $users_route = $app['pp_admin'] ? 'users_tiles_admin' : 'users_tiles';
 
-        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
+        $status_def_ary = UsersListController::get_status_def_ary(
+            $app['pp_admin'], $app['new_user_treshold']);
 
         $params = ['status'	=> $status];
 
@@ -96,10 +123,10 @@ class UsersTilesController extends AbstractController
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
             $out .= '<div';
 
-            if (isset(statuscnst::CLASS_ARY[$row_stat]))
+            if (isset(StatusCnst::CLASS_ARY[$row_stat]))
             {
                 $out .= ' class="bg-';
-                $out .= statuscnst::CLASS_ARY[$row_stat];
+                $out .= StatusCnst::CLASS_ARY[$row_stat];
                 $out .= '"';
             }
 

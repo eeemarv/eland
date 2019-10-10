@@ -2,13 +2,37 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ForumController extends AbstractController
 {
-    public function forum(Request $request, app $app):Response
+    public function forum(
+        Request $request,
+        XdbService $xdb_service,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service
+    ):Response
     {
         if (!$config_service->get('forum_en', $app['pp_schema']))
         {

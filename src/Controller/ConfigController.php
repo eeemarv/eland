@@ -12,6 +12,10 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\IntersystemsService;
 
 class ConfigController extends AbstractController
 {
@@ -23,7 +27,11 @@ class ConfigController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
+        AssetsService $assets_service,
         HeadingRender $heading_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        IntersystemsService $intersystems_service,
         SelectRender $select_render
     ):Response
     {
@@ -373,7 +381,11 @@ class ConfigController extends AbstractController
 
         if ($tab === 'logo')
         {
-            $out .= self::render_logo($app);
+            $out .= self::render_logo(
+                $config_service,
+                $link_render,
+                $assets_service
+            );
         }
 
         $out .= '<ul class="list-group">';
@@ -879,7 +891,11 @@ class ConfigController extends AbstractController
         return $out;
     }
 
-    static function render_logo(app $app)
+    static function render_logo(
+        ConfigService $config_service,
+        LinkRender $link_render,
+        AssetsService $assets_service
+    )
     {
         $logo = $config_service->get('logo', $app['pp_schema']);
 

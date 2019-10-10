@@ -230,7 +230,7 @@ class XdbService
 		{
 			$sql_where[] = 'agg_id in (?)';
 			$sql_params[] = $filters['agg_id_ary'];
-			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
+			$sql_types[] = Db::PARAM_STR_ARRAY;
 		}
 
 		unset($filters['agg_id_ary']);
@@ -239,7 +239,7 @@ class XdbService
 		{
 			$sql_where[] = 'data->>\'access\' in (?)';
 			$sql_params[] = $filters['access'];
-			$sql_types[] = \Doctrine\DBAL\Connection::PARAM_STR_ARRAY;
+			$sql_types[] = Db::PARAM_STR_ARRAY;
 		}
 
 		unset($filters['access']);

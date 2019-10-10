@@ -10,6 +10,15 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $env_mapbox_token: '%env(MAPBOX_TOKEN)%'
+            $env_legacy_eland_origin_pattern: '%env(LEGACY_ELAND_ORIGIN_PATTERN)%'
+            $env_aws_s3_bucket: '%env(AWS_S3_BUCKET)%'
+            $env_aws_s3_region: '%env(AWS_S3_REGION)%'
+            $env_s3_url: 'https://s3.%env(AWS_S3_REGION)%.amazonaws.com/%env(AWS_S3_BUCKET)%/'
+            $env_mail_noreply_address: '%env(MAIL_NOREPLY_ADDRESS)%'
+            $env_mail_from_address: '%env(MAIL_FROM_ADDRESS)%'
+            $env_mail_hoster_address: '%env(MAIL_HOSTER_ADDRESS)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

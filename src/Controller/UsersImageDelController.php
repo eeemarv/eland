@@ -2,6 +2,12 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\MenuService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,8 +17,13 @@ class UsersImageDelController extends AbstractController
 {
     public function users_image_del(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        AccountRender $account_render,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
     ):Response
     {
         if ($app['s_id'] < 1)
@@ -21,10 +32,30 @@ class UsersImageDelController extends AbstractController
             $link_render->redirect($app['r_users'], $app['pp_ary'], []);
         }
 
-        return $this->users_image_del_admin($request, $app, $app['s_id']);
+        return $this->users_image_del_admin(
+            $request,
+            $app['s_id'],
+            $db,
+            $alert_service,
+            $account_render,
+            $heading_render,
+            $link_render,
+            $user_cache_service,
+            $menu_service
+        );
     }
 
-    public function users_image_del_admin(Request $request, app $app, int $id):Response
+    public function users_image_del_admin(
+        Request $request,
+        int $id,
+        Db $db,
+        AlertService $alert_service,
+        AccountRender $account_render,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service
+    ):Response
     {
         $user = $user_cache_service->get($id, $app['pp_schema']);
 

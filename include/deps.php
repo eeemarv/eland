@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Silex\Provider;
 use Knp\Provider\ConsoleServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
@@ -594,9 +593,9 @@ $app['mail_transaction'] = function($app){
 	return new service\mail_transaction(
 		$app['user_cache'],
 		$config_service,
-		$app['mail_addr_system'],
-		$app['mail_addr_user'],
-		$app['queue.mail']
+		$mail_addr_system_service,
+		$mail_addr_user_service,
+		$mail_queue
 	);
 };
 
@@ -639,14 +638,14 @@ $app['date_format'] = function($app){
 	);
 };
 
-$app['mail_addr_system'] = function ($app){
+$mail_addr_system_service = function ($app){
 	return new service\mail_addr_system(
 		$app['monolog'],
 		$config_service
 	);
 };
 
-$app['mail_addr_user'] = function ($app){
+$mail_addr_user_service = function ($app){
 	return new service\mail_addr_user(
 		$app['db'],
 		$app['monolog']
@@ -700,13 +699,13 @@ $app['email_validate'] = function ($app){
 
 // queue
 
-$app['queue.mail'] = function ($app){
+$mail_queue = function ($app){
 	return new queue\mail(
 		$app['queue'],
 		$app['monolog'],
 		$app['twig'],
 		$config_service,
-		$app['mail_addr_system'],
+		$mail_addr_system_service,
 		$app['email_validate'],
 		$app['systems']
 	);
@@ -796,12 +795,12 @@ $app['schema_task.sync_user_cache'] = function ($app){
 $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs(
 		$app['db'],
-		$app['queue.mail'],
+		$mail_queue,
 		$app['schedule'],
 		$app['systems'],
 		$config_service,
 		$app['user_cache'],
-		$app['mail_addr_user']
+		$mail_addr_user_service
 	);
 };
 
@@ -811,12 +810,12 @@ $app['schema_task.saldo'] = function ($app){
 		$xdb_service,
 		$app['cache'],
 		$app['monolog'],
-		$app['queue.mail'],
+		$mail_queue,
 		$app['schedule'],
 		$app['systems'],
 		$app['intersystems'],
 		$config_service,
-		$app['mail_addr_user'],
+		$mail_addr_user_service,
 		$app['account_str']
 	);
 };

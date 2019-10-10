@@ -6,11 +6,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Queue\MailQueue;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsAddController extends AbstractController
 {
-    public function news_add(Request $request, app $app, Db $db):Response
+    public function news_add(
+        Request $request,
+        Db $db,
+        DateFormatService $date_format_service,
+        HeadingRender $heading_render,
+        MenuService $menu_service,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        FormTokenService $form_token_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MailQueue $mail_queue,
+        XdbService $xdb_service
+    ):Response
     {
         $news = [];
 
@@ -97,7 +120,7 @@ class NewsAddController extends AbstractController
 
                         $mail_queue->queue([
                             'schema'	=> $app['pp_schema'],
-                            'to' 		=> $app['mail_addr_system']->get_newsadmin($app['pp_schema']),
+                            'to' 		=> $mail_addr_system_service->get_newsadmin($app['pp_schema']),
                             'template'	=> 'news/review_admin',
                             'vars'		=> $vars,
                         ], 7000);

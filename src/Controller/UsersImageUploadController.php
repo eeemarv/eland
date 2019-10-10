@@ -2,19 +2,24 @@
 
 namespace App\Controller;
 
+use App\Service\ImageUploadService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class UsersImageUploadController extends AbstractController
 {
     public function users_image_upload(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        ImageUploadService $image_upload_service,
+        UserCacheService $user_cache_service
     ):Response
     {
         if ($app['s_id'] < 1)
@@ -22,14 +27,23 @@ class UsersImageUploadController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
         }
 
-        return $this->users_image_upload_admin($request, $app, $app['s_id'], $db);
+        return $this->users_image_upload_admin(
+            $request,
+            $app['s_id'],
+            $db,
+            $logger,
+            $image_upload_service,
+            $user_cache_service
+        );
     }
 
     public function users_image_upload_admin(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        ImageUploadService $image_upload_service,
+        UserCacheService $user_cache_service
     ):Response
     {
         $uploaded_file = $request->files->get('image');

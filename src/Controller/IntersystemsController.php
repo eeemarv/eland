@@ -50,7 +50,7 @@ class IntersystemsController extends AbstractController
             from ' . $app['pp_schema'] . '.users
             where letscode in (?)',
             [$letscodes],
-            [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
+            [Db::PARAM_INT_ARRAY]);
 
         foreach ($intersystem_users as $u)
         {
@@ -275,7 +275,7 @@ class IntersystemsController extends AbstractController
             from ' . $app['pp_schema'] . '.letsgroups
             where url in (?)',
             [$url_ary],
-            [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+            [Db::PARAM_STR_ARRAY]);
 
         foreach ($groups as $group)
         {
@@ -288,7 +288,7 @@ class IntersystemsController extends AbstractController
             from ' . $app['pp_schema'] . '.users
             where letscode in (?)',
             [$loc_letscode_ary],
-            [\Doctrine\DBAL\Connection::PARAM_STR_ARRAY]);
+            [Db::PARAM_STR_ARRAY]);
 
         foreach ($interlets_accounts as $u)
         {

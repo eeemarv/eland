@@ -2,18 +2,37 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class TransactionsEditController extends AbstractController
 {
     public function transactions_edit(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        LinkRender $link_render,
+        IntersystemsService $intersystems_service,
+        MenuService $menu_service
     ):Response
     {
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($app['pp_schema']);

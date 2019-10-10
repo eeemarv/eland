@@ -2,6 +2,15 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
+use App\Service\MenuService;
+use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,7 +18,20 @@ use Doctrine\DBAL\Connection as Db;
 
 class NewsDelController extends AbstractController
 {
-    public function news_del(Request $request, app $app, int $id, Db $db):Response
+    public function news_del(
+        Request $request,
+        int $id,
+        Db $db,
+        FormTokenService $form_token_service,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        DateFormatService $date_format_service,
+        HeadingRender $heading_render,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MenuService $menu_service,
+        XdbService $xdb_service
+    ):Response
     {
         if ($request->isMethod('POST'))
         {

@@ -7,16 +7,38 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use app\cnst\statuscnst;
+use App\Cnst\StatusCnst;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
+use App\Service\ThumbprintAccountsService;
+use App\Service\UserCacheService;
+use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
+use Predis\Client as Predis;
+use Psr\Log\LoggerInterface;
 
 class UsersDelAdminController extends AbstractController
 {
     public function users_del_admin(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        LoggerInterface $logger,
+        FormTokenService $form_token_service,
+        AlertService $alert_service,
+        AccountRender $account_render,
+        HeadingRender $heading_render,
+        LinkRender $link_render,
+        ThumbprintAccountsService $thumbprint_accounts_service,
+        UserCacheService $user_cache_service,
+        IntersystemsService $intersystems_service,
+        XdbService $xdb_service,
+        MenuService $menu_service
     ):Response
     {
         if ($app['s_id'] === $id)
@@ -64,9 +86,18 @@ class UsersDelAdminController extends AbstractController
             }
             else
             {
-                $this->remove_user($app, $id, $db);
+                $this->remove_user(
+                    $id,
+                    $db,
+                    $logger,
+                    $alert_service,
+                    $xdb_service,
+                    $intersystems_service,
+                    $thumbprint_accounts_service,
+                    $user_cache_service
+                );
 
-                $status = statuscnst::THUMBPINT_ARY[$user['status']];
+                $status = StatusCnst::THUMBPINT_ARY[$user['status']];
 
                 $link_render->redirect($app['r_users'], $app['pp_ary'],
                     ['status' => $status]);
@@ -118,7 +149,16 @@ class UsersDelAdminController extends AbstractController
         ]);
     }
 
-    private function remove_user(app $app, int $id, Db $db):void
+    private function remove_user(
+        int $id,
+        Db $db,
+        LoggerInterface $logger,
+        AlertService $alert_service,
+        XdbService $xdb_service,
+        IntersystemsService $intersystems_service,
+        ThumbprintAccountsService $thumbprint_accounts_service,
+        UserCacheService $user_cache_service
+    ):void
     {
         $user = $user_cache_service->get($id, $app['pp_schema']);
 
@@ -240,12 +280,13 @@ class UsersDelAdminController extends AbstractController
 
         $db->delete($app['pp_schema'] . '.users',
             ['id' => $id]);
-        $predis->expire($app['pp_schema'] . '_user_' . $id, 0);
+
+        $user_cache_service->clear($id, $app['pp_schema']);
 
         $alert_service->success('De gebruiker is verwijderd.');
 
-        $thumbprint_status = statuscnst::THUMBPINT_ARY[$user['status']];
-        $app['thumbprint_accounts']->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
+        $thumbprint_status = StatusCnst::THUMBPINT_ARY[$user['status']];
+        $thumbprint_accounts_service->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
 
         $intersystems_service->clear_cache($app['pp_schema']);
     }

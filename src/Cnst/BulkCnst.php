@@ -3,7 +3,7 @@
 namespace App\Cnst;
 
 use App\Cnst\RoleCnst;
-use app\cnst\statuscnst;
+use App\Cnst\StatusCnst;
 
 class BulkCnst
 {
@@ -49,7 +49,7 @@ class BulkCnst
         ],
         'status'			=> [
             'lbl'		=> 'Status',
-            'options'	=> statuscnst::LABEL_ARY,
+            'options'	=> StatusCnst::LABEL_ARY,
             'fa'		=> 'star-o',
         ],
         'admincomment'		=> [
