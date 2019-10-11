@@ -111,7 +111,7 @@ class DocsMapController extends AbstractController
         if (count($docs))
         {
             $show_visibility = ($app['pp_user']
-                    && $app['intersystem_en'])
+                    && $config_service->get_intersystem_en($app['pp_schema']))
                 || $app['pp_admin'];
 
             $out .= '<div class="panel panel-default printview">';

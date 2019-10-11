@@ -78,7 +78,7 @@ class ForumController extends AbstractController
         }
 
         $show_visibility = (!$app['pp_guest']
-                && $app['intersystem_en'])
+                && $config_service->get_intersystem_en($app['pp_schema']))
             || $app['pp_admin'];
 
         $heading_render->add('Forum');

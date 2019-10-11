@@ -37,7 +37,7 @@ class NewsShowController extends AbstractController
     ):Response
     {
         $show_visibility = ($app['pp_user']
-                && $app['intersystem_en'])
+                && $config_service->get_intersystem_en($app['pp_schema']))
             || $app['pp_admin'];
 
         $news_access_ary = $no_access_ary = [];

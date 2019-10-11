@@ -99,7 +99,7 @@ class MessagesDelController extends AbstractController
         $out .= $message['validity'];
         $out .= '</dd>';
 
-        if ($app['intersystem_en'] && $intersystems_service->get_count($app['pp_schema']))
+        if ($config_service->get_intersystem_en($app['pp_schema']) && $intersystems_service->get_count($app['pp_schema']))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';

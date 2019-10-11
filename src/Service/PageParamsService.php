@@ -6,26 +6,28 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
-class PpService
+class PageParamsService
 {
 	protected $request;
-	protected $logger;
 	protected $session;
-	protected $flashbag;
 	protected $schema;
 
 	public function __construct(
 		Request $request,
-		LoggerInterface $logger,
 		Session $session,
 		string $schema
 	)
 	{
 		$this->request = $request;
-		$this->logger = $logger;
 		$this->session = $session;
 		$this->schema = $schema;
-		$this->flashbag = $this->session->getFlashBag();
+
+		$this->init();
+	}
+
+	private function init():void
+	{
+
 	}
 
 	public function is_admin():bool
@@ -39,6 +41,11 @@ class PpService
 	}
 
 	public function is_guest():bool
+	{
+
+	}
+
+	public function edit_enabled():bool
 	{
 
 	}

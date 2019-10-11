@@ -67,7 +67,7 @@ class UsersMapController extends AbstractController
         $ref_geo = [];
         $params = ['status' => $status];
 
-        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
+        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
 
         $sql_bind = [];
 

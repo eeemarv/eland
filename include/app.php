@@ -63,7 +63,7 @@ $fn_before_system_auth = function(Request $request, app $app){
 $fn_before_system_guest = function(Request $request, app $app){
 	if ($app['pp_guest'])
 	{
-		if (!$app['intersystem_en'])
+		if (!$config_service->get_intersystem_en($app['pp_schema']))
 		{
 			throw new NotFoundHttpException('Guest routes are not enabled in this system.');
 		}

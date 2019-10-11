@@ -102,7 +102,7 @@ class TransactionsShowController extends AbstractController
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;
 
-        $intersystem_trans = ($real_from || $real_to) && $app['intersystem_en'];
+        $intersystem_trans = ($real_from || $real_to) && $config_service->get_intersystem_en($app['pp_schema']);
 
         $out = '<div class="panel panel-';
         $out .= $intersystem_trans ? 'warning' : 'default';

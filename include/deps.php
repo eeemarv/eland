@@ -221,7 +221,7 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
  *
  */
 
-$app['new_user_treshold'] = function ($app):int{
+$config_service->get_new_user_treshold($app['pp_schema']) = function ($app):int{
 	$new_user_days = (int) $config_service->get('newuserdays', $app['pp_schema']);
 	return time() -  ($new_user_days * 86400);
 };
@@ -296,7 +296,7 @@ $app['r_default'] = function ($app):string{
 	return $route;
 };
 
-$app['intersystem_en'] = function($app):bool{
+$config_service->get_intersystem_en($app['pp_schema']) = function($app):bool{
 	return $config_service->get('template_lets', $app['pp_schema'])
 		&& $config_service->get('interlets_en', $app['pp_schema']);
 };
@@ -890,7 +890,7 @@ $menu_service = function($app){
 		$app['item_access'],
 		$app['pp_schema'],
 		$app['pp_system'],
-		$app['intersystem_en'],
+		$config_service->get_intersystem_en($app['pp_schema']),
 		$app['r_messages'],
 		$app['r_users'],
 		$app['r_news'],
@@ -913,7 +913,7 @@ $app['menu_nav_system'] = function($app){
 		$app['s_logins'],
 		$app['s_schema'],
 		$app['pp_schema'],
-		$app['intersystem_en'],
+		$config_service->get_intersystem_en($app['pp_schema']),
 		$menu_service,
 		$config_service,
 		$app['user_cache'],
@@ -926,7 +926,7 @@ $app['item_access'] = function($app){
 		$app['assets'],
 		$app['pp_schema'],
 		$app['pp_role'],
-		$app['intersystem_en']
+		$config_service->get_intersystem_en($app['pp_schema'])
 	);
 };
 

@@ -128,7 +128,7 @@ class ContactsController extends AbstractController
             {
                 case 'new':
                     $where_sql[] = 'u.adate > ? and u.status = 1';
-                    $params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+                    $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($app['pp_schema']));
                     break;
                 case 'leaving':
                     $where_sql[] = 'u.status = 2';
@@ -301,7 +301,7 @@ class ContactsController extends AbstractController
             'interlets'	=> 'interSysteem',
         ];
 
-        if (!$app['intersystem_en'])
+        if (!$config_service->get_intersystem_en($app['pp_schema']))
         {
             unset($access_options['interlets']);
         }

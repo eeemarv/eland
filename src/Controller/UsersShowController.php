@@ -126,7 +126,7 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
         }
 
-        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
+        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
 
         // process mail form
 
@@ -267,7 +267,7 @@ class UsersShowController extends AbstractController
 
         if ($app['pp_admin']
             && $user['accountrole'] === 'interlets'
-            && $app['intersystem_en'])
+            && $config_service->get_intersystem_en($app['pp_schema']))
         {
             $intersystem_id = $db->fetchColumn('select id
                 from ' . $app['pp_schema'] . '.letsgroups
@@ -356,7 +356,7 @@ class UsersShowController extends AbstractController
 
         if (isset($user['adate']))
         {
-            $status_id = ($app['new_user_treshold'] < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
+            $status_id = ($config_service->get_new_user_treshold($app['pp_schema']) < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
         }
 
         $h_status_ary = StatusCnst::LABEL_ARY;

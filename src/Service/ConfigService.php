@@ -89,4 +89,16 @@ class ConfigService
 
 		return $value;
 	}
+
+	public function get_intersystem_en(string $schema):bool
+	{
+		return $this->get('template_lets', $schema)
+			&& $this->get('interlets_en', $schema);
+	}
+
+	public function get_new_user_treshold(string $schema):int
+	{
+		$new_user_days = (int) $this->get('newuserdays', $schema);
+		return time() -  ($new_user_days * 86400);
+	}
 }

@@ -49,7 +49,7 @@ class ConfigController extends AbstractController
             unset($block_ary['periodic_mail']['forum']);
         }
 
-        if (!$app['intersystem_en'])
+        if (!$config_service->get_intersystem_en($app['pp_schema']))
         {
             unset($block_ary['periodic_mail']['interlets']);
             unset($cond_ary['config_template_lets']);

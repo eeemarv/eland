@@ -804,7 +804,7 @@ class MassTransactionController extends AbstractController
 
             if (isset($user['adate']))
             {
-                $status_key = ($status_key == 'active' && $app['new_user_treshold'] < strtotime($user['adate'])) ? 'new' : $status_key;
+                $status_key = ($status_key == 'active' && $config_service->get_new_user_treshold($app['pp_schema']) < strtotime($user['adate'])) ? 'new' : $status_key;
             }
 
             $hsh = self::STATUS_RENDER[$status_key]['hsh'] ?: '';

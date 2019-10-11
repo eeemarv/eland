@@ -622,7 +622,7 @@ class TransactionsController extends AbstractController
             {
                 $out .= '<tr';
 
-                if ($app['intersystem_en'] && ($t['real_to'] || $t['real_from']))
+                if ($config_service->get_intersystem_en($app['pp_schema']) && ($t['real_to'] || $t['real_from']))
                 {
                     $out .= ' class="warning"';
                 }
@@ -731,7 +731,7 @@ class TransactionsController extends AbstractController
             {
                 $out .= '<tr';
 
-                if ($app['intersystem_en'] && ($t['real_to'] || $t['real_from']))
+                if ($config_service->get_intersystem_en($app['pp_schema']) && ($t['real_to'] || $t['real_from']))
                 {
                     $out .= ' class="warning"';
                 }

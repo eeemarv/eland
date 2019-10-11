@@ -461,7 +461,7 @@ class MessagesListController extends AbstractController
             $out .= '<li class="active"><a href="#extend_tab" ';
             $out .= 'data-toggle="tab">Verlengen</a></li>';
 
-            if ($app['intersystem_en'])
+            if ($config_service->get_intersystem_en($app['pp_schema']))
             {
                 $out .= '<li>';
                 $out .= '<a href="#access_tab" data-toggle="tab">';
@@ -503,7 +503,7 @@ class MessagesListController extends AbstractController
 
             $out .= '</div>';
 
-            if ($app['intersystem_en'])
+            if ($config_service->get_intersystem_en($app['pp_schema']))
             {
                 $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
                 $out .= '<h3>Zichtbaarheid instellen</h3>';
@@ -848,7 +848,7 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['new']))
             {
                 $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($app['pp_schema']));
                 $params['f']['ustatus']['new'] = 'on';
             }
 
@@ -861,7 +861,7 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['active']))
             {
                 $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $app['new_user_treshold']);
+                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($app['pp_schema']));
                 $params['f']['ustatus']['active'] = 'on';
             }
 

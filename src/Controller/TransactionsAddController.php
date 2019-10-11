@@ -983,7 +983,7 @@ class TransactionsAddController extends AbstractController
             }
         }
 
-        if ($app['intersystem_en'])
+        if ($config_service->get_intersystem_en($app['pp_schema']))
         {
             $mail_systems = $db->executeQuery('select l.id, l.groupname
                 from ' . $app['pp_schema'] . '.letsgroups l, ' .
@@ -1245,7 +1245,7 @@ class TransactionsAddController extends AbstractController
             $out .= '<li id="info_admin_limit">';
             $out .= 'Admins kunnen over en onder limieten gaan';
 
-            if ($app['intersystem_en'])
+            if ($config_service->get_intersystem_en($app['pp_schema']))
             {
                 $out .= ' in het eigen Systeem.';
             }

@@ -530,7 +530,7 @@ class UsersListController extends AbstractController
          * End bulk POST
          */
 
-        $status_def_ary = self::get_status_def_ary($app['pp_admin'], $app['new_user_treshold']);
+        $status_def_ary = self::get_status_def_ary($app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
 
         $sql_bind = [];
 
@@ -1177,7 +1177,7 @@ class UsersListController extends AbstractController
 
         $out = self::get_filter_and_tab_selector(
             $app['r_users'], $app['pp_ary'], $params, $link_render,
-            $app['pp_admin'], $f_col, $q, $app['new_user_treshold']
+            $app['pp_admin'], $f_col, $q, $config_service->get_new_user_treshold($app['pp_schema'])
         );
 
         $out .= '<div class="panel panel-success printview">';
@@ -1320,7 +1320,7 @@ class UsersListController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] == 1
-                && $app['new_user_treshold'] < strtotime($u['adate']))
+                && $config_service->get_new_user_treshold($app['pp_schema']) < strtotime($u['adate']))
             {
                 $row_stat = 3;
             }

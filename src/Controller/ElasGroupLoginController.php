@@ -24,7 +24,7 @@ class ElasGroupLoginController extends AbstractController
             ], 403);
         }
 
-        if (!$app['intersystem_en'])
+        if (!$config_service->get_intersystem_en($app['pp_schema']))
         {
             return $this->json([
                 'error' => 'InterSysteem verbindingen zijn niet ingeschakeld in het eigen Systeem.',

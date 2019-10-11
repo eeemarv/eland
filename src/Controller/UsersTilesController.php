@@ -61,7 +61,7 @@ class UsersTilesController extends AbstractController
         $users_route = $app['pp_admin'] ? 'users_tiles_admin' : 'users_tiles';
 
         $status_def_ary = UsersListController::get_status_def_ary(
-            $app['pp_admin'], $app['new_user_treshold']);
+            $app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
 
         $params = ['status'	=> $status];
 
@@ -96,7 +96,7 @@ class UsersTilesController extends AbstractController
             $app['pp_admin'],
             '',
             $q,
-            $app['new_user_treshold']
+            $config_service->get_new_user_treshold($app['pp_schema'])
         );
 
         $out .= '<p>';
@@ -121,7 +121,7 @@ class UsersTilesController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] == 1
-                && $app['new_user_treshold'] < strtotime($u['adate']))
+                && $config_service->get_new_user_treshold($app['pp_schema']) < strtotime($u['adate']))
             {
                 $row_stat = 3;
             }
