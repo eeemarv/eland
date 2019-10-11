@@ -221,11 +221,6 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
  *
  */
 
-$config_service->get_new_user_treshold($app['pp_schema']) = function ($app):int{
-	$new_user_days = (int) $config_service->get('newuserdays', $app['pp_schema']);
-	return time() -  ($new_user_days * 86400);
-};
-
 $app['s_view'] = function ($app):array{
 
 	$s_view = $session->get('view') ?? PagesCnst::DEFAULT_VIEW;
@@ -296,10 +291,6 @@ $app['r_default'] = function ($app):string{
 	return $route;
 };
 
-$config_service->get_intersystem_en($app['pp_schema']) = function($app):bool{
-	return $config_service->get('template_lets', $app['pp_schema'])
-		&& $config_service->get('interlets_en', $app['pp_schema']);
-};
 
 $app['pp_role_short'] = function ($app):string{
 	return $app['request']->attributes->get('role_short', '');
