@@ -16,7 +16,7 @@ Request::setTrustedProxies(
 );
 
 $fn_after_locale = function (Request $request, Response $response, app $app){
-	$origin = rtrim($app['s3_url'], '/');
+	$origin = rtrim($env_s3_url, '/');
 	$response->headers->set('Access-Control-Allow-Origin', $origin);
 };
 

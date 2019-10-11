@@ -6,9 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ItemAccess;
-use App\Render\btn_nav;
 use App\Render\LinkRender;
-use App\Render\heading;
 use App\Cnst\AccessCnst;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
@@ -1729,7 +1727,7 @@ class UsersListController extends AbstractController
     }
 
     static public function btn_nav(
-        btn_nav $btn_nav,
+        BtnNavRender $btn_nav_render,
         array $pp_ary,
         array $params,
         string $matched_route
@@ -1737,25 +1735,25 @@ class UsersListController extends AbstractController
     {
         $admin_suffix = $pp_ary['role_short'] === 'a' ? '_admin' : '';
 
-        $btn_nav->view('users_list' . $admin_suffix, $pp_ary,
+        $btn_nav_render->view('users_list' . $admin_suffix, $pp_ary,
             $params, 'Lijst', 'align-justify',
             $matched_route === 'users_list');
 
-        $btn_nav->view('users_tiles' . $admin_suffix, $pp_ary,
+        $btn_nav_render->view('users_tiles' . $admin_suffix, $pp_ary,
             $params, 'Tegels met foto\'s', 'th',
             $matched_route === 'users_tiles');
 
         unset($params['status']);
 
-        $btn_nav->view('users_map', $pp_ary,
+        $btn_nav_render->view('users_map', $pp_ary,
             $params, 'Kaart', 'map-marker',
             $matched_route === 'users_map');
     }
 
-    static public function heading(heading $heading):void
+    static public function heading(HeadingRender $heading_render):void
     {
-        $heading->add('Leden');
-        $heading->fa('users');
+        $heading_render->add('Leden');
+        $heading_render->fa('users');
     }
 
     static public function get_status_def_ary(

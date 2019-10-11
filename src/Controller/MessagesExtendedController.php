@@ -34,7 +34,8 @@ class MessagesExtendedController extends AbstractController
         TypeaheadService $typeahead_service,
         LinkRender $link_render,
         MenuService $menu_service,
-        PaginationRender $pagination_render
+        PaginationRender $pagination_render,
+        string $env_s3_url
     ):Response
     {
         $fetch_and_filter = self::fetch_and_filter(
@@ -120,7 +121,7 @@ class MessagesExtendedController extends AbstractController
 
                 $out .= '">';
                 $out .= '<img class="media-object" src="';
-                $out .= $app['s3_url'] . $imgs[$msg['id']];
+                $out .= $env_s3_url . $imgs[$msg['id']];
                 $out .= '" width="150">';
                 $out .= '</a>';
                 $out .= '</div>';

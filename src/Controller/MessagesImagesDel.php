@@ -75,7 +75,8 @@ class MessagesImagesDel extends AbstractController
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $errors = [];
@@ -152,7 +153,7 @@ class MessagesImagesDel extends AbstractController
             $out .= '<div class="col-xs-6 col-md-3">';
             $out .= '<div class="thumbnail">';
             $out .= '<img src="';
-            $out .= $app['s3_url'] . $img;
+            $out .= $env_s3_url . $img;
             $out .= '" class="img-rounded">';
 
             $out .= '<div class="caption">';

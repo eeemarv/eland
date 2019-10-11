@@ -32,7 +32,8 @@ class ConfigController extends AbstractController
         ConfigService $config_service,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
-        SelectRender $select_render
+        SelectRender $select_render,
+        string $env_s3_url
     ):Response
     {
         $pane = ConfigCnst::TAB_PANES[$tab];
@@ -384,7 +385,8 @@ class ConfigController extends AbstractController
             $out .= self::render_logo(
                 $config_service,
                 $link_render,
-                $assets_service
+                $assets_service,
+                $env_s3_url
             );
         }
 
@@ -894,7 +896,8 @@ class ConfigController extends AbstractController
     static function render_logo(
         ConfigService $config_service,
         LinkRender $link_render,
-        AssetsService $assets_service
+        AssetsService $assets_service,
+        string $env_s3_url
     )
     {
         $logo = $config_service->get('logo', $app['pp_schema']);
@@ -914,7 +917,7 @@ class ConfigController extends AbstractController
 
         if ($show_logo)
         {
-            $out .= $app['s3_url'] . $logo;
+            $out .= $env_s3_url . $logo;
         }
         else
         {
@@ -922,7 +925,7 @@ class ConfigController extends AbstractController
         }
 
         $out .= '" ';
-        $out .= 'data-base-url="' . $app['s3_url'] . '" ';
+        $out .= 'data-base-url="' . $env_s3_url . '" ';
         $out .= 'data-replace-logo="1">';
 
         $out .= '<div id="no_img"';

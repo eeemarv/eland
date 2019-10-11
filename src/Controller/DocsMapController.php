@@ -30,7 +30,8 @@ class DocsMapController extends AbstractController
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $q = $request->query->get('q', '');
@@ -146,7 +147,7 @@ class DocsMapController extends AbstractController
                 $td = [];
 
                 $td_c = '<a href="';
-                $td_c .= $app['s3_url'] . $d['filename'];
+                $td_c .= $env_s3_url . $d['filename'];
                 $td_c .= '" target="_self">';
                 $td_c .= (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
                 $td_c .= '</a>';

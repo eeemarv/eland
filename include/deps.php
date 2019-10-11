@@ -13,7 +13,7 @@ $app['route_class'] = 'util\route';
 $app['legacy_eland_origin_pattern'] = getenv('LEGACY_ELAND_ORIGIN_PATTERN');
 $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
 $app['s3_region'] = getenv('AWS_S3_REGION');
-$app['s3_url'] = 'https://s3.' . $app['s3_region'] . '.amazonaws.com/' . $app['s3_bucket'] . '/';
+$env_s3_url = 'https://s3.' . $app['s3_region'] . '.amazonaws.com/' . $app['s3_bucket'] . '/';
 $app['mapbox_token'] = getenv('MAPBOX_TOKEN');
 $app['log_schema_en'] = false;
 
@@ -43,7 +43,7 @@ $app->register(new Provider\TwigServiceProvider(), [
 
 $app->extend('twig', function($twig, $app) {
 
-	$twig->addGlobal('s3_url', $app['s3_url']);
+	$twig->addGlobal('s3_url', $env_s3_url);
 	$twig->addExtension(new twig\extension());
 	$twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader([
 		twig\config::class => function() use ($app){
@@ -75,7 +75,7 @@ $app->extend('twig', function($twig, $app) {
 		},
 		twig\s3_url::class => function() use ($app){
 			return new twig\s3_url(
-				$app['s3_url']
+				$env_s3_url
 			);
 		},
 		twig\heading::class => function() use ($app){

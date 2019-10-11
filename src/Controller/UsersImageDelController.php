@@ -23,7 +23,8 @@ class UsersImageDelController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         UserCacheService $user_cache_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         if ($app['s_id'] < 1)
@@ -41,7 +42,8 @@ class UsersImageDelController extends AbstractController
             $heading_render,
             $link_render,
             $user_cache_service,
-            $menu_service
+            $menu_service,
+            $env_s3_url
         );
     }
 
@@ -54,7 +56,8 @@ class UsersImageDelController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         UserCacheService $user_cache_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $user = $user_cache_service->get($id, $app['pp_schema']);
@@ -100,7 +103,7 @@ class UsersImageDelController extends AbstractController
         $out .= '<div class="col-xs-6">';
         $out .= '<div class="thumbnail">';
         $out .= '<img src="';
-        $out .= $app['s3_url'] . $file;
+        $out .= $env_s3_url . $file;
         $out .= '" class="img-rounded">';
         $out .= '</div>';
         $out .= '</div>';

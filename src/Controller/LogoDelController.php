@@ -20,7 +20,8 @@ class LogoDelController extends AbstractController
         AlertService $alert_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $logo = $config_service->get('logo', $app['pp_schema']);
@@ -45,7 +46,7 @@ class LogoDelController extends AbstractController
         $out .= '<div class="col-xs-6">';
         $out .= '<div class="thumbnail">';
         $out .= '<img src="';
-        $out .= $app['s3_url'] . $logo;
+        $out .= $env_s3_url . $logo;
         $out .= '" class="img-rounded">';
         $out .= '</div>';
         $out .= '</div>';

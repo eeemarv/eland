@@ -26,7 +26,8 @@ class DocsDelController extends AbstractController
         LinkRender $link_render,
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
@@ -101,7 +102,7 @@ class DocsDelController extends AbstractController
 
         $out .= '<p>';
         $out .= '<a href="';
-        $out .= $app['s3_url'] . $doc['filename'];
+        $out .= $env_s3_url . $doc['filename'];
         $out .= '" target="_self">';
         $out .= $doc['name'] ?? $doc['org_filename'];
         $out .= '</a>';

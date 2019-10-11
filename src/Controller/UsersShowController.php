@@ -49,7 +49,8 @@ class UsersShowController extends AbstractController
         MailQueue $mail_queue,
         DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         return $this->users_show_admin(
@@ -71,7 +72,8 @@ class UsersShowController extends AbstractController
             $mail_queue,
             $date_format_service,
             $user_cache_service,
-            $menu_service
+            $menu_service,
+            $env_s3_url
         );
     }
 
@@ -94,7 +96,8 @@ class UsersShowController extends AbstractController
         MailQueue $mail_queue,
         DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $tdays = $request->query->get('tdays', '365');
@@ -413,7 +416,7 @@ class UsersShowController extends AbstractController
 
         if ($user['PictureFile'])
         {
-            $out .= $app['s3_url'] . $user['PictureFile'];
+            $out .= $env_s3_url . $user['PictureFile'];
         }
         else
         {
@@ -421,7 +424,7 @@ class UsersShowController extends AbstractController
         }
 
         $out .= '" ';
-        $out .= 'data-base-url="' . $app['s3_url'] . '">';
+        $out .= 'data-base-url="' . $env_s3_url . '">';
 
         $out .= '<div id="no_img"';
         $out .= $no_user_img;

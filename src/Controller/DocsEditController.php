@@ -25,7 +25,8 @@ class DocsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
@@ -156,7 +157,7 @@ class DocsEditController extends AbstractController
         $out .= '<span class="fa fa-file-o"></span></span>';
         $out .= '<input type="text" class="form-control" id="location" ';
         $out .= 'name="location" value="';
-        $out .= $app['s3_url'] . $doc['filename'];
+        $out .= $env_s3_url . $doc['filename'];
         $out .= '" readonly>';
         $out .= '</div>';
         $out .= '</div>';

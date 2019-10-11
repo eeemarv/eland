@@ -558,7 +558,7 @@ class MessagesEditController extends AbstractController
         $out .= '<div class="col-sm-3 col-md-2 thumbnail-col hidden" ';
         $out .= 'id="thumbnail_model" ';
         $out .= 'data-s3-url="';
-        $out .= $app['s3_url'];
+        $out .= $env_s3_url;
         $out .= '">';
         $out .= '<div class="thumbnail">';
         $out .= '<img src="" alt="afbeelding">';
@@ -575,7 +575,7 @@ class MessagesEditController extends AbstractController
             $out .= '<div class="col-sm-3 col-md-2 thumbnail-col">';
             $out .= '<div class="thumbnail">';
             $out .= '<img src="';
-            $out .= $app['s3_url'] . $img;
+            $out .= $env_s3_url . $img;
             $out .= '" alt="afbeelding">';
             $out .= '<div class="caption">';
 

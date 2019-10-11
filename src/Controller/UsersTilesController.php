@@ -26,7 +26,8 @@ class UsersTilesController extends AbstractController
         BtnTopRender $btn_top_render,
         AssetsService $assets_service,
         LinkRender $link_render,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         return $this->users_tiles(
@@ -38,7 +39,8 @@ class UsersTilesController extends AbstractController
             $btn_top_render,
             $assets_service,
             $link_render,
-            $menu_service
+            $menu_service,
+            $env_s3_url
         );
     }
 
@@ -51,7 +53,8 @@ class UsersTilesController extends AbstractController
         BtnTopRender $btn_top_render,
         AssetsService $assets_service,
         LinkRender $link_render,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $q = $request->get('q', '');
@@ -82,12 +85,18 @@ class UsersTilesController extends AbstractController
                 [], 'Gebruiker toevoegen');
         }
 
-        users_list::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_tiles');
-        users_list::heading($heading_render);
+        UsersListController::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_tiles');
+        UsersListController::heading($heading_render);
 
-        $out = users_list::get_filter_and_tab_selector(
-            $users_route, $app['pp_ary'], $params, $link_render,
-            $app['pp_admin'], '', $q, $app['new_user_treshold']
+        $out = UsersListController::get_filter_and_tab_selector(
+            $users_route,
+            $app['pp_ary'],
+            $params,
+            $link_render,
+            $app['pp_admin'],
+            '',
+            $q,
+            $app['new_user_treshold']
         );
 
         $out .= '<p>';
@@ -137,7 +146,7 @@ class UsersTilesController extends AbstractController
             if (isset($u['PictureFile']) && $u['PictureFile'] != '')
             {
                 $out .= '<img src="';
-                $out .= $app['s3_url'] . $u['PictureFile'];
+                $out .= $env_s3_url . $u['PictureFile'];
                 $out .= '" class="img-rounded">';
             }
             else

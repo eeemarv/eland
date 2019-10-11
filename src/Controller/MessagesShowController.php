@@ -8,9 +8,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
-use App\Render\LinkRender;
 use App\Cnst\AccessCnst;
 use App\Cnst\MessageTypeCnst;
+use App\Queue\MailQueue;
+use App\Render\AccountRender;
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\DateFormatService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
+use App\Service\MailAddrUserService;
+use App\Service\MenuService;
+use App\Service\UserCacheService;
 use controller\contacts_user_show_inline;
 use controller\users_show;
 
@@ -18,9 +31,25 @@ class MessagesShowController extends AbstractController
 {
     public function messages_show(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AccountRender $account_render,
+        AlertService $alert_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        ConfigService $config_service,
+        DateFormatService $date_format_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        ItemAccessService $item_access_service,
+        LinkRender $link_render,
+        MailAddrUserService $mail_addr_user_service,
+        MailQueue $mail_queue,
+        UserCacheService $user_cache_service,
+        MenuService $menu_service,
+        string $env_s3_url
     ):Response
     {
         $message = self::get_message($db, $id, $app['pp_schema']);
@@ -149,7 +178,7 @@ class MessagesShowController extends AbstractController
         $balance = $user['saldo'];
 
         $data_images = [
-            'base_url'      => $app['s3_url'],
+            'base_url'      => $env_s3_url,
             'files'         => [],
         ];
 
