@@ -27,7 +27,7 @@ class DocsMapEditController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
-        $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $map_id, $pp->schema());
 
         if ($row)
         {
@@ -37,7 +37,7 @@ class DocsMapEditController extends AbstractController
         if (!$map_name)
         {
             $alert_service->error('Map niet gevonden.');
-            $link_render->redirect('docs', $app['pp_ary'], []);
+            $link_render->redirect('docs', $pp->ary(), []);
         }
 
         if ($request->isMethod('POST'))
@@ -46,7 +46,7 @@ class DocsMapEditController extends AbstractController
             {
                 $alert_service->error($error_token);
 
-                $link_render->redirect('docs_map', $app['pp_ary'],
+                $link_render->redirect('docs_map', $pp->ary(),
                     ['map_id' => $map_id]);
             }
 
@@ -60,7 +60,7 @@ class DocsMapEditController extends AbstractController
             if (!count($errors))
             {
 
-                $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
+                $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
                     'agg_type' => 'doc',
                     'eland_id' => ['<>' => $map_id],
                     'data->>\'map_name\'' => $posted_map_name]);
@@ -75,14 +75,14 @@ class DocsMapEditController extends AbstractController
             {
                 $xdb_service->set('doc', $map_id, [
                         'map_name' => $posted_map_name
-                    ], $app['pp_schema']);
+                    ], $pp->schema());
 
                 $alert_service->success('Map naam aangepast.');
 
                 $typeahead_service->delete_thumbprint('doc_map_names',
-                    $app['pp_ary'], []);
+                    $pp->ary(), []);
 
-                $link_render->redirect('docs_map', $app['pp_ary'],
+                $link_render->redirect('docs_map', $pp->ary(),
                     ['map_id' => $map_id]);
             }
 
@@ -90,7 +90,7 @@ class DocsMapEditController extends AbstractController
         }
 
         $heading_render->add('Map aanpassen: ');
-        $heading_render->add_raw($link_render->link_no_attr('docs_map', $app['pp_ary'],
+        $heading_render->add_raw($link_render->link_no_attr('docs_map', $pp->ary(),
             ['map_id' => $map_id], $map_name));
 
         $out = '<div class="panel panel-info" id="add">';
@@ -108,7 +108,7 @@ class DocsMapEditController extends AbstractController
         $out .= 'id="map_name" name="map_name" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('doc_map_names', [])
             ->str();
 
@@ -119,7 +119,7 @@ class DocsMapEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('docs_map', $app['pp_ary'], ['map_id' => $map_id]);
+        $out .= $link_render->btn_cancel('docs_map', $pp->ary(), ['map_id' => $map_id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
@@ -134,7 +134,7 @@ class DocsMapEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

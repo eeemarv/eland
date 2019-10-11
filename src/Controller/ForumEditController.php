@@ -32,13 +32,13 @@ class ForumEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $pp->schema()))
         {
             $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($app['r_default'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('default'), $pp->ary(), []);
         }
 
-        $row = $xdb_service->get('forum', $forum_id, $app['pp_schema']);
+        $row = $xdb_service->get('forum', $forum_id, $pp->schema());
 
         if ($row)
         {
@@ -48,11 +48,11 @@ class ForumEditController extends AbstractController
         if (!isset($forum_post))
         {
             $alert_service->error('Post niet gevonden.');
-            $link_render->redirect('forum', $app['pp_ary'], []);
+            $link_render->redirect('forum', $pp->ary(), []);
         }
 
         $s_owner = $forum_post['uid']
-            && (int) $forum_post['uid'] === $app['s_id'];
+            && (int) $forum_post['uid'] === $su->id();
 
         $is_topic = !isset($forum_post['parent_id']);
 
@@ -61,23 +61,23 @@ class ForumEditController extends AbstractController
             $topic_id = $forum_post['parent_id'];
         }
 
-        if (!($app['pp_admin'] || $s_owner))
+        if (!($pp->is_admin() || $s_owner))
         {
             if ($is_topic)
             {
                 $alert_service->error('Je hebt onvoldoende rechten om dit onderwerp aan te passen.');
-                $link_render->redirect('forum_topic', $app['pp_ary'],
+                $link_render->redirect('forum_topic', $pp->ary(),
                     ['topic_id' => $forum_id]);
             }
 
             $alert_service->error('Je hebt onvoldoende rechten om deze reactie aan te passen.');
-            $link_render->redirect('forum_topic', $app['pp_ary'],
+            $link_render->redirect('forum_topic', $pp->ary(),
                 ['topic_id' => $topic_id]);
         }
 
         if (!$is_topic)
         {
-            $row = $xdb_service->get('forum', $topic_id, $app['pp_schema']);
+            $row = $xdb_service->get('forum', $topic_id, $pp->schema());
 
             if ($row)
             {
@@ -87,7 +87,7 @@ class ForumEditController extends AbstractController
             if (!$item_access_service->is_visible_xdb($topic_post['access']))
             {
                 $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
-                $link_render->redirect('forum', $app['pp_ary'], []);
+                $link_render->redirect('forum', $pp->ary(), []);
             }
         }
 
@@ -138,17 +138,17 @@ class ForumEditController extends AbstractController
 
             if (!count($errors))
             {
-                $xdb_service->set('forum', $forum_id, $forum_post, $app['pp_schema']);
+                $xdb_service->set('forum', $forum_id, $forum_post, $pp->schema());
 
                 if ($is_topic)
                 {
                     $alert_service->success('Onderwerp aangepast.');
-                    $link_render->redirect('forum_topic', $app['pp_ary'],
+                    $link_render->redirect('forum_topic', $pp->ary(),
                         ['topic_id' => $forum_id]);
                 }
 
                 $alert_service->success('Reactie aangepast.');
-                $link_render->redirect('forum_topic', $app['pp_ary'],
+                $link_render->redirect('forum_topic', $pp->ary(),
                     ['topic_id' => $topic_id]);
             }
 
@@ -199,15 +199,15 @@ class ForumEditController extends AbstractController
 
         if ($is_topic)
         {
-            $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
+            $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $pp->is_user());
 
             $out .= $link_render->btn_cancel('forum_topic',
-                $app['pp_ary'], ['topic_id' => $forum_id]);
+                $pp->ary(), ['topic_id' => $forum_id]);
         }
         else
         {
             $out .= $link_render->btn_cancel('forum_topic',
-                $app['pp_ary'], ['topic_id' => $topic_id]);
+                $pp->ary(), ['topic_id' => $topic_id]);
         }
 
         $out .= '&nbsp;';
@@ -225,7 +225,7 @@ class ForumEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

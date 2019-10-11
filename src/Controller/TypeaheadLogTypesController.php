@@ -21,7 +21,7 @@ class TypeaheadLogTypesController extends AbstractController
             where schema = ?
             order by type asc');
 
-        $st->bindValue(1, $app['pp_schema']);
+        $st->bindValue(1, $pp->schema());
 
         $st->execute();
 
@@ -32,7 +32,7 @@ class TypeaheadLogTypesController extends AbstractController
 
         $crc = (string) crc32(json_encode($log_types));
 
-        $typeahead_service->set_thumbprint('log_types', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('log_types', $pp->ary(), [], $crc);
 
         return $this->json($log_types);
     }

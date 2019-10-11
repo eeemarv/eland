@@ -23,7 +23,7 @@ class TypeaheadDocMapNamesController extends AbstractController
                 and data->>\'map_name\' <> \'\'
             order by data->>\'map_name\' asc');
 
-        $st->bindValue(1, $app['pp_schema']);
+        $st->bindValue(1, $pp->schema());
 
         $st->execute();
 
@@ -34,7 +34,7 @@ class TypeaheadDocMapNamesController extends AbstractController
 
         $crc = (string) crc32(json_encode($map_names));
 
-        $typeahead_service->set_thumbprint('doc_map_names', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('doc_map_names', $pp->ary(), [], $crc);
 
         return $this->json($map_names);
     }

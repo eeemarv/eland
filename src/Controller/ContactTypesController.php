@@ -22,12 +22,12 @@ class ContactTypesController extends AbstractController
     ):Response
     {
         $types = $db->fetchAll('select *
-            from ' . $app['pp_schema'] . '.type_contact tc');
+            from ' . $pp->schema() . '.type_contact tc');
 
         $contact_count = [];
 
         $rs = $db->prepare('select distinct id_type_contact, count(id)
-            from ' . $app['pp_schema'] . '.contact
+            from ' . $pp->schema() . '.contact
             group by id_type_contact');
         $rs->execute();
 
@@ -36,7 +36,7 @@ class ContactTypesController extends AbstractController
             $contact_count[$row['id_type_contact']] = $row['count'];
         }
 
-        $btn_top_render->add('contact_types_add', $app['pp_ary'],
+        $btn_top_render->add('contact_types_add', $pp->ary(),
             [], 'Contact type toevoegen');
 
         $heading_render->add('Contact types');
@@ -74,7 +74,7 @@ class ContactTypesController extends AbstractController
             }
             else
             {
-                $out .= $link_render->link_no_attr('contact_types_edit', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('contact_types_edit', $pp->ary(),
                     ['id' => $t['id']], $t['abbrev']);
             }
 
@@ -88,7 +88,7 @@ class ContactTypesController extends AbstractController
             }
             else
             {
-                $out .= $link_render->link_no_attr('contact_types_edit', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('contact_types_edit', $pp->ary(),
                     ['id' => $t['id']], $t['name']);
             }
 
@@ -102,7 +102,7 @@ class ContactTypesController extends AbstractController
             }
             else
             {
-                $out .= $link_render->link_fa('contact_types_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('contact_types_del', $pp->ary(),
                     ['id' => $t['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'],
                     'times');
@@ -114,7 +114,7 @@ class ContactTypesController extends AbstractController
 
             if ($count)
             {
-                $out .= $link_render->link_no_attr('contacts', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('contacts', $pp->ary(),
                     ['f' => ['abbrev' => $t['abbrev']]], (string) $count);
             }
             else
@@ -139,7 +139,7 @@ class ContactTypesController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

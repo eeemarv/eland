@@ -32,14 +32,14 @@ $fn_before_locale = function (Request $request, app $app){
 
 	$assets_service->add_print_css(['print.css']);
 
-	error_log('LOGINS: ' . json_encode($app['s_logins']));
+	error_log('LOGINS: ' . json_encode($su->logins()));
 };
 
 $fn_before_system = function(Request $request, app $app){
 
-	if ($app['pp_schema'] === '')
+	if ($pp->schema() === '')
 	{
-		throw new NotFoundHttpException('Systeem ' . $app['pp_system'] . ' niet gevonden.');
+		throw new NotFoundHttpException('Systeem ' . $pp->system() . ' niet gevonden.');
 	}
 
 	$app['log_schema_en'] = true;
@@ -52,29 +52,29 @@ $fn_before_system = function(Request $request, app $app){
 
 $fn_before_system_auth = function(Request $request, app $app){
 
-	if (!isset($app['s_logins'][$app['s_schema']]))
+	if (!isset($su->logins()[$su->schema()]))
 	{
 		$location = $request->getRequestUri();
-		$link_render->redirect('login', ['system' => $app['pp_system']],
+		$link_render->redirect('login', ['system' => $pp->system()],
 			['location' => $location]);
 	}
 };
 
 $fn_before_system_guest = function(Request $request, app $app){
-	if ($app['pp_guest'])
+	if ($pp->is_guest())
 	{
-		if (!$config_service->get_intersystem_en($app['pp_schema']))
+		if (!$config_service->get_intersystem_en($pp->schema()))
 		{
 			throw new NotFoundHttpException('Guest routes are not enabled in this system.');
 		}
 
-		if (!$app['s_system_self'])
+		if (!$su->is_system_self())
 		{
-			$eland_intersystems = $intersystems_service->get_eland($app['s_schema']);
+			$eland_intersystems = $intersystems_service->get_eland($su->schema());
 
-			if (!isset($eland_intersystems[$app['pp_schema']]))
+			if (!isset($eland_intersystems[$pp->schema()]))
 			{
-				throw new AccessDeniedHttpException('System ' . $app['pp_system'] . ' permits no guest access to system ' . $app['pp_org_system']);
+				throw new AccessDeniedHttpException('System ' . $pp->system() . ' permits no guest access to system ' . $pp->org_system());
 			}
 
 			if (!in_array($app['s_role'], ['user', 'admin']))
@@ -84,7 +84,7 @@ $fn_before_system_guest = function(Request $request, app $app){
 		}
 
 		if ($request->query->get('welcome', '')
-			&& (!$app['s_system_self'] || $app['s_elas_guest']))
+			&& (!$su->is_system_self() || $app['s_elas_guest']))
 		{
 			$alert_service->info($app['welcome_msg']);
 		}
@@ -93,9 +93,9 @@ $fn_before_system_guest = function(Request $request, app $app){
 
 $fn_before_system_user = function(Request $request, app $app){
 
-	if ($app['pp_user'])
+	if ($pp->is_user())
 	{
-		if (!$app['s_system_self'])
+		if (!$su->is_system_self())
 		{
 			throw new AccessDeniedHttpException('You are not logged in this system.');
 		}
@@ -109,9 +109,9 @@ $fn_before_system_user = function(Request $request, app $app){
 
 $fn_before_system_admin = function(Request $request, app $app){
 
-	if ($app['pp_admin'])
+	if ($pp->is_admin())
 	{
-		if (!$app['s_system_self'])
+		if (!$su->is_system_self())
 		{
 			throw new AccessDeniedHttpException('You are not logged in this system.');
 		}

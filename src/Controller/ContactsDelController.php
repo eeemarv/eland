@@ -33,7 +33,7 @@ class ContactsDelController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        $contact = contacts_edit::get_contact($db, $id,  $app['pp_schema']);
+        $contact = contacts_edit::get_contact($db, $id,  $pp->schema());
 
         return self::form(
             $request,
@@ -68,7 +68,7 @@ class ContactsDelController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        $contact = ContactsEditController::get_contact($db, $id,  $app['pp_schema']);
+        $contact = ContactsEditController::get_contact($db, $id,  $pp->schema());
 
         if ($user_id !== $contact['id_user'])
         {
@@ -79,10 +79,10 @@ class ContactsDelController extends AbstractController
         if ($request->isMethod('GET'))
         {
             if ($contact['abbrev'] === 'mail'
-                && $user_cache_service->is_active_user($user_id, $app['pp_schema']))
+                && $user_cache_service->is_active_user($user_id, $pp->schema()))
             {
                 $count_mail = $db->fetchColumn('select count(c.*)
-                    from ' . $app['pp_schema'] . '.contact c
+                    from ' . $pp->schema() . '.contact c
                     where c.id_type_contact = ?
                         and c.id_user = ?', [
                             $contact['id_type_contact'],
@@ -90,7 +90,7 @@ class ContactsDelController extends AbstractController
 
                 if ($count_mail === 1)
                 {
-                    if ($app['pp_admin'])
+                    if ($pp->is_admin())
                     {
                         $alert_service->warning(
                             'Waarschuwing: dit is het enige E-mail adres
@@ -116,17 +116,17 @@ class ContactsDelController extends AbstractController
 
             if (!count($errors))
             {
-                $db->delete($app['pp_schema'] . '.contact', ['id' => $id]);
+                $db->delete($pp->schema() . '.contact', ['id' => $id]);
 
                 $alert_service->success('Contact verwijderd.');
 
                 if ($redirect_contacts)
                 {
-                    $link_render->redirect('contacts', $app['pp_ary'], []);
+                    $link_render->redirect('contacts', $pp->ary(), []);
                 }
                 else
                 {
-                    $link_render->redirect('users_show', $app['pp_ary'],
+                    $link_render->redirect('users_show', $pp->ary(),
                         ['id' => $user_id]);
                 }
             }
@@ -134,10 +134,10 @@ class ContactsDelController extends AbstractController
             $alert_service->error($error_token);
         }
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $heading_render->add('Contact verwijderen voor ');
-            $heading_render->add_raw($account_render->link($user_id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
             $heading_render->add('?');
         }
         else
@@ -153,7 +153,7 @@ class ContactsDelController extends AbstractController
         $out .= '<dt>Gebruiker</dt>';
         $out .= '<dd>';
 
-        $out .= $account_render->link($user_id, $app['pp_ary']);
+        $out .= $account_render->link($user_id, $pp->ary());
 
         $out .= '</dd>';
 
@@ -181,11 +181,11 @@ class ContactsDelController extends AbstractController
 
         if ($redirect_contacts)
         {
-            $out .= $link_render->btn_cancel('contacts', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('contacts', $pp->ary(), []);
         }
         else
         {
-            $out .= $link_render->btn_cancel('users_show', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('users_show', $pp->ary(),
                 ['id' => $user_id]);
         }
 
@@ -202,7 +202,7 @@ class ContactsDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

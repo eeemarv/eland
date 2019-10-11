@@ -56,7 +56,7 @@ class LogsController extends AbstractController
 
         $params_sql = $where_sql = [];
 
-        $params_sql[] = $app['pp_schema'];
+        $params_sql[] = $pp->schema();
 
         if (isset($filter['code'])
             && $filter['code'])
@@ -124,7 +124,7 @@ class LogsController extends AbstractController
 
         $rows = $db->fetchAll($query, $params_sql);
 
-        $pagination_render->init('logs', $app['pp_ary'],
+        $pagination_render->init('logs', $pp->ary(),
             $row_count, $params);
 
         $asc_preset_ary = [
@@ -199,7 +199,7 @@ class LogsController extends AbstractController
         $out .= 'aria-describedby="type_addon" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('log_types', [])
             ->str();
 
@@ -220,7 +220,7 @@ class LogsController extends AbstractController
         $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -228,7 +228,7 @@ class LogsController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
+                'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
             ]);
         $out .= '" ';
 
@@ -252,7 +252,7 @@ class LogsController extends AbstractController
         unset($params_form['p']['start']);
 
         $params_form['r'] = 'admin';
-        $params_form['u'] = $app['s_id'];
+        $params_form['u'] = $su->id();
 
         $params_form = http_build_query($params_form, 'prefix', '&');
         $params_form = urldecode($params_form);
@@ -310,7 +310,7 @@ class LogsController extends AbstractController
                     'asc' 		=> $data['asc'],
                 ];
 
-                $out .= $link_render->link_fa('logs', $app['pp_ary'], $th_params,
+                $out .= $link_render->link_fa('logs', $pp->ary(), $th_params,
                     $data['lbl'], [], 'sort' . $data['indicator']);
             }
 
@@ -326,7 +326,7 @@ class LogsController extends AbstractController
         {
             $td = [];
 
-            $td[] = $date_format_service->get($value['ts'], 'sec', $app['pp_schema']);
+            $td[] = $date_format_service->get($value['ts'], 'sec', $pp->schema());
             $td[] = $value['type'];
             $td[] .= $value['ip'];
 
@@ -335,9 +335,9 @@ class LogsController extends AbstractController
                 && ctype_digit((string) $value['user_id'])
                 && !empty($value['user_schema']))
             {
-                if ($value['user_schema'] === $app['pp_schema'])
+                if ($value['user_schema'] === $pp->schema())
                 {
-                    $td[] = $account_render->link($value['user_id'], $app['pp_ary']);
+                    $td[] = $account_render->link($value['user_id'], $pp->ary());
                 }
                 else
                 {
@@ -366,7 +366,7 @@ class LogsController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

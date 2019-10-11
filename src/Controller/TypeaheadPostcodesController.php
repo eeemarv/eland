@@ -17,7 +17,7 @@ class TypeaheadPostcodesController extends AbstractController
         $postcodes = [];
 
         $st = $db->prepare('select distinct postcode
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             order by postcode asc');
 
         $st->execute();
@@ -34,7 +34,7 @@ class TypeaheadPostcodesController extends AbstractController
 
         $crc = (string) crc32(json_encode($postcodes));
 
-        $typeahead_service->set_thumbprint('postcodes', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('postcodes', $pp->ary(), [], $crc);
 
         return $this->json($postcodes);
     }

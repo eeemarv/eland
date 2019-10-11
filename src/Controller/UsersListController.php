@@ -141,7 +141,7 @@ class UsersListController extends AbstractController
          * Begin bulk POST
          */
 
-        if ($app['pp_admin']
+        if ($pp->is_admin()
             && $request->isMethod('POST')
             && count($bulk_submit) === 1)
         {
@@ -201,7 +201,7 @@ class UsersListController extends AbstractController
 
             if (in_array($bulk_submit_action, ['mail', 'mail_test']))
             {
-                if (!$config_service->get('mailenabled', $app['pp_schema']))
+                if (!$config_service->get('mailenabled', $pp->schema()))
                 {
                     $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
                 }
@@ -245,14 +245,14 @@ class UsersListController extends AbstractController
                 $users_log = '';
 
                 $rows = $db->executeQuery('select letscode, name, id
-                    from ' . $app['pp_schema'] . '.users
+                    from ' . $pp->schema() . '.users
                     where id in (?)',
                     [$user_ids], [Db::PARAM_INT_ARRAY]);
 
                 foreach ($rows as $row)
                 {
                     $users_log .= ', ';
-                    $users_log .= $account_render->str_id($row['id'], $app['pp_schema'], false, true);
+                    $users_log .= $account_render->str_id($row['id'], $pp->schema(), false, true);
                 }
 
                 $users_log = ltrim($users_log, ', ');
@@ -268,14 +268,14 @@ class UsersListController extends AbstractController
                 {
                     $xdb_service->set('user_fullname_access', (string) $user_id, [
                         'fullname_access' => $bulk_fullname_access_xdb,
-                    ], $app['pp_schema']);
+                    ], $pp->schema());
 
-                    $user_cache_service->clear($user_id, $app['pp_schema']);
+                    $user_cache_service->clear($user_id, $pp->schema());
                 }
 
                 $logger->info('bulk: Set fullname_access to ' .
                     $bulk_field_value . ' for users ' .
-                    $users_log, ['schema' => $app['pp_schema']]);
+                    $users_log, ['schema' => $pp->schema()]);
 
                 $alert_service->success('De zichtbaarheid van de
                     volledige naam werd aangepast.');
@@ -288,12 +288,12 @@ class UsersListController extends AbstractController
                 [$abbrev] = explode('_', $bulk_field_action);
 
                 $id_type_contact = $db->fetchColumn('select id
-                    from ' . $app['pp_schema'] . '.type_contact
+                    from ' . $pp->schema() . '.type_contact
                     where abbrev = ?', [$abbrev]);
 
                 $flag_public = AccessCnst::TO_FLAG_PUBLIC[$bulk_field_value];
 
-                $db->executeUpdate('update ' . $app['pp_schema'] . '.contact
+                $db->executeUpdate('update ' . $pp->schema() . '.contact
                     set flag_public = ?
                     where id_user in (?) and id_type_contact = ?',
                         [$flag_public, $user_ids, $id_type_contact],
@@ -302,7 +302,7 @@ class UsersListController extends AbstractController
                 $logger->info('bulk: Set ' . $bulk_field_action .
                     ' to ' . $bulk_field_value .
                     ' for users ' . $users_log,
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
                 $alert_service->success('Het veld werd aangepast.');
 
                 $redirect = true;
@@ -310,7 +310,7 @@ class UsersListController extends AbstractController
             else if (!count($errors)
                 && $bulk_submit_action === 'cron_saldo')
             {
-                $db->executeUpdate('update ' . $app['pp_schema'] . '.users
+                $db->executeUpdate('update ' . $pp->schema() . '.users
                     set cron_saldo = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
@@ -318,7 +318,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $user_cache_service->clear($user_id, $app['pp_schema']);
+                    $user_cache_service->clear($user_id, $pp->schema());
                 }
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
@@ -326,9 +326,9 @@ class UsersListController extends AbstractController
                 $logger->info('bulk: Set periodic mail to ' .
                     $log_value . ' for users ' .
                     $users_log,
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
 
-                $intersystems_service->clear_cache($app['s_schema']);
+                $intersystems_service->clear_cache($su->schema());
 
                 $alert_service->success('Het veld werd aangepast.');
 
@@ -351,28 +351,28 @@ class UsersListController extends AbstractController
 
                 $field_type = BulkCnst::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-                $db->executeUpdate('update ' . $app['pp_schema'] . '.users
+                $db->executeUpdate('update ' . $pp->schema() . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
                     [$store_value, $user_ids],
                     [$field_type, Db::PARAM_INT_ARRAY]);
 
                 foreach ($user_ids as $user_id)
                 {
-                    $user_cache_service->clear($user_id, $app['pp_schema']);
+                    $user_cache_service->clear($user_id, $pp->schema());
                 }
 
                 if ($bulk_field == 'status')
                 {
-                    $thumbprint_accounts_service->delete('active', $app['pp_ary'], $app['pp_schema']);
-                    $thumbprint_accounts_service->delete('extern', $app['pp_ary'], $app['pp_schema']);
+                    $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
+                    $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
                 }
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
                     ' to ' . $store_value .
                     ' for users ' . $users_log,
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
 
-                $intersystems_service->clear_cache($app['pp_schema']);
+                $intersystems_service->clear_cache($pp->schema());
 
                 $alert_service->success('Het veld werd aangepast.');
 
@@ -384,8 +384,8 @@ class UsersListController extends AbstractController
             {
                 if ($bulk_submit_action === 'mail_test')
                 {
-                    $sel_ary = [$app['s_id'] => true];
-                    $user_ids = [$app['s_id']];
+                    $sel_ary = [$su->id() => true];
+                    $user_ids = [$su->id()];
                 }
                 else
                 {
@@ -400,9 +400,9 @@ class UsersListController extends AbstractController
                 $bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
 
                 $sel_users = $db->executeQuery('select u.*, c.value as mail
-                    from ' . $app['pp_schema'] . '.users u, ' .
-                        $app['pp_schema'] . '.contact c, ' .
-                        $app['pp_schema'] . '.type_contact tc
+                    from ' . $pp->schema() . '.users u, ' .
+                        $pp->schema() . '.contact c, ' .
+                        $pp->schema() . '.type_contact tc
                     where u.id in (?)
                         and u.id = c.id_user
                         and c.id_type_contact = tc.id
@@ -429,16 +429,16 @@ class UsersListController extends AbstractController
                     }
 
                     $mail_queue->queue([
-                        'schema'			=> $app['pp_schema'],
-                        'to' 				=> $mail_addr_user_service->get($sel_user['id'], $app['pp_schema']),
+                        'schema'			=> $pp->schema(),
+                        'to' 				=> $mail_addr_user_service->get($sel_user['id'], $pp->schema()),
                         'pre_html_template' => $bulk_mail_content,
-                        'reply_to' 			=> $mail_addr_user_service->get($app['s_id'], $app['pp_schema']),
+                        'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
                         'vars'				=> $vars,
                         'template'			=> 'skeleton',
                     ], random_int(1000, 4000));
 
-                    $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $app['pp_ary']);
-                    $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $app['pp_ary']);
+                    $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
+                    $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $pp->ary());
                 }
 
                 if (count($alert_users_sent_ary))
@@ -468,10 +468,10 @@ class UsersListController extends AbstractController
 
                     foreach ($sel_ary as $warning_user_id => $dummy)
                     {
-                        $alert_missing_users .= $account_render->link($warning_user_id, $app['pp_ary']);
+                        $alert_missing_users .= $account_render->link($warning_user_id, $pp->ary());
                         $alert_missing_users .= '<br>';
 
-                        $mail_missing_users .= $account_render->link_url($warning_user_id, $app['pp_ary']);
+                        $mail_missing_users .= $account_render->link_url($warning_user_id, $pp->ary());
                         $mail_missing_users .= '<br />';
                     }
 
@@ -502,8 +502,8 @@ class UsersListController extends AbstractController
                     $mail_users_info .= '<hr /><br />';
 
                     $mail_queue->queue([
-                        'schema'			=> $app['pp_schema'],
-                        'to' 				=> $mail_addr_user_service->get($app['s_id'], $app['pp_schema']),
+                        'schema'			=> $pp->schema(),
+                        'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
                         'template'			=> 'skeleton',
                         'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
                         'vars'				=> $vars,
@@ -511,7 +511,7 @@ class UsersListController extends AbstractController
 
                     $logger->debug('#bulk mail:: ' .
                         $mail_users_info . $bulk_mail_content,
-                        ['schema' => $app['pp_schema']]);
+                        ['schema' => $pp->schema()]);
                 }
 
                 if ($bulk_submit_action === 'mail')
@@ -522,7 +522,7 @@ class UsersListController extends AbstractController
 
             if ($redirect)
             {
-                $link_render->redirect($app['r_users'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('users'), $pp->ary(), []);
             }
         }
 
@@ -530,7 +530,7 @@ class UsersListController extends AbstractController
          * End bulk POST
          */
 
-        $status_def_ary = self::get_status_def_ary($app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
+        $status_def_ary = self::get_status_def_ary($pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
 
         $sql_bind = [];
 
@@ -544,7 +544,7 @@ class UsersListController extends AbstractController
         $ref_geo = [];
 
         $type_contact = $db->fetchAll('select id, abbrev, name
-            from ' . $app['pp_schema'] . '.type_contact');
+            from ' . $pp->schema() . '.type_contact');
 
         $columns = [
             'u'		=> [
@@ -562,7 +562,7 @@ class UsersListController extends AbstractController
             ],
         ];
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $columns['u'] += [
                 'admincomment'	=> 'Admin commentaar',
@@ -605,9 +605,9 @@ class UsersListController extends AbstractController
                 'total'	=> 'Transacties totaal',
             ],
             'amount'	=> [
-                'in'	=> $config_service->get('currency', $app['pp_schema']) . ' in',
-                'out'	=> $config_service->get('currency', $app['pp_schema']) . ' uit',
-                'total'	=> $config_service->get('currency', $app['pp_schema']) . ' totaal',
+                'in'	=> $config_service->get('currency', $pp->schema()) . ' in',
+                'out'	=> $config_service->get('currency', $pp->schema()) . ' uit',
+                'total'	=> $config_service->get('currency', $pp->schema()) . ' totaal',
             ],
         ];
 
@@ -636,7 +636,7 @@ class UsersListController extends AbstractController
         }
         else
         {
-            if ($app['pp_admin'] || $app['pp_guest'])
+            if ($pp->is_admin() || $pp->is_guest())
             {
                 $preset_columns = [
                     'u'	=> [
@@ -683,7 +683,7 @@ class UsersListController extends AbstractController
         $saldo_date = trim($saldo_date);
 
         $users = $db->fetchAll('select u.*
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
@@ -705,7 +705,7 @@ class UsersListController extends AbstractController
                 $user['fullname_access'] = $xdb_service->get(
                     'user_fullname_access',
                     (string) $user['id'],
-                    $app['pp_schema']
+                    $pp->schema()
                 )['data']['fullname_access'] ?? 'admin';
 
                 error_log($user['fullname_access']);
@@ -716,12 +716,12 @@ class UsersListController extends AbstractController
         {
             if ($saldo_date)
             {
-                $saldo_date_rev = $date_format_service->reverse($saldo_date, 'min', $app['pp_schema']);
+                $saldo_date_rev = $date_format_service->reverse($saldo_date, 'min', $pp->schema());
             }
 
             if ($saldo_date_rev === '' || $saldo_date == '')
             {
-                $saldo_date = $date_format_service->get('', 'day', $app['pp_schema']);
+                $saldo_date = $date_format_service->get('', 'day', $pp->schema());
 
                 array_walk($users, function(&$user, $user_id){
                     $user['saldo_date'] = $user['saldo'];
@@ -733,7 +733,7 @@ class UsersListController extends AbstractController
                 $datetime = new \DateTime($saldo_date_rev);
 
                 $rs = $db->prepare('select id_to, sum(amount)
-                    from ' . $app['pp_schema'] . '.transactions
+                    from ' . $pp->schema() . '.transactions
                     where date <= ?
                     group by id_to');
 
@@ -747,7 +747,7 @@ class UsersListController extends AbstractController
                 }
 
                 $rs = $db->prepare('select id_from, sum(amount)
-                    from ' . $app['pp_schema'] . '.transactions
+                    from ' . $pp->schema() . '.transactions
                     where date <= ?
                     group by id_from');
                 $rs->bindValue(1, $datetime, 'datetime');
@@ -771,9 +771,9 @@ class UsersListController extends AbstractController
         {
             $c_ary = $db->fetchAll('select tc.abbrev,
                     c.id_user, c.value, c.flag_public
-                from ' . $app['pp_schema'] . '.contact c, ' .
-                    $app['pp_schema'] . '.type_contact tc, ' .
-                    $app['pp_schema'] . '.users u
+                from ' . $pp->schema() . '.contact c, ' .
+                    $pp->schema() . '.type_contact tc, ' .
+                    $pp->schema() . '.users u
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.id_user = u.id
@@ -792,20 +792,20 @@ class UsersListController extends AbstractController
 
         if (isset($show_columns['d']) && !$app['s_master'])
         {
-            if (($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
-                || !isset($contacts[$app['s_id']]['adr']))
+            if (($pp->is_guest() && $su->schema() && !$app['s_elas_guest'])
+                || !isset($contacts[$su->id()]['adr']))
             {
                 $my_adr = $db->fetchColumn('select c.value
-                    from ' . $app['s_schema'] . '.contact c, ' .
-                        $app['s_schema'] . '.type_contact tc
+                    from ' . $su->schema() . '.contact c, ' .
+                        $su->schema() . '.type_contact tc
                     where c.id_user = ?
                         and c.id_type_contact = tc.id
-                        and tc.abbrev = \'adr\'', [$app['s_id']]);
+                        and tc.abbrev = \'adr\'', [$su->id()]);
             }
-            else if (!$app['pp_guest']
-                && isset($contacts[$app['s_id']]['adr'][0]['value']))
+            else if (!$pp->is_guest()
+                && isset($contacts[$su->id()]['adr'][0]['value']))
             {
-                $my_adr = trim($contacts[$app['s_id']]['adr'][0]['value']);
+                $my_adr = trim($contacts[$su->id()]['adr'][0]['value']);
             }
 
             if (isset($my_adr))
@@ -821,8 +821,8 @@ class UsersListController extends AbstractController
             if (isset($show_columns['m']['offers']))
             {
                 $ary = $db->fetchAll('select count(m.id), m.id_user
-                    from ' . $app['pp_schema'] . '.messages m, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.messages m, ' .
+                        $pp->schema() . '.users u
                     where msg_type = 1
                         and m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
@@ -837,8 +837,8 @@ class UsersListController extends AbstractController
             if (isset($show_columns['m']['wants']))
             {
                 $ary = $db->fetchAll('select count(m.id), m.id_user
-                    from ' . $app['pp_schema'] . '.messages m, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.messages m, ' .
+                        $pp->schema() . '.users u
                     where msg_type = 0
                         and m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
@@ -853,8 +853,8 @@ class UsersListController extends AbstractController
             if (isset($show_columns['m']['total']))
             {
                 $ary = $db->fetchAll('select count(m.id), m.id_user
-                    from ' . $app['pp_schema'] . '.messages m, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.messages m, ' .
+                        $pp->schema() . '.users u
                     where m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);
@@ -888,16 +888,16 @@ class UsersListController extends AbstractController
 
             $trans_in_ary = $db->fetchAll('select sum(t.amount),
                     count(t.id), t.id_to
-                from ' . $app['pp_schema'] . '.transactions t, ' .
-                    $app['pp_schema'] . '.users u
+                from ' . $pp->schema() . '.transactions t, ' .
+                    $pp->schema() . '.users u
                 where t.id_from = u.id
                     and t.cdate > ?' . $and . '
                 group by t.id_to', $sql_bind);
 
             $trans_out_ary = $db->fetchAll('select sum(t.amount),
                     count(t.id), t.id_from
-                from ' . $app['pp_schema'] . '.transactions t, ' .
-                    $app['pp_schema'] . '.users u
+                from ' . $pp->schema() . '.transactions t, ' .
+                    $pp->schema() . '.users u
                 where t.id_to = u.id
                     and t.cdate > ?' . $and . '
                 group by t.id_from', $sql_bind);
@@ -935,11 +935,11 @@ class UsersListController extends AbstractController
             }
         }
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $btn_nav_render->csv();
 
-            $btn_top_render->add('users_add', $app['pp_ary'],
+            $btn_top_render->add('users_add', $pp->ary(),
                 [], 'Gebruiker toevoegen');
 
             $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
@@ -947,7 +947,7 @@ class UsersListController extends AbstractController
 
         $btn_nav_render->columns_show();
 
-        self::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_list');
+        self::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_list');
         self::heading($heading_render);
 
         $assets_service->add([
@@ -956,7 +956,7 @@ class UsersListController extends AbstractController
             'datepicker',
         ]);
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $assets_service->add([
                 'codemirror',
@@ -1026,15 +1026,15 @@ class UsersListController extends AbstractController
                 $f_col .= '</div>';
                 $f_col .= '</div>';
 
-                $typeahead_service->ini($app['pp_ary'])
+                $typeahead_service->ini($pp->ary())
                     ->add('accounts', ['status' => 'active']);
 
-                if (!$app['pp_guest'])
+                if (!$pp->is_guest())
                 {
                     $typeahead_service->add('accounts', ['status' => 'extern']);
                 }
 
-                if ($app['pp_admin'])
+                if ($pp->is_admin())
                 {
                     $typeahead_service->add('accounts', ['status' => 'inactive'])
                         ->add('accounts', ['status' => 'ip'])
@@ -1062,7 +1062,7 @@ class UsersListController extends AbstractController
 
                 $f_col .= $typeahead_service->str([
                     'filter'		=> 'accounts',
-                    'newuserdays'	=> $config_service->get('newuserdays', $app['pp_schema']),
+                    'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
                 ]);
 
                 $f_col .= '">';
@@ -1140,7 +1140,7 @@ class UsersListController extends AbstractController
                     $f_col .= 'name="sh[p][u][saldo_date]" ';
                     $f_col .= 'data-provide="datepicker" ';
                     $f_col .= 'data-date-format="';
-                    $f_col .= $date_format_service->datepicker_format($app['pp_schema']);
+                    $f_col .= $date_format_service->datepicker_format($pp->schema());
                     $f_col .= '" ';
                     $f_col .= 'data-date-language="nl" ';
                     $f_col .= 'data-date-today-highlight="true" ';
@@ -1149,7 +1149,7 @@ class UsersListController extends AbstractController
                     $f_col .= 'data-date-end-date="0d" ';
                     $f_col .= 'data-date-orientation="bottom" ';
                     $f_col .= 'placeholder="';
-                    $f_col .= $date_format_service->datepicker_placeholder($app['pp_schema']);
+                    $f_col .= $date_format_service->datepicker_placeholder($pp->schema());
                     $f_col .= '" ';
                     $f_col .= 'value="';
                     $f_col .= $saldo_date;
@@ -1176,8 +1176,8 @@ class UsersListController extends AbstractController
         $f_col .= '</div>';
 
         $out = self::get_filter_and_tab_selector(
-            $app['r_users'], $app['pp_ary'], $params, $link_render,
-            $app['pp_admin'], $f_col, $q, $config_service->get_new_user_treshold($app['pp_schema'])
+            $vr->get('users'), $pp->ary(), $params, $link_render,
+            $pp->is_admin(), $f_col, $q, $config_service->get_new_user_treshold($pp->schema())
         );
 
         $out .= '<div class="panel panel-success printview">';
@@ -1304,11 +1304,11 @@ class UsersListController extends AbstractController
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        $can_link = $app['pp_admin'];
+        $can_link = $pp->is_admin();
 
         foreach($users as $u)
         {
-            if (($app['pp_user'] || $app['pp_guest'])
+            if (($pp->is_user() || $pp->is_guest())
                 && ($u['status'] === 1 || $u['status'] === 2))
             {
                 $can_link = true;
@@ -1320,7 +1320,7 @@ class UsersListController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] == 1
-                && $config_service->get_new_user_treshold($app['pp_schema']) < strtotime($u['adate']))
+                && $config_service->get_new_user_treshold($pp->schema()) < strtotime($u['adate']))
             {
                 $row_stat = 3;
             }
@@ -1354,7 +1354,7 @@ class UsersListController extends AbstractController
                     {
                         if ($can_link)
                         {
-                            $td .= $link_render->link_no_attr($app['r_users_show'], $app['pp_ary'],
+                            $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
                                 ['id' => $u['id'], 'status' => $status], $u[$key] ?: '**leeg**');
                         }
                         else
@@ -1366,7 +1366,7 @@ class UsersListController extends AbstractController
                     {
                         if ($u[$key])
                         {
-                            $td .= $date_format_service->get($u[$key], 'day', $app['pp_schema']);
+                            $td .= $date_format_service->get($u[$key], 'day', $pp->schema());
                         }
                         else
                         {
@@ -1375,13 +1375,13 @@ class UsersListController extends AbstractController
                     }
                     else if ($key === 'fullname')
                     {
-                        if ($app['pp_admin']
+                        if ($pp->is_admin()
                             || $u['fullname_access'] === 'interlets'
-                            || ($app['pp_user'] && $u['fullname_access'] !== 'admin'))
+                            || ($pp->is_user() && $u['fullname_access'] !== 'admin'))
                         {
                             if ($can_link)
                             {
-                                $td .= $link_render->link_no_attr($app['r_users_show'], $app['pp_ary'],
+                                $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
                                     ['id' => $u['id'], 'status' => $status], $u['fullname']);
                             }
                             else
@@ -1404,7 +1404,7 @@ class UsersListController extends AbstractController
                         $td .= htmlspecialchars((string) $u[$key]);
                     }
 
-                    if ($app['pp_admin'] && $first)
+                    if ($pp->is_admin() && $first)
                     {
                         $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                             '%id%'      => $id,
@@ -1511,7 +1511,7 @@ class UsersListController extends AbstractController
 
                     if (isset($msgs_count[$id][$key]))
                     {
-                        $out .= $link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
+                        $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
                             [
                                 'f'	=> [
                                     'uid' 	=> $id,
@@ -1527,7 +1527,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['a']))
             {
-                $from_date = $date_format_service->get_from_unix(time() - ($activity_days * 86400), 'day', $app['pp_schema']);
+                $from_date = $date_format_service->get_from_unix(time() - ($activity_days * 86400), 'day', $pp->schema());
 
                 foreach($show_columns['a'] as $a_key => $a_ary)
                 {
@@ -1543,7 +1543,7 @@ class UsersListController extends AbstractController
                             }
                             else
                             {
-                                $out .= $link_render->link_no_attr('transactions', $app['pp_ary'],
+                                $out .= $link_render->link_no_attr('transactions', $pp->ary(),
                                     [
                                         'f' => [
                                             'fcode'	=> $key === 'in' ? '' : $u['letscode'],
@@ -1570,11 +1570,11 @@ class UsersListController extends AbstractController
 
         $out .= '<div class="row"><div class="col-md-12">';
         $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
-        $out .= $config_service->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $pp->schema());
         $out .= '</span></p>';
         $out .= '</div></div>';
 
-        if ($app['pp_admin'] & isset($show_columns['u']))
+        if ($pp->is_admin() & isset($show_columns['u']))
         {
             $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
@@ -1722,7 +1722,7 @@ class UsersListController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 

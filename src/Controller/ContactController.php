@@ -32,10 +32,10 @@ class ContactController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get('contact_form_en', $app['pp_schema']))
+        if (!$config_service->get('contact_form_en', $pp->schema()))
         {
             $alert_service->warning('De contactpagina is niet ingeschakeld.');
-            $link_render->redirect('login', $app['pp_ary'], []);
+            $link_render->redirect('login', $pp->ary(), []);
         }
 
         if($request->isMethod('POST'))
@@ -63,7 +63,7 @@ class ContactController extends AbstractController
                 $errors[] = 'Geef een bericht in.';
             }
 
-            if (!trim($config_service->get('support', $app['pp_schema'])))
+            if (!trim($config_service->get('support', $pp->schema())))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
             }
@@ -83,15 +83,15 @@ class ContactController extends AbstractController
                 ];
 
                 $token = $data_token_service->store($contact,
-                    'contact', $app['pp_schema'], 86400);
+                    'contact', $pp->schema(), 86400);
 
                 $logger->info('Contact form filled in with address ' .
                     $email . ' ' .
                     json_encode($contact),
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
 
                 $mail_queue->queue([
-                    'schema'	=> $app['pp_schema'],
+                    'schema'	=> $pp->schema(),
                     'to' 		=> [
                         $email => $email
                     ],
@@ -105,7 +105,7 @@ class ContactController extends AbstractController
                     de link aan die we je zonden om je
                     bericht te bevestigen.');
 
-                $link_render->redirect('contact', $app['pp_ary'], []);
+                $link_render->redirect('contact', $pp->ary(), []);
             }
             else
             {
@@ -120,7 +120,7 @@ class ContactController extends AbstractController
 
         $form_disabled = false;
 
-        if (!$config_service->get('mailenabled', $app['pp_schema']))
+        if (!$config_service->get('mailenabled', $pp->schema()))
         {
             $alert_service->warning('E-mail functies zijn
                 uitgeschakeld door de beheerder.
@@ -128,7 +128,7 @@ class ContactController extends AbstractController
 
             $form_disabled = true;
         }
-        else if (!$config_service->get('support', $app['pp_schema']))
+        else if (!$config_service->get('support', $pp->schema()))
         {
             $alert_service->warning('Er is geen support E-mail adres
                 ingesteld door de beheerder.
@@ -140,7 +140,7 @@ class ContactController extends AbstractController
         $heading_render->add('Contact');
         $heading_render->fa('comment-o');
 
-        $top_text = $config_service->get('contact_form_top_text', $app['pp_schema']);
+        $top_text = $config_service->get('contact_form_top_text', $pp->schema());
 
         $out = $top_text ?: '';
 
@@ -191,7 +191,7 @@ class ContactController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $config_service->get('contact_form_bottom_text', $app['pp_schema']);
+        $bottom_text = $config_service->get('contact_form_bottom_text', $pp->schema());
 
         if ($bottom_text)
         {
@@ -209,7 +209,7 @@ class ContactController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

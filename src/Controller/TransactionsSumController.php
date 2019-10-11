@@ -74,8 +74,8 @@ class TransactionsSumController extends AbstractController
         }
 
         $query = 'select sum(t.amount), t.id_' . $res . ' as uid
-            from ' . $app['pp_schema'] . '.transactions t, ' .
-                $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.transactions t, ' .
+                $pp->schema() . '.users u
             where u.id = t.id_' . $inp . '
                 and t.cdate > ?';
 

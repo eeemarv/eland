@@ -27,13 +27,13 @@ class ContactTypesEditController extends AbstractController
     ):Response
     {
         $tc_prefetch = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.type_contact
+            from ' . $pp->schema() . '.type_contact
             where id = ?', [$id]);
 
         if (in_array($tc_prefetch['abbrev'], contact_types::PROTECTED))
         {
             $alert_service->warning('Beschermd contact type.');
-            $link_render->redirect('contact_types', $app['pp_ary'], []);
+            $link_render->redirect('contact_types', $pp->ary(), []);
         }
 
         if($request->isMethod('POST'))
@@ -41,7 +41,7 @@ class ContactTypesEditController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('contact_types', $app['pp_ary'], []);
+                $link_render->redirect('contact_types', $pp->ary(), []);
             }
 
             $tc = [
@@ -55,12 +55,12 @@ class ContactTypesEditController extends AbstractController
 
             if (!$error)
             {
-                if ($db->update($app['pp_schema'] . '.type_contact',
+                if ($db->update($pp->schema() . '.type_contact',
                     $tc,
                     ['id' => $id]))
                 {
                     $alert_service->success('Contact type aangepast.');
-                    $link_render->redirect('contact_types', $app['pp_ary'], []);
+                    $link_render->redirect('contact_types', $pp->ary(), []);
                 }
                 else
                 {
@@ -106,7 +106,7 @@ class ContactTypesEditController extends AbstractController
         $out .= '" required>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('contact_types', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('contact_types', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
@@ -121,7 +121,7 @@ class ContactTypesEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

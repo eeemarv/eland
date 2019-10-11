@@ -56,7 +56,7 @@ class ContactsController extends AbstractController
         if (isset($filter['uid']))
         {
             $params['f']['uid'] = $filter['uid'];
-            $filter['code'] = $account_render->str($filter['uid'], $app['pp_schema']);
+            $filter['code'] = $account_render->str($filter['uid'], $pp->schema());
         }
 
         if (isset($filter['code']) && $filter['code'])
@@ -64,14 +64,14 @@ class ContactsController extends AbstractController
             [$code] = explode(' ', trim($filter['code']));
 
             $fuid = $db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where letscode = ?', [$code]);
 
             if ($fuid)
             {
                 $where_sql[] = 'c.id_user = ?';
                 $params_sql[] = $fuid;
-                $params['f']['code'] = $account_render->str($fuid, $app['pp_schema']);
+                $params['f']['code'] = $account_render->str($fuid, $pp->schema());
             }
             else
             {
@@ -128,7 +128,7 @@ class ContactsController extends AbstractController
             {
                 case 'new':
                     $where_sql[] = 'u.adate > ? and u.status = 1';
-                    $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($app['pp_schema']));
+                    $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
                     break;
                 case 'leaving':
                     $where_sql[] = 'u.status = 2';
@@ -165,7 +165,7 @@ class ContactsController extends AbstractController
         if ($params['f']['ustatus'] !== 'all'
             || $params['s']['orderby'] === 'u.letscode')
         {
-            $user_table_sql = ', ' . $app['pp_schema'] . '.users u ';
+            $user_table_sql = ', ' . $pp->schema() . '.users u ';
             $where_sql[] = 'u.id = c.id_user';
         }
 
@@ -179,13 +179,13 @@ class ContactsController extends AbstractController
         }
 
         $query = 'select c.*, tc.abbrev
-            from ' . $app['pp_schema'] . '.contact c, ' .
-                $app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
+            from ' . $pp->schema() . '.contact c, ' .
+                $pp->schema() . '.type_contact tc' . $user_table_sql . '
             where c.id_type_contact = tc.id' . $where_sql;
 
         $row_count = $db->fetchColumn('select count(c.*)
-            from ' . $app['pp_schema'] . '.contact c, ' .
-                $app['pp_schema'] . '.type_contact tc' . $user_table_sql . '
+            from ' . $pp->schema() . '.contact c, ' .
+                $pp->schema() . '.type_contact tc' . $user_table_sql . '
             where c.id_type_contact = tc.id' . $where_sql, $params_sql);
 
         $query .= ' order by ' . $params['s']['orderby'] . ' ';
@@ -195,7 +195,7 @@ class ContactsController extends AbstractController
 
         $contacts = $db->fetchAll($query, $params_sql);
 
-        $pagination_render->init('contacts', $app['pp_ary'],
+        $pagination_render->init('contacts', $pp->ary(),
             $row_count, $params);
 
         $asc_preset_ary = [
@@ -232,7 +232,7 @@ class ContactsController extends AbstractController
         $abbrev_ary = [];
 
         $rs = $db->prepare('select abbrev
-            from ' . $app['pp_schema'] . '.type_contact');
+            from ' . $pp->schema() . '.type_contact');
 
         $rs->execute();
 
@@ -243,7 +243,7 @@ class ContactsController extends AbstractController
 
         $btn_nav_render->csv();
 
-        $btn_top_render->add('contacts_add_admin', $app['pp_ary'],
+        $btn_top_render->add('contacts_add_admin', $pp->ary(),
             [], 'Contact toevoegen');
 
         $filtered = !isset($filter['uid']) && (
@@ -301,7 +301,7 @@ class ContactsController extends AbstractController
             'interlets'	=> 'interSysteem',
         ];
 
-        if (!$config_service->get_intersystem_en($app['pp_schema']))
+        if (!$config_service->get_intersystem_en($pp->schema()))
         {
             unset($access_options['interlets']);
         }
@@ -355,7 +355,7 @@ class ContactsController extends AbstractController
         $out .= 'aria-describedby="letscode_addon" ';
 
         $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -363,7 +363,7 @@ class ContactsController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
+                'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
             ]);
         $out .= '" ';
 
@@ -387,7 +387,7 @@ class ContactsController extends AbstractController
         unset($params_form['p']['start']);
 
         $params_form['r'] = 'admin';
-        $params_form['u'] = $app['s_id'];
+        $params_form['u'] = $su->id();
 
         $params_form = http_build_query($params_form, 'prefix', '&');
         $params_form = urldecode($params_form);
@@ -427,7 +427,7 @@ class ContactsController extends AbstractController
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['pp_schema'],
+                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -464,7 +464,7 @@ class ContactsController extends AbstractController
                     'asc'		=> $data['asc'],
                 ];
 
-                $out .= $link_render->link_fa('contacts', $app['pp_ary'],
+                $out .= $link_render->link_fa('contacts', $pp->ary(),
                     $th_params, $data['lbl'], [], $data['fa']);
             }
 
@@ -484,7 +484,7 @@ class ContactsController extends AbstractController
 
             if (isset($c['value']))
             {
-                $td[] = $link_render->link_no_attr('contacts_edit_admin', $app['pp_ary'],
+                $td[] = $link_render->link_no_attr('contacts_edit_admin', $pp->ary(),
                     ['id' => $c['id']], $c['value']);
             }
             else
@@ -492,11 +492,11 @@ class ContactsController extends AbstractController
                 $td[] = '&nbsp;';
             }
 
-            $td[] = $account_render->link($c['id_user'], $app['pp_ary']);
+            $td[] = $account_render->link($c['id_user'], $pp->ary());
 
             if (isset($c['comments']))
             {
-                $td[] = $link_render->link_no_attr('contacts_edit_admin', $app['pp_ary'],
+                $td[] = $link_render->link_no_attr('contacts_edit_admin', $pp->ary(),
                     ['id' => $c['id']], $c['comments']);
             }
             else
@@ -506,7 +506,7 @@ class ContactsController extends AbstractController
 
             $td[] = $item_access_service->get_label_flag_public($c['flag_public']);
 
-            $td[] = $link_render->link_fa('contacts_del_admin', $app['pp_ary'],
+            $td[] = $link_render->link_fa('contacts_del_admin', $pp->ary(),
                 ['id' => $c['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'],
                 'times');
@@ -528,7 +528,7 @@ class ContactsController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

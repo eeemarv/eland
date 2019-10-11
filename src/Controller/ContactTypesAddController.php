@@ -30,7 +30,7 @@ class ContactTypesAddController extends AbstractController
             {
                 $alert_service->error($error_token);
 
-                $link_render->redirect('contact_types', $app['pp_ary'], []);
+                $link_render->redirect('contact_types', $pp->ary(), []);
             }
 
             $tc = [];
@@ -42,7 +42,7 @@ class ContactTypesAddController extends AbstractController
 
             if (!$error)
             {
-                if ($db->insert($app['pp_schema'] . '.type_contact', $tc))
+                if ($db->insert($pp->schema() . '.type_contact', $tc))
                 {
                     $alert_service->success('Contact type toegevoegd.');
                 }
@@ -51,7 +51,7 @@ class ContactTypesAddController extends AbstractController
                     $alert_service->error('Fout bij het opslaan');
                 }
 
-                $link_render->redirect('contact_types', $app['pp_ary'], []);
+                $link_render->redirect('contact_types', $pp->ary(), []);
             }
 
             $alert_service->error('Corrigeer één of meerdere velden.');
@@ -88,7 +88,7 @@ class ContactTypesAddController extends AbstractController
         $out .= '" required>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('contact_types', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('contact_types', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
@@ -103,7 +103,7 @@ class ContactTypesAddController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -40,7 +40,7 @@ class UsersPasswordController extends AbstractController
     {
         return $this->users_password_admin(
             $request,
-            $app['s_id'],
+            $su->id(),
             $db,
             $account_render,
             $alert_service,
@@ -85,7 +85,7 @@ class UsersPasswordController extends AbstractController
                 $errors[] = 'Vul paswoord in!';
             }
 
-            if (!$app['pp_admin']
+            if (!$pp->is_admin()
                 && $password_strength_service->get($password) < 50)
             {
                 $errors[] = 'Te zwak paswoord.';
@@ -103,20 +103,20 @@ class UsersPasswordController extends AbstractController
                     'mdate'		=> gmdate('Y-m-d H:i:s'),
                 ];
 
-                if ($db->update($app['pp_schema'] . '.users',
+                if ($db->update($pp->schema() . '.users',
                     $update,
                     ['id' => $id]))
                 {
-                    $user_cache_service->clear($id, $app['pp_schema']);
-                    $user = $user_cache_service->get($id, $app['pp_schema']);
+                    $user_cache_service->clear($id, $pp->schema());
+                    $user = $user_cache_service->get($id, $pp->schema());
                     $alert_service->success('Paswoord opgeslagen.');
 
                     if (($user['status'] === 1 || $user['status'] === 2)
                         && $notify)
                     {
                         $to = $db->fetchColumn('select c.value
-                            from ' . $app['pp_schema'] . '.contact c, ' .
-                                $app['pp_schema'] . '.type_contact tc
+                            from ' . $pp->schema() . '.contact c, ' .
+                                $pp->schema() . '.type_contact tc
                             where tc.id = c.id_type_contact
                                 and tc.abbrev = \'mail\'
                                 and c.id_user = ?', [$id]);
@@ -129,9 +129,9 @@ class UsersPasswordController extends AbstractController
                             ];
 
                             $mail_queue->queue([
-                                'schema'	=> $app['pp_schema'],
-                                'to' 		=> $mail_addr_user_service->get_active($id, $app['pp_schema']),
-                                'reply_to'	=> $mail_addr_system_service->get_support($app['pp_schema']),
+                                'schema'	=> $pp->schema(),
+                                'to' 		=> $mail_addr_user_service->get_active($id, $pp->schema()),
+                                'reply_to'	=> $mail_addr_system_service->get_support($pp->schema()),
                                 'template'	=> 'password_reset/user',
                                 'vars'		=> $vars,
                             ], 8000);
@@ -144,7 +144,7 @@ class UsersPasswordController extends AbstractController
                         }
                     }
 
-                    $link_render->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+                    $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
                 }
                 else
                 {
@@ -158,7 +158,7 @@ class UsersPasswordController extends AbstractController
 
         }
 
-        $user = $user_cache_service->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $pp->schema());
 
         $assets_service->add([
             'generate_password.js',
@@ -166,10 +166,10 @@ class UsersPasswordController extends AbstractController
 
         $heading_render->add('Paswoord aanpassen');
 
-        if ($app['pp_admin'] && $id !== $app['s_id'])
+        if ($pp->is_admin() && $id !== $su->id())
         {
             $heading_render->add(' voor ');
-            $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($id, $pp->ary()));
         }
 
         $heading_render->fa('key');
@@ -204,7 +204,7 @@ class UsersPasswordController extends AbstractController
         $out .= '>';
         $out .= ' Verzend notificatie E-mail met nieuw paswoord. ';
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $out .= 'Dit is enkel mogelijk wanneer de Status ';
             $out .= 'actief is en E-mail adres ingesteld.';
@@ -213,7 +213,7 @@ class UsersPasswordController extends AbstractController
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" ';
@@ -229,7 +229,7 @@ class UsersPasswordController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

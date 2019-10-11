@@ -20,7 +20,7 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
     ):Response
     {
         $group = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.letsgroups
+            from ' . $pp->schema() . '.letsgroups
             where id = ?', [$group_id]);
 
         if (!$group || !$group['url'])
@@ -41,7 +41,7 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
         {
             $logger->debug('typeahead/elas_intersystem_accounts: empty for id ' .
                 $group_id . ', url: ' . $group['url'],
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
             return $this->json([], 404);
         }
@@ -53,7 +53,7 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
         $crc = (string) crc32(json_encode($accounts));
 
         $typeahead_service->set_thumbprint(
-            'elas_intersystem_accounts', $app['pp_ary'], $params, $crc);
+            'elas_intersystem_accounts', $pp->ary(), $params, $crc);
 
         return $this->json($accounts);
     }

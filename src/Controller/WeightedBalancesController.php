@@ -20,7 +20,7 @@ class WeightedBalancesController extends AbstractController
         $balance = [];
 
         $rs = $db->prepare('select id, saldo
-            from ' . $app['pp_schema'] . '.users');
+            from ' . $pp->schema() . '.users');
 
         $rs->execute();
 
@@ -33,7 +33,7 @@ class WeightedBalancesController extends AbstractController
         $acc = array_map(function (){ return 0; }, $balance);
 
         $trans = $db->fetchAll('select id_to, id_from, amount, date
-            from ' . $app['pp_schema'] . '.transactions
+            from ' . $pp->schema() . '.transactions
             where date >= ?
             order by date desc', [$begin]);
 

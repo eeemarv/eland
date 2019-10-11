@@ -34,10 +34,10 @@ class RegisterController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        if (!$config_service->get('registration_en', $app['pp_schema']))
+        if (!$config_service->get('registration_en', $pp->schema()))
         {
             $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $link_render->redirect('login', $app['pp_ary'], []);
+            $link_render->redirect('login', $pp->ary(), []);
         }
 
         if ($request->isMethod('POST'))
@@ -52,7 +52,7 @@ class RegisterController extends AbstractController
             ];
 
             $logger->info('Registration request for ' .
-                $reg['email'], ['schema' => $app['pp_schema']]);
+                $reg['email'], ['schema' => $pp->schema()]);
 
             if(!$reg['email'])
             {
@@ -67,8 +67,8 @@ class RegisterController extends AbstractController
                 $alert_service->error('Geen geldig E-mail adres.');
             }
             else if ($db->fetchColumn('select c.id_user
-                from ' . $app['pp_schema'] . '.contact c, ' .
-                    $app['pp_schema'] . '.type_contact tc
+                from ' . $pp->schema() . '.contact c, ' .
+                    $pp->schema() . '.type_contact tc
                 where c. value = ?
                     AND tc.id = c.id_type_contact
                     AND tc.abbrev = \'mail\'', [$reg['email']]))
@@ -95,10 +95,10 @@ class RegisterController extends AbstractController
             else
             {
                 $token = $data_token_service->store($reg,
-                    'register', $app['pp_schema'], 604800); // 1 week
+                    'register', $pp->schema(), 604800); // 1 week
 
                 $mail_queue->queue([
-                    'schema'	=> $app['pp_schema'],
+                    'schema'	=> $pp->schema(),
                     'to' 		=> [$reg['email'] => $reg['first_name'] . ' ' . $reg['last_name']],
                     'vars'		=> ['token' => $token],
                     'template'	=> 'register/confirm',
@@ -108,14 +108,14 @@ class RegisterController extends AbstractController
                     bevestigingslink in de E-mail die we naar je gestuurd
                     hebben om je inschrijving te voltooien.');
 
-                $link_render->redirect('login', $app['pp_ary'], []);
+                $link_render->redirect('login', $pp->ary(), []);
             }
         }
 
         $heading_render->add('Inschrijven');
         $heading_render->fa('check-square-o');
 
-        $top_text = $config_service->get('registration_top_text', $app['pp_schema']);
+        $top_text = $config_service->get('registration_top_text', $pp->schema());
 
         $out = $top_text ?: '';
 
@@ -212,7 +212,7 @@ class RegisterController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $config_service->get('registration_bottom_text', $app['pp_schema']);
+        $bottom_text = $config_service->get('registration_bottom_text', $pp->schema());
 
         $out .= $bottom_text ?: '';
 
@@ -220,7 +220,7 @@ class RegisterController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

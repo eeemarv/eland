@@ -34,7 +34,7 @@ class UsersContactsDelController extends AbstractController
     {
         return ContactsDelController::form(
             $request,
-            $app['s_id'],
+            $su->id(),
             $contact_id,
             false,
             $db,

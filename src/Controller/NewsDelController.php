@@ -38,26 +38,26 @@ class NewsDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect($app['r_news'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('news'), $pp->ary(), []);
             }
 
-            if($db->delete($app['pp_schema'] . '.news', ['id' => $id]))
+            if($db->delete($pp->schema() . '.news', ['id' => $id]))
             {
-                $xdb_service->del('news_access', (string) $id, $app['pp_schema']);
+                $xdb_service->del('news_access', (string) $id, $pp->schema());
 
                 $alert_service->success('Nieuwsbericht verwijderd.');
-                $link_render->redirect($app['r_news'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('news'), $pp->ary(), []);
             }
 
             $alert_service->error('Nieuwsbericht niet verwijderd.');
         }
 
         $news = $db->fetchAssoc('select n.*
-            from ' . $app['pp_schema'] . '.news n
+            from ' . $pp->schema() . '.news n
             where n.id = ?', [$id]);
 
         $news_access = $xdb_service->get('news_access', (string) $id,
-            $app['pp_schema'])['data']['access'];
+            $pp->schema())['data']['access'];
 
         $heading_render->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
         $heading_render->fa('calendar-o');
@@ -80,7 +80,7 @@ class NewsDelController extends AbstractController
 
         if ($news['itemdate'])
         {
-            $out .= $date_format_service->get($news['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($news['itemdate'], 'day', $pp->schema());
         }
         else
         {
@@ -120,7 +120,7 @@ class NewsDelController extends AbstractController
 
         $out .= '<dt>Ingegeven door</dt>';
         $out .= '<dd>';
-        $out .= $account_render->link($news['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($news['id_user'], $pp->ary());
         $out .= '</dd>';
 
         $out .= '</dl>';
@@ -135,7 +135,7 @@ class NewsDelController extends AbstractController
         $out .= 'moet verwijderd worden?</strong></p>';
 
         $out .= '<form method="post">';
-        $out .= $link_render->btn_cancel('news_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('news_show', $pp->ary(), ['id' => $id]);
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
         $out .= 'name="zend" class="btn btn-danger btn-lg">';
@@ -149,7 +149,7 @@ class NewsDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

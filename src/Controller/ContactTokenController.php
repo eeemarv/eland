@@ -26,18 +26,18 @@ class ContactTokenController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get('contact_form_en', $app['pp_schema']))
+        if (!$config_service->get('contact_form_en', $pp->schema()))
         {
             $alert_service->warning('De contactpagina is niet ingeschakeld.');
-            $link_render->redirect('login', $app['pp_ary'], []);
+            $link_render->redirect('login', $pp->ary(), []);
         }
 
-        $data = $data_token_service->retrieve($token, 'contact', $app['pp_schema']);
+        $data = $data_token_service->retrieve($token, 'contact', $pp->schema());
 
         if (!$data)
         {
             $alert_service->error('Ongeldig of verlopen token.');
-            $link_render->redirect('contact', $app['pp_ary'], []);
+            $link_render->redirect('contact', $pp->ary(), []);
         }
 
         $vars = [
@@ -48,24 +48,24 @@ class ContactTokenController extends AbstractController
         ];
 
         $mail_queue->queue([
-            'schema'	=> $app['pp_schema'],
+            'schema'	=> $pp->schema(),
             'template'	=> 'contact/copy',
             'vars'		=> $vars,
             'to'		=> [$data['email'] => $data['email']],
         ], 9000);
 
         $mail_queue->queue([
-            'schema'	=> $app['pp_schema'],
+            'schema'	=> $pp->schema(),
             'template'	=> 'contact/support',
             'vars'		=> $vars,
-            'to'		=> $mail_addr_system_service->get_support($app['pp_schema']),
+            'to'		=> $mail_addr_system_service->get_support($pp->schema()),
             'reply_to'	=> [$data['email']],
         ], 8000);
 
-        $data_token_service->del($token, 'contact', $app['pp_schema']);
+        $data_token_service->del($token, 'contact', $pp->schema());
 
         $alert_service->success('Je bericht werd succesvol verzonden.');
-        $link_render->redirect('contact', $app['pp_ary'], []);
+        $link_render->redirect('contact', $pp->ary(), []);
 
         return new Response();
     }

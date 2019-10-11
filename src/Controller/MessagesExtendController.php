@@ -19,18 +19,18 @@ class MessagesExtendController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
+        $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-        $s_owner = $app['s_id']
+        $s_owner = $su->id()
             && $message['id_user']
-            && $message['id_user'] === $app['s_id'];
+            && $message['id_user'] === $su->id();
 
-        if (!($s_owner || $app['pp_admin']))
+        if (!($s_owner || $pp->is_admin()))
         {
             $alert_service->error('Je hebt onvoldoende rechten om ' .
                 $message['label']['type_this'] . ' te verlengen.');
 
-            $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
         $validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $days));
@@ -41,14 +41,14 @@ class MessagesExtendController extends AbstractController
             'exp_user_warn'	=> 'f',
         ];
 
-        if (!$db->update($app['pp_schema'] . '.messages', $m, ['id' => $id]))
+        if (!$db->update($pp->schema() . '.messages', $m, ['id' => $id]))
         {
             $alert_service->error('Fout: ' . $message['label']['type_the'] . ' is niet verlengd.');
-            $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
         $alert_service->success(ucfirst($message['label']['type_the']) . ' is verlengd.');
-        $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+        $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
 
         return new Response('');
     }

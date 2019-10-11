@@ -16,13 +16,13 @@ class IntersystemsShowController extends AbstractController
     ):Response
     {
         $group = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.letsgroups
+            from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);
 
         if (!$group)
         {
             $alert_service->error('Systeem niet gevonden.');
-            $link_render->redirect('intersystems', $app['pp_ary'], []);
+            $link_render->redirect('intersystems', $pp->ary(), []);
         }
 
         if ($group['localletscode'] === '')
@@ -32,17 +32,17 @@ class IntersystemsShowController extends AbstractController
         else
         {
             $user = $db->fetchAssoc('select *
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where letscode = ?', [$group['localletscode']]);
         }
 
-        $btn_top_render->edit('intersystems_edit', $app['pp_ary'],
+        $btn_top_render->edit('intersystems_edit', $pp->ary(),
             ['id' => $id], 'Intersysteem aanpassen');
 
-        $btn_top_render->del('intersystems_del', $app['pp_ary'],
+        $btn_top_render->del('intersystems_del', $pp->ary(),
             ['id' => $id], 'Intersysteem verwijderen');
 
-        $btn_nav_render->nav_list('intersystems', $app['pp_ary'],
+        $btn_nav_render->nav_list('intersystems', $pp->ary(),
             [], 'Lijst', 'share-alt');
 
         $assets_service->add(['elas_soap_status.js']);
@@ -85,7 +85,7 @@ class IntersystemsShowController extends AbstractController
             $out .= '<dd><i><span data-elas-soap-status="';
 
             $out .= htmlspecialchars($link_render->context_path('elas_soap_status',
-                $app['pp_ary'], ['group_id' => $group['id']]));
+                $pp->ary(), ['group_id' => $group['id']]));
 
             $out .= '">';
             $out .= 'Bezig met eLAS soap status te bekomen...</span></i>';
@@ -113,7 +113,7 @@ class IntersystemsShowController extends AbstractController
 
         if ($user)
         {
-            $out .= $link_render->link('users_show_admin', $app['pp_ary'],
+            $out .= $link_render->link('users_show_admin', $pp->ary(),
                 ['id' => $user['id']], $group['localletscode'],
                 [
                     'class' => 'btn btn-default',
@@ -124,7 +124,7 @@ class IntersystemsShowController extends AbstractController
             {
                 $out .= ' ';
 
-                $out .= $link_render->link_fa('users_edit_admin', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_edit_admin', $pp->ary(),
                     ['id' => $user['id']], 'Status!',
                     [
                         'class'	=> 'btn btn-danger',
@@ -135,7 +135,7 @@ class IntersystemsShowController extends AbstractController
             if ($user['accountrole'] != 'interlets')
             {
                 $out .= ' ';
-                $out .= $link_render->link_fa('users_edit_admin', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_edit_admin', $pp->ary(),
                     ['id' => $user['id']], 'Rol!',
                     [
                         'class'	=> 'btn btn-danger',
@@ -181,7 +181,7 @@ class IntersystemsShowController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

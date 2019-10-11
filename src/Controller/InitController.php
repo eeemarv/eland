@@ -8,6 +8,7 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\ElasDbUpgradeService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +36,7 @@ class InitController extends AbstractController
         Request $request,
         AlertService $alert_service,
         MenuService $menu_service,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
@@ -56,7 +58,7 @@ class InitController extends AbstractController
         foreach (self::ROUTES_LABELS as $route => $lbl)
         {
             $class_done = $done === $route ? ' list-group-item-success' : '';
-            $out .= $link_render->link($route, $app['pp_ary'],
+            $out .= $link_render->link($route, $pp->ary(),
                 [], $lbl, ['class' => 'list-group-item' . $class_done]);
         }
         $out .= '</div>';
@@ -67,13 +69,14 @@ class InitController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
     public function elas_db_upgrade(
         Request $request,
         Db $db,
+        PageParamsService $pp,
         ElasDbUpgradeService $elas_db_upgrade_service,
         LoggerInterface $logger,
         LinkRender $link_render
@@ -84,7 +87,7 @@ class InitController extends AbstractController
         $schemaversion = 31000;
 
         $currentversion = $dbversion = $db->fetchColumn('select value
-            from ' . $app['pp_schema'] . '.parameters
+            from ' . $pp->schema() . '.parameters
             where parameter = \'schemaversion\'');
 
         if ($currentversion >= $schemaversion)
@@ -101,17 +104,17 @@ class InitController extends AbstractController
             {
                 $currentversion++;
 
-                $elas_db_upgrade_service->run($currentversion, $app['pp_schema']);
+                $elas_db_upgrade_service->run($currentversion, $pp->schema());
             }
 
             $m = 'Upgraded database from schema version ' .
                 $dbversion . ' to ' . $currentversion;
 
             error_log(' -- ' . $m . ' -- ');
-            $logger->info('DB: ' . $m, ['schema' => $app['pp_schema']]);
+            $logger->info('DB: ' . $m, ['schema' => $pp->schema()]);
         }
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -123,6 +126,7 @@ class InitController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         S3Service $s3_service,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
@@ -131,7 +135,7 @@ class InitController extends AbstractController
         $found = false;
 
         $rs = $db->prepare('select id, "PictureFile"
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where "PictureFile" is not null
             order by id asc
             limit 50 offset ' . $start);
@@ -164,7 +168,7 @@ class InitController extends AbstractController
 
             if (!$found)
             {
-                $db->update($app['pp_schema'] . '.users',
+                $db->update($pp->schema() . '.users',
                     ['"PictureFile"' => null], ['id' => $user_id]);
 
                 error_log(' -- Profile image not present,
@@ -173,11 +177,11 @@ class InitController extends AbstractController
                 $logger->info('cron: Profile image file of user ' .
                     $user_id . ' was not found in bucket: deleted
                     from database. Deleted filename : ' .
-                    $filename, ['schema' => $app['pp_schema']]);
+                    $filename, ['schema' => $pp->schema()]);
             }
-            else if ($f_schema !== $app['pp_schema'])
+            else if ($f_schema !== $pp->schema())
             {
-                $new_filename = $app['pp_schema'] . '_u_' . $user_id .
+                $new_filename = $pp->schema() . '_u_' . $user_id .
                     '_' . sha1(time() . $filename) . '.jpg';
 
                 $err = $s3_service->copy($filename_bucket, $new_filename);
@@ -187,12 +191,12 @@ class InitController extends AbstractController
                     error_log(' -- error: ' . $err . ' -- ');
 
                     $logger->info('init: copy img error: ' .
-                        $err, ['schema' => $app['pp_schema']]);
+                        $err, ['schema' => $pp->schema()]);
 
                     continue;
                 }
 
-                $db->update($app['pp_schema'] . '.users',
+                $db->update($pp->schema() . '.users',
                     ['"PictureFile"' => $new_filename],
                     ['id' => $user_id]);
 
@@ -201,7 +205,7 @@ class InitController extends AbstractController
 
                 $logger->info('init: Profile image file renamed, Old: ' .
                     $filename . ' New: ' . $new_filename,
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
             }
         }
 
@@ -210,11 +214,11 @@ class InitController extends AbstractController
             error_log(' found img ');
             $start += 50;
 
-            $link_render->redirect('init_sync_users_images', $app['pp_ary'],
+            $link_render->redirect('init_sync_users_images', $pp->ary(),
                 ['start' => $start]);
         }
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -226,19 +230,20 @@ class InitController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         S3Service $s3_service,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
 
         $message_images = $db->fetchAll('select id, msgid, "PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures
+            from ' . $pp->schema() . '.msgpictures
             order by id asc
             limit 50 offset ' . $start);
 
         if (!count($message_images))
         {
-            $link_render->redirect('init', $app['pp_ary'],
+            $link_render->redirect('init', $pp->ary(),
                 ['ok' => $request->attributes->get('_route')]);
         }
 
@@ -267,7 +272,7 @@ class InitController extends AbstractController
 
             if (!$found)
             {
-                $db->delete($app['pp_schema'] . '.msgpictures',
+                $db->delete($pp->schema() . '.msgpictures',
                     ['id' => $id]);
 
                 error_log(' -- Message image not present,
@@ -275,11 +280,11 @@ class InitController extends AbstractController
 
                 $logger->info('init: Image file of message ' . $msg_id .
                     ' not found in bucket: deleted from database. Deleted : ' .
-                    $filename . ' id: ' . $id, ['schema' => $app['pp_schema']]);
+                    $filename . ' id: ' . $id, ['schema' => $pp->schema()]);
             }
-            else if ($f_schema !== $app['pp_schema'])
+            else if ($f_schema !== $pp->schema())
             {
-                $new_filename = $app['pp_schema'] . '_m_' .
+                $new_filename = $pp->schema() . '_m_' .
                     $msg_id . '_' . sha1(time() .
                     $filename) . '.jpg';
 
@@ -290,18 +295,18 @@ class InitController extends AbstractController
                     error_log(' -- error: ' . $err . ' -- ');
 
                     $logger->info('init: copy img error: ' . $err,
-                        ['schema' => $app['pp_schema']]);
+                        ['schema' => $pp->schema()]);
                     continue;
                 }
 
-                $db->update($app['pp_schema'] . '.msgpictures',
+                $db->update($pp->schema() . '.msgpictures',
                     ['"PictureFile"' => $new_filename], ['id' => $id]);
 
                 error_log('Profile image renamed, old: ' .
                     $filename . ' new: ' . $new_filename);
 
                 $logger->info('init: Message image file renamed, Old : ' .
-                    $filename . ' New: ' . $new_filename, ['schema' => $app['pp_schema']]);
+                    $filename . ' New: ' . $new_filename, ['schema' => $pp->schema()]);
             }
         }
 
@@ -309,7 +314,7 @@ class InitController extends AbstractController
 
         $start += 50;
 
-        $link_render->redirect('init_sync_messages_images', $app['pp_ary'],
+        $link_render->redirect('init_sync_messages_images', $pp->ary(),
             ['start' => $start]);
 
         return new Response('');
@@ -318,6 +323,7 @@ class InitController extends AbstractController
     public function clear_users_cache(
         Request $request,
         Db $db,
+        PageParamsService $pp,
         LinkRender $link_render,
         UserCacheService $user_cache_service
     ):Response
@@ -327,14 +333,14 @@ class InitController extends AbstractController
         error_log('*** clear users cache ***');
 
         $users = $db->fetchAll('select id
-            from ' . $app['pp_schema'] . '.users');
+            from ' . $pp->schema() . '.users');
 
         foreach ($users as $u)
         {
-            $user_cache_service->clear($u['id'], $app['pp_schema']);
+            $user_cache_service->clear($u['id'], $pp->schema());
         }
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -343,17 +349,18 @@ class InitController extends AbstractController
     public function empty_elas_tokens(
         Request $request,
         Db $db,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
         set_time_limit(300);
 
         $db->executeQuery('delete from ' .
-            $app['pp_schema'] . '.tokens');
+            $pp->schema() . '.tokens');
 
         error_log('*** empty tokens table from elas (is not used anymore) *** ');
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -361,7 +368,7 @@ class InitController extends AbstractController
 
     public function empty_city_distance(
         Request $request,
-        app $app,
+        PageParamsService $pp,
         Db $db,
         LinkRender $link_render
     ):Response
@@ -369,11 +376,11 @@ class InitController extends AbstractController
         set_time_limit(300);
 
         $db->executeQuery('delete from ' .
-            $app['pp_schema'] . '.city_distance');
+            $pp->schema() . '.city_distance');
 
         error_log('*** empty city_distance table (is not used anymore) *** ');
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -384,6 +391,7 @@ class InitController extends AbstractController
         int $start,
         Db $db,
         GeocodeQueue $geocode_queue,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
@@ -392,8 +400,8 @@ class InitController extends AbstractController
         error_log('*** Queue for Geocoding, start: ' . $start . ' ***');
 
         $rs = $db->prepare('select c.id_user, c.value
-            from ' . $app['pp_schema'] . '.contact c, ' .
-                $app['pp_schema'] . '.type_contact tc
+            from ' . $pp->schema() . '.contact c, ' .
+                $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'adr\'
             order by c.id_user asc
@@ -408,7 +416,7 @@ class InitController extends AbstractController
             $geocode_queue->cond_queue([
                 'adr'		=> $row['value'],
                 'uid'		=> $row['id_user'],
-                'schema'	=> $app['pp_schema'],
+                'schema'	=> $pp->schema(),
             ], 0);
 
             $more_geocoding = true;
@@ -418,11 +426,11 @@ class InitController extends AbstractController
         {
             $start += 50;
 
-            $link_render->redirect('init_queue_geocoding', $app['pp_ary'],
+            $link_render->redirect('init_queue_geocoding', $pp->ary(),
                 ['start' => $start]);
         }
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');
@@ -431,6 +439,7 @@ class InitController extends AbstractController
     public function copy_config(
         Request $request,
         Db $db,
+        PageParamsService $pp,
         ConfigService $config_service,
         LinkRender $link_render
     ):Response
@@ -440,18 +449,18 @@ class InitController extends AbstractController
         error_log('** Copy config **');
 
         $config_ary = $db->fetchAll('select value, setting
-            from ' . $app['pp_schema'] . '.config');
+            from ' . $pp->schema() . '.config');
 
         foreach($config_ary as $rec)
         {
-            if (!$config_service->exists($rec['setting'], $app['pp_schema']))
+            if (!$config_service->exists($rec['setting'], $pp->schema()))
             {
-                $config_service->set($rec['setting'], $app['pp_schema'], $rec['value']);
+                $config_service->set($rec['setting'], $pp->schema(), $rec['value']);
                 error_log('Config value copied: ' . $rec['setting'] . ' ' . $rec['value']);
             }
         }
 
-        $link_render->redirect('init', $app['pp_ary'],
+        $link_render->redirect('init', $pp->ary(),
             ['ok' => $request->attributes->get('_route')]);
 
         return new Response('');

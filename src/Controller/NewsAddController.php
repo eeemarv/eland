@@ -58,7 +58,7 @@ class NewsAddController extends AbstractController
 
             if ($news['itemdate'])
             {
-                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $app['pp_schema']);
+                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $pp->schema());
 
                 if ($news['itemdate'] === '')
                 {
@@ -94,43 +94,43 @@ class NewsAddController extends AbstractController
 
             if (!count($errors))
             {
-                $news['approved'] = $app['pp_admin'] ? 't' : 'f';
-                $news['published'] = $app['pp_admin'] ? 't' : 'f';
-                $news['id_user'] = $app['s_master'] ? 0 : $app['s_id'];
+                $news['approved'] = $pp->is_admin() ? 't' : 'f';
+                $news['published'] = $pp->is_admin() ? 't' : 'f';
+                $news['id_user'] = $app['s_master'] ? 0 : $su->id();
                 $news['cdate'] = gmdate('Y-m-d H:i:s');
 
-                if ($db->insert($app['pp_schema'] . '.news', $news))
+                if ($db->insert($pp->schema() . '.news', $news))
                 {
-                    $id = $db->lastInsertId($app['pp_schema'] . '.news_id_seq');
+                    $id = $db->lastInsertId($pp->schema() . '.news_id_seq');
 
                     $xdb_service->set('news_access', (string) $id, [
                         'access' => AccessCnst::TO_XDB[$access],
-                    ], $app['pp_schema']);
+                    ], $pp->schema());
 
                     $alert_service->success('Nieuwsbericht opgeslagen.');
 
                     $news['id'] = $id;
 
-                    if(!$app['pp_admin'])
+                    if(!$pp->is_admin())
                     {
                         $vars = [
                             'news'			=> $news,
-                            'user_id'       => $app['s_id'],
+                            'user_id'       => $su->id(),
                         ];
 
                         $mail_queue->queue([
-                            'schema'	=> $app['pp_schema'],
-                            'to' 		=> $mail_addr_system_service->get_newsadmin($app['pp_schema']),
+                            'schema'	=> $pp->schema(),
+                            'to' 		=> $mail_addr_system_service->get_newsadmin($pp->schema()),
                             'template'	=> 'news/review_admin',
                             'vars'		=> $vars,
                         ], 7000);
 
                         $alert_service->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
-                        $link_render->redirect($app['r_news'], $app['pp_ary'], []);
+                        $link_render->redirect($vr->get('news'), $pp->ary(), []);
 
                     }
 
-                    $link_render->redirect('news_show', $app['pp_ary'],
+                    $link_render->redirect('news_show', $pp->ary(),
                         ['id' => $id]);
                 }
                 else
@@ -177,17 +177,17 @@ class NewsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($app['pp_schema']);
+        $out .= $date_format_service->datepicker_format($pp->schema());
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-today-highlight="true" ';
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($news['itemdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($news['itemdate'], 'day', $pp->schema());
         $out .= '" ';
         $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_service->datepicker_placeholder($pp->schema());
         $out .= '" ';
         $out .= 'required>';
         $out .= '</div>';
@@ -227,9 +227,9 @@ class NewsAddController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $app['pp_user']);
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $pp->is_user());
 
-        $out .= $link_render->btn_cancel($app['r_news'], $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel($vr->get('news'), $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
@@ -245,7 +245,7 @@ class NewsAddController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

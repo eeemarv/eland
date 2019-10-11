@@ -61,7 +61,7 @@ class UsersEditController extends AbstractController
     {
         return UsersEditAdminController::form(
             $request,
-            $app['s_id'],
+            $su->id(),
             true,
             $db,
             $account_render,

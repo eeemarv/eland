@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Cnst\PagesCnst;
+use App\Service\ConfigService;
+use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -19,12 +21,14 @@ class VarRouteService
 	public function __construct(
 		RequestStack $request_stack,
 		Session $session,
-		PageParamsService $pp
+		PageParamsService $pp,
+		ConfigService $config_service
 	)
 	{
 		$this->request_stack = $request_stack;
 		$this->session = $session;
 		$this->pp = $pp;
+		$this->config_service = $config_service;
 
 		$this->init();
 	}
@@ -58,6 +62,9 @@ class VarRouteService
 			'messages'		=> 'messages_' . $view_ary['messages'],
 			'news'			=> 'messages_' . $view_ary['news'],
 		];
+
+		$default = $this->config_service->get('default_landing_page', $this->pp->schema());
+		$this->var_route_ary['default'] = $this->get($default);
 	}
 
 	public function get(string $menu_route):string

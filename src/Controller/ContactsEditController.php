@@ -63,7 +63,7 @@ class ContactsEditController extends AbstractController
     ):Response
     {
         $contact = self::get_contact(
-            $db, $id, $app['pp_schema']);
+            $db, $id, $pp->schema());
 
         return self::form(
             $request,
@@ -103,7 +103,7 @@ class ContactsEditController extends AbstractController
         $contact = self::get_contact(
             $db,
             $id,
-            $app['pp_schema']
+            $pp->schema()
         );
 
         if ($user_id !== $contact['id_user'])
@@ -138,7 +138,7 @@ class ContactsEditController extends AbstractController
             }
 
             $abbrev_type = $db->fetchColumn('select abbrev
-                from ' . $app['pp_schema'] . '.type_contact
+                from ' . $pp->schema() . '.type_contact
                 where id = ?', [$id_type_contact]);
 
             if ($abbrev_type === 'mail'
@@ -168,17 +168,17 @@ class ContactsEditController extends AbstractController
             }
 
             $mail_type_id = $db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.type_contact
+                from ' . $pp->schema() . '.type_contact
                 where abbrev = \'mail\'');
 
             $count_mail = $db->fetchColumn('select count(*)
-                from ' . $app['pp_schema'] . '.contact
+                from ' . $pp->schema() . '.contact
                 where id_user = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
 
             $mail_id = $db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.contact
+                from ' . $pp->schema() . '.contact
                 where id_user = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
@@ -196,9 +196,9 @@ class ContactsEditController extends AbstractController
                 $mailadr = $value;
 
                 $mail_count = $db->fetchColumn('select count(c.*)
-                    from ' . $app['pp_schema'] . '.contact c, ' .
-                        $app['pp_schema'] . '.type_contact tc, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.contact c, ' .
+                        $pp->schema() . '.type_contact tc, ' .
+                        $pp->schema() . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
                         and c.id_user = u.id
@@ -206,7 +206,7 @@ class ContactsEditController extends AbstractController
                         and u.id <> ?
                         and c.value = ?', [$user_id, $mailadr]);
 
-                if ($mail_count && $app['pp_admin'])
+                if ($mail_count && $pp->is_admin())
                 {
                     $warning = 'Omdat deze gebruikers niet meer ';
                     $warning .= 'een uniek E-mail adres hebben zullen zij ';
@@ -214,7 +214,7 @@ class ContactsEditController extends AbstractController
                     $warning .= 'of kunnen inloggen met ';
                     $warning .= 'E-mail adres. Zie ';
                     $warning .= $link_render->link_no_attr('status',
-                        $app['pp_ary'], [], 'Status');
+                        $pp->ary(), [], 'Status');
 
                     if ($mail_count === 1)
                     {
@@ -251,22 +251,22 @@ class ContactsEditController extends AbstractController
                     $geocode_queue->cond_queue([
                         'adr'		=> $value,
                         'uid'		=> $user_id,
-                        'schema'	=> $app['pp_schema'],
+                        'schema'	=> $pp->schema(),
                     ], 0);
                 }
 
-                $db->update($app['pp_schema'] . '.contact',
+                $db->update($pp->schema() . '.contact',
                     $update_ary, ['id' => $id]);
 
                 $alert_service->success('Contact aangepast.');
 
                 if ($redirect_contacts)
                 {
-                    $link_render->redirect('contacts', $app['pp_ary'], []);
+                    $link_render->redirect('contacts', $pp->ary(), []);
                 }
                 else
                 {
-                    $link_render->redirect('users_show', $app['pp_ary'],
+                    $link_render->redirect('users_show', $pp->ary(),
                         ['id' => $user_id]);
                 }
 
@@ -278,7 +278,7 @@ class ContactsEditController extends AbstractController
         $type_contact_ary = [];
 
         $rs = $db->prepare('select id, name, abbrev
-            from ' . $app['pp_schema'] . '.type_contact');
+            from ' . $pp->schema() . '.type_contact');
 
         $rs->execute();
 
@@ -293,10 +293,10 @@ class ContactsEditController extends AbstractController
 
         $heading_render->add('Contact aanpassen');
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $heading_render->add(' voor ');
-            $heading_render->add_raw($account_render->link($user_id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
         }
 
         $out = '<div class="panel panel-info">';
@@ -366,11 +366,11 @@ class ContactsEditController extends AbstractController
 
         if ($redirect_contacts)
         {
-            $out .= $link_render->btn_cancel('contacts', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('contacts', $pp->ary(), []);
         }
         else
         {
-            $out .= $link_render->btn_cancel('users_show', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('users_show', $pp->ary(),
                 ['id' => $user_id]);
         }
 
@@ -390,7 +390,7 @@ class ContactsEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 

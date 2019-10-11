@@ -33,7 +33,7 @@ class ExportController extends AbstractController
             'users'		=> [
                 'label'		=> 'Gebruikers',
                 'sql'		=> 'select *
-                    from ' . $app['pp_schema'] . '.users
+                    from ' . $pp->schema() . '.users
                     order by letscode',
                 'columns'	=> [
                     'letscode',
@@ -58,9 +58,9 @@ class ExportController extends AbstractController
             'contacts'	=> [
                 'label'	=> 'Contactgegevens',
                 'sql'	=> 'select c.*, tc.abbrev, u.letscode, u.name
-                    from ' . $app['pp_schema'] . '.contact c, ' .
-                        $app['pp_schema'] . '.type_contact tc, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.contact c, ' .
+                        $pp->schema() . '.type_contact tc, ' .
+                        $pp->schema() . '.users u
                     where c.id_type_contact = tc.id
                         and c.id_user = u.id',
                 'columns'	=> [
@@ -74,7 +74,7 @@ class ExportController extends AbstractController
             ],
             'categories'	=> [
                 'label'		=> 'Categorieën',
-                'sql'		=> 'select * from ' . $app['pp_schema'] . '.categories',
+                'sql'		=> 'select * from ' . $pp->schema() . '.categories',
                 'columns'	=> [
                     'name',
                     'id_parent',
@@ -87,8 +87,8 @@ class ExportController extends AbstractController
             'messages'	=> [
                 'label'		=> 'Vraag en Aanbod',
                 'sql'		=> 'select m.*, u.name as username, u.letscode
-                    from ' . $app['pp_schema'] . '.messages m, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.messages m, ' .
+                        $pp->schema() . '.users u
                     where m.id_user = u.id
                         and validity > ?',
                 'sql_bind'	=> [gmdate('Y-m-d H:i:s')],
@@ -107,9 +107,9 @@ class ExportController extends AbstractController
                                     concat(fu.letscode, \' \', fu.name) as from_user,
                                     concat(tu.letscode, \' \', tu.name) as to_user,
                                     t.cdate, t.real_from, t.real_to, t.amount
-                                from ' . $app['pp_schema'] . '.transactions t, ' .
-                                    $app['pp_schema'] . '.users fu, ' .
-                                    $app['pp_schema'] . '.users tu
+                                from ' . $pp->schema() . '.transactions t, ' .
+                                    $pp->schema() . '.users fu, ' .
+                                    $pp->schema() . '.users tu
                                 where t.id_to = tu.id
                                     and t.id_from = fu.id
                                 order by t.date desc',
@@ -131,7 +131,7 @@ class ExportController extends AbstractController
 
         if ($exec_en && $db_download)
         {
-            $filename = $app['pp_schema'] . '-';
+            $filename = $pp->schema() . '-';
             $filename .= $db_elas ? 'elas-db' : 'eland-xdb';
             $filename .= $db_eland_aggs ? '-aggs' : '';
             $filename .= $db_eland_events ? '-events' : '';
@@ -144,7 +144,7 @@ class ExportController extends AbstractController
             {
                 $exec = 'pg_dump --dbname=';
                 $exec .= getenv('DATABASE_URL');
-                $exec .= ' --schema=' . $app['pp_schema'];
+                $exec .= ' --schema=' . $pp->schema();
                 $exec .= ' --no-owner --no-acl > ' . $filename;
             }
             else
@@ -156,7 +156,7 @@ class ExportController extends AbstractController
                 $exec .= 'from xdb.';
                 $exec .= $db_eland_aggs ? 'aggs' : 'events';
                 $exec .= ' where agg_schema = \'';
-                $exec .= $app['pp_schema'] . '\')';
+                $exec .= $pp->schema() . '\')';
                 $exec .= ' TO ' . $filename;
                 $exec .= ' with delimiter \',\' ';
                 $exec .= 'csv header;"';
@@ -187,7 +187,7 @@ class ExportController extends AbstractController
             $download_log .= $db_eland_events ? 'events' : '';
 
             $logger->info($download_log . ' downloaded',
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
             $response = new Response($out);
 
@@ -230,7 +230,7 @@ class ExportController extends AbstractController
                 }
 
                 $logger->info('csv ' . $ex_key . ' exported.',
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
 
                 $filename = 'elas-' . $ex_key . '-'.date('Y-m-d-H-i-S').'.csv';
 
@@ -245,7 +245,7 @@ class ExportController extends AbstractController
             $buttons .= '<form><input type="submit" name="' . $ex_key . '" ';
             $buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom btn-lg">';
             $buttons .= '<input type="hidden" value="admin" name="r">';
-            $buttons .= '<input type="hidden" value="' . $app['s_id'] . '" name="u">';
+            $buttons .= '<input type="hidden" value="' . $su->id() . '" name="u">';
             $buttons .= '</form>';
         }
 
@@ -265,7 +265,7 @@ class ExportController extends AbstractController
             $out .= '<input type="submit" value="Download" name="db_elas" class="btn btn-default btn-lg margin-bottom">';
             $out .= '<input type="hidden" value="admin" name="r">';
             $out .= '<input type="hidden" value="';
-            $out .= $app['s_id'];
+            $out .= $su->id();
             $out .= '" name="u">';
             $out .= '</form>';
 
@@ -297,7 +297,7 @@ class ExportController extends AbstractController
             $out .= 'class="btn btn-default btn-lg margin-bottom">';
             $out .= '<input type="hidden" value="admin" name="r">';
             $out .= '<input type="hidden" value="';
-            $out .= $app['s_id'];
+            $out .= $su->id();
             $out .= '" name="u">';
             $out .= '</form>';
 
@@ -318,7 +318,7 @@ class ExportController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

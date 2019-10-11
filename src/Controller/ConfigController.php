@@ -44,12 +44,12 @@ class ConfigController extends AbstractController
 
         $block_ary = ConfigCnst::BLOCK_ARY;
 
-        if (!$config_service->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $pp->schema()))
         {
             unset($block_ary['periodic_mail']['forum']);
         }
 
-        if (!$config_service->get_intersystem_en($app['pp_schema']))
+        if (!$config_service->get_intersystem_en($pp->schema()))
         {
             unset($block_ary['periodic_mail']['interlets']);
             unset($cond_ary['config_template_lets']);
@@ -61,12 +61,12 @@ class ConfigController extends AbstractController
         ];
 
         $explain_replace_ary = [
-            '%path_register%'	=> $link_render->path('register', ['system' => $app['pp_system']]),
-            '%path_contact%'	=> $link_render->path('contact', ['system' => $app['pp_system']]),
+            '%path_register%'	=> $link_render->path('register', ['system' => $pp->system()]),
+            '%path_contact%'	=> $link_render->path('contact', ['system' => $pp->system()]),
         ];
 
         $addon_replace_ary = [
-            '%config_currency%'	=> $config_service->get('currency', $app['pp_schema']),
+            '%config_currency%'	=> $config_service->get('currency', $pp->schema()),
         ];
 
         $attr_replace_ary = [
@@ -83,13 +83,13 @@ class ConfigController extends AbstractController
 
                 foreach ($inline_input_names as $inline_input_name)
                 {
-                    $config[$inline_input_name] = $config_service->get($inline_input_name, $app['pp_schema']);
+                    $config[$inline_input_name] = $config_service->get($inline_input_name, $pp->schema());
                 }
 
                 continue;
             }
 
-            $config[$input_name] = $config_service->get($input_name, $app['pp_schema']);
+            $config[$input_name] = $config_service->get($input_name, $pp->schema());
         }
 
         if ($request->isMethod('POST'))
@@ -279,7 +279,7 @@ class ConfigController extends AbstractController
             {
                 $alert_service->warning('Geen gewijzigde waarden.');
 
-                $link_render->redirect('config', $app['pp_ary'],
+                $link_render->redirect('config', $pp->ary(),
                     ['tab' => $tab]);
             }
 
@@ -287,7 +287,7 @@ class ConfigController extends AbstractController
             {
                 $alert_service->error($errors);
 
-                $link_render->redirect('config', $app['pp_ary'],
+                $link_render->redirect('config', $pp->ary(),
                     ['tab' => $tab]);
             }
 
@@ -295,7 +295,7 @@ class ConfigController extends AbstractController
 
             foreach ($posted_configs as $input_name => $posted_value)
             {
-                $config_service->set($input_name, $app['pp_schema'], $posted_value);
+                $config_service->set($input_name, $pp->schema(), $posted_value);
 
                 // prevent string too long error for eLAS database
 
@@ -308,7 +308,7 @@ class ConfigController extends AbstractController
 
                 $posted_value = substr($posted_value, 0, 60);
 
-                $db->update($app['pp_schema'] . '.config',
+                $db->update($pp->schema() . '.config',
                     ['value' => $posted_value, '"default"' => 'f'],
                     ['setting' => $input_name]);
 
@@ -334,7 +334,7 @@ class ConfigController extends AbstractController
                 $alert_service->success('De instelling is aangepast.');
             }
 
-            $link_render->redirect('config', $app['pp_ary'],
+            $link_render->redirect('config', $pp->ary(),
                 ['tab' => $tab]);
         }
 
@@ -356,7 +356,7 @@ class ConfigController extends AbstractController
             $out .= $tab_id === $tab ? ' class="active"' : '';
             $out .= '>';
             $out .= $link_render->link_no_attr('config',
-                $app['pp_ary'],
+                $pp->ary(),
                 ['tab' => $tab_id],
                 $tab_pane_data['lbl']);
             $out .= '</li>';
@@ -763,7 +763,7 @@ class ConfigController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -900,7 +900,7 @@ class ConfigController extends AbstractController
         string $env_s3_url
     )
     {
-        $logo = $config_service->get('logo', $app['pp_schema']);
+        $logo = $config_service->get('logo', $pp->schema());
 
         $out = '<div class="panel-body bg-info">';
         $out .= '<div class="col-md-6">';
@@ -948,7 +948,7 @@ class ConfigController extends AbstractController
         $out .= '<input id="fileupload" type="file" name="image" ';
         $out .= 'data-url="';
 
-        $out .= $link_render->context_path('logo_upload', $app['pp_ary'], []);
+        $out .= $link_render->context_path('logo_upload', $pp->ary(), []);
 
         $out .= '" ';
         $out .= 'data-data-type="json" data-auto-upload="true" ';
@@ -966,7 +966,7 @@ class ConfigController extends AbstractController
         $out .= '(bvb. <a href="https://gimp.org">GIMP</a>") om te positioneren';
         $out .= '</p>';
 
-        $out .= $link_render->link_fa('logo_del', $app['pp_ary'],
+        $out .= $link_render->link_fa('logo_del', $pp->ary(),
             [], 'Logo verwijderen',
             array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
             'times');

@@ -26,13 +26,13 @@ class ForumDelController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $pp->schema()))
         {
             $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($app['r_default'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('default'), $pp->ary(), []);
         }
 
-        $row = $xdb_service->get('forum', $forum_id, $app['pp_schema']);
+        $row = $xdb_service->get('forum', $forum_id, $pp->schema());
 
         if ($row)
         {
@@ -42,25 +42,25 @@ class ForumDelController extends AbstractController
         if (!isset($forum_post))
         {
             $alert_service->error('Post niet gevonden.');
-            $link_render->redirect('forum', $app['pp_ary'], []);
+            $link_render->redirect('forum', $pp->ary(), []);
         }
 
         $s_owner = $forum_post['uid']
-            && (int) $forum_post['uid'] === $app['s_id'];
+            && (int) $forum_post['uid'] === $su->id();
 
         $is_topic = !isset($forum_post['parent_id']);
 
-        if (!($app['pp_admin'] || $s_owner))
+        if (!($pp->is_admin() || $s_owner))
         {
             if ($is_topic)
             {
                 $alert_service->error('Je hebt onvoldoende rechten om dit onderwerp te verwijderen.');
-                $link_render->redirect('forum_topic', $app['pp_ary'],
+                $link_render->redirect('forum_topic', $pp->ary(),
                     ['topic_id' => $forum_id]);
             }
 
             $alert_service->error('Je hebt onvoldoende rechten om deze reactie te verwijderen.');
-            $link_render->redirect('forum_topic', $app['pp_ary'],
+            $link_render->redirect('forum_topic', $pp->ary(),
                 ['topic_id' => $forum_post['parent_id']]);
         }
 
@@ -72,26 +72,26 @@ class ForumDelController extends AbstractController
             }
             else
             {
-                $xdb_service->del('forum', $forum_id, $app['pp_schema']);
+                $xdb_service->del('forum', $forum_id, $pp->schema());
 
                 if ($is_topic)
                 {
                     $rows = $xdb_service->get_many(['agg_type' => 'forum',
-                        'agg_schema' => $app['pp_schema'],
+                        'agg_schema' => $pp->schema(),
                         'data->>\'parent_id\'' => $forum_id]);
 
                     foreach ($rows as $row)
                     {
-                        $xdb_service->del('forum', $row['eland_id'], $app['pp_schema']);
+                        $xdb_service->del('forum', $row['eland_id'], $pp->schema());
                     }
 
                     $alert_service->success('Het forum onderwerp is verwijderd.');
-                    $link_render->redirect('forum', $app['pp_ary'], []);
+                    $link_render->redirect('forum', $pp->ary(), []);
                 }
 
                 $alert_service->success('De reactie is verwijderd.');
 
-                $link_render->redirect('forum_topic', $app['pp_ary'],
+                $link_render->redirect('forum_topic', $pp->ary(),
                     ['topic_id' => $forum_post['parent_id']]);
             }
         }
@@ -99,7 +99,7 @@ class ForumDelController extends AbstractController
         if ($is_topic)
         {
             $heading_render->add('Forum onderwerp ');
-            $heading_render->add_raw($link_render->link_no_attr('forum_topic', $app['pp_ary'],
+            $heading_render->add_raw($link_render->link_no_attr('forum_topic', $pp->ary(),
                 ['topic_id' => $forum_id], $forum_post['subject']));
             $heading_render->add(' verwijderen?');
         }
@@ -121,12 +121,12 @@ class ForumDelController extends AbstractController
 
         if ($is_topic)
         {
-            $out .= $link_render->btn_cancel('forum_topic', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('forum_topic', $pp->ary(),
                 ['topic_id' => $forum_id]);
         }
         else
         {
-            $out .= $link_render->btn_cancel('forum_topic', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('forum_topic', $pp->ary(),
                 ['topic_id' => $forum_post['parent_id']]);
         }
 
@@ -144,7 +144,7 @@ class ForumDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

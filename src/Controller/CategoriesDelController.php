@@ -32,20 +32,20 @@ class CategoriesDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('categories', $app['pp_ary'], []);
+                $link_render->redirect('categories', $pp->ary(), []);
             }
 
-            if ($db->delete($app['pp_schema'] . '.categories', ['id' => $id]))
+            if ($db->delete($pp->schema() . '.categories', ['id' => $id]))
             {
                 $alert_service->success('Categorie verwijderd.');
-                $link_render->redirect('categories', $app['pp_ary'], []);
+                $link_render->redirect('categories', $pp->ary(), []);
             }
 
             $alert_service->error('Categorie niet verwijderd.');
         }
 
         $fullname = $db->fetchColumn('select fullname
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             where id = ?', [$id]);
 
         $heading_render->add('Categorie verwijderen : ');
@@ -59,7 +59,7 @@ class CategoriesDelController extends AbstractController
         $out .= " moet verwijderd worden?</strong></font></p>";
         $out .= '<form method="post">';
 
-        $out .= $link_render->btn_cancel('categories', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
@@ -74,7 +74,7 @@ class CategoriesDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

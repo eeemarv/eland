@@ -25,13 +25,13 @@ class RegisterTokenController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('registration_en', $app['pp_schema']))
+        if (!$config_service->get('registration_en', $pp->schema()))
         {
             $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $link_render->redirect('login', $app['pp_ary'], []);
+            $link_render->redirect('login', $pp->ary(), []);
         }
 
-        $data = $data_token_service->retrieve($token, 'register', $app['pp_schema']);
+        $data = $data_token_service->retrieve($token, 'register', $pp->schema());
 
         if (!$data)
         {
@@ -45,7 +45,7 @@ class RegisterTokenController extends AbstractController
             $out .= '</div>';
             $out .= '<div class="panel-body">';
 
-            $out .= $link_render->link('register', $app['pp_ary'],
+            $out .= $link_render->link('register', $pp->ary(),
                 [], 'Opnieuw proberen', ['class' => 'btn btn-default']);
 
             $out .= '</div>';
@@ -55,11 +55,11 @@ class RegisterTokenController extends AbstractController
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['pp_schema'],
+                'schema'    => $pp->schema(),
             ]);
         }
 
-        $data_token_service->del($token, 'register', $app['pp_schema']);
+        $data_token_service->del($token, 'register', $pp->schema());
 
         for ($i = 0; $i < 20; $i++)
         {
@@ -75,22 +75,22 @@ class RegisterTokenController extends AbstractController
                 }
                 else
                 {
-                    $name .= substr(hash('sha512', $app['pp_schema'] . time() . mt_rand(0, 100000)), 0, 4);
+                    $name .= substr(hash('sha512', $pp->schema() . time() . mt_rand(0, 100000)), 0, 4);
                 }
             }
 
             if (!$db->fetchColumn('select name
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where name = ?', [$name]))
             {
                 break;
             }
         }
 
-        $minlimit = $config_service->get('preset_minlimit', $app['pp_schema']);
+        $minlimit = $config_service->get('preset_minlimit', $pp->schema());
         $minlimit = $minlimit === '' ? -999999999 : $minlimit;
 
-        $maxlimit = $config_service->get('preset_maxlimit', $app['pp_schema']);
+        $maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
         $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
         $user = [
@@ -113,14 +113,14 @@ class RegisterTokenController extends AbstractController
 
         try
         {
-            $db->insert($app['pp_schema'] . '.users', $user);
+            $db->insert($pp->schema() . '.users', $user);
 
-            $user_id = $db->lastInsertId($app['pp_schema'] . '.users_id_seq');
+            $user_id = $db->lastInsertId($pp->schema() . '.users_id_seq');
 
             $tc = [];
 
             $rs = $db->prepare('select abbrev, id
-                from ' . $app['pp_schema'] . '.type_contact');
+                from ' . $pp->schema() . '.type_contact');
 
             $rs->execute();
 
@@ -138,7 +138,7 @@ class RegisterTokenController extends AbstractController
                 'id_type_contact'	=> $tc['mail'],
             ];
 
-            $db->insert($app['pp_schema'] . '.contact', $mail);
+            $db->insert($pp->schema() . '.contact', $mail);
 
             if ($data['gsm'] || $data['tel'])
             {
@@ -151,7 +151,7 @@ class RegisterTokenController extends AbstractController
                         'id_type_contact'	=> $tc['gsm'],
                     ];
 
-                    $db->insert($app['pp_schema'] . '.contact', $gsm);
+                    $db->insert($pp->schema() . '.contact', $gsm);
                 }
 
                 if ($data['tel'])
@@ -163,7 +163,7 @@ class RegisterTokenController extends AbstractController
                         'id_type_contact'	=> $tc['tel'],
                     ];
 
-                    $db->insert($app['pp_schema'] . '.contact', $tel);
+                    $db->insert($pp->schema() . '.contact', $tel);
                 }
             }
             $db->commit();
@@ -181,8 +181,8 @@ class RegisterTokenController extends AbstractController
         ];
 
         $mail_queue->queue([
-            'schema'		=> $app['pp_schema'],
-            'to' 			=> $mail_addr_system_service->get_admin($app['pp_schema']),
+            'schema'		=> $pp->schema(),
+            'to' 			=> $mail_addr_system_service->get_admin($pp->schema()),
             'vars'			=> $vars,
             'template'		=> 'register/admin',
         ], 8000);
@@ -199,27 +199,27 @@ class RegisterTokenController extends AbstractController
         }
 
         $vars['subject'] = $app['translator']->trans('register_success.subject', [
-            '%system_name%'	=> $config_service->get('systemname', $app['pp_schema']),
+            '%system_name%'	=> $config_service->get('systemname', $pp->schema()),
         ], 'mail');
 
         $mail_queue->queue([
-            'schema'				=> $app['pp_schema'],
+            'schema'				=> $pp->schema(),
             'to' 					=> [$data['email'] => $user['fullname']],
-            'reply_to'				=> $mail_addr_system_service->get_admin($app['pp_schema']),
-            'pre_html_template'		=> $config_service->get('registration_success_mail', $app['pp_schema']),
+            'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
+            'pre_html_template'		=> $config_service->get('registration_success_mail', $pp->schema()),
             'template'				=> 'skeleton',
             'vars'					=> $vars,
         ], 8500);
 
         $alert_service->success('Inschrijving voltooid.');
 
-        $registration_success_text = $config_service->get('registration_success_text', $app['pp_schema']);
+        $registration_success_text = $config_service->get('registration_success_text', $pp->schema());
 
         $menu_service->set('register');
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $registration_success_text ?: '',
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

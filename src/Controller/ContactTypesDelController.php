@@ -27,23 +27,23 @@ class ContactTypesDelController extends AbstractController
     ):Response
     {
         $ct = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.type_contact
+            from ' . $pp->schema() . '.type_contact
             where id = ?', [$id]);
 
         if (in_array($ct['abbrev'], ContactTypesController::PROTECTED))
         {
             $alert_service->warning('Beschermd contact type.');
-            $link_render->redirect('contact_types', $app['pp_ary'], []);
+            $link_render->redirect('contact_types', $pp->ary(), []);
         }
 
         if ($db->fetchColumn('select id
-            from ' . $app['pp_schema'] . '.contact
+            from ' . $pp->schema() . '.contact
             where id_type_contact = ?', [$id]))
         {
             $alert_service->warning('Er is ten minste één contact
                 van dit contact type, dus kan het contact type
                 niet verwijderd worden.');
-            $link_render->redirect('contact_types', $app['pp_ary'], []);
+            $link_render->redirect('contact_types', $pp->ary(), []);
         }
 
         if($request->isMethod('POST'))
@@ -51,10 +51,10 @@ class ContactTypesDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('contact_types', $app['pp_ary'], []);
+                $link_render->redirect('contact_types', $pp->ary(), []);
             }
 
-            if ($db->delete($app['pp_schema'] . '.type_contact', ['id' => $id]))
+            if ($db->delete($pp->schema() . '.type_contact', ['id' => $id]))
             {
                 $alert_service->success('Contact type verwijderd.');
             }
@@ -63,7 +63,7 @@ class ContactTypesDelController extends AbstractController
                 $alert_service->error('Fout bij het verwijderen.');
             }
 
-            $link_render->redirect('contact_types', $app['pp_ary'], []);
+            $link_render->redirect('contact_types', $pp->ary(), []);
         }
 
         $heading_render->add('Contact type verwijderen: ' . $ct['name']);
@@ -74,7 +74,7 @@ class ContactTypesDelController extends AbstractController
         $out .= '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
         $out .= '<form method="post">';
 
-        $out .= $link_render->btn_cancel('contact_types', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('contact_types', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
@@ -89,7 +89,7 @@ class ContactTypesDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

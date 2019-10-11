@@ -57,7 +57,7 @@ class NewsEditController extends AbstractController
 
             if ($news['itemdate'])
             {
-                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $app['pp_schema']);
+                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $pp->schema());
 
                 if ($news['itemdate'] === '')
                 {
@@ -91,14 +91,14 @@ class NewsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if($db->update($app['pp_schema'] . '.news', $news, ['id' => $id]))
+                if($db->update($pp->schema() . '.news', $news, ['id' => $id]))
                 {
                     $xdb_service->set('news_access', (string) $id, [
                         'access' => AccessCnst::TO_XDB[$access]
-                    ], $app['pp_schema']);
+                    ], $pp->schema());
 
                     $alert_service->success('Nieuwsbericht aangepast.');
-                    $link_render->redirect('news_show', $app['pp_ary'], ['id' => $id]);
+                    $link_render->redirect('news_show', $pp->ary(), ['id' => $id]);
                 }
 
                 $errors[] = 'Nieuwsbericht niet aangepast.';
@@ -109,11 +109,11 @@ class NewsEditController extends AbstractController
         else
         {
             $news = $db->fetchAssoc('select *
-                from ' . $app['pp_schema'] . '.news
+                from ' . $pp->schema() . '.news
                 where id = ?', [$id]);
 
             $access = $xdb_service->get('news_access', (string) $id,
-                $app['pp_schema'])['data']['access'];
+                $pp->schema())['data']['access'];
 
             $access = AccessCnst::FROM_XDB[$access];
         }
@@ -148,17 +148,17 @@ class NewsEditController extends AbstractController
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($app['pp_schema']);
+        $out .= $date_format_service->datepicker_format($pp->schema());
         $out .= '" ';
         $out .= 'data-date-language="nl" ';
         $out .= 'data-date-today-highlight="true" ';
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($news['itemdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($news['itemdate'], 'day', $pp->schema());
         $out .= '" ';
         $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($app['pp_schema']);
+        $out .= $date_format_service->datepicker_placeholder($pp->schema());
         $out .= '" ';
         $out .= 'required>';
         $out .= '</div>';
@@ -198,9 +198,9 @@ class NewsEditController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $app['pp_user']);
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $pp->is_user());
 
-        $out .= $link_render->btn_cancel('news_show', $app['pp_ary'],
+        $out .= $link_render->btn_cancel('news_show', $pp->ary(),
             ['id' => $id]);
 
         $out .= '&nbsp;';
@@ -217,7 +217,7 @@ class NewsEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

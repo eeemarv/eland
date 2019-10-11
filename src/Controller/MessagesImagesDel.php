@@ -36,22 +36,22 @@ class MessagesImagesDel extends AbstractController
             throw new BadRequestHttpException('Form token fout: ' . $error);
         }
 
-        $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
+        $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
         if (!$message)
         {
             throw new NotFoundHttpException('Bericht niet gevonden.');
         }
 
-        $s_owner = $app['s_id'] === $message['id_user'];
+        $s_owner = $su->id() === $message['id_user'];
 
-        if (!($s_owner || $app['pp_admin']))
+        if (!($s_owner || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }
 
         $image = $db->fetchAssoc('select p."PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures p
+            from ' . $pp->schema() . '.msgpictures p
             where p.msgid = ?
                 and p."PictureFile" = ?', [$id, $img]);
 
@@ -60,7 +60,7 @@ class MessagesImagesDel extends AbstractController
             throw new NotFoundHttpException('Afbeelding niet gevonden');
         }
 
-        $db->delete($app['pp_schema'] . '.msgpictures', ['"PictureFile"' => $img]);
+        $db->delete($pp->schema() . '.msgpictures', ['"PictureFile"' => $img]);
 
         return $this->json(['success' => true]);
     }
@@ -81,11 +81,11 @@ class MessagesImagesDel extends AbstractController
     {
         $errors = [];
 
-        $message = messages_show::get_message($db, $id, $app['pp_schema']);
+        $message = messages_show::get_message($db, $id, $pp->schema());
 
-        $s_owner = $app['s_id'] && $app['s_id'] === $message['id_user'];
+        $s_owner = $su->id() && $su->id() === $message['id_user'];
 
-        if (!($s_owner || $app['pp_admin']))
+        if (!($s_owner || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException(
                 'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
@@ -100,12 +100,12 @@ class MessagesImagesDel extends AbstractController
 
             if (!count($errors))
             {
-                $db->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
+                $db->delete($pp->schema() . '.msgpictures', ['msgid' => $id]);
 
                 $alert_service->success('De afbeeldingen voor ' . $message['label']['type_this'] .
                     ' zijn verwijderd.');
 
-                $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+                $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
             }
 
             $alert_service->error($errors);
@@ -114,7 +114,7 @@ class MessagesImagesDel extends AbstractController
         $images = [];
 
         $st = $db->prepare('select "PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures
+            from ' . $pp->schema() . '.msgpictures
             where msgid = ?');
         $st->bindValue(1, $id);
         $st->execute();
@@ -127,7 +127,7 @@ class MessagesImagesDel extends AbstractController
         if (!count($images))
         {
             $alert_service->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
-            $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
         $heading_render->add('Afbeeldingen verwijderen voor ');
@@ -140,10 +140,10 @@ class MessagesImagesDel extends AbstractController
 
         $assets_service->add(['messages_images_del.js']);
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $heading_render->add_sub('Gebruiker: ');
-            $heading_render->add_sub_raw($account_render->link($message['id_user'], $app['pp_ary']));
+            $heading_render->add_sub_raw($account_render->link($message['id_user'], $pp->ary()));
         }
 
         $out = '<div class="row">';
@@ -166,7 +166,7 @@ class MessagesImagesDel extends AbstractController
 
             [$img_base, $ext] = explode('.', $img);
 
-            $out .= $link_render->context_path('messages_images_instant_del', $app['pp_ary'], [
+            $out .= $link_render->context_path('messages_images_instant_del', $pp->ary(), [
                 'img'           => $img_base,
                 'ext'           => $ext,
                 'form_token'    => $form_token,
@@ -194,7 +194,7 @@ class MessagesImagesDel extends AbstractController
         $out .= $message['content'];
         $out .= '"?</h3>';
 
-        $out .= $link_render->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('messages_show', $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger btn-lg">';
@@ -209,7 +209,7 @@ class MessagesImagesDel extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

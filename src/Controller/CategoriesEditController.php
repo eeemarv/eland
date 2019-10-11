@@ -31,7 +31,7 @@ class CategoriesEditController extends AbstractController
         $cats = [];
 
         $rs = $db->prepare('select *
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             order by fullname');
 
         $rs->execute();
@@ -81,21 +81,21 @@ class CategoriesEditController extends AbstractController
                 if ($cat['id_parent'])
                 {
                     $prefix .= $db->fetchColumn('select name
-                        from ' . $app['pp_schema'] . '.categories
+                        from ' . $pp->schema() . '.categories
                         where id = ?', [$cat['id_parent']]) . ' - ';
                 }
 
                 $cat['fullname'] = $prefix . $cat['name'];
                 unset($cat['id']);
 
-                if ($db->update($app['pp_schema'] . '.categories', $cat, ['id' => $id]))
+                if ($db->update($pp->schema() . '.categories', $cat, ['id' => $id]))
                 {
                     $alert_service->success('Categorie aangepast.');
-                    $db->executeUpdate('update ' . $app['pp_schema'] . '.categories
+                    $db->executeUpdate('update ' . $pp->schema() . '.categories
                         set fullname = ? || \' - \' || name
                         where id_parent = ?', [$cat['name'], $id]);
 
-                    $link_render->redirect('categories', $app['pp_ary'], []);
+                    $link_render->redirect('categories', $pp->ary(), []);
                 }
 
                 $alert_service->error('Categorie niet aangepast.');
@@ -105,7 +105,7 @@ class CategoriesEditController extends AbstractController
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $db->prepare('select id, name
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             where leafnote = 0
             order by name');
 
@@ -149,7 +149,7 @@ class CategoriesEditController extends AbstractController
         $out .= '</select>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('categories', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" ';
@@ -165,7 +165,7 @@ class CategoriesEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

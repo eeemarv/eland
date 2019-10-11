@@ -23,9 +23,9 @@ class StatusController extends AbstractController
         $status_msgs = false;
 
         $non_unique_mail = $db->fetchAll('select c.value, count(c.*)
-            from ' . $app['pp_schema'] . '.contact c, ' .
-                $app['pp_schema'] . '.type_contact tc, ' .
-                $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.contact c, ' .
+                $pp->schema() . '.type_contact tc, ' .
+                $pp->schema() . '.users u
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'mail\'
                 and c.id_user = u.id
@@ -36,7 +36,7 @@ class StatusController extends AbstractController
         if (count($non_unique_mail))
         {
             $st = $db->prepare('select id_user
-                from ' . $app['pp_schema'] . '.contact c
+                from ' . $pp->schema() . '.contact c
                 where c.value = ?');
 
             foreach ($non_unique_mail as $key => $ary)
@@ -56,7 +56,7 @@ class StatusController extends AbstractController
         //
 
         $non_unique_letscode = $db->fetchAll('select letscode, count(*)
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where letscode <> \'\'
             group by letscode
             having count(*) > 1');
@@ -64,7 +64,7 @@ class StatusController extends AbstractController
         if (count($non_unique_letscode))
         {
             $st = $db->prepare('select id
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where letscode = ?');
 
             foreach ($non_unique_letscode as $key => $ary)
@@ -84,7 +84,7 @@ class StatusController extends AbstractController
         //
 
         $non_unique_name = $db->fetchAll('select name, count(*)
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where name <> \'\'
             group by name
             having count(*) > 1');
@@ -92,7 +92,7 @@ class StatusController extends AbstractController
         if (count($non_unique_name))
         {
             $st = $db->prepare('select id
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where name = ?');
 
             foreach ($non_unique_name as $key => $ary)
@@ -112,8 +112,8 @@ class StatusController extends AbstractController
         //
 
         $unvalid_mail = $db->fetchAll('select c.id, c.value, c.id_user
-            from ' . $app['pp_schema'] . '.contact c, ' .
-                $app['pp_schema'] . '.type_contact tc
+            from ' . $pp->schema() . '.contact c, ' .
+                $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'mail\'
                 and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
@@ -122,11 +122,11 @@ class StatusController extends AbstractController
         $no_mail = array();
 
         $st = $db->prepare(' select u.id
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where u.status in (1, 2)
                 and not exists (select c.id
-                    from ' . $app['pp_schema'] . '.contact c, ' .
-                        $app['pp_schema'] . '.type_contact tc
+                    from ' . $pp->schema() . '.contact c, ' .
+                        $pp->schema() . '.type_contact tc
                     where c.id_user = u.id
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\')');
@@ -140,11 +140,11 @@ class StatusController extends AbstractController
         }
 
         $empty_letscode = $db->fetchAll('select id
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where status in (1, 2) and letscode = \'\'');
 
         $empty_name = $db->fetchAll('select id
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where name = \'\'');
 
         if ($unvalid_mail || $empty_letscode || $empty_name)
@@ -153,10 +153,10 @@ class StatusController extends AbstractController
         }
 
         $no_msgs_users = $db->fetchAll('select id, letscode, name, saldo, status
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where status in (1, 2)
                 and not exists (select 1
-                    from ' . $app['pp_schema'] . '.messages m
+                    from ' . $pp->schema() . '.messages m
                     where m.id_user = u.id)');
 
         if (count($no_msgs_users))
@@ -208,7 +208,7 @@ class StatusController extends AbstractController
 
                     foreach($ary['users'] as $user_id => $dummy)
                     {
-                        $user_ary[] = $account_render->link($user_id, $app['pp_ary']);
+                        $user_ary[] = $account_render->link($user_id, $pp->ary());
                     }
 
                     $out .= implode(', ', $user_ary);
@@ -252,7 +252,7 @@ class StatusController extends AbstractController
 
                     foreach($ary['users'] as $user_id => $dummy)
                     {
-                        $user_ary[] = $account_render->link($user_id, $app['pp_ary']);
+                        $user_ary[] = $account_render->link($user_id, $pp->ary());
                     }
 
                     $out .= implode(', ', $user_ary);
@@ -291,7 +291,7 @@ class StatusController extends AbstractController
 
                     foreach($ary['users'] as $user_id => $dummy)
                     {
-                        $user_ary[] = $account_render->link($user_id, $app['pp_ary']);
+                        $user_ary[] = $account_render->link($user_id, $pp->ary());
                     }
 
                     $out .= implode(', ', $user_ary);
@@ -324,18 +324,18 @@ class StatusController extends AbstractController
                     $out .= '<li>';
                     $out .= $ary['value'] .  ' ';
 
-                    $out .= $link_render->link('contacts', $app['pp_ary'],
+                    $out .= $link_render->link('contacts', $pp->ary(),
                         ['edit' => $ary['id']], 'Aanpassen',
                         ['class' => 'btn btn-default']);
 
                     $out .= ' ';
 
-                    $out .= $link_render->link('contacts', $app['pp_ary'],
+                    $out .= $link_render->link('contacts', $pp->ary(),
                         ['del' => $ary['id']], 'Verwijderen',
                         ['class' => 'btn btn-danger btn-xs']);
                     $out .= ' : ';
 
-                    $out .= $account_render->link($ary['id_user'], $app['pp_ary']);
+                    $out .= $account_render->link($ary['id_user'], $pp->ary());
 
                     $out .= '</li>';
                 }
@@ -361,7 +361,7 @@ class StatusController extends AbstractController
                 foreach ($no_mail as $user_id)
                 {
                     $out .= '<li>';
-                    $out .= $account_render->link($user_id, $app['pp_ary']);
+                    $out .= $account_render->link($user_id, $pp->ary());
                     $out .= '</li>';
                 }
 
@@ -385,7 +385,7 @@ class StatusController extends AbstractController
                 foreach ($empty_name as $ary)
                 {
                     $out .= '<li>';
-                    $out .= $account_render->link($ary['id'], $app['pp_ary']);
+                    $out .= $account_render->link($ary['id'], $pp->ary());
                     $out .= '</li>';
                 }
 
@@ -409,7 +409,7 @@ class StatusController extends AbstractController
                 foreach ($empty_letscode as $ary)
                 {
                     $out .= '<li>';
-                    $out .= $account_render->link($ary['id'], $app['pp_ary']);
+                    $out .= $account_render->link($ary['id'], $pp->ary());
                     $out .= '</li>';
                 }
 
@@ -431,12 +431,12 @@ class StatusController extends AbstractController
 
                 $out .= '<ul>';
 
-                $currency = $config_service->get('currency', $app['pp_schema']);
+                $currency = $config_service->get('currency', $pp->schema());
 
                 foreach ($no_msgs_users as $u)
                 {
                     $out .= '<li>';
-                    $out .= $account_render->link($u['id'], $app['pp_ary']);
+                    $out .= $account_render->link($u['id'], $pp->ary());
                     $out .= $u['status'] == 2 ? ' <span class="text-danger">Uitstapper</span>' : '';
                     $out .= ', saldo: ';
                     $out .= $u['saldo'];
@@ -465,7 +465,7 @@ class StatusController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

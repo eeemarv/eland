@@ -46,8 +46,8 @@ class LoginController extends AbstractController
                 && $master_password
                 && hash('sha512', $password) === $master_password)
             {
-                $s_logins = array_merge($app['s_logins'], [
-                    $app['pp_schema'] 	=> 'master',
+                $s_logins = array_merge($su->logins(), [
+                    $pp->schema() 	=> 'master',
                 ]);
                 $session->set('logins', $s_logins);
 
@@ -60,11 +60,11 @@ class LoginController extends AbstractController
                 }
 
                 $pp_ary = [
-                    'system'        => $app['pp_system'],
+                    'system'        => $pp->system(),
                     'role_short'    => 'a',
                 ];
 
-                $link_render->redirect($app['r_default'], $pp_ary, []);
+                $link_render->redirect($vr->get('default'), $pp_ary, []);
             }
 
             $user_id = false;
@@ -72,9 +72,9 @@ class LoginController extends AbstractController
             if (!count($errors) && filter_var($lc_login, FILTER_VALIDATE_EMAIL))
             {
                 $count_email = $db->fetchColumn('select count(c.*)
-                    from ' . $app['pp_schema'] . '.contact c, ' .
-                        $app['pp_schema'] . '.type_contact tc, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.contact c, ' .
+                        $pp->schema() . '.type_contact tc, ' .
+                        $pp->schema() . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
                         and c.id_user = u.id
@@ -84,9 +84,9 @@ class LoginController extends AbstractController
                 if ($count_email == 1)
                 {
                     $user_id = $db->fetchColumn('select u.id
-                        from ' . $app['pp_schema'] . '.contact c, ' .
-                            $app['pp_schema'] . '.type_contact tc, ' .
-                            $app['pp_schema'] . '.users u
+                        from ' . $pp->schema() . '.contact c, ' .
+                            $pp->schema() . '.type_contact tc, ' .
+                            $pp->schema() . '.users u
                         where c.id_type_contact = tc.id
                             and tc.abbrev = \'mail\'
                             and c.id_user = u.id
@@ -106,7 +106,7 @@ class LoginController extends AbstractController
             if (!$user_id && !count($errors))
             {
                 $count_letscode = $db->fetchColumn('select count(u.*)
-                    from ' . $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.users u
                     where lower(letscode) = ?', [$lc_login]);
 
                 if ($count_letscode > 1)
@@ -120,7 +120,7 @@ class LoginController extends AbstractController
                 else if ($count_letscode == 1)
                 {
                     $user_id = $db->fetchColumn('select id
-                        from ' . $app['pp_schema'] . '.users
+                        from ' . $pp->schema() . '.users
                         where lower(letscode) = ?', [$lc_login]);
                 }
             }
@@ -128,7 +128,7 @@ class LoginController extends AbstractController
             if (!$user_id && !count($errors))
             {
                 $count_name = $db->fetchColumn('select count(u.*)
-                    from ' . $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.users u
                     where lower(name) = ?', [$lc_login]);
 
                 if ($count_name > 1)
@@ -142,7 +142,7 @@ class LoginController extends AbstractController
                 else if ($count_name == 1)
                 {
                     $user_id = $db->fetchColumn('select id
-                        from ' . $app['pp_schema'] . '.users
+                        from ' . $pp->schema() . '.users
                         where lower(name) = ?', [$lc_login]);
                 }
             }
@@ -153,7 +153,7 @@ class LoginController extends AbstractController
             }
             else if ($user_id && !count($errors))
             {
-                $user = $user_cache_service->get($user_id, $app['pp_schema']);
+                $user = $user_cache_service->get($user_id, $pp->schema());
 
                 if (!$user)
                 {
@@ -165,7 +165,7 @@ class LoginController extends AbstractController
                         'user_id'	=> $user['id'],
                         'letscode'	=> $user['letscode'],
                         'username'	=> $user['name'],
-                        'schema' 	=> $app['pp_schema'],
+                        'schema' 	=> $pp->schema(),
                     ];
 
                     $sha512 = hash('sha512', $password);
@@ -178,7 +178,7 @@ class LoginController extends AbstractController
                     }
                     else if ($user['password'] !== $sha512)
                     {
-                        $db->update($app['pp_schema'] . '.users',
+                        $db->update($pp->schema() . '.users',
                             ['password' => hash('sha512', $password)],
                             ['id' => $user_id]);
 
@@ -198,7 +198,7 @@ class LoginController extends AbstractController
             }
 
             if (!count($errors)
-                && $config_service->get('maintenance', $app['pp_schema'])
+                && $config_service->get('maintenance', $pp->schema())
                 && $user['accountrole'] != 'admin')
             {
                 $errors[] = 'De website is in onderhoud, probeer later opnieuw';
@@ -206,8 +206,8 @@ class LoginController extends AbstractController
 
             if (!count($errors))
             {
-                $s_logins = array_merge($app['s_logins'], [
-                    $app['pp_schema'] 	=> $user_id,
+                $s_logins = array_merge($su->logins(), [
+                    $pp->schema() 	=> $user_id,
                 ]);
 
                 $session->set('logins', $s_logins);
@@ -215,18 +215,18 @@ class LoginController extends AbstractController
                 $agent = $request->server->get('HTTP_USER_AGENT');
 
                 $logger->info('User ' .
-                    $account_render->str_id($user_id, $app['pp_schema']) .
+                    $account_render->str_id($user_id, $pp->schema()) .
                     ' logged in, agent: ' . $agent, $log_ary);
 
-                $db->update($app['pp_schema'] . '.users',
+                $db->update($pp->schema() . '.users',
                     ['lastlogin' => gmdate('Y-m-d H:i:s')],
                     ['id' => $user_id]);
 
-                $user_cache_service->clear($user_id, $app['pp_schema']);
+                $user_cache_service->clear($user_id, $pp->schema());
 
                 $xdb_service->set('login', (string) $user_id, [
                     'browser' => $agent, 'time' => time()
-                ], $app['s_schema']);
+                ], $su->schema());
 
                 $alert_service->success('Je bent ingelogd.');
 
@@ -237,17 +237,17 @@ class LoginController extends AbstractController
                 }
 
                 $pp_ary = [
-                    'system'        => $app['pp_system'],
+                    'system'        => $pp->system(),
                     'role_short'    => RoleCnst::SHORT[$user['accountrole']],
                 ];
 
-                $link_render->redirect($app['r_default'], $pp_ary, []);
+                $link_render->redirect($vr->get('default'), $pp_ary, []);
             }
 
             $alert_service->error($errors);
         }
 
-        if($config_service->get('maintenance', $app['pp_schema']))
+        if($config_service->get('maintenance', $pp->schema()))
         {
             $alert_service->warning('De website is niet beschikbaar
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen');
@@ -290,7 +290,7 @@ class LoginController extends AbstractController
         $out .= '</div>';
         $out .= '<p>';
         $out .= $link_render->link_no_attr('password_reset',
-            $app['pp_ary'], [],
+            $pp->ary(), [],
             'Klik hier als je je paswoord vergeten bent.');
         $out .= '</p>';
         $out .= '</div>';
@@ -307,7 +307,7 @@ class LoginController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

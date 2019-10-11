@@ -2,16 +2,37 @@
 
 namespace App\Controller;
 
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\ConfigService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SystemsService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Predis\Client as Predis;
 
 class IntersystemsController extends AbstractController
 {
-    public function intersystems(app $app, Db $db):Response
+    public function intersystems(
+        Db $db,
+        Predis $predis,
+        BtnTopRender $btn_top_render,
+        HeadingRender $heading_render,
+        ConfigService $config_service,
+        LinkRender $link_render,
+        PageParamsService $pp,
+        VarRouteService $vr,
+        SystemsService $systems_service,
+        MenuService $menu_service
+    ):Response
     {
         $intersystems = $db->fetchAll('select *
-            from ' . $app['pp_schema'] . '.letsgroups');
+            from ' . $pp->schema() . '.letsgroups');
 
         $letscodes = [];
 
@@ -35,7 +56,7 @@ class IntersystemsController extends AbstractController
             else if ($sys['apimethod'] == 'internal')
             {
                 $intersystems[$key]['user_count'] = $db->fetchColumn('select count(*)
-                    from ' . $app['pp_schema'] . '.users
+                    from ' . $pp->schema() . '.users
                     where status in (1, 2)');
             }
             else
@@ -47,7 +68,7 @@ class IntersystemsController extends AbstractController
         $users_letscode = [];
 
         $intersystem_users = $db->executeQuery('select id, status, letscode, accountrole
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where letscode in (?)',
             [$letscodes],
             [Db::PARAM_INT_ARRAY]);
@@ -61,7 +82,7 @@ class IntersystemsController extends AbstractController
             ];
         }
 
-        $btn_top_render->add('intersystems_add', $app['pp_ary'],
+        $btn_top_render->add('intersystems_add', $pp->ary(),
             [], 'InterSysteem toevoegen');
 
         $heading_render->add('eLAS/eLAND InterSysteem');
@@ -104,7 +125,7 @@ class IntersystemsController extends AbstractController
 
                     if ($user)
                     {
-                        $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
+                        $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
                             ['id' => $user['id']], $sys['localletscode'],
                             [
                                 'class'	=> 'btn btn-default',
@@ -114,7 +135,7 @@ class IntersystemsController extends AbstractController
                         if (!in_array($user['status'], [1, 2, 7]))
                         {
                             $out .= ' ';
-                            $out .= $link_render->link_fa($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
                                 ['edit' => $user['id']], 'Status!',
                                 [
                                     'class'	=> 'btn btn-danger',
@@ -125,7 +146,7 @@ class IntersystemsController extends AbstractController
                         if ($user['accountrole'] != 'interlets')
                         {
                             $out .= ' ';
-                            $out .= $link_render->link_fa($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
                                 ['edit' => $user['id']], 'Rol!',
                                 [
                                     'class'	=> 'btn btn-danger',
@@ -149,7 +170,7 @@ class IntersystemsController extends AbstractController
 
                 $out .= '<td>';
 
-                $out .= $link_render->link_no_attr('intersystems_show', $app['pp_ary'],
+                $out .= $link_render->link_no_attr('intersystems_show', $pp->ary(),
                     ['id' => $sys['id']], $sys['groupname']);
 
                 if (isset($sys['eland']))
@@ -199,17 +220,31 @@ class IntersystemsController extends AbstractController
             $out .= '</div></div>';
         }
 
-        $out .= self::get_schemas_groups($app, $db);
+        $out .= self::get_schemas_groups(
+            $db,
+            $config_service,
+            $systems_service,
+            $pp,
+            $vr,
+            $link_render
+        );
 
         $menu_service->set('intersystems');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
-    public static function get_schemas_groups(app $app, Db $db):string
+    public static function get_schemas_groups(
+        Db $db,
+        ConfigService $config_service,
+        SystemsService $systems_service,
+        PageParamsService $pp,
+        VarRouteService $vr,
+        LinkRender $link_render
+    ):string
     {
         $out = '<div class="panel panel-default"><div class="panel-heading">';
         $out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
@@ -272,7 +307,7 @@ class IntersystemsController extends AbstractController
         $loc_letscode_ary = [];
 
         $groups = $db->executeQuery('select localletscode, url, id
-            from ' . $app['pp_schema'] . '.letsgroups
+            from ' . $pp->schema() . '.letsgroups
             where url in (?)',
             [$url_ary],
             [Db::PARAM_STR_ARRAY]);
@@ -285,7 +320,7 @@ class IntersystemsController extends AbstractController
         }
 
         $interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where letscode in (?)',
             [$loc_letscode_ary],
             [Db::PARAM_STR_ARRAY]);
@@ -393,7 +428,7 @@ class IntersystemsController extends AbstractController
             $out .= $group_user_count_ary[$rem_schema];
             $out .= '</td>';
 
-            if ($app['pp_schema'] === $rem_schema)
+            if ($pp->schema() === $rem_schema)
             {
                 $out .= '<td colspan="4">';
                 $out .= 'Eigen Systeem';
@@ -408,7 +443,7 @@ class IntersystemsController extends AbstractController
                 {
                     $loc_group = $loc_group_ary[$rem_origin];
 
-                    $out .= $link_render->link('intersystems_show', $app['pp_ary'],
+                    $out .= $link_render->link('intersystems_show', $pp->ary(),
                         ['id' => $loc_group['id']], 'OK',
                         ['class'	=> 'btn btn-success']);
                 }
@@ -417,7 +452,7 @@ class IntersystemsController extends AbstractController
                     if ($config_service->get('template_lets', $rem_schema)
                         && $config_service->get('interlets_en', $rem_schema))
                     {
-                        $out .= $link_render->link('intersystems_add', $app['pp_ary'],
+                        $out .= $link_render->link('intersystems_add', $pp->ary(),
                             ['add_schema' => $rem_schema], 'Creëer',
                             ['class' => 'btn btn-default']);
                     }
@@ -438,7 +473,7 @@ class IntersystemsController extends AbstractController
                     {
                         if ($loc_acc['accountrole'] != 'interlets')
                         {
-                            $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
                                 ['edit' => $loc_acc['id']], 'rol',
                                 [
                                     'class'	=> 'btn btn-warning',
@@ -447,7 +482,7 @@ class IntersystemsController extends AbstractController
                         }
                         else if (!in_array($loc_acc['status'], [1, 2, 7]))
                         {
-                            $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
                                 ['edit' => $loc_acc['id']], 'status',
                                 [
                                     'class'	=> 'btn btn-warning',
@@ -456,14 +491,14 @@ class IntersystemsController extends AbstractController
                         }
                         else
                         {
-                            $out .= $link_render->link($app['r_users_show'], $app['pp_ary'],
+                            $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
                                 ['id' => $loc_acc['id']], 'OK',
                                 ['class' => 'btn btn-success']);
                         }
                     }
                     else
                     {
-                        $out .= $link_render->link('users_add', $app['pp_ary'],
+                        $out .= $link_render->link('users_add', $pp->ary(),
                             ['intersystem_code' => $loc_group['localletscode']],
                             'Creëer',
                             [

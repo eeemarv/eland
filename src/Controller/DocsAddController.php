@@ -77,7 +77,7 @@ class DocsAddController extends AbstractController
             {
                 $doc_id = substr(sha1(random_bytes(16)), 0, 24);
 
-                $filename = $app['pp_schema'] . '_d_' . $doc_id . '.' . $ext;
+                $filename = $pp->schema() . '_d_' . $doc_id . '.' . $ext;
 
                 $error = $s3_service->doc_upload($filename, $tmpfile);
 
@@ -85,7 +85,7 @@ class DocsAddController extends AbstractController
                 {
                     $logger->error('doc upload fail: ' . $error);
                     $alert_service->error('Bestand opladen mislukt.',
-                        ['schema' => $app['pp_schema']]);
+                        ['schema' => $pp->schema()]);
                 }
                 else
                 {
@@ -93,14 +93,14 @@ class DocsAddController extends AbstractController
                         'filename'		=> $filename,
                         'org_filename'	=> $original_filename,
                         'access'		=> AccessCnst::TO_XDB[$access],
-                        'user_id'		=> $app['s_id'],
+                        'user_id'		=> $su->id(),
                     ];
 
                     $map_name = trim($request->request->get('map_name', ''));
 
                     if (strlen($map_name))
                     {
-                        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
+                        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
                             'agg_type' => 'doc',
                             'data->>\'map_name\'' => $map_name], 'limit 1');
 
@@ -116,10 +116,10 @@ class DocsAddController extends AbstractController
 
                             $map = ['map_name' => $map_name];
 
-                            $xdb_service->set('doc', $map_id, $map, $app['pp_schema']);
+                            $xdb_service->set('doc', $map_id, $map, $pp->schema());
 
                             $typeahead_service->delete_thumbprint('doc_map_names',
-                                $app['pp_ary'], []);
+                                $pp->ary(), []);
                         }
 
                         $doc['map_id'] = $map_id;
@@ -132,25 +132,25 @@ class DocsAddController extends AbstractController
                         $doc['name'] = $name;
                     }
 
-                    $xdb_service->set('doc', $doc_id, $doc, $app['pp_schema']);
+                    $xdb_service->set('doc', $doc_id, $doc, $pp->schema());
 
 
                     $alert_service->success('Het bestand is opgeladen.');
 
                     if (isset($doc['map_id']))
                     {
-                        $link_render->redirect('docs_map', $app['pp_ary'],
+                        $link_render->redirect('docs_map', $pp->ary(),
                             ['map_id' => $doc['map_id']]);
                     }
 
-                    $link_render->redirect('docs', $app['pp_ary'], []);
+                    $link_render->redirect('docs', $pp->ary(), []);
                 }
             }
         }
 
         if ($map_id)
         {
-            $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
+            $row = $xdb_service->get('doc', $map_id, $pp->schema());
 
             if ($row)
             {
@@ -203,7 +203,7 @@ class DocsAddController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('doc_map_names', [])
             ->str();
 
@@ -215,12 +215,12 @@ class DocsAddController extends AbstractController
 
         if ($map_id)
         {
-            $out .= $link_render->btn_cancel('docs_map', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('docs_map', $pp->ary(),
                 ['map_id' => $map_id]);
         }
         else
         {
-            $out .= $link_render->btn_cancel('docs', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('docs', $pp->ary(), []);
         }
 
         $out .= '&nbsp;';
@@ -237,7 +237,7 @@ class DocsAddController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

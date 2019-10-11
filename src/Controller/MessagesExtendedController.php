@@ -64,7 +64,7 @@ class MessagesExtendedController extends AbstractController
         }
 
         $_imgs = $db->executeQuery('select mp.msgid, mp."PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures mp
+            from ' . $pp->schema() . '.msgpictures mp
             where msgid in (?)',
             [$ids],
             [Db::PARAM_INT_ARRAY]);
@@ -81,7 +81,7 @@ class MessagesExtendedController extends AbstractController
 
         MessagesListController::set_view_btn_nav(
             $btn_nav_render,
-            $app['pp_ary'],
+            $pp->ary(),
             $params,
             'extended'
         );
@@ -99,8 +99,8 @@ class MessagesExtendedController extends AbstractController
 
         foreach ($messages as $msg)
         {
-            $sf_owner = $app['pp_user']
-                && $msg['id_user'] === $app['s_id'];
+            $sf_owner = $pp->is_user()
+                && $msg['id_user'] === $su->id();
 
             $exp = strtotime($msg['validity']) < $time;
 
@@ -116,7 +116,7 @@ class MessagesExtendedController extends AbstractController
                 $out .= '<div class="media-left">';
                 $out .= '<a href="';
 
-                $out .= $link_render->context_path('messages_show', $app['pp_ary'],
+                $out .= $link_render->context_path('messages_show', $pp->ary(),
                     ['id' => $msg['id']]);
 
                 $out .= '">';
@@ -130,7 +130,7 @@ class MessagesExtendedController extends AbstractController
             $out .= '<div class="media-body">';
             $out .= '<h3 class="media-heading">';
 
-            $out .= $link_render->link_no_attr('messages_show', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('messages_show', $pp->ary(),
                 ['id' => $msg['id']],
                 ucfirst($msg['label']['type']) . ': ' . $msg['content']);
 
@@ -151,19 +151,19 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '<div class="panel-footer">';
             $out .= '<p><i class="fa fa-user"></i> ';
-            $out .= $account_render->link($msg['id_user'], $app['pp_ary']);
+            $out .= $account_render->link($msg['id_user'], $pp->ary());
             $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
-            if ($app['pp_admin'] || $sf_owner)
+            if ($pp->is_admin() || $sf_owner)
             {
                 $out .= '<span class="inline-buttons pull-right hidden-xs">';
 
-                $out .= $link_render->link_fa('messages_edit', $app['pp_ary'],
+                $out .= $link_render->link_fa('messages_edit', $pp->ary(),
                     ['id' => $msg['id']], 'Aanpassen',
                     ['class'	=> 'btn btn-primary'],
                     'pencil');
 
-                $out .= $link_render->link_fa('messages_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('messages_del', $pp->ary(),
                     ['id' => $msg['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'],
                     'times');
@@ -182,7 +182,7 @@ class MessagesExtendedController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

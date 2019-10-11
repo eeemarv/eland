@@ -25,10 +25,10 @@ class LoginElasTokenController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        if($apikey = $predis->get($app['pp_schema'] . '_token_' . $elas_token))
+        if($apikey = $predis->get($pp->schema() . '_token_' . $elas_token))
         {
-            $s_logins = array_merge($app['s_logins'], [
-                $app['pp_schema'] 	=> 'elas',
+            $s_logins = array_merge($su->logins(), [
+                $pp->schema() 	=> 'elas',
             ]);
 
             $session->set('logins', $s_logins);
@@ -41,22 +41,22 @@ class LoginElasTokenController extends AbstractController
                 $domain_referrer = strtolower(parse_url($referrer, PHP_URL_HOST));
                 $xdb_service->set('apikey_login', $apikey, [
                     'domain' => $domain_referrer
-                ], $app['pp_schema']);
+                ], $pp->schema());
             }
 
             $logger->info('eLAS guest login using token ' .
                 $elas_token . ' succeeded. referrer: ' . $referrer,
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
-            return $link_render->redirect($app['r_default'], [
+            return $link_render->redirect($vr->get('default'), [
                 'role_short'	=> 'g',
-                'system'	    => $app['pp_system'],
+                'system'	    => $pp->system(),
                 'welcome'	    => '1',
             ], []);
         }
 
         $alert_service->error('De interSysteem login is mislukt.');
-        $link_render->redirect('login', $app['pp_ary'], []);
+        $link_render->redirect('login', $pp->ary(), []);
 
         return new Response('');
     }

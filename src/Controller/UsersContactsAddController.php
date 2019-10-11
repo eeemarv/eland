@@ -39,7 +39,7 @@ class UsersContactsAddController extends AbstractController
     {
         return ContactsAddController::form(
             $request,
-            $app['s_id'],
+            $su->id(),
             false,
             $db,
             $alert_service,

@@ -52,23 +52,23 @@ class CategoriesAddController extends AbstractController
             if (!count($errors))
             {
                 $cat['cdate'] = gmdate('Y-m-d H:i:s');
-                $cat['id_creator'] = $app['s_master'] ? 0 : $app['s_id'];
+                $cat['id_creator'] = $app['s_master'] ? 0 : $su->id();
                 $cat['fullname'] = '';
 
                 if ($cat['leafnote'])
                 {
                     $cat['fullname'] .= $db->fetchColumn('select name
-                        from ' . $app['pp_schema'] . '.categories
+                        from ' . $pp->schema() . '.categories
                         where id = ?', [(int) $cat['id_parent']]);
                     $cat['fullname'] .= ' - ';
                 }
 
                 $cat['fullname'] .= $cat['name'];
 
-                if ($db->insert($app['pp_schema'] . '.categories', $cat))
+                if ($db->insert($pp->schema() . '.categories', $cat))
                 {
                     $alert_service->success('Categorie toegevoegd.');
-                    $link_render->redirect('categories', $app['pp_ary'], []);
+                    $link_render->redirect('categories', $pp->ary(), []);
                 }
 
                 $alert_service->error('Categorie niet toegevoegd.');
@@ -82,7 +82,7 @@ class CategoriesAddController extends AbstractController
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $db->prepare('select id, name
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             where leafnote = 0 order by name');
 
         $rs->execute();
@@ -124,7 +124,7 @@ class CategoriesAddController extends AbstractController
         $out .= '</select>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('categories', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Toevoegen" ';
         $out .= 'class="btn btn-success btn-lg">';
@@ -139,7 +139,7 @@ class CategoriesAddController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

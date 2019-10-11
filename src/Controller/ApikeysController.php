@@ -13,6 +13,7 @@ use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\DateFormatService;
+use App\Service\PageParamsService;
 
 class ApikeysController extends AbstractController
 {
@@ -26,9 +27,9 @@ class ApikeysController extends AbstractController
     ):Response
     {
         $apikeys = $db->fetchAll('select *
-            from ' . $app['pp_schema'] . '.apikeys');
+            from ' . $pp->schema() . '.apikeys');
 
-        $btn_top_render->add('apikeys_add', $app['pp_ary'], [], 'Apikey toevoegen');
+        $btn_top_render->add('apikeys_add', $pp->ary(), [], 'Apikey toevoegen');
 
         $heading_render->add('Apikeys');
         $heading_render->fa('key');
@@ -57,8 +58,8 @@ class ApikeysController extends AbstractController
             $td[] = $a['id'];
             $td[] = $a['comment'];
             $td[] = $a['apikey'];
-            $td[] = $date_format_service->get_td($a['created'], 'min', $app['pp_schema']);
-            $td[] = $link_render->link_fa('apikeys_del', $app['pp_ary'],
+            $td[] = $date_format_service->get_td($a['created'], 'min', $pp->schema());
+            $td[] = $link_render->link_fa('apikeys_del', $pp->ary(),
                 ['id' => $a['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'], 'times');
 
@@ -75,7 +76,7 @@ class ApikeysController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -94,7 +95,7 @@ class ApikeysController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('apikeys', $app['pp_ary'], []);
+                $link_render->redirect('apikeys', $pp->ary(), []);
             }
 
             $apikey = [
@@ -103,10 +104,10 @@ class ApikeysController extends AbstractController
                 'type'		=> 'interlets',
             ];
 
-            if($db->insert($app['pp_schema'] . '.apikeys', $apikey))
+            if($db->insert($pp->schema() . '.apikeys', $apikey))
             {
                 $alert_service->success('Apikey opgeslagen.');
-                $link_render->redirect('apikeys', $app['pp_ary'], []);
+                $link_render->redirect('apikeys', $pp->ary(), []);
             }
 
             $alert_service->error('Apikey niet opgeslagen.');
@@ -152,7 +153,7 @@ class ApikeysController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('apikeys', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('apikeys', $pp->ary(), []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Opslaan" class="btn btn-success btn-lg">';
@@ -167,7 +168,7 @@ class ApikeysController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -196,7 +197,8 @@ class ApikeysController extends AbstractController
         MenuService $menu_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
-        FormTokenService $form_token_service
+        FormTokenService $form_token_service,
+        PageParamsService $pp
     ):Response
     {
         if($request->isMethod('POST'))
@@ -204,21 +206,21 @@ class ApikeysController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('apikeys', $app['pp_ary'], []);
+                $link_render->redirect('apikeys', $pp->ary(), []);
             }
 
-            if ($db->delete($app['pp_schema'] . '.apikeys',
+            if ($db->delete($pp->schema() . '.apikeys',
                 ['id' => $id]))
             {
                 $alert_service->success('Apikey verwijderd.');
-                $link_render->redirect('apikeys', $app['pp_ary'], []);
+                $link_render->redirect('apikeys', $pp->ary(), []);
             }
 
             $alert_service->error('Apikey niet verwijderd.');
         }
 
         $apikey = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.apikeys
+            from ' . $pp->schema() . '.apikeys
             where id = ?', [$id]);
 
         $heading_render->add('Apikey verwijderen?');
@@ -238,7 +240,7 @@ class ApikeysController extends AbstractController
         $out .= $apikey['comment'] ?: '<i class="fa fa-times"></i>';
         $out .= '</dd>';
         $out .= '</dl>';
-        $out .= $link_render->btn_cancel('apikeys', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('apikeys', $pp->ary(), []);
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
         $out .= 'name="zend" class="btn btn-danger btn-lg">';
@@ -252,7 +254,7 @@ class ApikeysController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -36,7 +36,7 @@ class DocsMapController extends AbstractController
     {
         $q = $request->query->get('q', '');
 
-        $row = $xdb_service->get('doc', $map_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $map_id, $pp->schema());
 
         if ($row)
         {
@@ -46,10 +46,10 @@ class DocsMapController extends AbstractController
         if (!$map_name)
         {
             $alert_service->error('Onbestaande map id.');
-            $link_render->redirect('docs', $app['pp_ary'], []);
+            $link_render->redirect('docs', $pp->ary(), []);
         }
 
-        $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
+        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
             'agg_type' => 'doc',
             'data->>\'map_id\'' => $map_id,
             'access' => $item_access_service->get_visible_ary_xdb()],
@@ -72,18 +72,18 @@ class DocsMapController extends AbstractController
             }
         }
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
-            $btn_top_render->add('docs_add', $app['pp_ary'],
+            $btn_top_render->add('docs_add', $pp->ary(),
                 ['map_id' => $map_id], 'Document opladen');
 
-            $btn_top_render->edit('docs_map_edit', $app['pp_ary'],
+            $btn_top_render->edit('docs_map_edit', $pp->ary(),
                 ['map_id' => $map_id], 'Map aanpassen');
 
             $btn_nav_render->csv();
         }
 
-        $heading_render->add_raw($link_render->link_no_attr('docs', $app['pp_ary'], [], 'Documenten'));
+        $heading_render->add_raw($link_render->link_no_attr('docs', $pp->ary(), [], 'Documenten'));
         $heading_render->add(': map "' . $map_name . '"');
 
         $out = '<div class="panel panel-info">';
@@ -110,9 +110,9 @@ class DocsMapController extends AbstractController
 
         if (count($docs))
         {
-            $show_visibility = ($app['pp_user']
-                    && $config_service->get_intersystem_en($app['pp_schema']))
-                || $app['pp_admin'];
+            $show_visibility = ($pp->is_user()
+                    && $config_service->get_intersystem_en($pp->schema()))
+                || $pp->is_admin();
 
             $out .= '<div class="panel panel-default printview">';
 
@@ -134,7 +134,7 @@ class DocsMapController extends AbstractController
                 $out .= 'Zichtbaarheid</th>';
             }
 
-            $out .= $app['pp_admin'] ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
+            $out .= $pp->is_admin() ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
             $out .= '</tr>';
 
             $out .= '</thead>';
@@ -153,20 +153,20 @@ class DocsMapController extends AbstractController
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $date_format_service->get($d['ts'], 'min', $app['pp_schema']);
+                $td[] = $date_format_service->get($d['ts'], 'min', $pp->schema());
 
                 if ($show_visibility)
                 {
                     $td[] = $item_access_service->get_label_xdb($d['access']);
                 }
 
-                if ($app['pp_admin'])
+                if ($pp->is_admin())
                 {
-                    $td_c = $link_render->link_fa('docs_edit', $app['pp_ary'],
+                    $td_c = $link_render->link_fa('docs_edit', $pp->ary(),
                         ['doc_id' => $did], 'Aanpassen',
                         ['class' => 'btn btn-primary'], 'pencil');
                     $td_c .= '&nbsp;';
-                    $td_c .= $link_render->link_fa('docs_del', $app['pp_ary'],
+                    $td_c .= $link_render->link_fa('docs_del', $pp->ary(),
                         ['doc_id' => $did], 'Verwijderen',
                         ['class' => 'btn btn-danger'], 'times');
                     $td[] = $td_c;
@@ -195,7 +195,7 @@ class DocsMapController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

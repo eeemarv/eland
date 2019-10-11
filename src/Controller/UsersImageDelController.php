@@ -27,15 +27,15 @@ class UsersImageDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if ($app['s_id'] < 1)
+        if ($su->id() < 1)
         {
             $alert_service->error('Je hebt geen toegang tot deze actie');
-            $link_render->redirect($app['r_users'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('users'), $pp->ary(), []);
         }
 
         return $this->users_image_del_admin(
             $request,
-            $app['s_id'],
+            $su->id(),
             $db,
             $alert_service,
             $account_render,
@@ -60,12 +60,12 @@ class UsersImageDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $user = $user_cache_service->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $pp->schema());
 
         if (!$user)
         {
             $alert_service->error('De gebruiker bestaat niet.');
-            $link_render->redirect($app['r_users'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('users'), $pp->ary(), []);
         }
 
         $file = $user['PictureFile'];
@@ -73,27 +73,27 @@ class UsersImageDelController extends AbstractController
         if ($file == '' || !$file)
         {
             $alert_service->error('De gebruiker heeft geen foto.');
-            $link_render->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
         }
 
         if ($request->isMethod('POST'))
         {
-            $db->update($app['pp_schema'] . '.users',
+            $db->update($pp->schema() . '.users',
                 ['"PictureFile"' => ''],
                 ['id' => $id]);
 
-            $user_cache_service->clear($id, $app['pp_schema']);
+            $user_cache_service->clear($id, $pp->schema());
 
             $alert_service->success('Profielfoto verwijderd.');
-            $link_render->redirect($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
         }
 
         $heading_render->add('Profielfoto ');
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $heading_render->add('van ');
-            $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
+            $heading_render->add_raw($account_render->link($id, $pp->ary()));
             $heading_render->add(' ');
         }
 
@@ -115,7 +115,7 @@ class UsersImageDelController extends AbstractController
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= $link_render->btn_cancel($app['r_users_show'], $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
@@ -129,7 +129,7 @@ class UsersImageDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

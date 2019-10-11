@@ -141,14 +141,14 @@ class MessagesEditController extends AbstractController
 
         if ($edit_mode)
         {
-            $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
+            $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-            $s_owner = !$app['pp_guest']
-                && $app['s_system_self']
-                && $app['s_id'] === $message['id_user']
+            $s_owner = !$pp->is_guest()
+                && $su->is_system_self()
+                && $su->id() === $message['id_user']
                 && $message['id_user'];
 
-            if (!($app['pp_admin'] || $s_owner))
+            if (!($pp->is_admin() || $s_owner))
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
                     $message['label']['type_this'] . ' aan te passen.');
@@ -175,7 +175,7 @@ class MessagesEditController extends AbstractController
             $validity = time() + ((int) $validity_days * 86400);
             $validity =  gmdate('Y-m-d H:i:s', $validity);
 
-            if ($app['pp_admin'])
+            if ($pp->is_admin())
             {
                 if (!$account_code)
                 {
@@ -186,7 +186,7 @@ class MessagesEditController extends AbstractController
                     [$account_code_expl] = explode(' ', trim($account_code));
                     $account_code_expl = trim($account_code_expl);
                     $user_id = $db->fetchColumn('select id
-                        from ' . $app['pp_schema'] . '.users
+                        from ' . $pp->schema() . '.users
                         where letscode = ?
                             and status in (1, 2)', [$account_code_expl]);
 
@@ -198,10 +198,10 @@ class MessagesEditController extends AbstractController
             }
             else
             {
-                $user_id = $app['s_id'];
+                $user_id = $su->id();
             }
 
-            if ($intersystems_service->get_count($app['pp_schema']))
+            if ($intersystems_service->get_count($pp->schema()))
             {
                 if (!$access)
                 {
@@ -221,7 +221,7 @@ class MessagesEditController extends AbstractController
             if (!ctype_digit((string) $amount) && $amount !== '')
             {
                 $err = 'De (richt)prijs in ';
-                $err .= $config_service->get('currency', $app['pp_schema']);
+                $err .= $config_service->get('currency', $pp->schema());
                 $err .= ' moet nul of een positief getal zijn.';
                 $errors[] = $err;
             }
@@ -231,7 +231,7 @@ class MessagesEditController extends AbstractController
                 $errors[] = 'Geieve een categorie te selecteren.';
             }
             else if(!$db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.categories
+                from ' . $pp->schema() . '.categories
                 where id = ?', [$id_category]))
             {
                 throw new BadRequestHttpException('Categorie bestaat niet!');
@@ -258,7 +258,7 @@ class MessagesEditController extends AbstractController
             }
 
             if(!($db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where id = ? and status in (1, 2)', [$user_id])))
             {
                 $errors[] = 'Gebruiker bestaat niet of is niet actief.';
@@ -288,19 +288,31 @@ class MessagesEditController extends AbstractController
             {
                 $post_message['cdate'] = gmdate('Y-m-d H:i:s');
 
-                $db->insert($app['pp_schema'] . '.messages', $post_message);
+                $db->insert($pp->schema() . '.messages', $post_message);
 
-                $id = (int) $db->lastInsertId($app['pp_schema'] . '.messages_id_seq');
+                $id = (int) $db->lastInsertId($pp->schema() . '.messages_id_seq');
 
-                self::adjust_category_stats($type,
-                    (int) $id_category, 1, $db, $app['pp_schema']);
+                self::adjust_category_stats(
+                    $type,
+                    (int) $id_category,
+                    1,
+                    $db,
+                    $pp->schema()
+                );
 
-                self::add_images_to_db($uploaded_images, $id, true,
-                    $db, $app['monolog'], $alert_service,
-                    $app['s3'], $app['pp_schema']);
+                self::add_images_to_db(
+                    $uploaded_images,
+                    $id,
+                    true,
+                    $db,
+                    $logger,
+                    $alert_service,
+                    $s3_service,
+                    $pp->schema()
+                );
 
                 $alert_service->success('Nieuw vraag of aanbod toegevoegd.');
-                $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+                $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
             }
             else if ($edit_mode && !count($errors))
             {
@@ -308,28 +320,40 @@ class MessagesEditController extends AbstractController
 
                 $db->beginTransaction();
 
-                $db->update($app['pp_schema'] . '.messages', $post_message, ['id' => $id]);
+                $db->update($pp->schema() . '.messages', $post_message, ['id' => $id]);
 
                 if ($type !== $message['type']
                     || $id_category !== $message['id_category'])
                 {
                     self::adjust_category_stats($message['type'],
-                        $message['id_category'], -1, $db, $app['pp_schema']);
+                        $message['id_category'], -1, $db, $pp->schema());
 
                     self::adjust_category_stats($type,
-                        (int) $id_category, 1, $db, $app['pp_schema']);
+                        (int) $id_category, 1, $db, $pp->schema());
                 }
 
-                self::delete_images_from_db($deleted_images, $id,
-                    $db, $app['monolog'], $app['pp_schema']);
+                self::delete_images_from_db(
+                    $deleted_images,
+                    $id,
+                    $db,
+                    $logger,
+                    $pp->schema()
+                );
 
-                self::add_images_to_db($uploaded_images, $id, false,
-                    $db, $app['monolog'], $alert_service,
-                    $app['s3'], $app['pp_schema']);
+                self::add_images_to_db(
+                    $uploaded_images,
+                    $id,
+                    false,
+                    $db,
+                    $logger,
+                    $alert_service,
+                    $s3_service,
+                    $pp->schema()
+                );
 
                 $db->commit();
                 $alert_service->success('Vraag/aanbod aangepast');
-                $link_render->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+                $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
             }
             else if (!count($errors))
             {
@@ -352,7 +376,7 @@ class MessagesEditController extends AbstractController
                 $validity_days = (int) round((strtotime($message['validity'] . ' UTC') - time()) / 86400);
                 $validity_days = $validity_days < 1 ? 0 : $validity_days;
 
-                $user = $user_cache_service->get($message['id_user'], $app['pp_schema']);
+                $user = $user_cache_service->get($message['id_user'], $pp->schema());
 
                 $account_code = $user['letscode'] . ' ' . $user['name'];
 
@@ -367,13 +391,13 @@ class MessagesEditController extends AbstractController
                 $units = '';
                 $id_category = '';
                 $type = '';
-                $validity_days = (int) $config_service->get('msgs_days_default', $app['pp_schema']);
+                $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
                 $account_code = '';
                 $access = '';
 
-                if ($app['pp_admin'])
+                if ($pp->is_admin())
                 {
-                    $account_code = $app['session_user']['letscode'] . ' ' . $app['session_user']['name'];
+                    $account_code = $su->user()['letscode'] . ' ' . $su->user()['name'];
                  }
             }
         }
@@ -383,7 +407,7 @@ class MessagesEditController extends AbstractController
         if ($edit_mode)
         {
             $st = $db->prepare('select "PictureFile"
-                from ' . $app['pp_schema'] . '.msgpictures
+                from ' . $pp->schema() . '.msgpictures
                 where msgid = ?', [$id]);
 
             $st->bindValue(1, $id);
@@ -408,7 +432,7 @@ class MessagesEditController extends AbstractController
         $cat_list = ['' => ''];
 
         $rs = $db->prepare('select id, fullname, id_parent
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             where leafnote = 1
             order by fullname');
 
@@ -440,7 +464,7 @@ class MessagesEditController extends AbstractController
 
         $out .= '<form method="post">';
 
-        if($app['pp_admin'])
+        if($pp->is_admin())
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="account_code" class="control-label">';
@@ -454,11 +478,11 @@ class MessagesEditController extends AbstractController
             $out .= 'id="account_code" name="account_code" ';
 
             $out .= 'data-typeahead="';
-            $out .= $typeahead_service->ini($app['pp_ary'])
+            $out .= $typeahead_service->ini($pp->ary())
                 ->add('accounts', ['status' => 'active'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $config_service->get('newuserdays', $app['pp_schema']),
+                    'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
                 ]);
             $out .= '" ';
 
@@ -525,7 +549,7 @@ class MessagesEditController extends AbstractController
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $pp->schema());
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" min="0" ';
@@ -607,7 +631,7 @@ class MessagesEditController extends AbstractController
         $out .= '<input id="fileupload" type="file" name="images[]" ';
         $out .= 'data-url="';
 
-        $out .= $link_render->context_path($upload_img_route, $app['pp_ary'],
+        $out .= $link_render->context_path($upload_img_route, $pp->ary(),
             $upload_img_param);
 
         $out .= '" ';
@@ -621,7 +645,7 @@ class MessagesEditController extends AbstractController
         $out .= 'verslepen.</p>';
         $out .= '</div>';
 
-        if ($intersystems_service->get_count($app['pp_schema']))
+        if ($intersystems_service->get_count($pp->schema()))
         {
             $out .= $item_access_service->get_radio_buttons('access', $access, 'messages', true);
         }
@@ -632,11 +656,11 @@ class MessagesEditController extends AbstractController
 
         if ($add_mode)
         {
-            $out .= $link_render->btn_cancel($app['r_messages'], $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel($vr->get('messages'), $pp->ary(), []);
         }
         else
         {
-            $out .= $link_render->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
+            $out .= $link_render->btn_cancel('messages_show', $pp->ary(), ['id' => $id]);
         }
 
         $btn_class = $edit_mode ? 'primary' : 'success';
@@ -664,7 +688,7 @@ class MessagesEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 

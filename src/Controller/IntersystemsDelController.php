@@ -17,13 +17,13 @@ class IntersystemsDelController extends AbstractController
     ):Response
     {
         $group = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.letsgroups
+            from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);
 
         if (!$group)
         {
             $alert_service->error('Systeem niet gevonden.');
-            $link_render->redirect('intersystems', $app['pp_ary'], []);
+            $link_render->redirect('intersystems', $pp->ary(), []);
         }
 
         if ($request->isMethod('POST'))
@@ -31,16 +31,16 @@ class IntersystemsDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('intersystems', $app['pp_ary'], []);
+                $link_render->redirect('intersystems', $pp->ary(), []);
             }
 
-            if($db->delete($app['pp_schema'] . '.letsgroups', ['id' => $id]))
+            if($db->delete($pp->schema() . '.letsgroups', ['id' => $id]))
             {
                 $alert_service->success('InterSysteem verwijderd.');
 
-                $intersystems_service->clear_cache($app['pp_schema']);
+                $intersystems_service->clear_cache($pp->schema());
 
-                $link_render->redirect('intersystems', $app['pp_ary'], []);
+                $link_render->redirect('intersystems', $pp->ary(), []);
             }
 
             $alert_service->error('InterSysteem niet verwijderd.');
@@ -57,7 +57,7 @@ class IntersystemsDelController extends AbstractController
         $out .= '<div><p>';
         $out .= '<form method="post">';
 
-        $out .= $link_render->btn_cancel('intersystems', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('intersystems', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
@@ -73,7 +73,7 @@ class IntersystemsDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

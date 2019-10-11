@@ -39,9 +39,9 @@ class PasswordResetController extends AbstractController
             else if($email)
             {
                 $user = $db->fetchAll('select u.id, u.name, u.letscode
-                    from ' . $app['pp_schema'] . '.contact c, ' .
-                        $app['pp_schema'] . '.type_contact tc, ' .
-                        $app['pp_schema'] . '.users u
+                    from ' . $pp->schema() . '.contact c, ' .
+                        $pp->schema() . '.type_contact tc, ' .
+                        $pp->schema() . '.users u
                     where c. value = ?
                         and tc.id = c.id_type_contact
                         and tc.abbrev = \'mail\'
@@ -59,10 +59,10 @@ class PasswordResetController extends AbstractController
                         $token = $data_token_service->store([
                             'user_id'	=> $user_id,
                             'email'		=> $email,
-                        ], 'password_reset', $app['pp_schema'], 86400);
+                        ], 'password_reset', $pp->schema(), 86400);
 
                         $mail_queue->queue([
-                            'schema'	=> $app['pp_schema'],
+                            'schema'	=> $pp->schema(),
                             'to' 		=> [$email => $user['letscode'] . ' ' . $user['name']],
                             'template'	=> 'password_reset/confirm',
                             'vars'		=> [
@@ -74,7 +74,7 @@ class PasswordResetController extends AbstractController
                         $alert_service->success('Een link om je paswoord te resetten werd
                             naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
-                        $link_render->redirect('login', $app['pp_ary'], []);
+                        $link_render->redirect('login', $pp->ary(), []);
                     }
                     else
                     {
@@ -128,7 +128,7 @@ class PasswordResetController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

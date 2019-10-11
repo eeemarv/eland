@@ -22,7 +22,7 @@ class NewsApproveController extends AbstractController
             'published' => 't',
         ];
 
-        if ($db->update($app['pp_schema'] . '.news',
+        if ($db->update($pp->schema() . '.news',
             $data, ['id' => $id]))
         {
             $alert_service->success('Nieuwsbericht goedgekeurd en gepubliceerd.');
@@ -32,7 +32,7 @@ class NewsApproveController extends AbstractController
             $alert_service->error('Goedkeuren en publiceren nieuwsbericht mislukt.');
         }
 
-        $link_render->redirect($app['r_news'], $app['pp_ary'], ['id' => $id]);
+        $link_render->redirect($vr->get('news'), $pp->ary(), ['id' => $id]);
 
         return new Response('');
     }

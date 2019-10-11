@@ -21,7 +21,7 @@ class CategoriesController extends AbstractController
     ):Response
     {
         $cats = $db->fetchAll('select *
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             order by fullname');
 
         $child_count_ary = [];
@@ -37,7 +37,7 @@ class CategoriesController extends AbstractController
         }
 
         $btn_top_render->add('categories_add',
-            $app['pp_ary'], [], 'Categorie toevoegen');
+            $pp->ary(), [], 'Categorie toevoegen');
 
         $heading_render->add('Categorieën');
         $heading_render->fa('clone');
@@ -84,7 +84,7 @@ class CategoriesController extends AbstractController
                 $out .= '<tr class="info"><td>';
 
                 $str = '<strong>';
-                $str .= $link_render->link_no_attr('categories_edit', $app['pp_ary'],
+                $str .= $link_render->link_no_attr('categories_edit', $pp->ary(),
                     ['id' => $cat['id']], $cat['name']);
                 $td[] = $str . '</strong>';
             }
@@ -92,7 +92,7 @@ class CategoriesController extends AbstractController
             {
                 $out .= '<tr><td>';
                 $str = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                $str .= $link_render->link_no_attr('categories_edit', $app['pp_ary'],
+                $str .= $link_render->link_no_attr('categories_edit', $pp->ary(),
                     ['id' => $cat['id']], $cat['name']);
                 $td[] = $str;
             }
@@ -108,7 +108,7 @@ class CategoriesController extends AbstractController
                     ],
                 ]);
 
-                $td[] = $link_render->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
+                $td[] = $link_render->link_no_attr($vr->get('messages'), $pp->ary(), $param_ary,
                     (string) $count_wanted);
             }
             else
@@ -127,7 +127,7 @@ class CategoriesController extends AbstractController
                     ],
                 ]);
 
-                $td[] = $link_render->link_no_attr($app['r_messages'], $app['pp_ary'], $param_ary,
+                $td[] = $link_render->link_no_attr($vr->get('messages'), $pp->ary(), $param_ary,
                     (string) $count_offers);
             }
             else
@@ -137,7 +137,7 @@ class CategoriesController extends AbstractController
 
             if (!$count)
             {
-                $td[] = $link_render->link_fa('categories_del', $app['pp_ary'],
+                $td[] = $link_render->link_fa('categories_del', $pp->ary(),
                     ['id' => $cat['id']], 'Verwijderen',
                     ['class' => 'btn btn-danger'], 'times');
             }
@@ -163,7 +163,7 @@ class CategoriesController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

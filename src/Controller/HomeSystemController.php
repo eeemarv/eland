@@ -16,7 +16,7 @@ class HomeSystemController extends AbstractController
     {
         $out = '<div class="jumbotron">';
         $out .= '<h1>';
-        $out .= $config_service->get('systemname', $app['pp_schema']);
+        $out .= $config_service->get('systemname', $pp->schema());
         $out .= '</h1>';
         $out .= '</div>';
 
@@ -24,7 +24,7 @@ class HomeSystemController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

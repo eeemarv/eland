@@ -30,7 +30,7 @@ class DocsDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $doc_id, $pp->schema());
 
         if ($row)
         {
@@ -39,7 +39,7 @@ class DocsDelController extends AbstractController
         else
         {
             $alert_service->error('Document niet gevonden');
-            $link_render->redirect('docs', $app['pp_ary'], []);
+            $link_render->redirect('docs', $pp->ary(), []);
         }
 
         if ($request->isMethod('POST'))
@@ -58,37 +58,37 @@ class DocsDelController extends AbstractController
                 if ($err)
                 {
                     $logger->error('doc delete file fail: ' . $err,
-                        ['schema' => $app['pp_schema']]);
+                        ['schema' => $pp->schema()]);
                 }
 
                 if (isset($doc['map_id']))
                 {
-                    $rows = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
+                    $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
                         'agg_type'	=> 'doc',
                         'data->>\'map_id\'' => $doc['map_id']]);
 
                     if (count($rows) < 2)
                     {
-                        $xdb_service->del('doc', $doc['map_id'], $app['pp_schema']);
+                        $xdb_service->del('doc', $doc['map_id'], $pp->schema());
 
                         $typeahead_service->delete_thumbprint('doc_map_names',
-                            $app['pp_ary'], []);
+                            $pp->ary(), []);
 
                         unset($doc['map_id']);
                     }
                 }
 
-                $xdb_service->del('doc', $doc_id, $app['pp_schema']);
+                $xdb_service->del('doc', $doc_id, $pp->schema());
 
                 $alert_service->success('Het document werd verwijderd.');
 
                 if (isset($doc['map_id']))
                 {
-                    $link_render->redirect('docs_map', $app['pp_ary'],
+                    $link_render->redirect('docs_map', $pp->ary(),
                         ['map_id' => $doc['map_id']]);
                 }
 
-                $link_render->redirect('docs', $app['pp_ary'], []);
+                $link_render->redirect('docs', $pp->ary(), []);
             }
 
             $alert_service->error($errors);
@@ -110,12 +110,12 @@ class DocsDelController extends AbstractController
 
         if (isset($doc['map_id']))
         {
-            $out .= $link_render->btn_cancel('docs_map', $app['pp_ary'],
+            $out .= $link_render->btn_cancel('docs_map', $pp->ary(),
                 ['map_id' => $doc['map_id']]);
         }
         else
         {
-            $out .= $link_render->btn_cancel('docs', $app['pp_ary'], []);
+            $out .= $link_render->btn_cancel('docs', $pp->ary(), []);
         }
 
         $out .= '&nbsp;';
@@ -131,7 +131,7 @@ class DocsDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -28,13 +28,13 @@ class LogoUploadController extends AbstractController
         }
 
         $filename = $image_upload_service->upload($uploaded_file,
-            'l', 0, 400, 100, $app['pp_schema']);
+            'l', 0, 400, 100, $pp->schema());
 
-        $config_service->set('logo', $app['pp_schema'], $filename);
+        $config_service->set('logo', $pp->schema(), $filename);
 
         $logger->info('Logo ' . $filename .
             ' uploaded.',
-            ['schema' => $app['pp_schema']]);
+            ['schema' => $pp->schema()]);
 
         return $this->json([$filename]);
     }

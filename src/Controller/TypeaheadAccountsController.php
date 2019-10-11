@@ -15,12 +15,12 @@ class TypeaheadAccountsController extends AbstractController
         TypeaheadService $typeahead_service
     ):Response
     {
-        if ($app['pp_guest'] && $status !== 'active')
+        if ($pp->is_guest() && $status !== 'active')
         {
             return $this->json(['error' => 'No access.'], 403);
         }
 
-        if(!$app['pp_admin'] && !in_array($status, ['active', 'extern']))
+        if(!$pp->is_admin() && !in_array($status, ['active', 'extern']))
         {
             return $this->json(['error' => 'No access.'], 403);
         }
@@ -58,7 +58,7 @@ class TypeaheadAccountsController extends AbstractController
                 saldo as b,
                 minlimit as min,
                 maxlimit as max
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             where status ' . $status_sql . '
             order by id asc'
         );
@@ -91,7 +91,7 @@ class TypeaheadAccountsController extends AbstractController
 
         $crc = (string) crc32(json_encode($accounts));
 
-        $typeahead_service->set_thumbprint('accounts', $app['pp_ary'], $params, $crc);
+        $typeahead_service->set_thumbprint('accounts', $pp->ary(), $params, $crc);
 
         return $this->json($accounts);
     }

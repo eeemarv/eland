@@ -35,13 +35,13 @@ class TransactionsEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($app['pp_schema']);
+        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
 
-        $s_inter_schema_check = array_merge($intersystems_service->get_eland($app['pp_schema']),
-            [$app['s_schema'] => true]);
+        $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
+            [$su->schema() => true]);
 
         $transaction = $db->fetchAssoc('select t.*
-            from ' . $app['pp_schema'] . '.transactions t
+            from ' . $pp->schema() . '.transactions t
             where t.id = ?', [$id]);
 
         $inter_schema = false;
@@ -72,7 +72,7 @@ class TransactionsEditController extends AbstractController
             $alert_service->error('De omschrijving van een transactie
                 naar een interSysteem dat draait op eLAS kan
                 niet aangepast worden.');
-            $link_render->redirect('transactions_show', $app['pp_ary'], ['id' => $id]);
+            $link_render->redirect('transactions_show', $pp->ary(), ['id' => $id]);
         }
 
         if ($request->isMethod('POST'))
@@ -96,7 +96,7 @@ class TransactionsEditController extends AbstractController
 
             if (!count($errors))
             {
-                $db->update($app['pp_schema'] . '.transactions',
+                $db->update($pp->schema() . '.transactions',
                     ['description' => $description],
                     ['id' => $id]);
 
@@ -109,11 +109,11 @@ class TransactionsEditController extends AbstractController
 
                 $logger->info('Transaction description edited from "' . $transaction['description'] .
                     '" to "' . $description . '", transid: ' .
-                    $transaction['transid'], ['schema' => $app['pp_schema']]);
+                    $transaction['transid'], ['schema' => $pp->schema()]);
 
                 $alert_service->success('Omschrijving transactie aangepast.');
 
-                $link_render->redirect('transactions_show', $app['pp_ary'], ['id' => $id]);
+                $link_render->redirect('transactions_show', $pp->ary(), ['id' => $id]);
             }
 
             $alert_service->error($errors);
@@ -144,7 +144,7 @@ class TransactionsEditController extends AbstractController
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $date_format_service->get($transaction['cdate'], 'min', $app['pp_schema']);
+        $out .= $date_format_service->get($transaction['cdate'], 'min', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';
@@ -157,13 +157,13 @@ class TransactionsEditController extends AbstractController
             $out .= '<dt>Van interSysteem account</dt>';
             $out .= '<dd>';
 
-            if ($app['pp_admin'])
+            if ($pp->is_admin())
             {
-                $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_from'], $pp->ary());
             }
             else
             {
-                $out .= $account_render->str($transaction['id_from'], $app['pp_schema']);
+                $out .= $account_render->str($transaction['id_from'], $pp->schema());
             }
 
             $out .= '</dd>';
@@ -197,7 +197,7 @@ class TransactionsEditController extends AbstractController
         {
             $out .= '<dt>Van gebruiker</dt>';
             $out .= '<dd>';
-            $out .= $account_render->link($transaction['id_from'], $app['pp_ary']);
+            $out .= $account_render->link($transaction['id_from'], $pp->ary());
             $out .= '</dd>';
         }
 
@@ -206,13 +206,13 @@ class TransactionsEditController extends AbstractController
             $out .= '<dt>Naar interSysteem account</dt>';
             $out .= '<dd>';
 
-            if ($app['pp_admin'])
+            if ($pp->is_admin())
             {
-                $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
+                $out .= $account_render->link($transaction['id_to'], $pp->ary());
             }
             else
             {
-                $out .= $account_render->str($transaction['id_to'], $app['pp_schema']);
+                $out .= $account_render->str($transaction['id_to'], $pp->schema());
             }
 
             $out .= '</dd>';
@@ -245,14 +245,14 @@ class TransactionsEditController extends AbstractController
         {
             $out .= '<dt>Naar gebruiker</dt>';
             $out .= '<dd>';
-            $out .= $account_render->link($transaction['id_to'], $app['pp_ary']);
+            $out .= $account_render->link($transaction['id_to'], $pp->ary());
             $out .= '</dd>';
         }
 
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $config_service->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -277,7 +277,7 @@ class TransactionsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('transactions_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('transactions_show', $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
@@ -296,7 +296,7 @@ class TransactionsEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -108,12 +108,12 @@ class UsersShowController extends AbstractController
 
         $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
-        $s_owner = !$app['pp_guest']
-            && $app['s_system_self']
-            && $app['s_id'] === $id
+        $s_owner = !$pp->is_guest()
+            && $su->is_system_self()
+            && $su->id() === $id
             && $id;
 
-        $user = $user_cache_service->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $pp->schema());
 
         if (!$user)
         {
@@ -121,12 +121,12 @@ class UsersShowController extends AbstractController
                 'De gebruiker met id ' . $id . ' bestaat niet');
         }
 
-        if (!$app['pp_admin'] && !in_array($user['status'], [1, 2]))
+        if (!$pp->is_admin() && !in_array($user['status'], [1, 2]))
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
         }
 
-        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
+        $status_def_ary = UsersListController::get_status_def_ary($pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
 
         // process mail form
 
@@ -140,7 +140,7 @@ class UsersShowController extends AbstractController
                     geen E-mail berichten versturen.');
             }
 
-            if (!$app['s_schema'] || $app['s_elas_guest'])
+            if (!$su->schema() || $app['s_elas_guest'])
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende
                     rechten om een E-mail bericht te versturen.');
@@ -156,7 +156,7 @@ class UsersShowController extends AbstractController
                 $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
             }
 
-            $reply_ary = $mail_addr_user_service->get($app['s_id'], $app['s_schema']);
+            $reply_ary = $mail_addr_user_service->get($su->id(), $su->schema());
 
             if (!count($reply_ary))
             {
@@ -167,32 +167,32 @@ class UsersShowController extends AbstractController
             if (!count($errors))
             {
                 $from_contacts = $db->fetchAll('select c.value, tc.abbrev
-                    from ' . $app['s_schema'] . '.contact c, ' .
-                        $app['s_schema'] . '.type_contact tc
+                    from ' . $su->schema() . '.contact c, ' .
+                        $su->schema() . '.type_contact tc
                     where c.flag_public >= ?
                         and c.id_user = ?
                         and c.id_type_contact = tc.id',
-                        [AccessCnst::TO_FLAG_PUBLIC[$user['accountrole']], $app['s_id']]);
+                        [AccessCnst::TO_FLAG_PUBLIC[$user['accountrole']], $su->id()]);
 
-                $from_user = $user_cache_service->get($app['s_id'], $app['s_schema']);
+                $from_user = $user_cache_service->get($su->id(), $su->schema());
 
                 $vars = [
                     'from_contacts'     => $from_contacts,
                     'from_user'			=> $from_user,
-                    'from_schema'		=> $app['s_schema'],
+                    'from_schema'		=> $su->schema(),
                     'to_user'			=> $user,
-                    'to_schema'			=> $app['pp_schema'],
-                    'is_same_system'	=> $app['s_system_self'],
+                    'to_schema'			=> $pp->schema(),
+                    'is_same_system'	=> $su->is_system_self(),
                     'msg_content'		=> $user_mail_content,
                 ];
 
-                $mail_template = $app['s_system_self']
+                $mail_template = $su->is_system_self()
                     ? 'user_msg/msg'
                     : 'user_msg/msg_intersystem';
 
                 $mail_queue->queue([
-                    'schema'	=> $app['pp_schema'],
-                    'to'		=> $mail_addr_user_service->get($id, $app['pp_schema']),
+                    'schema'	=> $pp->schema(),
+                    'to'		=> $mail_addr_user_service->get($id, $pp->schema()),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -200,13 +200,13 @@ class UsersShowController extends AbstractController
 
                 if ($user_mail_cc)
                 {
-                    $mail_template = $app['s_system_self']
+                    $mail_template = $su->is_system_self()
                         ? 'user_msg/copy'
                         : 'user_msg/copy_intersystem';
 
                     $mail_queue->queue([
-                        'schema'	=> $app['pp_schema'],
-                        'to' 		=> $mail_addr_user_service->get($app['s_id'], $app['s_schema']),
+                        'schema'	=> $pp->schema(),
+                        'to' 		=> $mail_addr_user_service->get($su->id(), $su->schema()),
                         'template' 	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);
@@ -214,7 +214,7 @@ class UsersShowController extends AbstractController
 
                 $alert_service->success('E-mail bericht verzonden.');
 
-                $link_render->redirect($app['r_users_show'], $app['pp_ary'],
+                $link_render->redirect($vr->get('users_show'), $pp->ary(),
                     ['id' => $id]);
 
             }
@@ -223,11 +223,11 @@ class UsersShowController extends AbstractController
         }
 
         $count_messages = $db->fetchColumn('select count(*)
-            from ' . $app['pp_schema'] . '.messages
+            from ' . $pp->schema() . '.messages
             where id_user = ?', [$id]);
 
         $count_transactions = $db->fetchColumn('select count(*)
-            from ' . $app['pp_schema'] . '.transactions
+            from ' . $pp->schema() . '.transactions
             where id_from = ?
                 or id_to = ?', [$id, $id]);
 
@@ -246,18 +246,18 @@ class UsersShowController extends AbstractController
         }
         else
         {
-            $and_status = $app['pp_admin'] ? '' : ' and u.status in (1, 2) ';
+            $and_status = $pp->is_admin() ? '' : ' and u.status in (1, 2) ';
         }
 
         $next = $db->fetchColumn('select id
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where u.letscode > ?
             ' . $and_status . '
             order by u.letscode asc
             limit 1', $sql_bind);
 
         $prev = $db->fetchColumn('select id
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where u.letscode < ?
             ' . $and_status . '
             order by u.letscode desc
@@ -265,12 +265,12 @@ class UsersShowController extends AbstractController
 
         $intersystem_missing = false;
 
-        if ($app['pp_admin']
+        if ($pp->is_admin()
             && $user['accountrole'] === 'interlets'
-            && $config_service->get_intersystem_en($app['pp_schema']))
+            && $config_service->get_intersystem_en($pp->schema()))
         {
             $intersystem_id = $db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.letsgroups
+                from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?', [$user['letscode']]);
 
             if (!$intersystem_id)
@@ -292,7 +292,7 @@ class UsersShowController extends AbstractController
             'plot_user_transactions.js',
         ]);
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $assets_service->add([
                 'fileupload',
@@ -300,74 +300,74 @@ class UsersShowController extends AbstractController
             ]);
         }
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
-            $title = $app['pp_admin'] ? 'Gebruiker' : 'Mijn gegevens';
+            $title = $pp->is_admin() ? 'Gebruiker' : 'Mijn gegevens';
 
-            $btn_top_render->edit($app['r_users_edit'], $app['pp_ary'],
+            $btn_top_render->edit($vr->get('users_edit'), $pp->ary(),
                 ['id' => $id], $title . ' aanpassen');
 
-            if ($app['pp_admin'])
+            if ($pp->is_admin())
             {
-                $btn_top_render->edit_pw('users_password_admin', $app['pp_ary'],
+                $btn_top_render->edit_pw('users_password_admin', $pp->ary(),
                 ['id' => $id], 'Paswoord aanpassen');
             }
             else if ($s_owner)
             {
-                $btn_top_render->edit_pw('users_password', $app['pp_ary'],
+                $btn_top_render->edit_pw('users_password', $pp->ary(),
                     [], 'Paswoord aanpassen');
             }
         }
 
-        if ($app['pp_admin'] && !$count_transactions && !$s_owner)
+        if ($pp->is_admin() && !$count_transactions && !$s_owner)
         {
-            $btn_top_render->del('users_del_admin', $app['pp_ary'],
+            $btn_top_render->del('users_del_admin', $pp->ary(),
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
-        if ($app['pp_admin']
+        if ($pp->is_admin()
             || (!$s_owner && $user['status'] !== 7
-                && !($app['pp_guest'] && $app['s_system_self'])))
+                && !($pp->is_guest() && $su->is_system_self())))
         {
             $tus = ['tuid' => $id];
 
-            if (!$app['s_system_self'])
+            if (!$su->is_system_self())
             {
-                $tus['tus'] = $app['pp_schema'];
+                $tus['tus'] = $pp->schema();
             }
 
             $btn_top_render->add_trans('transactions_add', $app['s_ary'],
-                $tus, 'Transactie naar ' . $account_render->str($id, $app['pp_schema']));
+                $tus, 'Transactie naar ' . $account_render->str($id, $pp->schema()));
         }
 
-        $pp_status_ary = $app['pp_ary'];
+        $pp_status_ary = $pp->ary();
         $pp_status_ary['status'] = $status;
 
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $btn_nav_render->nav($app['r_users_show'], $pp_status_ary,
+        $btn_nav_render->nav($vr->get('users_show'), $pp_status_ary,
             $prev_ary, $next_ary, false);
 
-        $btn_nav_render->nav_list($app['r_users'], $pp_status_ary,
+        $btn_nav_render->nav_list($vr->get('users'), $pp_status_ary,
             [], 'Overzicht', 'users');
 
         $status_id = $user['status'];
 
         if (isset($user['adate']))
         {
-            $status_id = ($config_service->get_new_user_treshold($app['pp_schema']) < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
+            $status_id = ($config_service->get_new_user_treshold($pp->schema()) < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
         }
 
         $h_status_ary = StatusCnst::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
 
-        if ($s_owner && !$app['pp_admin'])
+        if ($s_owner && !$pp->is_admin())
         {
             $heading_render->add('Mijn gegevens: ');
         }
 
-        $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
+        $heading_render->add_raw($account_render->link($id, $pp->ary()));
 
         if ($status_id != 1)
         {
@@ -378,7 +378,7 @@ class UsersShowController extends AbstractController
             $heading_render->add_raw('</span></small>');
         }
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             if ($intersystem_missing)
             {
@@ -389,7 +389,7 @@ class UsersShowController extends AbstractController
             else if ($intersystem_id)
             {
                 $heading_render->add(' ');
-                $heading_render->add_raw($link_render->link_fa('intersystems_show', $app['pp_ary'],
+                $heading_render->add_raw($link_render->link_fa('intersystems_show', $pp->ary(),
                     ['id' => $intersystem_id], 'Gekoppeld interSysteem',
                     ['class' => 'btn btn-default'], 'share-alt'));
             }
@@ -434,7 +434,7 @@ class UsersShowController extends AbstractController
 
         $out .= '</div>';
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $btn_del_attr = ['id'	=> 'btn_remove'];
 
@@ -449,14 +449,14 @@ class UsersShowController extends AbstractController
             $out .= '<input id="fileupload" type="file" name="image" ';
             $out .= 'data-url="';
 
-            if ($app['pp_admin'])
+            if ($pp->is_admin())
             {
-                $out .= $link_render->context_path('users_image_upload_admin', $app['pp_ary'],
+                $out .= $link_render->context_path('users_image_upload_admin', $pp->ary(),
                     ['id' => $id]);
             }
             else
             {
-                $out .= $link_render->context_path('users_image_upload', $app['pp_ary'], []);
+                $out .= $link_render->context_path('users_image_upload', $pp->ary(), []);
             }
 
             $out .= '" ';
@@ -470,16 +470,16 @@ class UsersShowController extends AbstractController
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook een foto hierheen verslepen.</p>';
 
-            if ($app['pp_admin'])
+            if ($pp->is_admin())
             {
-                $out .= $link_render->link_fa('users_image_del_admin', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
                     ['id' => $id], 'Foto verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
             else
             {
-                $out .= $link_render->link_fa('users_image_del', $app['pp_ary'],
+                $out .= $link_render->link_fa('users_image_del', $pp->ary(),
                     [], 'Foto verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
@@ -502,7 +502,7 @@ class UsersShowController extends AbstractController
         $out .= 'Volledige naam';
         $out .= '</dt>';
 
-        if ($app['pp_admin']
+        if ($pp->is_admin()
             || $s_owner
             || $item_access_service->is_visible_xdb($fullname_access))
         {
@@ -516,7 +516,7 @@ class UsersShowController extends AbstractController
             $out .= '</dd>';
         }
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $out .= '<dt>';
             $out .= 'Zichtbaarheid Volledige Naam';
@@ -531,7 +531,7 @@ class UsersShowController extends AbstractController
         $out .= '</dt>';
         $out .= $this->get_dd($user['postcode'] ?? '');
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $out .= '<dt>';
             $out .= 'Geboortedatum';
@@ -539,7 +539,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['birthday']))
             {
-                $out .= $date_format_service->get($user['birthday'], 'day', $app['pp_schema']);
+                $out .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
             }
             else
             {
@@ -557,7 +557,7 @@ class UsersShowController extends AbstractController
         $out .= '</dt>';
         $out .= $this->get_dd($user['comments'] ?? '');
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $out .= '<dt>';
             $out .= 'Tijdstip aanmaak';
@@ -565,7 +565,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['cdate']))
             {
-                $out .= $this->get_dd($date_format_service->get($user['cdate'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_service->get($user['cdate'], 'min', $pp->schema()));
             }
             else
             {
@@ -578,7 +578,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['adate']))
             {
-                $out .= $this->get_dd($date_format_service->get($user['adate'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_service->get($user['adate'], 'min', $pp->schema()));
             }
             else
             {
@@ -591,7 +591,7 @@ class UsersShowController extends AbstractController
 
             if (isset($user['lastlogin']))
             {
-                $out .= $this->get_dd($date_format_service->get($user['lastlogin'], 'min', $app['pp_schema']));
+                $out .= $this->get_dd($date_format_service->get($user['lastlogin'], 'min', $pp->schema()));
             }
             else
             {
@@ -619,7 +619,7 @@ class UsersShowController extends AbstractController
         $out .= '<span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span>&nbsp;';
-        $out .= $config_service->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $pp->schema());
         $out .= '</dd>';
 
         if ($user['minlimit'] !== '')
@@ -629,7 +629,7 @@ class UsersShowController extends AbstractController
             $out .= '<span class="label label-danger">';
             $out .= $user['minlimit'];
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $pp->schema());
             $out .= '</dd>';
         }
 
@@ -640,11 +640,11 @@ class UsersShowController extends AbstractController
             $out .= '<span class="label label-success">';
             $out .= $user['maxlimit'];
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $pp->schema());
             $out .= '</dd>';
         }
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $out .= '<dt>';
             $out .= 'Periodieke Overzichts E-mail';
@@ -672,7 +672,7 @@ class UsersShowController extends AbstractController
         $out .= '<h3>Huidig saldo: <span class="label label-info">';
         $out .= $user['saldo'];
         $out .= '</span> ';
-        $out .= $config_service->get('currency', $app['pp_schema']);
+        $out .= $config_service->get('currency', $pp->schema());
         $out .= '</h3>';
         $out .= '</div></div>';
 
@@ -682,7 +682,7 @@ class UsersShowController extends AbstractController
 
         $out .= 'data-plot-user-transactions="';
         $out .= htmlspecialchars($link_render->context_path('plot_user_transactions',
-            $app['pp_ary'], ['user_id' => $id, 'days' => $tdays]));
+            $pp->ary(), ['user_id' => $id, 'days' => $tdays]));
 
         $out .= '">';
         $out .= '</div>';
@@ -701,7 +701,7 @@ class UsersShowController extends AbstractController
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body">';
 
-        $account_str = $account_render->str($id, $app['pp_schema']);
+        $account_str = $account_render->str($id, $pp->schema());
 
         $attr_link_messages = $attr_link_transactions = [
             'class'     => 'btn btn-default btn-lg btn-block',
@@ -718,8 +718,8 @@ class UsersShowController extends AbstractController
             unset($attr_link_transactions['disabled']);
         }
 
-        $out .= $link_render->link_fa($app['r_messages'],
-            $app['pp_ary'],
+        $out .= $link_render->link_fa($vr->get('messages'),
+            $pp->ary(),
             ['f' => ['uid' => $id]],
             'Vraag en aanbod van ' . $account_str .
             ' (' . $count_messages . ')',
@@ -727,7 +727,7 @@ class UsersShowController extends AbstractController
             'newspaper-o');
 
         $out .= $link_render->link_fa('transactions',
-            $app['pp_ary'],
+            $pp->ary(),
             ['f' => ['uid' => $id]],
             'Transacties van ' . $account_str .
             ' (' . $count_transactions . ')',
@@ -742,7 +742,7 @@ class UsersShowController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -763,18 +763,18 @@ class UsersShowController extends AbstractController
         MailAddrUserService $mail_addr_user_service
     ):string
     {
-        $s_owner = !$app['pp_guest']
-            && $app['s_system_self']
-            && $app['s_id'] === $user_id
+        $s_owner = !$pp->is_guest()
+            && $su->is_system_self()
+            && $su->id() === $user_id
             && $user_id;
 
-        $mail_from = $app['s_schema']
+        $mail_from = $su->schema()
             && !$app['s_master']
             && !$app['s_elas_guest']
-                ? $mail_addr_user_service->get($app['s_id'], $app['s_schema'])
+                ? $mail_addr_user_service->get($su->id(), $su->schema())
                 : [];
 
-        $mail_to = $mail_addr_user_service->get($user_id, $app['pp_schema']);
+        $mail_to = $mail_addr_user_service->get($user_id, $pp->schema());
 
         $user_mail_disabled = true;
 
@@ -806,7 +806,7 @@ class UsersShowController extends AbstractController
 
         $out = '<h3><i class="fa fa-envelop-o"></i> ';
         $out .= 'Stuur een bericht naar ';
-        $out .=  $account_render->link($user_id, $app['pp_ary']);
+        $out .=  $account_render->link($user_id, $pp->ary());
         $out .= '</h3>';
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

@@ -33,14 +33,14 @@ class MessagesDelController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
+        $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-        $s_owner = !$app['pp_guest']
-            && $app['s_system_self']
-            && $app['s_id'] === $message['id_user']
+        $s_owner = !$pp->is_guest()
+            && $su->is_system_self()
+            && $su->id() === $message['id_user']
             && $message['id_user'];
 
-        if (!($s_owner || $app['pp_admin']))
+        if (!($s_owner || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException(
                 'Je hebt onvoldoende rechten om dit bericht te verwijderen.');
@@ -53,19 +53,19 @@ class MessagesDelController extends AbstractController
                 $alert_service->error($error_token);
             }
 
-            $db->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
+            $db->delete($pp->schema() . '.msgpictures', ['msgid' => $id]);
 
-            if ($db->delete($app['pp_schema'] . '.messages', ['id' => $id]))
+            if ($db->delete($pp->schema() . '.messages', ['id' => $id]))
             {
                 $column = 'stat_msgs_';
                 $column .= $message['msg_type'] ? 'offers' : 'wanted';
 
-                $db->executeUpdate('update ' . $app['pp_schema'] . '.categories
+                $db->executeUpdate('update ' . $pp->schema() . '.categories
                     set ' . $column . ' = ' . $column . ' - 1
                     where id = ?', [$message['id_category']]);
 
                 $alert_service->success(ucfirst($message['label']['type_this']) . ' is verwijderd.');
-                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
 
             $alert_service->error(ucfirst($message['label']['type_this']) . ' is niet verwijderd.');
@@ -73,7 +73,7 @@ class MessagesDelController extends AbstractController
 
         $heading_render->add(ucfirst($message['label']['type_this']) . ' ');
 
-        $heading_render->add_raw($link_render->link_no_attr('messages_show', $app['pp_ary'],
+        $heading_render->add_raw($link_render->link_no_attr('messages_show', $pp->ary(),
             ['id' => $id], $message['content']));
 
         $heading_render->add(' verwijderen?');
@@ -86,7 +86,7 @@ class MessagesDelController extends AbstractController
 
         $out .= '<dt>Wie</dt>';
         $out .= '<dd>';
-        $out .= $account_render->link($message['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($message['id_user'], $pp->ary());
         $out .= '</dd>';
 
         $out .= '<dt>Categorie</dt>';
@@ -99,7 +99,7 @@ class MessagesDelController extends AbstractController
         $out .= $message['validity'];
         $out .= '</dd>';
 
-        if ($config_service->get_intersystem_en($app['pp_schema']) && $intersystems_service->get_count($app['pp_schema']))
+        if ($config_service->get_intersystem_en($pp->schema()) && $intersystems_service->get_count($pp->schema()))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
@@ -125,7 +125,7 @@ class MessagesDelController extends AbstractController
 
         $out .= '<form method="post">';
 
-        $out .= $link_render->btn_cancel('messages_show', $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel('messages_show', $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
@@ -139,7 +139,7 @@ class MessagesDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

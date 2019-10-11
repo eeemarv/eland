@@ -17,21 +17,21 @@ class ElasGroupLoginController extends AbstractController
         IntersystemsService $intersystems_service
     ):Response
     {
-        if (!$app['s_schema'] || $app['s_elas_guest'])
+        if (!$su->schema() || $app['s_elas_guest'])
         {
             return $this->json([
                 'error' => 'Onvoldoende rechten.',
             ], 403);
         }
 
-        if (!$config_service->get_intersystem_en($app['pp_schema']))
+        if (!$config_service->get_intersystem_en($pp->schema()))
         {
             return $this->json([
                 'error' => 'InterSysteem verbindingen zijn niet ingeschakeld in het eigen Systeem.',
             ], 404);
         }
 
-        $elas_intersystems = $intersystems_service->get_elas($app['s_schema']);
+        $elas_intersystems = $intersystems_service->get_elas($su->schema());
 
         if (!isset($elas_intersystems[$group_id]))
         {
@@ -41,7 +41,7 @@ class ElasGroupLoginController extends AbstractController
         }
 
         $group = $db->fetchAssoc('select *
-            from ' . $app['s_schema'] . '.letsgroups
+            from ' . $su->schema() . '.letsgroups
             where id = ?', [$group_id]);
 
         if (!$group)
@@ -86,7 +86,7 @@ class ElasGroupLoginController extends AbstractController
             $m = 'Kan geen verbinding maken.';
 
             $logger->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
             return $this->json([
                 'error' => $m,
@@ -102,7 +102,7 @@ class ElasGroupLoginController extends AbstractController
             $m = 'Kan geen token krijgen voor dit interSysteem.';
 
             $logger->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
             return $this->json([
                 'error' => $m,

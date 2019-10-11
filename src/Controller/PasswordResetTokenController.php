@@ -34,13 +34,13 @@ class PasswordResetTokenController extends AbstractController
         UserCacheService $user_cache_service
     ):Response
     {
-        $data = $data_token_service->retrieve($token, 'password_reset', $app['pp_schema']);
+        $data = $data_token_service->retrieve($token, 'password_reset', $pp->schema());
         $password = $request->request->get('password', '');
 
         if (!$data)
         {
             $alert_service->error('Het reset-token is niet meer geldig.');
-            $link_render->redirect('password_reset', $app['pp_ary'], []);
+            $link_render->redirect('password_reset', $pp->ary(), []);
         }
 
         $user_id = $data['user_id'];
@@ -53,16 +53,16 @@ class PasswordResetTokenController extends AbstractController
             }
             else if (!($password_strength_service->get($password) < 50))
             {
-                $db->update($app['pp_schema'] . '.users',
+                $db->update($pp->schema() . '.users',
                     ['password' => hash('sha512', $password)],
                     ['id' => $user_id]);
 
-                $user_cache_service->clear($user_id, $app['pp_schema']);
+                $user_cache_service->clear($user_id, $pp->schema());
                 $alert_service->success('Paswoord opgeslagen.');
 
                 $mail_queue->queue([
-                    'schema'	=> $app['pp_schema'],
-                    'to' 		=> $mail_addr_user_service->get_active($user_id, $app['pp_schema']),
+                    'schema'	=> $pp->schema(),
+                    'to' 		=> $mail_addr_user_service->get_active($user_id, $pp->schema()),
                     'template'	=> 'password_reset/user',
                     'vars'		=> [
                         'password'		=> $password,
@@ -70,8 +70,8 @@ class PasswordResetTokenController extends AbstractController
                     ],
                 ], 10000);
 
-                $data = $data_token_service->del($token, 'password_reset', $app['pp_schema']);
-                $link_render->redirect('login', $app['pp_ary'], []);
+                $data = $data_token_service->del($token, 'password_reset', $pp->schema());
+                $link_render->redirect('login', $pp->ary(), []);
             }
             else
             {
@@ -119,7 +119,7 @@ class PasswordResetTokenController extends AbstractController
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

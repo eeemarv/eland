@@ -35,7 +35,7 @@ class SupportController extends AbstractController
         }
         else
         {
-            $user_email_ary = $mail_addr_user_service->get_active($app['s_id'], $app['pp_schema']);
+            $user_email_ary = $mail_addr_user_service->get_active($su->id(), $pp->schema());
         }
 
         $can_reply = count($user_email_ary) ? true : false;
@@ -52,7 +52,7 @@ class SupportController extends AbstractController
                 $errors[] = 'Het bericht is leeg.';
             }
 
-            if (!trim($config_service->get('support', $app['pp_schema'])))
+            if (!trim($config_service->get('support', $pp->schema())))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
             }
@@ -70,7 +70,7 @@ class SupportController extends AbstractController
             if(!count($errors))
             {
                 $vars = [
-                    'user_id'	=> $app['s_id'],
+                    'user_id'	=> $su->id(),
                     'can_reply'	=> $can_reply,
                     'message'	=> $message,
                 ];
@@ -78,7 +78,7 @@ class SupportController extends AbstractController
                 if ($cc && $can_reply)
                 {
                     $mail_queue->queue([
-                        'schema'	=> $app['pp_schema'],
+                        'schema'	=> $pp->schema(),
                         'template'	=> 'support/copy',
                         'vars'		=> $vars,
                         'to'		=> $user_email_ary,
@@ -86,15 +86,15 @@ class SupportController extends AbstractController
                 }
 
                 $mail_queue->queue([
-                    'schema'	=> $app['pp_schema'],
+                    'schema'	=> $pp->schema(),
                     'template'	=> 'support/support',
                     'vars'		=> $vars,
-                    'to'		=> $mail_addr_system_service->get_support($app['pp_schema']),
+                    'to'		=> $mail_addr_system_service->get_support($pp->schema()),
                     'reply_to'	=> $user_email_ary,
                 ], 8000);
 
                 $alert_service->success('De Support E-mail is verzonden.');
-                $link_render->redirect($app['r_default'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('default'), $pp->ary(), []);
             }
             else
             {
@@ -125,11 +125,11 @@ class SupportController extends AbstractController
             $cc = false;
         }
 
-        if (!$config_service->get('mailenabled', $app['pp_schema']))
+        if (!$config_service->get('mailenabled', $pp->schema()))
         {
             $alert_service->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }
-        else if (!$config_service->get('support', $app['pp_schema']))
+        else if (!$config_service->get('support', $pp->schema()))
         {
             $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
@@ -190,7 +190,7 @@ class SupportController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

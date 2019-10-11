@@ -31,10 +31,10 @@ class ForumAddTopicController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $pp->schema()))
         {
             $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($app['r_default'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('default'), $pp->ary(), []);
         }
 
         if ($request->isMethod('POST'))
@@ -52,7 +52,7 @@ class ForumAddTopicController extends AbstractController
             $topic = ['content' => $content];
 
             $topic['subject'] = $request->request->get('subject', '');
-            $topic['uid'] = $app['s_id'];
+            $topic['uid'] = $su->id();
 
             if (!$topic['subject'])
             {
@@ -88,11 +88,11 @@ class ForumAddTopicController extends AbstractController
             {
                 $topic_id = substr(sha1(random_bytes(16)), 0, 24);
 
-                $xdb_service->set('forum', $topic_id, $topic, $app['pp_schema']);
+                $xdb_service->set('forum', $topic_id, $topic, $pp->schema());
 
                 $alert_service->success('Onderwerp toegevoegd.');
 
-                $link_render->redirect('forum_topic', $app['pp_ary'],
+                $link_render->redirect('forum_topic', $pp->ary(),
                     ['topic_id' => $topic_id]);
             }
         }
@@ -132,9 +132,9 @@ class ForumAddTopicController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $app['pp_user']);
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $pp->is_user());
 
-        $out .= $link_render->btn_cancel('forum', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('forum', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
@@ -151,7 +151,7 @@ class ForumAddTopicController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -22,14 +22,14 @@ class UsersImageUploadController extends AbstractController
         UserCacheService $user_cache_service
     ):Response
     {
-        if ($app['s_id'] < 1)
+        if ($su->id() < 1)
         {
             throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
         }
 
         return $this->users_image_upload_admin(
             $request,
-            $app['s_id'],
+            $su->id(),
             $db,
             $logger,
             $image_upload_service,
@@ -54,17 +54,17 @@ class UsersImageUploadController extends AbstractController
         }
 
         $filename = $image_upload_service->upload($uploaded_file,
-            'u', $id, 400, 400, $app['pp_schema']);
+            'u', $id, 400, 400, $pp->schema());
 
-        $db->update($app['pp_schema'] . '.users', [
+        $db->update($pp->schema() . '.users', [
             '"PictureFile"'	=> $filename
         ],['id' => $id]);
 
         $logger->info('User image ' . $filename .
             ' uploaded. User: ' . $id,
-            ['schema' => $app['pp_schema']]);
+            ['schema' => $pp->schema()]);
 
-        $user_cache_service->clear($id, $app['pp_schema']);
+        $user_cache_service->clear($id, $pp->schema());
 
         return $this->json([$filename]);
     }

@@ -20,7 +20,7 @@ class LogoutController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        foreach($app['s_logins'] as $sch => $uid)
+        foreach($su->logins() as $sch => $uid)
         {
             $xdb_service->set('logout', (string) $uid, ['time' => time()], $sch);
         }
@@ -28,11 +28,11 @@ class LogoutController extends AbstractController
         $session->invalidate();
 
         $logger->info('user logged out',
-            ['schema' => $app['pp_schema']]);
+            ['schema' => $pp->schema()]);
 
         $alert_service->success('Je bent uitgelogd');
 
-        $link_render->redirect('login', ['system' => $app['pp_system']], []);
+        $link_render->redirect('login', ['system' => $pp->system()], []);
 
         return new Response('');
     }

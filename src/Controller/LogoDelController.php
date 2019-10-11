@@ -24,7 +24,7 @@ class LogoDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $logo = $config_service->get('logo', $app['pp_schema']);
+        $logo = $config_service->get('logo', $pp->schema());
 
         if ($logo == '' || !$logo)
         {
@@ -33,11 +33,11 @@ class LogoDelController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $config_service->set('logo', $app['pp_schema'], '');
-            $config_service->set('logo_width', $app['pp_schema'], '0');
+            $config_service->set('logo', $pp->schema(), '');
+            $config_service->set('logo_width', $pp->schema(), '0');
 
             $alert_service->success('Logo verwijderd.');
-            $link_render->redirect('config', $app['pp_ary'], ['tab' => 'logo']);
+            $link_render->redirect('config', $pp->ary(), ['tab' => 'logo']);
         }
 
         $heading_render->add('Logo verwijderen?');
@@ -58,7 +58,7 @@ class LogoDelController extends AbstractController
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= $link_render->btn_cancel('config', $app['pp_ary'], ['tab' => 'logo']);
+        $out .= $link_render->btn_cancel('config', $pp->ary(), ['tab' => 'logo']);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
@@ -72,7 +72,7 @@ class LogoDelController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

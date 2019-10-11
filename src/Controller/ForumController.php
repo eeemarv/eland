@@ -34,16 +34,16 @@ class ForumController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $app['pp_schema']))
+        if (!$config_service->get('forum_en', $pp->schema()))
         {
             $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($app['default'], $app['pp_ary'], []);
+            $link_render->redirect($app['default'], $pp->ary(), []);
         }
 
         $q = $request->query->get('q', '');
 
         $rows = $xdb_service->get_many([
-            'agg_schema' => $app['pp_schema'],
+            'agg_schema' => $pp->schema(),
             'agg_type' => 'forum',
             'access' => $item_access_service->get_visible_ary_xdb()],
                 'order by event_time desc');
@@ -54,7 +54,7 @@ class ForumController extends AbstractController
 
             foreach ($rows as $row)
             {
-                $replies = $xdb_service->get_many(['agg_schema' => $app['pp_schema'],
+                $replies = $xdb_service->get_many(['agg_schema' => $pp->schema(),
                     'agg_type' => 'forum',
                     'data->>\'parent_id\'' => $row['eland_id']]);
 
@@ -66,20 +66,20 @@ class ForumController extends AbstractController
             }
         }
 
-        if ($app['pp_admin'] || $app['pp_user'])
+        if ($pp->is_admin() || $pp->is_user())
         {
-            $btn_top_render->add('forum_add_topic', $app['pp_ary'],
+            $btn_top_render->add('forum_add_topic', $pp->ary(),
                 [], 'Onderwerp toevoegen');
         }
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $btn_nav_render->csv();
         }
 
-        $show_visibility = (!$app['pp_guest']
-                && $config_service->get_intersystem_en($app['pp_schema']))
-            || $app['pp_admin'];
+        $show_visibility = (!$pp->is_guest()
+                && $config_service->get_intersystem_en($pp->schema()))
+            || $pp->is_admin();
 
         $heading_render->add('Forum');
         $heading_render->fa('comments-o');
@@ -126,7 +126,7 @@ class ForumController extends AbstractController
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
-                'schema'    => $app['pp_schema'],
+                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -161,7 +161,7 @@ class ForumController extends AbstractController
             $out .= '<tr>';
 
             $out .= '<td>';
-            $out .= $link_render->link_no_attr('forum_topic', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('forum_topic', $pp->ary(),
                 ['topic_id' => $pid], $p['subject']);
             $out .= '</td>';
 
@@ -170,10 +170,10 @@ class ForumController extends AbstractController
             $out .= '</td>';
 
             $out .= '<td>';
-            $out .= $account_render->link((int) $p['uid'], $app['pp_ary']);
+            $out .= $account_render->link((int) $p['uid'], $pp->ary());
             $out .= '</td>';
 
-            $out .= $date_format_service->get_td($p['ts'], 'min', $app['pp_schema']);
+            $out .= $date_format_service->get_td($p['ts'], 'min', $pp->schema());
 
             if ($show_visibility)
             {
@@ -194,7 +194,7 @@ class ForumController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

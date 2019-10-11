@@ -23,7 +23,7 @@ class PlotUserTransactionsController extends AbstractController
         SystemsService $systems_service
     ):Response
     {
-        $user = $user_cache_service->get($user_id, $app['pp_schema']);
+        $user = $user_cache_service->get($user_id, $pp->schema());
 
         if (!$user)
         {
@@ -34,7 +34,7 @@ class PlotUserTransactionsController extends AbstractController
 
         $st = $db->prepare('select url, apimethod,
             localletscode as code, groupname as name
-            from ' . $app['pp_schema'] . '.letsgroups');
+            from ' . $pp->schema() . '.letsgroups');
 
         $st->execute();
 
@@ -73,8 +73,8 @@ class PlotUserTransactionsController extends AbstractController
                 t.real_from, t.real_to, t.cdate, t.description,
                 u.id as user_id, u.name, u.letscode as code,
                 u.accountrole as role, u.status
-            from ' . $app['pp_schema'] . '.transactions t, ' .
-                $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.transactions t, ' .
+                $pp->schema() . '.users u
             where (t.id_to = ? or t.id_from = ?)
                 and (u.id = t.id_to or u.id = t.id_from)
                 and u.id <> ?
@@ -103,10 +103,10 @@ class PlotUserTransactionsController extends AbstractController
             {
                 $intersystem_name = $intersystem_names[$code] ?? $name;
 
-                if ($app['pp_admin'])
+                if ($pp->is_admin())
                 {
-                    $user_link = $link_render->context_path($app['r_users_show'],
-                        $app['pp_ary'], ['id' => $t['user_id']]);
+                    $user_link = $link_render->context_path($vr->get('users_show'),
+                        $pp->ary(), ['id' => $t['user_id']]);
                 }
 
                 if (strpos($real, '(') !== false
@@ -126,11 +126,11 @@ class PlotUserTransactionsController extends AbstractController
             {
                 $user_label = $code . ' ' . $name;
 
-                if ($app['pp_admin']
+                if ($pp->is_admin()
                     || ($t['status'] === 1 || $t['status'] === 2))
                 {
-                    $user_link = $link_render->context_path($app['r_users_show'],
-                        $app['pp_ary'], ['id' => $t['user_id']]);
+                    $user_link = $link_render->context_path($vr->get('users_show'),
+                        $pp->ary(), ['id' => $t['user_id']]);
                 }
             }
 
@@ -153,9 +153,9 @@ class PlotUserTransactionsController extends AbstractController
             $transactions[] = [
                 'amount' 	        => $amount,
                 'time'              => $time,
-                'fdate'             => $date_format_service->get_from_unix($time, 'day', $app['pp_schema']),
+                'fdate'             => $date_format_service->get_from_unix($time, 'day', $pp->schema()),
                 'link' 		        => $link_render->context_path('transactions_show',
-                    $app['pp_ary'], ['id' => $t['id']]),
+                    $pp->ary(), ['id' => $t['id']]),
                 'user'              => $tr_user,
             ];
         }
@@ -165,7 +165,7 @@ class PlotUserTransactionsController extends AbstractController
         return $this->json([
             'user_id' 		=> $user_id,
             'ticks' 		=> $days === 365 ? 12 : 4,
-            'currency' 		=> $config_service->get('currency', $app['pp_schema']),
+            'currency' 		=> $config_service->get('currency', $pp->schema()),
             'transactions' 	=> $transactions,
             'begin_balance' => $begin_balance,
             'begin_unix' 	=> $begin_unix,

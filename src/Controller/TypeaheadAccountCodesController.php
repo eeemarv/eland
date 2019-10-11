@@ -17,7 +17,7 @@ class TypeaheadAccountCodesController extends AbstractController
         $account_codes = [];
 
         $st = $db->prepare('select letscode
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             order by letscode asc');
 
         $st->execute();
@@ -34,7 +34,7 @@ class TypeaheadAccountCodesController extends AbstractController
 
         $crc = (string) crc32(json_encode($account_codes));
 
-        $typeahead_service->set_thumbprint('account_codes', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('account_codes', $pp->ary(), [], $crc);
 
         return $this->json($account_codes);
     }

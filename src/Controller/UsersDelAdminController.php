@@ -41,21 +41,21 @@ class UsersDelAdminController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if ($app['s_id'] === $id)
+        if ($su->id() === $id)
         {
             throw new AccessDeniedHttpException(
                 'Je kan je eigen account niet verwijderen.');
         }
 
         if ($db->fetchColumn('select id
-            from ' . $app['pp_schema'] . '.transactions
+            from ' . $pp->schema() . '.transactions
             where id_to = ? or id_from = ?', [$id, $id]))
         {
             throw new AccessDeniedHttpException('Een gebruiker met transacties
                 kan niet worden verwijderd.');
         }
 
-        $user = $user_cache_service->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $pp->schema());
 
         if (!$user)
         {
@@ -99,19 +99,19 @@ class UsersDelAdminController extends AbstractController
 
                 $status = StatusCnst::THUMBPINT_ARY[$user['status']];
 
-                $link_render->redirect($app['r_users'], $app['pp_ary'],
+                $link_render->redirect($vr->get('users'), $pp->ary(),
                     ['status' => $status]);
             }
         }
 
         $heading_render->add('Gebruiker ');
-        $heading_render->add_raw($account_render->link($id, $app['pp_ary']));
+        $heading_render->add_raw($account_render->link($id, $pp->ary()));
         $heading_render->add(' verwijderen?');
         $heading_render->fa('user');
 
         $out = '<p><font color="red">Alle Gegevens, Vraag en aanbod, ';
         $out .= 'Contacten en Afbeeldingen van ';
-        $out .= $account_render->link($id, $app['pp_ary']);
+        $out .= $account_render->link($id, $pp->ary());
         $out .= ' worden verwijderd.</font></p>';
 
         $out .= '<div class="panel panel-info">';
@@ -128,8 +128,8 @@ class UsersDelAdminController extends AbstractController
         $out .= '</label>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel($app['r_users_show'],
-            $app['pp_ary'], ['id' => $id]);
+        $out .= $link_render->btn_cancel($vr->get('users_show'),
+            $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
@@ -145,7 +145,7 @@ class UsersDelAdminController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -160,7 +160,7 @@ class UsersDelAdminController extends AbstractController
         UserCacheService $user_cache_service
     ):void
     {
-        $user = $user_cache_service->get($id, $app['pp_schema']);
+        $user = $user_cache_service->get($id, $pp->schema());
 
         // remove messages
 
@@ -168,7 +168,7 @@ class UsersDelAdminController extends AbstractController
         $msgs = '';
         $st = $db->prepare('select id, content,
                 id_category, msg_type
-            from ' . $app['pp_schema'] . '.messages
+            from ' . $pp->schema() . '.messages
             where id_user = ?');
 
         $st->bindValue(1, $id);
@@ -184,24 +184,24 @@ class UsersDelAdminController extends AbstractController
         {
             $logger->info('Delete user ' . $usr .
                 ', deleted Messages ' . $msgs,
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
-            $db->delete($app['pp_schema'] . '.messages',
+            $db->delete($pp->schema() . '.messages',
                 ['id_user' => $id]);
         }
 
         // remove orphaned images.
 
         $rs = $db->prepare('select mp.id, mp."PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures mp
-                left join ' . $app['pp_schema'] . '.messages m on mp.msgid = m.id
+            from ' . $pp->schema() . '.msgpictures mp
+                left join ' . $pp->schema() . '.messages m on mp.msgid = m.id
             where m.id is null');
 
         $rs->execute();
 
         while ($row = $rs->fetch())
         {
-            $db->delete($app['pp_schema'] . '.msgpictures', ['id' => $row['id']]);
+            $db->delete($pp->schema() . '.msgpictures', ['id' => $row['id']]);
         }
 
         // update counts for each category
@@ -209,8 +209,8 @@ class UsersDelAdminController extends AbstractController
         $offer_count = $want_count = [];
 
         $rs = $db->prepare('select m.id_category, count(m.*)
-            from ' . $app['pp_schema'] . '.messages m, ' .
-                $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.messages m, ' .
+                $pp->schema() . '.users u
             where  m.id_user = u.id
                 and u.status IN (1, 2, 3)
                 and msg_type = 1
@@ -224,8 +224,8 @@ class UsersDelAdminController extends AbstractController
         }
 
         $rs = $db->prepare('select m.id_category, count(m.*)
-            from ' . $app['pp_schema'] . '.messages m, ' .
-                $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.messages m, ' .
+                $pp->schema() . '.users u
             where m.id_user = u.id
                 and u.status IN (1, 2, 3)
                 and msg_type = 0
@@ -240,7 +240,7 @@ class UsersDelAdminController extends AbstractController
 
         $all_cat = $db->fetchAll('select id,
                 stat_msgs_offers, stat_msgs_wanted
-            from ' . $app['pp_schema'] . '.categories
+            from ' . $pp->schema() . '.categories
             where id_parent is not null');
 
         foreach ($all_cat as $val)
@@ -262,32 +262,32 @@ class UsersDelAdminController extends AbstractController
                 'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
             ];
 
-            $db->update($app['pp_schema'] . '.categories',
+            $db->update($pp->schema() . '.categories',
                 $stats,
                 ['id' => $cat_id]);
         }
 
         //delete contacts
 
-        $db->delete($app['pp_schema'] . '.contact',
+        $db->delete($pp->schema() . '.contact',
             ['id_user' => $id]);
 
         //delete fullname access record.
 
-        $xdb_service->del('user_fullname_access', (string) $id, $app['pp_schema']);
+        $xdb_service->del('user_fullname_access', (string) $id, $pp->schema());
 
         //finally, the user
 
-        $db->delete($app['pp_schema'] . '.users',
+        $db->delete($pp->schema() . '.users',
             ['id' => $id]);
 
-        $user_cache_service->clear($id, $app['pp_schema']);
+        $user_cache_service->clear($id, $pp->schema());
 
         $alert_service->success('De gebruiker is verwijderd.');
 
         $thumbprint_status = StatusCnst::THUMBPINT_ARY[$user['status']];
-        $thumbprint_accounts_service->delete($thumbprint_status, $app['pp_ary'], $app['pp_schema']);
+        $thumbprint_accounts_service->delete($thumbprint_status, $pp->ary(), $pp->schema());
 
-        $intersystems_service->clear_cache($app['pp_schema']);
+        $intersystems_service->clear_cache($pp->schema());
     }
 }

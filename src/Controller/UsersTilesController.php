@@ -58,10 +58,10 @@ class UsersTilesController extends AbstractController
     ):Response
     {
         $q = $request->get('q', '');
-        $users_route = $app['pp_admin'] ? 'users_tiles_admin' : 'users_tiles';
+        $users_route = $pp->is_admin() ? 'users_tiles_admin' : 'users_tiles';
 
         $status_def_ary = UsersListController::get_status_def_ary(
-            $app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
+            $pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
 
         $params = ['status'	=> $status];
 
@@ -73,30 +73,30 @@ class UsersTilesController extends AbstractController
         }
 
         $users = $db->fetchAll('select u.*
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
         $assets_service->add(['isotope', 'users_tiles.js']);
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
-            $btn_top_render->add('users_add', $app['pp_ary'],
+            $btn_top_render->add('users_add', $pp->ary(),
                 [], 'Gebruiker toevoegen');
         }
 
-        UsersListController::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_tiles');
+        UsersListController::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_tiles');
         UsersListController::heading($heading_render);
 
         $out = UsersListController::get_filter_and_tab_selector(
             $users_route,
-            $app['pp_ary'],
+            $pp->ary(),
             $params,
             $link_render,
-            $app['pp_admin'],
+            $pp->is_admin(),
             '',
             $q,
-            $config_service->get_new_user_treshold($app['pp_schema'])
+            $config_service->get_new_user_treshold($pp->schema())
         );
 
         $out .= '<p>';
@@ -121,12 +121,12 @@ class UsersTilesController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] == 1
-                && $config_service->get_new_user_treshold($app['pp_schema']) < strtotime($u['adate']))
+                && $config_service->get_new_user_treshold($pp->schema()) < strtotime($u['adate']))
             {
                 $row_stat = 3;
             }
 
-            $url = $link_render->context_path($app['r_users_show'], $app['pp_ary'],
+            $url = $link_render->context_path($vr->get('users_show'), $pp->ary(),
                 ['id' => $u['id'], 'link' => $status]);
 
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
@@ -174,7 +174,7 @@ class UsersTilesController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

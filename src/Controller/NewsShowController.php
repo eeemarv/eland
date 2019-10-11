@@ -36,14 +36,14 @@ class NewsShowController extends AbstractController
         XdbService $xdb_service
     ):Response
     {
-        $show_visibility = ($app['pp_user']
-                && $config_service->get_intersystem_en($app['pp_schema']))
-            || $app['pp_admin'];
+        $show_visibility = ($pp->is_user()
+                && $config_service->get_intersystem_en($pp->schema()))
+            || $pp->is_admin();
 
         $news_access_ary = $no_access_ary = [];
 
         $rows = $xdb_service->get_many([
-            'agg_schema' => $app['pp_schema'],
+            'agg_schema' => $pp->schema(),
             'agg_type' => 'news_access',
         ]);
 
@@ -53,15 +53,15 @@ class NewsShowController extends AbstractController
             $news_access_ary[$row['eland_id']] = $access;
         }
 
-        $query = 'select * from ' . $app['pp_schema'] . '.news';
+        $query = 'select * from ' . $pp->schema() . '.news';
 
-        if(!$app['pp_admin'])
+        if(!$pp->is_admin())
         {
             $query .= ' where approved = \'t\'';
         }
 
         $query .= ' order by itemdate ';
-        $query .= $config_service->get('news_order_asc', $app['pp_schema']) === '1' ? 'asc' : 'desc';
+        $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
 
         $st = $db->prepare($query);
         $st->execute();
@@ -75,7 +75,7 @@ class NewsShowController extends AbstractController
             {
                 $xdb_service->set('news_access', (string) $news_id, [
                     'access' => 'interlets',
-                ], $app['pp_schema']);
+                ], $pp->schema());
 
                 $news[$news_id]['access'] = 'interlets';
             }
@@ -98,16 +98,16 @@ class NewsShowController extends AbstractController
 
         $news_item = $news[$id];
 
-        if (!$app['pp_admin'] && !$news_item['approved'])
+        if (!$pp->is_admin() && !$news_item['approved'])
         {
             $alert_service->error('Je hebt geen toegang tot dit nieuwsbericht.');
-            $link_render->redirect($app['r_news'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('news'), $pp->ary(), []);
         }
 
         if (isset($no_access_ary[$id]))
         {
             $alert_service->error('Je hebt geen toegang tot dit nieuwsbericht.');
-            $link_render->redirect($app['r_news'], $app['pp_ary'], []);
+            $link_render->redirect($vr->get('news'), $pp->ary(), []);
         }
 
         $next = $prev = $current_news = false;
@@ -129,17 +129,17 @@ class NewsShowController extends AbstractController
             $prev = $nid;
         }
 
-        if($app['pp_admin'])
+        if($pp->is_admin())
         {
-            $btn_top_render->edit('news_edit', $app['pp_ary'],
+            $btn_top_render->edit('news_edit', $pp->ary(),
                 ['id' => $id], 'Nieuwsbericht aanpassen');
 
-            $btn_top_render->del('news_del', $app['pp_ary'],
+            $btn_top_render->del('news_del', $pp->ary(),
                 ['id' => $id], 'Nieuwsbericht verwijderen');
 
             if (!$news_item['approved'])
             {
-                $btn_top_render->approve('news_approve', $app['pp_ary'],
+                $btn_top_render->approve('news_approve', $pp->ary(),
                     ['id' => $id], 'Nieuwsbericht goedkeuren en publiceren');
             }
         }
@@ -147,10 +147,10 @@ class NewsShowController extends AbstractController
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $btn_nav_render->nav('news_show', $app['pp_ary'],
+        $btn_nav_render->nav('news_show', $pp->ary(),
             $prev_ary, $next_ary, false);
 
-        $btn_nav_render->nav_list($app['r_news'], $app['pp_ary'],
+        $btn_nav_render->nav_list($vr->get('news'), $pp->ary(),
             [], 'Lijst', 'calendar-o');
 
         $heading_render->add('Nieuwsbericht: ' . $news_item['headline']);
@@ -163,7 +163,7 @@ class NewsShowController extends AbstractController
 
         $out .= '<dl>';
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $out .= '<dt>Goedgekeurd en gepubliceerd door Admin</dt>';
             $out .= '<dd>';
@@ -177,7 +177,7 @@ class NewsShowController extends AbstractController
 
         if ($news_item['itemdate'])
         {
-            $out .= $date_format_service->get($news_item['itemdate'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($news_item['itemdate'], 'day', $pp->schema());
         }
         else
         {
@@ -220,7 +220,7 @@ class NewsShowController extends AbstractController
 
         $out .= '<dt>Ingegeven door</dt>';
         $out .= '<dd>';
-        $out .= $account_render->link($news_item['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($news_item['id_user'], $pp->ary());
         $out .= '</dd>';
 
         $out .= '</dl>';
@@ -232,7 +232,7 @@ class NewsShowController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -17,7 +17,7 @@ class TypeaheadUsernamesController extends AbstractController
         $usernames = [];
 
         $st = $db->prepare('select name
-            from ' . $app['pp_schema'] . '.users
+            from ' . $pp->schema() . '.users
             order by name asc');
 
         $st->execute();
@@ -34,7 +34,7 @@ class TypeaheadUsernamesController extends AbstractController
 
         $crc = (string) crc32(json_encode($usernames));
 
-        $typeahead_service->set_thumbprint('usernames', $app['pp_ary'], [], $crc);
+        $typeahead_service->set_thumbprint('usernames', $pp->ary(), [], $crc);
 
         return $this->json($usernames);
     }

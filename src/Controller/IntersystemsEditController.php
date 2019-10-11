@@ -2,33 +2,54 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Render\SelectRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\intersystems;
 use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsEditController extends AbstractController
 {
     public function intersystems_add(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        ConfigService $config_service,
+        FormTokenService $form_token_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        LinkRender $link_render,
+        SelectRender $select_render,
+        SystemsService $systems_service,
+        PageParamsService $pp,
+        MenuService $menu_service
     ):Response
     {
         if ($request->isMethod('POST'))
         {
-            [$group, $errors] = self::get_post_errors($request, $app);
+            [$group, $errors] = self::get_post_errors(
+                $request,
+                $form_token_service
+            );
 
             if ($db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.letsgroups
+                from ' . $pp->schema() . '.letsgroups
                 where url = ?', [$group['url']]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze URL.';
             }
 
             if ($db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.letsgroups
+                from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?', [$group['localletscode']]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
@@ -36,15 +57,15 @@ class IntersystemsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if ($db->insert($app['pp_schema'] . '.letsgroups', $group))
+                if ($db->insert($pp->schema() . '.letsgroups', $group))
                 {
                     $alert_service->success('Intersysteem opgeslagen.');
 
-                    $id = $db->lastInsertId($app['pp_schema'] . '.letsgroups_id_seq');
+                    $id = $db->lastInsertId($pp->schema() . '.letsgroups_id_seq');
 
-                    $intersystems_service->clear_cache($app['pp_schema']);
+                    $intersystems_service->clear_cache($pp->schema());
 
-                    $link_render->redirect('intersystems_show', $app['pp_ary'],
+                    $link_render->redirect('intersystems_show', $pp->ary(),
                         ['id' => $id]);
                 }
 
@@ -80,27 +101,44 @@ class IntersystemsEditController extends AbstractController
 
         $heading_render->add('InterSysteem toevoegen');
 
-        $btn = $link_render->btn_cancel('intersystems', $app['pp_ary'], []);
+        $btn = $link_render->btn_cancel('intersystems', $pp->ary(), []);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-success btn-lg">';
 
-        return self::render_form($app, $group, $btn);
+        return self::render_form(
+            $group,
+            $btn,
+            $heading_render,
+            $select_render,
+            $form_token_service,
+            $pp,
+            $menu_service
+        );
     }
 
     public function intersystems_edit(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        LinkRender $link_render,
+        PageParamsService $pp,
+        FormTokenService $form_token_service,
+        MenuService $menu_service
     ):Response
     {
         if ($request->isMethod('POST'))
         {
-            [$group, $errors] = self::get_post_errors($request, $app);
+            [$group, $errors] = self::get_post_errors(
+                $request,
+                $form_token_service
+            );
 
             if ($db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.letsgroups
+                from ' . $pp->schema() . '.letsgroups
                 where url = ?
                     and id <> ?', [$group['url'], $id]))
             {
@@ -108,7 +146,7 @@ class IntersystemsEditController extends AbstractController
             }
 
             if ($db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.letsgroups
+                from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?
                     and id <> ?', [$group['localletscode'], $id]))
             {
@@ -117,15 +155,15 @@ class IntersystemsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if ($db->update($app['pp_schema'] . '.letsgroups',
+                if ($db->update($pp->schema() . '.letsgroups',
                     $group,
                     ['id' => $id]))
                 {
                     $alert_service->success('InterSysteem aangepast.');
 
-                    $intersystems_service->clear_cache($app['pp_schema']);
+                    $intersystems_service->clear_cache($pp->schema());
 
-                    $link_render->redirect('intersystems_show', $app['pp_ary'],
+                    $link_render->redirect('intersystems_show', $pp->ary(),
                         ['id'	=> $id]);
                 }
 
@@ -139,28 +177,36 @@ class IntersystemsEditController extends AbstractController
         else
         {
             $group = $db->fetchAssoc('select *
-            from ' . $app['pp_schema'] . '.letsgroups
+            from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);
 
             if (!$group)
             {
                 $alert_service->error('Systeem niet gevonden.');
-                $link_render->redirect('intersystems', $app['pp_ary'], []);
+                $link_render->redirect('intersystems', $pp->ary(), []);
             }
         }
 
         $heading_render->add('InterSysteem aanpassen');
 
-        $btn = $link_render->btn_cancel('intersystems_show', $app['pp_ary'],
+        $btn = $link_render->btn_cancel('intersystems_show', $pp->ary(),
             ['id' => $id]);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-primary btn-lg">';
 
-        return self::render_form($app, $group, $btn);
+        return self::render_form(
+            $group,
+            $btn,
+
+            $menu_service
+        );
     }
 
-    private static function get_post_errors(Request $request, app $app):array
+    private static function get_post_errors(
+        Request $request,
+        FormTokenService $form_token_service
+    ):array
     {
         $errors = [];
 
@@ -236,9 +282,13 @@ class IntersystemsEditController extends AbstractController
     }
 
     private static function render_form(
-        app $app,
         array $group,
-        string $btn
+        string $btn,
+        HeadingRender $heading_render,
+        SelectRender $select_render,
+        FormTokenService $form_token_service,
+        PageParamsService $pp,
+        MenuService $menu_service
     ):Response
     {
         $heading_render->fa('share-alt');
@@ -387,13 +437,13 @@ class IntersystemsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= intersystems::get_schemas_groups($app);
+        $out .= IntersystemsController::get_schemas_groups($app);
 
         $menu_service->set('intersystems');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

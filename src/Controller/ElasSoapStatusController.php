@@ -18,7 +18,7 @@ class ElasSoapStatusController extends AbstractController
         $response = new Response();
         $response->headers->set('Content-Type', 'text/plain');
 
-        if (!$app['s_schema'])
+        if (!$su->schema())
         {
             $response->setContent('Onvoldoende rechten');
             $response->setStatusCode(403);
@@ -26,7 +26,7 @@ class ElasSoapStatusController extends AbstractController
         }
 
         $group = $db->fetchAssoc('select *
-            from ' . $app['s_schema'] . '.letsgroups
+            from ' . $su->schema() . '.letsgroups
             where id = ?', [$group_id]);
 
         if (!$group)
@@ -64,7 +64,7 @@ class ElasSoapStatusController extends AbstractController
             $m = 'Kan geen verbinding maken.';
 
             $logger->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
             $response->setContent($m);
             $response->setStatusCode(404);
@@ -80,7 +80,7 @@ class ElasSoapStatusController extends AbstractController
             $m = 'Kan geen status verkrijgen. ' . $err;
 
             $logger->error('elas-token: ' . $m . ' ' . $err,
-                ['schema' => $app['pp_schema']]);
+                ['schema' => $pp->schema()]);
 
             $response->setContent($m);
             $response->setStatusCode(404);

@@ -29,7 +29,7 @@ class DocsEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $row = $xdb_service->get('doc', $doc_id, $app['pp_schema']);
+        $row = $xdb_service->get('doc', $doc_id, $pp->schema());
 
         if ($row)
         {
@@ -41,7 +41,7 @@ class DocsEditController extends AbstractController
         else
         {
             $alert_service->error('Document niet gevonden');
-            $link_render->redirect('docs', $app['pp_ary'], []);
+            $link_render->redirect('docs', $pp->ary(), []);
         }
 
         if ($request->isMethod('POST'))
@@ -75,7 +75,7 @@ class DocsEditController extends AbstractController
                 if (strlen($map_name))
                 {
                     $rows = $xdb_service->get_many(['agg_type' => 'doc',
-                        'agg_schema' => $app['pp_schema'],
+                        'agg_schema' => $pp->schema(),
                         'data->>\'map_name\'' => $map_name], 'limit 1');
 
                     if (count($rows))
@@ -89,7 +89,7 @@ class DocsEditController extends AbstractController
 
                         $mid = substr(sha1(random_bytes(16)), 0, 24);
 
-                        $xdb_service->set('doc', $mid, $map, $app['pp_schema']);
+                        $xdb_service->set('doc', $mid, $map, $pp->schema());
 
                         $map['id'] = $mid;
                     }
@@ -106,28 +106,28 @@ class DocsEditController extends AbstractController
                         || !strlen($map_name)))
                 {
                     $rows = $xdb_service->get_many(['agg_type' => 'doc',
-                        'agg_schema' => $app['pp_schema'],
+                        'agg_schema' => $pp->schema(),
                         'data->>\'map_id\'' => $doc['map_id']]);
 
                     if (count($rows) < 2)
                     {
-                        $xdb_service->del('doc', $doc['map_id'], $app['pp_schema']);
+                        $xdb_service->del('doc', $doc['map_id'], $pp->schema());
                     }
                 }
 
-                $xdb_service->set('doc', $doc_id, $update, $app['pp_schema']);
+                $xdb_service->set('doc', $doc_id, $update, $pp->schema());
 
                 $typeahead_service->delete_thumbprint('doc_map_names',
-                    $app['pp_ary'], []);
+                    $pp->ary(), []);
 
                 $alert_service->success('Document aangepast');
 
                 if (!$update['map_id'])
                 {
-                    $link_render->redirect('docs', $app['pp_ary'], []);
+                    $link_render->redirect('docs', $pp->ary(), []);
                 }
 
-                $link_render->redirect('docs_map', $app['pp_ary'],
+                $link_render->redirect('docs_map', $pp->ary(),
                     ['map_id' => $update['map_id']]);
             }
 
@@ -139,7 +139,7 @@ class DocsEditController extends AbstractController
             $map_id = $doc['map_id'];
 
             $map = $xdb_service->get('doc', $map_id,
-                $app['pp_schema'])['data'];
+                $pp->schema())['data'];
         }
 
         $heading_render->add('Document aanpassen');
@@ -204,7 +204,7 @@ class DocsEditController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('doc_map_names', [])
             ->str();
 
@@ -214,7 +214,7 @@ class DocsEditController extends AbstractController
         $out .= 'of selecteer een bestaande.</p>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('docs', $app['pp_ary'], []);
+        $out .= $link_render->btn_cancel('docs', $pp->ary(), []);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
@@ -228,7 +228,7 @@ class DocsEditController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

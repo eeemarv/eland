@@ -29,7 +29,7 @@ class AutoMinLimitController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('autominlimit', $app['pp_ary'], []);
+                $link_render->redirect('autominlimit', $pp->ary(), []);
             }
 
             $data = [
@@ -39,14 +39,14 @@ class AutoMinLimitController extends AbstractController
                 'trans_exclusive'	=> $request->request->get('trans_exclusive', ''),
             ];
 
-            $xdb_service->set('setting', 'autominlimit', $data, $app['pp_schema']);
+            $xdb_service->set('setting', 'autominlimit', $data, $pp->schema());
 
             $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
-            $link_render->redirect('autominlimit', $app['pp_ary'], []);
+            $link_render->redirect('autominlimit', $pp->ary(), []);
         }
         else
         {
-            $row = $xdb_service->get('setting', 'autominlimit', $app['pp_schema']);
+            $row = $xdb_service->get('setting', 'autominlimit', $pp->schema());
 
             if ($row)
             {
@@ -74,11 +74,11 @@ class AutoMinLimitController extends AbstractController
         $out .= 'worden door ontvangen transacties ';
         $out .= 'tot de ';
         $out .= $link_render->link_no_attr('config',
-            $app['pp_ary'], ['tab' => 'balance'], 'Minimum Systeemslimiet');
+            $pp->ary(), ['tab' => 'balance'], 'Minimum Systeemslimiet');
         $out .= ' bereikt wordt. ';
         $out .= 'De individuele Account Minimum Limiet wordt gewist wanneer de ';
         $out .= $link_render->link_no_attr('config',
-            $app['pp_ary'], ['tab' => 'balance'], 'Minimum Systeemslimiet');
+            $pp->ary(), ['tab' => 'balance'], 'Minimum Systeemslimiet');
         $out .= ' bereikt of onderschreden wordt.</p>';
         $out .= '<p>Wanneer geen Minimum Systeemslimiet is ingesteld, ';
         $out .= 'dan blijft de individuele Account Minimum Limiet bij elke ';
@@ -91,7 +91,7 @@ class AutoMinLimitController extends AbstractController
         $out .= 'voor instappende leden gebruikt wordt, is het ';
         $out .= 'nuttig de ';
         $out .= $link_render->link_no_attr('config',
-            $app['pp_ary'], ['tab' => 'balance'],
+            $pp->ary(), ['tab' => 'balance'],
             'Preset Individuele Account Minimum Limiet');
         $out .= ' ';
         $out .= 'in te vullen in de instellingen.</p>';
@@ -177,7 +177,7 @@ class AutoMinLimitController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

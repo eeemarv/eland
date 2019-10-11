@@ -58,7 +58,7 @@ class MessagesListController extends AbstractController
         $bulk_submit = $request->request->get('bulk_submit', []);
 
         if ($request->isMethod('POST')
-            && !$app['pp_guest']
+            && !$pp->is_guest()
             && count($bulk_submit))
         {
             $errors = [];
@@ -125,15 +125,15 @@ class MessagesListController extends AbstractController
 
             $rows = $db->executeQuery('select id_user, id, validity,
                 id_category, msg_type
-                from ' . $app['pp_schema'] . '.messages
+                from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
                 [Db::PARAM_INT_ARRAY]);
 
             foreach ($rows as $row)
             {
-                if (!$app['pp_admin']
-                    && ($row['id_user'] !== $app['s_id']))
+                if (!$pp->is_admin()
+                    && ($row['id_user'] !== $su->id()))
                 {
                     throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
                         $row['content'] . ' ( ' . $row['id'] . ')');
@@ -155,7 +155,7 @@ class MessagesListController extends AbstractController
                         'exp_user_warn'	=> 'f',
                     ];
 
-                    $db->update($app['pp_schema'] . '.messages',
+                    $db->update($pp->schema() . '.messages',
                         $msg_update, ['id' => $id]);
                 }
 
@@ -168,7 +168,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('Het bericht is verlengd.');
                 }
 
-                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
 
             if ($bulk_submit_action === 'access' && !count($errors))
@@ -180,7 +180,7 @@ class MessagesListController extends AbstractController
 
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $db->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
+                    $db->update($pp->schema() . '.messages', $msg_update, ['id' => $id]);
                 }
 
                 if (count($selected_messages) > 1)
@@ -192,7 +192,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
                 }
 
-                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
 
             if ($bulk_submit_action === 'category' && !count($errors))
@@ -200,7 +200,7 @@ class MessagesListController extends AbstractController
                 $to_id_category = (int) $bulk_field_value;
 
                 $test_id_category = $db->fetchColumn('select id
-                    from ' . $app['pp_schema'] . '.categories
+                    from ' . $pp->schema() . '.categories
                     where id_parent <> 0
                         and leafnote = 1
                         and id = ?', [$to_id_category]);
@@ -224,7 +224,7 @@ class MessagesListController extends AbstractController
 
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $db->update($app['pp_schema'] . '.messages', $msg_update, ['id' => $id]);
+                    $db->update($pp->schema() . '.messages', $msg_update, ['id' => $id]);
 
                     $type = MessageTypeCnst::FROM_DB[$row['msg_type']];
                     $id_category = $row['id_category'];
@@ -253,7 +253,7 @@ class MessagesListController extends AbstractController
                     foreach ($type_count_ary as $type => $count)
                     {
                         messages_edit::adjust_category_stats($type,
-                            (int) $id_category, $count, $app['db'], $app['pp_schema']);
+                            (int) $id_category, $count, $app['db'], $pp->schema());
                     }
                 }
 
@@ -266,7 +266,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('De categorie van het bericht is aangepast.');
                 }
 
-                $link_render->redirect($app['r_messages'], $app['pp_ary'], []);
+                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
 
             $alert_service->error($errors);
@@ -296,11 +296,11 @@ class MessagesListController extends AbstractController
 
         self::set_view_btn_nav(
             $btn_nav_render,
-            $app['pp_ary'],
+            $pp->ary(),
             $params, 'list'
         );
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
             $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             $btn_nav_render->csv();
@@ -308,7 +308,7 @@ class MessagesListController extends AbstractController
 
         $assets_service->add(['table_sel.js']);
 
-        $show_visibility_column = !$app['pp_guest'] && $intersystems_service->get_count($app['pp_schema']);
+        $show_visibility_column = !$pp->is_guest() && $intersystems_service->get_count($pp->schema());
 
         if (!count($messages))
         {
@@ -353,7 +353,7 @@ class MessagesListController extends AbstractController
                     'asc' 		=> $data['asc'],
                 ];
 
-                $out .= $link_render->link_fa($app['r_messages'], $app['pp_ary'],
+                $out .= $link_render->link_fa($vr->get('messages'), $pp->ary(),
                     $th_params, $data['lbl'], [], $data['fa']);
             }
             $out .= '</th>';
@@ -372,7 +372,7 @@ class MessagesListController extends AbstractController
 
             $out .= '<td>';
 
-            if ($app['pp_admin'] || $s_owner)
+            if ($pp->is_admin() || $s_owner)
             {
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
@@ -389,7 +389,7 @@ class MessagesListController extends AbstractController
 
             $out .= '<td>';
 
-            $out .= $link_render->link_no_attr('messages_show', $app['pp_ary'],
+            $out .= $link_render->link_no_attr('messages_show', $pp->ary(),
                 ['id' => $msg['id']], $msg['content']);
 
             $out .= '</td>';
@@ -397,7 +397,7 @@ class MessagesListController extends AbstractController
             if (!isset($params['f']['uid']))
             {
                 $out .= '<td>';
-                $out .= $account_render->link($msg['id_user'], $app['pp_ary']);
+                $out .= $account_render->link($msg['id_user'], $pp->ary());
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -408,14 +408,14 @@ class MessagesListController extends AbstractController
             if (!($params['f']['cid'] ?? false))
             {
                 $out .= '<td>';
-                $out .= $link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
                     $cat_params[$msg['id_category']],
                     $categories[$msg['id_category']]);
                 $out .= '</td>';
             }
 
             $out .= '<td>';
-            $out .= $date_format_service->get($msg['validity'], 'day', $app['pp_schema']);
+            $out .= $date_format_service->get($msg['validity'], 'day', $pp->schema());
             $out .= '</td>';
 
             if ($show_visibility_column)
@@ -436,7 +436,7 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        if (($app['pp_admin'] || $s_owner) && count($messages))
+        if (($pp->is_admin() || $s_owner) && count($messages))
         {
             $extend_options = [
                 '7'		=> '1 week',
@@ -461,7 +461,7 @@ class MessagesListController extends AbstractController
             $out .= '<li class="active"><a href="#extend_tab" ';
             $out .= 'data-toggle="tab">Verlengen</a></li>';
 
-            if ($config_service->get_intersystem_en($app['pp_schema']))
+            if ($config_service->get_intersystem_en($pp->schema()))
             {
                 $out .= '<li>';
                 $out .= '<a href="#access_tab" data-toggle="tab">';
@@ -503,7 +503,7 @@ class MessagesListController extends AbstractController
 
             $out .= '</div>';
 
-            if ($config_service->get_intersystem_en($app['pp_schema']))
+            if ($config_service->get_intersystem_en($pp->schema()))
             {
                 $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
                 $out .= '<h3>Zichtbaarheid instellen</h3>';
@@ -560,7 +560,7 @@ class MessagesListController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -582,7 +582,7 @@ class MessagesListController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 
@@ -711,11 +711,11 @@ class MessagesListController extends AbstractController
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $s_owner = !$app['pp_guest']
-            && $app['s_system_self']
+        $s_owner = !$pp->is_guest()
+            && $su->is_system_self()
             && isset($filter['uid'])
-            && $app['s_id'] === (int) $filter['uid']
-            && $app['s_id'];
+            && $su->id() === (int) $filter['uid']
+            && $su->id();
 
         $params = [
             's'	=> [
@@ -734,7 +734,7 @@ class MessagesListController extends AbstractController
             && $filter['uid']
             && !isset($filter['s']))
         {
-            $filter['fcode'] = $account_render->str((int) $filter['uid'], $app['pp_schema']);
+            $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
         }
 
         if (isset($filter['uid']))
@@ -758,7 +758,7 @@ class MessagesListController extends AbstractController
             $fcode = trim($fcode);
 
             $fuid = $db->fetchColumn('select id
-                from ' . $app['pp_schema'] . '.users
+                from ' . $pp->schema() . '.users
                 where letscode = ?', [$fcode]);
 
             if ($fuid)
@@ -766,7 +766,7 @@ class MessagesListController extends AbstractController
                 $where_sql[] = 'u.id = ?';
                 $params_sql[] = $fuid;
 
-                $fcode = $account_render->str((int) $fuid, $app['pp_schema']);
+                $fcode = $account_render->str((int) $fuid, $pp->schema());
                 $params['f']['fcode'] = $fcode;
             }
             else
@@ -781,7 +781,7 @@ class MessagesListController extends AbstractController
             $cat_ary = [];
 
             $st = $db->prepare('select id
-                from ' . $app['pp_schema'] . '.categories
+                from ' . $pp->schema() . '.categories
                 where id_parent = ?');
             $st->bindValue(1, $filter['cid']);
             $st->execute();
@@ -848,7 +848,7 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['new']))
             {
                 $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($app['pp_schema']));
+                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
                 $params['f']['ustatus']['new'] = 'on';
             }
 
@@ -861,7 +861,7 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['active']))
             {
                 $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($app['pp_schema']));
+                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
                 $params['f']['ustatus']['active'] = 'on';
             }
 
@@ -871,7 +871,7 @@ class MessagesListController extends AbstractController
             }
         }
 
-        if ($app['pp_guest'])
+        if ($pp->is_guest())
         {
             $where_sql[] = 'm.local = \'f\'';
         }
@@ -886,16 +886,16 @@ class MessagesListController extends AbstractController
         }
 
         $query = 'select m.*, u.postcode, c.fullname
-            from ' . $app['pp_schema'] . '.messages m, ' .
-                $app['pp_schema'] . '.users u, ' .
-                $app['pp_schema'] . '.categories c
+            from ' . $pp->schema() . '.messages m, ' .
+                $pp->schema() . '.users u, ' .
+                $pp->schema() . '.categories c
                 where m.id_user = u.id
                     and m.id_category = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
         $row_count = $db->fetchColumn('select count(m.*)
-            from ' . $app['pp_schema'] . '.messages m, ' .
-                $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.messages m, ' .
+                $pp->schema() . '.users u
             where m.id_user = u.id' . $where_sql, $params_sql);
 
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -914,7 +914,7 @@ class MessagesListController extends AbstractController
             $messages[] = $msg;
         }
 
-        $pagination_render->init($app['r_messages'], $app['pp_ary'],
+        $pagination_render->init($vr->get('messages'), $pp->ary(),
             $row_count, $params);
 
         $categories_filter_options = ['' => '-- alle categorieën --'];
@@ -932,8 +932,8 @@ class MessagesListController extends AbstractController
         if (isset($filter['uid']))
         {
             $st = $db->executeQuery('select c.*
-                from ' . $app['pp_schema'] . '.categories c, ' .
-                    $app['pp_schema'] . '.messages m
+                from ' . $pp->schema() . '.categories c, ' .
+                    $pp->schema() . '.messages m
                 where m.id_category = c.id
                     and m.id_user = ?
                 order by c.fullname', [$filter['uid']]);
@@ -941,7 +941,7 @@ class MessagesListController extends AbstractController
         else
         {
             $st = $db->executeQuery('select *
-                from ' . $app['pp_schema'] . '.categories
+                from ' . $pp->schema() . '.categories
                 order by fullname');
         }
 
@@ -967,22 +967,22 @@ class MessagesListController extends AbstractController
             }
         }
 
-        if ($app['pp_admin'] || $app['pp_user'])
+        if ($pp->is_admin() || $pp->is_user())
         {
             if ($s_owner || !isset($filter['uid']))
             {
-                $btn_top_render->add('messages_add', $app['pp_ary'],
+                $btn_top_render->add('messages_add', $pp->ary(),
                     [], 'Vraag of aanbod toevoegen');
             }
 
             if (isset($filter['uid']))
             {
-                if ($app['pp_admin'] && !$s_owner)
+                if ($pp->is_admin() && !$s_owner)
                 {
                     $str = 'Vraag of aanbod voor ';
-                    $str .= $account_render->str((int) $filter['uid'], $app['pp_schema']);
+                    $str .= $account_render->str((int) $filter['uid'], $pp->schema());
 
-                    $btn_top_render->add('messages_add', $app['pp_ary'],
+                    $btn_top_render->add('messages_add', $pp->ary(),
                         ['uid' => $filter['uid']], $str);
                 }
             }
@@ -1005,12 +1005,12 @@ class MessagesListController extends AbstractController
             }
             else
             {
-                $heading_render->add_raw($link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
+                $heading_render->add_raw($link_render->link_no_attr($vr->get('messages'), $pp->ary(),
                     ['f' => ['uid' => $filter['uid']]],
                     'Vraag en aanbod'));
 
                 $heading_render->add(' van ');
-                $heading_render->add_raw($account_render->link((int) $filter['uid'], $app['pp_ary']));
+                $heading_render->add_raw($account_render->link((int) $filter['uid'], $pp->ary()));
             }
         }
         else
@@ -1134,11 +1134,11 @@ class MessagesListController extends AbstractController
         $out .= 'aria-describedby="fcode_addon" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($app['pp_ary'])
+        $out .= $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $config_service->get('newuserdays', $app['pp_schema']),
+                'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
             ]);
 
         $out .= '" ';
@@ -1158,7 +1158,7 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $params_form = array_merge($params, $app['pp_ary']);
+        $params_form = array_merge($params, $pp->ary());
         unset($params_form['role_short']);
         unset($params_form['system']);
         unset($params_form['f']);

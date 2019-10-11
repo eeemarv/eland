@@ -67,7 +67,7 @@ class UsersMapController extends AbstractController
         $ref_geo = [];
         $params = ['status' => $status];
 
-        $status_def_ary = UsersListController::get_status_def_ary($app['pp_admin'], $config_service->get_new_user_treshold($app['pp_schema']));
+        $status_def_ary = UsersListController::get_status_def_ary($pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
 
         $sql_bind = [];
 
@@ -77,7 +77,7 @@ class UsersMapController extends AbstractController
         }
 
         $users = $db->fetchAll('select u.*
-            from ' . $app['pp_schema'] . '.users u
+            from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
@@ -85,8 +85,8 @@ class UsersMapController extends AbstractController
 
         $rs = $db->prepare('select
                 c.id, c.id_user as user_id, c.value, c.flag_public
-            from ' . $app['pp_schema'] . '.contact c, ' .
-                $app['pp_schema'] . '.type_contact tc
+            from ' . $pp->schema() . '.contact c, ' .
+                $pp->schema() . '.type_contact tc
             where tc.id = c.id_type_contact
                 and tc.abbrev = \'adr\'');
 
@@ -99,17 +99,17 @@ class UsersMapController extends AbstractController
 
         if (!$app['s_master'])
         {
-            if ($app['pp_guest'] && $app['s_schema'] && !$app['s_elas_guest'])
+            if ($pp->is_guest() && $su->schema() && !$app['s_elas_guest'])
             {
                 $my_adr = $db->fetchColumn('select c.value
-                    from ' . $app['s_schema'] . '.contact c, ' . $app['s_schema'] . '.type_contact tc
+                    from ' . $su->schema() . '.contact c, ' . $su->schema() . '.type_contact tc
                     where c.id_user = ?
                         and c.id_type_contact = tc.id
-                        and tc.abbrev = \'adr\'', [$app['s_id']]);
+                        and tc.abbrev = \'adr\'', [$su->id()]);
             }
-            else if (!$app['pp_guest'])
+            else if (!$pp->is_guest())
             {
-                $my_adr = trim($adr_ary[$app['s_id']]['value']);
+                $my_adr = trim($adr_ary[$su->id()]['value']);
             }
 
             if (isset($my_adr) && $my_adr)
@@ -136,8 +136,8 @@ class UsersMapController extends AbstractController
                     {
                         $data_users[$user['id']] = [
                             'link'      => $link_render->context_url(
-                                $app['r_users_show'],
-                                $app['pp_ary'],
+                                $vr->get('users_show'),
+                                $pp->ary(),
                                 ['id' => $user['id']]),
                             'name'		=> $user['name'],
                             'code'	    => $user['letscode'],
@@ -180,13 +180,13 @@ class UsersMapController extends AbstractController
 
         $assets_service->add(['leaflet', 'users_map.js']);
 
-        if ($app['pp_admin'])
+        if ($pp->is_admin())
         {
-            $btn_top_render->add('users_add', $app['pp_ary'],
+            $btn_top_render->add('users_add', $pp->ary(),
                 [], 'Gebruiker toevoegen');
         }
 
-        users_list::btn_nav($btn_nav_render, $app['pp_ary'], $params, 'users_map');
+        users_list::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_map');
         users_list::heading($heading_render);
 
         $data_map = json_encode([
@@ -270,7 +270,7 @@ class UsersMapController extends AbstractController
                 $out .= 'de "geocoding service".';
                 $out .= '</p>';
 
-                if ($app['pp_admin'])
+                if ($pp->is_admin())
                 {
                     $out .= '<p>';
                     $out .= 'Hieronder de adressen die nog niet ';
@@ -281,12 +281,12 @@ class UsersMapController extends AbstractController
                     {
                         $out .= '<li>';
 
-                        $out .= $link_render->link_no_attr('users_contacts_edit_admin', $app['pp_ary'],
+                        $out .= $link_render->link_no_attr('users_contacts_edit_admin', $pp->ary(),
                             ['contact_id' => $not_geocoded['id'], 'user_id' => $not_geocoded['user_id']],
                             $not_geocoded['value']);
 
                         $out .= ' gebruiker: ';
-                        $out .= $account_render->link($not_geocoded['user_id'], $app['pp_ary']);
+                        $out .= $account_render->link($not_geocoded['user_id'], $pp->ary());
                         $out .= '</li>';
                     }
 
@@ -295,7 +295,7 @@ class UsersMapController extends AbstractController
                 }
             }
 
-            if ($app['pp_admin'] && $not_present_count)
+            if ($pp->is_admin() && $not_present_count)
             {
                 $out .= '<h4>';
                 $out .= 'Gebruikers zonder adres';
@@ -307,7 +307,7 @@ class UsersMapController extends AbstractController
                 foreach ($not_present_ary as $not_present_addres_uid)
                 {
                     $out .= '<li>';
-                    $out .= $account_render->link($not_present_addres_uid, $app['pp_ary']);
+                    $out .= $account_render->link($not_present_addres_uid, $pp->ary());
                     $out .= '</li>';
                 }
 
@@ -323,7 +323,7 @@ class UsersMapController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 }

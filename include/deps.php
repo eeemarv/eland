@@ -100,25 +100,25 @@ $app->extend('twig', function($twig, $app) {
 		},
 		twig\pp_role::class => function() use ($app){
 			return new twig\pp_role(
-				$app['pp_anonymous'],
-				$app['pp_guest'],
-				$app['pp_user'],
-				$app['pp_admin'],
+				$pp->is_anonymous(),
+				$pp->is_guest(),
+				$pp->is_user(),
+				$pp->is_admin(),
 				$app['s_master'],
 				$app['s_elas_guest']
 			);
 		},
 		twig\s_role::class => function() use ($app){
-			return new twig\s_role($app['s_role'], $app['s_id'],
-				$app['s_schema'], $app['s_master'], $app['s_elas_guest'],
-				$app['s_system_self']
+			return new twig\s_role($app['s_role'], $su->id(),
+				$su->schema(), $app['s_master'], $app['s_elas_guest'],
+				$su->is_system_self()
 			);
 		},
 		twig\pp_ary::class => function() use ($app){
-			return new twig\pp_ary($app['pp_ary']);
+			return new twig\pp_ary($pp->ary());
 		},
 		twig\r_default::class => function() use ($app){
-			return new twig\r_default($app['r_default']);
+			return new twig\r_default($vr->get('default'));
 		},
 		twig\menu::class => function() use ($app){
 			return new twig\menu($menu_service);
@@ -172,9 +172,9 @@ $app->extend('monolog', function($monolog, $app) {
 
 		if ($app['log_schema_en'])
 		{
-			$record['extra']['schema'] = $app['pp_schema'];
-			$record['extra']['user_schema'] = $app['s_schema'];
-			$record['extra']['user_id'] = $app['s_id'];
+			$record['extra']['schema'] = $pp->schema();
+			$record['extra']['user_schema'] = $su->schema();
+			$record['extra']['user_id'] = $su->id();
 		}
 
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? ($_SERVER['REMOTE_ADDR'] ?? '');
@@ -240,7 +240,7 @@ $app['s_view'] = function ($app):array{
 	return $s_view;
 };
 
-$app['r_users'] = function ($app):string{
+$vr->get('users') = function ($app):string{
 
 	if ($app['s_view']['users'] === 'map')
 	{
@@ -258,34 +258,34 @@ $app['r_users'] = function ($app):string{
 	return $route;
 };
 
-$app['r_users_show'] = function ($app):string{
-	return 'users_show' . ($app['pp_admin'] ? '_admin' : '');
+$vr->get('users_show') = function ($app):string{
+	return 'users_show' . ($pp->is_admin() ? '_admin' : '');
 };
 
-$app['r_users_edit'] = function ($app):string{
-	return 'users_edit' . ($app['pp_admin'] ? '_admin' : '');
+$vr->get('users_edit') = function ($app):string{
+	return 'users_edit' . ($pp->is_admin() ? '_admin' : '');
 };
 
-$app['r_messages'] = function ($app):string{
+$vr->get('messages') = function ($app):string{
 	return 'messages_' . $app['s_view']['messages'];
 };
 
-$app['r_news'] = function ($app):string{
+$vr->get('news') = function ($app):string{
 	return 'news_' . $app['s_view']['news'];
 };
 
-$app['r_default'] = function ($app):string{
+$vr->get('default') = function ($app):string{
 
-	$route = $config_service->get('default_landing_page', $app['pp_schema']);
+	$route = $config_service->get('default_landing_page', $pp->schema());
 
 	switch ($route)
 	{
 		case 'users':
-			return $app['r_users'];
+			return $vr->get('users');
 		case 'messages':
-			return $app['r_messages'];
+			return $vr->get('messages');
 		case 'news':
-			return $app['r_news'];
+			return $vr->get('news');
 	}
 
 	return $route;
@@ -300,14 +300,14 @@ $app['pp_role'] =  function ($app):string{
 	return RoleCnst::LONG[$app['pp_role_short']] ?? 'anonymous';
 };
 
-$app['pp_system'] = function ($app):string{
+$pp->system() = function ($app):string{
 	return $app['request']->attributes->get('system', '');
 };
 
-$app['pp_org_system'] = function ($app):string{
+$pp->org_system() = function ($app):string{
 	$pp_org_system = $app['request']->query->get('org_system', '');
 
-	if ($pp_org_system === $app['pp_system'])
+	if ($pp_org_system === $pp->system())
 	{
 		return '';
 	}
@@ -320,13 +320,13 @@ $app['pp_org_system'] = function ($app):string{
 	return $pp_org_system;
 };
 
-$app['pp_ary'] = function ($app):array{
+$pp->ary() = function ($app):array{
 
 	$pp_ary = [];
 
-	if ($app['pp_system'] !== '')
+	if ($pp->system() !== '')
 	{
-		$pp_ary['system'] = $app['pp_system'];
+		$pp_ary['system'] = $pp->system();
 
 		if ($app['pp_role_short'] !== '')
 		{
@@ -337,9 +337,9 @@ $app['pp_ary'] = function ($app):array{
 
 			$pp_ary['role_short'] = $app['pp_role_short'];
 
-			if ($app['pp_org_system'] !== '')
+			if ($pp->org_system() !== '')
 			{
-				$pp_ary['org_system'] = $app['pp_org_system'];
+				$pp_ary['org_system'] = $pp->org_system();
 			}
 		}
 	}
@@ -347,26 +347,26 @@ $app['pp_ary'] = function ($app):array{
 	return $pp_ary;
 };
 
-$app['pp_schema'] = function ($app):string{
-	return $systems_service->get_schema($app['pp_system']);
+$pp->schema() = function ($app):string{
+	return $systems_service->get_schema($pp->system());
 };
 
 $app['request'] = function ($app):Request{
 	return $app['request_stack']->getCurrentRequest();
 };
 
-$app['s_schema'] = function ($app):string{
+$su->schema() = function ($app):string{
 
-	if ($app['pp_org_system'])
+	if ($pp->org_system())
 	{
-		return $systems_service->get_schema($app['pp_org_system']);
+		return $systems_service->get_schema($pp->org_system());
 	}
 
-	return $app['pp_schema'];
+	return $pp->schema();
 };
 
 $app['s_system'] = function ($app){
-	return $systems_service->get_system($app['s_schema']);
+	return $systems_service->get_system($su->schema());
 };
 
 $app['s_ary'] = function ($app){
@@ -386,17 +386,17 @@ $app['s_ary'] = function ($app){
 	];
 };
 
-$app['s_system_self'] = function ($app):bool{
-	return $app['s_schema'] === $app['pp_schema'];
+$su->is_system_self() = function ($app):bool{
+	return $su->schema() === $pp->schema();
 };
 
-$app['s_logins'] = function ($app):array{
+$su->logins() = function ($app):array{
 	return $session->get('logins') ?? [];
 };
 
-$app['s_id'] = function ($app):int{
+$su->id() = function ($app):int{
 
-	$s_id = $app['s_logins'][$app['s_schema']] ?? 0;
+	$s_id = $su->logins()[$su->schema()] ?? 0;
 
 	if (ctype_digit((string) $s_id))
 	{
@@ -406,14 +406,14 @@ $app['s_id'] = function ($app):int{
 	return 0;
 };
 
-$app['session_user'] = function ($app):array{
+$su->user() = function ($app):array{
 
-	if (!$app['s_id'])
+	if (!$su->id())
 	{
 		return [];
 	}
 
-	return $user_cache_service->get($app['s_id'], $app['s_schema']);
+	return $user_cache_service->get($su->id(), $su->schema());
 };
 
 $app['s_role'] = function ($app):string{
@@ -423,7 +423,7 @@ $app['s_role'] = function ($app):string{
 		return 'admin';
 	}
 
-	$role = $app['session_user']['accountrole'] ?? 'anonymous';
+	$role = $su->user()['accountrole'] ?? 'anonymous';
 
 	if ($role === 'interlets')
 	{
@@ -457,27 +457,27 @@ $app['s_role_short'] = function ($app):string{
 	return '';
 };
 
-$app['pp_guest'] = function ($app):bool{
+$pp->is_guest() = function ($app):bool{
 	return $app['pp_role'] == 'guest';
 };
 
-$app['pp_admin'] = function ($app):bool{
+$pp->is_admin() = function ($app):bool{
 	return $app['pp_role'] === 'admin';
 };
 
-$app['pp_user'] = function ($app):bool{
+$pp->is_user() = function ($app):bool{
 	return $app['pp_role'] === 'user';
 };
 
-$app['pp_anonymous'] = function ($app):bool{
+$pp->is_anonymous() = function ($app):bool{
 	return $app['pp_role'] === 'anonymous';
 };
 
 $app['s_master'] = function ($app):bool{
 
-	if (isset($app['s_logins'][$app['s_schema']]))
+	if (isset($su->logins()[$su->schema()]))
 	{
-		return $app['s_logins'][$app['s_schema']] === 'master';
+		return $su->logins()[$su->schema()] === 'master';
 	}
 
 	return false;
@@ -485,14 +485,14 @@ $app['s_master'] = function ($app):bool{
 
 $app['s_elas_guest'] = function ($app):bool{
 
-	if (!$app['s_system_self'])
+	if (!$su->is_system_self())
 	{
 		return false;
 	}
 
-	if (isset($app['s_logins'][$app['pp_schema']]))
+	if (isset($su->logins()[$pp->schema()]))
 	{
-		return $app['s_logins'][$app['pp_schema']] === 'elas';
+		return $su->logins()[$pp->schema()] === 'elas';
 	}
 
 	return false;
@@ -500,16 +500,16 @@ $app['s_elas_guest'] = function ($app):bool{
 
 $app['welcome_msg'] = function (app $app):string{
 	$msg = '<strong>Welkom bij ';
-	$msg .= $config_service->get('systemname', $app['pp_schema']);
+	$msg .= $config_service->get('systemname', $pp->schema());
 	$msg .= '</strong><br>';
 	$msg .= 'Waardering bij ';
-	$msg .= $config_service->get('systemname', $app['pp_schema']);
+	$msg .= $config_service->get('systemname', $pp->schema());
 	$msg .= ' gebeurt met \'';
-	$msg .= $config_service->get('currency', $app['pp_schema']);
+	$msg .= $config_service->get('currency', $pp->schema());
 	$msg .= '\'. ';
-	$msg .= $config_service->get('currencyratio', $app['pp_schema']);
+	$msg .= $config_service->get('currencyratio', $pp->schema());
 	$msg .= ' ';
-	$msg .= $config_service->get('currency', $app['pp_schema']);
+	$msg .= $config_service->get('currency', $pp->schema());
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
 	if ($app['s_elas_guest'])
@@ -531,7 +531,7 @@ $app['welcome_msg'] = function (app $app):string{
  *
  */
 
-$app['s3'] = function($app){
+$s3_service = function($app){
 	return new service\s3(
 		$app['s3_bucket'],
 		$app['s3_region']
@@ -540,15 +540,15 @@ $app['s3'] = function($app){
 
 $app['image_upload'] = function($app){
 	return new service\image_upload(
-		$app['monolog'],
-		$app['s3']
+		$logger,
+		$s3_service
 	);
 };
 
 $app['typeahead'] = function($app){
 	return new service\typeahead(
 		$app['predis'],
-		$app['monolog'],
+		$logger,
 		$app['url_generator'],
 		$app['systems'],
 		$app['assets']
@@ -572,7 +572,7 @@ $app['log_db'] = function($app){
 $app['transaction'] = function($app){
 	return new service\transaction(
 		$app['db'],
-		$app['monolog'],
+		$logger,
 		$app['user_cache'],
 		$app['autominlimit'],
 		$config_service,
@@ -604,7 +604,7 @@ $app['systems'] = function ($app){
 $xdb_service = function ($app){
 	return new service\xdb(
 		$app['db'],
-		$app['monolog']
+		$logger
 	);
 };
 
@@ -612,14 +612,14 @@ $app['cache'] = function ($app){
 	return new service\cache(
 		$app['db'],
 		$app['predis'],
-		$app['monolog']
+		$logger
 	);
 };
 
 $app['queue'] = function ($app){
 	return new service\queue(
 		$app['db'],
-		$app['monolog']
+		$logger
 	);
 };
 
@@ -631,7 +631,7 @@ $app['date_format'] = function($app){
 
 $mail_addr_system_service = function ($app){
 	return new service\mail_addr_system(
-		$app['monolog'],
+		$logger,
 		$config_service
 	);
 };
@@ -639,7 +639,7 @@ $mail_addr_system_service = function ($app){
 $mail_addr_user_service = function ($app){
 	return new service\mail_addr_user(
 		$app['db'],
-		$app['monolog']
+		$logger
 	);
 };
 
@@ -684,7 +684,7 @@ $app['email_validate'] = function ($app){
 		$app['cache'],
 		$xdb_service,
 		$app['token'],
-		$app['monolog']
+		$logger
 	);
 };
 
@@ -693,7 +693,7 @@ $app['email_validate'] = function ($app){
 $mail_queue = function ($app){
 	return new queue\mail(
 		$app['queue'],
-		$app['monolog'],
+		$logger,
 		$app['twig'],
 		$config_service,
 		$mail_addr_system_service,
@@ -708,8 +708,8 @@ $app['task.cleanup_images'] = function ($app){
 	return new task\cleanup_images(
 		$app['cache'],
 		$app['db'],
-		$app['monolog'],
-		$app['s3'],
+		$logger,
+		$s3_service,
 		$app['systems']
 	);
 };
@@ -727,7 +727,7 @@ $app['task.fetch_elas_intersystem'] = function ($app){
 		$app['cache'],
 		$app['predis'],
 		$app['typeahead'],
-		$app['monolog']
+		$logger
 	);
 };
 
@@ -736,7 +736,7 @@ $app['task.fetch_elas_intersystem'] = function ($app){
 $app['schema_task.cleanup_messages'] = function ($app){
 	return new schema_task\cleanup_messages(
 		$app['db'],
-		$app['monolog'],
+		$logger,
 		$app['schedule'],
 		$app['systems'],
 		$config_service
@@ -747,7 +747,7 @@ $app['schema_task.cleanup_news'] = function ($app){
 	return new schema_task\cleanup_news(
 		$app['db'],
 		$xdb_service,
-		$app['monolog'],
+		$logger,
 		$app['schedule'],
 		$app['systems']
 	);
@@ -757,7 +757,7 @@ $app['schema_task.geocode'] = function ($app){
 	return new schema_task\geocode(
 		$app['db'],
 		$app['cache'],
-		$app['monolog'],
+		$logger,
 		$app['queue.geocode'],
 		$app['schedule'],
 		$app['systems'],
@@ -768,7 +768,7 @@ $app['schema_task.geocode'] = function ($app){
 $app['schema_task.saldo_update'] = function ($app){
 	return new schema_task\saldo_update(
 		$app['db'],
-		$app['monolog'],
+		$logger,
 		$app['schedule'],
 		$app['systems']
 	);
@@ -800,7 +800,7 @@ $app['schema_task.saldo'] = function ($app){
 		$app['db'],
 		$xdb_service,
 		$app['cache'],
-		$app['monolog'],
+		$logger,
 		$mail_queue,
 		$app['schedule'],
 		$app['systems'],
@@ -835,7 +835,7 @@ $app['queue.geocode'] = function ($app){
 		$app['db'],
 		$app['cache'],
 		$app['queue'],
-		$app['monolog'],
+		$logger,
 		$app['geocode'],
 		$app['account_str']
 	);
@@ -870,30 +870,30 @@ $app['assets'] = function($app){
 $alert_service = function ($app){
 	return new service\alert(
 		$app['request'],
-		$app['monolog'],
+		$logger,
 		$app['session'],
-		$app['pp_schema']);
+		$pp->schema());
 };
 
 $menu_service = function($app){
 	return new service\menu(
 		$config_service,
 		$app['item_access'],
-		$app['pp_schema'],
-		$app['pp_system'],
-		$config_service->get_intersystem_en($app['pp_schema']),
-		$app['r_messages'],
-		$app['r_users'],
-		$app['r_news'],
-		$app['r_default']
+		$pp->schema(),
+		$pp->system(),
+		$config_service->get_intersystem_en($pp->schema()),
+		$vr->get('messages'),
+		$vr->get('users'),
+		$vr->get('news'),
+		$vr->get('default')
 	);
 };
 
 $app['menu_nav_user'] = function($app){
 	return new service\menu_nav_user(
-		$app['s_id'],
-		$app['r_messages'],
-		$app['r_users_show']
+		$su->id(),
+		$vr->get('messages'),
+		$vr->get('users_show')
 	);
 };
 
@@ -901,10 +901,10 @@ $app['menu_nav_system'] = function($app){
 	return new service\menu_nav_system(
 		$app['intersystems'],
 		$app['systems'],
-		$app['s_logins'],
-		$app['s_schema'],
-		$app['pp_schema'],
-		$config_service->get_intersystem_en($app['pp_schema']),
+		$su->logins(),
+		$su->schema(),
+		$pp->schema(),
+		$config_service->get_intersystem_en($pp->schema()),
 		$menu_service,
 		$config_service,
 		$app['user_cache'],
@@ -915,9 +915,9 @@ $app['menu_nav_system'] = function($app){
 $app['item_access'] = function($app){
 	return new service\item_access(
 		$app['assets'],
-		$app['pp_schema'],
+		$pp->schema(),
 		$app['pp_role'],
-		$config_service->get_intersystem_en($app['pp_schema'])
+		$config_service->get_intersystem_en($pp->schema())
 	);
 };
 
@@ -927,7 +927,7 @@ $app['password_strength'] = function (){
 
 $app['autominlimit'] = function ($app){
 	return new service\autominlimit(
-		$app['monolog'],
+		$logger,
 		$xdb_service,
 		$app['db'],
 		$config_service,
@@ -962,7 +962,7 @@ $app['account'] = function ($app) {
 		$link_render,
 		$app['systems'],
 		$app['user_cache'],
-		$app['r_users_show']
+		$vr->get('users_show')
 	);
 };
 

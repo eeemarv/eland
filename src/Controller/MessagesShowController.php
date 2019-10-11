@@ -52,7 +52,7 @@ class MessagesShowController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $message = self::get_message($db, $id, $app['pp_schema']);
+        $message = self::get_message($db, $id, $pp->schema());
 
         $user_mail_content = $request->request->get('user_mail_content', '');
         $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
@@ -60,17 +60,17 @@ class MessagesShowController extends AbstractController
 
         $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
-        if ($message['access'] === 'user' && $app['pp_guest'])
+        if ($message['access'] === 'user' && $pp->is_guest())
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
         }
 
-        $s_owner = !$app['pp_guest']
-            && $app['s_system_self']
-            && $app['s_id'] === $message['id_user']
+        $s_owner = !$pp->is_guest()
+            && $su->is_system_self()
+            && $su->id() === $message['id_user']
             && $message['id_user'] > 0;
 
-        $user = $user_cache_service->get($message['id_user'], $app['pp_schema']);
+        $user = $user_cache_service->get($message['id_user'], $pp->schema());
 
         // process mail form
 
@@ -80,7 +80,7 @@ class MessagesShowController extends AbstractController
 
             $to_user = $user;
 
-            if (!$app['pp_admin'] && !in_array($to_user['status'], [1, 2]))
+            if (!$pp->is_admin() && !in_array($to_user['status'], [1, 2]))
             {
                 throw new AccessDeniedHttpException('Je hebt geen rechten om een
                     bericht naar een niet-actieve gebruiker te sturen');
@@ -92,7 +92,7 @@ class MessagesShowController extends AbstractController
                     kan geen berichten versturen.');
             }
 
-            if (!$app['s_schema'] || $app['s_elas_guest'])
+            if (!$su->schema() || $app['s_elas_guest'])
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
                     om een E-mail bericht te versturen.');
@@ -110,7 +110,7 @@ class MessagesShowController extends AbstractController
                 $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
             }
 
-            $reply_ary = $mail_addr_user_service->get_active($app['s_id'], $app['s_schema']);
+            $reply_ary = $mail_addr_user_service->get_active($su->id(), $su->schema());
 
             if (!count($reply_ary))
             {
@@ -121,33 +121,33 @@ class MessagesShowController extends AbstractController
             if (!count($errors))
             {
                 $from_contacts = $db->fetchAll('select c.value, tc.abbrev
-                    from ' . $app['s_schema'] . '.contact c, ' .
-                        $app['s_schema'] . '.type_contact tc
+                    from ' . $su->schema() . '.contact c, ' .
+                        $su->schema() . '.type_contact tc
                     where c.flag_public >= ?
                         and c.id_user = ?
                         and c.id_type_contact = tc.id',
-                        [AccessCnst::TO_FLAG_PUBLIC[$to_user['accountrole']], $app['s_id']]);
+                        [AccessCnst::TO_FLAG_PUBLIC[$to_user['accountrole']], $su->id()]);
 
-                $from_user = $user_cache_service->get($app['s_id'], $app['s_schema']);
+                $from_user = $user_cache_service->get($su->id(), $su->schema());
 
                 $vars = [
                     'from_contacts'		=> $from_contacts,
                     'from_user'			=> $from_user,
-                    'from_schema'		=> $app['s_schema'],
-                    'is_same_system'	=> $app['s_system_self'],
+                    'from_schema'		=> $su->schema(),
+                    'is_same_system'	=> $su->is_system_self(),
                     'to_user'			=> $to_user,
-                    'to_schema'			=> $app['pp_schema'],
+                    'to_schema'			=> $pp->schema(),
                     'msg_content'		=> $user_mail_content,
                     'message'			=> $message,
                 ];
 
-                $mail_template = $app['s_system_self']
+                $mail_template = $su->is_system_self()
                     ? 'message_msg/msg'
                     : 'message_msg/msg_intersystem';
 
                 $mail_queue->queue([
-                    'schema'	=> $app['pp_schema'],
-                    'to'		=> $mail_addr_user_service->get_active($to_user['id'], $app['pp_schema']),
+                    'schema'	=> $pp->schema(),
+                    'to'		=> $mail_addr_user_service->get_active($to_user['id'], $pp->schema()),
                     'reply_to'	=> $reply_ary,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
@@ -155,20 +155,20 @@ class MessagesShowController extends AbstractController
 
                 if ($user_mail_cc)
                 {
-                    $mail_template = $app['s_system_self']
+                    $mail_template = $su->is_system_self()
                         ? 'message_msg/copy'
                         : 'message_msg/copy_intersystem';
 
                     $mail_queue->queue([
-                        'schema'	=> $app['pp_schema'],
-                        'to'		=> $mail_addr_user_service->get_active($app['s_id'], $app['s_schema']),
+                        'schema'	=> $pp->schema(),
+                        'to'		=> $mail_addr_user_service->get_active($su->id(), $su->schema()),
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);
                 }
 
                 $alert_service->success('Mail verzonden.');
-                $link_render->redirect('messages_show', $app['pp_ary'],
+                $link_render->redirect('messages_show', $pp->ary(),
                     ['id' => $id]);
             }
 
@@ -183,7 +183,7 @@ class MessagesShowController extends AbstractController
         ];
 
         $st = $db->prepare('select "PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures
+            from ' . $pp->schema() . '.msgpictures
             where msgid = ?');
         $st->bindValue(1, $id);
         $st->execute();
@@ -193,17 +193,17 @@ class MessagesShowController extends AbstractController
             $data_images['files'][] =$row['PictureFile'];
         }
 
-        $and_local = $app['pp_guest'] ? ' and local = \'f\' ' : '';
+        $and_local = $pp->is_guest() ? ' and local = \'f\' ' : '';
 
         $prev = $db->fetchColumn('select id
-            from ' . $app['pp_schema'] . '.messages
+            from ' . $pp->schema() . '.messages
             where id > ?
             ' . $and_local . '
             order by id asc
             limit 1', [$id]);
 
         $next = $db->fetchColumn('select id
-            from ' . $app['pp_schema'] . '.messages
+            from ' . $pp->schema() . '.messages
             where id < ?
             ' . $and_local . '
             order by id desc
@@ -218,7 +218,7 @@ class MessagesShowController extends AbstractController
             'messages_show_images_slider.js',
         ]);
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $assets_service->add([
                 'fileupload',
@@ -226,26 +226,26 @@ class MessagesShowController extends AbstractController
             ]);
         }
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
-            $btn_top_render->edit('messages_edit', $app['pp_ary'],
+            $btn_top_render->edit('messages_edit', $pp->ary(),
                 ['id' => $id],	ucfirst($message['label']['type']) . ' aanpassen');
 
-            $btn_top_render->del('messages_del', $app['pp_ary'],
+            $btn_top_render->del('messages_del', $pp->ary(),
                 ['id' => $id], ucfirst($message['label']['type']) . ' verwijderen');
         }
 
         if ($message['is_offer']
-            && ($app['pp_admin']
+            && ($pp->is_admin()
                 || (!$s_owner
                     && $user['status'] !== 7
-                    && !($app['pp_guest'] && $app['s_system_self']))))
+                    && !($pp->is_guest() && $su->is_system_self()))))
         {
             $tus = ['mid' => $id];
 
-            if (!$app['s_system_self'])
+            if (!$su->is_system_self())
             {
-                $tus['tus'] = $app['pp_schema'];
+                $tus['tus'] = $pp->schema();
             }
 
             $btn_top_render->add_trans('transactions_add', $app['s_ary'],
@@ -255,10 +255,10 @@ class MessagesShowController extends AbstractController
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $btn_nav_render->nav('messages_show', $app['pp_ary'],
+        $btn_nav_render->nav('messages_show', $pp->ary(),
             $prev_ary, $next_ary, false);
 
-        $btn_nav_render->nav_list($app['r_messages'], $app['pp_ary'],
+        $btn_nav_render->nav_list($vr->get('messages'), $pp->ary(),
             [], 'Lijst', 'newspaper-o');
 
         $heading_render->add(ucfirst($message['label']['type']));
@@ -270,7 +270,7 @@ class MessagesShowController extends AbstractController
         {
             $out = '<p>Categorie: ';
 
-            $out .= $link_render->link_no_attr($app['r_messages'], $app['pp_ary'],
+            $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
                 ['f' => ['cid' => $message['cid']]], $message['catname']);
 
             $out .= '</p>';
@@ -298,7 +298,7 @@ class MessagesShowController extends AbstractController
 
         $out .= '</div>';
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
@@ -307,7 +307,7 @@ class MessagesShowController extends AbstractController
             $out .= 'data-url="';
 
             $out .= $link_render->context_path('messages_images_upload',
-                $app['pp_ary'], ['id' => $id]);
+                $pp->ary(), ['id' => $id]);
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
@@ -319,7 +319,7 @@ class MessagesShowController extends AbstractController
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
-            $out .= $link_render->link_fa('messages_images_del', $app['pp_ary'],
+            $out .= $link_render->link_fa('messages_images_del', $pp->ary(),
                 ['id'		=> $id],
                 'Afbeeldingen verwijderen', [
                     'class'	=> 'btn btn-danger btn-lg btn-block',
@@ -373,7 +373,7 @@ class MessagesShowController extends AbstractController
         else
         {
             $out .= $message['amount'] . ' ';
-            $out .= $config_service->get('currency', $app['pp_schema']);
+            $out .= $config_service->get('currency', $pp->schema());
             $out .= $message['units'] ? ' per ' . $message['units'] : '';
         }
 
@@ -382,7 +382,7 @@ class MessagesShowController extends AbstractController
         $out .= '<dt>Van gebruiker: ';
         $out .= '</dt>';
         $out .= '<dd>';
-        $out .= $account_render->link($message['id_user'], $app['pp_ary']);
+        $out .= $account_render->link($message['id_user'], $pp->ary());
         $out .= '</dd>';
 
         $out .= '<dt>Plaats</dt>';
@@ -392,27 +392,27 @@ class MessagesShowController extends AbstractController
 
         $out .= '<dt>Aangemaakt op</dt>';
         $out .= '<dd>';
-        $out .= $date_format_service->get($message['cdate'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($message['cdate'], 'day', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Geldig tot</dt>';
         $out .= '<dd>';
-        $out .= $date_format_service->get($message['validity'], 'day', $app['pp_schema']);
+        $out .= $date_format_service->get($message['validity'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        if ($app['pp_admin'] || $s_owner)
+        if ($pp->is_admin() || $s_owner)
         {
             $out .= '<dt>Verlengen</dt>';
             $out .= '<dd>';
-            $out .= self::btn_extend($link_render, $app['pp_ary'], $id, 30, '1 maand');
+            $out .= self::btn_extend($link_render, $pp->ary(), $id, 30, '1 maand');
             $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $app['pp_ary'], $id, 180, '6 maanden');
+            $out .= self::btn_extend($link_render, $pp->ary(), $id, 180, '6 maanden');
             $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $app['pp_ary'], $id, 365, '1 jaar');
+            $out .= self::btn_extend($link_render, $pp->ary(), $id, 365, '1 jaar');
             $out .= '</dd>';
         }
 
-        if ($intersystems_service->get_count($app['pp_schema']))
+        if ($intersystems_service->get_count($pp->schema()))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
@@ -436,7 +436,7 @@ class MessagesShowController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $app['pp_schema'],
+            'schema'    => $pp->schema(),
         ]);
     }
 

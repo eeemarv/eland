@@ -79,14 +79,14 @@ class MessagesImagesUploadController extends AbstractController
 
         if ($id)
         {
-            $message = MessagesShowController::get_message($db, $id, $app['pp_schema']);
+            $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-            $s_owner = !$app['pp_guest']
-                && $app['s_system_self']
-                && $app['s_id'] === $message['id_user']
+            $s_owner = !$pp->is_guest()
+                && $su->is_system_self()
+                && $su->id() === $message['id_user']
                 && $message['id_user'];
 
-            if (!$s_owner && !$app['pp_admin'])
+            if (!$s_owner && !$pp->is_admin())
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
                     om een afbeelding op te laden voor
@@ -96,30 +96,30 @@ class MessagesImagesUploadController extends AbstractController
         else
         {
             $id = $db->fetchColumn('select max(id)
-                from ' . $app['pp_schema'] . '.messages');
+                from ' . $pp->schema() . '.messages');
             $id++;
         }
 
         foreach ($uploaded_files as $uploaded_file)
         {
             $filename = $image_upload_service->upload($uploaded_file,
-                'm', $id, 400, 400, $app['pp_schema']);
+                'm', $id, 400, 400, $pp->schema());
 
             if ($insert_in_db)
             {
-                $db->insert($app['pp_schema'] . '.msgpictures', [
+                $db->insert($pp->schema() . '.msgpictures', [
                     'msgid'			=> $id,
                     '"PictureFile"'	=> $filename]);
 
                 $logger->info('Message-Picture ' .
                     $filename . ' uploaded and inserted in db.',
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
             }
             else
             {
                 $logger->info('Message-Picture ' .
                     $filename . ' uploaded, not (yet) inserted in db.',
-                    ['schema' => $app['pp_schema']]);
+                    ['schema' => $pp->schema()]);
             }
 
             $return_ary[] = $filename;
