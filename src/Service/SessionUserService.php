@@ -3,9 +3,9 @@
 namespace App\Service;
 
 use App\Cnst\RoleCnst;
-use Symfony\Component\HttpFoundation\Session\Session;
 use App\Service\UserCacheService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SessionUserService
 {
@@ -28,7 +28,7 @@ class SessionUserService
 	protected $ary;
 
 	public function __construct(
-		Session $session,
+		SessionInterface $session,
 		PageParamsService $pp,
 		UserCacheService $user_cache_service
 	)

@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class AlertService
 {
@@ -17,7 +17,7 @@ class AlertService
 	public function __construct(
 		Request $request,
 		LoggerInterface $logger,
-		Session $session,
+		SessionInterface $session,
 		string $schema
 	)
 	{

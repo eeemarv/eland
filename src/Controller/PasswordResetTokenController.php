@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;

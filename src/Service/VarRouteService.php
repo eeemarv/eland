@@ -6,7 +6,7 @@ use App\Cnst\PagesCnst;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class VarRouteService
 {
@@ -20,7 +20,7 @@ class VarRouteService
 
 	public function __construct(
 		RequestStack $request_stack,
-		Session $session,
+		SessionInterface $session,
 		PageParamsService $pp,
 		ConfigService $config_service
 	)

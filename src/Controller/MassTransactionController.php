@@ -8,6 +8,7 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\AutoMinLimitService;
+use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;

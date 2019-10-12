@@ -12,6 +12,7 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;

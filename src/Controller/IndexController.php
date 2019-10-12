@@ -12,12 +12,9 @@ class IndexController extends AbstractController
 {
     public function index(
         Request $request,
-        MenuNavUserService $menu_service,
         SystemsService $systems_service
     ):Response
     {
-        $menu_service->set('index');
-
         $schemas = $systems_service->get_schemas();
 
         asort($schemas);

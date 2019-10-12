@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection as Db;
 class SystemsService
 {
 	protected $db;
-	protected $legacy_eland_origin_pattern;
+	protected $env_legacy_eland_origin_pattern;
 	protected $schemas = [];
 	protected $systems = [];
 
@@ -30,11 +30,11 @@ class SystemsService
 
 	public function __construct(
 		Db $db,
-		string $legacy_eland_origin_pattern
+		string $env_legacy_eland_origin_pattern
 	)
 	{
 		$this->db = $db;
-		$this->legacy_eland_origin_pattern = $legacy_eland_origin_pattern;
+		$this->env_legacy_eland_origin_pattern = $env_legacy_eland_origin_pattern;
 
 		$rs = $this->db->prepare('select schema_name
 			from information_schema.schemata');
@@ -68,7 +68,7 @@ class SystemsService
 			return '';
 		}
 
-		return str_replace('_', $this->systems[$schema], $this->legacy_eland_origin_pattern);
+		return str_replace('_', $this->systems[$schema], $this->env_legacy_eland_origin_pattern);
 	}
 
 	public function get_schema_from_legacy_eland_origin(string $origin):string

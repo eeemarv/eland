@@ -14,7 +14,9 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -455,7 +457,9 @@ class MessagesShowController extends AbstractController
             $user_mail_cc,
             $account_render,
             $form_token_service,
-            $mail_addr_user_service
+            $mail_addr_user_service,
+            $pp,
+            $su
         );
 
         $out .= $contacts_content;

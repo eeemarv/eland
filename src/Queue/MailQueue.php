@@ -4,42 +4,43 @@ namespace App\Queue;
 
 use App\Queue\QueueInterface;
 use League\HTMLToMarkdown\HtmlConverter;
-use App\Service\Queue;
 use Psr\Log\LoggerInterface;
 use Twig_Environment as Twig;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\EmailValidate;
+use App\Service\EmailValidateService;
+use App\Service\QueueService;
 use App\Service\SystemsService;
 
 class MailQueue implements QueueInterface
 {
 	protected $converter;
 	protected $mailer;
-	protected $queue;
+	protected $queue_service;
 	protected $logger;
 	protected $twig;
 	protected $config_service;
 	protected $mail_addr_system_service;
-	protected $email_validate;
+	protected $email_validate_service;
 	protected $systems_service;
 
 	public function __construct(
-		Queue $queue,
+		QueueService $queue_service,
 		LoggerInterface $logger,
 		Twig $twig,
 		ConfigService $config_service,
 		MailAddrSystemService $mail_addr_system_service,
-		EmailValidate $email_validate,
+		EmailValidateService $email_validate_service,
 		SystemsService $systems_service
 	)
 	{
-		$this->queue = $queue;
+		$this->queue_service = $queue_service;
 		$this->logger = $logger;
 		$this->twig = $twig;
 		$this->config_service = $config_service;
 		$this->mail_addr_system_service = $mail_addr_system_service;
-		$this->email_validate = $email_validate;
+		$this->email_validate_service = $email_validate_service;
 		$this->systems_service = $systems_service;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
@@ -219,10 +220,10 @@ class MailQueue implements QueueInterface
 			$val_data = $data;
 			$val_data['to'] = [$email => $name];
 
-			$email_token = $this->email_validate->get_token($email, $schema, $data['template']);
+			$email_token = $this->email_validate_service->get_token($email, $schema, $data['template']);
 			$val_data['vars']['et'] = $email_token;
 
-			$this->queue->set('mail', $val_data, $priority);
+			$this->queue_service->set('mail', $val_data, $priority);
 
 			$this->logger->info('mail in queue with email token ' .
 				$email_token .

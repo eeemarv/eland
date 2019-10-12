@@ -23,6 +23,8 @@ services:
             $env_mail_from_address: '%env(MAIL_FROM_ADDRESS)%'
             $env_mail_hoster_address: '%env(MAIL_HOSTER_ADDRESS)%'
             $env_master_password: '%env(MASTER_PASSWORD)%'
+            $env_mollie_test_api_key: '%env(MOLLIE_TEST_API_KEY)%'
+            $env_google_geo_api_key: '%env(GOOGLE_GEO_API_KEY)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

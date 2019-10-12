@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;

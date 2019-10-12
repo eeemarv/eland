@@ -13,6 +13,7 @@ use App\Controller\MessagesShowController;
 use App\Cnst\MessageTypeCnst;
 use App\Cnst\AccessCnst;
 use App\Render\HeadingRender;
+use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;

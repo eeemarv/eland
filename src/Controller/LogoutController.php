@@ -10,13 +10,13 @@ use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class LogoutController extends AbstractController
 {
     public function logout(
         XdbService $xdb_service,
-        Session $session,
+        SessionInterface $session,
         LoggerInterface $logger,
         AlertService $alert_service,
         PageParamsService $pp,

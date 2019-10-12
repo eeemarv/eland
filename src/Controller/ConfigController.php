@@ -12,6 +12,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Render\SelectRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;

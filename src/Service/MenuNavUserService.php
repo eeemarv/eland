@@ -6,35 +6,32 @@ use App\Cnst\MenuCnst;
 
 class MenuNavUserService
 {
-	protected $s_id;
-	protected $r_messages;
-	protected $r_users_show;
+	protected $su;
+	protected $vr;
 
 	public function __construct(
-		int $s_id,
-		string $r_messages,
-		string $r_users_show
+		SessionUserService $su,
+		VarRouteService $vr
 	)
 	{
-		$this->s_id = $s_id;
-		$this->r_messages = $r_messages;
-		$this->r_users_show = $r_users_show;
+		$this->su = $su;
+		$this->vr = $vr;
 	}
 
 	public function get_s_id():int
 	{
-		return $this->s_id;
+		return $this->su->id();
 	}
 
 	public function get_nav_user():array
 	{
 		$m_ary = MenuCnst::NAV_USER;
 
-		$m_ary['users_show']['params']['id'] = $this->s_id;
-		$m_ary['users_show']['route'] = $this->r_users_show;
-		$m_ary['messages']['params']['f']['uid'] = $this->s_id;
-		$m_ary['messages']['route'] = $this->r_messages;
-		$m_ary['transactions']['params']['f']['uid'] = $this->s_id;
+		$m_ary['users_show']['params']['id'] = $this->su->id();
+		$m_ary['users_show']['route'] = $this->vr->get('users_show');
+		$m_ary['messages']['params']['f']['uid'] = $this->su->id();
+		$m_ary['messages']['route'] = $this->vr->get('messages');
+		$m_ary['transactions']['params']['f']['uid'] = $this->su->id();
 
 		$m_ary += MenuCnst::NAV_LOGOUT;
 

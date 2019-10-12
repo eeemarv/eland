@@ -37,7 +37,7 @@ use App\Service\XdbService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UsersListController extends AbstractController
 {
@@ -46,7 +46,7 @@ class UsersListController extends AbstractController
         string $status,
         Db $db,
         LoggerInterface $logger,
-        Session $session,
+        SessionInterface $session,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -111,7 +111,7 @@ class UsersListController extends AbstractController
         string $status,
         Db $db,
         LoggerInterface $logger,
-        Session $session,
+        SessionInterface $session,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,

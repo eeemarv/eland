@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
+use App\Render\LinkRender;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
