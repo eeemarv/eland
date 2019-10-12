@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\Request;
 use Predis\Client as Predis;
 use App\Service\FormTokenService;
 use Gregwar\Captcha\CaptchaBuilder;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class CaptchaService
 {
@@ -17,12 +17,12 @@ class CaptchaService
 	const TTL = 14400; // 4 hours
 
 	public function __construct(
-		Request $request,
+		RequestStack $request_stack,
 		Predis $predis,
 		FormTokenService $form_token_service
 	)
 	{
-		$this->request = $request;
+		$this->request = $request_stack->getCurrentRequest();
 		$this->predis = $predis;
 		$this->form_token_service = $form_token_service;
 

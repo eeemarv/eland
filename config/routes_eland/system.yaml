@@ -1,0 +1,35 @@
+login_elas_token:
+  path: /login-elas/{elas_token<%assert.elas_token%>}
+  controller: App\Controller\LoginElasController::login_elas_token
+
+login:
+  path: /login
+  controller: App\Controller\LoginController::login
+
+contact:
+  path: /contact
+  controller: App\Controller\ContactController::contact
+
+contact_token:
+  path: /contact/{token<%assert.token%>}
+  controller: App\Controller\ContactTokenController::contact_token
+
+register:
+  path: /register
+  controller: App\Controller\RegisterController::register
+
+register_token:
+  path: /register/{token<%assert.token%>}
+  controller: App\Controller\RegisterTokenController::register_token
+
+password_reset:
+  path: /password-reset
+  controller: App\Controller\PasswordResetController::password_reset
+
+password_reset_token:
+  path: /password-reset/{token<%assert.token%>}
+  controller: App\Controller\PasswordResetTokenController::password_reset_token
+
+home_system:
+  path: /
+  controller: App\Controller\HomeSystemController::home_system

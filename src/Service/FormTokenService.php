@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\Request;
 use Predis\Client as Predis;
 use App\Service\TokenGeneratorService;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class FormTokenService
 {
@@ -18,12 +18,12 @@ class FormTokenService
 	const STORE_PREFIX = 'form_token_';
 
 	public function __construct(
-		Request $request,
+		RequestStack $request_stack,
 		Predis $predis,
 		TokenGeneratorService $token_generator_service
 	)
 	{
-		$this->request = $request;
+		$this->request = $request_stack->getCurrentRequest();
 		$this->predis = $predis;
 		$this->token_generator_service = $token_generator_service;
 	}

@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Render\LinkRender;
 use App\Service\CaptchaService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +19,6 @@ class IndexContactController extends AbstractController
         FormTokenService $form_token_service,
         CaptchaService $captcha_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         string $env_mail_hoster_address,
         string $env_mail_from_address
     ):Response
@@ -96,8 +94,6 @@ class IndexContactController extends AbstractController
                 ]);
             }
         }
-
-        $menu_service->set('index_contact');
 
         return $this->render('index/contact.html.twig', [
             'form_ok'       => $form_ok !== '',
