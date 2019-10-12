@@ -2,13 +2,13 @@
 
 namespace App\Render;
 
-use App\Render\select;
 use App\Render\LinkRender;
+use App\Render\SelectRender;
 
 class PaginationRender
 {
 	protected $link_render;
-	protected $select;
+	protected $select_render;
 
 	protected $route;
 	protected $pp_ary;
@@ -34,11 +34,11 @@ class PaginationRender
 	];
 
 	public function __construct(
-		select $select,
+		SelectRender $select_render,
 		LinkRender $link_render
 	)
 	{
-		$this->select = $select;
+		$this->select_render = $select_render;
 		$this->link_render = $link_render;
 	}
 
@@ -117,7 +117,7 @@ class PaginationRender
 
 		$this->out .= 'Per pagina: ';
 		$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
-		$this->out .= $this->select->get_options($this->limit_options, (string) $this->limit);
+		$this->out .= $this->select_render->get_options($this->limit_options, (string) $this->limit);
 		$this->out .= '</select>';
 
 		$action_params = array_merge($this->pp_ary, $this->params);

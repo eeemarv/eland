@@ -3,8 +3,9 @@
 namespace App\Twig;
 
 use App\Service\SystemsService;
+use Twig\Extension\RuntimeExtensionInterface;
 
-class system
+class SystemRuntime implements RuntimeExtensionInterface
 {
 	protected $systems_service;
 

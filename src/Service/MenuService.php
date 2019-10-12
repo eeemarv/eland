@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Service\ConfigService;
-use App\Service\ItemAccess;
+use App\Service\ItemAccessService;
 use App\Cnst\MenuCnst;
 
 class MenuService
@@ -12,41 +12,26 @@ class MenuService
 		'messages'		=> true,
 		'users'			=> true,
 		'news'			=> true,
-		'transactions'	=> false,
+		'transactions'	=> true,
 	];
 
 	protected $config_service;
-	protected $item_access;
-	protected $pp_schema;
-	protected $pp_system;
-	protected $intersystem_en;
-	protected $r_messages;
-	protected $r_users;
-	protected $r_news;
-	protected $r_default;
+	protected $item_access_service;
+	protected $pp;
+	protected $vr;
 	protected $active_menu;
 
 	public function __construct(
 		ConfigService $config_service,
-		ItemAccess $item_access,
-		string $pp_schema,
-		string $pp_system,
-		bool $intersystem_en,
-		string $r_messages,
-		string $r_users,
-		string $r_news,
-		string $r_default
+		ItemAccessService $item_access_service,
+		PageParamsService $pp,
+		VarRouteService $vr
 	)
 	{
 		$this->config_service = $config_service;
-		$this->item_access = $item_access;
-		$this->pp_schema = $pp_schema;
-		$this->pp_system = $pp_system;
-		$this->intersystem_en = $intersystem_en;
-		$this->r_messages = $r_messages;
-		$this->r_users = $r_users;
-		$this->r_news = $r_news;
-		$this->r_default = $r_default;
+		$this->item_access_service = $item_access_service;
+		$this->pp = $pp;
+		$this->vr = $vr;
 	}
 
 	public function set(string $active_menu):void
@@ -58,32 +43,29 @@ class MenuService
 	{
 		if (isset(self::FALLBACK_VAR[$this->active_menu]))
 		{
-			if (self::FALLBACK_VAR[$this->active_menu])
-			{
-				$route = 'r_' . $this->active_menu;
-				$route = $this->{$route};
-				return str_replace('_admin', '', $route);
-			}
-
-			return $this->active_menu;
+			$route = $this->active_menu;
+		}
+		else
+		{
+			$route = 'default';
 		}
 
-		return str_replace('_admin', '', $this->r_default);
+		return str_replace('_admin', '', $this->vr->get($route));
 	}
 
 	public function get_nav_admin():array
 	{
 		$m_ary = MenuCnst::NAV_ADMIN;
 
-		$m_ary['user_mode']['params']['system'] = $this->pp_system;
-		$m_ary['guest_mode']['params']['system'] = $this->pp_system;
+		$m_ary['user_mode']['params']['system'] = $this->pp->system();
+		$m_ary['guest_mode']['params']['system'] = $this->pp->system();
 
 		$fallback_route = $this->get_fallback_route();
 
 		$m_ary['user_mode']['route'] = $fallback_route;
 		$m_ary['guest_mode']['route'] = $fallback_route;
 
-		if (!$this->intersystem_en)
+		if (!$this->config->get_intersystem_en($this->pp->schema()))
 		{
 			unset($m_ary['intersystems'], $m_ary['apikeys'], $m_ary['guest_mode']);
 		}
@@ -102,14 +84,14 @@ class MenuService
 
 		foreach (MenuCnst::SIDEBAR as $m_route => $item)
 		{
-			if (!$this->item_access->is_visible($item['access']))
+			if (!$this->item_access_service->is_visible($item['access']))
 			{
 				continue;
 			}
 
 			if (isset($item['config_en']))
 			{
-				if (!$this->config_service->get($item['config_en'], $this->pp_schema))
+				if (!$this->config_service->get($item['config_en'], $this->pp->schema()))
 				{
 					continue;
 				}

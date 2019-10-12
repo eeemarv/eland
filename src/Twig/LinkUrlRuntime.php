@@ -3,8 +3,9 @@
 namespace App\Twig;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Extension\RuntimeExtensionInterface;
 
-class link_url
+class LinkUrlRuntime implements RuntimeExtensionInterface
 {
 	protected $url_generator;
 

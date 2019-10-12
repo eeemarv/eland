@@ -2,22 +2,24 @@
 
 namespace App\Twig;
 
-class s3_url
+use Twig\Extension\RuntimeExtensionInterface;
+
+class S3UrlRuntime implements RuntimeExtensionInterface
 {
-	protected $s3_url;
+	protected $env_s3_url;
 
 	public function __construct(
-		string $s3_url
+		string $env_s3_url
 	)
 	{
-		$this->s3_url = $s3_url;
+		$this->env_s3_url = $env_s3_url;
 	}
 
 	public function get(
 		string $file
 	):string
 	{
-		return $this->s3_url . $file;
+		return $this->env_s3_url . $file;
 	}
 
 	public function get_link_open(

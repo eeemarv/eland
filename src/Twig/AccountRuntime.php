@@ -3,8 +3,9 @@
 namespace App\Twig;
 
 use App\Service\UserCacheService;
+use Twig\Extension\RuntimeExtensionInterface;
 
-class account
+class AccountRuntime implements RuntimeExtensionInterface
 {
 	protected $user_cache_service;
 

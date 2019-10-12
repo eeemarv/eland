@@ -8,28 +8,25 @@ use App\Cnst\AccessCnst;
 class ItemAccessService
 {
 	protected $assets_service;
-	protected $pp_schema;
-	protected $pp_role;
-	protected $intersystem_en;
+	protected $config_service;
+	protected $pp;
 
 	public function __construct(
 		AssetsService $assets_service,
-		string $pp_schema,
-		string $pp_role,
-		bool $intersystem_en
+		PageParamsService $pp,
+		ConfigService $config_service
 	)
 	{
 		$this->assets_service = $assets_service;
-		$this->pp_schema = $pp_schema;
-		$this->pp_role = $pp_role;
-		$this->intersystem_en = $intersystem_en;
+		$this->pp = $pp;
+		$this->config_service = $config_service;
 	}
 
 	public function is_visible(string $access):bool
 	{
 		if ($access === 'anonymous')
 		{
-			if ($this->pp_role === 'anonymous')
+			if ($this->pp->is_anonymous())
 			{
 				return true;
 			}
@@ -37,20 +34,21 @@ class ItemAccessService
 			return false;
 		}
 
-		if ($this->pp_role === 'admin')
+		if ($this->pp->is_admin())
 		{
 			return true;
 		}
-		else if ($this->pp_role === 'user')
+		else if ($this->pp->is_user())
 		{
 			if ($access === 'user' || $access === 'guest')
 			{
 				return true;
 			}
 		}
-		else if ($this->pp_role === 'guest')
+		else if ($this->pp->is_guest())
 		{
-			if ($this->intersystem_en && $access === 'guest')
+			if ($this->config_service->get_intersystem_en($this->pp->schema())
+				&& $access === 'guest')
 			{
 				return true;
 			}
@@ -88,17 +86,17 @@ class ItemAccessService
 	{
 		$ary = AccessCnst::ARY;
 
-		if (!isset($ary[$this->pp_role]))
+		if (!isset($ary[$this->pp->role()]))
 		{
 			return [];
 		}
 
-		if ($this->pp_role !== 'admin')
+		if (!$this->pp->is_admin())
 		{
 			unset($ary['admin']);
 		}
 
-		if ($this->pp_role === 'guest')
+		if ($this->pp->is_guest())
 		{
 			unset($ary['user']);
 		}
@@ -134,7 +132,8 @@ class ItemAccessService
 		string $access
 	):string
 	{
-		$access = $access === 'guest' && !$this->intersystem_en ? 'user' : $access;
+		$access = $access === 'guest'
+			&& !$this->config->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
 
 		$out = '<span class="btn btn-';
 		$out .= AccessCnst::LABEL[$access]['class'];
@@ -175,7 +174,7 @@ class ItemAccessService
 	{
 		$ary = AccessCnst::ARY;
 
-		if (!$this->intersystem_en)
+		if (!$this->config->get_intersystem_en($this->pp->schema()))
 		{
 			unset($ary['guest']);
 			$selected = $selected === 'guest' ? 'user' : $selected;
@@ -208,7 +207,7 @@ class ItemAccessService
 			$this->assets_service->add(['access_input_cache.js']);
 
 			$out .= ' data-access-cache-id="';
-			$out .= $this->pp_schema . '_' . $cache_id . '"';
+			$out .= $this->pp->schema() . '_' . $cache_id . '"';
 		}
 
 		$out .= '>';

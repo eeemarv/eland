@@ -3,24 +3,25 @@
 namespace App\Twig;
 
 use App\Service\SystemsService;
+use Twig\Extension\RuntimeExtensionInterface;
 
-class base_url
+class BaseUrlRuntime implements RuntimeExtensionInterface
 {
 	protected $systems_service;
-	protected $protocol;
+	protected $env_app_scheme;
 
 	public function __construct(
 		SystemsService $systems_service,
-		string $protocol
+		string $env_app_scheme
 	)
 	{
 		$this->systems_service = $systems_service;
-		$this->protocol = $protocol;
+		$this->env_app_scheme = $env_app_scheme;
 	}
 
 	public function get(string $schema)
 	{
-		return $this->protocol . $this->systems_service->get_host($schema);
+		return $this->env_app_scheme . $this->systems_service->get_host($schema);
 	}
 
 	public function get_link_open(string $schema)
