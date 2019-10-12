@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,8 @@ class TypeaheadUsernamesController extends AbstractController
 {
     public function typeahead_usernames(
         Db $db,
-        TypeaheadService $typeahead_service
+        TypeaheadService $typeahead_service,
+        PageParamsService $pp
     ):Response
     {
         $usernames = [];

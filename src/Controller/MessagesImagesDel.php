@@ -16,6 +16,8 @@ use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesImagesDel extends AbstractController
@@ -26,6 +28,8 @@ class MessagesImagesDel extends AbstractController
         string $ext,
         string $form_token,
         Db $db,
+        PageParamsService $pp,
+        SessionUserService $su,
         FormTokenService $form_token_service
     ):Response
     {
@@ -75,6 +79,8 @@ class MessagesImagesDel extends AbstractController
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service,
         string $env_s3_url
     ):Response

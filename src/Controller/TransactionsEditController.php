@@ -11,6 +11,8 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +34,8 @@ class TransactionsEditController extends AbstractController
         DateFormatService $date_format_service,
         LinkRender $link_render,
         IntersystemsService $intersystems_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {

@@ -16,6 +16,7 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
+use App\Service\PageParamsService;
 
 class ConfigController extends AbstractController
 {
@@ -33,6 +34,7 @@ class ConfigController extends AbstractController
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         SelectRender $select_render,
+        PageParamsService $pp,
         string $env_s3_url
     ):Response
     {
@@ -386,6 +388,7 @@ class ConfigController extends AbstractController
                 $config_service,
                 $link_render,
                 $assets_service,
+                $pp,
                 $env_s3_url
             );
         }
@@ -897,6 +900,7 @@ class ConfigController extends AbstractController
         ConfigService $config_service,
         LinkRender $link_render,
         AssetsService $assets_service,
+        PageParamsService $pp,
         string $env_s3_url
     )
     {

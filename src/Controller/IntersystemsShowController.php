@@ -2,17 +2,37 @@
 
 namespace App\Controller;
 
+use App\Render\BtnNavRender;
+use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
+use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SystemsService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use controller\intersystems;
 use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsShowController extends AbstractController
 {
     public function intersystems_show(
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        AlertService $alert_service,
+        LinkRender $link_render,
+        ConfigService $config_service,
+        AssetsService $assets_service,
+        BtnNavRender $btn_nav_render,
+        BtnTopRender $btn_top_render,
+        HeadingRender $heading_render,
+        SystemsService $systems_service,
+        PageParamsService $pp,
+        VarRouteService $vr,
+        MenuService $menu_service
     ):Response
     {
         $group = $db->fetchAssoc('select *
@@ -175,7 +195,14 @@ class IntersystemsShowController extends AbstractController
 
         $out .= '</div></div>';
 
-        $out .= intersystems::get_schemas_groups($app);
+        $out .= IntersystemsController::get_schemas_groups(
+            $db,
+            $config_service,
+            $systems_service,
+            $pp,
+            $vr,
+            $link_render
+        );
 
         $menu_service->set('intersystems');
 

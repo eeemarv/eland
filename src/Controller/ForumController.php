@@ -7,15 +7,16 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumController extends AbstractController
 {
@@ -23,7 +24,6 @@ class ForumController extends AbstractController
         Request $request,
         XdbService $xdb_service,
         AccountRender $account_render,
-        AlertService $alert_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
@@ -31,13 +31,13 @@ class ForumController extends AbstractController
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($app['default'], $pp->ary(), []);
+            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
         $q = $request->query->get('q', '');

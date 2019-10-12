@@ -14,10 +14,13 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumTopicController extends AbstractController
 {
@@ -36,13 +39,14 @@ class ForumTopicController extends AbstractController
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($vr->get('default'), $pp->ary(), []);
+            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
         $show_visibility = ($pp->is_user()

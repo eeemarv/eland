@@ -12,6 +12,8 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\LogDbService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +35,8 @@ class LogsController extends AbstractController
         TypeaheadService $typeahead_service,
         AccountRender $account_render,
         ConfigService $config_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         DateFormatService $date_format_service
 
     ):Response

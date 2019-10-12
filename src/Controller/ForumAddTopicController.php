@@ -14,6 +14,9 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 
 class ForumAddTopicController extends AbstractController
@@ -28,6 +31,9 @@ class ForumAddTopicController extends AbstractController
         HeadingRender $heading_render,
         AssetsService $assets_service,
         ItemAccessService $item_access_service,
+        VarRouteService $vr,
+        SessionUserService $su,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {

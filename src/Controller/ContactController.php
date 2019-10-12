@@ -14,6 +14,7 @@ use App\Render\LinkRender;
 use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
+use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 
 class ContactController extends AbstractController
@@ -29,6 +30,7 @@ class ContactController extends AbstractController
         DataTokenService $data_token_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
+        PageParamsService $pp,
         MailQueue $mail_queue
     ):Response
     {

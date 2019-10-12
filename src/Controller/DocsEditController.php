@@ -11,6 +11,7 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use App\Service\XdbService;
 
@@ -26,6 +27,7 @@ class DocsEditController extends AbstractController
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
         MenuService $menu_service,
+        PageParamsService $pp,
         string $env_s3_url
     ):Response
     {

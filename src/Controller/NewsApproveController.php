@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\PageParamsService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -13,6 +15,8 @@ class NewsApproveController extends AbstractController
     public function news_approve(
         int $id,
         Db $db,
+        PageParamsService $pp,
+        VarRouteService $vr,
         LinkRender $link_render,
         AlertService $alert_service
     ):Response

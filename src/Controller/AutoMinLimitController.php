@@ -12,6 +12,8 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\PageParamsService;
+use App\Service\XdbService;
 
 class AutoMinLimitController extends AbstractController
 {
@@ -21,6 +23,8 @@ class AutoMinLimitController extends AbstractController
         MenuService $menu_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
+        PageParamsService $pp,
+        XdbService $xdb_service,
         FormTokenService $form_token_service
     ):Response
     {

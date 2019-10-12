@@ -9,19 +9,25 @@ use App\Queue\MailQueue;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
+use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class RegisterTokenController extends AbstractController
 {
     public function register_token(
         string $token,
         Db $db,
+        TranslatorInterface $translator,
         ConfigService $config_service,
         AlertService $alert_service,
         DataTokenService $data_token_service,
         LinkRender $link_render,
+        MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
@@ -198,7 +204,7 @@ class RegisterTokenController extends AbstractController
             $vars[$k] = $data[$v];
         }
 
-        $vars['subject'] = $app['translator']->trans('register_success.subject', [
+        $vars['subject'] = $translator->trans('register_success.subject', [
             '%system_name%'	=> $config_service->get('systemname', $pp->schema()),
         ], 'mail');
 

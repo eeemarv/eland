@@ -18,6 +18,7 @@ use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 
 class ContactsAddController extends AbstractController
@@ -35,6 +36,7 @@ class ContactsAddController extends AbstractController
         GeocodeQueue $geocode_queue,
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
+        PageParamsService $pp,
         HeadingRender $heading_render
     ):Response
     {
@@ -53,6 +55,7 @@ class ContactsAddController extends AbstractController
             $geocode_queue,
             $item_access_service,
             $typeahead_service,
+            $pp,
             $heading_render
         );
     }
@@ -72,6 +75,7 @@ class ContactsAddController extends AbstractController
         GeocodeQueue $geocode_queue,
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
+        PageParamsService $pp,
         HeadingRender $heading_render
     ):Response
     {

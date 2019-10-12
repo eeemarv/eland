@@ -23,11 +23,14 @@ use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
+use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 
 class UsersEditController extends AbstractController
@@ -56,6 +59,9 @@ class UsersEditController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -85,6 +91,9 @@ class UsersEditController extends AbstractController
             $mail_addr_user_service,
             $mail_addr_system_service,
             $mail_queue,
+            $pp,
+            $su,
+            $vr,
             $menu_service
         );
     }

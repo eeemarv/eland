@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Service\ConfigService;
 use App\Service\IntersystemsService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -14,10 +17,13 @@ class ElasGroupLoginController extends AbstractController
         int $group_id,
         Db $db,
         LoggerInterface $logger,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         IntersystemsService $intersystems_service
     ):Response
     {
-        if (!$su->schema() || $app['s_elas_guest'])
+        if (!$su->schema() || $su->is_elas_guest())
         {
             return $this->json([
                 'error' => 'Onvoldoende rechten.',

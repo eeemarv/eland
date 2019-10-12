@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Service\ImageUploadService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +21,9 @@ class UsersImageUploadController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         ImageUploadService $image_upload_service,
-        UserCacheService $user_cache_service
+        UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su
     ):Response
     {
         if ($su->id() < 1)
@@ -33,7 +37,8 @@ class UsersImageUploadController extends AbstractController
             $db,
             $logger,
             $image_upload_service,
-            $user_cache_service
+            $user_cache_service,
+            $pp
         );
     }
 
@@ -43,7 +48,8 @@ class UsersImageUploadController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         ImageUploadService $image_upload_service,
-        UserCacheService $user_cache_service
+        UserCacheService $user_cache_service,
+        PageParamsService $pp
     ):Response
     {
         $uploaded_file = $request->files->get('image');

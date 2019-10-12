@@ -16,6 +16,8 @@ use App\Render\SelectRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
 
@@ -35,6 +37,8 @@ class MessagesExtendedController extends AbstractController
         LinkRender $link_render,
         MenuService $menu_service,
         PaginationRender $pagination_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         string $env_s3_url
     ):Response
     {
@@ -81,7 +85,7 @@ class MessagesExtendedController extends AbstractController
 
         MessagesListController::set_view_btn_nav(
             $btn_nav_render,
-            $pp->ary(),
+            $pp,
             $params,
             'extended'
         );
@@ -90,7 +94,8 @@ class MessagesExtendedController extends AbstractController
         {
             return MessagesListController::no_messages(
                 $pagination_render,
-                $menu_service
+                $menu_service,
+                $pp
             );
         }
 

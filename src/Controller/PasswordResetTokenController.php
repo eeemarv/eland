@@ -8,7 +8,9 @@ use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
+use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,8 +31,10 @@ class PasswordResetTokenController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         MenuService $menu_service,
+        MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         PasswordStrengthService $password_strength_service,
+        PageParamsService $pp,
         UserCacheService $user_cache_service
     ):Response
     {

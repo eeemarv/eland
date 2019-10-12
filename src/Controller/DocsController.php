@@ -10,8 +10,10 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\XdbService;
 
 class DocsController extends AbstractController
@@ -25,6 +27,8 @@ class DocsController extends AbstractController
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
         MenuService $menu_service,
         string $env_s3_url
     ):Response

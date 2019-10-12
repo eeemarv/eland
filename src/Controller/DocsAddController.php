@@ -12,7 +12,9 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\S3Service;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
@@ -31,6 +33,8 @@ class DocsAddController extends AbstractController
         LinkRender $link_render,
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {

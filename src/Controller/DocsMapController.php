@@ -14,6 +14,7 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\XdbService;
 
 
@@ -31,6 +32,8 @@ class DocsMapController extends AbstractController
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
         MenuService $menu_service,
+        ConfigService $config_service,
+        PageParamsService $pp,
         string $env_s3_url
     ):Response
     {

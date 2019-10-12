@@ -16,6 +16,8 @@ use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 
 class ContactsController extends AbstractController
@@ -33,6 +35,8 @@ class ContactsController extends AbstractController
         TypeaheadService $typeahead_service,
         ConfigService $config_service,
         AccountRender $account_render,
+        SessionUserService $su,
+        PageParamsService $pp,
         ItemAccessService $item_access_service
     ):Response
     {

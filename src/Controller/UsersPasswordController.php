@@ -12,8 +12,11 @@ use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,6 +38,9 @@ class UsersPasswordController extends AbstractController
         MailQueue $mail_queue,
         PasswordStrengthService $password_strength_service,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -53,6 +59,9 @@ class UsersPasswordController extends AbstractController
             $mail_queue,
             $password_strength_service,
             $user_cache_service,
+            $pp,
+            $su,
+            $vr,
             $menu_service
         );
     }
@@ -72,6 +81,9 @@ class UsersPasswordController extends AbstractController
         MailQueue $mail_queue,
         PasswordStrengthService $password_strength_service,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {

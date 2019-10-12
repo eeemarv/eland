@@ -7,10 +7,13 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumDelController extends AbstractController
 {
@@ -23,13 +26,14 @@ class ForumDelController extends AbstractController
         FormTokenService $form_token_service,
         ConfigService $config_service,
         AlertService $alert_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($vr->get('default'), $pp->ary(), []);
+            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
         $row = $xdb_service->get('forum', $forum_id, $pp->schema());

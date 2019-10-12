@@ -16,6 +16,8 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\assetsService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 
 class UsersContactsEditController extends AbstractController
 {
@@ -31,6 +33,8 @@ class UsersContactsEditController extends AbstractController
         LinkRender $link_render,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         GeocodeQueue $geocode_queue
     ):Response
     {
@@ -48,6 +52,7 @@ class UsersContactsEditController extends AbstractController
             $link_render,
             $heading_render,
             $account_render,
+            $pp,
             $geocode_queue
         );
     }
@@ -65,6 +70,7 @@ class UsersContactsEditController extends AbstractController
         LinkRender $link_render,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        PageParamsService $pp,
         GeocodeQueue $geocode_queue
     ):Response
     {
@@ -82,6 +88,7 @@ class UsersContactsEditController extends AbstractController
             $link_render,
             $heading_render,
             $account_render,
+            $pp,
             $geocode_queue
         );
     }

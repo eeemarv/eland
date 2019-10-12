@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,28 +13,32 @@ class TransactionsSumController extends AbstractController
     public function transactions_sum_in(
         Request $request,
         int $days,
-        Db $db
+        Db $db,
+        PageParamsService $pp
     ):Response
     {
         return $this->calc(
             $request,
             $days,
             true,
-            $db
+            $db,
+            $pp
         );
     }
 
     public function transactions_sum_out(
         Request $request,
         int $days,
-        Db $db
+        Db $db,
+        PageParamsService $pp
     ):Response
     {
         return $this->calc(
             $request,
             $days,
             false,
-            $db
+            $db,
+            $pp
         );
     }
 
@@ -41,7 +46,8 @@ class TransactionsSumController extends AbstractController
         Request $request,
         int $days,
         bool $in,
-        Db $db
+        Db $db,
+        PageParamsService $pp
     ):Response
     {
         $ex_letscodes = $request->query->get('ex', []);

@@ -9,6 +9,7 @@ use App\Service\AlertService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,7 @@ class PasswordResetController extends AbstractController
         HeadingRender $heading_render,
         MailQueue $mail_queue,
         LinkRender $link_render,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {

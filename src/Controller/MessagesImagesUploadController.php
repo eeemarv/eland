@@ -10,6 +10,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Controller\MessagesShowController;
 use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
@@ -21,6 +23,8 @@ class MessagesImagesUploadController extends AbstractController
         Db $db,
         FormTokenService $form_token_service,
         LoggerInterface $logger,
+        PageParamsService $pp,
+        SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
@@ -31,6 +35,8 @@ class MessagesImagesUploadController extends AbstractController
             $db,
             $form_token_service,
             $logger,
+            $pp,
+            $su,
             $image_upload_service
         );
     }
@@ -42,6 +48,8 @@ class MessagesImagesUploadController extends AbstractController
         Db $db,
         FormTokenService $form_token_service,
         LoggerInterface $logger,
+        PageParamsService $pp,
+        SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
@@ -55,6 +63,8 @@ class MessagesImagesUploadController extends AbstractController
             $id,
             $db,
             $logger,
+            $pp,
+            $su,
             $image_upload_service
         );
     }
@@ -64,6 +74,8 @@ class MessagesImagesUploadController extends AbstractController
         int $id,
         Db $db,
         LoggerInterface $logger,
+        PageParamsService $pp,
+        SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {

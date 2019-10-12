@@ -14,7 +14,10 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\XdbService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumEditController extends AbstractController
 {
@@ -29,13 +32,14 @@ class ForumEditController extends AbstractController
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($vr->get('default'), $pp->ary(), []);
+            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
         $row = $xdb_service->get('forum', $forum_id, $pp->schema());

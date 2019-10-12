@@ -12,6 +12,8 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 
 class CategoriesAddController extends AbstractController
 {
@@ -23,6 +25,8 @@ class CategoriesAddController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         SelectRender $select_render
     ):Response
     {
@@ -52,7 +56,7 @@ class CategoriesAddController extends AbstractController
             if (!count($errors))
             {
                 $cat['cdate'] = gmdate('Y-m-d H:i:s');
-                $cat['id_creator'] = $app['s_master'] ? 0 : $su->id();
+                $cat['id_creator'] = $su->is_master() ? 0 : $su->id();
                 $cat['fullname'] = '';
 
                 if ($cat['leafnote'])

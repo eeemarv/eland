@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
+use App\Service\DistanceService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 
 class ContactsUserShowInlineController extends AbstractController
 {
@@ -17,13 +21,16 @@ class ContactsUserShowInlineController extends AbstractController
         AssetsService $assets_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        AccountRender $account_render
-
+        PageParamsService $pp,
+        SessionUserService $su,
+        DistanceService $distance_service,
+        AccountRender $account_render,
+        string $env_mapbox_token
     ):Response
     {
         $s_owner = $su->id() === $uid
             && !$pp->is_guest()
-            && !$app['s_elas_guest']
+            && !$su->is_elas_guest()
             && $su->is_system_self();
 
         $contacts = $db->fetchAll('select c.*, tc.abbrev
@@ -117,11 +124,11 @@ class ContactsUserShowInlineController extends AbstractController
 
                     if ($c['abbrev'] == 'adr')
                     {
-                        $app['distance']->set_to_geo($c['value']);
+                        $distance_service->set_to_geo($c['value']);
 
-                        if (!$app['s_elas_guest'] && !$app['s_master'])
+                        if (!$su->is_elas_guest() && !$su->is_master())
                         {
-                            $tr_c .= $app['distance']->set_from_geo($su->id(), $su->schema())
+                            $tr_c .= $distance_service->set_from_geo($su->id(), $su->schema())
                                 ->calc()
                                 ->format_parenthesis();
                         }
@@ -167,11 +174,11 @@ class ContactsUserShowInlineController extends AbstractController
 
                     if ($c['abbrev'] === 'adr')
                     {
-                        $app['distance']->set_to_geo($c['value']);
+                        $distance_service->set_to_geo($c['value']);
 
-                        if (!$app['s_elas_guest'] && !$app['s_master'])
+                        if (!$su->is_elas_guest() && !$su->is_master())
                         {
-                            $tr_c .= $app['distance']->set_from_geo($su->id(), $su->schema())
+                            $tr_c .= $distance_service->set_from_geo($su->id(), $su->schema())
                                 ->calc()
                                 ->format_parenthesis();
                         }
@@ -208,14 +215,14 @@ class ContactsUserShowInlineController extends AbstractController
             $out .= '</tbody>';
             $out .= '</table>';
 
-            if ($app['distance']->has_map_data())
+            if ($distance_service->has_map_data())
             {
                 $out .= '<div class="panel-footer">';
                 $out .= '<div class="user_map" id="map" data-markers="';
-                $out .= $app['distance']->get_map_markers();
+                $out .= $distance_service->get_map_markers();
                 $out .= '" ';
                 $out .= 'data-token="';
-                $out .= $app['mapbox_token'];
+                $out .= $env_mapbox_token;
                 $out .= '"></div>';
                 $out .= '</div>';
             }

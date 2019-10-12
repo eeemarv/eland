@@ -11,6 +11,7 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +29,7 @@ class NewsController extends AbstractController
         BtnNavRender $btn_nav_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
@@ -35,14 +37,16 @@ class NewsController extends AbstractController
             $db,
             $xdb_service,
             $config_service,
-            $item_access_service
+            $item_access_service,
+            $pp
         );
 
         $this->set_heading_and_btns(
             true,
             $heading_render,
             $btn_top_render,
-            $btn_nav_render
+            $btn_nav_render,
+            $pp
         );
 
         $show_visibility = ($pp->is_user()
@@ -56,7 +60,7 @@ class NewsController extends AbstractController
 
         if (!count($news))
         {
-            return $this->no_news($menu_service);
+            return $this->no_news($menu_service, $pp);
         }
 
         $out = '<div class="panel panel-warning printview">';
@@ -130,6 +134,7 @@ class NewsController extends AbstractController
         AccountRender $account_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
@@ -137,14 +142,16 @@ class NewsController extends AbstractController
             $db,
             $xdb_service,
             $config_service,
-            $item_access_service
+            $item_access_service,
+            $pp
         );
 
         $this->set_heading_and_btns(
             false,
             $heading_render,
             $btn_top_render,
-            $btn_nav_render
+            $btn_nav_render,
+            $pp
         );
 
         $show_visibility = ($pp->is_user()
@@ -153,7 +160,7 @@ class NewsController extends AbstractController
 
         if (!count($news))
         {
-            return $this->no_news($menu_service);
+            return $this->no_news($menu_service, $pp);
         }
 
         $out = '';
@@ -300,7 +307,8 @@ class NewsController extends AbstractController
         Db $db,
         XdbService $xdb_service,
         ConfigService $config_service,
-        ItemAccessService $item_access_service
+        ItemAccessService $item_access_service,
+        PageParamsService $pp
     ):array
     {
         $news = $news_access_ary = [];
@@ -360,7 +368,8 @@ class NewsController extends AbstractController
         bool $is_list,
         HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render
+        BtnNavRender $btn_nav_render,
+        PageParamsService $pp
     ):void
     {
         if($pp->is_user() || $pp->is_admin())
@@ -380,7 +389,8 @@ class NewsController extends AbstractController
     }
 
     private function no_news(
-        MenuService $menu_service
+        MenuService $menu_service,
+        PageParamsService $pp
     ):Response
     {
         $out = '<div class="panel panel-default">';

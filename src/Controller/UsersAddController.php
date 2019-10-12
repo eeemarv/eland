@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\UsersEditAdminController;
-use App\Cnst\ContactInputCnst;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -23,11 +22,14 @@ use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
+use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
@@ -57,6 +59,9 @@ class UsersAddController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -86,6 +91,9 @@ class UsersAddController extends AbstractController
             $mail_addr_user_service,
             $mail_addr_system_service,
             $mail_queue,
+            $pp,
+            $su,
+            $vr,
             $menu_service
         );
     }

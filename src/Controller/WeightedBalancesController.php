@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -10,7 +11,8 @@ class WeightedBalancesController extends AbstractController
 {
     public function weighted_balances(
         int $days,
-        Db $db
+        Db $db,
+        PageParamsService $pp
     ):Response
     {
         $end_unix = time();

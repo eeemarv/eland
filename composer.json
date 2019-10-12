@@ -45,7 +45,7 @@
 		"symfony/profiler-pack": "^1.0",
 		"symfony/security": "^4",
 		"symfony/security-csrf": "^4",
-		"symfony/translation": "^4",
+		"symfony/translation": "4.3.*",
 		"symfony/twig-bridge": "^4",
 		"symfony/twig-bundle": "4.3.*",
 		"symfony/validator": "^4",

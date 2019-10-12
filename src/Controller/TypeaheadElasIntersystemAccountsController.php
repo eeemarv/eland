@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\CacheService;
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,8 @@ class TypeaheadElasIntersystemAccountsController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         CacheService $cache_service,
-        TypeaheadService $typeahead_service
+        TypeaheadService $typeahead_service,
+        PageParamsService $pp
     ):Response
     {
         $group = $db->fetchAssoc('select *

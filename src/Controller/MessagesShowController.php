@@ -18,12 +18,16 @@ use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
+use App\Service\DistanceService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use controller\contacts_user_show_inline;
 use controller\users_show;
 
@@ -48,8 +52,13 @@ class MessagesShowController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service,
-        string $env_s3_url
+        DistanceService $distance_service,
+        string $env_s3_url,
+        string $env_mapbox_token
     ):Response
     {
         $message = self::get_message($db, $id, $pp->schema());
@@ -86,13 +95,13 @@ class MessagesShowController extends AbstractController
                     bericht naar een niet-actieve gebruiker te sturen');
             }
 
-            if ($app['s_master'])
+            if ($su->is_master())
             {
                 throw new AccessDeniedHttpException('Het master account
                     kan geen berichten versturen.');
             }
 
-            if (!$su->schema() || $app['s_elas_guest'])
+            if (!$su->schema() || $su->is_elas_guest())
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
                     om een E-mail bericht te versturen.');
@@ -209,8 +218,20 @@ class MessagesShowController extends AbstractController
             order by id desc
             limit 1', [$id]);
 
-        $contacts_user_show_inline = new contacts_user_show_inline();
-        $contacts_response = $contacts_user_show_inline->contacts_user_show_inline($app, $user['id']);
+        $contacts_user_show_inline_controller = new ContactsUserShowInlineController();
+        $contacts_response = $contacts_user_show_inline_controller->contacts_user_show_inline(
+            $user['id'],
+            $db,
+            $assets_service,
+            $item_access_service,
+            $link_render,
+            $pp,
+            $su,
+            $distance_service,
+            $account_render,
+            $env_mapbox_token,
+        );
+
         $contacts_content = $contacts_response->getContent();
 
         $assets_service->add([
@@ -248,7 +269,7 @@ class MessagesShowController extends AbstractController
                 $tus['tus'] = $pp->schema();
             }
 
-            $btn_top_render->add_trans('transactions_add', $app['s_ary'],
+            $btn_top_render->add_trans('transactions_add', $su->ary(),
                 $tus, 'Transactie voor dit aanbod');
         }
 
@@ -404,11 +425,11 @@ class MessagesShowController extends AbstractController
         {
             $out .= '<dt>Verlengen</dt>';
             $out .= '<dd>';
-            $out .= self::btn_extend($link_render, $pp->ary(), $id, 30, '1 maand');
+            $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
             $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp->ary(), $id, 180, '6 maanden');
+            $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
             $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp->ary(), $id, 365, '1 jaar');
+            $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
             $out .= '</dd>';
         }
 
@@ -428,7 +449,14 @@ class MessagesShowController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= users_show::get_mail_form($app, $message['id_user'], $user_mail_content, $user_mail_cc);
+        $out .= UsersShowController::get_mail_form(
+            $message['id_user'],
+            $user_mail_content,
+            $user_mail_cc,
+            $account_render,
+            $form_token_service,
+            $mail_addr_user_service
+        );
 
         $out .= $contacts_content;
 
@@ -441,14 +469,14 @@ class MessagesShowController extends AbstractController
     }
 
     static public function btn_extend(
-        link $link,
-        array $pp_ary,
+        LinkRender $link_render,
+        PageParamsService $pp,
         int $id,
         int $days,
         string $label
     ):string
     {
-        return $link->link('messages_extend', $pp_ary, [
+        return $link_render->link('messages_extend', $pp->ary(), [
                 'id' 	=> $id,
                 'days' 	=> $days,
             ], $label, [

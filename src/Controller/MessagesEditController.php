@@ -21,9 +21,12 @@ use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\S3Service;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesEditController extends AbstractController
@@ -31,6 +34,7 @@ class MessagesEditController extends AbstractController
     public function messages_add(
         Request $request,
         Db $db,
+        LoggerInterface $logger,
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
@@ -42,7 +46,12 @@ class MessagesEditController extends AbstractController
         LinkRender $link_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service
+        UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
+        S3Service $s3_service,
+        string $env_s3_url
     ):Response
     {
         return $this->messages_form(
@@ -50,6 +59,7 @@ class MessagesEditController extends AbstractController
             0,
             'add',
             $db,
+            $logger,
             $alert_service,
             $assets_service,
             $config_service,
@@ -61,7 +71,12 @@ class MessagesEditController extends AbstractController
             $link_render,
             $menu_service,
             $typeahead_service,
-            $user_cache_service
+            $pp,
+            $su,
+            $vr,
+            $user_cache_service,
+            $s3_service,
+            $env_s3_url
         );
     }
 
@@ -69,6 +84,7 @@ class MessagesEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        LoggerInterface $logger,
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
@@ -80,7 +96,12 @@ class MessagesEditController extends AbstractController
         LinkRender $link_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
+        UserCacheService $user_cache_service,
+        S3Service $s3_service,
+        string $env_s3_url
     ):Response
     {
         return $this->messages_form(
@@ -88,6 +109,7 @@ class MessagesEditController extends AbstractController
             $id,
             'edit',
             $db,
+            $logger,
             $alert_service,
             $assets_service,
             $config_service,
@@ -99,7 +121,12 @@ class MessagesEditController extends AbstractController
             $link_render,
             $menu_service,
             $typeahead_service,
-            $user_cache_service
+            $pp,
+            $su,
+            $vr,
+            $user_cache_service,
+            $s3_service,
+            $env_s3_url
         );
     }
 
@@ -108,6 +135,7 @@ class MessagesEditController extends AbstractController
         int $id,
         string $mode,
         Db $db,
+        LoggerInterface $logger,
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
@@ -119,7 +147,12 @@ class MessagesEditController extends AbstractController
         LinkRender $link_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
+        UserCacheService $user_cache_service,
+        S3Service $s3_service,
+        string $env_s3_url
     ):Response
     {
         $edit_mode = $mode === 'edit';

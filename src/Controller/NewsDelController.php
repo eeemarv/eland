@@ -10,6 +10,8 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +32,8 @@ class NewsDelController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
+        PageParamsService $pp,
+        VarRouteService $vr,
         XdbService $xdb_service
     ):Response
     {

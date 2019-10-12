@@ -14,6 +14,7 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
@@ -31,6 +32,7 @@ class NewsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
+        PageParamsService $pp,
         XdbService $xdb_service
     ):Response
     {

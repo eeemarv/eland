@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\ConfigService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -11,6 +12,7 @@ class HomeSystemController extends AbstractController
 {
     public function home_system(
         ConfigService $config_service,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {

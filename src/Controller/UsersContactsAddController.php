@@ -17,6 +17,8 @@ use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 
 class UsersContactsAddController extends AbstractController
@@ -34,6 +36,8 @@ class UsersContactsAddController extends AbstractController
         GeocodeQueue $geocode_queue,
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         HeadingRender $heading_render
     ):Response
     {
@@ -52,6 +56,7 @@ class UsersContactsAddController extends AbstractController
             $geocode_queue,
             $item_access_service,
             $typeahead_service,
+            $pp,
             $heading_render
         );
     }
@@ -70,6 +75,7 @@ class UsersContactsAddController extends AbstractController
         GeocodeQueue $geocode_queue,
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
+        PageParamsService $pp,
         HeadingRender $heading_render
     ):Response
     {
@@ -88,6 +94,7 @@ class UsersContactsAddController extends AbstractController
             $geocode_queue,
             $item_access_service,
             $typeahead_service,
+            $pp,
             $heading_render
         );
     }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -18,6 +19,7 @@ class ContactTypesController extends AbstractController
         HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
         LinkRender $link_render,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {

@@ -9,8 +9,12 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\CacheService;
+use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Controller\UsersListController;
@@ -29,6 +33,10 @@ class UsersMapController extends AbstractController
         CacheService $cache_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service,
         string $env_mapbox_token
     ):Response
@@ -44,6 +52,10 @@ class UsersMapController extends AbstractController
             $cache_service,
             $item_access_service,
             $link_render,
+            $config_service,
+            $pp,
+            $su,
+            $vr,
             $menu_service,
             $env_mapbox_token
         );
@@ -60,6 +72,10 @@ class UsersMapController extends AbstractController
         CacheService $cache_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service,
         string $env_mapbox_token
     ):Response
@@ -97,9 +113,9 @@ class UsersMapController extends AbstractController
             $adr_ary[$row['user_id']] = $row;
         }
 
-        if (!$app['s_master'])
+        if (!$su->is_master())
         {
-            if ($pp->is_guest() && $su->schema() && !$app['s_elas_guest'])
+            if ($pp->is_guest() && $su->schema() && !$su->is_elas_guest())
             {
                 $my_adr = $db->fetchColumn('select c.value
                     from ' . $su->schema() . '.contact c, ' . $su->schema() . '.type_contact tc

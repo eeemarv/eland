@@ -27,7 +27,10 @@ use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
+use App\Service\VarRouteService;
 
 class MessagesListController extends AbstractController
 {
@@ -49,6 +52,9 @@ class MessagesListController extends AbstractController
         SelectRender $select_render,
         ConfigService $config_service,
         TypeaheadService $typeahead_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         HeadingRender $heading_render
     ):Response
     {
@@ -124,7 +130,7 @@ class MessagesListController extends AbstractController
             $update_msgs_ary  = [];
 
             $rows = $db->executeQuery('select id_user, id, validity,
-                id_category, msg_type
+                    id_category, msg_type
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
@@ -132,8 +138,7 @@ class MessagesListController extends AbstractController
 
             foreach ($rows as $row)
             {
-                if (!$pp->is_admin()
-                    && ($row['id_user'] !== $su->id()))
+                if (!$pp->is_admin() && !$su->is_owner($row['id_user']))
                 {
                     throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
                         $row['content'] . ' ( ' . $row['id'] . ')');
@@ -253,7 +258,7 @@ class MessagesListController extends AbstractController
                     foreach ($type_count_ary as $type => $count)
                     {
                         messages_edit::adjust_category_stats($type,
-                            (int) $id_category, $count, $app['db'], $pp->schema());
+                            (int) $id_category, $count, $db, $pp->schema());
                     }
                 }
 
@@ -283,6 +288,9 @@ class MessagesListController extends AbstractController
             $link_render,
             $pagination_render,
             $select_render,
+            $pp,
+            $su,
+            $vr,
             $typeahead_service
         );
 
@@ -296,8 +304,9 @@ class MessagesListController extends AbstractController
 
         self::set_view_btn_nav(
             $btn_nav_render,
-            $pp->ary(),
-            $params, 'list'
+            $pp,
+            $params,
+            'list'
         );
 
         if ($pp->is_admin())
@@ -312,7 +321,7 @@ class MessagesListController extends AbstractController
 
         if (!count($messages))
         {
-            return self::no_messages($pagination_render, $menu_service);
+            return self::no_messages($pagination_render, $menu_service, $pp);
         }
 
         $out .= $pagination_render->get();
@@ -566,7 +575,8 @@ class MessagesListController extends AbstractController
 
     static public function no_messages(
         PaginationRender $pagination_render,
-        MenuService $menu_service
+        MenuService $menu_service,
+        PageParamsService $pp
     ):Response
     {
         $out = $pagination_render->get();
@@ -613,15 +623,15 @@ class MessagesListController extends AbstractController
 
     public static function set_view_btn_nav(
         BtnNavRender $btn_nav_render,
-        array $pp_ary,
+        PageParamsService $pp,
         array $params,
         string $view
     )
     {
-        $btn_nav_render->view('messages_list', $pp_ary,
+        $btn_nav_render->view('messages_list', $pp->ary(),
             $params, 'Lijst', 'align-justify', $view === 'list');
 
-        $btn_nav_render->view('messages_extended', $pp_ary,
+        $btn_nav_render->view('messages_extended', $pp->ary(),
             $params, 'Lijst met omschrijvingen', 'th-list', $view === 'extended');
     }
 
@@ -704,6 +714,9 @@ class MessagesListController extends AbstractController
         LinkRender $link_render,
         PaginationRender $pagination_render,
         SelectRender $select_render,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         TypeaheadService $typeahead_service
     ):array
     {

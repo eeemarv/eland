@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,8 @@ class TypeaheadAccountCodesController extends AbstractController
 {
     public function typeahead_account_codes(
         Db $db,
-        TypeaheadService $typeahead_service
+        TypeaheadService $typeahead_service,
+        PageParamsService $pp
     ):Response
     {
         $account_codes = [];

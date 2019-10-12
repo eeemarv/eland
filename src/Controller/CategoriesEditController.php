@@ -13,6 +13,8 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Render\SelectRender;
+use App\Service\PageParamsService;
 
 class CategoriesEditController extends AbstractController
 {
@@ -25,6 +27,7 @@ class CategoriesEditController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
+        PageParamsService $pp,
         SelectRender $select_render
     ):Response
     {

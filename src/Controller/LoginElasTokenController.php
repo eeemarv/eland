@@ -4,13 +4,15 @@ namespace App\Controller;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class LoginElasTokenController extends AbstractController
 {
@@ -19,19 +21,17 @@ class LoginElasTokenController extends AbstractController
         Request $request,
         Predis $predis,
         LoggerInterface $logger,
-        Session $session,
         XdbService $xdb_service,
         AlertService $alert_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         LinkRender $link_render
     ):Response
     {
         if($apikey = $predis->get($pp->schema() . '_token_' . $elas_token))
         {
-            $s_logins = array_merge($su->logins(), [
-                $pp->schema() 	=> 'elas',
-            ]);
-
-            $session->set('logins', $s_logins);
+            $su->set_elas_guest_login($pp->schema());
 
             $referrer = $request->server->get('HTTP_REFERER');
 

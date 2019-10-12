@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Controller\MessagesShowController;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendController extends AbstractController
@@ -16,6 +18,8 @@ class MessagesExtendController extends AbstractController
         int $days,
         Db $db,
         AlertService $alert_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         LinkRender $link_render
     ):Response
     {

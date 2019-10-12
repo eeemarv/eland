@@ -11,10 +11,14 @@ use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesDelController extends AbstractController
@@ -30,6 +34,10 @@ class MessagesDelController extends AbstractController
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {

@@ -27,9 +27,12 @@ use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
@@ -64,6 +67,9 @@ class UsersListController extends AbstractController
         TypeaheadService $typeahead_service,
         XdbService  $xdb_service,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -93,6 +99,9 @@ class UsersListController extends AbstractController
             $typeahead_service,
             $xdb_service,
             $user_cache_service,
+            $pp,
+            $su,
+            $vr,
             $menu_service
         );
     }
@@ -123,6 +132,9 @@ class UsersListController extends AbstractController
         TypeaheadService $typeahead_service,
         XdbService  $xdb_service,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -206,7 +218,7 @@ class UsersListController extends AbstractController
                     $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
                 }
 
-                if ($app['s_master'])
+                if ($su->is_master())
                 {
                     $errors[] = 'Het master account kan geen E-mail berichten verzenden.';
                 }
@@ -530,7 +542,7 @@ class UsersListController extends AbstractController
          * End bulk POST
          */
 
-        $status_def_ary = self::get_status_def_ary($pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
+        $status_def_ary = self::get_status_def_ary($config_service, $pp);
 
         $sql_bind = [];
 
@@ -579,7 +591,7 @@ class UsersListController extends AbstractController
             $columns['c'][$tc['abbrev']] = $tc['name'];
         }
 
-        if (!$app['s_elas_guest'])
+        if (!$su->is_elas_guest())
         {
             $columns['d'] = [
                 'distance'	=> 'Afstand',
@@ -625,8 +637,8 @@ class UsersListController extends AbstractController
         ];
 
         $session_users_columns_key = 'users_columns_';
-        $session_users_columns_key .= $app['pp_role'];
-        $session_users_columns_key .= $app['s_elas_guest'] ? '_elas' : '';
+        $session_users_columns_key .= $pp->role();
+        $session_users_columns_key .= $su->is_elas_guest() ? '_elas' : '';
 
         if (count($show_columns))
         {
@@ -667,7 +679,7 @@ class UsersListController extends AbstractController
                 ];
             }
 
-            if ($app['s_elas_guest'])
+            if ($su->is_elas_guest())
             {
                 unset($columns['d']['distance']);
             }
@@ -767,7 +779,7 @@ class UsersListController extends AbstractController
             }
         }
 
-        if (isset($show_columns['c']) || (isset($show_columns['d']) && !$app['s_master']))
+        if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
         {
             $c_ary = $db->fetchAll('select tc.abbrev,
                     c.id_user, c.value, c.flag_public
@@ -790,9 +802,9 @@ class UsersListController extends AbstractController
             }
         }
 
-        if (isset($show_columns['d']) && !$app['s_master'])
+        if (isset($show_columns['d']) && !$su->is_master())
         {
-            if (($pp->is_guest() && $su->schema() && !$app['s_elas_guest'])
+            if (($pp->is_guest() && $su->schema() && !$su->is_elas_guest())
                 || !isset($contacts[$su->id()]['adr']))
             {
                 $my_adr = $db->fetchColumn('select c.value
@@ -1176,8 +1188,13 @@ class UsersListController extends AbstractController
         $f_col .= '</div>';
 
         $out = self::get_filter_and_tab_selector(
-            $vr->get('users'), $pp->ary(), $params, $link_render,
-            $pp->is_admin(), $f_col, $q, $config_service->get_new_user_treshold($pp->schema())
+            $params,
+            $f_col,
+            $q,
+            $link_render,
+            $config_service,
+            $pp,
+            $vr
         );
 
         $out .= '<div class="panel panel-success printview">';
@@ -1439,21 +1456,21 @@ class UsersListController extends AbstractController
 
                         [$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0]['value']);
 
-                        $out .= self::get_contacts_str($app['item_access'], [[
+                        $out .= self::get_contacts_str($item_access_service, [[
                             'value'         => $adr_1,
                             'flag_public'   => $contacts[$id]['adr'][0][1]]],
                         'adr');
 
                         $out .= '</td><td>';
 
-                        $out .= self::get_contacts_str($app['item_access'], [[
+                        $out .= self::get_contacts_str($item_access_service, [[
                             'value'         => $adr_2,
                             'flag_public'   => $contacts[$id]['adr'][0][1]]],
                         'adr');
                     }
                     else if (isset($contacts[$id][$key]))
                     {
-                        $out .= self::get_contacts_str($app['item_access'], $contacts[$id][$key], $key);
+                        $out .= self::get_contacts_str($item_access_service, $contacts[$id][$key], $key);
                     }
                     else
                     {
@@ -1757,13 +1774,15 @@ class UsersListController extends AbstractController
     }
 
     static public function get_status_def_ary(
-        bool $pp_admin,
-        int $new_user_treshold
+        ConfigService $config_service,
+        PageParamsService $pp
     ):array
     {
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+
         $status_def_ary = [
             'active'	=> [
-                'lbl'	=> $pp_admin ? 'Actief' : 'Alle',
+                'lbl'	=> $pp->admin() ? 'Actief' : 'Alle',
                 'sql'	=> 'u.status in (1, 2)',
                 'st'	=> [1, 2],
             ],
@@ -1782,7 +1801,7 @@ class UsersListController extends AbstractController
             ],
         ];
 
-        if ($pp_admin)
+        if ($pp->admin())
         {
             $status_def_ary = $status_def_ary + [
                 'inactive'	=> [
@@ -1820,14 +1839,13 @@ class UsersListController extends AbstractController
     }
 
     static public function get_filter_and_tab_selector(
-        string $r_users,
-        array $pp_ary,
         array $params,
-        link $link,
-        bool $pp_admin,
         string $before,
         string $q,
-        int $new_user_treshold
+        LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        VarRouteService $vr
     ):string
     {
         $out = '';
@@ -1872,7 +1890,7 @@ class UsersListController extends AbstractController
 
         $nav_params = $params;
 
-        foreach (self::get_status_def_ary($pp_admin, $new_user_treshold) as $k => $tab)
+        foreach (self::get_status_def_ary($config_service, $pp) as $k => $tab)
         {
             $nav_params['status'] = $k;
 
@@ -1882,8 +1900,13 @@ class UsersListController extends AbstractController
 
             $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
 
-            $out .= $link->link($r_users, $pp_ary,
-                $nav_params, $tab['lbl'], $class_ary);
+            $out .= $link_render->link(
+                $vr->get('users'),
+                $pp->ary(),
+                $nav_params,
+                $tab['lbl'],
+                $class_ary
+            );
 
             $out .= '</li>';
         }
@@ -1894,7 +1917,7 @@ class UsersListController extends AbstractController
     }
 
     public static function get_contacts_str(
-        ItemAccess $item_access,
+        ItemAccessService $item_access_service,
         array $contacts,
         string $abbrev
     ):string
@@ -1919,7 +1942,7 @@ class UsersListController extends AbstractController
 
             foreach ($contacts as $key => $contact)
             {
-                if ($item_access->is_visible_flag_public($contact['flag_public']))
+                if ($item_access_service->is_visible_flag_public($contact['flag_public']))
                 {
                     $ret .= sprintf($tpl, htmlspecialchars($contact['value'], ENT_QUOTES));
 

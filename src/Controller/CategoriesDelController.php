@@ -13,6 +13,7 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\PageParamsService;
 
 class CategoriesDelController extends AbstractController
 {
@@ -24,6 +25,7 @@ class CategoriesDelController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
+        PageParamsService $pp,
         HeadingRender $heading_render
     ):Response
     {

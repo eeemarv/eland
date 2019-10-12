@@ -12,6 +12,8 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,12 +34,15 @@ class TransactionsShowController extends AbstractController
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         SystemsService $systems_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
+        $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
 
-        $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
+        $s_inter_schema_check = array_merge($eland_intersystem_ary,
             [$su->schema() => true]);
 
         $transaction = $db->fetchAssoc('select t.*
@@ -308,7 +313,7 @@ class TransactionsShowController extends AbstractController
                 $str .= 'in de eigen tijdsmunt.';
 
                 if ($inter_transaction
-                    && isset($app['intersystem_ary']['eland'][$inter_schema]))
+                    && isset($eland_intersystem_ary[$inter_schema]))
                 {
                     $out .= $link_render->link_no_attr('transactions', [
                             'system'		=> $systems_service->get_system($inter_schema),
@@ -433,7 +438,7 @@ class TransactionsShowController extends AbstractController
                 $str .= 'met gelijke tijdswaarde als Tr-1.';
 
                 if ($inter_transaction
-                    && isset($app['intersystem_ary']['eland'][$inter_schema]))
+                    && isset($eland_intersystem_ary[$inter_schema]))
                 {
                     $out .= $link_render->link_no_attr('transactions', [
                             'system'	=> $systems_service->get_system($inter_schema),

@@ -23,6 +23,7 @@ class ApikeysController extends AbstractController
         HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
         LinkRender $link_render,
+        PageParamsService $pp,
         DateFormatService $date_format_service
     ):Response
     {
@@ -87,6 +88,7 @@ class ApikeysController extends AbstractController
         MenuService $menu_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
+        PageParamsService $pp,
         FormTokenService $form_token_service
     ):Response
     {

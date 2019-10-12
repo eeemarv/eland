@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +19,8 @@ class LogoutController extends AbstractController
         Session $session,
         LoggerInterface $logger,
         AlertService $alert_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         LinkRender $link_render
     ):Response
     {

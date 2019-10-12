@@ -14,6 +14,7 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 
 class UsersContactsDelController extends AbstractController
@@ -29,6 +30,7 @@ class UsersContactsDelController extends AbstractController
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        SessionUserService $su,
         LinkRender $link_render
     ):Response
     {

@@ -8,12 +8,16 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\AutoMinLimitService;
+use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailTransactionService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
@@ -37,6 +41,7 @@ class TransactionsAddController extends AbstractController
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
+        CacheService $cache_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
@@ -47,7 +52,10 @@ class TransactionsAddController extends AbstractController
         MailTransactionService $mail_transaction_service,
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
+        AutoMinLimitService $autominlimit_service,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
@@ -80,7 +88,7 @@ class TransactionsAddController extends AbstractController
 
             $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');;
             $transaction['date'] = gmdate('Y-m-d H:i:s');
-            $transaction['creator'] = $app['s_master'] ? 0 : $su->id();
+            $transaction['creator'] = $su->is_master() ? 0 : $su->id();
 
             $group_id = trim($request->request->get('group_id', ''));
 
@@ -117,7 +125,7 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            if ($pp->is_user() && !$app['s_master'])
+            if ($pp->is_user() && !$su->is_master())
             {
                 $fromuser = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.users
@@ -720,7 +728,7 @@ class TransactionsAddController extends AbstractController
                 }
                 else
                 {
-                    $transaction['creator'] = $app['s_master'] ? 0 : $su->id();
+                    $transaction['creator'] = $su->is_master() ? 0 : $su->id();
                     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
                     $transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
 
@@ -789,7 +797,7 @@ class TransactionsAddController extends AbstractController
                         $remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
                         $to_remote_user['name'], ['schema' => $remote_schema]);
 
-                    $app['autominlimit']->init($pp->schema())
+                    $autominlimit_service->init($pp->schema())
                         ->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
 
                     $alert_service->success('InterSysteem transactie uitgevoerd.');
@@ -798,7 +806,7 @@ class TransactionsAddController extends AbstractController
             }
 
             $transaction['letscode_to'] = $request->request->get('letscode_to', '');
-            $transaction['letscode_from'] = $pp->is_admin() || $app['s_master']
+            $transaction['letscode_from'] = $pp->is_admin() || $su->is_master()
                 ? $request->request->get('letscode_from', '')
                 : $account_render->str($su->id(), $pp->schema());
         }
@@ -814,7 +822,7 @@ class TransactionsAddController extends AbstractController
 
             $transaction = [
                 'date'			=> gmdate('Y-m-d H:i:s'),
-                'letscode_from'	=> $app['s_master'] ? '' : $account_render->str($su->id(), $pp->schema()),
+                'letscode_from'	=> $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema()),
                 'letscode_to'	=> '',
                 'amount'		=> '',
                 'description'	=> '',

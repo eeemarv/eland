@@ -9,6 +9,8 @@ use App\Service\MenuService;
 use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\PageParamsService;
+use App\Service\VarRouteService;
 
 class CategoriesController extends AbstractController
 {
@@ -17,6 +19,8 @@ class CategoriesController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
+        PageParamsService $pp,
+        VarRouteService $vr,
         HeadingRender $heading_render
     ):Response
     {

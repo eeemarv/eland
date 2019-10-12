@@ -21,11 +21,15 @@ use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
+use App\Service\DistanceService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersShowController extends AbstractController
@@ -49,8 +53,13 @@ class UsersShowController extends AbstractController
         MailQueue $mail_queue,
         DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
+        DistanceService $distance_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service,
-        string $env_s3_url
+        string $env_s3_url,
+        string $env_mapbox_token
     ):Response
     {
         return $this->users_show_admin(
@@ -72,8 +81,13 @@ class UsersShowController extends AbstractController
             $mail_queue,
             $date_format_service,
             $user_cache_service,
+            $distance_service,
+            $pp,
+            $su,
+            $vr,
             $menu_service,
-            $env_s3_url
+            $env_s3_url,
+            $env_mapbox_token
         );
     }
 
@@ -96,8 +110,13 @@ class UsersShowController extends AbstractController
         MailQueue $mail_queue,
         DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
+        DistanceService $distance_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service,
-        string $env_s3_url
+        string $env_s3_url,
+        string $env_mapbox_token
     ):Response
     {
         $tdays = $request->query->get('tdays', '365');
@@ -126,7 +145,7 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
         }
 
-        $status_def_ary = UsersListController::get_status_def_ary($pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
         // process mail form
 
@@ -134,13 +153,13 @@ class UsersShowController extends AbstractController
         {
             $errors = [];
 
-            if ($app['s_master'])
+            if ($su->is_master())
             {
                 throw new AccessDeniedHttpException('Het master account kan
                     geen E-mail berichten versturen.');
             }
 
-            if (!$su->schema() || $app['s_elas_guest'])
+            if (!$su->schema() || $su->is_elas_guest())
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende
                     rechten om een E-mail bericht te versturen.');
@@ -283,8 +302,20 @@ class UsersShowController extends AbstractController
             $intersystem_id = false;
         }
 
-        $contacts_user_show_inline = new contacts_user_show_inline();
-        $contacts_response = $contacts_user_show_inline->contacts_user_show_inline($app, $user['id']);
+        $contacts_user_show_inline = new ContactsUserShowInlineController();
+        $contacts_response = $contacts_user_show_inline->contacts_user_show_inline(
+            $user['id'],
+            $db,
+            $assets_service,
+            $item_access_service,
+            $link_render,
+            $pp,
+            $su,
+            $distance_service,
+            $account_render,
+            $env_mapbox_token
+        );
+
         $contacts_content = $contacts_response->getContent();
 
         $assets_service->add([
@@ -336,7 +367,7 @@ class UsersShowController extends AbstractController
                 $tus['tus'] = $pp->schema();
             }
 
-            $btn_top_render->add_trans('transactions_add', $app['s_ary'],
+            $btn_top_render->add_trans('transactions_add', $su->ary(),
                 $tus, 'Transactie naar ' . $account_render->str($id, $pp->schema()));
         }
 
@@ -661,7 +692,9 @@ class UsersShowController extends AbstractController
             $user_mail_cc,
             $account_render,
             $form_token_service,
-            $mail_addr_user_service
+            $mail_addr_user_service,
+            $pp,
+            $su
         );
 
         $out .= $contacts_content;
@@ -760,7 +793,9 @@ class UsersShowController extends AbstractController
         bool $user_mail_cc,
         AccountRender $account_render,
         FormTokenService $form_token_service,
-        MailAddrUserService $mail_addr_user_service
+        MailAddrUserService $mail_addr_user_service,
+        PageParamsService $pp,
+        SessionUserService $su
     ):string
     {
         $s_owner = !$pp->is_guest()
@@ -769,8 +804,8 @@ class UsersShowController extends AbstractController
             && $user_id;
 
         $mail_from = $su->schema()
-            && !$app['s_master']
-            && !$app['s_elas_guest']
+            && !$su->is_master()
+            && !$su->is_elas_guest()
                 ? $mail_addr_user_service->get($su->id(), $su->schema())
                 : [];
 
@@ -778,11 +813,11 @@ class UsersShowController extends AbstractController
 
         $user_mail_disabled = true;
 
-        if ($app['s_elas_guest'])
+        if ($su->is_elas_guest())
         {
             $placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
         }
-        else if ($app['s_master'])
+        else if ($su->is_master())
         {
             $placeholder = 'Het master account kan geen berichten versturen.';
         }

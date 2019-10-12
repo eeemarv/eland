@@ -10,6 +10,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use App\Service\XdbService;
 
@@ -24,6 +25,7 @@ class DocsMapEditController extends AbstractController
         TypeaheadService $typeahead_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
+        PageParamsService $pp,
         HeadingRender $heading_render
     ):Response
     {

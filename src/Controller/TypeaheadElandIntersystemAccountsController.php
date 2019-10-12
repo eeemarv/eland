@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\IntersystemsService;
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,8 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         IntersystemsService $intersystems_service,
-        TypeaheadService $typeahead_service
+        TypeaheadService $typeahead_service,
+        PageParamsService $pp
     ):Response
     {
         $eland_intersystems = $intersystems_service->get_eland($pp->schema());

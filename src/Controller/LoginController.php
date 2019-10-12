@@ -6,14 +6,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\RoleCnst;
+use App\Render\AccountRender;
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\ConfigService;
+use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\UserCacheService;
+use App\Service\VarRouteService;
+use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class LoginController extends AbstractController
 {
     public function login(
         Request $request,
-        app $app,
-        Db $db
+        Db $db,
+        XdbService $xdb_service,
+        AlertService $alert_service,
+        LoggerInterface $logger,
+        MenuService $menu_service,
+        LinkRender $link_render,
+        HeadingRender $heading_render,
+        ConfigService $config_service,
+        AccountRender $account_render,
+        UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
+        string $env_master_password
     ):Response
     {
         $location = $request->query->get('location', '');
@@ -40,16 +64,11 @@ class LoginController extends AbstractController
                 $errors[] = 'Login gefaald. Vul Login en Paswoord in.';
             }
 
-            $master_password = getenv('MASTER_PASSWORD');
-
             if ($lc_login === 'master'
-                && $master_password
-                && hash('sha512', $password) === $master_password)
+                && $env_master_password
+                && hash('sha512', $password) === $env_master_password)
             {
-                $s_logins = array_merge($su->logins(), [
-                    $pp->schema() 	=> 'master',
-                ]);
-                $session->set('logins', $s_logins);
+                $su->set_master_login($pp->schema());
 
                 $alert_service->success('OK - Gebruiker ingelogd als master.');
 
@@ -199,18 +218,14 @@ class LoginController extends AbstractController
 
             if (!count($errors)
                 && $config_service->get('maintenance', $pp->schema())
-                && $user['accountrole'] != 'admin')
+                && $user['accountrole'] !== 'admin')
             {
                 $errors[] = 'De website is in onderhoud, probeer later opnieuw';
             }
 
             if (!count($errors))
             {
-                $s_logins = array_merge($su->logins(), [
-                    $pp->schema() 	=> $user_id,
-                ]);
-
-                $session->set('logins', $s_logins);
+                $su->set_login($pp->schema(), $user_id);
 
                 $agent = $request->server->get('HTTP_USER_AGENT');
 

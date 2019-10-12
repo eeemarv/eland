@@ -12,7 +12,11 @@ use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersTilesController extends AbstractController
@@ -26,6 +30,9 @@ class UsersTilesController extends AbstractController
         BtnTopRender $btn_top_render,
         AssetsService $assets_service,
         LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        VarRouteService $vr,
         MenuService $menu_service,
         string $env_s3_url
     ):Response
@@ -39,6 +46,9 @@ class UsersTilesController extends AbstractController
             $btn_top_render,
             $assets_service,
             $link_render,
+            $config_service,
+            $pp,
+            $vr,
             $menu_service,
             $env_s3_url
         );
@@ -53,15 +63,16 @@ class UsersTilesController extends AbstractController
         BtnTopRender $btn_top_render,
         AssetsService $assets_service,
         LinkRender $link_render,
+        ConfigService $config_service,
+        PageParamsService $pp,
+        VarRouteService $vr,
         MenuService $menu_service,
         string $env_s3_url
     ):Response
     {
         $q = $request->get('q', '');
-        $users_route = $pp->is_admin() ? 'users_tiles_admin' : 'users_tiles';
 
-        $status_def_ary = UsersListController::get_status_def_ary(
-            $pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
         $params = ['status'	=> $status];
 
@@ -89,14 +100,13 @@ class UsersTilesController extends AbstractController
         UsersListController::heading($heading_render);
 
         $out = UsersListController::get_filter_and_tab_selector(
-            $users_route,
-            $pp->ary(),
             $params,
-            $link_render,
-            $pp->is_admin(),
             '',
             $q,
-            $config_service->get_new_user_treshold($pp->schema())
+            $link_render,
+            $config_service,
+            $pp,
+            $vr
         );
 
         $out .= '<p>';

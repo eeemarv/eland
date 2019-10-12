@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\ContactTypesController;
+use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesDelController extends AbstractController
@@ -23,6 +24,7 @@ class ContactTypesDelController extends AbstractController
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
+        PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {

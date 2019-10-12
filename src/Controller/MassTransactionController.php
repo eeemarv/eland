@@ -7,9 +7,16 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\AutoMinLimitService;
 use App\Service\FormTokenService;
+use App\Service\MailAddrSystemService;
+use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\TransactionService;
 use App\Service\TypeaheadService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,6 +96,13 @@ class MassTransactionController extends AbstractController
         HeadingRender $heading_render,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
+        MailAddrSystemService $mail_addr_system_service,
+        MailAddrUserService $mail_addr_user_service,
+        AutoMinLimitService $autominlimit_service,
+        TransactionService $transaction_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         AssetsService $assets_service
     ):Response
     {
@@ -290,7 +304,7 @@ class MassTransactionController extends AbstractController
                             'date' 			=> $cdate,
                             'cdate' 		=> $cdate,
                             'transid'		=> $transid,
-                            'creator'		=> $app['s_master'] ? 0 : $su->id(),
+                            'creator'		=> $su->is_master() ? 0 : $su->id(),
                         ];
 
                         $db->insert($pp->schema() . '.transactions', $transaction);
@@ -320,11 +334,11 @@ class MassTransactionController extends AbstractController
                     throw $e;
                 }
 
-                $app['autominlimit']->init($pp->schema());
+                $autominlimit_service->init($pp->schema());
 
                 foreach($transactions as $t)
                 {
-                    $app['autominlimit']->process($t['id_from'], $t['id_to'], (int) $t['amount']);
+                    $autominlimit_service->process($t['id_from'], $t['id_to'], (int) $t['amount']);
                 }
 
                 if ($to_one)
@@ -364,7 +378,7 @@ class MassTransactionController extends AbstractController
 
                 $logger->info('trans: ' . $log_str, ['schema' => $pp->schema()]);
 
-                if ($app['s_master'])
+                if ($su->is_master())
                 {
                     $alert_service->warning('Master account: geen mails verzonden.');
                 }

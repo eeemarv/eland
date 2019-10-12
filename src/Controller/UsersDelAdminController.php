@@ -15,11 +15,13 @@ use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\ThumbprintAccountsService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 
 class UsersDelAdminController extends AbstractController
@@ -38,6 +40,9 @@ class UsersDelAdminController extends AbstractController
         UserCacheService $user_cache_service,
         IntersystemsService $intersystems_service,
         XdbService $xdb_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -94,7 +99,8 @@ class UsersDelAdminController extends AbstractController
                     $xdb_service,
                     $intersystems_service,
                     $thumbprint_accounts_service,
-                    $user_cache_service
+                    $user_cache_service,
+                    $pp
                 );
 
                 $status = StatusCnst::THUMBPINT_ARY[$user['status']];
@@ -157,7 +163,8 @@ class UsersDelAdminController extends AbstractController
         XdbService $xdb_service,
         IntersystemsService $intersystems_service,
         ThumbprintAccountsService $thumbprint_accounts_service,
-        UserCacheService $user_cache_service
+        UserCacheService $user_cache_service,
+        PageParamsService $pp
     ):void
     {
         $user = $user_cache_service->get($id, $pp->schema());

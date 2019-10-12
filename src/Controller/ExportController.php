@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Render\HeadingRender;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +19,8 @@ class ExportController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         HeadingRender $heading_render,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {

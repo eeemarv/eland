@@ -18,6 +18,8 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
@@ -41,6 +43,8 @@ class TransactionsController extends AbstractController
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
@@ -844,17 +848,20 @@ class TransactionsController extends AbstractController
         ]);
     }
 
-    static public function get_valuation(ConfigService $config_service, string $schema):string
+    static public function get_valuation(
+        ConfigService $config_service,
+        string $schema
+    ):string
     {
         $out = '';
 
-        if ($config->get('template_lets', $schema)
-            && $config->get('currencyratio', $schema) > 0)
+        if ($config_service->get('template_lets', $schema)
+            && $config_service->get('currencyratio', $schema) > 0)
         {
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
-            $out .= $config->get('currencyratio', $schema);
+            $out .= $config_service->get('currencyratio', $schema);
             $out .= '</span> ';
-            $out .= $config->get('currency', $schema);
+            $out .= $config_service->get('currency', $schema);
             $out .= ' per uur</li>';
         }
 

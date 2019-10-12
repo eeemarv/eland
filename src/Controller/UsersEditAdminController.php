@@ -25,11 +25,14 @@ use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
+use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
@@ -60,6 +63,9 @@ class UsersEditAdminController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -89,6 +95,9 @@ class UsersEditAdminController extends AbstractController
             $mail_addr_user_service,
             $mail_addr_system_service,
             $mail_queue,
+            $pp,
+            $su,
+            $vr,
             $menu_service
         );
     }
@@ -119,6 +128,9 @@ class UsersEditAdminController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -452,7 +464,7 @@ class UsersEditAdminController extends AbstractController
 
                 if (!$is_edit)
                 {
-                    $user['creator'] = $app['s_master'] ? 0 : $su->id();
+                    $user['creator'] = $su->is_master() ? 0 : $su->id();
 
                     $user['cdate'] = gmdate('Y-m-d H:i:s');
 

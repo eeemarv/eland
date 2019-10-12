@@ -11,6 +11,7 @@ use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class RegisterController extends AbstractController
         CaptchaService $captcha_service,
         ConfigService $config_service,
         AlertService $alert_service,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {

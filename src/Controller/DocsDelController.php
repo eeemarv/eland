@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +28,7 @@ class DocsDelController extends AbstractController
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
         MenuService $menu_service,
+        PageParamsService $pp,
         string $env_s3_url
     ):Response
     {

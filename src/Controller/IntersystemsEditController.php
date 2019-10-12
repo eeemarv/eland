@@ -12,6 +12,7 @@ use App\Service\IntersystemsService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class IntersystemsEditController extends AbstractController
         SelectRender $select_render,
         SystemsService $systems_service,
         PageParamsService $pp,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -109,10 +111,15 @@ class IntersystemsEditController extends AbstractController
         return self::render_form(
             $group,
             $btn,
+            $db,
             $heading_render,
             $select_render,
             $form_token_service,
+            $config_service,
+            $link_render,
+            $systems_service,
             $pp,
+            $vr,
             $menu_service
         );
     }
@@ -127,6 +134,10 @@ class IntersystemsEditController extends AbstractController
         LinkRender $link_render,
         PageParamsService $pp,
         FormTokenService $form_token_service,
+        SelectRender $select_render,
+        ConfigService $config_service,
+        SystemsService $systems_service,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -198,7 +209,15 @@ class IntersystemsEditController extends AbstractController
         return self::render_form(
             $group,
             $btn,
-
+            $db,
+            $heading_render,
+            $select_render,
+            $form_token_service,
+            $config_service,
+            $link_render,
+            $systems_service,
+            $pp,
+            $vr,
             $menu_service
         );
     }
@@ -284,10 +303,15 @@ class IntersystemsEditController extends AbstractController
     private static function render_form(
         array $group,
         string $btn,
+        Db $db,
         HeadingRender $heading_render,
         SelectRender $select_render,
         FormTokenService $form_token_service,
+        ConfigService $config_service,
+        LinkRender $link_render,
+        SystemsService $systems_service,
         PageParamsService $pp,
+        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -437,7 +461,14 @@ class IntersystemsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= IntersystemsController::get_schemas_groups($app);
+        $out .= IntersystemsController::get_schemas_groups(
+            $db,
+            $config_service,
+            $systems_service,
+            $pp,
+            $vr,
+            $link_render
+        );
 
         $menu_service->set('intersystems');
 

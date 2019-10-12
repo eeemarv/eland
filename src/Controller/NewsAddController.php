@@ -14,7 +14,11 @@ use App\Service\AssetsService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
+use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
@@ -31,7 +35,11 @@ class NewsAddController extends AbstractController
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         XdbService $xdb_service
     ):Response
     {
@@ -96,7 +104,7 @@ class NewsAddController extends AbstractController
             {
                 $news['approved'] = $pp->is_admin() ? 't' : 'f';
                 $news['published'] = $pp->is_admin() ? 't' : 'f';
-                $news['id_user'] = $app['s_master'] ? 0 : $su->id();
+                $news['id_user'] = $su->is_master() ? 0 : $su->id();
                 $news['cdate'] = gmdate('Y-m-d H:i:s');
 
                 if ($db->insert($pp->schema() . '.news', $news))

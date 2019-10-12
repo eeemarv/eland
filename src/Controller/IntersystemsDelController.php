@@ -2,6 +2,13 @@
 
 namespace App\Controller;
 
+use App\Render\HeadingRender;
+use App\Render\LinkRender;
+use App\Service\AlertService;
+use App\Service\FormTokenService;
+use App\Service\IntersystemsService;
+use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,9 +18,15 @@ class IntersystemsDelController extends AbstractController
 {
     public function intersystems_del(
         Request $request,
-        app $app,
         int $id,
-        Db $db
+        Db $db,
+        HeadingRender $heading_render,
+        IntersystemsService $intersystems_service,
+        LinkRender $link_render,
+        AlertService $alert_service,
+        FormTokenService $form_token_service,
+        PageParamsService $pp,
+        MenuService $menu_service
     ):Response
     {
         $group = $db->fetchAssoc('select *

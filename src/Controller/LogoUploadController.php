@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\ConfigService;
 use App\Service\ImageUploadService;
+use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,8 +17,8 @@ class LogoUploadController extends AbstractController
         Request $request,
         LoggerInterface $logger,
         ConfigService $config_service,
+        PageParamsService $pp,
         ImageUploadService $image_upload_service
-
     ):Response
     {
         $uploaded_file = $request->files->get('image');

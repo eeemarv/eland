@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -12,6 +14,8 @@ class ElasSoapStatusController extends AbstractController
     public function elas_soap_status(
         int $group_id,
         Db $db,
+        PageParamsService $pp,
+        SessionUserService $su,
         LoggerInterface $logger
     ):Response
     {

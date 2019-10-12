@@ -14,7 +14,7 @@ $app['legacy_eland_origin_pattern'] = getenv('LEGACY_ELAND_ORIGIN_PATTERN');
 $app['s3_bucket'] = getenv('AWS_S3_BUCKET');
 $app['s3_region'] = getenv('AWS_S3_REGION');
 $env_s3_url = 'https://s3.' . $app['s3_region'] . '.amazonaws.com/' . $app['s3_bucket'] . '/';
-$app['mapbox_token'] = getenv('MAPBOX_TOKEN');
+$env_mapbox_token = getenv('MAPBOX_TOKEN');
 $app['log_schema_en'] = false;
 
 $app->register(new Predis\Silex\ClientServiceProvider(), [
@@ -104,13 +104,13 @@ $app->extend('twig', function($twig, $app) {
 				$pp->is_guest(),
 				$pp->is_user(),
 				$pp->is_admin(),
-				$app['s_master'],
-				$app['s_elas_guest']
+				$su->is_master(),
+				$su->is_elas_guest()
 			);
 		},
 		twig\s_role::class => function() use ($app){
 			return new twig\s_role($app['s_role'], $su->id(),
-				$su->schema(), $app['s_master'], $app['s_elas_guest'],
+				$su->schema(), $su->is_master(), $su->is_elas_guest(),
 				$su->is_system_self()
 			);
 		},
@@ -250,7 +250,7 @@ $vr->get('users') = function ($app):string{
 	$route = 'users_';
 	$route .= $app['s_view']['users'];
 
-	if ($app['pp_role'] === 'admin')
+	if ($pp->role() === 'admin')
 	{
 		$route .= '_admin';
 	}
@@ -296,7 +296,7 @@ $app['pp_role_short'] = function ($app):string{
 	return $app['request']->attributes->get('role_short', '');
 };
 
-$app['pp_role'] =  function ($app):string{
+$pp->role() =  function ($app):string{
 	return RoleCnst::LONG[$app['pp_role_short']] ?? 'anonymous';
 };
 
@@ -369,7 +369,7 @@ $app['s_system'] = function ($app){
 	return $systems_service->get_system($su->schema());
 };
 
-$app['s_ary'] = function ($app){
+$su->ary() = function ($app){
 	if ($app['s_role_short'] === '')
 	{
 		return [];
@@ -418,7 +418,7 @@ $su->user() = function ($app):array{
 
 $app['s_role'] = function ($app):string{
 
-	if ($app['s_master'])
+	if ($su->is_master())
 	{
 		return 'admin';
 	}
@@ -458,22 +458,22 @@ $app['s_role_short'] = function ($app):string{
 };
 
 $pp->is_guest() = function ($app):bool{
-	return $app['pp_role'] == 'guest';
+	return $pp->role() == 'guest';
 };
 
 $pp->is_admin() = function ($app):bool{
-	return $app['pp_role'] === 'admin';
+	return $pp->role() === 'admin';
 };
 
 $pp->is_user() = function ($app):bool{
-	return $app['pp_role'] === 'user';
+	return $pp->role() === 'user';
 };
 
 $pp->is_anonymous() = function ($app):bool{
-	return $app['pp_role'] === 'anonymous';
+	return $pp->role() === 'anonymous';
 };
 
-$app['s_master'] = function ($app):bool{
+$su->is_master() = function ($app):bool{
 
 	if (isset($su->logins()[$su->schema()]))
 	{
@@ -483,7 +483,7 @@ $app['s_master'] = function ($app):bool{
 	return false;
 };
 
-$app['s_elas_guest'] = function ($app):bool{
+$su->is_elas_guest() = function ($app):bool{
 
 	if (!$su->is_system_self())
 	{
@@ -512,7 +512,7 @@ $app['welcome_msg'] = function (app $app):string{
 	$msg .= $config_service->get('currency', $pp->schema());
 	$msg .= ' stemt overeen met 1 uur.<br>';
 
-	if ($app['s_elas_guest'])
+	if ($su->is_elas_guest())
 	{
 		$msg .= 'Je bent ingelogd als gast, je kan informatie ';
 		$msg .= 'raadplegen maar niets wijzigen. Transacties moet je ';
@@ -564,17 +564,17 @@ $app['thumbprint_accounts'] = function($app){
 
 $app['log_db'] = function($app){
 	return new service\log_db(
-		$app['db'],
+		$db,
 		$app['predis']
 	);
 };
 
 $app['transaction'] = function($app){
 	return new service\transaction(
-		$app['db'],
+		$db,
 		$logger,
 		$app['user_cache'],
-		$app['autominlimit'],
+		$autominlimit_service,
 		$config_service,
 		$app['account']
 	);
@@ -596,21 +596,21 @@ $app['mail_transaction'] = function($app){
 
 $app['systems'] = function ($app){
 	return new service\systems(
-		$app['db'],
+		$db,
 		$app['legacy_eland_origin_pattern']
 	);
 };
 
 $xdb_service = function ($app){
 	return new service\xdb(
-		$app['db'],
+		$db,
 		$logger
 	);
 };
 
 $app['cache'] = function ($app){
 	return new service\cache(
-		$app['db'],
+		$db,
 		$app['predis'],
 		$logger
 	);
@@ -618,7 +618,7 @@ $app['cache'] = function ($app){
 
 $app['queue'] = function ($app){
 	return new service\queue(
-		$app['db'],
+		$db,
 		$logger
 	);
 };
@@ -638,30 +638,30 @@ $mail_addr_system_service = function ($app){
 
 $mail_addr_user_service = function ($app){
 	return new service\mail_addr_user(
-		$app['db'],
+		$db,
 		$logger
 	);
 };
 
 $app['intersystems'] = function ($app){
 	return new service\intersystems(
-		$app['db'],
+		$db,
 		$app['predis'],
 		$app['systems'],
 		$config_service
 	);
 };
 
-$app['distance'] = function ($app){
+$distance_service = function ($app){
 	return new service\distance(
-		$app['db'],
+		$db,
 		$app['cache']
 	);
 };
 
 $config_service = function ($app){
 	return new service\config(
-		$app['db'],
+		$db,
 		$xdb_service,
 		$app['predis']
 	);
@@ -669,7 +669,7 @@ $config_service = function ($app){
 
 $app['user_cache'] = function ($app){
 	return new service\user_cache(
-		$app['db'],
+		$db,
 		$xdb_service,
 		$app['predis']
 	);
@@ -707,7 +707,7 @@ $mail_queue = function ($app){
 $app['task.cleanup_images'] = function ($app){
 	return new task\cleanup_images(
 		$app['cache'],
-		$app['db'],
+		$db,
 		$logger,
 		$s3_service,
 		$app['systems']
@@ -716,7 +716,7 @@ $app['task.cleanup_images'] = function ($app){
 
 $app['task.get_elas_intersystem_domains'] = function ($app){
 	return new task\get_elas_intersystem_domains(
-		$app['db'],
+		$db,
 		$app['cache'],
 		$app['systems']
 	);
@@ -735,7 +735,7 @@ $app['task.fetch_elas_intersystem'] = function ($app){
 
 $app['schema_task.cleanup_messages'] = function ($app){
 	return new schema_task\cleanup_messages(
-		$app['db'],
+		$db,
 		$logger,
 		$app['schedule'],
 		$app['systems'],
@@ -745,7 +745,7 @@ $app['schema_task.cleanup_messages'] = function ($app){
 
 $app['schema_task.cleanup_news'] = function ($app){
 	return new schema_task\cleanup_news(
-		$app['db'],
+		$db,
 		$xdb_service,
 		$logger,
 		$app['schedule'],
@@ -755,7 +755,7 @@ $app['schema_task.cleanup_news'] = function ($app){
 
 $app['schema_task.geocode'] = function ($app){
 	return new schema_task\geocode(
-		$app['db'],
+		$db,
 		$app['cache'],
 		$logger,
 		$app['queue.geocode'],
@@ -767,7 +767,7 @@ $app['schema_task.geocode'] = function ($app){
 
 $app['schema_task.saldo_update'] = function ($app){
 	return new schema_task\saldo_update(
-		$app['db'],
+		$db,
 		$logger,
 		$app['schedule'],
 		$app['systems']
@@ -776,7 +776,7 @@ $app['schema_task.saldo_update'] = function ($app){
 
 $app['schema_task.sync_user_cache'] = function ($app){
 	return new schema_task\sync_user_cache(
-		$app['db'],
+		$db,
 		$app['user_cache'],
 		$app['schedule'],
 		$app['systems']
@@ -785,7 +785,7 @@ $app['schema_task.sync_user_cache'] = function ($app){
 
 $app['schema_task.user_exp_msgs'] = function ($app){
 	return new schema_task\user_exp_msgs(
-		$app['db'],
+		$db,
 		$mail_queue,
 		$app['schedule'],
 		$app['systems'],
@@ -797,7 +797,7 @@ $app['schema_task.user_exp_msgs'] = function ($app){
 
 $app['schema_task.saldo'] = function ($app){
 	return new schema_task\saldo(
-		$app['db'],
+		$db,
 		$xdb_service,
 		$app['cache'],
 		$logger,
@@ -822,7 +822,7 @@ $app['schedule'] = function ($app){
 
 $app['monitor_process'] = function ($app) {
 	return new service\monitor_process(
-		$app['db'],
+		$db,
 		$app['predis'],
 		$app['cache']
 	);
@@ -832,7 +832,7 @@ $app['monitor_process'] = function ($app) {
 
 $app['queue.geocode'] = function ($app){
 	return new queue\geocode(
-		$app['db'],
+		$db,
 		$app['cache'],
 		$app['queue'],
 		$logger,
@@ -878,7 +878,7 @@ $alert_service = function ($app){
 $menu_service = function($app){
 	return new service\menu(
 		$config_service,
-		$app['item_access'],
+		$item_access_service,
 		$pp->schema(),
 		$pp->system(),
 		$config_service->get_intersystem_en($pp->schema()),
@@ -908,15 +908,15 @@ $app['menu_nav_system'] = function($app){
 		$menu_service,
 		$config_service,
 		$app['user_cache'],
-		$app['s_elas_guest']
+		$su->is_elas_guest()
 	);
 };
 
-$app['item_access'] = function($app){
+$item_access_service = function($app){
 	return new service\item_access(
 		$app['assets'],
 		$pp->schema(),
-		$app['pp_role'],
+		$pp->role(),
 		$config_service->get_intersystem_en($pp->schema())
 	);
 };
@@ -925,11 +925,11 @@ $app['password_strength'] = function (){
 	return new service\password_strength();
 };
 
-$app['autominlimit'] = function ($app){
+$autominlimit_service = function ($app){
 	return new service\autominlimit(
 		$logger,
 		$xdb_service,
-		$app['db'],
+		$db,
 		$config_service,
 		$app['user_cache'],
 		$app['account']
@@ -1005,7 +1005,7 @@ $app['render_stat'] = function (){
 // init
 
 $app['elas_db_upgrade'] = function ($app){
-	return new service\elas_db_upgrade($app['db']);
+	return new service\elas_db_upgrade($db);
 };
 
 $form_token_service = function ($app){

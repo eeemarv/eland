@@ -14,6 +14,8 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
+use App\Service\MailAddrSystemService;
+use App\Service\PageParamsService;
 
 class ContactTokenController extends AbstractController
 {
@@ -23,6 +25,8 @@ class ContactTokenController extends AbstractController
         LinkRender $link_render,
         AlertService $alert_service,
         DataTokenService $data_token_service,
+        MailAddrSystemService $mail_addr_system_service,
+        PageParamsService $pp,
         MailQueue $mail_queue
     ):Response
     {

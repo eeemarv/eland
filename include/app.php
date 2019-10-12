@@ -84,7 +84,7 @@ $fn_before_system_guest = function(Request $request, app $app){
 		}
 
 		if ($request->query->get('welcome', '')
-			&& (!$su->is_system_self() || $app['s_elas_guest']))
+			&& (!$su->is_system_self() || $su->is_elas_guest()))
 		{
 			$alert_service->info($app['welcome_msg']);
 		}

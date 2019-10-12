@@ -10,6 +10,9 @@ use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,10 +29,13 @@ class SupportController extends AbstractController
         MailQueue $mail_queue,
         MenuService $menu_service,
         MailAddrUserService $mail_addr_user_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         MailAddrSystemService $mail_addr_system_service
     ):Response
     {
-        if ($app['s_master'])
+        if ($su->is_master())
         {
             $user_email_ary = [];
         }
@@ -57,7 +63,7 @@ class SupportController extends AbstractController
                 $errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
             }
 
-            if ($app['s_master'])
+            if ($su->is_master())
             {
                 $errors[] = 'Het master account kan geen E-mail berichten versturen.';
             }
@@ -105,7 +111,7 @@ class SupportController extends AbstractController
         {
             $message = '';
 
-            if ($app['s_master'])
+            if ($su->is_master())
             {
                 $alert_service->warning('Het master account kan geen E-mail berichten versturen.');
             }
@@ -146,7 +152,7 @@ class SupportController extends AbstractController
         $out .= '<label for="message">Je Bericht</label>';
         $out .= '<textarea name="message" ';
         $out .= 'class="form-control" id="message" rows="4"';
-        $out .= $app['s_master'] ? ' disabled' : '';
+        $out .= $su->is_master() ? ' disabled' : '';
         $out .= '>';
         $out .= $message;
         $out .= '</textarea>';

@@ -7,6 +7,7 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,6 +22,7 @@ class LogoDelController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         MenuService $menu_service,
+        PageParamsService $pp,
         string $env_s3_url
     ):Response
     {

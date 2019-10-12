@@ -7,7 +7,10 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\MenuService;
+use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +27,9 @@ class UsersImageDelController extends AbstractController
         LinkRender $link_render,
         UserCacheService $user_cache_service,
         MenuService $menu_service,
+        PageParamsService $pp,
+        SessionUserService $su,
+        VarRouteService $vr,
         string $env_s3_url
     ):Response
     {
@@ -42,6 +48,8 @@ class UsersImageDelController extends AbstractController
             $heading_render,
             $link_render,
             $user_cache_service,
+            $pp,
+            $vr,
             $menu_service,
             $env_s3_url
         );
@@ -56,6 +64,8 @@ class UsersImageDelController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         UserCacheService $user_cache_service,
+        PageParamsService $pp,
+        VarRouteService $vr,
         MenuService $menu_service,
         string $env_s3_url
     ):Response
