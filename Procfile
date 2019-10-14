@@ -1,4 +1,4 @@
-web: $(composer config bin-dir)/heroku-php-apache2 web/
+web: $(composer config bin-dir)/heroku-php-apache2 public/
 cleanup_cache: php bin/console process:cleanup_cache
 cleanup_images: php bin/console process:cleanup_images
 cleanup_logs: php bin/console process:cleanup_logs

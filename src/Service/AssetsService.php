@@ -156,9 +156,9 @@ class AssetsService
 		$finder = new Finder();
 		$finder->files()
 			->in([
-				__DIR__ . '/../web/css',
-				__DIR__ . '/../web/js',
-				__DIR__ . '/../web/img',
+				__DIR__ . '/../public/css',
+				__DIR__ . '/../public/js',
+				__DIR__ . '/../public/img',
 			])
 			->name([
 				'*.js',

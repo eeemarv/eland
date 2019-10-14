@@ -1,10 +1,12 @@
 index_contact:
   path: /contact
   controller: App\Controller\IndexContactController::index_contact
+  methods: GET|POST
 
 monitor:
   path: /monitor
   controller: App\Controller\MonitorController::monitor
+  methods: GET
 
 system:
   prefix: /{system<%assert.system%>}
@@ -13,3 +15,4 @@ system:
 index:
   path: /
   controller: App\Controller\IndexController::index
+  methods: GET
