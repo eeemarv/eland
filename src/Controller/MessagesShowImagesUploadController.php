@@ -8,68 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Controller\MessagesShowController;
-use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-class MessagesImagesUploadController extends AbstractController
+class MessagesShowImagesUploadController extends AbstractController
 {
-    public function messages_add_images_upload(
-        Request $request,
-        string $form_token,
-        Db $db,
-        FormTokenService $form_token_service,
-        LoggerInterface $logger,
-        PageParamsService $pp,
-        SessionUserService $su,
-        ImageUploadService $image_upload_service
-    ):Response
-    {
-        return $this->messages_edit_images_upload(
-            $request,
-            0,
-            $form_token,
-            $db,
-            $form_token_service,
-            $logger,
-            $pp,
-            $su,
-            $image_upload_service
-        );
-    }
-
-    public function messages_edit_images_upload(
-        Request $request,
-        int $id,
-        string $form_token,
-        Db $db,
-        FormTokenService $form_token_service,
-        LoggerInterface $logger,
-        PageParamsService $pp,
-        SessionUserService $su,
-        ImageUploadService $image_upload_service
-    ):Response
-    {
-        if ($error = $form_token_service->get_ajax_error($form_token))
-        {
-            throw new BadRequestHttpException('Form token fout: ' . $error);
-        }
-
-        return $this->messages_images_upload(
-            $request,
-            $id,
-            $db,
-            $logger,
-            $pp,
-            $su,
-            $image_upload_service
-        );
-    }
-
-    public function messages_images_upload(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

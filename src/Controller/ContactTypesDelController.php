@@ -16,7 +16,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesDelController extends AbstractController
 {
-    public function contact_types_del(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

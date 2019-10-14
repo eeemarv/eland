@@ -17,7 +17,7 @@ use App\Service\PageParamsService;
 
 class CategoriesDelController extends AbstractController
 {
-    public function categories_del(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

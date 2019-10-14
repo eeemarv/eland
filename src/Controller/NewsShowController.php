@@ -22,7 +22,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class NewsShowController extends AbstractController
 {
-    public function news_show(
+    public function __invoke(
         int $id,
         Db $db,
         AccountRender $account_render,

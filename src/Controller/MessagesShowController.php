@@ -30,12 +30,10 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use controller\contacts_user_show_inline;
-use controller\users_show;
 
 class MessagesShowController extends AbstractController
 {
-    public function messages_show(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,
@@ -59,6 +57,7 @@ class MessagesShowController extends AbstractController
         VarRouteService $vr,
         MenuService $menu_service,
         DistanceService $distance_service,
+        ContactsUserShowInlineController $contacts_user_show_inline_controller,
         string $env_s3_url,
         string $env_mapbox_token
     ):Response
@@ -220,8 +219,7 @@ class MessagesShowController extends AbstractController
             order by id desc
             limit 1', [$id]);
 
-        $contacts_user_show_inline_controller = new ContactsUserShowInlineController();
-        $contacts_response = $contacts_user_show_inline_controller->contacts_user_show_inline(
+        $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
             $db,
             $assets_service,

@@ -42,9 +42,9 @@ class SessionUserService
 
 	private function init():void
 	{
-		$this->schema = $this->pp->org_schema ?: $this->pp->schema;
-		$this->system = $this->pp->org_system ?: $this->pp->system;
-		$this->is_system_self = $this->schema === $this->pp->schema;
+		$this->schema = $this->pp->org_schema() ?: $this->pp->schema();
+		$this->system = $this->pp->org_system() ?: $this->pp->system();
+		$this->is_system_self = $this->schema() === $this->pp->schema();
 
 		$this->logins = $this->session->get('logins') ?? [];
 
@@ -65,7 +65,7 @@ class SessionUserService
 		}
 
 		$this->role = $role;
-		$this->role_short = RoleCnst::SHORT[$this->role];
+		$this->role_short = RoleCnst::SHORT[$this->role] ?? '';
 
 		$this->is_user = $this->role === 'user';
 		$this->is_admin = $this->role === 'admin';

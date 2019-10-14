@@ -18,7 +18,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class RegisterTokenController extends AbstractController
 {
-    public function register_token(
+    public function __invoke(
         string $token,
         Db $db,
         TranslatorInterface $translator,

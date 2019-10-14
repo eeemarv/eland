@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Service\PageParamsService;
 
 class AlertService
 {
@@ -12,19 +13,19 @@ class AlertService
 	protected $logger;
 	protected $session;
 	protected $flashbag;
-	protected $schema;
+	protected $pp;
 
 	public function __construct(
-		Request $request,
+		RequestStack $request_stack,
 		LoggerInterface $logger,
 		SessionInterface $session,
-		string $schema
+		PageParamsService $pp
 	)
 	{
-		$this->request = $request;
+		$this->request = $request_stack->getCurrentRequest();
 		$this->logger = $logger;
 		$this->session = $session;
-		$this->schema = $schema;
+		$this->pp = $pp;
 		$this->flashbag = $this->session->getFlashBag();
 	}
 
@@ -33,7 +34,7 @@ class AlertService
 		$uri = $this->request->getRequestUri();
 
 		$log_ary = [
-			'schema'		=> $this->schema,
+			'schema'		=> $this->pp->schema(),
 			'alert_type'	=> $type,
 		];
 

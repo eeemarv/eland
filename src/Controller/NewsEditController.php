@@ -20,7 +20,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class NewsEditController extends AbstractController
 {
-    public function news_edit(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

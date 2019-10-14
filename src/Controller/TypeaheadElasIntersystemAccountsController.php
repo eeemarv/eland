@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 
 class TypeaheadElasIntersystemAccountsController extends AbstractController
 {
-    public function typeahead_elas_intersystem_accounts(
+    public function __invoke(
         int $group_id,
         Db $db,
         LoggerInterface $logger,

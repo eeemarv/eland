@@ -15,7 +15,7 @@ use App\Service\SessionUserService;
 
 class ContactsUserShowInlineController extends AbstractController
 {
-    public function contacts_user_show_inline(
+    public function __invoke(
         int $uid,
         Db $db,
         AssetsService $assets_service,

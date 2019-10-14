@@ -14,7 +14,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class StatusController extends AbstractController
 {
-    public function status(
+    public function __invoke(
         Db $db,
         AccountRender $account_render,
         HeadingRender $heading_render,

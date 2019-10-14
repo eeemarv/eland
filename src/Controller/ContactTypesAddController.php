@@ -15,7 +15,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesAddController extends AbstractController
 {
-    public function contact_types_add(
+    public function __invoke(
         Request $request,
         Db $db,
         FormTokenService $form_token_service,

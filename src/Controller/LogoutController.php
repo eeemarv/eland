@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class LogoutController extends AbstractController
 {
-    public function logout(
+    public function __invoke(
         XdbService $xdb_service,
         SessionInterface $session,
         LoggerInterface $logger,

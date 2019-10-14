@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IndexController extends AbstractController
 {
-    public function index(
+    public function __invoke(
         Request $request,
         SystemsService $systems_service
     ):Response

@@ -17,7 +17,7 @@ use App\Service\SessionUserService;
 
 class CategoriesAddController extends AbstractController
 {
-    public function categories_add(
+    public function __invoke(
         Request $request,
         Db $db,
         AlertService $alert_service,

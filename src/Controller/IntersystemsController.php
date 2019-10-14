@@ -6,7 +6,6 @@ use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
-use App\Service\IntersystemsService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
@@ -18,7 +17,7 @@ use Predis\Client as Predis;
 
 class IntersystemsController extends AbstractController
 {
-    public function intersystems(
+    public function __invoke(
         Db $db,
         Predis $predis,
         BtnTopRender $btn_top_render,

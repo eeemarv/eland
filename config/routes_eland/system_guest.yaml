@@ -1,0 +1,19 @@
+logout:
+  controller: App\Controller\LogoutController
+  path: \logout
+  methods: GET
+
+messages_show:
+  controller: App\Controller\MessagesShowController
+  path: \messages\{id<%assert.id%>}
+  methods: GET|POST
+
+messages_extended:
+  controller: App\Controller\MessagesExtendedController
+  path: \messages\extended
+  methods: GET
+
+messages_list:
+  controller: App\Controller\MessagesListController
+  path: \messages
+  methods: GET|POST

@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 
 class TransactionsEditController extends AbstractController
 {
-    public function transactions_edit(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 
 class ElasSoapStatusController extends AbstractController
 {
-    public function elas_soap_status(
+    public function __invoke(
         int $group_id,
         Db $db,
         PageParamsService $pp,

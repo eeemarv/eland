@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class IndexContactController extends AbstractController
 {
-    public function index_contact(
+    public function __invoke(
         Request $request,
         SessionInterface $session,
         FormTokenService $form_token_service,

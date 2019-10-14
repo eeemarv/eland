@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SupportController extends AbstractController
 {
-    public function support(
+    public function __invoke(
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,

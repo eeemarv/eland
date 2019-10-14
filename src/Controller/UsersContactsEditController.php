@@ -21,7 +21,7 @@ use App\Service\SessionUserService;
 
 class UsersContactsEditController extends AbstractController
 {
-    public function users_contacts_edit(
+    public function __invoke(
         Request $request,
         int $contact_id,
         Db $db,
@@ -41,42 +41,6 @@ class UsersContactsEditController extends AbstractController
         return ContactsEditController::form(
             $request,
             $su->id(),
-            $contact_id,
-            false,
-            $db,
-            $form_token_service,
-            $alert_service,
-            $assets_service,
-            $menu_service,
-            $item_access_service,
-            $link_render,
-            $heading_render,
-            $account_render,
-            $pp,
-            $geocode_queue
-        );
-    }
-
-    public function users_contacts_edit_admin(
-        Request $request,
-        int $user_id,
-        int $contact_id,
-        Db $db,
-        FormTokenService $form_token_service,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        MenuService $menu_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        HeadingRender $heading_render,
-        AccountRender $account_render,
-        PageParamsService $pp,
-        GeocodeQueue $geocode_queue
-    ):Response
-    {
-        return ContactsEditController::form(
-            $request,
-            $user_id,
             $contact_id,
             false,
             $db,

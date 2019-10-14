@@ -15,11 +15,12 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\UserCacheService;
 
-class ContactsDelController extends AbstractController
+class ContactsDelAdminController extends AbstractController
 {
-    public function contacts_del_admin(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,
@@ -30,10 +31,11 @@ class ContactsDelController extends AbstractController
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
-        $contact = contacts_edit::get_contact($db, $id,  $pp->schema());
+        $contact = ContactsEditAdminController::get_contact($db, $id,  $pp->schema());
 
         return self::form(
             $request,
@@ -48,6 +50,7 @@ class ContactsDelController extends AbstractController
             $item_access_service,
             $heading_render,
             $account_render,
+            $pp,
             $link_render
         );
     }
@@ -65,6 +68,7 @@ class ContactsDelController extends AbstractController
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {

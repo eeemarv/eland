@@ -84,7 +84,7 @@ class MassTransactionController extends AbstractController
         123 => 'without-new-and-leaving',
     ];
 
-    public function mass_transaction(
+    public function __invoke(
         Predis $predis,
         Request $request,
         Db $db,

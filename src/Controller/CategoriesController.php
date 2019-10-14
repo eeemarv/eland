@@ -14,7 +14,7 @@ use App\Service\VarRouteService;
 
 class CategoriesController extends AbstractController
 {
-    public function categories(
+    public function __invoke(
         Db $db,
         MenuService $menu_service,
         LinkRender $link_render,

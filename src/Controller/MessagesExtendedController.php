@@ -23,7 +23,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendedController extends AbstractController
 {
-    public function messages_extended(
+    public function __invoke(
         Request $request,
         Db $db,
         AccountRender $account_render,

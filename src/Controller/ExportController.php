@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 
 class ExportController extends AbstractController
 {
-    public function export(
+    public function __invoke(
         Request $request,
         Db $db,
         LoggerInterface $logger,

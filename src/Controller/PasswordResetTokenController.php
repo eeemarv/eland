@@ -21,7 +21,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class PasswordResetTokenController extends AbstractController
 {
-    public function password_reset_token(
+    public function __invoke(
         Request $request,
         string $token,
         Db $db,

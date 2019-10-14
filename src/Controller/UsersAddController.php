@@ -35,7 +35,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class UsersAddController extends AbstractController
 {
-    public function users_add(
+    public function __invoke(
         Request $request,
         Db $db,
         AccountRender $account_render,

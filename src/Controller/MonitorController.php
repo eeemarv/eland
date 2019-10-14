@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MonitorController extends AbstractController
 {
-    public function monitor(
+    public function __invoke(
         MonitorProcessService $monitor_process_service
     ):Response
     {

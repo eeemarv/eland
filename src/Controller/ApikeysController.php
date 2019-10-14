@@ -17,7 +17,7 @@ use App\Service\PageParamsService;
 
 class ApikeysController extends AbstractController
 {
-    public function apikeys(
+    public function __invoke(
         Db $db,
         MenuService $menu_service,
         HeadingRender $heading_render,
@@ -81,100 +81,7 @@ class ApikeysController extends AbstractController
         ]);
     }
 
-    public function apikeys_add(
-        Request $request,
-        Db $db,
-        AlertService $alert_service,
-        MenuService $menu_service,
-        HeadingRender $heading_render,
-        LinkRender $link_render,
-        PageParamsService $pp,
-        FormTokenService $form_token_service
-    ):Response
-    {
-        if ($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $alert_service->error($error_token);
-                $link_render->redirect('apikeys', $pp->ary(), []);
-            }
-
-            $apikey = [
-                'apikey' 	=> $request->request->get('apikey', ''),
-                'comment'	=> $request->request->get('comment', ''),
-                'type'		=> 'interlets',
-            ];
-
-            if($db->insert($pp->schema() . '.apikeys', $apikey))
-            {
-                $alert_service->success('Apikey opgeslagen.');
-                $link_render->redirect('apikeys', $pp->ary(), []);
-            }
-
-            $alert_service->error('Apikey niet opgeslagen.');
-        }
-
-        $key = sha1(random_bytes(16));
-
-        $heading_render->add('Apikey toevoegen');
-        $heading_render->fa('key');
-
-        $out = self::get_apikey_explain();
-
-        $out .= '<div class="panel panel-info" id="add">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="apikey" class="control-label">';
-        $out .= 'Apikey</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="name_addon">';
-        $out .= '<span class="fa fa-key"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="apikey" name="apikey" ';
-        $out .= 'value="';
-        $out .= $key;
-        $out .= '" required readonly>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="comment" class="control-label">';
-        $out .= 'Commentaar</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="name_addon">';
-        $out .= '<span class="fa fa-comment-o"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="comment" name="comment" ';
-        $out .= 'value="';
-        $out .= $apikey['comment'] ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= $link_render->btn_cancel('apikeys', $pp->ary(), []);
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-success btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $menu_service->set('apikeys');
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    private static function get_apikey_explain():string
+    public static function get_apikey_explain():string
     {
         $out = '<p>';
         $out .= '<ul>';
@@ -189,74 +96,5 @@ class ApikeysController extends AbstractController
         $out .= '</li></ul>';
         $out .= '</p>';
         return $out;
-    }
-
-    public function apikeys_del(
-        Request $request,
-        int $id,
-        Db $db,
-        AlertService $alert_service,
-        MenuService $menu_service,
-        HeadingRender $heading_render,
-        LinkRender $link_render,
-        FormTokenService $form_token_service,
-        PageParamsService $pp
-    ):Response
-    {
-        if($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $alert_service->error($error_token);
-                $link_render->redirect('apikeys', $pp->ary(), []);
-            }
-
-            if ($db->delete($pp->schema() . '.apikeys',
-                ['id' => $id]))
-            {
-                $alert_service->success('Apikey verwijderd.');
-                $link_render->redirect('apikeys', $pp->ary(), []);
-            }
-
-            $alert_service->error('Apikey niet verwijderd.');
-        }
-
-        $apikey = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.apikeys
-            where id = ?', [$id]);
-
-        $heading_render->add('Apikey verwijderen?');
-        $heading_render->fa('key');
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-        $out .= '<dl>';
-        $out .= '<dt>Apikey</dt>';
-        $out .= '<dd>';
-        $out .= $apikey['apikey'] ?: '<i class="fa fa-times"></i>';
-        $out .= '</dd>';
-        $out .= '<dt>Commentaar</dt>';
-        $out .= '<dd>';
-        $out .= $apikey['comment'] ?: '<i class="fa fa-times"></i>';
-        $out .= '</dd>';
-        $out .= '</dl>';
-        $out .= $link_render->btn_cancel('apikeys', $pp->ary(), []);
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $menu_service->set('apikeys');
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
     }
 }

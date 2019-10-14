@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 
 class DocsAddController extends AbstractController
 {
-    public function docs_add(
+    public function __invoke(
         Request $request,
         LoggerInterface $logger,
         string $map_id,

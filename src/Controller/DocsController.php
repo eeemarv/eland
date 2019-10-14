@@ -18,7 +18,7 @@ use App\Service\XdbService;
 
 class DocsController extends AbstractController
 {
-    public function docs(
+    public function __invoke(
         Request $request,
         XdbService $xdb_service,
         BtnNavRender $btn_nav_render,

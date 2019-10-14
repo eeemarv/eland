@@ -19,7 +19,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsShowController extends AbstractController
 {
-    public function intersystems_show(
+    public function __invoke(
         int $id,
         Db $db,
         AlertService $alert_service,

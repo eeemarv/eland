@@ -16,7 +16,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class IntersystemsDelController extends AbstractController
 {
-    public function intersystems_del(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

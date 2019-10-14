@@ -17,7 +17,7 @@ use App\Service\XdbService;
 
 class AutoMinLimitController extends AbstractController
 {
-    public function autominlimit(
+    public function __invoke(
         Request $request,
         AlertService $alert_service,
         MenuService $menu_service,

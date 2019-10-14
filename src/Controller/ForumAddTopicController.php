@@ -21,7 +21,7 @@ use App\Service\XdbService;
 
 class ForumAddTopicController extends AbstractController
 {
-    public function forum_add_topic(
+    public function __invoke(
         Request $request,
         XdbService $xdb_service,
         ConfigService $config_service,

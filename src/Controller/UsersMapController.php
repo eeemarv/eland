@@ -22,46 +22,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class UsersMapController extends AbstractController
 {
-    public function users_map_admin(
-        string $status,
-        Db $db,
-        AccountRender $account_render,
-        AssetsService $assets_service,
-        BtnNavRender $btn_nav_render,
-        BtnTopRender $btn_top_render,
-        HeadingRender $heading_render,
-        CacheService $cache_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        ConfigService $config_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        MenuService $menu_service,
-        string $env_mapbox_token
-    ):Response
-    {
-        return $this->users_map(
-            $status,
-            $db,
-            $account_render,
-            $assets_service,
-            $btn_nav_render,
-            $btn_top_render,
-            $heading_render,
-            $cache_service,
-            $item_access_service,
-            $link_render,
-            $config_service,
-            $pp,
-            $su,
-            $vr,
-            $menu_service,
-            $env_mapbox_token
-        );
-    }
-
-    public function users_map(
+    public function __invoke(
         string $status,
         Db $db,
         AccountRender $account_render,

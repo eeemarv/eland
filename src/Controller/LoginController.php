@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
 
 class LoginController extends AbstractController
 {
-    public function login(
+    public function __invoke(
         Request $request,
         Db $db,
         XdbService $xdb_service,

@@ -32,56 +32,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class MessagesEditController extends AbstractController
 {
-    public function messages_add(
-        Request $request,
-        Db $db,
-        LoggerInterface $logger,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        ConfigService $config_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
-        IntersystemsService $intersystems_service,
-        ItemAccessService $item_access_service,
-        SelectRender $select_render,
-        LinkRender $link_render,
-        MenuService $menu_service,
-        TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        S3Service $s3_service,
-        string $env_s3_url
-    ):Response
-    {
-        return $this->messages_form(
-            $request,
-            0,
-            'add',
-            $db,
-            $logger,
-            $alert_service,
-            $assets_service,
-            $config_service,
-            $form_token_service,
-            $heading_render,
-            $intersystems_service,
-            $item_access_service,
-            $select_render,
-            $link_render,
-            $menu_service,
-            $typeahead_service,
-            $pp,
-            $su,
-            $vr,
-            $user_cache_service,
-            $s3_service,
-            $env_s3_url
-        );
-    }
-
-    public function messages_edit(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,
@@ -105,7 +56,7 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        return $this->messages_form(
+        return self::messages_form(
             $request,
             $id,
             'edit',
@@ -131,7 +82,7 @@ class MessagesEditController extends AbstractController
         );
     }
 
-    public function messages_form(
+    public static function messages_form(
         Request $request,
         int $id,
         string $mode,

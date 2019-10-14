@@ -41,72 +41,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UsersListController extends AbstractController
 {
-    public function users_list_admin(
-        Request $request,
-        string $status,
-        Db $db,
-        LoggerInterface $logger,
-        SessionInterface $session,
-        AccountRender $account_render,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        BtnNavRender $btn_nav_render,
-        BtnTopRender $btn_top_render,
-        CacheService $cache_service,
-        ConfigService $config_service,
-        DateFormatService $date_format_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
-        IntersystemsService $intersystems_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        MailAddrUserService $mail_addr_user_service,
-        MailQueue $mail_queue,
-        SelectRender $select_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
-        TypeaheadService $typeahead_service,
-        XdbService  $xdb_service,
-        UserCacheService $user_cache_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        MenuService $menu_service
-    ):Response
-    {
-        return $this->users_list(
-            $request,
-            $status,
-            $db,
-            $logger,
-            $session,
-            $account_render,
-            $alert_service,
-            $assets_service,
-            $btn_nav_render,
-            $btn_top_render,
-            $cache_service,
-            $config_service,
-            $date_format_service,
-            $form_token_service,
-            $heading_render,
-            $intersystems_service,
-            $item_access_service,
-            $link_render,
-            $mail_addr_user_service,
-            $mail_queue,
-            $select_render,
-            $thumbprint_accounts_service,
-            $typeahead_service,
-            $xdb_service,
-            $user_cache_service,
-            $pp,
-            $su,
-            $vr,
-            $menu_service
-        );
-    }
-
-    public function users_list(
+    public function __invoke(
         Request $request,
         string $status,
         Db $db,

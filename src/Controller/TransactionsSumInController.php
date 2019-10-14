@@ -8,16 +8,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
-class TransactionsSumController extends AbstractController
+class TransactionsSumInController extends AbstractController
 {
-    public function transactions_sum_in(
+    public function __invoke(
         Request $request,
         int $days,
         Db $db,
         PageParamsService $pp
     ):Response
     {
-        return $this->calc(
+        return self::calc(
             $request,
             $days,
             true,
@@ -26,23 +26,7 @@ class TransactionsSumController extends AbstractController
         );
     }
 
-    public function transactions_sum_out(
-        Request $request,
-        int $days,
-        Db $db,
-        PageParamsService $pp
-    ):Response
-    {
-        return $this->calc(
-            $request,
-            $days,
-            false,
-            $db,
-            $pp
-        );
-    }
-
-    private function calc(
+    public static function calc(
         Request $request,
         int $days,
         bool $in,

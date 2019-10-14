@@ -22,7 +22,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class LogsController extends AbstractController
 {
-    public function logs(
+    public function __invoke(
         Request $request,
         Db $db,
         PaginationRender $pagination_render,

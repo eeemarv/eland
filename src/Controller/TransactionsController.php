@@ -26,7 +26,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class TransactionsController extends AbstractController
 {
-    public function transactions(
+    public function __invoke(
         Request $request,
         Db $db,
         AccountRender $account_render,

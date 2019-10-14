@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class LogoDelController extends AbstractController
 {
-    public function logo_del(
+    public function __invoke(
         Request $request,
         ConfigService $config_service,
         AlertService $alert_service,

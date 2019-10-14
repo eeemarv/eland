@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 
 class DocsDelController extends AbstractController
 {
-    public function docs_del(
+    public function __invoke(
         Request $request,
         string $doc_id,
         XdbService $xdb_service,

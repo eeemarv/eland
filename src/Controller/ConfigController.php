@@ -21,7 +21,7 @@ use App\Service\PageParamsService;
 
 class ConfigController extends AbstractController
 {
-    public function config(
+    public function __invoke(
         Request $request,
         string $tab,
         Db $db,

@@ -42,6 +42,18 @@ password_reset_token:
   controller: App\Controller\PasswordResetTokenController::password_reset_token
   methods: GET|POST
 
+system_guest:
+  prefix: /{role_short<%assert.role_short.guest%>}
+  resource: system_guest.yaml
+
+system_user:
+  prefix: /{role_short<%assert.role_short.user%>}
+  resource: system_user.yaml
+
+system_admin:
+  prefix: /{role_short<%assert.role_short.admin%>}
+  resource: system_admin.yaml
+
 home_system:
   path: /
   controller: App\Controller\HomeSystemController::home_system

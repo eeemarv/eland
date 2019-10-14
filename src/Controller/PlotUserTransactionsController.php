@@ -15,7 +15,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class PlotUserTransactionsController extends AbstractController
 {
-    public function plot_user_transactions(
+    public function __invoke(
         int $user_id,
         int $days,
         Db $db,

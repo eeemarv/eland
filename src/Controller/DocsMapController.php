@@ -21,7 +21,7 @@ use App\Service\XdbService;
 
 class DocsMapController extends AbstractController
 {
-    public function docs_map(
+    public function __invoke(
         Request $request,
         string $map_id,
         XdbService $xdb_service,

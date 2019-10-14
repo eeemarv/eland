@@ -5,155 +5,137 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Doctrine\DBAL\Connection as Db;
 use App\Cnst\AccessCnst;
 use App\Queue\GeocodeQueue;
 use App\Render\AccountRender;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Service\assetsService;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use App\Service\TypeaheadService;
 
-class ContactsEditController extends AbstractController
+class ContactsAddAdminController extends AbstractController
 {
-    const FORMAT = [
-        'adr'	=> [
-            'fa'		=> 'map-marker',
-            'lbl'		=> 'Adres',
-            'explain'	=> 'Voorbeeldstraat 23, 4520 Voorbeeldgemeente',
-        ],
-        'gsm'	=> [
-            'fa'		=> 'mobile',
-            'lbl'		=> 'GSM',
-        ],
-        'tel'	=> [
-            'fa'		=> 'phone',
-            'lbl'		=> 'Telefoon',
-        ],
-        'mail'	=> [
-            'fa'		=> 'envelope-o',
-            'lbl'		=> 'E-mail',
-            'type'		=> 'email',
-        ],
-        'web'	=> [
-            'fa'		=> 'link',
-            'lbl'		=> 'Website',
-            'type'		=> 'url',
-        ],
-    ];
-
-    public function contacts_edit_admin(
+    public function __invoke(
         Request $request,
-        int $id,
         Db $db,
-        FormTokenService $form_token_service,
         AlertService $alert_service,
-        AssetsService $assets_service,
+        FormTokenService $form_token_service,
         MenuService $menu_service,
-        ItemAccessService $item_access_service,
+        ConfigService $config_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         AccountRender $account_render,
+        AssetsService $assets_service,
+        GeocodeQueue $geocode_queue,
+        ItemAccessService $item_access_service,
+        TypeaheadService $typeahead_service,
         PageParamsService $pp,
-        GeocodeQueue $geocode_queue
+        HeadingRender $heading_render
     ):Response
     {
-        $contact = self::get_contact(
-            $db, $id, $pp->schema());
-
         return self::form(
             $request,
-            $contact['id_user'],
-            $id,
+            0,
             true,
             $db,
-            $form_token_service,
             $alert_service,
-            $assets_service,
+            $form_token_service,
             $menu_service,
-            $item_access_service,
+            $config_service,
             $link_render,
-            $heading_render,
             $account_render,
+            $assets_service,
+            $geocode_queue,
+            $item_access_service,
+            $typeahead_service,
             $pp,
-            $geocode_queue
+            $heading_render
         );
     }
 
     public static function form(
         Request $request,
         int $user_id,
-        int $id,
         bool $redirect_contacts,
         Db $db,
-        FormTokenService $form_token_service,
         AlertService $alert_service,
-        AssetsService $assets_service,
+        FormTokenService $form_token_service,
         MenuService $menu_service,
-        ItemAccessService $item_access_service,
+        ConfigService $config_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         AccountRender $account_render,
+        AssetsService $assets_service,
+        GeocodeQueue $geocode_queue,
+        ItemAccessService $item_access_service,
+        TypeaheadService $typeahead_service,
         PageParamsService $pp,
-        GeocodeQueue $geocode_queue
+        HeadingRender $heading_render
     ):Response
     {
-        $contact = self::get_contact(
-            $db,
-            $id,
-            $pp->schema()
-        );
-
-        if ($user_id !== $contact['id_user'])
-        {
-            throw new BadRequestHttpException(
-                'Contact ' . $id . ' behoort niet tot gebruiker ' . $user_id);
-        }
-
-        $id_type_contact = $contact['id_type_contact'];
-        $value = $contact['value'];
-        $comments = $contact['comments'];
-        $access = $contact['access'];
-
+        $account_code = $request->request->get('account_code', '');
+        $id_type_contact = (int) $request->request->get('id_type_contact', '');
+        $value = $request->request->get('value', '');
+        $comments = $request->request->get('comments', '');
+        $access = $request->request->get('access', '');
 
         if($request->isMethod('POST'))
         {
             $errors = [];
-
-            $id_type_contact = (int) $request->request->get('id_type_contact', '');
-            $value = $request->request->get('value', '');
-            $comments = $request->request->get('comments', '');
-            $access = $request->request->get('access', '');
 
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
 
+            if ($pp->is_admin() && $redirect_contacts)
+            {
+               [$code] = explode(' ', trim($account_code));
+
+                $user_id = $db->fetchColumn('select id
+                    from ' . $pp->schema() . '.users
+                    where letscode = ?', [$code]);
+
+                if (!$user_id)
+                {
+                    $errors[] = 'Ongeldige Account Code.';
+                }
+            }
+
+            if (!$value)
+            {
+                $errors[] = 'Vul waarde in!';
+            }
+
             if (!$access)
             {
-                $errors[] = 'Vul een zichtbaarheid in!';
+                $errors[] = 'Vul zichtbaarheid in.';
+            }
+
+            if (!isset(AccessCnst::TO_FLAG_PUBLIC[$access]))
+            {
+                throw new BadRequestHttpException('Ongeldige waarde zichtbaarheid');
             }
 
             $abbrev_type = $db->fetchColumn('select abbrev
                 from ' . $pp->schema() . '.type_contact
                 where id = ?', [$id_type_contact]);
 
+            if(!$abbrev_type)
+            {
+                throw new BadRequestHttpException('Ongeldig contact type!');
+            }
+
             if ($abbrev_type === 'mail'
                 && !filter_var($value, FILTER_VALIDATE_EMAIL))
             {
                 $errors[] = 'Geen geldig E-mail adres';
-            }
-
-            if (!$value)
-            {
-                $errors[] = 'Vul waarde in!';
             }
 
             if (strlen($value) > 130)
@@ -166,34 +148,9 @@ class ContactsEditController extends AbstractController
                 $errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
             }
 
-            if(!$abbrev_type)
-            {
-                $errors[] = 'Contact type bestaat niet!';
-            }
-
             $mail_type_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.type_contact
                 where abbrev = \'mail\'');
-
-            $count_mail = $db->fetchColumn('select count(*)
-                from ' . $pp->schema() . '.contact
-                where id_user = ?
-                    and id_type_contact = ?',
-                [$user_id, $mail_type_id]);
-
-            $mail_id = $db->fetchColumn('select id
-                from ' . $pp->schema() . '.contact
-                where id_user = ?
-                    and id_type_contact = ?',
-                [$user_id, $mail_type_id]);
-
-            if ($id === $mail_id
-                && $count_mail === 1
-                && $id_type_contact !== $mail_type_id)
-            {
-                $alert_service->warning('Waarschuwing: de gebruiker heeft
-                    geen E-mail adres.');
-            }
 
             if ($id_type_contact === $mail_type_id)
             {
@@ -220,7 +177,7 @@ class ContactsEditController extends AbstractController
                     $warning .= $link_render->link_no_attr('status',
                         $pp->ary(), [], 'Status');
 
-                    if ($mail_count === 1)
+                    if ($mail_count == 1)
                     {
                         $warning_2 = 'Waarschuwing: E-mail adres ' . $mailadr;
                         $warning_2 .= ' bestaat al onder de actieve gebruikers.';
@@ -241,13 +198,6 @@ class ContactsEditController extends AbstractController
                 }
             }
 
-            $update_ary = [
-                'id_type_contact'   => $id_type_contact,
-                'value'             => $value,
-                'comments'          => $comments,
-                'flag_public'       => AccessCnst::TO_FLAG_PUBLIC[$access],
-            ];
-
             if(!count($errors))
             {
                 if ($abbrev_type === 'adr')
@@ -259,27 +209,39 @@ class ContactsEditController extends AbstractController
                     ], 0);
                 }
 
-                $db->update($pp->schema() . '.contact',
-                    $update_ary, ['id' => $id]);
+                $insert_ary = [
+                    'id_type_contact'		=> $id_type_contact,
+                    'value'					=> $value,
+                    'comments' 				=> $comments,
+                    'flag_public'			=> AccessCnst::TO_FLAG_PUBLIC[$access],
+                    'id_user'				=> $user_id,
+                ];
 
-                $alert_service->success('Contact aangepast.');
-
-                if ($redirect_contacts)
+                if ($db->insert($pp->schema() . '.contact', $insert_ary))
                 {
-                    $link_render->redirect('contacts', $pp->ary(), []);
+                    $alert_service->success('Contact opgeslagen.');
+
+                    if ($redirect_contacts)
+                    {
+                        $link_render->redirect('contacts', $pp->ary(), []);
+                    }
+
+                    $link_render->redirect('users_show', $pp->ary(),
+                        ['id' => $user_id]);
+
                 }
                 else
                 {
-                    $link_render->redirect('users_show', $pp->ary(),
-                        ['id' => $user_id]);
+                    $alert_service->error('Fout bij het opslaan');
                 }
-
             }
-
-            $alert_service->error($errors);
+            else
+            {
+                $alert_service->error($errors);
+            }
         }
 
-        $type_contact_ary = [];
+        $tc = [];
 
         $rs = $db->prepare('select id, name, abbrev
             from ' . $pp->schema() . '.type_contact');
@@ -288,16 +250,23 @@ class ContactsEditController extends AbstractController
 
         while ($row = $rs->fetch())
         {
-            $type_contact_ary[$row['id']] = $row;
+            $tc[$row['id']] = $row;
+
+            if ($id_type_contact)
+            {
+                continue;
+            }
+
+            $id_type_contact = $row['id'];
         }
 
         $assets_service->add(['contacts_edit.js']);
 
-        $abbrev = $type_contact_ary[$id_type_contact]['abbrev'];
+        $abbrev = $tc[$id_type_contact]['abbrev'];
 
-        $heading_render->add('Contact aanpassen');
+        $heading_render->add('Contact toevoegen');
 
-        if ($pp->is_admin())
+        if ($pp->is_admin() && !$redirect_contacts)
         {
             $heading_render->add(' voor ');
             $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
@@ -308,20 +277,50 @@ class ContactsEditController extends AbstractController
 
         $out .= '<form method="post">';
 
+        if ($pp->is_admin() && $redirect_contacts)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<label for="account_code" class="control-label">Voor</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon" id="fcode_addon">';
+            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<input type="text" class="form-control" id="account_code" name="account_code" ';
+
+            $out .= 'data-typeahead="';
+            $out .= $typeahead_service->ini($pp->ary())
+                ->add('accounts', ['status' => 'active'])
+                ->add('accounts', ['status' => 'inactive'])
+                ->add('accounts', ['status' => 'ip'])
+                ->add('accounts', ['status' => 'im'])
+                ->add('accounts', ['status' => 'extern'])
+                ->str([
+                    'filter'        => 'accounts',
+                    'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
+                ]);
+            $out .= '" ';
+
+            $out .= 'placeholder="Account Code" ';
+            $out .= 'value="';
+            $out .= $account_code;
+            $out .= '" required>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
         $out .= '<div class="form-group">';
         $out .= '<label for="id_type_contact" class="control-label">Type</label>';
         $out .= '<select name="id_type_contact" id="id_type_contact" ';
         $out .= 'class="form-control" required>';
 
-        foreach ($type_contact_ary as $tc_id => $type)
+        foreach ($tc as $id_tc => $type)
         {
             $out .= '<option value="';
-            $out .= $tc_id;
+            $out .= $id_tc;
             $out .= '" ';
             $out .= 'data-abbrev="';
             $out .= $type['abbrev'];
             $out .= '" ';
-            $out .= $tc_id === $id_type_contact ? ' selected="selected"' : '';
+            $out .= $id_tc === $id_type_contact ? ' selected="selected"' : '';
             $out .= '>';
             $out .= $type['name'];
             $out .= '</option>';
@@ -336,7 +335,7 @@ class ContactsEditController extends AbstractController
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon" id="value_addon">';
         $out .= '<i class="fa fa-';
-        $out .= self::FORMAT[$abbrev]['fa'] ?? 'circle-o';
+        $out .= ContactsEditController::FORMAT[$abbrev]['fa'] ?? 'circle-o';
         $out .= '"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
@@ -344,7 +343,7 @@ class ContactsEditController extends AbstractController
         $out .= $value;
         $out .= '" required disabled maxlength="130" ';
         $out .= 'data-contacts-format="';
-        $out .= htmlspecialchars(json_encode(self::FORMAT));
+        $out .= htmlspecialchars(json_encode(ContactsEditController::FORMAT));
         $out .= '">';
         $out .= '</div>';
         $out .= '<p id="contact-explain">';
@@ -366,11 +365,11 @@ class ContactsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $item_access_service->get_radio_buttons('access', $access);
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'contacts_add');
 
         if ($redirect_contacts)
         {
-            $out .= $link_render->btn_cancel('contacts', $pp->ary(), []);
+           $out .= $link_render->btn_cancel('contacts', $pp->ary(), []);
         }
         else
         {
@@ -380,8 +379,8 @@ class ContactsEditController extends AbstractController
 
         $out .= '&nbsp;';
 
-        $out .= '<input type="submit" value="Aanpassen" ';
-        $out .= 'name="zend" class="btn btn-primary btn-lg">';
+        $out .= '<input type="submit" value="Opslaan" ';
+        $out .= 'name="zend" class="btn btn-success btn-lg">';
 
         $out .= $form_token_service->get_hidden_input();
 
@@ -396,28 +395,5 @@ class ContactsEditController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
-    }
-
-    public static function get_contact(
-        Db $db,
-        int $contact_id,
-        string $schema
-    ):array
-    {
-        $contact = $db->fetchAssoc('select c.*, tc.abbrev
-            from ' . $schema . '.contact c,
-                ' . $schema . '.type_contact tc
-            where c.id = ?
-                and tc.id = c.id_type_contact', [$contact_id]);
-
-        if (!$contact)
-        {
-            throw new NotFoundHttpException(
-                'Het contact met id ' . $contact_id . ' bestaat niet.');
-        }
-
-        $contact['access'] = AccessCnst::FROM_FLAG_PUBLIC[$contact['flag_public']];
-
-        return $contact;
     }
 }

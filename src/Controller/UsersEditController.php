@@ -35,7 +35,7 @@ use App\Service\XdbService;
 
 class UsersEditController extends AbstractController
 {
-    public function users_edit(
+    public function __invoke(
         Request $request,
         Db $db,
         AccountRender $account_render,

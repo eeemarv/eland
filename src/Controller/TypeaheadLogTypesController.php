@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadLogTypesController extends AbstractController
 {
-    public function typeahead_log_types(
+    public function __invoke(
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp

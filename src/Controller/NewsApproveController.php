@@ -12,7 +12,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class NewsApproveController extends AbstractController
 {
-    public function news_approve(
+    public function __invoke(
         int $id,
         Db $db,
         PageParamsService $pp,

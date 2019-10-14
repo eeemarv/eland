@@ -23,7 +23,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class MessagesDelController extends AbstractController
 {
-    public function messages_del(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

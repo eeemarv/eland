@@ -19,7 +19,7 @@ use App\Service\UserCacheService;
 
 class UsersContactsDelController extends AbstractController
 {
-    public function users_contacts_del(
+    public function __invoke(
         Request $request,
         int $contact_id,
         Db $db,
@@ -37,38 +37,6 @@ class UsersContactsDelController extends AbstractController
         return ContactsDelController::form(
             $request,
             $su->id(),
-            $contact_id,
-            false,
-            $db,
-            $alert_service,
-            $user_cache_service,
-            $form_token_service,
-            $menu_service,
-            $item_access_service,
-            $heading_render,
-            $account_render,
-            $link_render
-        );
-    }
-
-    public function users_contacts_del_admin(
-        Request $request,
-        int $user_id,
-        int $contact_id,
-        Db $db,
-        AlertService $alert_service,
-        UserCacheService $user_cache_service,
-        FormTokenService $form_token_service,
-        MenuService $menu_service,
-        ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
-        AccountRender $account_render,
-        LinkRender $link_render
-    ):Response
-    {
-        return ContactsDelController::form(
-            $request,
-            $user_id,
             $contact_id,
             false,
             $db,

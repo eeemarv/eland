@@ -53,12 +53,12 @@ class VarRouteService
 
 		$r_users = 'users_' . $view_ary['users'];
 		$r_users .= $r_users !== 'users_map'
-			&& $this->pp->is_admin ? '_admin' : '';
+			&& $this->pp->is_admin() ? '_admin' : '';
 
 		$this->var_route_ary = [
 			'users'			=> $r_users,
-			'users_show'	=> $this->pp->is_admin ? 'users_show_admin' : 'users_show',
-			'users_edit'	=> $this->pp->is_admin ? 'users_edit_admin' : 'users_edit',
+			'users_show'	=> $this->pp->is_admin() ? 'users_show_admin' : 'users_show',
+			'users_edit'	=> $this->pp->is_admin() ? 'users_edit_admin' : 'users_edit',
 			'messages'		=> 'messages_' . $view_ary['messages'],
 			'news'			=> 'messages_' . $view_ary['news'],
 		];

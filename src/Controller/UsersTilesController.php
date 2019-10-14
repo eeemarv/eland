@@ -21,40 +21,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class UsersTilesController extends AbstractController
 {
-    public function users_tiles_admin(
-        Request $request,
-        string $status,
-        Db $db,
-        HeadingRender $heading_render,
-        BtnNavRender $btn_nav_render,
-        BtnTopRender $btn_top_render,
-        AssetsService $assets_service,
-        LinkRender $link_render,
-        ConfigService $config_service,
-        PageParamsService $pp,
-        VarRouteService $vr,
-        MenuService $menu_service,
-        string $env_s3_url
-    ):Response
-    {
-        return $this->users_tiles(
-            $request,
-            $status,
-            $db,
-            $heading_render,
-            $btn_nav_render,
-            $btn_top_render,
-            $assets_service,
-            $link_render,
-            $config_service,
-            $pp,
-            $vr,
-            $menu_service,
-            $env_s3_url
-        );
-    }
-
-    public function users_tiles(
+    public function __invoke(
         Request $request,
         string $status,
         Db $db,

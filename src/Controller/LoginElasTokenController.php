@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LoginElasTokenController extends AbstractController
 {
-    public function login_elas_token(
+    public function __invoke(
         string $elas_token,
         Request $request,
         Predis $predis,

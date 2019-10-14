@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 
 class UsersDelAdminController extends AbstractController
 {
-    public function users_del_admin(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

@@ -20,9 +20,9 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 
-class ContactsController extends AbstractController
+class ContactsAdminController extends AbstractController
 {
-    public function contacts(
+    public function __invoke(
         Request $request,
         Db $db,
         BtnNavRender $btn_nav_render,

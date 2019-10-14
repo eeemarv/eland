@@ -32,7 +32,7 @@ use Psr\Log\LoggerInterface;
 
 class TransactionsAddController extends AbstractController
 {
-    public function transactions_add(
+    public function __invoke(
         Request $request,
         Db $db,
         Predis $predis,

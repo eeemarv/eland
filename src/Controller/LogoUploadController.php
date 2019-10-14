@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class LogoUploadController extends AbstractController
 {
-    public function logo_upload(
+    public function __invoke(
         Request $request,
         LoggerInterface $logger,
         ConfigService $config_service,

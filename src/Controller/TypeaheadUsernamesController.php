@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadUsernamesController extends AbstractController
 {
-    public function typeahead_usernames(
+    public function __invoke(
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp

@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 
 class RegisterController extends AbstractController
 {
-    public function register(
+    public function __invoke(
         Request $request,
         Db $db,
         LoggerInterface $logger,

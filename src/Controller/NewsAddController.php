@@ -24,7 +24,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class NewsAddController extends AbstractController
 {
-    public function news_add(
+    public function __invoke(
         Request $request,
         Db $db,
         DateFormatService $date_format_service,

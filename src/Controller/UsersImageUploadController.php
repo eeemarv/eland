@@ -23,7 +23,8 @@ class UsersImageUploadController extends AbstractController
         ImageUploadService $image_upload_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
-        SessionUserService $su
+        SessionUserService $su,
+        UsersImageUploadAdminController $users_image_upload_admin_controller
     ):Response
     {
         if ($su->id() < 1)
@@ -31,7 +32,7 @@ class UsersImageUploadController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
         }
 
-        return $this->users_image_upload_admin(
+        return $users_image_upload_admin_controller(
             $request,
             $su->id(),
             $db,
@@ -40,38 +41,5 @@ class UsersImageUploadController extends AbstractController
             $user_cache_service,
             $pp
         );
-    }
-
-    public function users_image_upload_admin(
-        Request $request,
-        int $id,
-        Db $db,
-        LoggerInterface $logger,
-        ImageUploadService $image_upload_service,
-        UserCacheService $user_cache_service,
-        PageParamsService $pp
-    ):Response
-    {
-        $uploaded_file = $request->files->get('image');
-
-        if (!$uploaded_file)
-        {
-            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
-        }
-
-        $filename = $image_upload_service->upload($uploaded_file,
-            'u', $id, 400, 400, $pp->schema());
-
-        $db->update($pp->schema() . '.users', [
-            '"PictureFile"'	=> $filename
-        ],['id' => $id]);
-
-        $logger->info('User image ' . $filename .
-            ' uploaded. User: ' . $id,
-            ['schema' => $pp->schema()]);
-
-        $user_cache_service->clear($id, $pp->schema());
-
-        return $this->json([$filename]);
     }
 }

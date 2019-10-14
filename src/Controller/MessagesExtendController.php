@@ -13,7 +13,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendController extends AbstractController
 {
-    public function messages_extend(
+    public function __invoke(
         int $id,
         int $days,
         Db $db,

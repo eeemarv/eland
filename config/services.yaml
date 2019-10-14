@@ -1,8 +1,3 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     router.request_context.host: '%env(APP_HOST)%'
     router.request_context.scheme: '%env(APP_SCHEME)%'
@@ -11,6 +6,20 @@ parameters:
     assert.elas_token: '[0-9a-f]{32}'
     assert.token: '[a-z0-9-]{12}'
     assert.system: '[a-z][a-z0-9]*'
+    assert.schema: '[a-z][a-z0-9]*'
+    assert.role_short.guest: '[gua]'
+    assert.role_short.user: '[ua]'
+    assert.role_short.admin: 'a'
+    assert.id: \d++
+    assert.doc_id: '[0-9a-f]{24}'
+    assert.view: 'extended|list|map|tiles'
+    assert.config_tab: 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|messages|users|news|forum|system'
+    assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
+    assert.account_status.primary: 'active|inactive|im|ip|extern'
+    assert.account_status.active: 'active|new|leaving'
+    assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
+    assert.message.image_ext: 'jpg|png|gif'
+
 
 services:
     _defaults:

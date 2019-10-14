@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HomeSystemController extends AbstractController
 {
-    public function home_system(
+    public function __invoke(
         ConfigService $config_service,
         PageParamsService $pp,
         MenuService $menu_service

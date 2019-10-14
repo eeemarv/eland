@@ -19,7 +19,7 @@ use App\Service\PageParamsService;
 
 class ContactTokenController extends AbstractController
 {
-    public function contact_token(
+    public function __invoke(
         string $token,
         ConfigService $config_service,
         LinkRender $link_render,

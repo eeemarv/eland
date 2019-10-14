@@ -34,7 +34,7 @@ use App\Service\VarRouteService;
 
 class MessagesListController extends AbstractController
 {
-    public function messages_list(
+    public function __invoke(
         Request $request,
         Db $db,
         FormTokenService $form_token_service,

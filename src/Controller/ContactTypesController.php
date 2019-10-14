@@ -15,7 +15,7 @@ class ContactTypesController extends AbstractController
 {
     const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];
 
-    public function contact_types(
+    public function __invoke(
         Db $db,
         HeadingRender $heading_render,
         BtnTopRender $btn_top_render,

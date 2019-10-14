@@ -18,7 +18,7 @@ use App\Service\PageParamsService;
 
 class CategoriesEditController extends AbstractController
 {
-    public function categories_edit(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

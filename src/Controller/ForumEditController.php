@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumEditController extends AbstractController
 {
-    public function forum_edit(
+    public function __invoke(
         Request $request,
         string $forum_id,
         XdbService $xdb_service,

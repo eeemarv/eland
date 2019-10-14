@@ -10,7 +10,7 @@ monitor:
 
 system:
   prefix: /{system<%assert.system%>}
-  resource: system.yaml
+  resource: system_anonymous.yaml
 
 index:
   path: /

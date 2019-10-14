@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class ContactController extends AbstractController
 {
-    public function contact(
+    public function __invoke(
         Request $request,
         LoggerInterface $logger,
         AlertService $alert_service,

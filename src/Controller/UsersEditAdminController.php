@@ -38,7 +38,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class UsersEditAdminController extends AbstractController
 {
-    public function users_edit_admin(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

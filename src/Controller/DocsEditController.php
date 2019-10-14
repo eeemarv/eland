@@ -17,7 +17,7 @@ use App\Service\XdbService;
 
 class DocsEditController extends AbstractController
 {
-    public function docs_edit(
+    public function __invoke(
         Request $request,
         string $doc_id,
         XdbService $xdb_service,

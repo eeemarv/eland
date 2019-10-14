@@ -16,7 +16,7 @@ use App\Service\XdbService;
 
 class DocsMapEditController extends AbstractController
 {
-    public function docs_map_edit(
+    public function __invoke(
         Request $request,
         string $map_id,
         XdbService $xdb_service,

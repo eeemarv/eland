@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 
 class ElasGroupLoginController extends AbstractController
 {
-    public function elas_group_login(
+    public function __invoke(
         int $group_id,
         Db $db,
         LoggerInterface $logger,

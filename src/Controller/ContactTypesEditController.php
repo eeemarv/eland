@@ -16,7 +16,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesEditController extends AbstractController
 {
-    public function contact_types_edit(
+    public function __invoke(
         Request $request,
         int $id,
         Db $db,

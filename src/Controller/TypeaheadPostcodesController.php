@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadPostcodesController extends AbstractController
 {
-    public function typeahead_postcodes(
+    public function __invoke(
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp

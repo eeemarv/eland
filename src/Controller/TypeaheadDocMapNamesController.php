@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection as Db;
 
 class TypeaheadDocMapNamesController extends AbstractController
 {
-    public function typeahead_doc_map_names(
+    public function __invoke(
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
