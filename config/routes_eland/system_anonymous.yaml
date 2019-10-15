@@ -1,60 +1,56 @@
-
-
-
-
 login_elas_token:
   path: /login-elas/{elas_token<%assert.elas_token%>}
-  controller: App\Controller\LoginElasController::login_elas_token
+  controller: App\Controller\LoginElasTokenController
   methods: GET
 
 login:
   path: /login
-  controller: App\Controller\LoginController::login
+  controller: App\Controller\LoginController
   methods: GET|POST
 
 contact:
   path: /contact
-  controller: App\Controller\ContactController::contact
+  controller: App\Controller\ContactController
   methods: GET|POST
 
 contact_token:
   path: /contact/{token<%assert.token%>}
-  controller: App\Controller\ContactTokenController::contact_token
+  controller: App\Controller\ContactTokenController
   methods: GET
 
 register:
   path: /register
-  controller: App\Controller\RegisterController::register
+  controller: App\Controller\RegisterController
   methods: GET|POST
 
 register_token:
   path: /register/{token<%assert.token%>}
-  controller: App\Controller\RegisterTokenController::register_token
+  controller: App\Controller\RegisterTokenController
   methods: GET
 
 password_reset:
   path: /password-reset
-  controller: App\Controller\PasswordResetController::password_reset
+  controller: App\Controller\PasswordResetController
   methods: GET|POST
 
 password_reset_token:
   path: /password-reset/{token<%assert.token%>}
-  controller: App\Controller\PasswordResetTokenController::password_reset_token
+  controller: App\Controller\PasswordResetTokenController
   methods: GET|POST
-
-system_guest:
-  prefix: /{role_short<%assert.role_short.guest%>}
-  resource: system_guest.yaml
-
-system_user:
-  prefix: /{role_short<%assert.role_short.user%>}
-  resource: system_user.yaml
 
 system_admin:
   prefix: /{role_short<%assert.role_short.admin%>}
   resource: system_admin.yaml
 
+system_user:
+  prefix: /{role_short<%assert.role_short.user%>}
+  resource: system_user.yaml
+
+system_guest:
+  prefix: /{role_short<%assert.role_short.guest%>}
+  resource: system_guest.yaml
+
 home_system:
   path: /
-  controller: App\Controller\HomeSystemController::home_system
+  controller: App\Controller\HomeSystemController
   methods: GET

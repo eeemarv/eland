@@ -74,7 +74,7 @@ class MenuNavSystemService
 			}
 			else
 			{
-				$role = $this->user_cache->get_role($login_id, $login_schema);
+				$role = $this->user_cache_service->get_role($login_id, $login_schema);
 
 				if ($role === 'user')
 				{

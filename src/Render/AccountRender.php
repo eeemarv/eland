@@ -29,7 +29,7 @@ class AccountRender
 
 	public function get_str(int $id, string $schema):string
 	{
-		$user = $this->user_cache->get($id, $schema);
+		$user = $this->user_cache_service->get($id, $schema);
 
 		$code = $user['letscode'] ?? '';
 		$name = $user['name'] ?? '';

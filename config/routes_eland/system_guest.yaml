@@ -1,19 +1,99 @@
 logout:
   controller: App\Controller\LogoutController
-  path: \logout
+  path: /logout
   methods: GET
 
 messages_show:
   controller: App\Controller\MessagesShowController
-  path: \messages\{id<%assert.id%>}
+  path: /messages/{id<%assert.id%>}
   methods: GET|POST
 
 messages_extended:
   controller: App\Controller\MessagesExtendedController
-  path: \messages\extended
+  path: /messages/extended
   methods: GET
 
 messages_list:
   controller: App\Controller\MessagesListController
-  path: \messages
+  path: /messages
   methods: GET|POST
+
+users_show:
+  controller: App\Controller\UsersShowController
+  path: /users/{id<%assert.id%>}/{status<%assert.account_status.active%>?active}
+  methods: GET|POST
+
+users_map:
+  controller: App\Controller\UsersMapController
+  path: /users/map/{status<%assert.account_status.active%>?active}
+  methods: GET
+
+users_tiles:
+  controller: App\Controller\UsersTilesController
+  path: /users/tiles/{status<%assert.account_status.active%>?active}
+  methods: GET
+
+users_list:
+  controller: App\Controller\UsersListController
+  path: /users/tiles/{status<%assert.account_status.active%>?active}
+  methods: GET
+
+transactions_show:
+  controller: App\Controller\TransactionsShowController
+  path: /transactions/{id<%assert.id%>}
+  methods: GET
+
+transactions:
+  controller: App\Controller\TransactionsController
+  path: /transactions
+  methods: GET
+
+news_show:
+  controller: App\Controller\NewsShowController
+  path: /news/{id<%assert.id%>}
+  methods: GET
+
+news_extended:
+  controller: App\Controller\NewsExtendedController
+  path: /news/extended
+  methods: GET
+
+news_list:
+  controller: App\Controller\NewsListController
+  path: /news
+  methods: GET
+
+docs_map:
+  controller: App\Controller\DocsMapController
+  path: /news/{map_id<%assert.doc_id%>}
+  methods: GET
+
+docs:
+  controller: App\Controller\DocsController
+  path: /docs
+  methods: GET
+
+forum_topic:
+  controller: App\Controller\ForumTopicController
+  path: /forum/{topic_id<%assert.doc_id%>}
+  methods: GET|POST
+
+forum:
+  controller: App\Controller\ForumController
+  path: /forum
+  methods: GET
+
+typeahead_accounts:
+  controller: App\Controller\TypeaheadAccountsController
+  path: /typeahead-accounts/{status<%assert.account_status.primary%>}
+  methods: GET
+
+elas_group_login:
+  controller: App\Controller\ElasGroupLoginController
+  path: /elas-group-login/{group_id<%assert.id%>}
+  methods: GET
+
+plot_user_transactions:
+  controller: App\Controller\PlotUserTransactionsController
+  path: /plot-user-transactions/{user_id<%assert.id%>}/{days<%assert.id%>}
+  methods: GET

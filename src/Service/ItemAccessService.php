@@ -133,7 +133,7 @@ class ItemAccessService
 	):string
 	{
 		$access = $access === 'guest'
-			&& !$this->config->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
+			&& !$this->config_service->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
 
 		$out = '<span class="btn btn-';
 		$out .= AccessCnst::LABEL[$access]['class'];
@@ -174,7 +174,7 @@ class ItemAccessService
 	{
 		$ary = AccessCnst::ARY;
 
-		if (!$this->config->get_intersystem_en($this->pp->schema()))
+		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
 		{
 			unset($ary['guest']);
 			$selected = $selected === 'guest' ? 'user' : $selected;

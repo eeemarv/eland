@@ -65,7 +65,7 @@ class MenuService
 		$m_ary['user_mode']['route'] = $fallback_route;
 		$m_ary['guest_mode']['route'] = $fallback_route;
 
-		if (!$this->config->get_intersystem_en($this->pp->schema()))
+		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
 		{
 			unset($m_ary['intersystems'], $m_ary['apikeys'], $m_ary['guest_mode']);
 		}
@@ -98,7 +98,7 @@ class MenuService
 			}
 
 			$menu_ary[] = [
-				'route'			=> isset($item['var_route']) ? $this->{$item['var_route']} : $m_route,
+				'route'			=> $this->vr->get($m_route),
 				'label'			=> $item['label'],
 				'fa'			=> $item['fa'],
 				'active'		=> $m_route === $this->active_menu,

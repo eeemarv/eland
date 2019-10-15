@@ -42,7 +42,7 @@ class VarRouteService
 
 		if (isset(PagesCnst::ROUTE_TO_VIEW[$route]))
 		{
-			[$menu, $view_route] = PagesCnst::ROUTE_TO_VIEW[$this->route];
+			[$menu, $view_route] = PagesCnst::ROUTE_TO_VIEW[$route];
 
 			if ($view_ary[$menu] !== $view_route)
 			{

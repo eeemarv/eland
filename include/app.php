@@ -320,7 +320,7 @@ $c_system_user->match('/users/contacts/{contact_id}/del',
 		'controller\\users_contacts_del::users_contacts_del')
 	->bind('users_contacts_del');
 
-$c_system_user->match('/users/{user_id}/contacts/add',
+$c_system_admin->match('/users/{user_id}/contacts/add',
 		'controller\\users_contacts_add::users_contacts_add_admin')
 	->bind('users_contacts_add_admin');
 
@@ -439,11 +439,11 @@ $c_system_guest->match('/messages',
 		'controller\\messages_list::messages_list')
 	->bind('messages_list');
 
-$c_system_user->match('/users/{id}/image/del',
+$c_system_admin->post('/users/{id}/image/del',
 		'controller\\users_image_del::users_image_del_admin')
 	->bind('users_image_del_admin');
 
-$c_system_user->match('/users/image/del',
+$c_system_user->post('/users/image/del',
 		'controller\\users_image_del::users_image_del')
 	->bind('users_image_del');
 

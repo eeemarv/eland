@@ -1717,7 +1717,7 @@ class UsersListController extends AbstractController
 
         $status_def_ary = [
             'active'	=> [
-                'lbl'	=> $pp->admin() ? 'Actief' : 'Alle',
+                'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
                 'sql'	=> 'u.status in (1, 2)',
                 'st'	=> [1, 2],
             ],
@@ -1736,7 +1736,7 @@ class UsersListController extends AbstractController
             ],
         ];
 
-        if ($pp->admin())
+        if ($pp->is_admin())
         {
             $status_def_ary = $status_def_ary + [
                 'inactive'	=> [
