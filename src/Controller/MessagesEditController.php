@@ -112,10 +112,10 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):string
     {
+        $errors = [];
+
         $edit_mode = $mode === 'edit';
         $add_mode = $mode === 'add';
-
-        $errors = [];
 
         $validity_days = $request->request->get('validity_days', '');
         $account_code = $request->request->get('account_code', '');

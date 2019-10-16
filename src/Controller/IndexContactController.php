@@ -23,6 +23,8 @@ class IndexContactController extends AbstractController
         string $env_mail_from_address
     ):Response
     {
+        $errors = [];
+
         $mail = $request->request->get('mail', '');
         $message = $request->request->get('message', '');
         $form_ok = $request->query->get('form_ok', '');
@@ -36,8 +38,6 @@ class IndexContactController extends AbstractController
             {
                 throw new HttpException(500, 'Interne configuratie fout.');
             }
-
-            $errors = [];
 
             if (!$captcha_service->validate())
             {

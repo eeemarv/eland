@@ -45,6 +45,8 @@ class UsersPasswordAdminController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         $password = trim($request->request->get('password', ''));
         $notify = $request->request->get('notify', '');
 

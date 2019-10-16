@@ -36,6 +36,8 @@ class SupportController extends AbstractController
         MailAddrSystemService $mail_addr_system_service
     ):Response
     {
+        $errors = [];
+
         if ($su->is_master())
         {
             $user_email_ary = [];

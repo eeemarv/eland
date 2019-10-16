@@ -29,6 +29,8 @@ class DocsMapEditController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        $errors = [];
+
         $row = $xdb_service->get('doc', $map_id, $pp->schema());
 
         if ($row)
@@ -46,10 +48,7 @@ class DocsMapEditController extends AbstractController
         {
             if ($error_token = $form_token_service->get_error())
             {
-                $alert_service->error($error_token);
-
-                $link_render->redirect('docs_map', $pp->ary(),
-                    ['map_id' => $map_id]);
+                $errors[] = $error_token;
             }
 
             $posted_map_name = trim($request->request->get('map_name', ''));

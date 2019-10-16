@@ -10,9 +10,7 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
-use App\Service\DateFormatService;
 use App\Service\PageParamsService;
 
 class ApikeysDelController extends AbstractController

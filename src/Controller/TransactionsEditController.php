@@ -39,6 +39,8 @@ class TransactionsEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
 
         $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),

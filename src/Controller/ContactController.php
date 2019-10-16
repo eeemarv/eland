@@ -34,6 +34,8 @@ class ContactController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
+        $errors = [];
+
         if (!$config_service->get('contact_form_en', $pp->schema()))
         {
             $alert_service->warning('De contactpagina is niet ingeschakeld.');

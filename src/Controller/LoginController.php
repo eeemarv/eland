@@ -40,6 +40,8 @@ class LoginController extends AbstractController
         string $env_master_password
     ):Response
     {
+        $errors = [];
+
         $location = $request->query->get('location', '');
 
         if (!$location
@@ -56,8 +58,6 @@ class LoginController extends AbstractController
         {
             $lc_login = strtolower($login);
             $password = trim($request->request->get('password'));
-
-            $errors = [];
 
             if (!($lc_login && $password))
             {

@@ -58,6 +58,8 @@ class MessagesListController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        $errors = [];
+
         $selected_messages = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
@@ -67,8 +69,6 @@ class MessagesListController extends AbstractController
             && !$pp->is_guest()
             && count($bulk_submit))
         {
-            $errors = [];
-
             if (count($bulk_submit) > 1)
             {
                 throw new BadRequestHttpException('Ongeldig formulier. Meer dan 1 submit.');

@@ -37,6 +37,8 @@ class ForumEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');

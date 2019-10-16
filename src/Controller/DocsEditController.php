@@ -31,6 +31,8 @@ class DocsEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $errors = [];
+
         $row = $xdb_service->get('doc', $doc_id, $pp->schema());
 
         if ($row)
@@ -48,8 +50,6 @@ class DocsEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             $access = $request->request->get('access', '');
 
             if (!$access)

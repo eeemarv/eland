@@ -46,6 +46,8 @@ class UsersDelAdminController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if ($su->id() === $id)
         {
             throw new AccessDeniedHttpException(
@@ -70,8 +72,6 @@ class UsersDelAdminController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;

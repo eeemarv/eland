@@ -46,6 +46,13 @@ class NewsAddController extends AbstractController
         $news = [];
         $errors = [];
 
+        $itemdate = trim($request->request->get('itemdate', ''));
+        $location = trim($request->request->get('location', ''));
+        $sticky = $request->request->get('sticky', '') ? true : false;
+        $newsitem = trim($request->request->get('newsitem', ''));
+        $headline = trim($request->request->get('headline', ''));
+        $access = $request->request->get('access', '');
+
         if ($request->isMethod('POST'))
         {
             $news = [
@@ -56,22 +63,18 @@ class NewsAddController extends AbstractController
                 'headline'	=> trim($request->request->get('headline', '')),
             ];
 
-            $access = $request->request->get('access', '');
-
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
             }
 
-            if ($news['itemdate'])
+            if ($itemdate)
             {
-                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $pp->schema());
+                $itemdate_formatted = $date_format_service->reverse($news['itemdate'], $pp->schema());
 
-                if ($news['itemdate'] === '')
+                if ($itemdate_formatted === '')
                 {
                     $errors[] = 'Fout formaat in agendadatum.';
-
-                    $news['itemdate'] = '';
                 }
             }
             else
@@ -79,17 +82,17 @@ class NewsAddController extends AbstractController
                 $errors[] = 'Geef een agendadatum op.';
             }
 
-            if (!isset($news['headline']) || (trim($news['headline']) == ''))
+            if ($headline === '')
             {
                 $errors[] = 'Titel is niet ingevuld';
             }
 
-            if (strlen($news['headline']) > 200)
+            if (strlen($headline) > 200)
             {
                 $errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
             }
 
-            if (strlen($news['location']) > 128)
+            if (strlen($location) > 128)
             {
                 $errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
             }
@@ -101,10 +104,17 @@ class NewsAddController extends AbstractController
 
             if (!count($errors))
             {
-                $news['approved'] = $pp->is_admin() ? 't' : 'f';
-                $news['published'] = $pp->is_admin() ? 't' : 'f';
-                $news['id_user'] = $su->is_master() ? 0 : $su->id();
-                $news['cdate'] = gmdate('Y-m-d H:i:s');
+                $news = [
+                    'approved'      => $pp->is_admin() ? 't' : 'f',
+                    'published'     => $pp->is_admin() ? 't' : 'f',
+                    'id_user'       => $su->is_master() ? 0 : $su->id(),
+                    'cdate'         => gmdate('Y-m-d H:i:s'),
+                    'itemdate'	    => $itemdate_formatted,
+                    'location'	    => $location,
+                    'sticky'	    => $sticky ? 't' : 'f',
+                    'newsitem'	    => $newsitem,
+                    'headline'	    => $headline,
+                ];
 
                 if ($db->insert($pp->schema() . '.news', $news))
                 {
@@ -150,8 +160,7 @@ class NewsAddController extends AbstractController
         }
         else
         {
-            $news['itemdate'] = gmdate('Y-m-d');
-            $access = '';
+            $itemdate = gmdate('Y-m-d');
         }
 
         $assets_service->add(['datepicker']);
@@ -170,7 +179,7 @@ class NewsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="headline" name="headline" ';
         $out .= 'value="';
-        $out .= $news['headline'] ?? '';
+        $out .= $headline;
         $out .= '" required maxlength="200">';
         $out .= '</div>';
 
@@ -191,7 +200,7 @@ class NewsAddController extends AbstractController
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($news['itemdate'], 'day', $pp->schema());
+        $out .= $date_format_service->get($itemdate, 'day', $pp->schema());
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());
@@ -205,7 +214,7 @@ class NewsAddController extends AbstractController
         $out .= '<label for="sticky" class="control-label">';
         $out .= '<input type="checkbox" id="sticky" name="sticky" ';
         $out .= 'value="1"';
-        $out .=  $news['sticky'] ? ' checked="checked"' : '';
+        $out .=  $sticky ? ' checked="checked"' : '';
         $out .= '>';
         $out .= ' Behoud na datum</label>';
         $out .= '</div>';
@@ -220,7 +229,7 @@ class NewsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="location" name="location" ';
         $out .= 'value="';
-        $out .= $news['location'] ?? '';
+        $out .= $location;
         $out .= '" maxlength="128">';
         $out .= '</div>';
         $out .= '</div>';
@@ -230,7 +239,7 @@ class NewsAddController extends AbstractController
         $out .= 'Bericht</label>';
         $out .= '<textarea name="newsitem" id="newsitem" ';
         $out .= 'class="form-control" rows="10" required>';
-        $out .= $news['newsitem'] ?? '';
+        $out .= $newsitem;
         $out .= '</textarea>';
         $out .= '</div>';
 

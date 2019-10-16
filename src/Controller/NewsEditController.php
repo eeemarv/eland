@@ -37,11 +37,10 @@ class NewsEditController extends AbstractController
     ):Response
     {
         $news = [];
+        $errors = [];
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             $news = [
                 'itemdate'	=> trim($request->request->get('itemdate', '')),
                 'location'	=> trim($request->request->get('location', '')),

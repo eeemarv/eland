@@ -79,6 +79,8 @@ class ContactsAddAdminController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        $errors = [];
+
         $account_code = $request->request->get('account_code', '');
         $id_type_contact = (int) $request->request->get('id_type_contact', '');
         $value = $request->request->get('value', '');
@@ -87,8 +89,6 @@ class ContactsAddAdminController extends AbstractController
 
         if($request->isMethod('POST'))
         {
-            $errors = [];
-
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;

@@ -62,6 +62,8 @@ class MessagesShowController extends AbstractController
         string $env_mapbox_token
     ):Response
     {
+        $errors = [];
+
         $message = self::get_message($db, $id, $pp->schema());
 
         $user_mail_content = $request->request->get('user_mail_content', '');
@@ -86,8 +88,6 @@ class MessagesShowController extends AbstractController
 
         if ($user_mail_submit && $request->isMethod('POST'))
         {
-            $errors = [];
-
             $to_user = $user;
 
             if (!$pp->is_admin() && !in_array($to_user['status'], [1, 2]))

@@ -63,6 +63,8 @@ class UsersShowAdminController extends AbstractController
         string $env_mapbox_token
     ):Response
     {
+        $errors = [];
+
         $tdays = $request->query->get('tdays', '365');
 
         $user_mail_content = $request->request->get('user_mail_content', '');
@@ -95,8 +97,6 @@ class UsersShowAdminController extends AbstractController
 
         if ($request->isMethod('POST') && $user_mail_submit)
         {
-            $errors = [];
-
             if ($su->is_master())
             {
                 throw new AccessDeniedHttpException('Het master account kan

@@ -3,12 +3,9 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;

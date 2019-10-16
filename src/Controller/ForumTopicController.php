@@ -44,6 +44,8 @@ class ForumTopicController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
@@ -87,8 +89,6 @@ class ForumTopicController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             if (!($pp->is_user() || $pp->is_admin()))
             {
                 $alert_service->error('Actie niet toegelaten.');

@@ -31,6 +31,7 @@ class CategoriesAddController extends AbstractController
     ):Response
     {
         $cat = [];
+        $errors = [];
 
         if ($request->isMethod('POST'))
         {

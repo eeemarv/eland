@@ -34,6 +34,8 @@ class DocsDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $errors = [];
+
         $row = $xdb_service->get('doc', $doc_id, $pp->schema());
 
         if ($row)
@@ -48,8 +50,6 @@ class DocsDelController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;

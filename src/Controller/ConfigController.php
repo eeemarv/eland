@@ -39,6 +39,7 @@ class ConfigController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $errors = [];
         $pane = ConfigCnst::TAB_PANES[$tab];
 
         $cond_ary = [

@@ -104,6 +104,8 @@ class ContactsEditAdminController extends AbstractController
         GeocodeQueue $geocode_queue
     ):Response
     {
+        $errors = [];
+
         $contact = self::get_contact(
             $db,
             $id,
@@ -124,8 +126,6 @@ class ContactsEditAdminController extends AbstractController
 
         if($request->isMethod('POST'))
         {
-            $errors = [];
-
             $id_type_contact = (int) $request->request->get('id_type_contact', '');
             $value = $request->request->get('value', '');
             $comments = $request->request->get('comments', '');

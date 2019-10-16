@@ -107,6 +107,8 @@ class MassTransactionController extends AbstractController
         AssetsService $assets_service
     ):Response
     {
+        $errors = [];
+
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '096024');
 
@@ -160,8 +162,6 @@ class MassTransactionController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             if (!$request->request->get('verify', false))
             {
                 $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';

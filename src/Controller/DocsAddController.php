@@ -38,10 +38,10 @@ class DocsAddController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             $f_file = $request->files->get('file');
 
             if (!$f_file)

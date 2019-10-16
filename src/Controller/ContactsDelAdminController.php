@@ -72,6 +72,8 @@ class ContactsDelAdminController extends AbstractController
         LinkRender $link_render
     ):Response
     {
+        $errors = [];
+
         $contact = ContactsEditController::get_contact($db, $id,  $pp->schema());
 
         if ($user_id !== $contact['id_user'])
@@ -111,8 +113,6 @@ class ContactsDelAdminController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;

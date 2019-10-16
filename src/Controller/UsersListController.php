@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ItemAccess;
 use App\Render\LinkRender;
 use App\Cnst\AccessCnst;
 use App\Cnst\StatusCnst;
@@ -73,6 +72,8 @@ class UsersListController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         $q = $request->get('q', '');
         $show_columns = $request->query->get('sh', []);
 
@@ -92,8 +93,6 @@ class UsersListController extends AbstractController
             && $request->isMethod('POST')
             && count($bulk_submit) === 1)
         {
-            $errors = [];
-
             if (count($bulk_field) > 1)
             {
                 throw new BadRequestHttpException('Ongeldig formulier. Request voor meer dan één veld.');

@@ -76,9 +76,15 @@ class ImageUploadService
 
         $tmp_upload_path = $uploaded_file->getRealPath();
 
-        $exif = exif_read_data($tmp_upload_path);
-
-        $orientation = $exif['COMPUTED']['Orientation'] ?? false;
+        if ($ext === 'jpg')
+        {
+            $exif = exif_read_data($tmp_upload_path);
+            $orientation = $exif['COMPUTED']['Orientation'] ?? 1;
+        }
+        else
+        {
+            $orientation = 1;
+        }
 
         $tmp_after_resize_path = tempnam(sys_get_temp_dir(), 'img');
 
