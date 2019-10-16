@@ -56,7 +56,7 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        return self::messages_form(
+        $content = self::messages_form(
             $request,
             $id,
             'edit',
@@ -80,6 +80,11 @@ class MessagesEditController extends AbstractController
             $s3_service,
             $env_s3_url
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function messages_form(
@@ -105,7 +110,7 @@ class MessagesEditController extends AbstractController
         UserCacheService $user_cache_service,
         S3Service $s3_service,
         string $env_s3_url
-    ):Response
+    ):string
     {
         $edit_mode = $mode === 'edit';
         $add_mode = $mode === 'add';
@@ -382,8 +387,11 @@ class MessagesEditController extends AbstractController
 
                 if ($pp->is_admin())
                 {
-                    $account_code = $su->user()['letscode'] . ' ' . $su->user()['name'];
-                 }
+                    $account_code = $su->user()['letscode'] ?? '';
+                    $account_code .= ' ';
+                    $account_code .= $su->user()['name'] ?? '';
+                    $account_code = trim($account_code);
+                }
             }
         }
 
@@ -671,10 +679,7 @@ class MessagesEditController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 
     public static function format(string $value):string

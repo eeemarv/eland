@@ -30,7 +30,7 @@ class UserExpMsgsTask extends SchemaTask
 		MailAddrUserService $mail_addr_user_service
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->mail_queue = $mail_queue;
 		$this->config_service = $config_service;
@@ -52,7 +52,7 @@ class UserExpMsgsTask extends SchemaTask
 
 		foreach ($warn_messages as $message)
 		{
-			$user = $this->user_cache->get($message['id_user'], $this->schema);
+			$user = $this->user_cache_service->get($message['id_user'], $this->schema);
 
 			if (!($user['status'] == 1 || $user['status'] == 2))
 			{
@@ -70,7 +70,7 @@ class UserExpMsgsTask extends SchemaTask
 			$mail_template .= $message['type'] === 'offer' ? 'offer' : 'want';
 
 			$this->mail_queue->queue([
-				'to' 				=> $this->mail_addr_user->get_active($message['id_user'], $this->schema),
+				'to' 				=> $this->mail_addr_user_service->get_active($message['id_user'], $this->schema),
 				'schema' 			=> $this->schema,
 				'template' 			=> $mail_template,
 				'vars' 				=> $vars

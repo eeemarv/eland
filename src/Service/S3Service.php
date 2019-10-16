@@ -6,10 +6,8 @@ use Aws\S3\S3Client;
 
 class S3Service
 {
-	protected $bucket;
-	protected $region;
-	protected $img_bucket;
-	protected $doc_bucket;
+	protected $env_aws_s3_bucket;
+	protected $env_aws_s3_region;
 	protected $client;
 
 	const IMG_TYPES = [
@@ -59,23 +57,23 @@ class S3Service
 	];
 
 	public function __construct(
-		string $bucket,
-		string $region
+		string $env_aws_s3_bucket,
+		string $env_aws_s3_region
 	)
 	{
-		$this->bucket = $bucket;
-		$this->region = $region;
+		$this->env_aws_s3_bucket = $env_aws_s3_bucket;
+		$this->env_aws_s3_region = $env_aws_s3_region;
 
 		$this->client = S3Client::factory([
 			'signature'	=> 'v4',
-			'region'	=> $this->region,
+			'region'	=> $this->env_aws_s3_region,
 			'version'	=> '2006-03-01',
 		]);
 	}
 
 	public function exists(string $filename):bool
 	{
-		return $this->client->doesObjectExist($this->bucket, $filename);
+		return $this->client->doesObjectExist($this->env_aws_s3_bucket, $filename);
 	}
 
 	public function img_upload(
@@ -94,7 +92,7 @@ class S3Service
 
 		try {
 
-			$this->client->upload($this->bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+			$this->client->upload($this->env_aws_s3_bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
 				'params'	=> [
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> $content_type,
@@ -132,7 +130,7 @@ class S3Service
 
 		try
 		{
-			$this->client->upload($this->bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
+			$this->client->upload($this->env_aws_s3_bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
 				'params'	=> [
 					'CacheControl'	=> 'public, max-age=31536000',
 					'ContentType'	=> $content_type,
@@ -152,13 +150,13 @@ class S3Service
 		try
 		{
 			$result = $this->client->getObject([
-				'Bucket' => $this->bucket,
+				'Bucket' => $this->env_aws_s3_bucket,
 				'Key'    => $source,
 			]);
 
 			$this->client->copyObject([
-				'Bucket'		=> $this->bucket,
-				'CopySource'	=> $this->bucket . '/' . $source,
+				'Bucket'		=> $this->env_aws_s3_bucket,
+				'CopySource'	=> $this->env_aws_s3_bucket . '/' . $source,
 				'Key'			=> $destination,
 				'ACL'			=> 'public-read',
 				'CacheControl'	=> 'public, max-age=31536000',
@@ -178,7 +176,7 @@ class S3Service
 		try
 		{
 			$this->client->deleteObject([
-				'Bucket'	=> $this->bucket,
+				'Bucket'	=> $this->env_aws_s3_bucket,
 				'Key'		=> $filename,
 			]);
 		}
@@ -191,7 +189,7 @@ class S3Service
 	public function list(int $num = 10, string $marker = '0')
 	{
 		$params = [
-			'Bucket'	=> $this->bucket,
+			'Bucket'	=> $this->env_aws_s3_bucket,
 			'Marker'	=> $marker,
 			'MaxKeys'	=> $num,
 		];

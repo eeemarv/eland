@@ -20,7 +20,7 @@ class SyncUserCacheTask extends SchemaTask
 		SystemsService $systems_service
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->user_cache_service = $user_cache_service;
 	}
@@ -41,7 +41,7 @@ class SyncUserCacheTask extends SchemaTask
 
 		foreach ($user_ids as $id)
 		{
-			$this->user_cache->sync($id, $this->schema);
+			$this->user_cache_service->sync($id, $this->schema);
 		}
 	}
 

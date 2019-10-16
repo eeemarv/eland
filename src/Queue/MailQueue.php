@@ -178,11 +178,11 @@ class MailQueue implements QueueInterface
 
 		if (isset($data['reply_to']))
 		{
-			$data['from'] = $this->mail_addr_system->get_from($schema);
+			$data['from'] = $this->mail_addr_system_service->get_from($schema);
 		}
  		else
 		{
-			$data['from'] = $this->mail_addr_system->get_noreply($schema);
+			$data['from'] = $this->mail_addr_system_service->get_noreply($schema);
 		}
 
 		if ($this->has_from_address_error($data, 'mail_queue'))

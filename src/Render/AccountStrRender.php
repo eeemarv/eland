@@ -17,9 +17,12 @@ class AccountStrRender
 
 	public function get(int $id, string $schema):string
 	{
-		$user = $this->user_cache->get($id, $schema);
+		$user = $this->user_cache_service->get($id, $schema);
 
-		$str = trim($user['letscode'] . ' ' . $user['name']);
+		$code = $user['letscode'] ?? '';
+		$name = $user['name'] ?? '';
+
+		$str = trim($code . ' ' . $name);
 
 		return $str === '' ? '** (leeg) ***' : $str;
 	}

@@ -49,7 +49,7 @@ class MessagesAddController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        return MessagesEditController::messages_form(
+        $content = MessagesEditController::messages_form(
             $request,
             0,
             'add',
@@ -73,5 +73,10 @@ class MessagesAddController extends AbstractController
             $s3_service,
             $env_s3_url
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }

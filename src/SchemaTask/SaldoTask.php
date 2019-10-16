@@ -41,7 +41,7 @@ class SaldoTask extends SchemaTask
 		account_str $account_str
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->xdb_service = $xdb_service;
 		$this->cache_service = $cache_service;
@@ -532,7 +532,7 @@ class SaldoTask extends SchemaTask
 
 		foreach ($saldo_mail as $id => $b)
 		{
-			$to = $this->mail_addr_user->get_active($id, $this->schema);
+			$to = $this->mail_addr_user_service->get_active($id, $this->schema);
 
 			if (!count($to))
 			{

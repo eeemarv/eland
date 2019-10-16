@@ -17,7 +17,6 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Controller\UsersListController;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersMapController extends AbstractController
@@ -44,7 +43,9 @@ class UsersMapController extends AbstractController
         $ref_geo = [];
         $params = ['status' => $status];
 
-        $status_def_ary = UsersListController::get_status_def_ary($pp->is_admin(), $config_service->get_new_user_treshold($pp->schema()));
+        $status_def_ary = UsersListController::get_status_def_ary(
+            $config_service, $pp
+        );
 
         $sql_bind = [];
 
@@ -86,7 +87,10 @@ class UsersMapController extends AbstractController
             }
             else if (!$pp->is_guest())
             {
-                $my_adr = trim($adr_ary[$su->id()]['value']);
+                if  (isset($adr_ary[$su->id()]))
+                {
+                    $my_adr = trim($adr_ary[$su->id()]['value']);
+                }
             }
 
             if (isset($my_adr) && $my_adr)
@@ -163,8 +167,8 @@ class UsersMapController extends AbstractController
                 [], 'Gebruiker toevoegen');
         }
 
-        users_list::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_map');
-        users_list::heading($heading_render);
+        UsersListController::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_map');
+        UsersListController::heading($heading_render);
 
         $data_map = json_encode([
             'users' => $data_users,

@@ -22,7 +22,7 @@ class TransactionService
 		Db $db,
 		LoggerInterface $logger,
 		UserCacheService $user_cache_service,
-		AutoMinLimitSerivce $autominlimit_service,
+		AutoMinLimitService $autominlimit_service,
 		ConfigService $config_service,
 		AccountRender $account_render
 	)
@@ -83,8 +83,8 @@ class TransactionService
 			return 0;
 		}
 
-		$this->user_cache->clear($transaction['id_to'], $schema);
-		$this->user_cache->clear($transaction['id_from'], $schema);
+		$this->user_cache_service->clear($transaction['id_to'], $schema);
+		$this->user_cache_service->clear($transaction['id_from'], $schema);
 
 		$this->autominlimit_service->init($schema)
 			->process($transaction['id_from'],

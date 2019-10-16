@@ -257,7 +257,7 @@ class MessagesListController extends AbstractController
                 {
                     foreach ($type_count_ary as $type => $count)
                     {
-                        messages_edit::adjust_category_stats($type,
+                        MessagesEditController::adjust_category_stats($type,
                             (int) $id_category, $count, $db, $pp->schema());
                     }
                 }

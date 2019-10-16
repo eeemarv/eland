@@ -19,6 +19,7 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
+use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
 class MessagesExtendedController extends AbstractController
@@ -39,10 +40,11 @@ class MessagesExtendedController extends AbstractController
         PaginationRender $pagination_render,
         PageParamsService $pp,
         SessionUserService $su,
+        VarRouteService $vr,
         string $env_s3_url
     ):Response
     {
-        $fetch_and_filter = self::fetch_and_filter(
+        $fetch_and_filter = MessagesListController::fetch_and_filter(
             $request,
             $db,
             $account_render,
@@ -53,6 +55,9 @@ class MessagesExtendedController extends AbstractController
             $link_render,
             $pagination_render,
             $select_render,
+            $pp,
+            $su,
+            $vr,
             $typeahead_service
         );
 

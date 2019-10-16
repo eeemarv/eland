@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Service\S3;
 use Psr\Log\LoggerInterface;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
@@ -25,15 +24,15 @@ class ImageUploadService
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
 
 	protected $logger;
-    protected $s3;
+    protected $s3_service;
 
 	public function __construct(
 		LoggerInterface $logger,
-		S3 $s3
+		S3Service $s3_service
 	)
 	{
 		$this->logger = $logger;
-		$this->s3 = $s3;
+		$this->s3_service = $s3_service;
 	}
 
 	public function upload(
@@ -108,7 +107,7 @@ class ImageUploadService
         $thumbnail = $image->thumbnail(new Box($width, $height), ImageInterface::THUMBNAIL_INSET);
         $thumbnail->save($tmp_after_resize_path);
 
-		$err = $this->s3->img_upload($filename, $tmp_after_resize_path);
+		$err = $this->s3_service->img_upload($filename, $tmp_after_resize_path);
 
         unlink($tmp_after_resize_path);
         unlink($tmp_upload_path);

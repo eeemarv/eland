@@ -16,8 +16,8 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\VarRouteService;
 use App\Service\XdbService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumAddTopicController extends AbstractController
 {
@@ -31,16 +31,16 @@ class ForumAddTopicController extends AbstractController
         HeadingRender $heading_render,
         AssetsService $assets_service,
         ItemAccessService $item_access_service,
-        VarRouteService $vr,
         SessionUserService $su,
         PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            $alert_service->warning('De forum pagina is niet ingeschakeld.');
-            $link_render->redirect($vr->get('default'), $pp->ary(), []);
+            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
         if ($request->isMethod('POST'))

@@ -44,15 +44,14 @@ class NewsAddController extends AbstractController
     ):Response
     {
         $news = [];
+        $errors = [];
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             $news = [
                 'itemdate'	=> trim($request->request->get('itemdate', '')),
                 'location'	=> trim($request->request->get('location', '')),
-                'sticky'	=> $request->request->get('sticky', false) ? 't' : 'f',
+                'sticky'	=> $request->request->get('sticky', '') ? 't' : 'f',
                 'newsitem'	=> trim($request->request->get('newsitem', '')),
                 'headline'	=> trim($request->request->get('headline', '')),
             ];
@@ -171,7 +170,7 @@ class NewsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="headline" name="headline" ';
         $out .= 'value="';
-        $out .= $news['headline'];
+        $out .= $news['headline'] ?? '';
         $out .= '" required maxlength="200">';
         $out .= '</div>';
 
@@ -221,7 +220,7 @@ class NewsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="location" name="location" ';
         $out .= 'value="';
-        $out .= $news['location'];
+        $out .= $news['location'] ?? '';
         $out .= '" maxlength="128">';
         $out .= '</div>';
         $out .= '</div>';
@@ -231,7 +230,7 @@ class NewsAddController extends AbstractController
         $out .= 'Bericht</label>';
         $out .= '<textarea name="newsitem" id="newsitem" ';
         $out .= 'class="form-control" rows="10" required>';
-        $out .= $news['newsitem'];
+        $out .= $news['newsitem'] ?? '';
         $out .= '</textarea>';
         $out .= '</div>';
 

@@ -86,7 +86,7 @@ class TransactionsAddController extends AbstractController
             [$letscode_from] = explode(' ', trim($request->request->get('letscode_from', '')));
             [$letscode_to] = explode(' ', trim($request->request->get('letscode_to', '')));
 
-            $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');;
+            $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');
             $transaction['date'] = gmdate('Y-m-d H:i:s');
             $transaction['creator'] = $su->is_master() ? 0 : $su->id();
 
@@ -1239,7 +1239,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<ul>';
 
-        $out .= transactions::get_valuation($config_service, $pp->schema());
+        $out .= TransactionsController::get_valuation($config_service, $pp->schema());
 
         $out .= '<li id="info_remote_amount_unknown" ';
         $out .= 'class="hidden">De omrekening ';
