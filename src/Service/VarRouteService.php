@@ -42,11 +42,11 @@ class VarRouteService
 
 		if (isset(PagesCnst::ROUTE_TO_VIEW[$route]))
 		{
-			[$menu, $view_route] = PagesCnst::ROUTE_TO_VIEW[$route];
+			[$menu, $view] = PagesCnst::ROUTE_TO_VIEW[$route];
 
-			if ($view_ary[$menu] !== $view_route)
+			if ($view_ary[$menu] !== $view)
 			{
-				$view_ary[$menu] = $view_route;
+				$view_ary[$menu] = $view;
 				$this->session->set('view', $view_ary);
 			}
 		}
@@ -60,7 +60,7 @@ class VarRouteService
 			'users_show'	=> $this->pp->is_admin() ? 'users_show_admin' : 'users_show',
 			'users_edit'	=> $this->pp->is_admin() ? 'users_edit_admin' : 'users_edit',
 			'messages'		=> 'messages_' . $view_ary['messages'],
-			'news'			=> 'messages_' . $view_ary['news'],
+			'news'			=> 'news_' . $view_ary['news'],
 		];
 
 		$default = $this->config_service->get('default_landing_page', $this->pp->schema());

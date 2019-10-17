@@ -24,6 +24,7 @@ class PagesCnst
         'users_tiles'       => ['users', 'tiles'],
         'users_tiles_admin' => ['users', 'tiles'],
         'users_map'         => ['users', 'map'],
+        'users_map_admin'   => ['users', 'map'],
         'messages_list'     => ['messages', 'list'],
         'messages_extended' => ['messages', 'extended'],
         'news_list'         => ['news', 'list'],
