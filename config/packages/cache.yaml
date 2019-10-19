@@ -1,5 +1,6 @@
 framework:
     cache:
-        prefix_seed: eland_
+        prefix_seed: app_
         app: cache.adapter.redis
-        default_redis_provider: '%env(REDIS_URL)%'
+        system: cache.adapter.redis
+        default_redis_provider: Predis\Client
