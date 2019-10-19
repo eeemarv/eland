@@ -23,7 +23,8 @@ class MessagesAddImagesUploadController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         ImageUploadService $image_upload_service,
-        MessagesEditImagesUploadController $edit_upload_controller
+        MessagesEditImagesUploadController $edit_upload_controller,
+        MessagesShowImagesUploadController $show_upload_controller
     ):Response
     {
         return $edit_upload_controller(
@@ -35,7 +36,8 @@ class MessagesAddImagesUploadController extends AbstractController
             $logger,
             $pp,
             $su,
-            $image_upload_service
+            $image_upload_service,
+            $show_upload_controller
         );
     }
 }

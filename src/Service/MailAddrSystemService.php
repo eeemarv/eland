@@ -59,6 +59,11 @@ class MailAddrSystemService
 
 		foreach ($mail_ary as $mail)
 		{
+			if (!$mail)
+			{
+				continue;
+			}
+
 			$mail = trim($mail);
 
 			if ($this->validate($mail, $mail_id, $schema))

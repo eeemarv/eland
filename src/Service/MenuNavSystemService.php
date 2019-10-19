@@ -148,7 +148,7 @@ class MenuNavSystemService
 				'label'		=> $this->config_service->get('systemname', $eland_schema),
 			];
 
-			if ($this->pp_schema === $eland_schema)
+			if ($this->pp->schema() === $eland_schema)
 			{
 				$m_item['active'] = true;
 			}

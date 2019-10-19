@@ -47,17 +47,21 @@ class MailAddrUserService
 		while ($row = $st->fetch())
 		{
 			$mail = trim($row['value']);
-			$name = $row['letscode'] . ' ' . $row['name'];
+
+			$code = $row['letscode'] ?? '';
+			$name = $row['name'] ?? '';
+
+			$code_name = $code . ' ' . $name;
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{
 				$this->logger->error('Mail Addr User: invalid address : ' .
-					$mail . ' for user: ' . $name,
+					$mail . ' for user: ' . $code_name,
 					['schema' => $schema]);
 				continue;
 			}
 
-			$out[$mail] = $name;
+			$out[$mail] = $code_name;
 		}
 
 		return $out;
