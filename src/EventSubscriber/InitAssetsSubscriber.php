@@ -31,7 +31,7 @@ class InitAssetsSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-           'kernel.controller' => 'onKernelController',
+           'kernel.controller' => ['onKernelController', 2000],
         ];
     }
 }

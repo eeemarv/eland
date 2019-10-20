@@ -11,10 +11,12 @@ class GeocodeService
 {
     protected $geocoder;
 
-    public function __construct()
+    public function __construct(
+        string $env_google_geo_api_key
+    )
     {
         $httpClient = new HttpClient();
-        $provider = new GoogleMaps($httpClient, 'be', getenv('GOOGLE_GEO_API_KEY'));
+        $provider = new GoogleMaps($httpClient, 'be', $env_google_geo_api_key);
         $this->geocoder = new StatefulGeocoder($provider, 'nl');
         $this->geocoder->setLimit(1);
     }

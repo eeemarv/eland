@@ -5,35 +5,35 @@ namespace App\Queue;
 use App\Queue\QueueInterface;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
-use App\Service\Queue;
 use Psr\Log\LoggerInterface;
-use App\Service\Geocode;
-use App\Render\account_str;
+use App\Render\AccountStrRender;
+use App\Service\GeocodeService;
+use App\Service\QueueService;
 
 class GeocodeQueue implements QueueInterface
 {
-	protected $queue;
+	protected $queue_service;
 	protected $logger;
 	protected $cache_service;
 	protected $db;
-	protected $geocode;
+	protected $geocode_service;
 	protected $account_str;
 
 	public function __construct(
 		Db $db,
 		CacheService $cache_service,
-		Queue $queue,
+		QueueService $queue_service,
 		LoggerInterface $logger,
-		Geocode $geocode,
-		account_str $account_str
+		GeocodeService $geocode_service,
+		AccountStrRender $account_str_render
 	)
 	{
-		$this->queue = $queue;
+		$this->queue_service = $queue_service;
 		$this->logger = $logger;
 		$this->cache_service = $cache_service;
 		$this->db = $db;
-		$this->geocode = $geocode;
-		$this->account_str = $account_str;
+		$this->geocode_service = $geocode_service;
+		$this->account_str_render = $account_str_render;
 	}
 
 	public function process(array $data):void
@@ -58,7 +58,7 @@ class GeocodeQueue implements QueueInterface
 		}
 
 		$log_user = 'user: ' . $sch . '.' .
-			$this->account_str->get_with_id($uid, $sch);
+			$this->account_str_render->get_with_id($uid, $sch);
 
 		$geo_status_key = 'geo_status_' . $adr;
 		$key = 'geo_' . $adr;
@@ -81,7 +81,7 @@ class GeocodeQueue implements QueueInterface
 		}
 
 		// lat, lng
-		$coords = $this->geocode->getCoordinates($adr);
+		$coords = $this->geocode_service->getCoordinates($adr);
 
 		if (count($coords))
 		{
@@ -113,7 +113,7 @@ class GeocodeQueue implements QueueInterface
 
 		$data['adr'] = trim($data['adr']);
 
-		$this->queue->set('geocode', $data, $priority);
+		$this->queue_service->set('geocode', $data, $priority);
 	}
 
 	/**
@@ -152,7 +152,7 @@ class GeocodeQueue implements QueueInterface
 		$this->queue($data, $priority);
 
 		$log = 'Queued for Geocoding: ';
-		$log .= $this->account_str->get_with_id($data['uid'], $data['schema']);
+		$log .= $this->account_str_render->get_with_id($data['uid'], $data['schema']);
 		$log .= ', ';
 		$log .= $data['adr'];
 
