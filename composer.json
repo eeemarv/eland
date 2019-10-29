@@ -52,6 +52,7 @@
 		"symfony/translation": "4.3.*",
 		"symfony/twig-bridge": "^4",
 		"symfony/twig-bundle": "4.3.*",
+		"symfony/twig-pack": "^1.0",
 		"symfony/validator": "^4",
 		"symfony/var-dumper": "^4.3",
 		"symfony/yaml": "4.3.*",
@@ -60,6 +61,7 @@
 	},
 
     "require-dev": {
+		"symfony/maker-bundle": "^1.13",
 		"symfony/web-server-bundle": "4.3.*"
 	},
 

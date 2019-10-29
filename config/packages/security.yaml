@@ -1,22 +1,35 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+        App\Security\User:
+            algorithm: auto
+
     providers:
-        in_memory: { memory: null }
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            id: App\Security\UserProvider
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+        pass:
+            pattern: ^/(_profiler|_wdt|css|images|js)/
             security: false
         main:
             anonymous: true
+            guard:
+                authenticators:
+                    - App\Security\LoginAuthenticator
+                    - App\Security\SystemUserAuthenticator
+                entry_point: App\Security\SystemUserAuthenticator
+            logout:
+                path: app_logout
+                # where to redirect after logout
+                # target: app_any_route
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#firewalls-authentication
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/\w+/a/, roles: ROLE_ADMIN }
+         - { path: ^/\w+/u/, roles: ROLE_USER }
+         - { path: ^/\w+/g/, roles: ROLE_GUEST }
+
+    role_hierarchy:
+        ROLE_MASTER: ROLE_ADMIN
+        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_USER: ROLE_GUEST
+        ROLE_ELAS_GUEST: ROLE_GUEST
