@@ -576,7 +576,7 @@ class UsersListController extends AbstractController
 
         if (count($show_columns))
         {
-            $show_columns = array_intersect_key_recursive($show_columns, $columns);
+            $show_columns = self::array_intersect_key_recursive($show_columns, $columns);
 
             $session->set($session_users_columns_key, $show_columns);
         }
@@ -1901,5 +1901,20 @@ class UsersListController extends AbstractController
         }
 
         return $ret;
+    }
+
+    public static function array_intersect_key_recursive(array $ary_1, array $ary_2)
+    {
+        $ary_1 = array_intersect_key($ary_1, $ary_2);
+
+        foreach ($ary_1 as $key => &$val)
+        {
+            if (is_array($val))
+            {
+                $val = is_array($ary_2[$key]) ? self::array_intersect_key_recursive($val, $ary_2[$key]) : $val;
+            }
+        }
+
+        return $ary_1;
     }
 }
