@@ -11,11 +11,9 @@ security:
         dev:
             pattern: ^/(_profiler|_wdt)/
             security: false
-        index:
-            pattern: ^(|/x/|/contact|/monitor)$
-            security: false
         main:
             anonymous: true
+            access_denied_handler: App\Security\AccessDeniedHandler
 
 #            guard:
 #                authenticators:
