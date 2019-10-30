@@ -46,6 +46,7 @@
 		"symfony/orm-pack": "^1.0",
 		"symfony/process": "^4",
 		"symfony/profiler-pack": "^1.0",
+		"symfony/proxy-manager-bridge": "4.3.*",
 		"symfony/security": "^4",
 		"symfony/security-bundle": "4.3.*",
 		"symfony/security-csrf": "^4",

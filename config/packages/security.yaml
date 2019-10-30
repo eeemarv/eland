@@ -1,35 +1,39 @@
 security:
-    encoders:
-        App\Security\User:
-            algorithm: auto
+#    encoders:
+#        App\Security\User:
+#            algorithm: auto
 
     providers:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             id: App\Security\UserProvider
     firewalls:
-        pass:
-            pattern: ^/(_profiler|_wdt|css|images|js)/
+        dev:
+            pattern: ^/(_profiler|_wdt)/
+            security: false
+        index:
+            pattern: ^(|/x/|/contact|/monitor)$
             security: false
         main:
             anonymous: true
-            guard:
-                authenticators:
-                    - App\Security\LoginAuthenticator
-                    - App\Security\SystemUserAuthenticator
-                entry_point: App\Security\SystemUserAuthenticator
-            logout:
-                path: app_logout
+
+#            guard:
+#                authenticators:
+#                    - App\Security\LoginAuthenticator
+#                    - App\Security\SystemUserAuthenticator
+#                entry_point: App\Security\SystemUserAuthenticator
+#            logout:
+#                path: logout
                 # where to redirect after logout
-                # target: app_any_route
+                # target: login
 
     access_control:
-         - { path: ^/\w+/a/, roles: ROLE_ADMIN }
-         - { path: ^/\w+/u/, roles: ROLE_USER }
-         - { path: ^/\w+/g/, roles: ROLE_GUEST }
+         - { path: ^/\w+/a/, roles: admin }
+         - { path: ^/\w+/u/, roles: user }
+         - { path: ^/\w+/g/, roles: guest }
 
-    role_hierarchy:
-        ROLE_MASTER: ROLE_ADMIN
-        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
-        ROLE_USER: ROLE_GUEST
-        ROLE_ELAS_GUEST: ROLE_GUEST
+#    role_hierarchy:
+#        ROLE_MASTER: ROLE_ADMIN
+#        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
+#        ROLE_USER: ROLE_GUEST
+#        ROLE_ELAS_GUEST: ROLE_GUEST

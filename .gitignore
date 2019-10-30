@@ -1,7 +1,7 @@
-_book
-node_modules
-.env_m
-.dist
+/_book/
+/node_modules/
+/.env_m
+/.dist
 /cache/
 
 ###> symfony/framework-bundle ###

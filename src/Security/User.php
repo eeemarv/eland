@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class User implements UserInterface
@@ -36,24 +35,25 @@ class User implements UserInterface
 
     public function getPassword(): string
     {
+        // hashed password
         return (string) $this->password;
     }
 
     public function setPassword(string $password): self
     {
+        // hashed password
         $this->password = $password;
-
         return $this;
     }
 
     public function getSalt()
     {
         return null;
+        // not used
     }
 
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        // obsolete, not used
     }
 }

@@ -212,6 +212,9 @@
     "symfony/profiler-pack": {
         "version": "v1.0.4"
     },
+    "symfony/proxy-manager-bridge": {
+        "version": "v4.3.5"
+    },
     "symfony/routing": {
         "version": "4.2",
         "recipe": {
