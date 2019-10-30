@@ -35,6 +35,8 @@ class ForumController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $forum_posts = [];
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
@@ -50,8 +52,6 @@ class ForumController extends AbstractController
 
         if (count($rows))
         {
-            $forum_posts = [];
-
             foreach ($rows as $row)
             {
                 $replies = $xdb_service->get_many(['agg_schema' => $pp->schema(),

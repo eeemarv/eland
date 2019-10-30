@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 
 /**
  * This is never called. See bug report https://github.com/symfony/symfony/issues/28229
- *
+ * App\EventSubscriber\AccessDeniedExceptionSubscriber is used instead
  */
 
 class AccessDeniedHandler implements AccessDeniedHandlerInterface
