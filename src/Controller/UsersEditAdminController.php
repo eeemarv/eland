@@ -217,13 +217,13 @@ class UsersEditAdminController extends AbstractController
 
                 foreach ($contact as $key => $c)
                 {
-                    if ($c['value'] && !$c['access'])
+                    if ($c['value'] && !isset($c['access']))
                     {
                         $errors[] = 'Vul een zichtbaarheid in.';
                         continue;
                     }
 
-                    if ($c['access'])
+                    if (isset($c['access']))
                     {
                         $contact[$key]['flag_public'] = AccessCnst::TO_FLAG_PUBLIC[$c['access']];
                     }
@@ -439,7 +439,9 @@ class UsersEditAdminController extends AbstractController
                     maximaal 500 tekens lang zijn.';
             }
 
-            if ($pp->is_admin() && !$user_prefetch['adate'] && $user['status'] == 1)
+            if ($pp->is_admin()
+                && ($is_edit && !$user_prefetch['adate'])
+                && $user['status'] == 1)
             {
                 if (!$password)
                 {
@@ -638,7 +640,8 @@ class UsersEditAdminController extends AbstractController
 
                             foreach ($contact as $contact_ary)
                             {
-                                $stored_contact = $stored_contacts[$contact_ary['id']];
+                                $contact_id = $contact_ary['id'];
+                                $stored_contact = $stored_contacts[$contact_id] ?? [];
 
                                 if (!$contact_ary['value'])
                                 {
@@ -650,7 +653,8 @@ class UsersEditAdminController extends AbstractController
                                     continue;
                                 }
 
-                                if ($stored_contact['abbrev'] == $contact_ary['abbrev']
+                                if ($stored_contact
+                                    && $stored_contact['abbrev'] == $contact_ary['abbrev']
                                     && $stored_contact['value'] == $contact_ary['value']
                                     && $stored_contact['flag_public'] == $contact_ary['flag_public'])
                                 {
