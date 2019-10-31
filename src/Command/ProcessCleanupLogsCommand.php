@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Service\MonitorProcessService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,6 +11,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ProcessCleanupLogsCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_logs';
+
+    protected $monitor_process_service;
+    protected $db;
+
+    public function __construct(
+        MonitorProcessService $monitor_process_service,
+        Db $db
+    )
+    {
+        parent::__construct();
+
+        $this->monitor_process_service = $monitor_process_service;
+        $this->db = $db;
+    }
 
     protected function configure()
     {
@@ -30,7 +46,7 @@ class ProcessCleanupLogsCommand extends Command
 
             $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
 
-            $db->executeQuery('delete from xdb.logs
+            $this->db->executeQuery('delete from xdb.logs
                 where ts < ?', [$treshold]);
 
             $this->monitor_process_service->periodic_log();
