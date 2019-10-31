@@ -69,7 +69,7 @@ class UsersEditAdminController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        return self::form(
+        $content = self::form(
             $request,
             $id,
             true,
@@ -100,6 +100,11 @@ class UsersEditAdminController extends AbstractController
             $vr,
             $menu_service
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function form(
@@ -132,7 +137,7 @@ class UsersEditAdminController extends AbstractController
         SessionUserService $su,
         VarRouteService $vr,
         MenuService $menu_service
-    ):Response
+    ):string
     {
         $errors = [];
         $contact = [];
@@ -218,7 +223,10 @@ class UsersEditAdminController extends AbstractController
                         continue;
                     }
 
-                    $contact[$key]['flag_public'] = AccessCnst::TO_FLAG_PUBLIC[$c['access']];
+                    if ($c['access'])
+                    {
+                        $contact[$key]['flag_public'] = AccessCnst::TO_FLAG_PUBLIC[$c['access']];
+                    }
                 }
 
                 foreach ($contact as $key => $c)
@@ -1183,6 +1191,7 @@ class UsersEditAdminController extends AbstractController
             $out .= 'class="form-control" maxlength="200">';
             $out .= $user['admincomment'] ?? '';
             $out .= '</textarea>';
+            $out .= 'Deze informatie is enkel zichtbaar voor de admins';
             $out .= '</div>';
 
             $out .= '<div class="pan-sub">';
@@ -1381,7 +1390,7 @@ class UsersEditAdminController extends AbstractController
 
                 $out .= $item_access_service->get_radio_buttons(
                     $access_name,
-                    $item_access_service->get_value_from_flag_public($c['flag_public']),
+                    $item_access_service->get_value_from_flag_public($c['flag_public'] ?? ''),
                     $abbrev
                 );
 
@@ -1429,10 +1438,7 @@ class UsersEditAdminController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 
     private static function send_activation_mail(

@@ -65,7 +65,7 @@ class UsersEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        return UsersEditAdminController::form(
+        $content = UsersEditAdminController::form(
             $request,
             $su->id(),
             true,
@@ -96,5 +96,10 @@ class UsersEditController extends AbstractController
             $vr,
             $menu_service
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }
