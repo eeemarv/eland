@@ -56,8 +56,12 @@ class PageParamsService
 
 		$this->system = $this->request->attributes->get('system', '');
 
-		if ($this->system === ''
-			|| !$this->systems_service->get_schema($this->system))
+		if ($this->system === '')
+		{
+			throw new NotFoundHttpException('Geen systeem gedefinieerd.');
+		}
+
+		if (!$this->systems_service->get_schema($this->system))
 		{
 			throw new NotFoundHttpException('Systeem "' . $this->system . '" niet gevonden.');
 		}
@@ -83,7 +87,7 @@ class PageParamsService
 
 			if ($this->edit_enabled)
 			{
-				$this->ary['edit'] = '';
+				$this->ary['edit'] = '1';
 			}
 
 			if ($this->org_system !== '')

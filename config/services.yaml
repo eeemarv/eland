@@ -51,6 +51,9 @@ services:
     App\Service\SessionUserService:
         lazy: true
 
+    App\Service\PageParamsService:
+        lazy: true
+
     Predis\Client:
         arguments:
             - '%env(REDIS_URL)%'
