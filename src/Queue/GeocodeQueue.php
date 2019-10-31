@@ -18,6 +18,7 @@ class GeocodeQueue implements QueueInterface
 	protected $db;
 	protected $geocode_service;
 	protected $account_str;
+	protected $geo_block;
 
 	public function __construct(
 		Db $db,
@@ -25,7 +26,8 @@ class GeocodeQueue implements QueueInterface
 		QueueService $queue_service,
 		LoggerInterface $logger,
 		GeocodeService $geocode_service,
-		AccountStrRender $account_str_render
+		AccountStrRender $account_str_render,
+		string $env_geo_block
 	)
 	{
 		$this->queue_service = $queue_service;
@@ -34,6 +36,7 @@ class GeocodeQueue implements QueueInterface
 		$this->db = $db;
 		$this->geocode_service = $geocode_service;
 		$this->account_str_render = $account_str_render;
+		$this->env_geo_block = $env_geo_block;
 	}
 
 	public function process(array $data):void
@@ -73,7 +76,7 @@ class GeocodeQueue implements QueueInterface
 
 		$this->cache_service->set($geo_status_key, ['value' => 'error'], 31536000); // 1 year
 
-		if (getenv('GEO_BLOCK') === '1')
+		if ($this->env_geo_block === '1')
 		{
 			error_log('geo coding is blocked. not processing: ' .
 				json_encode($data));

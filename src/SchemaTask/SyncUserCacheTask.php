@@ -25,7 +25,12 @@ class SyncUserCacheTask extends SchemaTask
 		$this->user_cache_service = $user_cache_service;
 	}
 
-	function process():void
+	public function get_name():string
+	{
+		return 'sync_user_cache';
+	}
+
+	public function process():void
 	{
 		$user_ids = [];
 

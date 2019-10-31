@@ -32,12 +32,17 @@ class GeocodeTask extends SchemaTask
 		account_str $account_str
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->logger = $logger;
 		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
 		$this->account_str = $account_str;
+	}
+
+	public function get_name():string
+	{
+		return 'geocode';
 	}
 
 	public function process():void

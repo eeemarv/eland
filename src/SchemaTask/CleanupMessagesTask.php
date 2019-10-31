@@ -24,13 +24,18 @@ class CleanupMessagesTask extends SchemaTask
 		ConfigService $config_service
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->logger = $logger;
 		$this->config_service = $config_service;
 	}
 
-	function process():void
+	public function get_name():string
+	{
+		return 'cleanup_messages';
+	}
+
+	public function process():void
 	{
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('msgexpcleanupdays', $this->schema) * 86400);

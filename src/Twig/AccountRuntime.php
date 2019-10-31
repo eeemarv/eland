@@ -22,7 +22,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_fullname(int $id, string $schema):string
 	{
-		$user = $this->user_cache_service>get($id, $schema);
+		$user = $this->user_cache_service->get($id, $schema);
 		return htmlspecialchars($user['fullname']);
 	}
 
@@ -40,20 +40,20 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_balance(int $id, string $schema):int
 	{
-		$user = $this->user_cache_service>get($id, $schema);
+		$user = $this->user_cache_service->get($id, $schema);
 		return $user['saldo'];
 	}
 
 	public function get_min(int $id, string $schema):string
 	{
-		$minlimit = $this->user_cache_service>get($id, $schema)['minlimit'];
+		$minlimit = $this->user_cache_service->get($id, $schema)['minlimit'];
 		$minlimit = $minlimit == -999999999 ? '' : $minlimit;
 		return $minlimit;
 	}
 
 	public function get_max(int $id, string $schema):string
 	{
-		$maxlimit = $this->user_cache_service>get($id, $schema)['maxlimit'];
+		$maxlimit = $this->user_cache_service->get($id, $schema)['maxlimit'];
 		$maxlimit = $maxlimit == 999999999 ? '' : $maxlimit;
 		return $maxlimit;
 	}

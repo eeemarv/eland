@@ -38,7 +38,12 @@ class UserExpMsgsTask extends SchemaTask
 		$this->mail_addr_user_service = $mail_addr_user_service;
 	}
 
-	function process(bool $update = true):void
+	public function get_name():string
+	{
+		return 'user_exp_msgs';
+	}
+
+	public function process(bool $update = true):void
 	{
 		$now = gmdate('Y-m-d H:i:s');
 

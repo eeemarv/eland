@@ -21,12 +21,17 @@ class SaldoUpdateTask extends SchemaTask
 		SystemsService $systems_service
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->logger = $logger;
 	}
 
-	function process():void
+	public function get_name():string
+	{
+		return 'saldo_update';
+	}
+
+	public function process():void
 	{
 		$user_balances = $min = $plus = [];
 

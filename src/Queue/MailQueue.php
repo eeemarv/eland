@@ -8,7 +8,6 @@ use Psr\Log\LoggerInterface;
 use Twig_Environment as Twig;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
-use App\Service\EmailValidate;
 use App\Service\EmailValidateService;
 use App\Service\QueueService;
 use App\Service\SystemsService;
@@ -32,7 +31,11 @@ class MailQueue implements QueueInterface
 		ConfigService $config_service,
 		MailAddrSystemService $mail_addr_system_service,
 		EmailValidateService $email_validate_service,
-		SystemsService $systems_service
+		SystemsService $systems_service,
+		string $env_smtp_host,
+		string $env_smtp_port,
+		string $env_smtp_username,
+		string $env_smtp_password
 	)
 	{
 		$this->queue_service = $queue_service;
@@ -44,9 +47,9 @@ class MailQueue implements QueueInterface
 		$this->systems_service = $systems_service;
 
 		$enc = getenv('SMTP_ENC') ?: 'tls';
-		$transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
-			->setUsername(getenv('SMTP_USERNAME'))
-			->setPassword(getenv('SMTP_PASSWORD'));
+		$transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, $enc))
+			->setUsername($env_smtp_username)
+			->setPassword($env_smtp_password);
 		$this->mailer = new \Swift_Mailer($transport);
 		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 		$this->mailer->getTransport()->stop();

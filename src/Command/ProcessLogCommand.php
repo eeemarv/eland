@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Service\LogDbService;
+use App\Service\MonitorProcessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,6 +11,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ProcessLogCommand extends Command
 {
     protected static $defaultName = 'process:log';
+
+    protected $monitor_process_service;
+    protected $log_db_service;
+
+    public function __construct(
+        MonitorProcessService $monitor_process_service,
+        LogDbService $log_db_service
+    )
+    {
+        parent::__construct();
+
+        $this->monitor_process_service = $monitor_process_service;
+        $this->log_db_service = $log_db_service;
+    }
 
     protected function configure()
     {
@@ -26,7 +42,7 @@ class ProcessLogCommand extends Command
                 continue;
             }
 
-            $log_db_service->update();
+            $this->log_db_service->update();
             $this->monitor_process_service->periodic_log();
         }
     }

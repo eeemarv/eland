@@ -11,6 +11,23 @@ class ProcessWorkerCommand extends Command
 {
     protected static $defaultName = 'process:worker';
 
+    protected $monitor_process_service;
+    protected $mail_queue;
+    protected $queue_service;
+
+    public function __construct(
+        MonitorProcessService $monitor_process_service,
+        MailQueue $mail_queue,
+        QueueService $queue_service
+    )
+    {
+        parent::__construct();
+
+        $this->monitor_process_service = $monitor_process_service;
+        $this->mail_queue = $mail_queue;
+        $this->queue_service = $queue_service;
+    }
+
     protected function configure()
     {
         $this->setDescription('Several slow background processes and set asset hashes.');

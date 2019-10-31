@@ -2,6 +2,9 @@
 
 namespace App\Command;
 
+use App\Queue\MailQueue;
+use App\Service\MonitorProcessService;
+use App\Service\QueueService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,6 +12,23 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ProcessMailCommand extends Command
 {
     protected static $defaultName = 'process:mail';
+
+    protected $monitor_process_service;
+    protected $mail_queue;
+    protected $queue_service;
+
+    public function __construct(
+        MonitorProcessService $monitor_process_service,
+        MailQueue $mail_queue,
+        QueueService $queue_service
+    )
+    {
+        parent::__construct();
+
+        $this->monitor_process_service = $monitor_process_service;
+        $this->mail_queue = $mail_queue;
+        $this->queue_service = $queue_service;
+    }
 
     protected function configure()
     {
@@ -26,11 +46,11 @@ class ProcessMailCommand extends Command
                 continue;
             }
 
-            $record = $app['queue']->get(['mail']);
+            $record = $this->queue_service->get(['mail']);
 
             if (count($record))
             {
-                $mail_queue->process($record['data']);
+                $this->mail_queue->process($record['data']);
             }
 
             $this->monitor_process_service->periodic_log();

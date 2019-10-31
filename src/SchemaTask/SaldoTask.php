@@ -53,7 +53,12 @@ class SaldoTask extends SchemaTask
 		$this->account_str = $account_str;
 	}
 
-	function process():void
+	public function get_name():string
+	{
+		return 'saldo';
+	}
+
+	public function process():void
 	{
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('saldofreqdays', $this->schema) * 86400);
 

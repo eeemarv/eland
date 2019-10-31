@@ -24,10 +24,15 @@ class CleanupNewsTask extends SchemaTask
 		SystemsService $systems_service
 	)
 	{
-		parent::__construct($schedule, $systems);
+		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->xdb_service = $xdb_service;
 		$this->logger = $logger;
+	}
+
+	public function get_name():string
+	{
+		return 'cleanup_news';
 	}
 
 	public function process():void

@@ -20,7 +20,7 @@ class FetchElasIntersystemTask
 	protected $now;
 	protected $now_gmdate;
 	protected $last_fetch;
-	protected $apikeys_fails;
+	protected $apikey_fails;
 	protected $elas_domains;
 
 	public function __construct(
@@ -36,9 +36,6 @@ class FetchElasIntersystemTask
 		$this->logger = $logger;
 	}
 
-	/**
-	 *
-	 */
 	function process():void
 	{
 		$this->now = time();
@@ -46,18 +43,18 @@ class FetchElasIntersystemTask
 
 		$this->elas_domains = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['domains']);
 		$this->last_fetch = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['last']);
-		$this->apikeys_fails = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['apikey_fails']);
+		$this->apikey_fails = $this->cache_service->get(CacheKeyCnst::ELAS_FETCH['apikey_fails']);
 
 		error_log('-- Last fetch --');
 		error_log(json_encode($this->last_fetch));
 		error_log('-- apikey fails --');
 		error_log(json_encode($this->apikey_fails));
 
-		$apikeys_ignore = $apikeys_fails_cleanup = [];
+		$apikeys_ignore = $apikey_fails_cleanup = [];
 
 		$yesterday = $this->now - 86400;
 
-		foreach ($this->apikeys_fails as $apikey => $time_failed)
+		foreach ($this->apikey_fails as $apikey => $time_failed)
 		{
 			$failed = strtotime($time_failed . ' UTC');
 
@@ -67,7 +64,7 @@ class FetchElasIntersystemTask
 				continue;
 			}
 
-			$apikeys_fails_cleanup[] = $apikey;
+			$apikey_fails_cleanup[] = $apikey;
 		}
 
 		if (count($apikeys_ignore))
@@ -76,9 +73,9 @@ class FetchElasIntersystemTask
 			error_log(json_encode($apikeys_ignore));
 		}
 
-		foreach ($apikeys_fails_cleanup as $apikey)
+		foreach ($apikey_fails_cleanup as $apikey)
 		{
-			unset($this->apikeys_fails[$apikey]);
+			unset($this->apikey_fails[$apikey]);
 		}
 
 		$diff = array_diff_key($this->elas_domains, $this->last_fetch['users'] ?? []);
@@ -188,7 +185,7 @@ class FetchElasIntersystemTask
 		{
 			error_log($this->domain . ' : Can not get token.');
 
-			$this->apikeys_fails[$apikey] = $this->now_gmdate;
+			$this->apikey_fails[$apikey] = $this->now_gmdate;
 			$this->update_cache();
 			return;
 		}
@@ -197,7 +194,7 @@ class FetchElasIntersystemTask
 		{
 			error_log ($this->domain . ' : Invalid token.');
 
-			$this->apikeys_fails[$apikey] = $this->now_gmdate;
+			$this->apikey_fails[$apikey] = $this->now_gmdate;
 			$this->update_cache();
 			return;
 		}
@@ -226,7 +223,7 @@ class FetchElasIntersystemTask
 		{
 			error_log($e->getMessage());
 
-			$this->apikeys_fails[$apikey] = $this->now_gmdate;
+			$this->apikey_fails[$apikey] = $this->now_gmdate;
 			$this->update_cache();
 
 		}
@@ -234,19 +231,13 @@ class FetchElasIntersystemTask
 		return;
 	}
 
-	/**
-	*
-	*/
 	protected function update_cache():void
 	{
 		$this->cache_service->set(CacheKeyCnst::ELAS_FETCH['last'], $this->last_fetch);
-		$this->cache_service->set(CacheKeyCnst::ELAS_FETCH['apikey_fails'], $this->apikeys_fails);
+		$this->cache_service->set(CacheKeyCnst::ELAS_FETCH['apikey_fails'], $this->apikey_fails);
 		error_log('update cache');
 	}
 
-	/**
-	 *
-	 */
 	protected function fetch_msgs():void
 	{
 		$msgs = [];
@@ -307,8 +298,6 @@ class FetchElasIntersystemTask
 					'fetch_count'	=> $count,
 					'fetched_at'	=> is_array($c) ? $c['fetched_at'] : $this->now_gmdate,
 				];
-
-//				error_log($this->domain . ' _' . $va . '_  id:' . $id . ' c: ' . $content . ' -- ' . $user);
 
 				$msgs[$id] = $msg;
 			});
@@ -404,9 +393,6 @@ class FetchElasIntersystemTask
 		return;
 	}
 
-	/**
-	 *
-	 */
 	protected function fetch_users():void
 	{
 		$crawler = $this->client->request('GET',
