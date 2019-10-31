@@ -17,20 +17,17 @@ class ProcessLogCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
-        $monitor_process_service->boot('log');
+        $this->monitor_process_service->boot('log');
 
         while (true)
         {
-            if (!$monitor_process_service->wait_most_recent())
+            if (!$this->monitor_process_service->wait_most_recent())
             {
                 continue;
             }
 
             $log_db_service->update();
-            $monitor_process_service->periodic_log();
+            $this->monitor_process_service->periodic_log();
         }
     }
 }

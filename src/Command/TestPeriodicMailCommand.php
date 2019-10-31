@@ -21,14 +21,11 @@ class TestPeriodicMailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
         error_log('TEST periodic mail');
 
         $schema = $input->getArgument('schema');
 
-        $systems_service->get_schemas();
+        $this->systems_service->get_schemas();
         $app['schema_task.saldo']->set_schema($schema);
         $app['schema_task.saldo']->process();
 

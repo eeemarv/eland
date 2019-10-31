@@ -21,9 +21,6 @@ class TestExpiredMessagesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
         $schema = $input->getArgument('schema');
 
         $systems_service->get_schemas();

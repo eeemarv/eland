@@ -5,7 +5,7 @@ namespace App\Task;
 use App\Service\CacheService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use App\Service\S3;
+use App\Service\S3Service;
 use App\Service\SystemsService;
 
 class CleanupImagesTask
@@ -22,14 +22,14 @@ class CleanupImagesTask
 		CacheService $cache_service,
 		Db $db,
 		LoggerInterface $logger,
-		S3 $s3,
+		S3Service $s3_service,
 		SystemsService $systems_service
 	)
 	{
 		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->logger = $logger;
-		$this->s3 = $s3;
+		$this->s3_service = $s3_service;
 		$this->systems_service = $systems_service;
 	}
 
@@ -43,7 +43,7 @@ class CleanupImagesTask
 
 		$time_treshold = time() - (84600 * self::DAYS);
 
-		$object = $this->s3->find_next($marker);
+		$object = $this->s3_service->find_next($marker);
 
 		if (!$object)
 		{
@@ -136,7 +136,7 @@ class CleanupImagesTask
 		}
 
 		error_log(' -- delete img --');
-		$this->s3->del($object['Key']);
+		$this->s3_service->del($object['Key']);
 
 		if ($del_str)
 		{

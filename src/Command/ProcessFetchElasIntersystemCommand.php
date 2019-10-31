@@ -17,14 +17,11 @@ class ProcessFetchElasIntersystemCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
-        $monitor_process_service->boot('fetch_elas_intersystem');
+        $this->monitor_process_service->boot('fetch_elas_intersystem');
 
         while (true)
         {
-            if (!$monitor_process_service->wait_most_recent())
+            if (!$this->monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -34,7 +31,7 @@ class ProcessFetchElasIntersystemCommand extends Command
             sleep(450);
 
             $app['task.fetch_elas_intersystem']->process();
-            $monitor_process_service->periodic_log();
+            $this->monitor_process_service->periodic_log();
         }
     }
 }

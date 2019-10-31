@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Service\CacheService;
+use App\Service\MonitorProcessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,9 +12,18 @@ class ProcessCleanupCacheCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_cache';
 
-    public function __construct()
+    protected $monitor_process_service;
+    protected $cache_service;
+
+    public function __construct(
+        MonitorProcessService $monitor_process_service,
+        CacheService $cache_service
+    )
     {
         parent::__construct();
+
+        $this->monitor_process_service = $monitor_process_service;
+        $this->cache_service = $cache_service;
     }
 
     protected function configure()
@@ -22,20 +33,17 @@ class ProcessCleanupCacheCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
-        $monitor_process_service->boot('cleanup_cache');
+        $this->monitor_process_service->boot('cleanup_cache');
 
         while (true)
         {
-            if (!$monitor_process_service->wait_most_recent())
+            if (!$this->monitor_process_service->wait_most_recent())
             {
                 continue;
             }
 
-            $cache_service->cleanup();
-            $monitor_process_service->periodic_log();
+            $this->cache_service->cleanup();
+            $this->monitor_process_service->periodic_log();
         }
     }
 }

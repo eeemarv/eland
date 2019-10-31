@@ -17,16 +17,11 @@ class ProcessMailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
-//        error_log($app->url('contact', ['system' => 'x']));
-
-        $monitor_process_service->boot('mail');
+        $this->monitor_process_service->boot('mail');
 
         while (true)
         {
-            if (!$monitor_process_service->wait_most_recent())
+            if (!$this->monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -38,7 +33,7 @@ class ProcessMailCommand extends Command
                 $mail_queue->process($record['data']);
             }
 
-            $monitor_process_service->periodic_log();
+            $this->monitor_process_service->periodic_log();
         }
     }
 }

@@ -17,14 +17,11 @@ class ProcessGeocodeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $app = $this->getSilexApplication();
-
-        $monitor_process_service->boot('geocode');
+        $this->monitor_process_service->boot('geocode');
 
         while (true)
         {
-            if (!$monitor_process_service->wait_most_recent())
+            if (!$this->monitor_process_service->wait_most_recent())
             {
                 continue;
             }
@@ -36,7 +33,7 @@ class ProcessGeocodeCommand extends Command
                 $geocode_queue->process($record['data']);
             }
 
-            $monitor_process_service->periodic_log();
+            $this->monitor_process_service->periodic_log();
         }
     }
 }
