@@ -1646,6 +1646,7 @@ class UsersListController extends AbstractController
                         '%required%'    => isset($t['required']) ? ' required' : '',
                         '%fa%'          => $t['fa'] ?? '',
                         '%attr%'        => $t['attr'] ?? '',
+                        '%explain%'     => $t['explain'] ?? '',
                     ]);
                 }
 

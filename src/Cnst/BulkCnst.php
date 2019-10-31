@@ -60,11 +60,15 @@ class BulkCnst
         ],
         'minlimit'			=> [
             'lbl'		=> 'Minimum Account Limiet',
+            'explain'   => 'Tip: laat het veld leeg om de minimum limiet te wissen.
+                Bij accounts zonder individuele minimum limiet is de minimum systeemslimiet van toepassing (wanneer ingesteld).',
             'type'		=> 'number',
             'fa'		=> 'arrow-down',
         ],
         'maxlimit'			=> [
             'lbl'		=> 'Maximum Account Limiet',
+            'explain'   => 'Tip: laat het veld leeg om de maximum limiet te wissen.
+                Bij accounts zonder individuele maximum limiet is de maximum systeems limiet van toepassing (wanneer ingesteld).',
             'type'		=> 'number',
             'fa'		=> 'arrow-up',
         ],
@@ -84,6 +88,7 @@ class BulkCnst
     <span class="fa fa-%fa%"></span></span>
     <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
     </div>
+    %explain%
     </div>
     TPL;
 
@@ -106,6 +111,7 @@ class BulkCnst
     %options%
     </select>
     </div>
+    %explain%
     </div>
     TPL;
 
