@@ -2,29 +2,32 @@
 
 namespace App\Command;
 
+use App\SchemaTask\SchemaTaskSchedule;
+use App\Service\AssetsService;
 use App\Service\MonitorProcessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use util\task_container;
 
 class ProcessWorkerCommand extends Command
 {
     protected static $defaultName = 'process:worker';
 
     protected $monitor_process_service;
-    protected $mail_queue;
-    protected $queue_service;
+    protected $assets_service;
+    protected $schema_task_schedule;
 
     public function __construct(
-        MonitorProcessService $monitor_process_service
-//        MailQueue $mail_queue,
-//        QueueService $queue_service
+        MonitorProcessService $monitor_process_service,
+        AssetsService $assets_service,
+        SchemaTaskSchedule $schema_task_schedule
     )
     {
         parent::__construct();
 
         $this->monitor_process_service = $monitor_process_service;
+        $this->assets_service = $assets_service;
+        $this->schema_task_schedule = $schema_task_schedule;
     }
 
     protected function configure()
@@ -36,17 +39,24 @@ class ProcessWorkerCommand extends Command
     {
         $this->monitor_process_service->boot('worker');
 
-        error_log(' --- ');
-        error_log('schemas: ' . json_encode($this->systems_service->get_schemas()));
-        error_log(' --- ');
-
         $this->assets_service->write_file_hash_ary();
 
-        error_log('+-----------------+');
-        error_log('| Worker Tasks    |');
-        error_log('+-----------------+');
+        error_log('+------------------------+');
+        error_log('| Schema Tasks           |');
+        error_log('+------------------------+');
 
-        $schema_task = new task_container($app, 'schema_task');
+        foreach ($this->schema_task_schedule->get_schema_task_names() as $name)
+        {
+            error_log((string) $name);
+        }
+
+        error_log('+------------------------+');
+        error_log('| Last runs              |');
+        error_log('+------------------------+');
+
+        error_log(json_encode($this->schema_task_schedule->get_last_run_ary()));
+
+        error_log('+------------------------+');
 
         while (true)
         {
@@ -55,10 +65,7 @@ class ProcessWorkerCommand extends Command
                 continue;
             }
 
-            if ($schema_task->should_run())
-            {
-                $schema_task->run();
-            }
+            $this->schema_task_schedule->process();
 
             $this->monitor_process_service->periodic_log();
         }

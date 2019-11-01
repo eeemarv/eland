@@ -10,7 +10,7 @@ use App\Queue\MailQueue;
 use App\Service\IntersystemsService;
 use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
-use App\Render\account_str;
+use App\Render\AccountStrRender;
 
 class SaldoSchemaTask implements SchemaTaskInterface
 {
@@ -22,7 +22,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 	protected $intersystems_service;
 	protected $config_service;
 	protected $mail_addr_user_service;
-	protected $account_str;
+	protected $account_str_render;
 
 	public function __construct(
 		Db $db,
@@ -33,7 +33,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 		IntersystemsService $intersystems_service,
 		ConfigService $config_service,
 		MailAddrUserService $mail_addr_user_service,
-		account_str $account_str
+		AccountStrRender $account_str_render
 	)
 	{
 		$this->db = $db;
@@ -44,7 +44,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 		$this->intersystems_service = $intersystems_service;
 		$this->config_service = $config_service;
 		$this->mail_addr_user_service = $mail_addr_user_service;
-		$this->account_str = $account_str;
+		$this->account_str_render = $account_str_render;
 	}
 
 	public static function get_default_index_name():string
@@ -536,7 +536,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			if (!count($to))
 			{
 				$this->logger->info('No periodic mail queued for user ' .
-				$this->account_str->get_with_id($id, $schema) . ' because no email address.',
+				$this->account_str_render->get_with_id($id, $schema) . ' because no email address.',
 				['schema' => $schema]);
 
 				continue;
@@ -551,7 +551,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 				]),
 			], random_int(0, 5000));
 
-			$log_str = $this->account_str->get_with_id($id, $schema);
+			$log_str = $this->account_str_render->get_with_id($id, $schema);
 			$log_str .= ' to: ' . json_encode($to) . ' )';
 			$log_to[] = $log_str;
 		}

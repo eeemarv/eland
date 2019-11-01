@@ -5,8 +5,8 @@ namespace App\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
 use Psr\Log\LoggerInterface;
-use App\Queue\geocode as geocode_queue;
-use App\Render\account_str;
+use App\Queue\GeocodeQueue;
+use App\Render\AccountStrRender;
 
 class GeocodeSchemaTask implements SchemaTaskInterface
 {
@@ -17,15 +17,15 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 	protected $curl;
 	protected $geocoder;
 	protected $geocode_queue;
-	protected $account_str;
+	protected $account_str_render;
 	protected $env_geo_block;
 
 	public function __construct(
 		Db $db,
 		CacheService $cache_service,
 		LoggerInterface $logger,
-		geocode_queue $geocode_queue,
-		account_str $account_str,
+		GeocodeQueue $geocode_queue,
+		AccountStrRender $account_str_render,
 		string $env_geo_block
 	)
 	{
@@ -33,7 +33,7 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
-		$this->account_str = $account_str;
+		$this->account_str_render = $account_str_render;
 		$this->env_geo_block = $env_geo_block;
 	}
 
@@ -86,7 +86,7 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 
 			$this->geocode_queue->queue($data, 0);
 
-			$log = $this->account_str->get_with_id($row['id_user'], $schema);
+			$log = $this->account_str_render->get_with_id($row['id_user'], $schema);
 			$log .= ': ';
 			$log .= $data['adr'];
 

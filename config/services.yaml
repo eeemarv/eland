@@ -44,13 +44,6 @@ services:
             $env_app_host: '%env(APP_HOST)%'
             $env_app_scheme: '%env(APP_SCHEME)%'
 
-    _instanceof:
-        App\SchemaTask\SchemaTaskInterface:
-            tags: ['app.schema_task']
-
-    App\SchemaTask\SchemaTaskCollection:
-        arguments: [!tagged {tag: 'app.schema_task', default_index_method: 'get_default_index_name'}]
-
     App\:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
@@ -58,6 +51,13 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
+
+    _instanceof:
+        App\SchemaTask\SchemaTaskInterface:
+            tags: ['app.schema_task']
+
+    App\SchemaTask\SchemaTaskCollection:
+        arguments: [!tagged {tag: 'app.schema_task'}]
 
     App\Service\SessionUserService:
         lazy: true
