@@ -2,16 +2,13 @@
 
 namespace App\SchemaTask;
 
-use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
 use Psr\Log\LoggerInterface;
 use App\Queue\geocode as geocode_queue;
-use App\Service\Schedule;
-use App\Service\SystemsService;
 use App\Render\account_str;
 
-class GeocodeTask extends SchemaTask
+class GeocodeSchemaTask implements SchemaTaskInterface
 {
 	protected $queue;
 	protected $logger;
@@ -21,33 +18,33 @@ class GeocodeTask extends SchemaTask
 	protected $geocoder;
 	protected $geocode_queue;
 	protected $account_str;
+	protected $env_geo_block;
 
 	public function __construct(
 		Db $db,
 		CacheService $cache_service,
 		LoggerInterface $logger,
 		geocode_queue $geocode_queue,
-		Schedule $schedule,
-		SystemsService $systems_service,
-		account_str $account_str
+		account_str $account_str,
+		string $env_geo_block
 	)
 	{
-		parent::__construct($schedule, $systems_service);
 		$this->logger = $logger;
 		$this->cache_service = $cache_service;
 		$this->db = $db;
 		$this->geocode_queue = $geocode_queue;
 		$this->account_str = $account_str;
+		$this->env_geo_block = $env_geo_block;
 	}
 
-	public function get_name():string
+	public static function get_default_index_name():string
 	{
 		return 'geocode';
 	}
 
-	public function process():void
+	public function run(string $schema, bool $update):void
 	{
-		if (getenv('GEO_BLOCK') === '1')
+		if ($this->env_geo_block === '1')
 		{
 			error_log('geo coding is blocked.');
 			return;
@@ -56,9 +53,9 @@ class GeocodeTask extends SchemaTask
 		$log_ary = [];
 
 		$st = $this->db->prepare('select c.value, c.id_user
-			from ' . $this->schema . '.contact c, ' .
-				$this->schema . '.type_contact tc, ' .
-				$this->schema . '.users u
+			from ' . $schema . '.contact c, ' .
+				$schema . '.type_contact tc, ' .
+				$schema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'adr\'
 				and c.id_user = u.id
@@ -71,7 +68,7 @@ class GeocodeTask extends SchemaTask
 			$data = [
 				'adr'		=> trim($row['value']),
 				'uid'		=> $row['id_user'],
-				'schema'	=> $this->schema,
+				'schema'	=> $schema,
 			];
 
 			$key = 'geo_' . $data['adr'];
@@ -89,7 +86,7 @@ class GeocodeTask extends SchemaTask
 
 			$this->geocode_queue->queue($data, 0);
 
-			$log = $this->account_str->get_with_id($row['id_user'], $this->schema);
+			$log = $this->account_str->get_with_id($row['id_user'], $schema);
 			$log .= ': ';
 			$log .= $data['adr'];
 
@@ -104,16 +101,16 @@ class GeocodeTask extends SchemaTask
 		{
 			$this->logger->info('Addresses queued for geocoding: ' .
 				implode(', ', $log_ary),
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 		}
 	}
 
-	public function is_enabled():bool
+	public function is_enabled(string $schema):bool
 	{
 		return true;
 	}
 
-	public function get_interval():int
+	public function get_interval(string $schema):int
 	{
 		return 86400;
 	}

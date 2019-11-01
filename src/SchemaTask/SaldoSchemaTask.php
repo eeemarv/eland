@@ -2,20 +2,17 @@
 
 namespace App\SchemaTask;
 
-use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\XdbService;
 use App\Service\CacheService;
 use Psr\Log\LoggerInterface;
 use App\Queue\MailQueue;
-use App\Service\Schedule;
-use App\Service\SystemsService;
 use App\Service\IntersystemsService;
 use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use App\Render\account_str;
 
-class SaldoTask extends SchemaTask
+class SaldoSchemaTask implements SchemaTaskInterface
 {
 	protected $db;
 	protected $xdb_service;
@@ -33,15 +30,12 @@ class SaldoTask extends SchemaTask
 		CacheService $cache_service,
 		LoggerInterface $logger,
 		MailQueue $mail_queue,
-		Schedule $schedule,
-		SystemsService $systems_service,
 		IntersystemsService $intersystems_service,
 		ConfigService $config_service,
 		MailAddrUserService $mail_addr_user_service,
 		account_str $account_str
 	)
 	{
-		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->xdb_service = $xdb_service;
 		$this->cache_service = $cache_service;
@@ -53,14 +47,14 @@ class SaldoTask extends SchemaTask
 		$this->account_str = $account_str;
 	}
 
-	public function get_name():string
+	public static function get_default_index_name():string
 	{
 		return 'saldo';
 	}
 
-	public function process():void
+	public function run(string $schema, bool $update):void
 	{
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('saldofreqdays', $this->schema) * 86400);
+		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('saldofreqdays', $schema) * 86400);
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
@@ -69,13 +63,13 @@ class SaldoTask extends SchemaTask
 
 	// get blocks
 
-		$forum_en = $this->config_service->get('forum_en', $this->schema) ? true : false;
-		$intersystem_en = $this->config_service->get('interlets_en', $this->schema) ? true : false;
-		$intersystem_en = $intersystem_en && $this->config_service->get('template_lets', $this->schema) ? true : false;
+		$forum_en = $this->config_service->get('forum_en', $schema) ? true : false;
+		$intersystem_en = $this->config_service->get('interlets_en', $schema) ? true : false;
+		$intersystem_en = $intersystem_en && $this->config_service->get('template_lets', $schema) ? true : false;
 
 		$blocks_sorted = $block_options = [];
 
-		$block_ary = $this->config_service->get('periodic_mail_block_ary', $this->schema);
+		$block_ary = $this->config_service->get('periodic_mail_block_ary', $schema);
 
 		$block_ary = explode(',', ltrim($block_ary, '+'));
 
@@ -102,7 +96,7 @@ class SaldoTask extends SchemaTask
 		$rs = $this->db->prepare('select u.id,
 				u.name, u.saldo, u.status,
 				u.letscode, u.postcode, u.cron_saldo
-			from ' . $this->schema . '.users u
+			from ' . $schema . '.users u
 			where u.status in (1, 2)');
 
 		$rs->execute();
@@ -115,9 +109,9 @@ class SaldoTask extends SchemaTask
 	// fetch mail addresses & cron_saldo
 
 		$st = $this->db->prepare('select u.id, c.value, c.flag_public
-			from ' . $this->schema . '.users u, ' .
-				$this->schema . '.contact c, ' .
-				$this->schema . '.type_contact tc
+			from ' . $schema . '.users u, ' .
+				$schema . '.contact c, ' .
+				$schema . '.type_contact tc
 			where u.status in (1, 2)
 				and u.id = c.id_user
 				and c.id_type_contact = tc.id
@@ -146,8 +140,8 @@ class SaldoTask extends SchemaTask
 			$image_ary = [];
 
 			$rs = $this->db->prepare('select m.id, p."PictureFile"
-				from ' . $this->schema . '.msgpictures p, ' .
-					$this->schema . '.messages m
+				from ' . $schema . '.msgpictures p, ' .
+					$schema . '.messages m
 				where p.msgid = m.id
 					and m.cdate >= ?', [$treshold_time]);
 
@@ -164,9 +158,9 @@ class SaldoTask extends SchemaTask
 			$addr = $addr_public = $addr_p = [];
 
 			$rs = $this->db->prepare('select u.id, c.value, c.flag_public
-				from ' . $this->schema . '.users u, ' .
-					$this->schema . '.contact c, ' .
-					$this->schema . '.type_contact tc
+				from ' . $schema . '.users u, ' .
+					$schema . '.contact c, ' .
+					$schema . '.type_contact tc
 				where u.status in (1, 2)
 					and u.id = c.id_user
 					and c.id_type_contact = tc.id
@@ -187,8 +181,8 @@ class SaldoTask extends SchemaTask
 					m."Description" as description,
 					m.msg_type, m.id_user,
 					m.amount, m.units
-				from ' . $this->schema . '.messages m, ' .
-					$this->schema . '.users u
+				from ' . $schema . '.messages m, ' .
+					$schema . '.users u
 				where m.id_user = u.id
 					and u.status IN (1, 2)
 					and m.cdate >= ?
@@ -220,7 +214,7 @@ class SaldoTask extends SchemaTask
 
 		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
 		{
-			$eland_ary = $this->intersystems_service->get_eland($this->schema);
+			$eland_ary = $this->intersystems_service->get_eland($schema);
 
 			foreach ($eland_ary as $sch => $d)
 			{
@@ -261,7 +255,7 @@ class SaldoTask extends SchemaTask
 				}
 			}
 
-			$elas_ary = $this->intersystems_service->get_elas($this->schema);
+			$elas_ary = $this->intersystems_service->get_elas($schema);
 
 			foreach ($elas_ary as $group_id => $ary)
 			{
@@ -302,7 +296,7 @@ class SaldoTask extends SchemaTask
 		if (isset($block_options['news']))
 		{
 			$rows = $this->xdb_service->get_many([
-				'agg_schema' => $this->schema,
+				'agg_schema' => $schema,
 				'agg_type' => 'news_access',
 			]);
 
@@ -312,13 +306,13 @@ class SaldoTask extends SchemaTask
 			}
 
 			$query = 'select n.*
-				from ' . $this->schema . '.news n
+				from ' . $schema . '.news n
 				where n.approved = \'t\'
 					and n.published = \'t\' ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
 			$query .= 'order by n.itemdate ';
-			$query .= $this->config_service->get('news_order_asc', $this->schema) === '1' ? 'asc' : 'desc';
+			$query .= $this->config_service->get('news_order_asc', $schema) === '1' ? 'asc' : 'desc';
 
 			$rs = $this->db->prepare($query);
 
@@ -340,7 +334,7 @@ class SaldoTask extends SchemaTask
 					$this->xdb_service->set('news_access',
 						(string) $row['id'],
 						['access' => 'interlets'],
-						$this->schema);
+						$schema);
 
 					$row['access'] = 'interlets';
 				}
@@ -360,11 +354,11 @@ class SaldoTask extends SchemaTask
 		{
 
 			$rs = $this->db->prepare('select u.id
-				from ' . $this->schema . '.users u
+				from ' . $schema . '.users u
 				where u.status = 1
 					and u.adate > ?');
 
-			$time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('newuserdays', $this->schema) * 86400);
+			$time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('newuserdays', $schema) * 86400);
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time: $time;
 
 			$rs->bindValue(1, $time);
@@ -381,7 +375,7 @@ class SaldoTask extends SchemaTask
 		if (isset($block_options['leaving_users']))
 		{
 			$query = 'select u.id
-				from ' . $this->schema . '.users u
+				from ' . $schema . '.users u
 				where u.status = 2';
 
 			if ($block_options['leaving_users'] === 'recent')
@@ -409,7 +403,7 @@ class SaldoTask extends SchemaTask
 		if (isset($block_options['transactions']))
 		{
 			$rs = $this->db->prepare('select t.*
-				from ' . $this->schema . '.transactions t
+				from ' . $schema . '.transactions t
 				where t.cdate > ?');
 
 			$rs->bindValue(1, $treshold_time);
@@ -430,7 +424,7 @@ class SaldoTask extends SchemaTask
 			// new topics
 
 			$rows = $this->xdb_service->get_many([
-				'agg_schema' => $this->schema,
+				'agg_schema' => $schema,
 				'agg_type' => 'forum',
 				'data->>\'subject\'' => ['is not null'],
 				'ts' => ['>' => $treshold_time],
@@ -455,7 +449,7 @@ class SaldoTask extends SchemaTask
 
 			// new replies
 
-			$rows = $this->xdb_service->get_many(['agg_schema' => $this->schema,
+			$rows = $this->xdb_service->get_many(['agg_schema' => $schema,
 				'agg_type' => 'forum',
 				'data->>\'parent_id\'' => ['is not null'],
 				'ts' => ['>' => $treshold_time]], 'order by event_time desc');
@@ -466,7 +460,7 @@ class SaldoTask extends SchemaTask
 
 				if (!isset($forum_topics[$data['parent_id']]))
 				{
-					$forum_topics_replied[] = $this->schema . '_forum_' . $data['parent_id'];
+					$forum_topics_replied[] = $schema . '_forum_' . $data['parent_id'];
 				}
 			}
 
@@ -496,7 +490,7 @@ class SaldoTask extends SchemaTask
 
 		if (isset($block_options['docs']))
 		{
-			$rows = $this->xdb_service->get_many(['agg_schema' => $this->schema,
+			$rows = $this->xdb_service->get_many(['agg_schema' => $schema,
 				'agg_type' => 'doc',
 				'ts' => ['>' => $treshold_time],
 				'access' => ['users', 'interlets']], 'order by event_time desc');
@@ -537,19 +531,19 @@ class SaldoTask extends SchemaTask
 
 		foreach ($saldo_mail as $id => $b)
 		{
-			$to = $this->mail_addr_user_service->get_active($id, $this->schema);
+			$to = $this->mail_addr_user_service->get_active($id, $schema);
 
 			if (!count($to))
 			{
 				$this->logger->info('No periodic mail queued for user ' .
-				$this->account_str->get_with_id($id, $this->schema) . ' because no email address.',
-				['schema' => $this->schema]);
+				$this->account_str->get_with_id($id, $schema) . ' because no email address.',
+				['schema' => $schema]);
 
 				continue;
 			}
 
 			$this->mail_queue->queue([
-				'schema'			=> $this->schema,
+				'schema'			=> $schema,
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',
 				'vars'				=> array_merge($vars, [
@@ -557,7 +551,7 @@ class SaldoTask extends SchemaTask
 				]),
 			], random_int(0, 5000));
 
-			$log_str = $this->account_str->get_with_id($id, $this->schema);
+			$log_str = $this->account_str->get_with_id($id, $schema);
 			$log_str .= ' to: ' . json_encode($to) . ' )';
 			$log_to[] = $log_str;
 		}
@@ -565,27 +559,27 @@ class SaldoTask extends SchemaTask
 		if (count($log_to))
 		{
 			$this->logger->info('Saldomail queued: ' .
-				implode(', ', $log_to), ['schema' => $this->schema]);
+				implode(', ', $log_to), ['schema' => $schema]);
 		}
 		else
 		{
 			$this->logger->info('Saldomail NOT queued (no users)',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 		}
 
 		return;
 	}
 
-	public function is_enabled():bool
+	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get('saldofreqdays', $this->schema) ? true : false;
+		return $this->config_service->get('saldofreqdays', $schema) ? true : false;
 	}
 
-	public function get_interval():int
+	public function get_interval(string $schema):int
 	{
-		if (isset($this->schema))
+		if (isset($schema))
 		{
-			$days = $this->config_service->get('saldofreqdays', $this->schema);
+			$days = $this->config_service->get('saldofreqdays', $schema);
 			$days = $days < 1 ? 7 : $days;
 
 			return 86400 * $days;

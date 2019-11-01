@@ -20,7 +20,6 @@ parameters:
     assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
     assert.message_image_ext: 'jpg|png|gif'
 
-
 services:
     _defaults:
         autowire: true
@@ -44,6 +43,13 @@ services:
             $env_geo_block: '%env(GEO_BLOCK)%'
             $env_app_host: '%env(APP_HOST)%'
             $env_app_scheme: '%env(APP_SCHEME)%'
+
+    _instanceof:
+        App\SchemaTask\SchemaTaskInterface:
+            tags: ['app.schema_task']
+
+    App\SchemaTask\SchemaTaskCollection:
+        arguments: [!tagged {tag: 'app.schema_task', default_index_method: 'get_default_index_name'}]
 
     App\:
         resource: '../src/*'

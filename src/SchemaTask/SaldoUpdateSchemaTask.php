@@ -2,41 +2,34 @@
 
 namespace App\SchemaTask;
 
-use App\Model\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-use App\Service\Schedule;
-use App\Service\SystemsService;
-
-class SaldoUpdateTask extends SchemaTask
+class SaldoUpdateSchemaTask implements SchemaTaskInterface
 {
 	protected $db;
 	protected $logger;
 
 	public function __construct(
 		Db $db,
-		LoggerInterface $logger,
-		Schedule $schedule,
-		SystemsService $systems_service
+		LoggerInterface $logger
 	)
 	{
-		parent::__construct($schedule, $systems_service);
 		$this->db = $db;
 		$this->logger = $logger;
 	}
 
-	public function get_name():string
+	public static function get_default_index_name():string
 	{
 		return 'saldo_update';
 	}
 
-	public function process():void
+	public function run(string $schema, bool $update):void
 	{
 		$user_balances = $min = $plus = [];
 
 		$rs = $this->db->prepare('select id, saldo
-			from ' . $this->schema . '.users');
+			from ' . $schema . '.users');
 
 		$rs->execute();
 
@@ -46,7 +39,7 @@ class SaldoUpdateTask extends SchemaTask
 		}
 
 		$rs = $this->db->prepare('select id_from, sum(amount)
-			from ' . $this->schema . '.transactions
+			from ' . $schema . '.transactions
 			group by id_from');
 
 		$rs->execute();
@@ -57,7 +50,7 @@ class SaldoUpdateTask extends SchemaTask
 		}
 
 		$rs = $this->db->prepare('select id_to, sum(amount)
-			from ' . $this->schema . '.transactions
+			from ' . $schema . '.transactions
 			group by id_to');
 
 		$rs->execute();
@@ -79,21 +72,21 @@ class SaldoUpdateTask extends SchemaTask
 				continue;
 			}
 
-			$this->db->update($this->schema . '.users',
+			$this->db->update($schema . '.users',
 				['saldo' => $calculated], ['id' => $id]);
 
 			$m = 'User id ' . $id . ' balance updated, old: ' .
 				$balance . ', new: ' . $calculated;
-			$this->logger->info('(cron) ' . $m, ['schema' => $this->schema]);
+			$this->logger->info('(cron) ' . $m, ['schema' => $schema]);
 		}
 	}
 
-	public function is_enabled():bool
+	public function is_enabled(string $schema):bool
 	{
 		return true;
 	}
 
-	public function get_interval():int
+	public function get_interval(string $schema):int
 	{
 		return 86400;
 	}

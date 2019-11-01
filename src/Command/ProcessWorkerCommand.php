@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Service\MonitorProcessService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,16 +17,14 @@ class ProcessWorkerCommand extends Command
     protected $queue_service;
 
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        MailQueue $mail_queue,
-        QueueService $queue_service
+        MonitorProcessService $monitor_process_service
+//        MailQueue $mail_queue,
+//        QueueService $queue_service
     )
     {
         parent::__construct();
 
         $this->monitor_process_service = $monitor_process_service;
-        $this->mail_queue = $mail_queue;
-        $this->queue_service = $queue_service;
     }
 
     protected function configure()
@@ -38,10 +37,10 @@ class ProcessWorkerCommand extends Command
         $this->monitor_process_service->boot('worker');
 
         error_log(' --- ');
-        error_log('schemas: ' . json_encode($systems_service->get_schemas()));
+        error_log('schemas: ' . json_encode($this->systems_service->get_schemas()));
         error_log(' --- ');
 
-        $assets_service->write_file_hash_ary();
+        $this->assets_service->write_file_hash_ary();
 
         error_log('+-----------------+');
         error_log('| Worker Tasks    |');

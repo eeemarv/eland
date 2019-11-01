@@ -3,12 +3,13 @@
 namespace App\Service;
 
 use App\Service\CacheService;
-use Predis\Client as Predis;
 
 class ScheduleService
 {
+	const MINIMUM_INTERVAL = 720;
+	const CACHE_KEY = 'tasks';
+
 	protected $cache_service;
-	protected $predis;
 
 	protected $tasks;
 	protected $time;
@@ -16,12 +17,13 @@ class ScheduleService
 	protected $interval;
 	protected $id;
 
-	public function __construct(CacheService $cache_service, Predis $predis)
+	public function __construct(
+		CacheService $cache_service
+	)
 	{
 		$this->cache_service = $cache_service;
-		$this->predis = $predis;
 
-		$this->tasks = $this->cache_service->get('tasks');
+		$this->tasks = $this->cache_service->get(self::CACHE_KEY);
 	}
 
 	public function set_time():self
@@ -66,43 +68,39 @@ class ScheduleService
 	{
 		if (!isset($this->tasks[$this->id]) || !$this->tasks[$this->id])
 		{
-			error_log('insert task: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
+			error_log('insert task: ' . $this->id);
 
 			$this->tasks[$this->id] = gmdate('Y-m-d H:i:s', $this->time + mt_rand(60, 900));
 
-			$this->cache_service->set('tasks', $this->tasks);
+			$this->cache_service->set(self::CACHE_KEY, $this->tasks);
 
 			return false;
 		}
 
 		$last = strtotime($this->tasks[$this->id] . ' UTC');
 
-		// test 12 min
-		if (($this->time - $last) < 720)
+		if (($this->time - $last) < self::MINIMUM_INTERVAL)
 		{
-
-		//	error_log('blocked lt 720: ' . $this->id . ', last: ' . $last . ' diff: ' . ($this->time - $last) . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
-
 			return false;
 		}
 
 		$this->next = $last + $this->interval;
 
-		if ($this->next < $this->time)
+		if ($this->next >= $this->time)
 		{
-			$next = ((($this->time - $this->next) > 43200) || ($this->interval < 43201)) ? $this->time : $this->next;
-
-			$next = gmdate('Y-m-d H:i:s', $next);
-
-			$this->tasks[$this->id] = $next;
-
-			$this->cache_service->set('tasks', $this->tasks);
-
-			error_log('update & run: ' . $this->id . ' PID: ' . getmypid() . ' uid: ' . getmyuid() . ' inode: ' . getmyinode());
-
-			return true;
+			return false;
 		}
 
-		return false;
+		$next = ((($this->time - $this->next) > 43200) || ($this->interval < 43201)) ? $this->time : $this->next;
+
+		$next = gmdate('Y-m-d H:i:s', $next);
+
+		$this->tasks[$this->id] = $next;
+
+		$this->cache_service->set(self::CACHE_KEY, $this->tasks);
+
+		error_log('update & run: ' . $this->id);
+
+		return true;
 	}
 }
