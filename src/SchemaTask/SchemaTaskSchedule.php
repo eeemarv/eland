@@ -89,6 +89,11 @@ class SchemaTaskSchedule
 			}
 		}
 
+		if (!count($next_run_check))
+		{
+			return;
+		}
+
 		asort($next_run_check);
 		$id = array_key_first($next_run_check);
 
