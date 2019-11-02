@@ -43,6 +43,7 @@
 		"symfony/form": "4.3.*",
 		"symfony/framework-bundle": "4.3.*",
 		"symfony/monolog-bridge": "^4",
+		"symfony/monolog-bundle": "^3.4",
 		"symfony/orm-pack": "^1.0",
 		"symfony/process": "^4",
 		"symfony/profiler-pack": "^1.0",

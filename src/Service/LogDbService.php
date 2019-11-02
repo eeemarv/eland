@@ -2,11 +2,14 @@
 
 namespace App\Service;
 
+use App\Monolog\RedisHandler;
 use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 
 class LogDbService
 {
+	const MAX_POP = 500;
+
 	protected $db;
 	protected $predis;
 
@@ -16,19 +19,18 @@ class LogDbService
 		$this->predis = $predis;
 	}
 
-	/**
-	 *
-	 */
-	public function update(int $count = 500):void
+	public function update():void
 	{
-		for ($i = 0; $i < $count; $i++)
+		for ($i = 0; $i < self::MAX_POP; $i++)
 		{
-			$log_json = $this->predis->lpop('monolog_logs');
+			$log_json = $this->predis->lpop(RedisHandler::KEY);
 
 			if (!isset($log_json))
 			{
 				break;
 			}
+
+			error_log('LPOP LOG:: ' . $log_json);
 
 			$log = json_decode($log_json, true);
 
