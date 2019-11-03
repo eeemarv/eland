@@ -1,5 +1,8 @@
 <?php declare(strict_types=1);
 
+require_once __DIR__ . '/index.php';
+
+/*
 require_once __DIR__ . '/../include/web_legacy.php';
 
 $token = $_GET['token'] ?? '';
@@ -17,3 +20,4 @@ header('Location: ' . $app->url('login', [
 	'system'		=> $system,
 ]));
 exit;
+*/

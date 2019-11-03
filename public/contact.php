@@ -1,8 +1,12 @@
 <?php declare(strict_types=1);
 
+require_once __DIR__ . '/index.php';
+
+/*
 require_once __DIR__ . '/../include/web_legacy.php';
 
 header('Location: ' . $app->url('contact', [
     'system'		=> $system,
 ]));
 exit;
+*/
