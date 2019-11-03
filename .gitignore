@@ -3,6 +3,7 @@
 /.env_m
 /.dist
 /cache/
+/.env*
 
 ###> symfony/framework-bundle ###
 /.env.local
