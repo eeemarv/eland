@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . '/../include/web_legacy.php';
+$server_name = $_SERVER['SERVER_NAME'];
 
-header('Location: ' . $app->url('register', [
-    'system'		=> $system,
-]));
+$parts = explode('.', $server_name);
+
+if (count($parts) === 3)
+{
+    header('Location: https://' . $parts[1] . '.' . $parts[2] . '/' . $parts[0] . '/register');
+    exit;
+}
+
+header('Location: https://' . $parts[0] . '.' . $parts[1]);
 exit;

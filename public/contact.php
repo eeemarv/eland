@@ -1,12 +1,14 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . '/index.php';
+$server_name = $_SERVER['SERVER_NAME'];
 
-/*
-require_once __DIR__ . '/../include/web_legacy.php';
+$parts = explode('.', $server_name);
 
-header('Location: ' . $app->url('contact', [
-    'system'		=> $system,
-]));
+if (count($parts) === 3)
+{
+    header('Location: https://' . $parts[1] . '.' . $parts[2] . '/' . $parts[0] . '/contact');
+    exit;
+}
+
+header('Location: https://' . $parts[0] . '.' . $parts[1]);
 exit;
-*/

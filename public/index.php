@@ -1,8 +1,22 @@
-<?php
+<?php declare(strict_types=1);
 
 use App\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
+
+/** Redirect old subdomain routes */
+
+$server_name = $_SERVER['SERVER_NAME'];
+
+$parts = explode('.', $server_name);
+
+if (count($parts) === 3)
+{
+    header('Location: https://' . $parts[1] . '.' . $parts[2] . '/' . $parts[0] . '/login');
+    exit;
+}
+
+/** End redirect */
 
 require dirname(__DIR__).'/config/bootstrap.php';
 

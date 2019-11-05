@@ -1,23 +1,22 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . '/index.php';
+$server_name = $_SERVER['SERVER_NAME'];
 
-/*
-require_once __DIR__ . '/../include/web_legacy.php';
+$parts = explode('.', $server_name);
 
-$token = $_GET['token'] ?? '';
-
-if (strlen($token) > 10)
+if (count($parts) === 3)
 {
-	header('Location: ' . $app->url('login_elas_token', [
-		'system'		=> $system,
-		'elas_token'	=> substr($token, 6),
-	]));
-	exit;
+    $base_url = 'https://' . $parts[1] . '.' . $parts[2] . '/' . $parts[0];
+
+    if (isset($_GET['token']))
+    {
+        header('Location: ' . $base_url . '/login-elas/' . substr($_GET['token'], 6));
+        exit;
+    }
+
+    header('Location: ' . $base_url . '/login');
+    exit;
 }
 
-header('Location: ' . $app->url('login', [
-	'system'		=> $system,
-]));
+header('Location: https://' . $parts[0] . '.' . $parts[1]);
 exit;
-*/

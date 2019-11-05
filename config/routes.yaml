@@ -1,11 +1,2 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
-
-redirect_legacy:
-    path: /{path<.*>}
-    host: "{subdomain}.{domain}"
-    controller: App\Controller\RedirectLegacyController
-
 routes_eland:
     resource: routes_eland/index.yaml
