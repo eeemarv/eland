@@ -53,7 +53,6 @@ class users_edit_admin
                 'hobbies'		=> trim($request->request->get('hobbies', '')),
                 'comments'		=> trim($request->request->get('comments', '')),
                 'cron_saldo'	=> $request->request->get('cron_saldo') ? 1 : 0,
-                'lang'			=> 'nl'
             ];
 
             if ($app['pp_admin'])
@@ -179,7 +178,7 @@ class users_edit_admin
 
             if ($username_edit)
             {
-                $user['login'] = $user['name'] = trim($request->request->get('name', ''));
+                $user['name'] = trim($request->request->get('name', ''));
             }
 
             if ($fullname_edit)

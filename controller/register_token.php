@@ -82,14 +82,12 @@ class register_token
             'name'			=> $name,
             'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
             'postcode'		=> $data['postcode'],
-        //			'letscode'		=> '',
-            'login'			=> sha1(microtime()),
+
             'minlimit'		=> $minlimit,
             'maxlimit'		=> $maxlimit,
             'status'		=> 5,
             'accountrole'	=> 'user',
             'cron_saldo'	=> 't',
-            'lang'			=> 'nl',
             'hobbies'		=> '',
             'cdate'			=> gmdate('Y-m-d H:i:s'),
         ];
