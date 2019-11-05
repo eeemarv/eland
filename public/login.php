@@ -8,12 +8,6 @@ if (count($parts) === 3)
 {
     $base_url = 'https://' . $parts[1] . '.' . $parts[2] . '/' . $parts[0];
 
-    if (isset($_GET['token']))
-    {
-        header('Location: ' . $base_url . '/login-elas/' . substr($_GET['token'], 6));
-        exit;
-    }
-
     header('Location: ' . $base_url . '/login');
     exit;
 }
