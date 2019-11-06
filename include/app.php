@@ -687,40 +687,14 @@ $c_system_admin->match('/logo/del',
 	'controller\\logo_del::logo_del')
 	->bind('logo_del');
 
-$c_system_init->get('/elas-db-upgrade',
-	'controller\\init::elas_db_upgrade')
-	->bind('init_elas_db_upgrade');
-
-$c_system_init->get('/sync-users-images/{start}',
-	'controller\\init::sync_users_images')
-	->value('start', 0)
-	->bind('init_sync_users_images');
-
-$c_system_init->get('/sync-messages-images/{start}',
-	'controller\\init::sync_messages_images')
-	->value('start', 0)
-	->bind('init_sync_messages_images');
-
 $c_system_init->get('/clear-users-cache',
 	'controller\\init::clear_users_cache')
 	->bind('init_clear_users_cache');
-
-$c_system_init->get('/empty-elas-tokens',
-	'controller\\init::empty_elas_tokens')
-	->bind('init_empty_elas_tokens');
-
-$c_system_init->get('/empty-city-distance',
-	'controller\\init::empty_city_distance')
-	->bind('init_empty_city_distance');
 
 $c_system_init->get('/queue-geocoding/{start}',
 	'controller\\init::queue_geocoding')
 	->value('start', 0)
 	->bind('init_queue_geocoding');
-
-$c_system_init->get('/copy-config',
-	'controller\\init::copy_config')
-	->bind('init_copy_config');
 
 $c_system_init->get('/',
 	'controller\\init::init')
