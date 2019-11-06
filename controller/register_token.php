@@ -72,25 +72,29 @@ class register_token
             }
         }
 
-        $minlimit = $app['config']->get('preset_minlimit', $app['pp_schema']);
-        $minlimit = $minlimit === '' ? -999999999 : $minlimit;
-
-        $maxlimit = $app['config']->get('preset_maxlimit', $app['pp_schema']);
-        $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
-
         $user = [
             'name'			=> $name,
             'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
             'postcode'		=> $data['postcode'],
-
-            'minlimit'		=> $minlimit,
-            'maxlimit'		=> $maxlimit,
             'status'		=> 5,
             'accountrole'	=> 'user',
             'cron_saldo'	=> 't',
             'hobbies'		=> '',
             'cdate'			=> gmdate('Y-m-d H:i:s'),
         ];
+
+        $preset_minlimit = $app['config']->get('preset_minlimit', $app['pp_schema']);
+        $preset_maxlimit = $app['config']->get('preset_maxlimit', $app['pp_schema']);
+
+        if ($preset_minlimit)
+        {
+            $user['minlimit'] = (int) $preset_minlimit;
+        }
+
+        if ($preset_maxlimit)
+        {
+            $user['maxlimit'] = (int) $preset_maxlimit;
+        }
 
         $app['db']->beginTransaction();
 

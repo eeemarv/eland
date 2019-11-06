@@ -543,27 +543,39 @@ class users_show
         $out .= $app['config']->get('currency', $app['pp_schema']);
         $out .= '</dd>';
 
-        if ($user['minlimit'] !== '')
+        $out .= '<dt>Minimum limiet</dt>';
+        $out .= '<dd>';
+
+        if (isset($user['minlimit']))
         {
-            $out .= '<dt>Minimum limiet</dt>';
-            $out .= '<dd>';
             $out .= '<span class="label label-danger">';
             $out .= $user['minlimit'];
             $out .= '</span>&nbsp;';
             $out .= $app['config']->get('currency', $app['pp_schema']);
-            $out .= '</dd>';
+        }
+        else
+        {
+            $out .= '<i class="fa fa-times"></i>';
         }
 
-        if ($user['maxlimit'] !== '')
+        $out .= '</dd>';
+
+        $out .= '<dt>Maximum limiet</dt>';
+        $out .= '<dd>';
+
+        if (isset($user['maxlimit']))
         {
-            $out .= '<dt>Maximum limiet</dt>';
-            $out .= '<dd>';
             $out .= '<span class="label label-success">';
             $out .= $user['maxlimit'];
             $out .= '</span>&nbsp;';
             $out .= $app['config']->get('currency', $app['pp_schema']);
-            $out .= '</dd>';
         }
+        else
+        {
+            $out .= '<i class="fa fa-times"></i>';
+        }
+
+        $out .= '</dd>';
 
         if ($app['pp_admin'] || $s_owner)
         {

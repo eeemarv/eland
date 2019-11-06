@@ -238,14 +238,9 @@ class users_list
             {
                 $store_value = $bulk_field_value;
 
-                if ($bulk_submit_action === 'minlimit')
+                if (in_array($bulk_submit_action, ['minlimit', 'maxlimit']))
                 {
-                    $store_value = $store_value === '' ? -999999999 : $store_value;
-                }
-
-                if ($bulk_submit_action == 'maxlimit')
-                {
-                    $store_value = $store_value === '' ? 999999999 : $store_value;
+                    $store_value = $store_value === '' ? null : $store_value;
                 }
 
                 $field_type = cnst_bulk::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
@@ -592,8 +587,8 @@ class users_list
         {
             foreach ($users as &$user)
             {
-                $user['minlimit'] = $user['minlimit'] === -999999999 ? '' : $user['minlimit'];
-                $user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : $user['maxlimit'];
+                $user['minlimit'] = $user['minlimit'] === -999999999 ? '' : ($user['minlimit'] ?? '');
+                $user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : ($user['maxlimit'] ?? '');
             }
         }
 

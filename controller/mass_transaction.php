@@ -90,11 +90,14 @@ class mass_transaction
 
         while ($row = $rs->fetch())
         {
-
-        // hack eLAS compatibility (in eLAND limits can be null)
-
-            $row['minlimit'] = $row['minlimit'] === -999999999 ? '' : $row['minlimit'];
-            $row['maxlimit'] = $row['maxlimit'] === 999999999 ? '' : $row['maxlimit'];
+            $row['minlimit'] = !isset($row['minlimit'])
+                    || $row['minlimit'] === -999999999
+                ? ''
+                : $row['minlimit'];
+            $row['maxlimit'] = !isset($row['maxlimit'])
+                || $row['maxlimit'] === 999999999
+                ? ''
+                : $row['maxlimit'];
 
             $users[$row['id']] = $row;
         }

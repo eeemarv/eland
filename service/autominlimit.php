@@ -162,9 +162,11 @@ class autominlimit
 				(string) $to_id,
 				['minlimit' => '', 'erased' => true],
 				$this->schema);
+
 			$this->db->update($this->schema . '.users',
-				['minlimit' => -999999999],
+				['minlimit' => null],
 				['id' => $to_id]);
+
 			$this->user_cache->clear($to_id, $this->schema);
 
 			$debug = 'autominlimit: minlimit reached group minlimit, ';

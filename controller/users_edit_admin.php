@@ -57,21 +57,17 @@ class users_edit_admin
 
             if ($app['pp_admin'])
             {
-                // hack eLAS compatibility (in eLAND limits can be null)
                 $minlimit = trim($request->request->get('minlimit', ''));
                 $maxlimit = trim($request->request->get('maxlimit', ''));
-
-                $minlimit = $minlimit === '' ? -999999999 : $minlimit;
-                $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
 
                 $user += [
                     'letscode'		=> trim($request->request->get('letscode', '')),
                     'accountrole'	=> $request->request->get('accountrole', ''),
                     'status'		=> $request->request->get('status', ''),
                     'admincomment'	=> trim($request->request->get('admincomment', '')),
-                    'minlimit'		=> $minlimit,
-                    'maxlimit'		=> $maxlimit,
                     'presharedkey'	=> trim($request->request->get('presharedkey', '')),
+                    'minlimit'      => $minlimit === '' ? null : $minlimit,
+                    'maxlimit'      => $maxlimit === '' ? null : $maxlimit,
                 ];
 
                 $contact = $request->request->get('contact', []);
@@ -271,13 +267,15 @@ class users_edit_admin
                         letters, cijfers en koppeltekens bestaan.';
                 }
 
-                if (filter_var($user['minlimit'], FILTER_VALIDATE_INT) === false)
+                if (isset($user['minlimit'])
+                    && filter_var($user['minlimit'], FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Minimum Account Limiet.';
                 }
 
-                if (filter_var($user['maxlimit'], FILTER_VALIDATE_INT) === false)
+                if (isset($user['maxlimit'])
+                    && filter_var($user['maxlimit'], FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Maximum Account Limiet.';
@@ -635,8 +633,8 @@ class users_edit_admin
                     $user['adate'] = $user_prefetch['adate'];
                 }
 
-                $user['minlimit'] = $user['minlimit'] === -999999999 ? '' : $user['minlimit'];
-                $user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : $user['maxlimit'];
+                $user['minlimit'] = $user['minlimit'] === -999999999 ? '' : ($user['minlimit'] ?? '');
+                $user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : ($user['maxlimit'] ?? '');
             }
         }
         else

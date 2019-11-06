@@ -150,7 +150,8 @@ class transactions_add
 
             if (!$app['pp_admin'] && !count($errors))
             {
-                if ($fromuser['minlimit'] === -999999999)
+                if (!isset($fromuser['minlimit'])
+                    || $fromuser['minlimit'] === -999999999)
                 {
                     $minlimit = $app['config']->get('minlimit', $app['pp_schema']);
 
@@ -183,7 +184,8 @@ class transactions_add
 
             if (!$app['pp_admin'] && !count($errors))
             {
-                if ($touser['maxlimit'] === 999999999)
+                if (!isset($touser['maxlimit'])
+                    || $touser['maxlimit'] === 999999999)
                 {
                     $maxlimit = $app['config']->get('maxlimit', $app['pp_schema']);
 
@@ -578,7 +580,8 @@ class transactions_add
 
                 if (!count($errors))
                 {
-                    if ($remote_interlets_account['minlimit'] === -999999999)
+                    if (!isset($remote_interlets_account['minlimit'])
+                        || $remote_interlets_account['minlimit'] === -999999999)
                     {
                         $minlimit = $app['config']->get('minlimit', $remote_schema);
 
@@ -628,7 +631,8 @@ class transactions_add
 
                 if (!count($errors))
                 {
-                    if ($to_remote_user['maxlimit'] === 999999999)
+                    if (!isset($to_remote_user['maxlimit'])
+                        || $to_remote_user['maxlimit'] === 999999999)
                     {
                         $maxlimit = $app['config']->get('maxlimit', $remote_schema);
 
