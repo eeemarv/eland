@@ -1,41 +1,11 @@
-init_elas_db_upgrade:
-  controller: App\Controller\InitElasDbUpgradeController
-  path: /elas-db-upgrade
-  methods: GET
-
-init_sync_users_images:
-  controller: App\Controller\InitSyncUsersImagesController
-  path: /sync-users-images/{start<%assert.id%>?0}
-  methods: GET
-
-init_sync_messages_images:
-  controller: App\Controller\InitSyncMessagesImagesController
-  path: /sync-messages-images/{start<%assert.id%>?0}
-  methods: GET
-
 init_clear_users_cache:
   controller: App\Controller\InitClearUsersCacheController
   path: /clear-users-cache
   methods: GET
 
-init_empty_elas_tokens:
-  controller: App\Controller\InitEmptyElasTokensController
-  path: /empty-elas-tokens
-  methods: GET
-
-init_empty_city_distance:
-  controller: App\Controller\InitEmptyCityDistanceController
-  path: /empty-city-distance
-  methods: GET
-
 init_queue_geocoding:
   controller: App\Controller\InitQueueGeocodingController
   path: /queue-geocoding/{start<%assert.id%>?0}
-  methods: GET
-
-init_copy_config:
-  controller: App\Controller\InitCopyConfigController
-  path: /copy-config
   methods: GET
 
 init:

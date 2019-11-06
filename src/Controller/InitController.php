@@ -15,14 +15,8 @@ class InitController extends AbstractController
     const POSSIBLE_IMAGE_EXT = ['jpg', 'jpeg', 'JPG', 'JPEG'];
 
     const ROUTES_LABELS = [
-        'init_elas_db_upgrade'      => 'eLAS database upgrade',
-        'init_sync_users_images'    => 'Sync users images',
-        'init_sync_messages_images' => 'Sync messages images',
         'init_clear_users_cache'    => 'Clear users cache',
-        'init_empty_elas_tokens'    => 'Empty eLAS tokens',
-        'init_empty_city_distance'  => 'Empty city distance table',
         'init_queue_geocoding'      => 'Queue geocoding',
-        'init_copy_config'          => 'Copy config',
     ];
 
     public function __invoke(

@@ -94,25 +94,29 @@ class RegisterTokenController extends AbstractController
             }
         }
 
-        $minlimit = $config_service->get('preset_minlimit', $pp->schema());
-        $minlimit = $minlimit === '' ? -999999999 : $minlimit;
-
-        $maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
-        $maxlimit = $maxlimit === '' ? 999999999 : $maxlimit;
-
         $user = [
             'name'			=> $name,
             'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
             'postcode'		=> $data['postcode'],
-
-            'minlimit'		=> $minlimit,
-            'maxlimit'		=> $maxlimit,
             'status'		=> 5,
             'accountrole'	=> 'user',
             'cron_saldo'	=> 't',
             'hobbies'		=> '',
             'cdate'			=> gmdate('Y-m-d H:i:s'),
         ];
+
+        $preset_minlimit = $config_service->get('preset_minlimit', $pp->schema());
+        $preset_maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
+
+        if ($preset_minlimit)
+        {
+            $user['minlimit'] = (int) $preset_minlimit;
+        }
+
+        if ($preset_maxlimit)
+        {
+            $user['maxlimit'] = (int) $preset_maxlimit;
+        }
 
         $db->beginTransaction();
 

@@ -55,11 +55,7 @@ class TypeaheadAccountsController extends AbstractController
             'select letscode as c,
                 name as n,
                 extract(epoch from adate) as a,
-                status as s,
-                postcode as p,
-                saldo as b,
-                minlimit as min,
-                maxlimit as max
+                status as s
             from ' . $pp->schema() . '.users
             where status ' . $status_sql . '
             order by id asc'
@@ -72,16 +68,6 @@ class TypeaheadAccountsController extends AbstractController
             if ($account['s'] == 1)
             {
                 unset($account['s']);
-            }
-
-            if ($account['max'] == 999999999)
-            {
-                unset($account['max']);
-            }
-
-            if ($account['min'] == -999999999)
-            {
-                unset($account['min']);
             }
 
             $accounts[] = $account;
