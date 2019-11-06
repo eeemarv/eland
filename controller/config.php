@@ -272,21 +272,6 @@ class config
             {
                 $app['config']->set($input_name, $app['pp_schema'], $posted_value);
 
-                // prevent string too long error for eLAS database
-
-                if (isset(cnst_config::INPUTS[$input_name]['max_inputs'])
-                    && cnst_config::INPUTS[$input_name]['max_inputs'] > 1)
-                {
-                    [$posted_value] = explode(',', $posted_value);
-                    $posted_value = trim($posted_value);
-                }
-
-                $posted_value = substr($posted_value, 0, 60);
-
-                $app['db']->update($app['pp_schema'] . '.config',
-                    ['value' => $posted_value, '"default"' => 'f'],
-                    ['setting' => $input_name]);
-
                 $post_actions = cnst_config::INPUTS[$input_name]['post_actions'] ?? [];
 
                 foreach($post_actions as $post_action)

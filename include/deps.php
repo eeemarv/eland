@@ -671,7 +671,6 @@ $app['distance'] = function ($app){
 
 $app['config'] = function ($app){
 	return new service\config(
-		$app['db'],
 		$app['xdb'],
 		$app['predis']
 	);
