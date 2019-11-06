@@ -170,7 +170,6 @@ class UsersEditAdminController extends AbstractController
                 'hobbies'		=> trim($request->request->get('hobbies', '')),
                 'comments'		=> trim($request->request->get('comments', '')),
                 'cron_saldo'	=> $request->request->get('cron_saldo') ? 1 : 0,
-                'lang'			=> 'nl'
             ];
 
             if ($pp->is_admin())
@@ -299,7 +298,7 @@ class UsersEditAdminController extends AbstractController
 
             if ($username_edit)
             {
-                $user['login'] = $user['name'] = trim($request->request->get('name', ''));
+                $user['name'] = trim($request->request->get('name', ''));
             }
 
             if ($fullname_edit)

@@ -43,7 +43,7 @@ class WeightedBalancesController extends AbstractController
         {
             $id_to = $t['id_to'];
             $id_from = $t['id_from'];
-            $time = strtotime($t['date']);
+            $time = strtotime($t['cdate']);
             $period_to = $next[$id_to] - $time;
             $period_from = $next[$id_from] - $time;
             $acc[$id_to] += ($period_to) * $balance[$id_to];

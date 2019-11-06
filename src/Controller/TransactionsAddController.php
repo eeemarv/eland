@@ -86,7 +86,6 @@ class TransactionsAddController extends AbstractController
             [$letscode_to] = explode(' ', trim($request->request->get('letscode_to', '')));
 
             $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');
-            $transaction['date'] = gmdate('Y-m-d H:i:s');
             $transaction['creator'] = $su->is_master() ? 0 : $su->id();
 
             $group_id = trim($request->request->get('group_id', ''));
@@ -820,7 +819,6 @@ class TransactionsAddController extends AbstractController
             $predis->expire($redis_transid_key, 3600);
 
             $transaction = [
-                'date'			=> gmdate('Y-m-d H:i:s'),
                 'letscode_from'	=> $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema()),
                 'letscode_to'	=> '',
                 'amount'		=> '',

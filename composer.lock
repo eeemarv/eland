@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.112.34",
+            "version": "3.113.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5918919b64550f7436a01738ea49e56703c83799"
+                "reference": "09998bf4d47195d5c4afa0ffd30e28921ce75f92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5918919b64550f7436a01738ea49e56703c83799",
-                "reference": "5918919b64550f7436a01738ea49e56703c83799",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/09998bf4d47195d5c4afa0ffd30e28921ce75f92",
+                "reference": "09998bf4d47195d5c4afa0ffd30e28921ce75f92",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-11-01T18:08:35+00:00"
+            "time": "2019-11-05T19:13:36+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -577,31 +577,30 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.9.2",
+            "version": "v2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9"
+                "reference": "0c9a646775ef549eb0a213a4f9bd4381d9b4d934"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
-                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/0c9a646775ef549eb0a213a4f9bd4381d9b4d934",
+                "reference": "0c9a646775ef549eb0a213a4f9bd4381d9b4d934",
                 "shasum": ""
             },
             "require": {
                 "doctrine/cache": "^1.0",
                 "doctrine/event-manager": "^1.0",
                 "ext-pdo": "*",
-                "php": "^7.1"
+                "php": "^7.2"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^5.0",
-                "jetbrains/phpstorm-stubs": "^2018.1.2",
-                "phpstan/phpstan": "^0.10.1",
-                "phpunit/phpunit": "^7.4",
-                "symfony/console": "^2.0.5|^3.0|^4.0",
-                "symfony/phpunit-bridge": "^3.4.5|^4.0.5"
+                "doctrine/coding-standard": "^6.0",
+                "jetbrains/phpstorm-stubs": "^2019.1",
+                "phpstan/phpstan": "^0.11.3",
+                "phpunit/phpunit": "^8.4.1",
+                "symfony/console": "^2.0.5|^3.0|^4.0|^5.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -612,7 +611,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9.x-dev",
+                    "dev-master": "2.10.x-dev",
                     "dev-develop": "3.0.x-dev"
                 }
             },
@@ -627,16 +626,16 @@
             ],
             "authors": [
                 {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
                     "name": "Roman Borschel",
                     "email": "roman@code-factory.org"
                 },
                 {
                     "name": "Benjamin Eberlei",
                     "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
                 },
                 {
                     "name": "Jonathan Wage",
@@ -648,14 +647,25 @@
             "keywords": [
                 "abstraction",
                 "database",
+                "db2",
                 "dbal",
+                "mariadb",
+                "mssql",
                 "mysql",
-                "persistence",
+                "oci8",
+                "oracle",
+                "pdo",
                 "pgsql",
-                "php",
-                "queryobject"
+                "postgresql",
+                "queryobject",
+                "sasql",
+                "sql",
+                "sqlanywhere",
+                "sqlite",
+                "sqlserver",
+                "sqlsrv"
             ],
-            "time": "2018-12-31T03:27:51+00:00"
+            "time": "2019-11-03T16:50:43+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -2159,16 +2169,16 @@
         },
         {
             "name": "league/html-to-markdown",
-            "version": "4.8.3",
+            "version": "4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/html-to-markdown.git",
-                "reference": "63adb92233b5400d63f7ea5c72e58479d9bcc456"
+                "reference": "71319108e3db506250b8987721b13568fd9fa446"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/html-to-markdown/zipball/63adb92233b5400d63f7ea5c72e58479d9bcc456",
-                "reference": "63adb92233b5400d63f7ea5c72e58479d9bcc456",
+                "url": "https://api.github.com/repos/thephpleague/html-to-markdown/zipball/71319108e3db506250b8987721b13568fd9fa446",
+                "reference": "71319108e3db506250b8987721b13568fd9fa446",
                 "shasum": ""
             },
             "require": {
@@ -2178,7 +2188,7 @@
             },
             "require-dev": {
                 "mikehaertl/php-shellcommand": "~1.1.0",
-                "phpunit/phpunit": "4.*",
+                "phpunit/phpunit": "^4.8|^5.7",
                 "scrutinizer/ocular": "~1.1"
             },
             "bin": [
@@ -2187,7 +2197,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.9-dev"
+                    "dev-master": "4.10-dev"
                 }
             },
             "autoload": {
@@ -2219,7 +2229,7 @@
                 "html",
                 "markdown"
             ],
-            "time": "2019-10-31T12:59:55+00:00"
+            "time": "2019-11-02T14:54:14+00:00"
         },
         {
             "name": "mollie/mollie-api-php",
@@ -6934,16 +6944,16 @@
         },
         {
             "name": "symfony/maker-bundle",
-            "version": "v1.14.1",
+            "version": "v1.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/maker-bundle.git",
-                "reference": "f7dd84691dbf399137a5caafc90f419801d09e5f"
+                "reference": "5dfcbc400b168943f15a21d4283ad848605d9bc2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/f7dd84691dbf399137a5caafc90f419801d09e5f",
-                "reference": "f7dd84691dbf399137a5caafc90f419801d09e5f",
+                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/5dfcbc400b168943f15a21d4283ad848605d9bc2",
+                "reference": "5dfcbc400b168943f15a21d4283ad848605d9bc2",
                 "shasum": ""
             },
             "require": {
@@ -6998,7 +7008,7 @@
                 "scaffold",
                 "scaffolding"
             ],
-            "time": "2019-11-01T19:39:59+00:00"
+            "time": "2019-11-04T13:50:13+00:00"
         },
         {
             "name": "symfony/web-server-bundle",

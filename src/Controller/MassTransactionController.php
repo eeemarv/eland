@@ -302,7 +302,6 @@ class MassTransactionController extends AbstractController
                             'id_from' 		=> $from_id,
                             'amount' 		=> $amo,
                             'description' 	=> $description,
-                            'date' 			=> $cdate,
                             'cdate' 		=> $cdate,
                             'transid'		=> $transid,
                             'creator'		=> $su->is_master() ? 0 : $su->id(),

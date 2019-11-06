@@ -301,21 +301,6 @@ class ConfigController extends AbstractController
             {
                 $config_service->set($input_name, $pp->schema(), $posted_value);
 
-                // prevent string too long error for eLAS database
-
-                if (isset(ConfigCnst::INPUTS[$input_name]['max_inputs'])
-                    && ConfigCnst::INPUTS[$input_name]['max_inputs'] > 1)
-                {
-                    [$posted_value] = explode(',', $posted_value);
-                    $posted_value = trim($posted_value);
-                }
-
-                $posted_value = substr($posted_value, 0, 60);
-
-                $db->update($pp->schema() . '.config',
-                    ['value' => $posted_value, '"default"' => 'f'],
-                    ['setting' => $input_name]);
-
                 $post_actions = ConfigCnst::INPUTS[$input_name]['post_actions'] ?? [];
 
                 foreach($post_actions as $post_action)

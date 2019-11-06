@@ -189,7 +189,6 @@ function dopayment($apikey, $from, $real_from, $to, $description, $amount, $tran
 
 	$transaction = [
 		'transid'		=> $transid,
-		'date' 			=> date('Y-m-d H:i:s'),
 		'description' 	=> $description,
 		'id_from' 		=> $fromuser['id'],
 		'real_from' 	=> $real_from,

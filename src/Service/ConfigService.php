@@ -4,24 +4,20 @@ namespace App\Service;
 
 use App\Service\XdbService;
 use App\Cnst\ConfigCnst;
-use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 
 class ConfigService
 {
-	protected $db;
 	protected $xdb_service;
 	protected $predis;
 	protected $is_cli;
 
 	public function __construct(
-		Db $db,
 		XdbService $xdb_service,
 		Predis $predis
 	)
 	{
 		$this->predis = $predis;
-		$this->db = $db;
 		$this->xdb_service = $xdb_service;
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
