@@ -262,7 +262,6 @@ class mass_transaction
                             'id_from' 		=> $from_id,
                             'amount' 		=> $amo,
                             'description' 	=> $description,
-                            'date' 			=> $cdate,
                             'cdate' 		=> $cdate,
                             'transid'		=> $transid,
                             'creator'		=> $app['s_master'] ? 0 : $app['s_id'],

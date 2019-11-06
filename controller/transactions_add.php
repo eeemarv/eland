@@ -39,7 +39,6 @@ class transactions_add
             [$letscode_to] = explode(' ', trim($request->request->get('letscode_to', '')));
 
             $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');;
-            $transaction['date'] = gmdate('Y-m-d H:i:s');
             $transaction['creator'] = $app['s_master'] ? 0 : $app['s_id'];
 
             $group_id = trim($request->request->get('group_id', ''));
@@ -773,7 +772,6 @@ class transactions_add
             $app['predis']->expire($redis_transid_key, 3600);
 
             $transaction = [
-                'date'			=> gmdate('Y-m-d H:i:s'),
                 'letscode_from'	=> $app['s_master'] ? '' : $app['account']->str($app['s_id'], $app['pp_schema']),
                 'letscode_to'	=> '',
                 'amount'		=> '',
