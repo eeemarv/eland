@@ -88,11 +88,6 @@ typeahead_accounts:
   path: /typeahead-accounts/{status<%assert.account_status.primary%>}
   methods: GET
 
-elas_group_login:
-  controller: App\Controller\ElasGroupLoginController
-  path: /elas-group-login/{group_id<%assert.id%>}
-  methods: GET
-
 plot_user_transactions:
   controller: App\Controller\PlotUserTransactionsController
   path: /plot-user-transactions/{user_id<%assert.id%>}/{days<%assert.id%>}

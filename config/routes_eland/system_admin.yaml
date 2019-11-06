@@ -108,21 +108,6 @@ intersystems:
   path: /intersystems
   methods: GET
 
-apikeys_del:
-  controller: App\Controller\ApikeysDelController
-  path: /apikeys/{id<%assert.id%>}/del
-  methods: GET|POST
-
-apikeys_add:
-  controller: App\Controller\ApikeysAddController
-  path: /apikeys/add
-  methods: GET|POST
-
-apikeys:
-  controller: App\Controller\ApikeysController
-  path: /apikeys
-  methods: GET
-
 export:
   controller: App\Controller\ExportController
   path: /export
@@ -241,11 +226,6 @@ typeahead_log_types:
 typeahead_usernames:
   controller: App\Controller\TypeaheadUsernamesController
   path: /typeahead-usernames
-  methods: GET
-
-elas_soap_status:
-  controller: App\Controller\ElasSoapStatusController
-  path: /elas-soap-status/{group_id<%assert.id%>}
   methods: GET
 
 transactions_sum_in:

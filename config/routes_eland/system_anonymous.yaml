@@ -1,8 +1,3 @@
-login_elas_token:
-  path: /login-elas/{elas_token<%assert.elas_token%>}
-  controller: App\Controller\LoginElasTokenController
-  methods: GET
-
 login:
   path: /login
   controller: App\Controller\LoginController

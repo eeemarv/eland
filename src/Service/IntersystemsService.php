@@ -10,7 +10,6 @@ use App\Service\ConfigService;
 class IntersystemsService
 {
 	const ELAND = '_eland_intersystems';
-	const ELAS = '_elas_intersystems';
 	const ELAND_ACCOUNTS_SCHEMAS = '_eland_accounts_schemas';
 	const TTL = 854000;
 	const TTL_ELAND_ACCOUNTS_SCHEMAS = 864000;
@@ -40,14 +39,7 @@ class IntersystemsService
 
 	public function clear_cache(string $s_schema):void
 	{
-		$this->clear_elas_cache($s_schema);
 		$this->clear_eland_cache();
-	}
-
-	public function clear_elas_cache(string $s_schema):void
-	{
-		unset($this->elas_ary[$s_schema]);
-		$this->predis->del($s_schema . self::ELAS);
 	}
 
 	public function clear_eland_cache():void
@@ -85,12 +77,7 @@ class IntersystemsService
 
 			if ($interschema = $this->systems_service->get_schema($system))
 			{
-				if (!$this->config_service->get('template_lets', $interschema))
-				{
-					continue;
-				}
-
-				if (!$this->config_service->get('interlets_en', $interschema))
+				if (!$this->config_service->get_intersystem_en($interschema))
 				{
 					continue;
 				}
@@ -188,74 +175,13 @@ class IntersystemsService
 		return $this->eland_ary[$s_schema];
 	}
 
-	public function get_elas(string $s_schema):array
-	{
-		if (!$s_schema)
-		{
-			return [];
-		}
-
-		if (isset($this->elas_ary[$s_schema]))
-		{
-			return $this->elas_ary[$s_schema];
-		}
-
-		$redis_key = $s_schema . self::ELAS;
-
-		if ($this->predis->exists($redis_key))
-		{
-			$this->predis->expire($redis_key, self::TTL);
-			return $this->elas_ary[$s_schema] = json_decode($this->predis->get($redis_key), true);
-		}
-
-		$this->elas_ary[$s_schema] = [];
-
-		$st = $this->db->prepare('select g.id, g.groupname, g.url
-			from ' . $s_schema . '.letsgroups g, ' . $s_schema . '.users u
-			where g.apimethod = \'elassoap\'
-				and u.letscode = g.localletscode
-				and g.groupname <> \'\'
-				and g.url <> \'\'
-				and g.myremoteletscode <> \'\'
-				and g.remoteapikey <> \'\'
-				and g.presharedkey <> \'\'
-				and u.letscode <> \'\'
-				and u.name <> \'\'
-				and u.accountrole = \'interlets\'
-				and u.status in (1, 2, 7)');
-
-		$st->execute();
-
-		while($row = $st->fetch())
-		{
-			$host = strtolower(parse_url($row['url'], PHP_URL_HOST));
-			[$system] = explode('.', $host);
-
-			if (!$this->systems_service->get_schema($system))
-			{
-				$row['domain'] = $host;
-				$this->elas_ary[$s_schema][$row['id']] = $row;
-			}
-		}
-
-		$this->predis->set($redis_key, json_encode($this->elas_ary[$s_schema]));
-		$this->predis->expire($redis_key, self::TTL);
-
-		return $this->elas_ary[$s_schema];
-	}
-
 	public function get_count(string $s_schema):int
 	{
-		return $this->get_eland_count($s_schema) + $this->get_elas_count($s_schema);
+		return $this->get_eland_count($s_schema);
 	}
 
 	public function get_eland_count(string $s_schema):int
 	{
 		return count($this->get_eland($s_schema));
-	}
-
-	public function get_elas_count(string $s_schema):int
-	{
-		return count($this->get_elas($s_schema));
 	}
 }

@@ -36,8 +36,6 @@
 </head>
 <body{%- block body_attr -%}{%- endblock -%}>
 
-<img src="{{- assets('loading.gif') -}}" class="ajax-loader" alt="waiting">
-
 {%- block navbar -%}
 	<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
 		<div class="container-fluid">

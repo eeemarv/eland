@@ -31,12 +31,6 @@
 				<li class="dropdown-header">{{- m.label -}}</li>
 			{%- elseif m.divider is defined -%}
 				<li class="divider"></li>
-			{%- elseif m.elas_group_id is defined -%}
-				<li>
-					<a href="#" data-elas-group-login="{{- path('elas_group_login', pp_ary()|merge({'group_id': m.elas_group_id})) -}}">
-						{{- m.label -}}
-					</a>
-				</li>
 			{%- elseif m.params is defined -%}
 				<li{%- if m.active is defined %} class="active"{%- elseif m.active_group is defined %}  class="active-group"{%- endif -%}>
 					<a href="{{- path(m.route, pp_ary()|merge(m.params)) -}}">

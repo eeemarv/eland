@@ -125,11 +125,6 @@ class MenuCnst
             'label'     => 'InterSysteem',
             'route'     => 'intersystems',
         ],
-        'apikeys'			=> [
-            'fa'        => 'key',
-            'label'     => 'Apikeys',
-            'route'     => 'apikeys',
-        ],
         'export'			=> [
             'fa'        => 'download',
             'label'     => 'Export',

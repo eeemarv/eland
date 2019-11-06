@@ -368,179 +368,9 @@ class TransactionsAddController extends AbstractController
             }
             else if (!$systems_service->get_schema_from_legacy_eland_origin($group['url']))
             {
-                // The interSysteem group uses eLAS or is on another server
+                // Previously eLAS intersystem
 
-                if (!$group['remoteapikey'])
-                {
-                    $errors[] = 'Geen Remote Apikey voor dit interSysteem ingesteld.' . $contact_admin;
-                }
-
-                if (!$group['presharedkey'])
-                {
-                    $errors[] = 'Geen Preshared Key voor dit interSysteem ingesteld.' . $contact_admin;
-                }
-
-                if (!$group['myremoteletscode'])
-                {
-                    $errors[] = 'Geen Remote Account Code ingesteld voor dit interSysteem.' . $contact_admin;
-                }
-
-                $currencyratio = $config_service->get('currencyratio', $pp->schema());
-
-                if (!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
-                {
-                    $errors[] = 'De Currency Ratio is niet correct ingesteld. ' . $contact_admin;
-                }
-
-                if (strlen($letscode_to))
-                {
-                    $active_users = $cache_service->get($group['domain'] . '_typeahead_data');
-
-                    $user_letscode_found = false;
-
-                    foreach ($active_users as $active_user)
-                    {
-                        if ($active_user['c'] == $letscode_to)
-                        {
-                            $real_name_to = $active_user['n'];
-                            $user_letscode_found = true;
-                            break;
-                        }
-                    }
-
-                    if ($user_letscode_found)
-                    {
-                        if(!$real_name_to)
-                        {
-                            $errors[] = 'Er werd geen naam gevonden voor het Account van het interSysteem.';
-                        }
-                    }
-                    else
-                    {
-                        $errors[] = 'Er werd geen Account gevonden met Code ' . $letscode_to;
-                    }
-                }
-
-                if (count($errors))
-                {
-                    $alert_service->error($errors);
-                    $link_render->redirect('transactions', $pp->ary(), []);
-                }
-
-                $trans = $transaction;
-
-                $trans['amount'] = $trans['amount'] / $currencyratio;
-                $trans['amount'] = (float) $trans['amount'];
-                $trans['amount'] = round($trans['amount'], 5);
-
-                $trans['letscode_to'] = $letscode_to;
-
-                $soapurl = $group['elassoapurl'] ?: $group['url'] . '/soap';
-                $soapurl .= '/wsdlelas.php?wsdl';
-
-                $client = new \nusoap_client($soapurl, true);
-
-                $error = $client->getError();
-
-                if ($error)
-                {
-                    $alert_service->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-                    $link_render->redirect('transactions', $pp->ary(), []);
-                }
-
-                $result = $client->call('dopayment', [
-                    'apikey' 		=> $group['remoteapikey'],
-                    'from' 			=> $group['myremoteletscode'],
-                    'real_from' 	=> $account_render->str($fromuser['id'], $pp->schema()),
-                    'to' 			=> $letscode_to,
-                    'description' 	=> $trans['description'],
-                    'amount' 		=> $trans['amount'],
-                    'transid' 		=> $trans['transid'],
-                    'signature' 	=> $transaction_service->sign($trans, trim($group['presharedkey']), $pp->schema()),
-                ]);
-
-                $error = $client->getError();
-
-                if ($error)
-                {
-                    $alert_service->error('eLAS soap error: ' . $error . ' <br>' . $contact_admin);
-                    $link_render->redirect('transactions', $pp->ary(), []);
-                }
-
-                if ($result == 'OFFLINE')
-                {
-                    $errors[] = 'Het andere Systeem is offline. Probeer het later opnieuw. ';
-                }
-
-                if ($result == 'FAILED')
-                {
-                    $errors[] = 'De interSysteem transactie is gefaald.' . $contact_admin;
-                }
-
-                if ($result == 'SIGFAIL')
-                {
-                    $errors[] = 'De signatuur van de interSysteem transactie is gefaald. ' . $contact_admin;
-                }
-
-                if ($result == 'DUPLICATE')
-                {
-                    $errors[] = 'De transactie bestaat reeds in het andere Systeem. ' . $contact_admin;
-                }
-
-                if ($result == 'NOUSER')
-                {
-                    $errors[] = 'Het Account in het andere Systeem werd niet gevonden. ';
-                }
-
-                if ($result == 'APIKEYFAIL')
-                {
-                    $errors[] = 'De Apikey is niet correct. ' . $contact_admin;
-                }
-
-                if (!count($errors) && $result != 'SUCCESS')
-                {
-                    $errors[] = 'De interSysteem transactie kon niet verwerkt worden. ' . $contact_admin;
-                }
-
-                if (count($errors))
-                {
-                    $alert_service->error($errors);
-                    $link_render->redirect('transactions', $pp->ary(), []);
-                }
-
-                $transaction['real_to'] = $letscode_to . ' ' . $real_name_to;
-
-                $logger->debug('insert transation: --  ' .
-                    http_build_query($transaction) .
-                    ' --', ['schema' => $pp->schema()]);
-
-                $id = $transaction_service->insert($transaction, $pp->schema());
-
-                if (!$id)
-                {
-                    $mail_queue->queue([
-                        'schema'		=> $pp->schema(),
-                        'to' 			=> $mail_addr_system_service->get_admin($pp->schema()),
-                        'template'		=> 'transaction/intersystem_fail',
-                        'vars'			=> [
-                            'remote_system_name'	=> $group['groupname'],
-                            'transaction'			=> $transaction,
-                        ],
-                    ], 9000);
-
-                    $alert_service->error('De lokale commit van de interSysteem
-                        transactie is niet geslaagd. ' .
-                        $contact_admin);
-
-                    $link_render->redirect('transactions', $pp->ary(), []);
-                }
-
-                $transaction['id'] = $id;
-
-                // to eLAS intersystem
-                $mail_transaction_service->queue($transaction, $pp->schema());
-
-                $alert_service->success('De interSysteem transactie werd verwerkt.');
+                $alert_service-error('Geen verbinding met interSysteem ' . $group['groupname']).
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
             else
@@ -969,29 +799,6 @@ class TransactionsAddController extends AbstractController
             }
         }
 
-        if ($intersystems_service->get_elas_count($pp->schema()))
-        {
-            $ids = [];
-
-            foreach ($intersystems_service->get_elas($pp->schema()) as $key => $name)
-            {
-                $ids[] = $key;
-            }
-
-            $elas_systems = $db->executeQuery('select id, groupname
-                from ' . $pp->schema() . '.letsgroups
-                where apimethod = \'elassoap\'
-                    and id in (?)',
-                    [$ids],
-                    [Db::PARAM_INT_ARRAY]);
-
-            foreach ($elas_systems as $sys)
-            {
-                $sys['elas'] = true;
-                $systems[] = $sys;
-            }
-        }
-
         if ($config_service->get_intersystem_en($pp->schema()))
         {
             $mail_systems = $db->executeQuery('select l.id, l.groupname
@@ -1088,14 +895,6 @@ class TransactionsAddController extends AbstractController
 
                     $config_schema = $remote_schema;
                 }
-                else if (isset($sys['elas']))
-                {
-                    $typeahead_service->add('elas_intersystem_accounts', [
-                        'group_id'	=> $sys['id'],
-                    ]);
-
-                    unset($config_schema);
-                }
                 else if (isset($sys['mail']))
                 {
                     unset($config_schema);
@@ -1134,7 +933,7 @@ class TransactionsAddController extends AbstractController
                 {
                     $out .= ': eigen Systeem';
                 }
-                else if (isset($sys['eland']) || isset($sys['elas']))
+                else if (isset($sys['eland']))
                 {
                     $out .= ': interSysteem';
                 }

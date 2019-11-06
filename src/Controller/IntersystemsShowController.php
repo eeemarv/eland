@@ -65,8 +65,6 @@ class IntersystemsShowController extends AbstractController
         $btn_nav_render->nav_list('intersystems', $pp->ary(),
             [], 'Lijst', 'share-alt');
 
-        $assets_service->add(['elas_soap_status.js']);
-
         $heading_render->add('InterSysteem: ');
         $heading_render->add($group['groupname']);
         $heading_render->fa('share-alt');
@@ -102,13 +100,9 @@ class IntersystemsShowController extends AbstractController
         }
         else
         {
-            $out .= '<dd><i><span data-elas-soap-status="';
-
-            $out .= htmlspecialchars($link_render->context_path('elas_soap_status',
-                $pp->ary(), ['group_id' => $group['id']]));
-
-            $out .= '">';
-            $out .= 'Bezig met eLAS soap status te bekomen...</span></i>';
+            $out .= '<dd><i><span data-status="';
+            $out .= 'null">';
+            $out .= 'Geen verbinding</span></i>';
             $out .= '</dd>';
 
         }

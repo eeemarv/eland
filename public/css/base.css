@@ -731,18 +731,6 @@ div.jqplot-noData-container {
     background-color: rgba(96%, 96%, 96%, 0.3);
 }
 
-/** loading icon **/
-
-.ajax-loader {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  margin-left: -60px;
-  margin-top: -60px;
-  z-index: 9999;
-  display: none;
-}
-
 /** input sm **/
 
 .sm-size {

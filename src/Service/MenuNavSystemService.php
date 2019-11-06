@@ -156,14 +156,6 @@ class MenuNavSystemService
 			$m_ary[] = $m_item;
 		}
 
-		foreach ($this->intersystems_service->get_elas($this->su->schema()) as $elas_group_id => $elas_group)
-		{
-			$m_ary[] = [
-				'label'			=> $elas_group['groupname'],
-				'elas_group_id'	=> $elas_group_id,
-			];
-		}
-
 		return $m_ary;
 	}
 }

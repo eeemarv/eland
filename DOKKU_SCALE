@@ -6,4 +6,3 @@ geocode=1
 cleanup_cache=1
 cleanup_logs=1
 cleanup_images=1
-fetch_elas_intersystem=1
