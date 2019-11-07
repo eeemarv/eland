@@ -120,10 +120,10 @@ class UsersTilesController extends AbstractController
             $out .= '<div class="thumbnail text-center">';
             $out .= '<a href="' . $url . '">';
 
-            if (isset($u['PictureFile']) && $u['PictureFile'] != '')
+            if (isset($u['image_file']) && $u['image_file'] != '')
             {
                 $out .= '<img src="';
-                $out .= $env_s3_url . $u['PictureFile'];
+                $out .= $env_s3_url . $u['image_file'];
                 $out .= '" class="img-rounded">';
             }
             else

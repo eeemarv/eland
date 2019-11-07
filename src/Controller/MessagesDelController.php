@@ -61,8 +61,6 @@ class MessagesDelController extends AbstractController
                 $alert_service->error($error_token);
             }
 
-            $db->delete($pp->schema() . '.msgpictures', ['msgid' => $id]);
-
             if ($db->delete($pp->schema() . '.messages', ['id' => $id]))
             {
                 $column = 'stat_msgs_';

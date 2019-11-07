@@ -47,17 +47,22 @@ class MessagesImagesInstantDelController extends AbstractController
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }
 
-        $image = $db->fetchAssoc('select p."PictureFile"
-            from ' . $pp->schema() . '.msgpictures p
-            where p.msgid = ?
-                and p."PictureFile" = ?', [$id, $img]);
+        $image_file_ary = json_decode($message['image_files'] ?? '[]', true);
 
-        if (!$image)
+        $key = array_search($img, $image_file_ary);
+
+        if ($key === false)
         {
             throw new NotFoundHttpException('Afbeelding niet gevonden');
         }
 
-        $db->delete($pp->schema() . '.msgpictures', ['"PictureFile"' => $img]);
+        unset($image_file_ary[$key]);
+
+        $image_files = json_encode($image_file_ary);
+
+        $db->update($pp->schema() . '.messages',
+            ['image_files' => $image_files],
+            ['id' => $id]);
 
         return $this->json(['success' => true]);
     }

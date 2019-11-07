@@ -185,23 +185,10 @@ class MessagesShowController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $balance = $user['saldo'];
-
         $data_images = [
             'base_url'      => $env_s3_url,
-            'files'         => [],
+            'files'         => json_decode($message['image_files'] ?? '[]', true),
         ];
-
-        $st = $db->prepare('select "PictureFile"
-            from ' . $pp->schema() . '.msgpictures
-            where msgid = ?');
-        $st->bindValue(1, $id);
-        $st->execute();
-
-        while ($row = $st->fetch())
-        {
-            $data_images['files'][] =$row['PictureFile'];
-        }
 
         $and_local = $pp->is_guest() ? ' and local = \'f\' ' : '';
 

@@ -65,29 +65,6 @@ class MessagesExtendedController extends AbstractController
         $params = $fetch_and_filter['params'];
         $out = $fetch_and_filter['out'];
 
-        $ids = $imgs = [];
-
-        foreach ($messages as $msg)
-        {
-            $ids[] = $msg['id'];
-        }
-
-        $_imgs = $db->executeQuery('select mp.msgid, mp."PictureFile"
-            from ' . $pp->schema() . '.msgpictures mp
-            where msgid in (?)',
-            [$ids],
-            [Db::PARAM_INT_ARRAY]);
-
-        foreach ($_imgs as $_img)
-        {
-            if (isset($imgs[$_img['msgid']]))
-            {
-                continue;
-            }
-
-            $imgs[$_img['msgid']] = $_img['PictureFile'];
-        }
-
         MessagesListController::set_view_btn_nav(
             $btn_nav_render,
             $pp,
@@ -109,6 +86,9 @@ class MessagesExtendedController extends AbstractController
 
         foreach ($messages as $msg)
         {
+            $image_files_ary = json_decode($msg['image_files'] ?? '[]', true);
+            $image_file = $image_files_ary ? $image_files_ary[0] : '';
+
             $sf_owner = $pp->is_user()
                 && $msg['id_user'] === $su->id();
 
@@ -121,7 +101,7 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '<div class="media">';
 
-            if (isset($imgs[$msg['id']]))
+            if ($image_file)
             {
                 $out .= '<div class="media-left">';
                 $out .= '<a href="';
@@ -131,7 +111,7 @@ class MessagesExtendedController extends AbstractController
 
                 $out .= '">';
                 $out .= '<img class="media-object" src="';
-                $out .= $env_s3_url . $imgs[$msg['id']];
+                $out .= $env_s3_url . $image_file;
                 $out .= '" width="150">';
                 $out .= '</a>';
                 $out .= '</div>';

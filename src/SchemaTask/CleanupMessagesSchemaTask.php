@@ -95,21 +95,6 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 			}
 		}
 
-		// remove orphaned images.
-
-		$rs = $this->db->prepare('select mp.id, mp."PictureFile"
-			from ' . $schema . '.msgpictures mp
-			left join ' . $schema . '.messages m on mp.msgid = m.id
-			where m.id is null');
-
-		$rs->execute();
-
-		while ($row = $rs->fetch())
-		{
-			$this->db->delete($schema . '.msgpictures',
-				['id' => $row['id']]);
-		}
-
 		// update counts for each category
 
 		$offer_count = $want_count = [];

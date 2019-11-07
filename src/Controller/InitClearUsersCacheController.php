@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
+use App\Service\SystemsService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,7 @@ class InitClearUsersCacheController extends AbstractController
         Db $db,
         PageParamsService $pp,
         LinkRender $link_render,
+        SystemsService $systems_service,
         UserCacheService $user_cache_service
     ):Response
     {
@@ -24,12 +26,17 @@ class InitClearUsersCacheController extends AbstractController
 
         error_log('*** clear users cache ***');
 
-        $users = $db->fetchAll('select id
-            from ' . $pp->schema() . '.users');
+        $schemas = $systems_service->get_schemas();
 
-        foreach ($users as $u)
+        foreach($schemas as $schema)
         {
-            $user_cache_service->clear($u['id'], $pp->schema());
+            $users = $db->fetchAll('select id
+                from ' . $schema . '.users');
+
+            foreach ($users as $u)
+            {
+                $user_cache_service->clear($u['id'], $schema);
+            }
         }
 
         $link_render->redirect('init', $pp->ary(),

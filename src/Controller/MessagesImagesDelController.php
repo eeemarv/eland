@@ -47,6 +47,14 @@ class MessagesImagesDelController extends AbstractController
                 'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
         }
 
+        $images = json_decode($message['image_files'] ?? '[]', true);
+
+        if (!count($images))
+        {
+            $alert_service->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
+            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
+        }
+
         if ($request->isMethod('POST'))
         {
             if ($error_form = $form_token_service->get_error())
@@ -65,25 +73,6 @@ class MessagesImagesDelController extends AbstractController
             }
 
             $alert_service->error($errors);
-        }
-
-        $images = [];
-
-        $st = $db->prepare('select "PictureFile"
-            from ' . $pp->schema() . '.msgpictures
-            where msgid = ?');
-        $st->bindValue(1, $id);
-        $st->execute();
-
-        while ($row = $st->fetch())
-        {
-            $images[] = $row['PictureFile'];
-        }
-
-        if (!count($images))
-        {
-            $alert_service->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
-            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
         $heading_render->add('Afbeeldingen verwijderen voor ');

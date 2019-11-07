@@ -378,7 +378,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '<div class="panel-body text-center ';
         $out .= 'center-block" id="img_user">';
 
-        $show_img = $user['PictureFile'] ? true : false;
+        $show_img = $user['image_file'] ? true : false;
 
         $user_img = $show_img ? '' : ' style="display:none;"';
         $no_user_img = $show_img ? ' style="display:none;"' : '';
@@ -388,9 +388,9 @@ class UsersShowAdminController extends AbstractController
         $out .= ' class="img-rounded img-responsive center-block" ';
         $out .= 'src="';
 
-        if ($user['PictureFile'])
+        if ($user['image_file'])
         {
-            $out .= $env_s3_url . $user['PictureFile'];
+            $out .= $env_s3_url . $user['image_file'];
         }
         else
         {
@@ -412,7 +412,7 @@ class UsersShowAdminController extends AbstractController
         {
             $btn_del_attr = ['id'	=> 'btn_remove'];
 
-            if (!$user['PictureFile'])
+            if (!$user['image_file'])
             {
                 $btn_del_attr['style'] = 'display:none;';
             }

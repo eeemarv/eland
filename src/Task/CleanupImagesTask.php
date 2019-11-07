@@ -35,7 +35,7 @@ class CleanupImagesTask
 
 	public function process():void
 	{
-		// $schema is not used, files of all schemas are scanned
+		// files of all schemas are scanned
 
 		$cached = $this->cache_service->get('cleanup_image_files_marker');
 
@@ -90,16 +90,16 @@ class CleanupImagesTask
 			return;
 		}
 
-		if (!$this->table_exists('msgpictures', $sch))
+		if (!$this->table_exists('messages', $sch))
 		{
 			error_log('-> table not present for schema ' .
-				$sch . '.msgpictures (no delete)');
+				$sch . '.messages (no delete)');
 			return;
 		}
 
 		if ($type == 'u' && ctype_digit((string) $id))
 		{
-			$user = $this->db->fetchAssoc('select id, "PictureFile"
+			$user = $this->db->fetchAssoc('select id, image_file
 				from ' . $sch . '.users
 				where id = ?', [$id]);
 
@@ -107,9 +107,9 @@ class CleanupImagesTask
 			{
 				$del_str = '->User does not exist.';
 			}
-			else if ($user['PictureFile'] !== $object['Key'])
+			else if ($user['image_file'] !== $object['Key'])
 			{
-				$del_str = '->does not match db key ' . $user['PictureFile'];
+				$del_str = '->does not match db key ' . $user['image_file'];
 			}
 			else
 			{
@@ -119,12 +119,14 @@ class CleanupImagesTask
 		}
 		else if ($type === 'm' && ctype_digit((string) $id))
 		{
-			$msgpict = $this->db->fetchAssoc('select *
-				from ' . $sch . '.msgpictures
-				where msgid = ?
-					and "PictureFile" = ?', [$id, $object['Key']]);
+			$image_files = $this->db->fetchColumn('select image_files
+				from ' . $sch . '.message
+				where id = ?', ['id' => $id]);
 
-			if (!$msgpict)
+			$image_file_ary = json_decode($image_files ?? '[]', true);
+			$key = array_search($object['Key'], $image_file_ary);
+
+			if ($key === false)
 			{
 				$del_str = '->is not present in db.';
 			}

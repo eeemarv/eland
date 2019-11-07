@@ -125,9 +125,17 @@ class MessagesEditController extends AbstractController
         $id_category = $request->request->get('id_category', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
+/*
         $deleted_images = $request->request->get('deleted_images', []);
         $uploaded_images = $request->request->get('uploaded_images', []);
+*/
+        $image_files = $request->request->get('image_files', '') ?: '[]';
         $access = $request->request->get('access', '');
+
+        if (json_decode($image_files, true) === null)
+        {
+            $image_files = '[]';
+        }
 
         if ($edit_mode)
         {
@@ -266,6 +274,7 @@ class MessagesEditController extends AbstractController
                     'amount'            => $amount,
                     'units'             => $units,
                     'local'             => AccessCnst::TO_LOCAL[$access],
+                    'image_files'       => $image_files,
                 ];
 
                 if (empty($amount))
@@ -290,16 +299,68 @@ class MessagesEditController extends AbstractController
                     $pp->schema()
                 );
 
-                self::add_images_to_db(
-                    $uploaded_images,
-                    $id,
-                    true,
-                    $db,
-                    $logger,
-                    $alert_service,
-                    $s3_service,
-                    $pp->schema()
-                );
+                $images = json_decode($image_files, true);
+                $new_image_files = [];
+                $update_image_files = false;
+
+                foreach ($images as $img)
+                {
+                    [$img_schema, $img_type, $img_msg_id, $img_file_name] = explode('_', $img);
+                    [$img_id, $img_ext] = explode('.', $img_file_name);
+
+                    $img_msg_id = (int) $img_msg_id;
+
+                    if ($img_schema !== $pp->schema())
+                    {
+                        $logger->debug('Schema does not fit image (not inserted): ' . $img,
+                            ['schema' => $pp->schema()]);
+                        $update_image_files = true;
+                        continue;
+                    }
+
+                    if ($img_type !== 'm')
+                    {
+                        $logger->debug('Type does not fit image message (not inserted): ' . $img,
+                            ['schema' => $pp->schema()]);
+
+                        $update_image_files = true;
+                        continue;
+                    }
+
+                    if ($img_msg_id !== $id)
+                    {
+                        $new_filename = $pp->schema() . '_m_' . $id . '_';
+                        $new_filename .= sha1(random_bytes(16)) . '.' . $img_ext;
+
+                        $err = $s3_service->copy($img, $new_filename);
+
+                        if (isset($err))
+                        {
+                            $logger->error('message-picture renaming and storing in db ' .
+                                $img .  ' not succeeded. ' . $err,
+                                ['schema' => $pp->schema()]);
+                        }
+                        else
+                        {
+                            $logger->info('renamed ' . $img . ' to ' .
+                                $new_filename, ['schema' => $pp->schema()]);
+
+                            $new_image_files[] = $new_filename;
+                        }
+
+                        $update_image_files = true;
+                        continue;
+                    }
+
+                    $new_image_files[] = $img;
+                }
+
+                if ($update_image_files)
+                {
+                    $image_files = json_encode($new_image_files);
+
+                    $db->update($pp->schema() . '.messages', ['image_files' => $image_files], ['id' => $id]);
+                }
 
                 $alert_service->success('Nieuw vraag of aanbod toegevoegd.');
                 $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
@@ -321,25 +382,6 @@ class MessagesEditController extends AbstractController
                     self::adjust_category_stats($type,
                         (int) $id_category, 1, $db, $pp->schema());
                 }
-
-                self::delete_images_from_db(
-                    $deleted_images,
-                    $id,
-                    $db,
-                    $logger,
-                    $pp->schema()
-                );
-
-                self::add_images_to_db(
-                    $uploaded_images,
-                    $id,
-                    false,
-                    $db,
-                    $logger,
-                    $alert_service,
-                    $s3_service,
-                    $pp->schema()
-                );
 
                 $db->commit();
                 $alert_service->success('Vraag/aanbod aangepast');
@@ -371,6 +413,8 @@ class MessagesEditController extends AbstractController
                 $account_code = $user['letscode'] . ' ' . $user['name'];
 
                 $access = AccessCnst::FROM_LOCAL[$message['local']] ?? 'user';
+
+                $image_files = $message['image_files'];
             }
 
             if ($add_mode)
@@ -384,6 +428,7 @@ class MessagesEditController extends AbstractController
                 $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
                 $account_code = '';
                 $access = '';
+                $image_files = '[]';
 
                 if ($pp->is_admin())
                 {
@@ -393,33 +438,6 @@ class MessagesEditController extends AbstractController
                     $account_code = trim($account_code);
                 }
             }
-        }
-
-        $render_images = [];
-
-        if ($edit_mode)
-        {
-            $st = $db->prepare('select "PictureFile"
-                from ' . $pp->schema() . '.msgpictures
-                where msgid = ?', [$id]);
-
-            $st->bindValue(1, $id);
-            $st->execute();
-
-            while($row = $st->fetch())
-            {
-                $render_images[$row['PictureFile']] = true;
-            }
-        }
-
-        foreach ($deleted_images as $del_img)
-        {
-            unset($render_images[$del_img]);
-        }
-
-        foreach ($uploaded_images as $upl_img)
-        {
-            $render_images[$upl_img] = true;
         }
 
         $cat_list = ['' => ''];
@@ -438,6 +456,7 @@ class MessagesEditController extends AbstractController
 
         $assets_service->add([
             'fileupload',
+            'sortable',
             'messages_edit_images_upload.js',
         ]);
 
@@ -570,7 +589,7 @@ class MessagesEditController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="fileupload" class="control-label">';
         $out .= 'Afbeeldingen</label>';
-        $out .= '<div class="row">';
+        $out .= '<div class="row sortable">';
 
         $out .= '<div class="col-sm-3 col-md-2 thumbnail-col hidden" ';
         $out .= 'id="thumbnail_model" ';
@@ -587,9 +606,12 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        foreach ($render_images as $img => $dummy)
+        $images = json_decode($image_files, true);
+
+        foreach ($images as $img)
         {
-            $out .= '<div class="col-sm-3 col-md-2 thumbnail-col">';
+            $out .= '<div class="col-sm-3 col-md-2 thumbnail-col" ';
+            $out .= 'data-file="' . $img . '">';
             $out .= '<div class="thumbnail">';
             $out .= '<img src="';
             $out .= $env_s3_url . $img;
@@ -638,6 +660,10 @@ class MessagesEditController extends AbstractController
         $out .= 'verslepen.</p>';
         $out .= '</div>';
 
+        $out .= '<input type="hidden" name="image_files" value="';
+        $out .= htmlspecialchars($image_files);
+        $out .= '">';
+
         if ($intersystems_service->get_count($pp->schema()))
         {
             $out .= $item_access_service->get_radio_buttons('access', $access, 'messages', true);
@@ -662,6 +688,7 @@ class MessagesEditController extends AbstractController
         $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . ' btn-lg">';
         $out .= $form_token_service->get_hidden_input();
 
+/*
         foreach ($uploaded_images as $img)
         {
             $out .= '<input type="hidden" name="uploaded_images[]" value="' . $img . '">';
@@ -671,6 +698,7 @@ class MessagesEditController extends AbstractController
         {
             $out .= '<input type="hidden" name="deleted_images[]" value="' . $img . '">';
         }
+**/
 
         $out .= '</form>';
 
@@ -707,126 +735,6 @@ class MessagesEditController extends AbstractController
         $db->executeUpdate('update ' . $schema . '.categories
             set ' . $column . ' = ' . $column . ' ' . $adj_str . '
             where id = ?', [$id_category]);
-    }
-
-    public static function delete_images_from_db(
-        array $deleted_images,
-        int $id,
-        Db $db,
-        LoggerInterface $logger,
-        string $schema
-    ):void
-    {
-        if (!count($deleted_images))
-        {
-            return;
-        }
-
-        foreach ($deleted_images as $img)
-        {
-            if ($db->delete($schema . '.msgpictures', [
-                'msgid'		        => $id,
-                '"PictureFile"'	    => $img,
-            ]))
-            {
-                $logger->info('message-picture ' . $img .
-                    ' deleted from db.', ['schema' => $schema]);
-            }
-        }
-    }
-
-    public static function add_images_to_db(
-        array $uploaded_images,
-        int $id,
-        bool $fix_id,
-        Db $db,
-        LoggerInterface $logger,
-        AlertService $alert_service,
-        S3Service $s3_service,
-        string $schema
-    ):void
-    {
-        if (!count($uploaded_images))
-        {
-            return;
-        }
-
-        foreach ($uploaded_images as $img)
-        {
-            $img_errors = [];
-
-            [$img_schema, $img_type, $img_msg_id, $hash] = explode('_', $img);
-
-            $img_msg_id = (int) $img_msg_id;
-
-            if ($img_schema !== $schema)
-            {
-                $img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
-            }
-
-            if ($img_type !== 'm')
-            {
-                $img_errors[] = 'Type stemt niet overeen voor afbeelding ' . $img;
-            }
-
-            if ($img_msg_id !== $id && !$fix_id)
-
-            if (count($img_errors))
-            {
-                $alert_service->error($img_errors);
-
-                continue;
-            }
-
-            if ($img_msg_id === $id)
-            {
-                if ($db->insert($schema . '.msgpictures', [
-                    '"PictureFile"' => $img,
-                    'msgid'			=> $id,
-                ]))
-                {
-                    $logger->info('message-picture ' . $img .
-                        ' inserted in db.', ['schema' => $schema]);
-
-                    continue;
-                }
-
-                $logger->error('error message-picture ' . $img .
-                    ' not inserted in db.', ['schema' => $schema]);
-
-                continue;
-            }
-
-            $new_filename = $schema . '_m_' . $id . '_';
-            $new_filename .= sha1(random_bytes(16)) . '.jpg';
-
-            $err = $s3_service->copy($img, $new_filename);
-
-            if (isset($err))
-            {
-                $logger->error('message-picture renaming and storing in db ' . $img .
-                    ' not succeeded. ' . $err, ['schema' => $schema]);
-            }
-            else
-            {
-                $logger->info('renamed ' . $img . ' to ' .
-                    $new_filename, ['schema' => $schema]);
-
-                if ($db->insert($schema . '.msgpictures', [
-                    '"PictureFile"'		=> $new_filename,
-                    'msgid'				=> $id,
-                ]))
-                {
-                    $logger->info('message-picture ' . $new_filename .
-                        ' inserted in db.', ['schema' => $schema]);
-
-                    continue;
-                }
-
-                $logger->error('error: message-picture ' . $new_filename .
-                    ' not inserted in db.', ['schema' => $schema]);
-            }
-        }
     }
 
     static public function get_radio(

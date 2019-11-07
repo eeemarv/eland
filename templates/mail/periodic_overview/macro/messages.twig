@@ -26,9 +26,9 @@
 		</a>
 	</strong>
 <br />
-{%- if msg.images|length -%}
+{%- if msg.image_file -%}
 	<br/>
-	<img src="{{- s3_url(msg.images.0) -}}" height="200" alt="afbeelding">
+	<img src="{{- s3_url(msg.image_file) -}}" height="200" alt="afbeelding">
 	<br />
 {%- endif -%}
 {{- msg.description -}}

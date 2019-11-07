@@ -35,7 +35,7 @@ class UsersImageUploadAdminController extends AbstractController
             'u', $id, 400, 400, $pp->schema());
 
         $db->update($pp->schema() . '.users', [
-            '"PictureFile"'	=> $filename
+            'image_file'	=> $filename
         ],['id' => $id]);
 
         $logger->info('User image ' . $filename .

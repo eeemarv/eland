@@ -197,20 +197,6 @@ class UsersDelAdminController extends AbstractController
                 ['id_user' => $id]);
         }
 
-        // remove orphaned images.
-
-        $rs = $db->prepare('select mp.id, mp."PictureFile"
-            from ' . $pp->schema() . '.msgpictures mp
-                left join ' . $pp->schema() . '.messages m on mp.msgid = m.id
-            where m.id is null');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $db->delete($pp->schema() . '.msgpictures', ['id' => $row['id']]);
-        }
-
         // update counts for each category
 
         $offer_count = $want_count = [];

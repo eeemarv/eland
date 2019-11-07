@@ -59,6 +59,16 @@ class MessagesShowImagesUploadController extends AbstractController
             $id++;
         }
 
+        if ($insert_in_db)
+        {
+            $image_files = $db->fetchColumn('select image_files
+                from ' . $pp->schema() . '.messages
+                where id = ?', [$id]);
+            $new_image_files = json_decode($image_files ?? '[]', true);
+        }
+
+        $update_db = false;
+
         foreach ($uploaded_files as $uploaded_file)
         {
             $filename = $image_upload_service->upload($uploaded_file,
@@ -66,22 +76,29 @@ class MessagesShowImagesUploadController extends AbstractController
 
             if ($insert_in_db)
             {
-                $db->insert($pp->schema() . '.msgpictures', [
-                    'msgid'			=> $id,
-                    '"PictureFile"'	=> $filename]);
+                $update_db = true;
+                $new_image_files[] = $filename;
 
-                $logger->info('Message-Picture ' .
+                $logger->info('Image file ' .
                     $filename . ' uploaded and inserted in db.',
                     ['schema' => $pp->schema()]);
             }
             else
             {
-                $logger->info('Message-Picture ' .
+                $logger->info('Image file ' .
                     $filename . ' uploaded, not (yet) inserted in db.',
                     ['schema' => $pp->schema()]);
             }
 
             $return_ary[] = $filename;
+        }
+
+        if ($update_db)
+        {
+            $image_files = json_encode($new_image_files);
+            $db->update($pp->schema() . '.messages',
+                ['image_files' => $image_files],
+                ['id' => $id]);
         }
 
         return $this->json($return_ary);

@@ -133,25 +133,8 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			$saldo_mail[$user_id] = true;
 		}
 
-	// fetch images
-
 		if (isset($block_options['messages']))
 		{
-			$image_ary = [];
-
-			$rs = $this->db->prepare('select m.id, p."PictureFile"
-				from ' . $schema . '.msgpictures p, ' .
-					$schema . '.messages m
-				where p.msgid = m.id
-					and m.cdate >= ?', [$treshold_time]);
-
-			$rs->bindValue(1, $treshold_time);
-			$rs->execute();
-
-			while ($row = $rs->fetch())
-			{
-				$image_ary[$row['id']][] = $row['PictureFile'];
-			}
 
 		// fetch addresses
 
@@ -180,7 +163,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			$rs = $this->db->prepare('select m.id, m.content,
 					m."Description" as description,
 					m.msg_type, m.id_user,
-					m.amount, m.units
+					m.amount, m.units, m.image_files
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
 				where m.id_user = u.id
@@ -196,10 +179,13 @@ class SaldoSchemaTask implements SchemaTaskInterface
 				$uid = $row['id_user'];
 				$adr = isset($addr_public[$uid]) && $addr_public[$uid] ? $addr[$uid] : '';
 
+				$image_file_ary = json_decode($row['image_files'] ?? '[]', true);
+				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';
+
 				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 				$row['offer'] = $row['type'] == 'offer' ? true : false;
 				$row['want'] = $row['type'] == 'want' ? true : false;
-				$row['images'] = $image_ary[$row['id']] ?? [];
+				$row['image_file'] = $image_file;
 				$row['mail'] = $mailaddr[$uid] ?? '';
 				$row['addr'] = str_replace(' ', '+', $adr);
 				$row['adr'] = $adr;

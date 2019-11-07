@@ -41,7 +41,7 @@ class UsersImageDelAdminController extends AbstractController
             $link_render->redirect($vr->get('users'), $pp->ary(), []);
         }
 
-        $file = $user['PictureFile'];
+        $file = $user['image_file'];
 
         if ($file == '' || !$file)
         {
@@ -52,7 +52,7 @@ class UsersImageDelAdminController extends AbstractController
         if ($request->isMethod('POST'))
         {
             $db->update($pp->schema() . '.users',
-                ['"PictureFile"' => ''],
+                ['image_file' => ''],
                 ['id' => $id]);
 
             $user_cache_service->clear($id, $pp->schema());
