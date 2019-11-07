@@ -279,11 +279,6 @@ class messages_edit
 
                     $app['db']->update($app['pp_schema'] . '.messages', ['image_files' => $image_files], ['id' => $id]);
                 }
-            /*
-                self::add_images_to_db($uploaded_images, $id, true,
-                    $app['db'], $app['monolog'], $app['alert'],
-                    $app['s3'], $app['pp_schema']);
-            */
 
                 $app['alert']->success('Nieuw vraag of aanbod toegevoegd.');
                 $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
@@ -305,15 +300,6 @@ class messages_edit
                     self::adjust_category_stats($type,
                         (int) $id_category, 1, $app['db'], $app['pp_schema']);
                 }
-
-/*
-                self::delete_images_from_db($deleted_images, $id,
-                    $app['db'], $app['monolog'], $app['pp_schema']);
-
-                self::add_images_to_db($uploaded_images, $id, false,
-                    $app['db'], $app['monolog'], $app['alert'],
-                    $app['s3'], $app['pp_schema']);
-*/
 
                 $app['db']->commit();
                 $app['alert']->success('Vraag/aanbod aangepast');
@@ -367,35 +353,6 @@ class messages_edit
                  }
             }
         }
-
-/*
-        $render_images = [];
-
-        if ($edit_mode)
-        {
-            $st = $app['db']->prepare('select "PictureFile"
-                from ' . $app['pp_schema'] . '.msgpictures
-                where msgid = ?', [$id]);
-
-            $st->bindValue(1, $id);
-            $st->execute();
-
-            while($row = $st->fetch())
-            {
-                $render_images[$row['PictureFile']] = true;
-            }
-        }
-
-        foreach ($deleted_images as $del_img)
-        {
-            unset($render_images[$del_img]);
-        }
-
-        foreach ($uploaded_images as $upl_img)
-        {
-            $render_images[$upl_img] = true;
-        }
-*/
 
         $cat_list = ['' => ''];
 
@@ -690,126 +647,6 @@ class messages_edit
         $db->executeUpdate('update ' . $schema . '.categories
             set ' . $column . ' = ' . $column . ' ' . $adj_str . '
             where id = ?', [$id_category]);
-    }
-
-    public static function delete_images_from_db(
-        array $deleted_images,
-        int $id,
-        db $db,
-        monolog $monolog,
-        string $schema
-    ):void
-    {
-        if (!count($deleted_images))
-        {
-            return;
-        }
-
-        foreach ($deleted_images as $img)
-        {
-            if ($db->delete($schema . '.msgpictures', [
-                'msgid'		        => $id,
-                '"PictureFile"'	    => $img,
-            ]))
-            {
-                $monolog->info('message-picture ' . $img .
-                    ' deleted from db.', ['schema' => $schema]);
-            }
-        }
-    }
-
-    public static function add_images_to_db(
-        array $uploaded_images,
-        int $id,
-        bool $fix_id,
-        db $db,
-        monolog $monolog,
-        alert $alert,
-        s3 $s3,
-        string $schema
-    ):void
-    {
-        if (!count($uploaded_images))
-        {
-            return;
-        }
-
-        foreach ($uploaded_images as $img)
-        {
-            $img_errors = [];
-
-            [$img_schema, $img_type, $img_msg_id, $hash] = explode('_', $img);
-
-            $img_msg_id = (int) $img_msg_id;
-
-            if ($img_schema !== $schema)
-            {
-                $img_errors[] = 'Schema stemt niet overeen voor afbeelding ' . $img;
-            }
-
-            if ($img_type !== 'm')
-            {
-                $img_errors[] = 'Type stemt niet overeen voor afbeelding ' . $img;
-            }
-
-            if ($img_msg_id !== $id && !$fix_id)
-
-            if (count($img_errors))
-            {
-                $alert->error($img_errors);
-
-                continue;
-            }
-
-            if ($img_msg_id === $id)
-            {
-                if ($db->insert($schema . '.msgpictures', [
-                    '"PictureFile"' => $img,
-                    'msgid'			=> $id,
-                ]))
-                {
-                    $monolog->info('message-picture ' . $img .
-                        ' inserted in db.', ['schema' => $schema]);
-
-                    continue;
-                }
-
-                $monolog->error('error message-picture ' . $img .
-                    ' not inserted in db.', ['schema' => $schema]);
-
-                continue;
-            }
-
-            $new_filename = $schema . '_m_' . $id . '_';
-            $new_filename .= sha1(random_bytes(16)) . '.jpg';
-
-            $err = $s3->copy($img, $new_filename);
-
-            if (isset($err))
-            {
-                $monolog->error('message-picture renaming and storing in db ' . $img .
-                    ' not succeeded. ' . $err, ['schema' => $schema]);
-            }
-            else
-            {
-                $monolog->info('renamed ' . $img . ' to ' .
-                    $new_filename, ['schema' => $schema]);
-
-                if ($db->insert($schema . '.msgpictures', [
-                    '"PictureFile"'		=> $new_filename,
-                    'msgid'				=> $id,
-                ]))
-                {
-                    $monolog->info('message-picture ' . $new_filename .
-                        ' inserted in db.', ['schema' => $schema]);
-
-                    continue;
-                }
-
-                $monolog->error('error: message-picture ' . $new_filename .
-                    ' not inserted in db.', ['schema' => $schema]);
-            }
-        }
     }
 
     static public function get_radio(

@@ -97,21 +97,6 @@ class cleanup_messages extends schema_task
 			}
 		}
 
-		// remove orphaned images.
-
-		$rs = $this->db->prepare('select mp.id, mp."PictureFile"
-			from ' . $this->schema . '.msgpictures mp
-			left join ' . $this->schema . '.messages m on mp.msgid = m.id
-			where m.id is null');
-
-		$rs->execute();
-
-		while ($row = $rs->fetch())
-		{
-			$this->db->delete($this->schema . '.msgpictures',
-				['id' => $row['id']]);
-		}
-
 		// update counts for each category
 
 		$offer_count = $want_count = [];

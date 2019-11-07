@@ -41,17 +41,22 @@ class messages_images_del
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }
 
-        $image = $app['db']->fetchAssoc('select p."PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures p
-            where p.msgid = ?
-                and p."PictureFile" = ?', [$id, $img]);
+        $image_file_ary = json_decode($message['image_files'] ?? '[]', true);
 
-        if (!$image)
+        $key = array_search($img, $image_file_ary);
+
+        if ($key === false)
         {
             throw new NotFoundHttpException('Afbeelding niet gevonden');
         }
 
-        $app['db']->delete($app['pp_schema'] . '.msgpictures', ['"PictureFile"' => $img]);
+        unset($image_file_ary[$key]);
+
+        $image_files = json_encode($image_file_ary);
+
+        $app['db']->update($app['pp_schema'] . '.messages',
+            ['image_files' => $image_files],
+            ['id' => $id]);
 
         return $app->json(['success' => true]);
     }
@@ -70,6 +75,14 @@ class messages_images_del
                 'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
         }
 
+        $images = json_decode($message['image_files'] ?? '[]', true);
+
+        if (!count($images))
+        {
+            $app['alert']->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
+            $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
+        }
+
         if ($request->isMethod('POST'))
         {
             if ($error_form = $app['form_token']->get_error())
@@ -79,34 +92,15 @@ class messages_images_del
 
             if (!count($errors))
             {
-                $app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
+                $app['db']->update($app['pp_schema'] . '.messages',
+                    ['image_files' => '[]'], ['id' => $id]);
 
                 $app['alert']->success('De afbeeldingen voor ' . $message['label']['type_this'] .
                     ' zijn verwijderd.');
-
                 $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
             }
 
             $app['alert']->error($errors);
-        }
-
-        $images = [];
-
-        $st = $app['db']->prepare('select "PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures
-            where msgid = ?');
-        $st->bindValue(1, $id);
-        $st->execute();
-
-        while ($row = $st->fetch())
-        {
-            $images[] = $row['PictureFile'];
-        }
-
-        if (!count($images))
-        {
-            $app['alert']->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
-            $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
         }
 
         $app['heading']->add('Afbeeldingen verwijderen voor ');
@@ -142,7 +136,6 @@ class messages_images_del
             $out .= 'data-url="';
 
             $form_token = $app['form_token']->get();
-
             [$img_base, $ext] = explode('.', $img);
 
             $out .= $app['link']->context_path('messages_images_instant_del', $app['pp_ary'], [

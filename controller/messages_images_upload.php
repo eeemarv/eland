@@ -79,7 +79,7 @@ class messages_images_upload
             $image_files = $app['db']->fetchColumn('select image_files
                 from ' . $app['pp_schema'] . '.messages
                 where id = ?', [$id]);
-            $new_image_files = json_decode($image_files, true);
+            $new_image_files = json_decode($image_files ?? '[]', true);
         }
 
         $update_db = false;

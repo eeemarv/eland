@@ -144,20 +144,6 @@ class users_del_admin
                 ['id_user' => $id]);
         }
 
-        // remove orphaned images.
-
-        $rs = $app['db']->prepare('select mp.id, mp."PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures mp
-                left join ' . $app['pp_schema'] . '.messages m on mp.msgid = m.id
-            where m.id is null');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $app['db']->delete($app['pp_schema'] . '.msgpictures', ['id' => $row['id']]);
-        }
-
         // update counts for each category
 
         $offer_count = $want_count = [];

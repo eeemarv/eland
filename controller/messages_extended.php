@@ -17,29 +17,6 @@ class messages_extended
         $params = $fetch_and_filter['params'];
         $out = $fetch_and_filter['out'];
 
-        $ids = $imgs = [];
-
-        foreach ($messages as $msg)
-        {
-            $ids[] = $msg['id'];
-        }
-
-        $_imgs = $app['db']->executeQuery('select mp.msgid, mp."PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures mp
-            where msgid in (?)',
-            [$ids],
-            [\Doctrine\DBAL\Connection::PARAM_INT_ARRAY]);
-
-        foreach ($_imgs as $_img)
-        {
-            if (isset($imgs[$_img['msgid']]))
-            {
-                continue;
-            }
-
-            $imgs[$_img['msgid']] = $_img['PictureFile'];
-        }
-
         messages_list::set_view_btn_nav(
             $app['btn_nav'], $app['pp_ary'],
             $params, 'extended');
@@ -54,6 +31,9 @@ class messages_extended
 
         foreach ($messages as $msg)
         {
+            $image_files_ary = json_decode($msg['image_files'] ?? '[]', true);
+            $image_file = $image_files_ary ? $image_files_ary[0] : '';
+
             $sf_owner = $app['pp_user']
                 && $msg['id_user'] === $app['s_id'];
 
@@ -66,7 +46,7 @@ class messages_extended
 
             $out .= '<div class="media">';
 
-            if (isset($imgs[$msg['id']]))
+            if ($image_file)
             {
                 $out .= '<div class="media-left">';
                 $out .= '<a href="';
@@ -76,7 +56,7 @@ class messages_extended
 
                 $out .= '">';
                 $out .= '<img class="media-object" src="';
-                $out .= $app['s3_url'] . $imgs[$msg['id']];
+                $out .= $app['s3_url'] . $image_file;
                 $out .= '" width="150">';
                 $out .= '</a>';
                 $out .= '</div>';
