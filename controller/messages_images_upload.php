@@ -74,6 +74,16 @@ class messages_images_upload
             $id++;
         }
 
+        if ($insert_in_db)
+        {
+            $image_files = $app['db']->fetchColumn('select image_files
+                from ' . $app['pp_schema'] . '.messages
+                where id = ?', [$id]);
+            $new_image_files = json_decode($image_files, true);
+        }
+
+        $update_db = false;
+
         foreach ($uploaded_files as $uploaded_file)
         {
             $filename = $app['image_upload']->upload($uploaded_file,
@@ -81,22 +91,27 @@ class messages_images_upload
 
             if ($insert_in_db)
             {
-                $app['db']->insert($app['pp_schema'] . '.msgpictures', [
-                    'msgid'			=> $id,
-                    '"PictureFile"'	=> $filename]);
+                $update_db = true;
+                $new_image_files[] = $filename;
 
-                $app['monolog']->info('Message-Picture ' .
+                $app['monolog']->info('Image file ' .
                     $filename . ' uploaded and inserted in db.',
                     ['schema' => $app['pp_schema']]);
             }
             else
             {
-                $app['monolog']->info('Message-Picture ' .
+                $app['monolog']->info('Image file ' .
                     $filename . ' uploaded, not (yet) inserted in db.',
                     ['schema' => $app['pp_schema']]);
             }
 
             $return_ary[] = $filename;
+        }
+
+        if ($update_db)
+        {
+            $image_files = json_encode($new_image_files);
+            $app['db']->update($app['pp_schema'] . '.messages', ['image_files' => $image_files], ['id' => $id]);
         }
 
         return $app->json($return_ary);

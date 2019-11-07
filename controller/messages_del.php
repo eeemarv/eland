@@ -32,8 +32,6 @@ class messages_del
                 $app['alert']->error($error_token);
             }
 
-            $app['db']->delete($app['pp_schema'] . '.msgpictures', ['msgid' => $id]);
-
             if ($app['db']->delete($app['pp_schema'] . '.messages', ['id' => $id]))
             {
                 $column = 'stat_msgs_';
