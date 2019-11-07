@@ -370,6 +370,7 @@ class messages_edit
 
         $app['assets']->add([
             'fileupload',
+            'sortable',
             'messages_edit_images_upload.js',
         ]);
 
@@ -502,7 +503,7 @@ class messages_edit
         $out .= '<div class="form-group">';
         $out .= '<label for="fileupload" class="control-label">';
         $out .= 'Afbeeldingen</label>';
-        $out .= '<div class="row">';
+        $out .= '<div class="row sortable">';
 
         $out .= '<div class="col-sm-3 col-md-2 thumbnail-col hidden" ';
         $out .= 'id="thumbnail_model" ';
@@ -523,7 +524,8 @@ class messages_edit
 
         foreach ($images as $img)
         {
-            $out .= '<div class="col-sm-3 col-md-2 thumbnail-col">';
+            $out .= '<div class="col-sm-3 col-md-2 thumbnail-col" ';
+            $out .= 'data-file="' . $img . '">';
             $out .= '<div class="thumbnail">';
             $out .= '<img src="';
             $out .= $app['s3_url'] . $img;
