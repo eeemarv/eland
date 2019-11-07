@@ -245,29 +245,7 @@ class IntersystemsController extends AbstractController
         LinkRender $link_render
     ):string
     {
-        $out = '<div class="panel panel-default"><div class="panel-heading">';
-        $out .= '<h3>Een interSysteem verbinding aanmaken met een Systeem dat draait op eLAS. ';
-        $out .= 'Zie <a href="https://eland.letsa.net/elas-intersysteem-koppeling-maken.html">hier</a> ';
-        $out .= 'voor de procedure.</h3>';
-        $out .= '<p>Voor het aanmaken van interSysteem verbindingen ';
-        $out .= 'in deze eLAND-server zie onder!</p>';
-        $out .= '</div>';
-        $out .= '<ul>';
-        $out .= '<li> Kies \'elassoap\' als API methode.</li>';
-        $out .= '<li> De API Key moet je aanvragen bij de beheerder van het andere Systeem. ';
-        $out .= 'Het is een sleutel die je eigen Systeem toelaat om met het andere Systeem (in eLAS) te communiceren. </li>';
-        $out .= '<li> De Lokale Account Code is de Account Code waarmee het andere Systeem in dit Systeem bekend is. ';
-        $out .= 'Dit account moet al bestaan.</li>';
-        $out .= '<li> De Remote Account Code is de Account Code waarmee dit Systeem bij het ';
-        $out .= 'andere Systeem bekend is. Deze moet in het andere Systeem aangemaakt zijn.</li>';
-        $out .= '<li> De URL is de weblocatie van het andere Systeem. </li>';
-        $out .= '<li> De Preshared Key is een gedeelde sleutel waarmee de interSysteem ';
-        $out .= 'transacties ondertekend worden.  Deze moet identiek zijn aan de Preshared Key ';
-        $out .= 'in het Account van dit Systeem bij het andere Systeem.</li>';
-        $out .= '</ul>';
-        $out .= '</div>';
-
-        $out .= '<div class="panel panel-default">';
+        $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
         $out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
         $out .= '</div>';
