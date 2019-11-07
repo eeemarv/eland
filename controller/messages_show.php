@@ -141,23 +141,10 @@ class messages_show
             $app['alert']->error($errors);
         }
 
-        $balance = $user['saldo'];
-
         $data_images = [
             'base_url'      => $app['s3_url'],
-            'files'         => [],
+            'files'         => json_decode($message['image_files'], true),
         ];
-
-        $st = $app['db']->prepare('select "PictureFile"
-            from ' . $app['pp_schema'] . '.msgpictures
-            where msgid = ?');
-        $st->bindValue(1, $id);
-        $st->execute();
-
-        while ($row = $st->fetch())
-        {
-            $data_images['files'][] =$row['PictureFile'];
-        }
 
         $and_local = $app['pp_guest'] ? ' and local = \'f\' ' : '';
 
