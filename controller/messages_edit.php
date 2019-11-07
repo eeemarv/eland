@@ -48,9 +48,17 @@ class messages_edit
         $id_category = $request->request->get('id_category', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
+/*
         $deleted_images = $request->request->get('deleted_images', []);
         $uploaded_images = $request->request->get('uploaded_images', []);
+*/
+        $image_files = $request->request->get('image_files', '') ?: '[]';
         $access = $request->request->get('access', '');
+
+        if (json_decode($image_files, true) === null)
+        {
+            $image_files = '[]';
+        }
 
         if ($edit_mode)
         {
@@ -189,6 +197,7 @@ class messages_edit
                     'amount'            => $amount,
                     'units'             => $units,
                     'local'             => cnst_access::TO_LOCAL[$access],
+                    'image_files'       => $image_files,
                 ];
 
                 if (empty($amount))
@@ -208,9 +217,73 @@ class messages_edit
                 self::adjust_category_stats($type,
                     (int) $id_category, 1, $app['db'], $app['pp_schema']);
 
+                $images = json_decode($image_files, true);
+                $new_image_files = [];
+                $update_image_files = false;
+
+                foreach ($images as $img)
+                {
+                    [$img_schema, $img_type, $img_msg_id, $img_file_name] = explode('_', $img);
+                    [$img_id, $img_ext] = explode('.', $img_file_name);
+
+                    $img_msg_id = (int) $img_msg_id;
+
+                    if ($img_schema !== $app['pp_schema'])
+                    {
+                        $app['monolog']->debug('Schema does not fit image (not inserted): ' . $img,
+                            ['schema' => $app['pp_schema']]);
+                        $update_image_files = true;
+                        continue;
+                    }
+
+                    if ($img_type !== 'm')
+                    {
+                        $app['monolog']->debug('Type does not fit image message (not inserted): ' . $img,
+                            ['schema' => $app['pp_schema']]);
+
+                        $update_image_files = true;
+                        continue;
+                    }
+
+                    if ($img_msg_id !== $id)
+                    {
+                        $new_filename = $app['pp_schema'] . '_m_' . $id . '_';
+                        $new_filename .= sha1(random_bytes(16)) . '.' . $img_ext;
+
+                        $err = $app['s3']->copy($img, $new_filename);
+
+                        if (isset($err))
+                        {
+                            $app['monolog']->error('message-picture renaming and storing in db ' .
+                                $img .  ' not succeeded. ' . $err,
+                                ['schema' => $app['pp_schema']]);
+                        }
+                        else
+                        {
+                            $app['monolog']->info('renamed ' . $img . ' to ' .
+                                $new_filename, ['schema' => $app['pp_schema']]);
+
+                            $new_image_files[] = $new_filename;
+                        }
+
+                        $update_image_files = true;
+                        continue;
+                    }
+
+                    $new_image_files[] = $img;
+                }
+
+                if ($update_image_files)
+                {
+                    $image_files = json_encode($new_image_files);
+
+                    $app['db']->update($app['pp_schema'] . '.messages', ['image_files' => $image_files], ['id' => $id]);
+                }
+            /*
                 self::add_images_to_db($uploaded_images, $id, true,
                     $app['db'], $app['monolog'], $app['alert'],
                     $app['s3'], $app['pp_schema']);
+            */
 
                 $app['alert']->success('Nieuw vraag of aanbod toegevoegd.');
                 $app['link']->redirect('messages_show', $app['pp_ary'], ['id' => $id]);
@@ -233,12 +306,14 @@ class messages_edit
                         (int) $id_category, 1, $app['db'], $app['pp_schema']);
                 }
 
+/*
                 self::delete_images_from_db($deleted_images, $id,
                     $app['db'], $app['monolog'], $app['pp_schema']);
 
                 self::add_images_to_db($uploaded_images, $id, false,
                     $app['db'], $app['monolog'], $app['alert'],
                     $app['s3'], $app['pp_schema']);
+*/
 
                 $app['db']->commit();
                 $app['alert']->success('Vraag/aanbod aangepast');
@@ -270,6 +345,7 @@ class messages_edit
                 $account_code = $user['letscode'] . ' ' . $user['name'];
 
                 $access = cnst_access::FROM_LOCAL[$message['local']] ?? 'user';
+                $image_files = $message['image_files'];
             }
 
             if ($add_mode)
@@ -283,6 +359,7 @@ class messages_edit
                 $validity_days = (int) $app['config']->get('msgs_days_default', $app['pp_schema']);
                 $account_code = '';
                 $access = '';
+                $image_files = '[]';
 
                 if ($app['pp_admin'])
                 {
@@ -291,6 +368,7 @@ class messages_edit
             }
         }
 
+/*
         $render_images = [];
 
         if ($edit_mode)
@@ -317,6 +395,7 @@ class messages_edit
         {
             $render_images[$upl_img] = true;
         }
+*/
 
         $cat_list = ['' => ''];
 
@@ -483,7 +562,9 @@ class messages_edit
         $out .= '</div>';
         $out .= '</div>';
 
-        foreach ($render_images as $img => $dummy)
+        $images = json_decode($image_files, true);
+
+        foreach ($images as $img)
         {
             $out .= '<div class="col-sm-3 col-md-2 thumbnail-col">';
             $out .= '<div class="thumbnail">';
@@ -534,6 +615,10 @@ class messages_edit
         $out .= 'verslepen.</p>';
         $out .= '</div>';
 
+        $out .= '<input type="hidden" name="image_files" value="';
+        $out .= htmlspecialchars($image_files);
+        $out .= '">';
+
         if ($app['intersystems']->get_count($app['pp_schema']))
         {
             $out .= $app['item_access']->get_radio_buttons('access', $access, 'messages', true);
@@ -558,6 +643,7 @@ class messages_edit
         $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . ' btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
 
+/*
         foreach ($uploaded_images as $img)
         {
             $out .= '<input type="hidden" name="uploaded_images[]" value="' . $img . '">';
@@ -567,6 +653,7 @@ class messages_edit
         {
             $out .= '<input type="hidden" name="deleted_images[]" value="' . $img . '">';
         }
+**/
 
         $out .= '</form>';
 

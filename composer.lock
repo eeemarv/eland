@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.113.0",
+            "version": "3.114.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "09998bf4d47195d5c4afa0ffd30e28921ce75f92"
+                "reference": "94d8df3d2de310df8475d76a729c88c6c1348be4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/09998bf4d47195d5c4afa0ffd30e28921ce75f92",
-                "reference": "09998bf4d47195d5c4afa0ffd30e28921ce75f92",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/94d8df3d2de310df8475d76a729c88c6c1348be4",
+                "reference": "94d8df3d2de310df8475d76a729c88c6c1348be4",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-11-05T19:13:36+00:00"
+            "time": "2019-11-06T23:05:00+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -1947,16 +1947,16 @@
         },
         {
             "name": "phpoption/phpoption",
-            "version": "1.5.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/php-option.git",
-                "reference": "94e644f7d2051a5f0fcf77d81605f152eecff0ed"
+                "reference": "894e8f93890b79f29911cce497fe811fe9d931ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/94e644f7d2051a5f0fcf77d81605f152eecff0ed",
-                "reference": "94e644f7d2051a5f0fcf77d81605f152eecff0ed",
+                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/894e8f93890b79f29911cce497fe811fe9d931ba",
+                "reference": "894e8f93890b79f29911cce497fe811fe9d931ba",
                 "shasum": ""
             },
             "require": {
@@ -1978,7 +1978,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache2"
+                "Apache-2.0"
             ],
             "authors": [
                 {
@@ -1993,7 +1993,7 @@
                 "php",
                 "type"
             ],
-            "time": "2015-07-25T16:39:46+00:00"
+            "time": "2019-11-06T12:42:47+00:00"
         },
         {
             "name": "pimple/pimple",
