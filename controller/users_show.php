@@ -325,7 +325,7 @@ class users_show
         $out .= '<div class="panel-body text-center ';
         $out .= 'center-block" id="img_user">';
 
-        $show_img = $user['PictureFile'] ? true : false;
+        $show_img = $user['image_file'] ? true : false;
 
         $user_img = $show_img ? '' : ' style="display:none;"';
         $no_user_img = $show_img ? ' style="display:none;"' : '';
@@ -335,9 +335,9 @@ class users_show
         $out .= ' class="img-rounded img-responsive center-block" ';
         $out .= 'src="';
 
-        if ($user['PictureFile'])
+        if ($user['image_file'])
         {
-            $out .= $app['s3_url'] . $user['PictureFile'];
+            $out .= $app['s3_url'] . $user['image_file'];
         }
         else
         {
@@ -359,7 +359,7 @@ class users_show
         {
             $btn_del_attr = ['id'	=> 'btn_remove'];
 
-            if (!$user['PictureFile'])
+            if (!$user['image_file'])
             {
                 $btn_del_attr['style'] = 'display:none;';
             }

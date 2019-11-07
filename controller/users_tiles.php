@@ -96,10 +96,10 @@ class users_tiles
             $out .= '<div class="thumbnail text-center">';
             $out .= '<a href="' . $url . '">';
 
-            if (isset($u['PictureFile']) && $u['PictureFile'] != '')
+            if (isset($u['image_file']) && $u['image_file'] != '')
             {
                 $out .= '<img src="';
-                $out .= $app['s3_url'] . $u['PictureFile'];
+                $out .= $app['s3_url'] . $u['image_file'];
                 $out .= '" class="img-rounded">';
             }
             else

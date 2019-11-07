@@ -56,12 +56,17 @@ class init
 
         error_log('*** clear users cache ***');
 
-        $users = $app['db']->fetchAll('select id
-            from ' . $app['pp_schema'] . '.users');
+        $schemas = $app['systems']->get_schemas();
 
-        foreach ($users as $u)
+        foreach($schemas as $schema)
         {
-            $app['predis']->del($app['pp_schema'] . '_user_' . $u['id']);
+            $users = $app['db']->fetchAll('select id
+            from ' . $schema . '.users');
+
+            foreach ($users as $u)
+            {
+                $app['user_cache']->clear($u['id'], $schema);
+            }
         }
 
         $app['link']->redirect('init', $app['pp_ary'],

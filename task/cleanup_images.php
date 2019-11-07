@@ -99,7 +99,7 @@ class cleanup_images
 
 		if ($type == 'u' && ctype_digit((string) $id))
 		{
-			$user = $this->db->fetchAssoc('select id, "PictureFile"
+			$user = $this->db->fetchAssoc('select id, image_file
 				from ' . $sch . '.users
 				where id = ?', [$id]);
 
@@ -107,9 +107,9 @@ class cleanup_images
 			{
 				$del_str = '->User does not exist.';
 			}
-			else if ($user['PictureFile'] !== $object['Key'])
+			else if ($user['image_file'] !== $object['Key'])
 			{
-				$del_str = '->does not match db key ' . $user['PictureFile'];
+				$del_str = '->does not match db key ' . $user['image_file'];
 			}
 			else
 			{

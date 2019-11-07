@@ -33,7 +33,7 @@ class users_image_upload
             'u', $id, 400, 400, $app['pp_schema']);
 
         $app['db']->update($app['pp_schema'] . '.users', [
-            '"PictureFile"'	=> $filename
+            'image_file'	=> $filename
         ],['id' => $id]);
 
         $app['monolog']->info('User image ' . $filename .

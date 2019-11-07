@@ -29,7 +29,7 @@ class users_image_del
             $app['link']->redirect($app['r_users'], $app['pp_ary'], []);
         }
 
-        $file = $user['PictureFile'];
+        $file = $user['image_file'];
 
         if ($file == '' || !$file)
         {
@@ -40,7 +40,7 @@ class users_image_del
         if ($request->isMethod('POST'))
         {
             $app['db']->update($app['pp_schema'] . '.users',
-                ['"PictureFile"' => ''],
+                ['image_file' => ''],
                 ['id' => $id]);
 
             $app['user_cache']->clear($id, $app['pp_schema']);
