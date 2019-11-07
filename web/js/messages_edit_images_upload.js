@@ -47,7 +47,7 @@ $(document).ready(function () {
 
             if (file) {
 				var $thumbnail = $model.clone();
-				$thumbnail.attr('id', file);
+				$thumbnail.removeAttr('id');
 				$thumbnail.attr('data-file', file);
 				var $img = $thumbnail.find('img');
 				$img.attr('src', s3_url + file);
