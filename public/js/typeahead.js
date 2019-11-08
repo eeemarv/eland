@@ -136,14 +136,10 @@ $(document).ready(function(){
 						return {
 							value: user.c + ' ' + user.n,
 							tokens : [ user.c, user.n ],
-							letscode: user.c,
+							code: user.c,
 							name: user.n,
 							class: cl,
-							leaving: user.s === 2,
-							postcode: user.p,
-							balance: user.b,
-							min: user.min,
-							max: user.max
+							leaving: user.s === 2
 						};
 					});
 				}
@@ -154,7 +150,7 @@ $(document).ready(function(){
 
 				var templates = {
 					suggestion: function(data) {
-						return '<p' + data.class + '><strong>' + data.letscode +
+						return '<p' + data.class + '><strong>' + data.code +
 							'</strong> ' + data.name + '</p>';
 					}
 				};
