@@ -47,12 +47,13 @@ $(document).ready(function () {
 
             if (file) {
 				var $thumbnail = $model.clone();
-				$thumbnail.data('file', file);
+				$thumbnail.removeAttr('id');
+				$thumbnail.attr('data-file', file);
 				var $img = $thumbnail.find('img');
 				$img.attr('src', s3_url + file);
 
 				$thumbnail.find('span.img-delete').click(function(){
-					$input.remove();
+					$(this).closest('div.thumbnail-col').remove();
 					$thumbnail.remove();
 				});
 
