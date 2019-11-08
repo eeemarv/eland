@@ -293,8 +293,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 			$query = 'select n.*
 				from ' . $schema . '.news n
-				where n.approved = \'t\'
-					and n.published = \'t\' ';
+				where n.approved = \'t\' ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
 			$query .= 'order by n.itemdate ';

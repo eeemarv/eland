@@ -23,7 +23,6 @@ class NewsApproveController extends AbstractController
     {
         $data = [
             'approved'  => 't',
-            'published' => 't',
         ];
 
         if ($db->update($pp->schema() . '.news',
