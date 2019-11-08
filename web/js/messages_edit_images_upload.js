@@ -53,7 +53,7 @@ $(document).ready(function () {
 				$img.attr('src', s3_url + file);
 
 				$thumbnail.find('span.img-delete').click(function(){
-					$input.remove();
+					$(this).closest('div.thumbnail-col').remove();
 					$thumbnail.remove();
 				});
 
