@@ -11,7 +11,6 @@ class news_approve
     {
         $data = [
             'approved'  => 't',
-            'published' => 't',
         ];
 
         if ($app['db']->update($app['pp_schema'] . '.news',

@@ -295,8 +295,7 @@ class saldo extends schema_task
 
 			$query = 'select n.*
 				from ' . $this->schema . '.news n
-				where n.approved = \'t\'
-					and n.published = \'t\' ';
+				where n.approved = \'t\' ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
 			$query .= 'order by n.itemdate ';
