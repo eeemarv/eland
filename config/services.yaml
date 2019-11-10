@@ -38,7 +38,7 @@ services:
             $env_smtp_port: '%env(SMTP_PORT)%'
             $env_smtp_username: '%env(SMTP_USERNAME)%'
             $env_smtp_password: '%env(SMTP_PASSWORD)%'
-            $env_master_password: '%env(MASTER_PASSWORD)%'
+            $env_master_password: '%env(base64:MASTER_PASSWORD)%'
             $env_mollie_test_api_key: '%env(MOLLIE_TEST_API_KEY)%'
             $env_google_geo_api_key: '%env(GOOGLE_GEO_API_KEY)%'
             $env_geo_block: '%env(GEO_BLOCK)%'

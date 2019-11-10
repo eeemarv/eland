@@ -45,6 +45,8 @@ class LoginController extends AbstractController
     {
         $errors = [];
 
+        error_log($env_master_password);
+
         $location = $request->query->get('location', '');
 
         if (!$location

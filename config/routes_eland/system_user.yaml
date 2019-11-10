@@ -39,7 +39,7 @@ messages_add_images_upload:
   methods: POST
 
 messages_images_upload:
-  controller: App\Controller\MessagesImagesUploadController
+  controller: App\Controller\MessagesShowImagesUploadController
   path: /messages/{id<%assert.id%>}/images/upload
   methods: POST
 
