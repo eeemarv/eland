@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.115.0",
+            "version": "3.115.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "c705a740705bdfb7c23394a3a92adb2fe13fe149"
+                "reference": "43407075f446c202d9520498d4ebcbc5de439690"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/c705a740705bdfb7c23394a3a92adb2fe13fe149",
-                "reference": "c705a740705bdfb7c23394a3a92adb2fe13fe149",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/43407075f446c202d9520498d4ebcbc5de439690",
+                "reference": "43407075f446c202d9520498d4ebcbc5de439690",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2019-11-07T19:27:35+00:00"
+            "time": "2019-11-08T19:17:23+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -3680,16 +3680,16 @@
         },
         {
             "name": "symfony/contracts",
-            "version": "v1.1.7",
+            "version": "v1.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/contracts.git",
-                "reference": "9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e"
+                "reference": "f51bca9de06b7a25b19a4155da7bebad099a5def"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/contracts/zipball/9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e",
-                "reference": "9cb52490dd60e0f50dbcdbdb3a6dbcb31f3a363e",
+                "url": "https://api.github.com/repos/symfony/contracts/zipball/f51bca9de06b7a25b19a4155da7bebad099a5def",
+                "reference": "f51bca9de06b7a25b19a4155da7bebad099a5def",
                 "shasum": ""
             },
             "require": {
@@ -3753,7 +3753,7 @@
                 "interoperability",
                 "standards"
             ],
-            "time": "2019-10-04T21:43:27+00:00"
+            "time": "2019-11-07T12:44:51+00:00"
         },
         {
             "name": "symfony/css-selector",

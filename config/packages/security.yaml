@@ -1,8 +1,7 @@
 security:
-#    encoders:
-#        App\Security\User:
-#            algorithm: auto
-
+    encoders:
+        App\Security\User:
+            algorithm: auto
     providers:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:

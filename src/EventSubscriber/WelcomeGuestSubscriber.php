@@ -5,45 +5,31 @@ namespace App\EventSubscriber;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 
 class WelcomeGuestSubscriber implements EventSubscriberInterface
 {
     const MSG = <<<'TPL'
-    <strong>Welkom bij %system_name%</strong>
-    <br>
+    <strong>Welkom bij %system_name%</strong><br>
     Waardering bij %system_name% gebeurt met '%currency%'.
-    %currency_ratio% %currency% stemt overeen met 1 uur.<br> %context_msg%
-    TPL;
-
-    const ELAS_CONTEXT_MSG = <<<'TPL'
-    Je bent ingelogd als gast. Je kan informatie
-    raadplegen maar niets wijzigen. Transacties moet je
-    ingeven in je eigen Systeem.
-    TPL;
-
-    const ELAND_CONTEXT_MSG = <<<'TPL'
+    %currency_ratio% %currency% stemt overeen met 1 uur.<br>
     Je kan steeds terug naar je eigen Systeem via het menu <strong>Systeem</strong>
     boven in de navigatiebalk.
     TPL;
 
     protected $alert_service;
     protected $pp;
-    protected $su;
     protected $config_service;
 
     public function __construct(
         AlertService $alert_service,
         PageParamsService $pp,
-        SessionUserService $su,
         ConfigService $config_service
     )
     {
         $this->alert_service = $alert_service;
         $this->pp = $pp;
-        $this->su = $su;
         $this->config_service = $config_service;
     }
 
@@ -81,7 +67,6 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
             '%system_name%'     => $system_name,
             '%currency%'        => $currency,
             '%currency_ratio%'  => $currency_ratio,
-            '%context_msg%'     => $this->su->is_elas_guest() ? self::ELAND_CONTEXT_MSG : self::ELAND_CONTEXT_MSG,
         ]);
 
         $this->alert_service->info($msg);

@@ -6,6 +6,7 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Security\User;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\FormTokenService;
@@ -21,11 +22,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersPasswordAdminController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        EncoderFactoryInterface $encoder_factory,
         int $id,
         Db $db,
         AccountRender $account_render,
@@ -70,8 +73,11 @@ class UsersPasswordAdminController extends AbstractController
 
             if (!count($errors))
             {
+                $encoder = $encoder_factory->getEncoder(new User());
+                $hashed_password = $encoder->encodePassword($password, null);
+
                 $update = [
-                    'password'	=> hash('sha512', $password),
+                    'password'	=> $hashed_password,
                     'mdate'		=> gmdate('Y-m-d H:i:s'),
                 ];
 

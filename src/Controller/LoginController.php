@@ -9,6 +9,7 @@ use App\Cnst\RoleCnst;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Security\User;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
@@ -19,12 +20,14 @@ use App\Service\VarRouteService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class LoginController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        EncoderFactoryInterface $encoder_factory,
         XdbService $xdb_service,
         AlertService $alert_service,
         LoggerInterface $logger,
@@ -59,6 +62,8 @@ class LoginController extends AbstractController
             $lc_login = strtolower($login);
             $password = trim($request->request->get('password'));
 
+            $encoder = $encoder_factory->getEncoder(new User());
+
             if (!($lc_login && $password))
             {
                 $errors[] = 'Login gefaald. Vul Login en Paswoord in.';
@@ -66,7 +71,7 @@ class LoginController extends AbstractController
 
             if ($lc_login === 'master'
                 && $env_master_password
-                && hash('sha512', $password) === $env_master_password)
+                && $encoder->isPasswordValid($env_master_password, $password, null))
             {
                 $su->set_master_login($pp->schema());
 
@@ -187,21 +192,20 @@ class LoginController extends AbstractController
                         'schema' 	=> $pp->schema(),
                     ];
 
-                    $sha512 = hash('sha512', $password);
-                    $sha1 = sha1($password);
-                    $md5 = md5($password);
+                    if ($user['password'] === hash('sha512', $password))
+                    {
+                        $hashed_password = $encoder->encodePassword($password, null);
 
-                    if (!in_array($user['password'], [$sha512, $sha1, $md5]))
-                    {
-                        $errors[] = 'Het paswoord is niet correct.';
-                    }
-                    else if ($user['password'] !== $sha512)
-                    {
                         $db->update($pp->schema() . '.users',
-                            ['password' => hash('sha512', $password)],
+                            ['password' => $hashed_password],
                             ['id' => $user_id]);
 
-                        $logger->info('Password encryption updated to sha512', $log_ary);
+                        $logger->info('Password hashing updated', $log_ary);
+                        error_log('Password hashing updated');
+                    }
+                    else if (!$encoder->isPasswordValid($user['password'], $password, null))
+                    {
+                        $errors[] = 'Het paswoord is niet correct.';
                     }
                 }
             }

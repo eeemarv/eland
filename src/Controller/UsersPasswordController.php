@@ -21,11 +21,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersPasswordController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        EncoderFactoryInterface $encoder_factory,
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -47,6 +49,7 @@ class UsersPasswordController extends AbstractController
     {
         return $users_password_admin_controller(
             $request,
+            $encoder_factory,
             $su->id(),
             $db,
             $account_render,

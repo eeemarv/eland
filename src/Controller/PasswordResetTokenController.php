@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Security\User;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\DataTokenService;
@@ -18,11 +19,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class PasswordResetTokenController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        EncoderFactoryInterface $encoder_factory,
         string $token,
         Db $db,
         DataTokenService $data_token_service,
@@ -58,8 +61,11 @@ class PasswordResetTokenController extends AbstractController
             }
             else if (!($password_strength_service->get($password) < 50))
             {
+                $encoder = $encoder_factory->getEncoder(new User());
+                $hashed_password = $encoder->encodePassword($password, null);
+
                 $db->update($pp->schema() . '.users',
-                    ['password' => hash('sha512', $password)],
+                    ['password' => $hashed_password],
                     ['id' => $user_id]);
 
                 $user_cache_service->clear($user_id, $pp->schema());
