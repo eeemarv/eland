@@ -7,7 +7,6 @@ parameters:
     assert.token: '[a-z0-9-]{12}'
     assert.system: '[a-z][a-z0-9]*'
     assert.schema: '[a-z][a-z0-9]*'
-    assert.path: '.+'
     assert.role_short.guest: '[gua]'
     assert.role_short.user: '[ua]'
     assert.role_short.admin: 'a'
