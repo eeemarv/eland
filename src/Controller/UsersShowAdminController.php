@@ -103,12 +103,6 @@ class UsersShowAdminController extends AbstractController
                     geen E-mail berichten versturen.');
             }
 
-            if (!$su->schema() || $su->is_elas_guest())
-            {
-                throw new AccessDeniedHttpException('Je hebt onvoldoende
-                    rechten om een E-mail bericht te versturen.');
-            }
-
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
@@ -754,25 +748,17 @@ class UsersShowAdminController extends AbstractController
     ):string
     {
         $s_owner = !$pp->is_guest()
+            && !$su->is_master()
             && $su->is_system_self()
             && $su->id() === $user_id
             && $user_id;
 
-        $mail_from = $su->schema()
-            && !$su->is_master()
-            && !$su->is_elas_guest()
-                ? $mail_addr_user_service->get($su->id(), $su->schema())
-                : [];
-
+        $mail_from = $mail_addr_user_service->get($su->id(), $su->schema());
         $mail_to = $mail_addr_user_service->get($user_id, $pp->schema());
 
         $user_mail_disabled = true;
 
-        if ($su->is_elas_guest())
-        {
-            $placeholder = 'Als eLAS gast kan je niet het E-mail formulier gebruiken.';
-        }
-        else if ($su->is_master())
+        if ($su->is_master())
         {
             $placeholder = 'Het master account kan geen berichten versturen.';
         }

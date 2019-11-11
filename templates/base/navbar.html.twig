@@ -14,9 +14,7 @@
 			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', menu_nav_system()) -}}
 		{%- endif -%}
 
-		{%- if is_s_elas_guest() -%}
-			{%- set account_name = 'eLAS gast' -%}
-		{%- elseif is_s_master() -%}
+		{%- if is_s_master() -%}
 			{%- set account_name = 'Master' -%}
 		{%- else -%}
 			{%- set account_name =  account(get_s_id(), get_s_schema()) -%}

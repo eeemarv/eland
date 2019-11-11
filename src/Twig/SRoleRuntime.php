@@ -26,11 +26,6 @@ class SRoleRuntime implements RuntimeExtensionInterface
 		return $this->su->is_master();
 	}
 
-	public function is_s_elas_guest():bool
-	{
-		return $this->su->is_elas_guest();
-	}
-
 	public function get_s_id():int
 	{
 		return $this->su->id();

@@ -14,17 +14,18 @@ class SessionUserService
 	protected $user_cache_service;
 
 	protected $schema;
+	protected $system;
 	protected $is_system_self;
 	protected $id;
 	protected $logins;
 	protected $user = [];
 	protected $role;
 	protected $role_short;
-	protected $is_master;
-	protected $is_elas_guest;
-	protected $is_admin;
-	protected $is_user;
 	protected $is_anonymous;
+	protected $is_guest;
+	protected $is_user;
+	protected $is_admin;
+	protected $is_master;
 	protected $ary;
 
 	public function __construct(
@@ -37,21 +38,24 @@ class SessionUserService
 		$this->pp = $pp;
 		$this->user_cache_service = $user_cache_service;
 
-		$this->init();
+		$this->load_session();
+		$this->load_user_role();
 	}
 
-	private function init():void
+	private function load_session():void
+	{
+		$this->logins = $this->session->get('logins') ?? [];
+	}
+
+	private function load_user_role():void
 	{
 		$this->schema = $this->pp->org_schema() ?: $this->pp->schema();
 		$this->system = $this->pp->org_system() ?: $this->pp->system();
 		$this->is_system_self = $this->schema() === $this->pp->schema();
 
-		$this->logins = $this->session->get('logins') ?? [];
-
 		$id = $this->logins[$this->schema] ?? 0;
 
 		$this->is_master = $id === 'master';
-		$this->is_elas_guest = $this->is_system_self && $id === 'elas';
 
 		$role = $this->is_master ? 'admin' : 'anonymous';
 
@@ -61,15 +65,17 @@ class SessionUserService
 		{
 			$this->user = $this->user_cache_service->get($this->id, $this->schema);
 			$role = $this->user['accountrole'];
-			$role = in_array($role, ['user', 'admin']) ? $role : 'anonymous';
+			$role = $role === 'interlets' ? 'guest' : $role;
+			$role = in_array($role, ['user', 'admin', 'guest']) ? $role : 'anonymous';
 		}
 
 		$this->role = $role;
 		$this->role_short = RoleCnst::SHORT[$this->role] ?? '';
 
+		$this->is_anonymous = $this->role === 'anonymous';
+		$this->is_guest = $this->role === 'guest';
 		$this->is_user = $this->role === 'user';
 		$this->is_admin = $this->role === 'admin';
-		$this->is_anonymous = $this->role === 'anonymous';
 
 		if ($this->system && $this->role_short)
 		{
@@ -86,16 +92,9 @@ class SessionUserService
 
 	public function set_login(string $schema, int $user_id):void
 	{
-		$logins = $this->logins;
-		$logins[$schema] = $user_id;
-		$this->session->set('logins', $logins);
-	}
-
-	public function set_elas_guest_login(string $schema):void
-	{
-		$logins = $this->logins;
-		$logins[$schema] = 'elas';
-		$this->session->set('logins', $logins);
+		$this->logins[$schema] = $user_id;
+		$this->session->set('logins', $this->logins);
+		$this->load_user_role();
 	}
 
 	public function set_master_login(string $schema):void
@@ -145,9 +144,14 @@ class SessionUserService
 		return $this->ary;
 	}
 
-	public function is_admin():bool
+	public function is_anonymous():bool
 	{
-		return $this->is_admin;
+		return $this->is_anonymous;
+	}
+
+	public function is_guest():bool
+	{
+		return $this->is_guest;
 	}
 
 	public function is_user():bool
@@ -155,19 +159,14 @@ class SessionUserService
 		return $this->is_user;
 	}
 
-	public function is_anonymous():bool
+	public function is_admin():bool
 	{
-		return $this->is_anonymous;
+		return $this->is_admin;
 	}
 
 	public function is_master():bool
 	{
 		return $this->is_master;
-	}
-
-	public function is_elas_guest():bool
-	{
-		return $this->is_elas_guest;
 	}
 
 	public function is_system_self():bool

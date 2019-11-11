@@ -102,12 +102,6 @@ class MessagesShowController extends AbstractController
                     kan geen berichten versturen.');
             }
 
-            if (!$su->schema() || $su->is_elas_guest())
-            {
-                throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
-                    om een E-mail bericht te versturen.');
-            }
-
             $token_error = $form_token_service->get_error();
 
             if ($token_error)

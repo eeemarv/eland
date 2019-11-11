@@ -215,11 +215,6 @@ class LoginController extends AbstractController
                 $errors[] = 'Het account is niet actief.';
             }
 
-            if (!count($errors) && !in_array($user['accountrole'], ['user', 'admin']))
-            {
-                $errors[] = 'Het account beschikt niet over de juiste rechten.';
-            }
-
             if (!count($errors)
                 && $config_service->get('maintenance', $pp->schema())
                 && $user['accountrole'] !== 'admin')
@@ -244,7 +239,7 @@ class LoginController extends AbstractController
                 $user_cache_service->clear($user_id, $pp->schema());
 
                 $xdb_service->set('login', (string) $user_id, [
-                    'browser' => $agent, 'time' => time()
+                    'browser' => $agent,
                 ], $su->schema());
 
                 $alert_service->success('Je bent ingelogd.');
@@ -255,12 +250,7 @@ class LoginController extends AbstractController
                     exit;
                 }
 
-                $pp_ary = [
-                    'system'        => $pp->system(),
-                    'role_short'    => RoleCnst::SHORT[$user['accountrole']],
-                ];
-
-                $link_render->redirect($vr->get('default'), $pp_ary, []);
+                $link_render->redirect($vr->get('default'), $su->ary(), []);
             }
 
             $alert_service->error($errors);

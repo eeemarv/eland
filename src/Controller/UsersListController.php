@@ -520,12 +520,9 @@ class UsersListController extends AbstractController
             $columns['c'][$tc['abbrev']] = $tc['name'];
         }
 
-        if (!$su->is_elas_guest())
-        {
-            $columns['d'] = [
-                'distance'	=> 'Afstand',
-            ];
-        }
+        $columns['d'] = [
+            'distance'	=> 'Afstand',
+        ];
 
         $columns['m'] = [
             'wants'		=> 'Vraag',
@@ -567,7 +564,6 @@ class UsersListController extends AbstractController
 
         $session_users_columns_key = 'users_columns_';
         $session_users_columns_key .= $pp->role();
-        $session_users_columns_key .= $su->is_elas_guest() ? '_elas' : '';
 
         if (count($show_columns))
         {
@@ -606,11 +602,6 @@ class UsersListController extends AbstractController
                         'distance'	=> 1,
                     ],
                 ];
-            }
-
-            if ($su->is_elas_guest())
-            {
-                unset($columns['d']['distance']);
             }
 
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
@@ -733,7 +724,7 @@ class UsersListController extends AbstractController
 
         if (isset($show_columns['d']) && !$su->is_master())
         {
-            if (($pp->is_guest() && $su->schema() && !$su->is_elas_guest())
+            if (($pp->is_guest() && $su->schema())
                 || !isset($contacts[$su->id()]['adr']))
             {
                 $my_adr = $db->fetchColumn('select c.value

@@ -39,7 +39,7 @@ class MenuNavSystemService
 
 	public function has_nav_system():bool
 	{
-		if ($this->su->is_elas_guest())
+		if ($this->su->is_guest())
 		{
 			$count_intersystems = 0;
 		}
@@ -64,11 +64,7 @@ class MenuNavSystemService
 
 		foreach ($this->su->logins() as $login_schema => $login_id)
 		{
-			if ($login_id === 'elas')
-			{
-				$role_short = 'g';
-			}
-			else if ($login_id === 'master')
+			if ($login_id === 'master')
 			{
 				$role_short = 'a';
 			}
@@ -76,7 +72,12 @@ class MenuNavSystemService
 			{
 				$role = $this->user_cache_service->get_role($login_id, $login_schema);
 
-				if ($role === 'user')
+				if ($role === 'interlets' || $role === 'guest')
+				{
+					$role = 'guest';
+					$role_short = 'g';
+				}
+				else if ($role === 'user')
 				{
 					$role_short = 'u';
 				}
@@ -115,7 +116,7 @@ class MenuNavSystemService
 			$m_ary[] = $m_item;
 		}
 
-		if ($this->su->is_elas_guest())
+		if ($this->su->is_guest())
 		{
 			return $m_ary;
 		}

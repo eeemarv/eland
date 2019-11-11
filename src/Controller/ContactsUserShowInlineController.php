@@ -30,7 +30,6 @@ class ContactsUserShowInlineController extends AbstractController
     {
         $s_owner = $su->id() === $uid
             && !$pp->is_guest()
-            && !$su->is_elas_guest()
             && $su->is_system_self();
 
         $contacts = $db->fetchAll('select c.*, tc.abbrev
@@ -126,7 +125,7 @@ class ContactsUserShowInlineController extends AbstractController
                     {
                         $distance_service->set_to_geo($c['value']);
 
-                        if (!$su->is_elas_guest() && !$su->is_master())
+                        if (!$su->is_master())
                         {
                             $tr_c .= $distance_service->set_from_geo($su->id(), $su->schema())
                                 ->calc()
@@ -176,7 +175,7 @@ class ContactsUserShowInlineController extends AbstractController
                     {
                         $distance_service->set_to_geo($c['value']);
 
-                        if (!$su->is_elas_guest() && !$su->is_master())
+                        if (!$su->is_master())
                         {
                             $tr_c .= $distance_service->set_from_geo($su->id(), $su->schema())
                                 ->calc()

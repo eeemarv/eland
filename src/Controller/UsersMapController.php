@@ -77,7 +77,7 @@ class UsersMapController extends AbstractController
 
         if (!$su->is_master())
         {
-            if ($pp->is_guest() && $su->schema() && !$su->is_elas_guest())
+            if ($pp->is_guest() && !$su->is_system_self())
             {
                 $my_adr = $db->fetchColumn('select c.value
                     from ' . $su->schema() . '.contact c, ' . $su->schema() . '.type_contact tc

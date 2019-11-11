@@ -39,9 +39,6 @@ class PpRoleRuntime implements RuntimeExtensionInterface
 			case 'master':
 				return $this->su->is_master();
 				break;
-			case 'elas_guest':
-				return $this->su->is_elas_guest();
-				break;
 			default:
 				return false;
 				break;

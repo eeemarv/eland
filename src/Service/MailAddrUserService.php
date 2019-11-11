@@ -28,7 +28,13 @@ class MailAddrUserService
 
 	private function get_ary(int $user_id, string $schema, bool $active_only):array
 	{
+		if (!$user_id)
+		{
+			return [];
+		}
+
 		$out = [];
+
 		$status_sql = $active_only ? ' and u.status in (1,2)' : '';
 
 		$st = $this->db->prepare('select c.value, u.name, u.letscode
