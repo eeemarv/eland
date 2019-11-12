@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\RoleCnst;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -213,6 +212,13 @@ class LoginController extends AbstractController
             if (!count($errors) && !in_array($user['status'], [1, 2]))
             {
                 $errors[] = 'Het account is niet actief.';
+            }
+
+            if (!in_array($user['accountrole'], ['user', 'admin'])
+                && !$config_service->get_intersystem_en($pp->schema()))
+            {
+                $errors[] = 'Het account is een interSysteem-gast account,
+                    maar interSysteem functionaliteit is niet ingeschakeld in dit systeem.';
             }
 
             if (!count($errors)

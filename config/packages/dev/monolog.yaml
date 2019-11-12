@@ -8,14 +8,10 @@ monolog:
         redis:
             type: service
             id: App\Monolog\RedisHandler
-        # uncomment to get logging in your browser
-        # you may have to allow bigger header sizes in your Web server configuration
-        #firephp:
-        #    type: firephp
-        #    level: info
-        #chromephp:
-        #    type: chromephp
-        #    level: info
+            level: debug
+        syslog:
+            type: syslog
+            level: debug
         console:
             type: console
             process_psr_3_messages: false

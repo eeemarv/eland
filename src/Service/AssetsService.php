@@ -26,6 +26,11 @@ class AssetsService
 				'twitter-bootstrap/3.3.7/js/bootstrap.min.js',
 			],
 		],
+		'bootstrap-tagsinput' => [
+			'js'	=> [
+				'bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js',
+			],
+		],
 		'fontawesome'	=> [
 			'css'	=> [
 				'font-awesome/4.7.0/css/font-awesome.min.css',
