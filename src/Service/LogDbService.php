@@ -56,16 +56,26 @@ class LogDbService
 
 			$insert = [
 				'schema'		=> $schema,
-				'user_id'		=> $user_id,
-				'user_schema'	=> $user_id ? ($log['extra']['user_schema'] ?? '') : '',
-				'letscode'		=> '',
-				'username'		=> '',
-				'ip'			=> $log['extra']['ip'] ?? '',
 				'ts'			=> $log['datetime']['date'],
 				'type'			=> $log['level_name'],
 				'event'			=> $log['message'],
 				'data'			=> $log_json,
 			];
+
+			if (isset($log['extra']['user_id']))
+			{
+				$insert['user_id'] = $log['extra']['user_id'];
+			}
+
+			if (isset($log['extra']['user_schema']))
+			{
+				$insert['user_schema'] = $log['extra']['user_schema'];
+			}
+
+			if (isset($log['extra']['ip']))
+			{
+				$insert['ip'] = $log['extra']['ip'];
+			}
 
 			$this->db->insert('xdb.logs', $insert);
 		}
