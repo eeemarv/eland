@@ -575,7 +575,7 @@ class messages_edit
         $out .= '</div>';
 
         $out .= '<input type="hidden" name="image_files" value="';
-        $out .= htmlspecialchars($image_files);
+        $out .= htmlspecialchars($image_files ?? '[]');
         $out .= '">';
 
         if ($app['intersystems']->get_count($app['pp_schema']))
