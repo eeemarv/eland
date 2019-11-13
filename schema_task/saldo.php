@@ -181,7 +181,7 @@ class saldo extends schema_task
 				$uid = $row['id_user'];
 				$adr = isset($addr_public[$uid]) && $addr_public[$uid] ? $addr[$uid] : '';
 
-				$image_file_ary = json_decode($row['image_files'] ?? '[]', true);
+				$image_file_ary = array_values(json_decode($row['image_files'] ?? '[]', true));
 				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';
 
 				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
