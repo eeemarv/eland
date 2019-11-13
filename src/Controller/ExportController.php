@@ -116,7 +116,7 @@ class ExportController extends AbstractController
                                     $pp->schema() . '.users tu
                                 where t.id_to = tu.id
                                     and t.id_from = fu.id
-                                order by t.date desc',
+                                order by t.cdate desc',
                 'columns'	=> [
                     'cdate'			=> 'Datum',
                     'from_user'		=> 'Van',
