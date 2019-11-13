@@ -275,7 +275,7 @@ class messages_edit
 
                 if ($update_image_files)
                 {
-                    $image_files = json_encode($new_image_files);
+                    $image_files = json_encode(array_values($new_image_files));
 
                     $app['db']->update($app['pp_schema'] . '.messages', ['image_files' => $image_files], ['id' => $id]);
                 }
@@ -601,18 +601,6 @@ class messages_edit
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . ' btn-lg">';
         $out .= $app['form_token']->get_hidden_input();
-
-/*
-        foreach ($uploaded_images as $img)
-        {
-            $out .= '<input type="hidden" name="uploaded_images[]" value="' . $img . '">';
-        }
-
-        foreach ($deleted_images as $img)
-        {
-            $out .= '<input type="hidden" name="deleted_images[]" value="' . $img . '">';
-        }
-**/
 
         $out .= '</form>';
 

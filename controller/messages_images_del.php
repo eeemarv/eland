@@ -52,7 +52,7 @@ class messages_images_del
 
         unset($image_file_ary[$key]);
 
-        $image_files = json_encode($image_file_ary);
+        $image_files = json_encode(array_values($image_file_ary));
 
         $app['db']->update($app['pp_schema'] . '.messages',
             ['image_files' => $image_files],

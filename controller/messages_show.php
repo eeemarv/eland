@@ -143,7 +143,7 @@ class messages_show
 
         $data_images = [
             'base_url'      => $app['s3_url'],
-            'files'         => json_decode($message['image_files'] ?? '[]', true),
+            'files'         => array_values(json_decode($message['image_files'] ?? '[]', true)),
         ];
 
         $and_local = $app['pp_guest'] ? ' and local = \'f\' ' : '';

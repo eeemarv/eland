@@ -110,7 +110,7 @@ class messages_images_upload
 
         if ($update_db)
         {
-            $image_files = json_encode($new_image_files);
+            $image_files = json_encode(array_values($new_image_files));
             $app['db']->update($app['pp_schema'] . '.messages', ['image_files' => $image_files], ['id' => $id]);
         }
 
