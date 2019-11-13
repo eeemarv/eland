@@ -48,16 +48,18 @@ class messages_edit
         $id_category = $request->request->get('id_category', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
-/*
-        $deleted_images = $request->request->get('deleted_images', []);
-        $uploaded_images = $request->request->get('uploaded_images', []);
-*/
-        $image_files = $request->request->get('image_files', '') ?: '[]';
+
+        $image_files = $request->request->get('image_files', '[]');
         $access = $request->request->get('access', '');
 
         if (json_decode($image_files, true) === null)
         {
             $image_files = '[]';
+        }
+        else
+        {
+            $image_files_decoded = json_decode($image_files, true);
+            $image_files = json_encode(array_values($image_files_decoded));
         }
 
         if ($edit_mode)
@@ -217,7 +219,7 @@ class messages_edit
                 self::adjust_category_stats($type,
                     (int) $id_category, 1, $app['db'], $app['pp_schema']);
 
-                $images = json_decode($image_files, true);
+                $images = json_decode($image_files, true) ?? [];
                 $new_image_files = [];
                 $update_image_files = false;
 
