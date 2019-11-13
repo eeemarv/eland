@@ -520,7 +520,7 @@ class messages_edit
         $out .= '</div>';
         $out .= '</div>';
 
-        $images = json_decode($image_files, true);
+        $images = json_decode($image_files ?? '[]', true);
 
         foreach ($images as $img)
         {
