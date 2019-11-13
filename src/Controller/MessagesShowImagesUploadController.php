@@ -30,6 +30,7 @@ class MessagesShowImagesUploadController extends AbstractController
         $insert_in_db = $request->attributes->get('form_token') ? false : true;
 
         $return_ary = [];
+        $new_image_files = [];
 
         if (!count($uploaded_files))
         {
@@ -64,7 +65,7 @@ class MessagesShowImagesUploadController extends AbstractController
             $image_files = $db->fetchColumn('select image_files
                 from ' . $pp->schema() . '.messages
                 where id = ?', [$id]);
-            $new_image_files = json_decode($image_files ?? '[]', true);
+            $new_image_files = array_values(json_decode($image_files ?? '[]', true));
         }
 
         $update_db = false;
@@ -95,7 +96,7 @@ class MessagesShowImagesUploadController extends AbstractController
 
         if ($update_db)
         {
-            $image_files = json_encode($new_image_files);
+            $image_files = json_encode(array_values($new_image_files));
             $db->update($pp->schema() . '.messages',
                 ['image_files' => $image_files],
                 ['id' => $id]);

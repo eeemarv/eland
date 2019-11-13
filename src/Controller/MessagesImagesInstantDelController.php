@@ -47,7 +47,7 @@ class MessagesImagesInstantDelController extends AbstractController
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }
 
-        $image_file_ary = json_decode($message['image_files'] ?? '[]', true);
+        $image_file_ary = array_values(json_decode($message['image_files'] ?? '[]', true));
 
         $key = array_search($img, $image_file_ary);
 
@@ -58,7 +58,7 @@ class MessagesImagesInstantDelController extends AbstractController
 
         unset($image_file_ary[$key]);
 
-        $image_files = json_encode($image_file_ary);
+        $image_files = json_encode(array_values($image_file_ary));
 
         $db->update($pp->schema() . '.messages',
             ['image_files' => $image_files],

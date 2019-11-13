@@ -181,7 +181,7 @@ class MessagesShowController extends AbstractController
 
         $data_images = [
             'base_url'      => $env_s3_url,
-            'files'         => json_decode($message['image_files'] ?? '[]', true),
+            'files'         => array_values(json_decode($message['image_files'] ?? '[]', true)),
         ];
 
         $and_local = $pp->is_guest() ? ' and local = \'f\' ' : '';

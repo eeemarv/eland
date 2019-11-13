@@ -10,6 +10,7 @@ class PageParamsService
 {
 	protected $request_stack;
 	protected $systems_service;
+	protected $env_app_system_redirects;
 
 	protected $request;
 	protected $role_short;
@@ -28,11 +29,13 @@ class PageParamsService
 
 	public function __construct(
 		RequestStack $request_stack,
-		SystemsService $systems_service
+		SystemsService $systems_service,
+		string $env_app_system_redirects
 	)
 	{
 		$this->request_stack = $request_stack;
 		$this->systems_service = $systems_service;
+		$this->env_app_system_redirects = $env_app_system_redirects;
 
 		$this->init();
 	}
@@ -63,6 +66,14 @@ class PageParamsService
 
 		if (!$this->systems_service->get_schema($this->system))
 		{
+			$system_redirects = json_decode($this->env_app_system_redirects, true) ?? [];
+
+			if (isset($system_redirects[$this->system()]))
+			{
+				header('Location: ' . $system_redirects[$this->system()]);
+				exit;
+			}
+
 			throw new NotFoundHttpException('Systeem "' . $this->system . '" niet gevonden.');
 		}
 

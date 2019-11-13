@@ -39,6 +39,21 @@ $fn_before_system = function(Request $request, app $app){
 
 	if ($pp->schema() === '')
 	{
+		if ($pp->system())
+		{
+			if (getenv('APP_SYSTEM_REDIRECTS'))
+			{
+				$redirects_decoded = base64_decode(getenv('APP_SYSTEM_REDIRECTS'));
+				$system_redirects = json_decode($redirects_decoded, true) ?? [];
+
+				if (isset($system_redirects[$pp->system()]))
+				{
+					header('Location: ' . $system_redirects[$pp->system()]);
+					exit;
+				}
+			}
+		}
+
 		throw new NotFoundHttpException('Systeem ' . $pp->system() . ' niet gevonden.');
 	}
 

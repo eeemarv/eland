@@ -47,7 +47,7 @@ class MessagesImagesDelController extends AbstractController
                 'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
         }
 
-        $images = json_decode($message['image_files'] ?? '[]', true);
+        $images = array_values(json_decode($message['image_files'] ?? '[]', true));
 
         if (!count($images))
         {
@@ -64,7 +64,7 @@ class MessagesImagesDelController extends AbstractController
 
             if (!count($errors))
             {
-                $db->delete($pp->schema() . '.msgpictures', ['msgid' => $id]);
+                $db->update($pp->schema() . '.messages', ['image_files' => '[]'], ['id' => $id]);
 
                 $alert_service->success('De afbeeldingen voor ' . $message['label']['type_this'] .
                     ' zijn verwijderd.');

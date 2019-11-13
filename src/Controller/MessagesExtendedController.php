@@ -86,7 +86,7 @@ class MessagesExtendedController extends AbstractController
 
         foreach ($messages as $msg)
         {
-            $image_files_ary = json_decode($msg['image_files'] ?? '[]', true);
+            $image_files_ary = array_values(json_decode($msg['image_files'] ?? '[]', true));
             $image_file = $image_files_ary ? $image_files_ary[0] : '';
 
             $sf_owner = $pp->is_user()

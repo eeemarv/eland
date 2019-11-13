@@ -125,16 +125,18 @@ class MessagesEditController extends AbstractController
         $id_category = $request->request->get('id_category', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
-/*
-        $deleted_images = $request->request->get('deleted_images', []);
-        $uploaded_images = $request->request->get('uploaded_images', []);
-*/
-        $image_files = $request->request->get('image_files', '') ?: '[]';
+
+        $image_files = $request->request->get('image_files', '[]');
         $access = $request->request->get('access', '');
 
         if (json_decode($image_files, true) === null)
         {
             $image_files = '[]';
+        }
+        else
+        {
+            $image_files_decoded = json_decode($image_files, true);
+            $image_files = json_encode(array_values($image_files_decoded));
         }
 
         if ($edit_mode)
@@ -299,7 +301,7 @@ class MessagesEditController extends AbstractController
                     $pp->schema()
                 );
 
-                $images = json_decode($image_files, true);
+                $images = array_values(json_decode($image_files, true) ?? []);
                 $new_image_files = [];
                 $update_image_files = false;
 
@@ -357,7 +359,7 @@ class MessagesEditController extends AbstractController
 
                 if ($update_image_files)
                 {
-                    $image_files = json_encode($new_image_files);
+                    $image_files = json_encode(array_values($new_image_files));
 
                     $db->update($pp->schema() . '.messages', ['image_files' => $image_files], ['id' => $id]);
                 }
@@ -606,7 +608,7 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $images = json_decode($image_files, true);
+        $images = array_values(json_decode($image_files ?? '[]', true));
 
         foreach ($images as $img)
         {
@@ -661,7 +663,7 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
 
         $out .= '<input type="hidden" name="image_files" value="';
-        $out .= htmlspecialchars($image_files);
+        $out .= htmlspecialchars($image_files ?? '[]');
         $out .= '">';
 
         if ($intersystems_service->get_count($pp->schema()))
@@ -687,18 +689,6 @@ class MessagesEditController extends AbstractController
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . ' btn-lg">';
         $out .= $form_token_service->get_hidden_input();
-
-/*
-        foreach ($uploaded_images as $img)
-        {
-            $out .= '<input type="hidden" name="uploaded_images[]" value="' . $img . '">';
-        }
-
-        foreach ($deleted_images as $img)
-        {
-            $out .= '<input type="hidden" name="deleted_images[]" value="' . $img . '">';
-        }
-**/
 
         $out .= '</form>';
 
