@@ -3,7 +3,6 @@ parameters:
     router.request_context.scheme: '%env(APP_SCHEME)%'
     app.default_locale: nl
     app.locales: en|nl
-    assert.elas_token: '[0-9a-f]{32}'
     assert.token: '[a-z0-9-]{12}'
     assert.system: '[a-z][a-z0-9]*'
     assert.schema: '[a-z][a-z0-9]*'
@@ -75,3 +74,9 @@ services:
         arguments:
             - '@Predis\Client'
             - {prefix: session_}
+
+    Bramus\Monolog\Formatter\ColoredLineFormatter: ~
+
+    App\Monolog\ElandProcessor:
+        tags:
+           - {name: 'monolog.processor', channel: 'app'}

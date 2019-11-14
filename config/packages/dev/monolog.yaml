@@ -1,18 +1,16 @@
 monolog:
     handlers:
-        main:
+        stream:
+            path: "php://stdout"
             type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-            channels: ["!event"]
+            formatter: Bramus\Monolog\Formatter\ColoredLineFormatter
+            channels: ["app"]
         redis:
             type: service
             id: App\Monolog\RedisHandler
             level: debug
-        syslog:
-            type: syslog
-            level: debug
+            channels: ["app"]
         console:
             type: console
             process_psr_3_messages: false
-            channels: ["!event", "!doctrine", "!console"]

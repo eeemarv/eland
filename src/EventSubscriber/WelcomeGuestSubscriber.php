@@ -7,6 +7,7 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class WelcomeGuestSubscriber implements EventSubscriberInterface
 {
@@ -75,7 +76,7 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-           'kernel.controller' => 'onKernelController',
+           KernelEvents::CONTROLLER => 'onKernelController',
         ];
     }
 }

@@ -12,11 +12,17 @@ class LogDbService
 
 	protected $db;
 	protected $predis;
+	protected $systems_service;
 
-	public function __construct(Db $db, Predis $predis)
+	public function __construct(
+		Db $db,
+		Predis $predis,
+		SystemsService $systems_service
+	)
 	{
 		$this->db = $db;
 		$this->predis = $predis;
+		$this->systems_service = $systems_service;
 	}
 
 	public function update():void
@@ -30,29 +36,58 @@ class LogDbService
 				break;
 			}
 
+			unset($user_id);
+
 			error_log('LPOP LOG:: ' . $log_json);
 
 			$log = json_decode($log_json, true);
 
-			$schema = $log['extra']['schema'] ?? '';
+			$context = $log['context'];
+			$extra = $log['extra'];
+
+			if (isset($context['schema']))
+			{
+				$schema = $context['schema'];
+
+				if (!$schema)
+				{
+					continue;
+				}
+			}
+			else
+			{
+				if (!isset($extra['system']))
+				{
+					return;
+				}
+
+				$system = $extra['system'];
+				$schema = $this->systems_service->get_schema($system);
+			}
 
 			if (!$schema)
 			{
 				continue;
 			}
 
-			if ($log['message'] === '< 200')
+			$user_schema = $schema;
+
+			if (isset($extra['org_system'])
+				&& $extra['org_system'])
 			{
-				continue;
+				$org_schema = $this->systems_service->get_schema($context['org_system']);
+
+				if ($org_schema)
+				{
+					$user_schema = $org_schema;
+				}
 			}
 
-			if ($log['message'] === 'Notified event "{event}" to listener "{listener}".')
+			if (isset($extra['logins'])
+				&& isset($extra['logins'][$user_schema]))
 			{
-				continue;
+				$user_id = $extra['logins'][$user_schema];
 			}
-
-			$user_id = $log['context']['user_id'] ?? $log['extra']['user_id'] ?? 0;
-			$user_id = ctype_digit((string) $user_id) ? $user_id : 0;
 
 			$insert = [
 				'schema'		=> $schema,
@@ -62,14 +97,15 @@ class LogDbService
 				'data'			=> $log_json,
 			];
 
-			if (isset($log['extra']['user_id']))
+			if (isset($user_id) && ctype_digit((string) $user_id))
 			{
-				$insert['user_id'] = $log['extra']['user_id'];
+				$insert['user_id'] = $user_id;
+				$insert['user_schema'] = $user_schema;
 			}
 
-			if (isset($log['extra']['user_schema']))
+			if (isset($user_id) && $user_id === 'master')
 			{
-				$insert['user_schema'] = $log['extra']['user_schema'];
+				$insert['is_master'] = true;
 			}
 
 			if (isset($log['extra']['ip']))

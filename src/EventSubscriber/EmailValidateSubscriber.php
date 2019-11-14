@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Service\EmailValidateService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class EmailValidateSubscriber implements EventSubscriberInterface
 {
@@ -30,7 +31,7 @@ class EmailValidateSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-           'kernel.controller' => ['onKernelController', 1000],
+           KernelEvents::CONTROLLER => ['onKernelController', 1000],
         ];
     }
 }

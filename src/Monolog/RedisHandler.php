@@ -29,12 +29,12 @@ class RedisHandler extends AbstractProcessingHandler
 
     protected function write(array $record): void
     {
-        if (!isset($record['formatted']['schema']))
+        if (!isset($record['context']['schema']))
         {
+            error_log('APP LOG without schema: ' . $record['message']);
             return;
         }
 
-        error_log('LOG--IN: ' . json_encode($record['formatted']));
         $this->predis->rpush(self::KEY, $record['formatted']);
     }
 }

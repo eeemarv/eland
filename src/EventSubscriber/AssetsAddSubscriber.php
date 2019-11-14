@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Service\AssetsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class AssetsAddSubscriber implements EventSubscriberInterface
 {
@@ -31,7 +32,7 @@ class AssetsAddSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-           'kernel.controller' => ['onKernelController', 2000],
+           KernelEvents::CONTROLLER => ['onKernelController', 2000],
         ];
     }
 }

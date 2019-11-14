@@ -118,11 +118,6 @@ typeahead_eland_intersystem_accounts:
   path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}
   methods: GET
 
-typeahead_elas_intersystem_accounts:
-  controller: App\Controller\TypeaheadElasIntersystemAccountsController
-  path: /typeahead-elas-intersystem-accounts/{group_id<%assert.id%>}
-  methods: GET
-
 typeahead_postcodes:
   controller: App\Controller\TypeaheadPostcodesController
   path: /typeahead-postcodes

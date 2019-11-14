@@ -326,34 +326,41 @@ class LogsController extends AbstractController
 
         $out .= '<tbody>';
 
-        foreach($rows as $value)
+        foreach($rows as $row)
         {
             $td = [];
 
-            $td[] = $date_format_service->get($value['ts'], 'sec', $pp->schema());
-            $td[] = $value['type'];
-            $td[] .= $value['ip'];
+            $td[] = $date_format_service->get($row['ts'], 'sec', $pp->schema());
+            $td[] = $row['type'];
+            $td[] .= $row['ip'];
 
-            if (isset($value['user_schema'])
-                && isset($value['user_id'])
-                && ctype_digit((string) $value['user_id'])
-                && !empty($value['user_schema']))
+            if ($row['is_master'])
             {
-                if ($value['user_schema'] === $pp->schema())
-                {
-                    $td[] = $account_render->link($value['user_id'], $pp->ary());
-                }
-                else
-                {
-                    $td[] = $account_render->inter_link($value['user_id'], $value['user_schema']);
-                }
+                $td[] = '<i> ** master ** </i>';
             }
             else
             {
-                $td[] = '<i> ** geen ** </i>';
+                if (isset($row['user_schema'])
+                    && isset($row['user_id'])
+                    && ctype_digit((string) $row['user_id'])
+                    && !empty($row['user_schema']))
+                {
+                    if ($row['user_schema'] === $pp->schema())
+                    {
+                        $td[] = $account_render->link($row['user_id'], $pp->ary());
+                    }
+                    else
+                    {
+                        $td[] = $account_render->inter_link($row['user_id'], $row['user_schema']);
+                    }
+                }
+                else
+                {
+                    $td[] = '<i> ** geen ** </i>';
+                }
             }
 
-            $td[] = $value['event'];
+            $td[] = $row['event'];
 
             $out .= '<tr><td>';
             $out .= implode('</td><td>', $td);

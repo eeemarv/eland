@@ -24,3 +24,4 @@ monolog:
         redis:
             type: service
             id: App\Monolog\RedisHandler
+            level: debug
