@@ -36,7 +36,7 @@ users_tiles:
 users_list:
   controller: App\Controller\UsersListController
   path: /users/{status<%assert.account_status.active%>?active}
-  methods: GET
+  methods: GET|POST
 
 transactions_show:
   controller: App\Controller\TransactionsShowController

@@ -83,7 +83,7 @@ class AccountRender
 	{
 		$schema = $this->systems_service->get_schema($pp_ary['system']);
 
-		return $this->link_render->link_url($this->r_users_show, $pp_ary,
+		return $this->link_render->link_url($this->vr->get('users_show'), $pp_ary,
 			['id' => $id], $this->get_str($id, $schema), []);
 	}
 

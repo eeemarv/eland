@@ -229,7 +229,7 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
-                && BulkCnst::USER_TABS[$bulk_submit_action]['item_access'])
+                && isset(BulkCnst::USER_TABS[$bulk_submit_action]['item_access']))
             {
                 [$abbrev] = explode('_', $bulk_field_action);
 
@@ -281,7 +281,7 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
-                && BulkCnst::USER_TABS[$bulk_submit_action])
+                && isset(BulkCnst::USER_TABS[$bulk_submit_action]))
             {
                 $store_value = $bulk_field_value;
 
