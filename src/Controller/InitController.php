@@ -9,6 +9,7 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class InitController extends AbstractController
 {
@@ -24,9 +25,15 @@ class InitController extends AbstractController
         AlertService $alert_service,
         MenuService $menu_service,
         PageParamsService $pp,
-        LinkRender $link_render
+        LinkRender $link_render,
+        string $env_app_init_enabled
     ):Response
     {
+        if (!$env_app_init_enabled)
+        {
+            throw new NotFoundHttpException('De init routes zijn niet ingeschakeld.');
+        }
+
         $done = $request->query->get('ok', '');
 
         if ($done)

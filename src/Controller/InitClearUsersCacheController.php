@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class InitClearUsersCacheController extends AbstractController
 {
@@ -19,9 +20,15 @@ class InitClearUsersCacheController extends AbstractController
         PageParamsService $pp,
         LinkRender $link_render,
         SystemsService $systems_service,
-        UserCacheService $user_cache_service
+        UserCacheService $user_cache_service,
+        string $env_app_init_enabled
     ):Response
     {
+        if (!$env_app_init_enabled)
+        {
+            throw new NotFoundHttpException('De init routes zijn niet ingeschakeld.');
+        }
+
         set_time_limit(300);
 
         error_log('*** clear users cache ***');

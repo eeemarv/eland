@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Service\MenuNavUserService;
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

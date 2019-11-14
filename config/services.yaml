@@ -42,6 +42,7 @@ services:
             $env_geo_block: '%env(GEO_BLOCK)%'
             $env_app_host: '%env(APP_HOST)%'
             $env_app_scheme: '%env(APP_SCHEME)%'
+            $env_app_init_enabled: '%env(APP_INIT_ENABLED)%'
             $env_app_system_redirects: '%env(base64:APP_SYSTEM_REDIRECTS)%'
 
     App\:
