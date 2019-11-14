@@ -67,7 +67,7 @@ class MenuService
 
 		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
 		{
-			unset($m_ary['intersystems'], $m_ary['apikeys'], $m_ary['guest_mode']);
+			unset($m_ary['intersystems'], $m_ary['guest_mode']);
 		}
 
 		if (isset($m_ary[$this->active_menu]))
