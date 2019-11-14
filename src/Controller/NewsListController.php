@@ -59,7 +59,12 @@ class NewsListController extends AbstractController
 
         if (!count($news))
         {
-            return self::no_news($menu_service, $pp);
+            $content = self::no_news($menu_service, $pp);
+
+            return $this->render('base/navbar.html.twig', [
+                'content'   => $content,
+                'schema'    => $pp->schema(),
+            ]);
         }
 
         $out = '<div class="panel panel-warning printview">';
@@ -208,9 +213,8 @@ class NewsListController extends AbstractController
     }
 
     public static function no_news(
-        MenuService $menu_service,
-        PageParamsService $pp
-    ):Response
+        MenuService $menu_service
+    ):string
     {
         $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
@@ -219,9 +223,6 @@ class NewsListController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 }

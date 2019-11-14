@@ -74,11 +74,15 @@ class MessagesExtendedController extends AbstractController
 
         if (!count($messages))
         {
-            return MessagesListController::no_messages(
+            $content = MessagesListController::no_messages(
                 $pagination_render,
                 $menu_service,
-                $pp
             );
+
+            return $this->render('base/navbar.html.twig', [
+                'content'   => $content,
+                'schema'    => $pp->schema(),
+            ]);
         }
 
         $time = time();

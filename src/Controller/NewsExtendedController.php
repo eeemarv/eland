@@ -56,7 +56,12 @@ class NewsExtendedController extends AbstractController
 
         if (!count($news))
         {
-            return NewsListController::no_news($menu_service, $pp);
+            $content = NewsListController::no_news($menu_service, $pp);
+
+            return $this->render('base/navbar.html.twig', [
+                'content'   => $content,
+                'schema'    => $pp->schema(),
+            ]);
         }
 
         $out = '';

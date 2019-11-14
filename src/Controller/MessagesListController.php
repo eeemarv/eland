@@ -321,7 +321,12 @@ class MessagesListController extends AbstractController
 
         if (!count($messages))
         {
-            return self::no_messages($pagination_render, $menu_service, $pp);
+            $content = self::no_messages($pagination_render, $menu_service);
+
+            return $this->render('base/navbar.html.twig', [
+                'content'   => $content,
+                'schema'    => $pp->schema(),
+            ]);
         }
 
         $out .= $pagination_render->get();
@@ -575,9 +580,8 @@ class MessagesListController extends AbstractController
 
     static public function no_messages(
         PaginationRender $pagination_render,
-        MenuService $menu_service,
-        PageParamsService $pp
-    ):Response
+        MenuService $menu_service
+    ):string
     {
         $out = $pagination_render->get();
 
@@ -590,10 +594,7 @@ class MessagesListController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 
     public static function get_checkbox_filter(
