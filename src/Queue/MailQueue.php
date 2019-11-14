@@ -46,8 +46,7 @@ class MailQueue implements QueueInterface
 		$this->email_validate_service = $email_validate_service;
 		$this->systems_service = $systems_service;
 
-		$enc = getenv('SMTP_ENC') ?: 'tls';
-		$transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, $enc))
+		$transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, 'tls'))
 			->setUsername($env_smtp_username)
 			->setPassword($env_smtp_password);
 		$this->mailer = new \Swift_Mailer($transport);

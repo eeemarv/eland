@@ -20,7 +20,11 @@ class IndexContactController extends AbstractController
         CaptchaService $captcha_service,
         LinkRender $link_render,
         string $env_mail_hoster_address,
-        string $env_mail_from_address
+        string $env_mail_from_address,
+        string $env_smtp_host,
+        string $env_smtp_port,
+        string $env_smtp_password,
+        string $env_smtp_username
     ):Response
     {
         $errors = [];
@@ -67,10 +71,9 @@ class IndexContactController extends AbstractController
                 $text .= $request->headers->get('User-Agent') . "\n";
                 $text .= 'form_token: ' . $form_token_service->get();
 
-                $enc = getenv('SMTP_ENC') ?: 'tls';
-                $transport = (new \Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'), $enc))
-                    ->setUsername(getenv('SMTP_USERNAME'))
-                    ->setPassword(getenv('SMTP_PASSWORD'));
+                $transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, 'tls'))
+                    ->setUsername($env_smtp_username)
+                    ->setPassword($env_smtp_password);
                 $mailer = new \Swift_Mailer($transport);
                 $mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 
