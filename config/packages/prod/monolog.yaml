@@ -1,27 +1,16 @@
 monolog:
     handlers:
-        main:
-            type: fingers_crossed
-            action_level: error
-            handler: nested
-            excluded_http_codes: [404, 405]
-        nested:
+        stream:
+            path: "php://stdout"
             type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
-        console:
-            type: console
-            process_psr_3_messages: false
-            channels: ["!event", "!doctrine"]
-        deprecation:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.deprecations.log"
-        deprecation_filter:
-            type: filter
-            handler: deprecation
-            max_level: info
-            channels: ["php"]
+            formatter: Bramus\Monolog\Formatter\ColoredLineFormatter
+            channels: ["app"]
         redis:
             type: service
             id: App\Monolog\RedisHandler
             level: debug
+            channels: ["app"]
+        console:
+            type: console
+            process_psr_3_messages: false
