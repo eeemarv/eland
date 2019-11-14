@@ -38,8 +38,6 @@ class LogDbService
 
 			unset($user_id);
 
-			error_log('LPOP LOG:: ' . $log_json);
-
 			$log = json_decode($log_json, true);
 
 			$context = $log['context'];
