@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
 use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -19,7 +18,6 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsAddController extends AbstractController
@@ -39,8 +37,7 @@ class NewsAddController extends AbstractController
         MailQueue $mail_queue,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        XdbService $xdb_service
+        VarRouteService $vr
     ):Response
     {
         $news = [];
@@ -55,14 +52,6 @@ class NewsAddController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $news = [
-                'itemdate'	=> trim($request->request->get('itemdate', '')),
-                'location'	=> trim($request->request->get('location', '')),
-                'sticky'	=> $request->request->get('sticky', '') ? 't' : 'f',
-                'newsitem'	=> trim($request->request->get('newsitem', '')),
-                'headline'	=> trim($request->request->get('headline', '')),
-            ];
-
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
@@ -70,7 +59,7 @@ class NewsAddController extends AbstractController
 
             if ($itemdate)
             {
-                $itemdate_formatted = $date_format_service->reverse($news['itemdate'], $pp->schema());
+                $itemdate_formatted = $date_format_service->reverse($itemdate, $pp->schema());
 
                 if ($itemdate_formatted === '')
                 {
@@ -113,15 +102,12 @@ class NewsAddController extends AbstractController
                     'sticky'	    => $sticky ? 't' : 'f',
                     'newsitem'	    => $newsitem,
                     'headline'	    => $headline,
+                    'access'        => $access,
                 ];
 
                 if ($db->insert($pp->schema() . '.news', $news))
                 {
                     $id = $db->lastInsertId($pp->schema() . '.news_id_seq');
-
-                    $xdb_service->set('news_access', (string) $id, [
-                        'access' => AccessCnst::TO_XDB[$access],
-                    ], $pp->schema());
 
                     $alert_service->success('Nieuwsbericht opgeslagen.');
 

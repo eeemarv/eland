@@ -11,7 +11,6 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -20,7 +19,6 @@ class NewsListController extends AbstractController
 {
     public function __invoke(
         Db $db,
-        XdbService $xdb_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
@@ -34,7 +32,6 @@ class NewsListController extends AbstractController
     {
         $news = self::get_data(
             $db,
-            $xdb_service,
             $config_service,
             $item_access_service,
             $pp
@@ -109,7 +106,7 @@ class NewsListController extends AbstractController
             if ($show_visibility)
             {
                 $out .= '<td>';
-                $out .= $item_access_service->get_label_xdb($n['access']);
+                $out .= $item_access_service->get_label($n['access']);
                 $out .= '</td>';
             }
 
@@ -129,60 +126,31 @@ class NewsListController extends AbstractController
 
     public static function get_data(
         Db $db,
-        XdbService $xdb_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         PageParamsService $pp
     ):array
     {
-        $news = $news_access_ary = [];
+        $news = [];
 
-        $rows = $xdb_service->get_many([
-            'agg_schema' => $pp->schema(),
-            'agg_type' => 'news_access',
-        ]);
+        $query = 'select * from ' . $pp->schema() . '.news ';
+        $query .= 'where access in (?) ';
+
+        if (!$pp->is_admin())
+        {
+            $query .= 'and approved = \'t\' ';
+        }
+
+        $query .= 'order by itemdate ';
+        $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
+
+        $access_ary = $item_access_service->get_fetch_ary();
+
+        $rows = $db->executeQuery($query, [$access_ary], [Db::PARAM_STR_ARRAY]);
 
         foreach ($rows as $row)
         {
-            $access = $row['data']['access'];
-            $news_access_ary[$row['eland_id']] = $access;
-        }
-
-        $query = 'select * from ' . $pp->schema() . '.news';
-
-        if(!$pp->is_admin())
-        {
-            $query .= ' where approved = \'t\'';
-        }
-
-        $query .= ' order by itemdate ';
-        $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
-
-        $st = $db->prepare($query);
-        $st->execute();
-
-        while ($row = $st->fetch())
-        {
-            $news_id = $row['id'];
-            $news[$news_id] = $row;
-
-            if (!isset($news_access_ary[$news_id]))
-            {
-                $xdb_service->set('news_access', (string) $news_id, [
-                    'access' => 'interlets',
-                ], $pp->schema());
-
-                $news[$news_id]['access'] = 'interlets';
-            }
-            else
-            {
-                $news[$news_id]['access'] = $news_access_ary[$news_id];
-            }
-
-            if (!$item_access_service->is_visible_xdb($news[$news_id]['access']))
-            {
-                unset($news[$news_id]);
-            }
+            $news[$row['id']] = $row;
         }
 
         return $news;

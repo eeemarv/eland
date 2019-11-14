@@ -246,19 +246,10 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		if (isset($block_options['news']))
 		{
-			$rows = $this->xdb_service->get_many([
-				'agg_schema' => $schema,
-				'agg_type' => 'news_access',
-			]);
-
-			foreach ($rows as $row)
-			{
-				$news_access_ary[$row['eland_id']] = $row['data']['access'];
-			}
-
 			$query = 'select n.*
 				from ' . $schema . '.news n
-				where n.approved = \'t\' ';
+				where n.approved = \'t\'
+					and n.access in (\'user\', \'guest\', \'anonymous\') ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
 			$query .= 'order by n.itemdate ';
@@ -275,25 +266,6 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 			while ($row = $rs->fetch())
 			{
-				if (isset($news_access_ary[$row['id']]))
-				{
-					$row['access'] = $news_access_ary[$row['id']];
-				}
-				else
-				{
-					$this->xdb_service->set('news_access',
-						(string) $row['id'],
-						['access' => 'interlets'],
-						$schema);
-
-					$row['access'] = 'interlets';
-				}
-
-				if (!in_array($row['access'], ['users', 'interlets']))
-				{
-					continue;
-				}
-
 				$news[] = $row;
 			}
 		}

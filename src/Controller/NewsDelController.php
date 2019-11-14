@@ -12,7 +12,6 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,8 +32,7 @@ class NewsDelController extends AbstractController
         LinkRender $link_render,
         MenuService $menu_service,
         PageParamsService $pp,
-        VarRouteService $vr,
-        XdbService $xdb_service
+        VarRouteService $vr
     ):Response
     {
         if ($request->isMethod('POST'))
@@ -47,8 +45,6 @@ class NewsDelController extends AbstractController
 
             if($db->delete($pp->schema() . '.news', ['id' => $id]))
             {
-                $xdb_service->del('news_access', (string) $id, $pp->schema());
-
                 $alert_service->success('Nieuwsbericht verwijderd.');
                 $link_render->redirect($vr->get('news'), $pp->ary(), []);
             }
@@ -59,9 +55,6 @@ class NewsDelController extends AbstractController
         $news = $db->fetchAssoc('select n.*
             from ' . $pp->schema() . '.news n
             where n.id = ?', [$id]);
-
-        $news_access = $xdb_service->get('news_access', (string) $id,
-            $pp->schema())['data']['access'];
 
         $heading_render->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
         $heading_render->fa('calendar-o');
@@ -119,7 +112,7 @@ class NewsDelController extends AbstractController
 
         $out .= '<dt>Zichtbaarheid</dt>';
         $out .= '<dd>';
-        $out .= $item_access_service->get_label_xdb($news_access);
+        $out .= $item_access_service->get_label($news['access']);
         $out .= '</dd>';
 
         $out .= '<dt>Ingegeven door</dt>';

@@ -57,6 +57,11 @@ class ItemAccessService
 		return false;
 	}
 
+	public function get_fetch_ary():array
+	{
+		return array_keys(AccessCnst::ACCESS[$this->pp->role()]);
+	}
+
 	public function is_visible_xdb(string $access_xdb):bool
 	{
 		if (!isset(AccessCnst::FROM_XDB[$access_xdb]))

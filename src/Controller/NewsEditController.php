@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -15,7 +14,6 @@ use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
 class NewsEditController extends AbstractController
@@ -32,35 +30,30 @@ class NewsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
-        PageParamsService $pp,
-        XdbService $xdb_service
+        PageParamsService $pp
     ):Response
     {
-        $news = [];
         $errors = [];
+
+        $itemdate = trim($request->request->get('itemdate', ''));
+        $location = trim($request->request->get('location', ''));
+        $sticky = $request->request->has('sticky');
+        $newsitem = trim($request->request->get('newsitem', ''));
+        $headline = trim($request->request->get('headline', ''));
+        $access = $request->request->get('access', '');
 
         if ($request->isMethod('POST'))
         {
-            $news = [
-                'itemdate'	=> trim($request->request->get('itemdate', '')),
-                'location'	=> trim($request->request->get('location', '')),
-                'sticky'	=> $request->request->get('sticky', false) ? 't' : 'f',
-                'newsitem'	=> trim($request->request->get('newsitem', '')),
-                'headline'	=> trim($request->request->get('headline', '')),
-            ];
-
-            $access = $request->request->get('access', '');
-
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
             }
 
-            if ($news['itemdate'])
+            if ($itemdate)
             {
-                $news['itemdate'] = $date_format_service->reverse($news['itemdate'], $pp->schema());
+                $itemdate = $date_format_service->reverse($itemdate, $pp->schema());
 
-                if ($news['itemdate'] === '')
+                if ($itemdate === '')
                 {
                     $errors[] = 'Fout formaat in agendadatum.';
                 }
@@ -70,17 +63,17 @@ class NewsEditController extends AbstractController
                 $errors[] = 'Geef een agendadatum op.';
             }
 
-            if (!isset($news['headline']) || (trim($news['headline']) == ''))
+            if (!$headline === '')
             {
                 $errors[] = 'Titel is niet ingevuld';
             }
 
-            if (strlen($news['headline']) > 200)
+            if (strlen($headline) > 200)
             {
                 $errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
             }
 
-            if (strlen($news['location']) > 128)
+            if (strlen($location) > 128)
             {
                 $errors[] = 'De locatie mag maximaal 128 tekens lang zijn.';
             }
@@ -92,17 +85,18 @@ class NewsEditController extends AbstractController
 
             if (!count($errors))
             {
-                if($db->update($pp->schema() . '.news', $news, ['id' => $id]))
-                {
-                    $xdb_service->set('news_access', (string) $id, [
-                        'access' => AccessCnst::TO_XDB[$access]
-                    ], $pp->schema());
+                $news = [
+                    'headline'  => $headline,
+                    'newsitem'  => $newsitem,
+                    'location'  => $location,
+                    'sticky'    => $sticky,
+                    'itemdate'  => $itemdate,
+                    'access'    => $access,
+                ];
 
-                    $alert_service->success('Nieuwsbericht aangepast.');
-                    $link_render->redirect('news_show', $pp->ary(), ['id' => $id]);
-                }
-
-                $errors[] = 'Nieuwsbericht niet aangepast.';
+                $db->update($pp->schema() . '.news', $news, ['id' => $id]);
+                $alert_service->success('Nieuwsbericht aangepast.');
+                $link_render->redirect('news_show', $pp->ary(), ['id' => $id]);
             }
 
             $alert_service->error($errors);
@@ -113,10 +107,12 @@ class NewsEditController extends AbstractController
                 from ' . $pp->schema() . '.news
                 where id = ?', [$id]);
 
-            $access = $xdb_service->get('news_access', (string) $id,
-                $pp->schema())['data']['access'];
-
-            $access = AccessCnst::FROM_XDB[$access];
+            $headline = $news['headline'];
+            $itemdate = $news['itemdate'];
+            $location = $news['location'];
+            $sticky = $news['sticky'];
+            $newsitem = $news['newsitem'];
+            $access = $news['access'];
         }
 
         $assets_service->add(['datepicker']);
@@ -135,7 +131,7 @@ class NewsEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="headline" name="headline" ';
         $out .= 'value="';
-        $out .= $news['headline'];
+        $out .= $headline;
         $out .= '" required maxlength="200">';
         $out .= '</div>';
 
@@ -156,7 +152,7 @@ class NewsEditController extends AbstractController
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($news['itemdate'], 'day', $pp->schema());
+        $out .= $date_format_service->get($itemdate, 'day', $pp->schema());
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());
@@ -170,7 +166,7 @@ class NewsEditController extends AbstractController
         $out .= '<label for="sticky" class="control-label">';
         $out .= '<input type="checkbox" id="sticky" name="sticky" ';
         $out .= 'value="1"';
-        $out .=  $news['sticky'] ? ' checked="checked"' : '';
+        $out .=  $sticky ? ' checked="checked"' : '';
         $out .= '>';
         $out .= ' Behoud na datum</label>';
         $out .= '</div>';
@@ -185,7 +181,7 @@ class NewsEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="location" name="location" ';
         $out .= 'value="';
-        $out .= $news['location'];
+        $out .= $location ?? '';
         $out .= '" maxlength="128">';
         $out .= '</div>';
         $out .= '</div>';
@@ -195,7 +191,7 @@ class NewsEditController extends AbstractController
         $out .= 'Bericht</label>';
         $out .= '<textarea name="newsitem" id="newsitem" ';
         $out .= 'class="form-control" rows="10" required>';
-        $out .= $news['newsitem'];
+        $out .= $newsitem ?? '';
         $out .= '</textarea>';
         $out .= '</div>';
 

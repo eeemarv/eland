@@ -12,7 +12,6 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\XdbService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -21,7 +20,6 @@ class NewsExtendedController extends AbstractController
 {
     public function __invoke(
         Db $db,
-        XdbService $xdb_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
@@ -36,7 +34,6 @@ class NewsExtendedController extends AbstractController
     {
         $news = NewsListController::get_data(
             $db,
-            $xdb_service,
             $config_service,
             $item_access_service,
             $pp
@@ -154,7 +151,7 @@ class NewsExtendedController extends AbstractController
                 $out .=  'Zichtbaarheid';
                 $out .=  '</dt>';
                 $out .=  '<dd>';
-                $out .=  $item_access_service->get_label_xdb($n['access']);
+                $out .=  $item_access_service->get_label($n['access']);
                 $out .=  '</dd>';
             }
 
