@@ -242,7 +242,7 @@ class IntersystemsEditController extends AbstractController
         $out .= '<select class="form-control" id="apimethod" name="apimethod" >';
 
         $out .= $select_render->get_options([
-            'elassoap'	=> 'eLAND naar eLAND of eLAS (elassoap)',
+            'elassoap'	=> 'eLAND naar eLAND',
             'internal'	=> 'Intern (eigen Systeem - niet gebruiken)',
             'mail'		=> 'E-mail',
         ], $group['apimethod']);

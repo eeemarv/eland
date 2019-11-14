@@ -240,41 +240,6 @@ class SaldoSchemaTask implements SchemaTaskInterface
 					];
 				}
 			}
-
-			$elas_ary = $this->intersystems_service->get_elas($schema);
-
-			foreach ($elas_ary as $group_id => $ary)
-			{
-				$intersystem_msgs = [];
-
-				$domain = strtolower(parse_url($ary['url'], PHP_URL_HOST)); // TODO: switch to $ary['domain']
-
-				$elas_msgs = $this->cache_service->get($domain . '_elas_interlets_msgs');
-
-				foreach ($elas_msgs as $m)
-				{
-					if ($m['fetched_at'] < $treshold_time)
-					{
-						continue;
-					}
-
-					$m['type'] = $m['ow'] == 'o' ? 'offer' : 'want';
-					$m['offer'] = $m['type'] == 'offer' ? true : false;
-					$m['want'] = $m['type'] == 'want' ? true : false;
-
-					$intersystem_msgs[] = $m;
-				}
-
-				if (count($intersystem_msgs))
-				{
-					$intersystem[] = [
-						'elas'			=> true,
-						'eland_server'	=> false,
-						'system_name'	=> $ary['groupname'],
-						'messages'		=> $intersystem_msgs,
-					];
-				}
-			}
 		}
 
 	// news

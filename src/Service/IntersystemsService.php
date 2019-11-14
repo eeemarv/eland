@@ -19,7 +19,6 @@ class IntersystemsService
 	protected $systems_service;
 	protected $config_service;
 
-	protected $elas_ary = [];
 	protected $eland_ary = [];
 	protected $eland_accounts_schemas = [];
 	protected $eland_intersystems = [];

@@ -62,7 +62,6 @@ class AppExtension extends AbstractExtension
 			new TwigFunction('get_s_id', [SRoleRuntime::class, 'get_s_id']),
 			new TwigFunction('get_s_schema', [SRoleRuntime::class, 'get_s_schema']),
 			new TwigFunction('is_s_master', [SRoleRuntime::class, 'is_s_master']),
-			new TwigFunction('is_s_elas_guest', [SRoleRuntime::class, 'is_s_elas_guest']),
 			new TwigFunction('is_s_system_self', [SRoleRuntime::class, 'is_s_system_self']),
 		];
 	}
