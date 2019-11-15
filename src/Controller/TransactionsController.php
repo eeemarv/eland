@@ -165,7 +165,7 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.date >= ?';
+                $where_sql[] = 't.cdate >= ?';
                 $params_sql[] = $fdate_sql;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
@@ -181,7 +181,7 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.date <= ?';
+                $where_sql[] = 't.cdate <= ?';
                 $params_sql[] = $tdate_sql;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }

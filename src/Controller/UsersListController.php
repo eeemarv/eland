@@ -1409,7 +1409,7 @@ class UsersListController extends AbstractController
                                     'type' 	=> $message_type_filter[$key],
                                 ],
                             ],
-                            $msgs_count[$id][$key]);
+                            (string) $msgs_count[$id][$key]);
                     }
 
                     $out .= '</td>';
@@ -1443,7 +1443,7 @@ class UsersListController extends AbstractController
                                             'fdate' => $from_date,
                                         ],
                                     ],
-                                    $activity[$id][$a_key][$key]);
+                                    (string) $activity[$id][$a_key][$key]);
                             }
                         }
 
