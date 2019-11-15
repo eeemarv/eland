@@ -265,10 +265,6 @@ class UsersDelAdminController extends AbstractController
         $db->delete($pp->schema() . '.contact',
             ['id_user' => $id]);
 
-        //delete fullname access record.
-
-        $xdb_service->del('user_fullname_access', (string) $id, $pp->schema());
-
         //finally, the user
 
         $db->delete($pp->schema() . '.users',

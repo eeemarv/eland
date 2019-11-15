@@ -150,16 +150,16 @@ class UsersEditAdminController extends AbstractController
 
         if ($pp->is_admin())
         {
-            $username_edit = $fullname_edit = true;
+            $username_edit_en = $fullname_edit_en = true;
         }
         else if ($s_owner)
         {
-            $username_edit = $config_service->get('users_can_edit_username', $pp->schema());
-            $fullname_edit = $config_service->get('users_can_edit_fullname', $pp->schema());
+            $username_edit_en = $config_service->get('users_can_edit_username', $pp->schema());
+            $fullname_edit_en = $config_service->get('users_can_edit_fullname', $pp->schema());
         }
         else
         {
-            $username_edit = $fullname_edit = false;
+            $username_edit_en = $fullname_edit_en = false;
         }
 
         if ($request->isMethod('POST'))
@@ -182,7 +182,6 @@ class UsersEditAdminController extends AbstractController
                     'accountrole'	=> $request->request->get('accountrole', ''),
                     'status'		=> $request->request->get('status', ''),
                     'admincomment'	=> trim($request->request->get('admincomment', '')),
-                    'presharedkey'	=> trim($request->request->get('presharedkey', '')),
                     'minlimit'      => $minlimit === '' ? null : $minlimit,
                     'maxlimit'      => $maxlimit === '' ? null : $maxlimit,
                 ];
@@ -292,12 +291,12 @@ class UsersEditAdminController extends AbstractController
                 $letscode_sql_params = [$user['letscode']];
             }
 
-            if ($username_edit)
+            if ($username_edit_en)
             {
                 $user['name'] = trim($request->request->get('name', ''));
             }
 
-            if ($fullname_edit)
+            if ($fullname_edit_en)
             {
                 $user['fullname'] = trim($request->request->get('fullname', ''));
             }
@@ -331,7 +330,7 @@ class UsersEditAdminController extends AbstractController
                 $errors[] = 'Vul een zichtbaarheid in voor de volledige naam.';
             }
 
-            if ($username_edit)
+            if ($username_edit_en)
             {
                 if (!$user['name'])
                 {
@@ -347,7 +346,7 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if ($fullname_edit)
+            if ($fullname_edit_en)
             {
                 if (!$user['fullname'])
                 {
@@ -399,12 +398,6 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Maximum Account Limiet.';
-                }
-
-                if (strlen($user['presharedkey']) > 80)
-                {
-                    $errors[] = 'De Preshared Key mag maximaal
-                        80 tekens lang zijn.';
                 }
             }
 
@@ -949,7 +942,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        if ($username_edit)
+        if ($username_edit_en)
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="name" class="control-label">';
@@ -986,7 +979,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        if ($fullname_edit)
+        if ($fullname_edit_en)
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="fullname" class="control-label">';
@@ -1111,24 +1104,6 @@ class UsersEditAdminController extends AbstractController
             $out .= 'class="form-control">';
             $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $user['accountrole']);
             $out .= '</select>';
-            $out .= '</div>';
-            $out .= '</div>';
-
-            $out .= '<div class="pan-sub" id="presharedkey_panel">';
-            $out .= '<div class="form-group" id="presharedkey_formgroup">';
-            $out .= '<label for="presharedkey" class="control-label">';
-            $out .= 'Preshared Key</label>';
-            $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-key"></span></span>';
-            $out .= '<input type="text" class="form-control" ';
-            $out .= 'id="presharedkey" name="presharedkey" ';
-            $out .= 'value="';
-            $out .= $user['presharedkey'] ?? '';
-            $out .= '" maxlength="80">';
-            $out .= '</div>';
-            $out .= '<p>Vul dit enkel in voor een interSysteem Account ';
-            $out .= 'van een Systeem op een eLAS-server.</p>';
             $out .= '</div>';
             $out .= '</div>';
 
