@@ -472,7 +472,7 @@ class UsersShowAdminController extends AbstractController
 
         if ($pp->is_admin()
             || $s_owner
-            || $item_access_service->is_visible_xdb($fullname_access))
+            || $item_access_service->is_visible($fullname_access))
         {
             $out .= $this->get_dd($user['fullname'] ?? '');
         }
@@ -490,7 +490,7 @@ class UsersShowAdminController extends AbstractController
             $out .= 'Zichtbaarheid Volledige Naam';
             $out .= '</dt>';
             $out .= '<dd>';
-            $out .= $item_access_service->get_label_xdb($fullname_access);
+            $out .= $item_access_service->get_label($fullname_access);
             $out .= '</dd>';
         }
 

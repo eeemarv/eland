@@ -32,12 +32,14 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use App\Service\XdbService;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        EncoderFactoryInterface $encoder_factory,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -54,7 +56,6 @@ class UsersEditController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        XdbService $xdb_service,
         ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -70,6 +71,7 @@ class UsersEditController extends AbstractController
             $su->id(),
             true,
             $db,
+            $encoder_factory,
             $account_render,
             $alert_service,
             $assets_service,
@@ -86,7 +88,6 @@ class UsersEditController extends AbstractController
             $systems_service,
             $typeahead_service,
             $user_cache_service,
-            $xdb_service,
             $thumbprint_accounts_service,
             $mail_addr_user_service,
             $mail_addr_system_service,

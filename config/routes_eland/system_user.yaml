@@ -113,6 +113,11 @@ typeahead_account_codes:
   path: /typeahead-account-codes
   methods: GET
 
+typeahead_usernames:
+  controller: App\Controller\TypeaheadUsernamesController
+  path: /typeahead-usernames
+  methods: GET
+
 typeahead_eland_intersystem_accounts:
   controller: App\Controller\TypeaheadElandIntersystemAccountsController
   path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}

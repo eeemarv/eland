@@ -223,11 +223,6 @@ typeahead_log_types:
   path: /typeahead-log-types
   methods: GET
 
-typeahead_usernames:
-  controller: App\Controller\TypeaheadUsernamesController
-  path: /typeahead-usernames
-  methods: GET
-
 transactions_sum_in:
   controller: App\Controller\TransactionsSumInController
   path: /transactions-sum-in/{days<%assert.id%>}

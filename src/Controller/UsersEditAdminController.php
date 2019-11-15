@@ -15,6 +15,7 @@ use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Security\User;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -33,8 +34,8 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersEditAdminController extends AbstractController
 {
@@ -42,6 +43,7 @@ class UsersEditAdminController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        EncoderFactoryInterface $encoder_factory,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -58,7 +60,6 @@ class UsersEditAdminController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        XdbService $xdb_service,
         ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -74,6 +75,7 @@ class UsersEditAdminController extends AbstractController
             $id,
             true,
             $db,
+            $encoder_factory,
             $account_render,
             $alert_service,
             $assets_service,
@@ -90,7 +92,6 @@ class UsersEditAdminController extends AbstractController
             $systems_service,
             $typeahead_service,
             $user_cache_service,
-            $xdb_service,
             $thumbprint_accounts_service,
             $mail_addr_user_service,
             $mail_addr_system_service,
@@ -112,6 +113,7 @@ class UsersEditAdminController extends AbstractController
         int $id,
         bool $is_edit,
         Db $db,
+        EncoderFactoryInterface $encoder_factory,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -128,7 +130,6 @@ class UsersEditAdminController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        XdbService $xdb_service,
         ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -139,10 +140,41 @@ class UsersEditAdminController extends AbstractController
         MenuService $menu_service
     ):string
     {
+        $is_add = !$is_edit;
         $errors = [];
         $contact = [];
+        $username_edit_en = false;
+        $fullname_edit_en = false;
+        $is_activated = false;
+        $mailenabled = $config_service->get('mailenabled', $pp->schema());
+
+        if ($is_edit)
+        {
+            $stored_user = $user_cache_service->get($id, $pp->schema());
+            $stored_code = $stored_user['letscode'];
+            $stored_name = $stored_user['name'];
+            $is_activated = isset($stored_user['adate']);
+        }
 
         $intersystem_code = $request->query->get('intersystem_code', '');
+
+        $code = trim($request->request->get('code', ''));
+        $name = trim($request->request->get('name', ''));
+        $fullname = trim($request->request->get('fullname', ''));
+        $fullname_access = $request->request->get('fullname_access', '');
+        $postcode = trim($request->request->get('postcode', ''));
+        $birthday = trim($request->request->get('birthday', ''));
+        $hobbies = trim($request->request->get('hobbies', ''));
+        $comments = trim($request->request->get('comments', ''));
+        $accountrole = $request->request->get('accountrole', '');
+        $status = $request->request->get('status', '');
+        $password = trim($request->request->get('password', ''));
+        $password_notify = $request->request->has('password_notify');
+        $admincomment = trim($request->request->get('admincomment', ''));
+        $minlimit = trim($request->request->get('minlimit', ''));
+        $maxlimit = trim($request->request->get('maxlimit', ''));
+        $cron_saldo = $request->request->has('cron_saldo');
+        $contact = $request->request->get('contact', []);
 
         $s_owner = $is_edit
             && $su->id()
@@ -154,42 +186,19 @@ class UsersEditAdminController extends AbstractController
         }
         else if ($s_owner)
         {
-            $username_edit_en = $config_service->get('users_can_edit_username', $pp->schema());
-            $fullname_edit_en = $config_service->get('users_can_edit_fullname', $pp->schema());
-        }
-        else
-        {
-            $username_edit_en = $fullname_edit_en = false;
+            $username_edit_en = $config_service->get('users_can_edit_username', $pp->schema()) ? true : false;
+            $fullname_edit_en = $config_service->get('users_can_edit_fullname', $pp->schema()) ? true : false;
         }
 
         if ($request->isMethod('POST'))
         {
-            $user = [
-                'postcode'		=> trim($request->request->get('postcode', '')),
-                'birthday'		=> trim($request->request->get('birthday', '')) ?: null,
-                'hobbies'		=> trim($request->request->get('hobbies', '')),
-                'comments'		=> trim($request->request->get('comments', '')),
-                'cron_saldo'	=> $request->request->get('cron_saldo') ? 1 : 0,
-            ];
+            if ($error_token = $form_token_service->get_error())
+            {
+                $errors[] = $error_token;
+            }
 
             if ($pp->is_admin())
             {
-                $minlimit = trim($request->request->get('minlimit', ''));
-                $maxlimit = trim($request->request->get('maxlimit', ''));
-
-                $user += [
-                    'letscode'		=> trim($request->request->get('letscode', '')),
-                    'accountrole'	=> $request->request->get('accountrole', ''),
-                    'status'		=> $request->request->get('status', ''),
-                    'admincomment'	=> trim($request->request->get('admincomment', '')),
-                    'minlimit'      => $minlimit === '' ? null : $minlimit,
-                    'maxlimit'      => $maxlimit === '' ? null : $maxlimit,
-                ];
-
-                $contact = $request->request->get('contact', []);
-                $notify = $request->request->get('notify');
-                $password = trim($request->request->get('password', ''));
-
                 $mail_unique_check_sql = 'select count(c.value)
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
@@ -274,7 +283,7 @@ class UsersEditAdminController extends AbstractController
                     }
                 }
 
-                if ($user['status'] == 1 || $user['status'] == 2)
+                if ($status === '1' || $status === '2')
                 {
                     if (!$mailadr)
                     {
@@ -284,45 +293,31 @@ class UsersEditAdminController extends AbstractController
                         $alert_service->warning($err);
                     }
                 }
-
-                $letscode_sql = 'select letscode
-                    from ' . $pp->schema() . '.users
-                    where letscode = ?';
-                $letscode_sql_params = [$user['letscode']];
             }
 
-            if ($username_edit_en)
-            {
-                $user['name'] = trim($request->request->get('name', ''));
-            }
-
-            if ($fullname_edit_en)
-            {
-                $user['fullname'] = trim($request->request->get('fullname', ''));
-            }
-
-            $fullname_access = $request->request->get('fullname_access', '');
+            $code_sql = 'select letscode
+                from ' . $pp->schema() . '.users
+                where letscode = ?';
+            $code_sql_params = [$code];
 
             $name_sql = 'select name
                 from ' . $pp->schema() . '.users
                 where name = ?';
-            $name_sql_params = [$user['name']];
+            $name_sql_params = [$name];
 
             $fullname_sql = 'select fullname
                 from ' . $pp->schema() . '.users
                 where fullname = ?';
-            $fullname_sql_params = [$user['fullname']];
+            $fullname_sql_params = [$fullname];
 
             if ($is_edit)
             {
-                $letscode_sql .= ' and id <> ?';
-                $letscode_sql_params[] = $id;
+                $code_sql .= ' and id <> ?';
+                $code_sql_params[] = $id;
                 $name_sql .= 'and id <> ?';
                 $name_sql_params[] = $id;
                 $fullname_sql .= 'and id <> ?';
                 $fullname_sql_params[] = $id;
-
-                $user_prefetch = $user_cache_service->get($id, $pp->schema());
             }
 
             if (!$fullname_access)
@@ -332,7 +327,7 @@ class UsersEditAdminController extends AbstractController
 
             if ($username_edit_en)
             {
-                if (!$user['name'])
+                if (!$name)
                 {
                     $errors[] = 'Vul gebruikersnaam in!';
                 }
@@ -340,7 +335,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Deze gebruikersnaam is al in gebruik!';
                 }
-                else if (strlen($user['name']) > 50)
+                else if (strlen($name) > 50)
                 {
                     $errors[] = 'De gebruikersnaam mag maximaal 50 tekens lang zijn.';
                 }
@@ -348,17 +343,15 @@ class UsersEditAdminController extends AbstractController
 
             if ($fullname_edit_en)
             {
-                if (!$user['fullname'])
+                if (!$fullname)
                 {
                     $errors[] = 'Vul de Volledige Naam in!';
                 }
-
-                if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
+                else if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
                 {
                     $errors[] = 'Deze Volledige Naam is al in gebruik!';
                 }
-
-                if (strlen($user['fullname']) > 100)
+                else if (strlen($fullname) > 100)
                 {
                     $errors[] = 'De Volledige Naam mag maximaal 100 tekens lang zijn.';
                 }
@@ -366,72 +359,71 @@ class UsersEditAdminController extends AbstractController
 
             if ($pp->is_admin())
             {
-                if (!$user['letscode'])
+                if (!$code)
                 {
                     $errors[] = 'Vul een Account Code in!';
                 }
-                else if ($db->fetchColumn($letscode_sql, $letscode_sql_params))
+                else if ($db->fetchColumn($code_sql, $code_sql_params))
                 {
                     $errors[] = 'De Account Code bestaat al!';
                 }
-                else if (strlen($user['letscode']) > 20)
+                else if (strlen($code) > 20)
                 {
                     $errors[] = 'De Account Code mag maximaal
                         20 tekens lang zijn.';
                 }
 
-                if (!preg_match("/^[A-Za-z0-9-]+$/", $user['letscode']))
+                if (!preg_match("/^[A-Za-z0-9-]+$/", $code))
                 {
                     $errors[] = 'De Account Code kan enkel uit
                         letters, cijfers en koppeltekens bestaan.';
                 }
 
-                if (isset($user['minlimit'])
-                    && filter_var($user['minlimit'], FILTER_VALIDATE_INT) === false)
+                if ($minlimit
+                    && filter_var($minlimit, FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Minimum Account Limiet.';
                 }
 
-                if (isset($user['maxlimit'])
-                    && filter_var($user['maxlimit'], FILTER_VALIDATE_INT) === false)
+                if ($maxlimit
+                    && filter_var($maxlimit, FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Maximum Account Limiet.';
                 }
             }
 
-            if ($user['birthday'])
+            if ($birthday)
             {
-                $user['birthday'] = $date_format_service->reverse($user['birthday'], $pp->schema());
+                $birthday = $date_format_service->reverse($birthday, $pp->schema());
 
-                if ($user['birthday'] === '')
+                if ($birthday === '')
                 {
                     $errors[] = 'Fout in formaat geboortedag.';
-                    $user['birthday'] = '';
                 }
             }
 
-            if (strlen($user['comments']) > 100)
+            if (strlen($comments) > 100)
             {
                 $errors[] = 'Het veld Commentaar mag maximaal
                     100 tekens lang zijn.';
             }
 
-            if (strlen($user['postcode']) > 6)
+            if (strlen($postcode) > 6)
             {
                 $errors[] = 'De postcode mag maximaal 6 tekens lang zijn.';
             }
 
-            if (strlen($user['hobbies']) > 500)
+            if (strlen($hobbies) > 500)
             {
                 $errors[] = 'Het veld hobbies en interesses mag
                     maximaal 500 tekens lang zijn.';
             }
 
             if ($pp->is_admin()
-                && ($is_edit && !$user_prefetch['adate'])
-                && $user['status'] == 1)
+                && !$is_activated
+                && $status === '1')
             {
                 if (!$password)
                 {
@@ -443,345 +435,324 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if ($error_token = $form_token_service->get_error())
+            if (!count($errors))
             {
-                $errors[] = $error_token;
+                $post_user = [
+                    'fullname_access'   => $fullname_access,
+                    'postcode'		    => $postcode,
+                    'birthday'		    => $birthday === '' ? null : $birthday,
+                    'hobbies'		    => $hobbies,
+                    'comments'		    => $comments,
+                    'cron_saldo'	    => $cron_saldo ? 1 : 0,
+                ];
+
+                if ($is_add)
+                {
+                    $post_user['creator'] = $su->id();
+                    $post_user['cdate'] = gmdate('Y-m-d H:i:s');
+                }
+
+                if ($is_edit)
+                {
+                    $post_user['mdate'] = gmdate('Y-m-d H:i:s');
+                }
+
+                if (($is_add || ($is_edit && !$is_activated))
+                    && $status === '1')
+                {
+                    $post_user['adate'] = gmdate('Y-m-d H:i:s');
+
+                    $encoder = $encoder_factory->getEncoder(new User());
+                    $post_user['password'] = $encoder->encodePassword($password, null);
+                }
+                else if ($is_add)
+                {
+                    $post_user['password'] = hash('sha512', sha1(random_bytes(16)));
+                }
+
+                if ($username_edit_en)
+                {
+                    $post_user['name'] = $name;
+                }
+
+                if ($fullname_edit_en)
+                {
+                    $post_user['fullname'] = $fullname;
+                }
+
+                if ($pp->is_admin())
+                {
+                    $post_user['letscode'] = $code;
+                    $post_user['accountrole'] = $accountrole;
+                    $post_user['status'] = (int) $status;
+                    $post_user['admincomment'] = $admincomment;
+                    $post_user['minlimit'] = $minlimit === '' ? null : (int) $minlimit;
+                    $post_user['maxlimit'] = $maxlimit === '' ? null : (int) $maxlimit;
+                }
+
+                if ($is_add)
+                {
+                    if ($db->insert($pp->schema() . '.users', $post_user))
+                    {
+                        $id = (int) $db->lastInsertId($pp->schema() . '.users_id_seq');
+                        $alert_service->success('Gebruiker opgeslagen.');
+                    }
+                    else
+                    {
+                        $errors[] = 'Gebruiker niet opgeslagen.';
+                    }
+                }
+
+                if ($is_edit)
+                {
+                    if ($db->update($pp->schema() . '.users', $post_user, ['id' => $id]))
+                    {
+                        $alert_service->success('Gebruiker aangepast.');
+                    }
+                    else
+                    {
+                        $errors[] = 'Gebruiker niet aangepast.';
+                    }
+                }
             }
 
             if (!count($errors))
             {
-                $contact_types = [];
+                $user_cache_service->clear($id, $pp->schema());
+//                $user = $user_cache_service->get($id, $pp->schema());
 
-                $rs = $db->prepare('select abbrev, id
-                    from ' . $pp->schema() . '.type_contact');
-
-                $rs->execute();
-
-                while ($row = $rs->fetch())
+                if ($pp->is_admin())
                 {
-                    $contact_types[$row['abbrev']] = $row['id'];
-                }
+                    $contact_types = [];
 
-                if (!$is_edit)
-                {
-                    $user['creator'] = $su->is_master() ? 0 : $su->id();
+                    $rs = $db->prepare('select abbrev, id
+                        from ' . $pp->schema() . '.type_contact');
 
-                    $user['cdate'] = gmdate('Y-m-d H:i:s');
+                    $rs->execute();
 
-                    if ($user['status'] == 1)
+                    while ($row = $rs->fetch())
                     {
-                        $user['adate'] = gmdate('Y-m-d H:i:s');
-                        $user['password'] = hash('sha512', $password);
-                    }
-                    else
-                    {
-                        $user['password'] = hash('sha512', sha1(microtime()));
+                        $contact_types[$row['abbrev']] = $row['id'];
                     }
 
-                    if ($db->insert($pp->schema() . '.users', $user))
+                    $stored_contacts = [];
+
+                    $rs = $db->prepare('select c.id,
+                            tc.abbrev, c.value, c.flag_public
+                        from ' . $pp->schema() . '.type_contact tc, ' .
+                            $pp->schema() . '.contact c
+                        WHERE tc.id = c.id_type_contact
+                            AND c.id_user = ?');
+                    $rs->bindValue(1, $id);
+
+                    $rs->execute();
+
+                    while ($row = $rs->fetch())
                     {
-                        $id = (int) $db->lastInsertId($pp->schema() . '.users_id_seq');
+                        $stored_contacts[$row['id']] = $row;
+                    }
 
-                        $fullname_access_role = AccessCnst::TO_XDB[$fullname_access];
+                    foreach ($contact as $contact_ary)
+                    {
+                        $contact_id = $contact_ary['id'] ?? 0;
+                        $stored_contact = $stored_contacts[$contact_id] ?? [];
 
-                        $xdb_service->set('user_fullname_access', (string) $id, [
-                            'fullname_access' => $fullname_access_role,
-                        ], $pp->schema());
-
-                        $alert_service->success('Gebruiker opgeslagen.');
-
-                        $user_cache_service->clear($id, $pp->schema());
-                        $user = $user_cache_service->get($id, $pp->schema());
-
-                        foreach ($contact as $contact_ary)
+                        if (!$contact_ary['value'])
                         {
-                            if (!$contact_ary['value'])
+                            if ($stored_contact)
                             {
-                                continue;
+                                $db->delete($pp->schema() . '.contact',
+                                    ['id_user' => $id, 'id' => $contact_ary['id']]);
                             }
+                            continue;
+                        }
 
-                            if ($contact_ary['abbrev'] === 'adr')
-                            {
-                                $geocode_queue->cond_queue([
-                                    'adr'		=> $contact_ary['value'],
-                                    'uid'		=> $id,
-                                    'schema'	=> $pp->schema(),
-                                ], 0);
-                            }
+                        if ($stored_contact
+                            && $stored_contact['abbrev'] == $contact_ary['abbrev']
+                            && $stored_contact['value'] == $contact_ary['value']
+                            && $stored_contact['flag_public'] == $contact_ary['flag_public'])
+                        {
+                            continue;
+                        }
 
+                        if ($contact_ary['abbrev'] === 'adr')
+                        {
+                            $geocode_queue->cond_queue([
+                                'adr'		=> $contact_ary['value'],
+                                'uid'		=> $id,
+                                'schema'	=> $pp->schema(),
+                            ], 0);
+                        }
+
+                        if (!isset($stored_contact) || !$stored_contact)
+                        {
                             $insert = [
+                                'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
                                 'value'				=> trim($contact_ary['value']),
                                 'flag_public'		=> $contact_ary['flag_public'],
-                                'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
                                 'id_user'			=> $id,
                             ];
 
                             $db->insert($pp->schema() . '.contact', $insert);
+                            continue;
                         }
 
-                        if ($user['status'] == 1)
-                        {
-                            if ($notify && $password)
-                            {
-                                if ($config_service->get('mailenabled', $pp->schema()))
-                                {
-                                    if ($mailadr)
-                                    {
-                                        $alert_service->success('Een E-mail met paswoord is
-                                            naar de gebruiker verstuurd.');
-                                    }
-                                    else
-                                    {
-                                        $alert_service->warning('Er is geen E-mail met paswoord
-                                            naar de gebruiker verstuurd want er is geen E-mail
-                                            adres ingesteld voor deze gebruiker.');
-                                    }
+                        $contact_update = $contact_ary;
 
-                                    self::send_activation_mail(
-                                        $mail_queue,
-                                        $mail_addr_system_service,
-                                        $mail_addr_user_service,
-                                        $mailadr ? true : false,
-                                        $password,
-                                        $id,
-                                        $pp->schema()
-                                    );
+                        unset($contact_update['id']);
+                        unset($contact_update['abbrev']);
+                        unset($contact_update['access']);
+
+                        $db->update($pp->schema() . '.contact',
+                            $contact_update,
+                            ['id' => $contact_ary['id'], 'id_user' => $id]);
+                    }
+
+                    if ($status === '1' && !$is_activated)
+                    {
+                        if ($password_notify && $password)
+                        {
+                            if ($mailenabled)
+                            {
+                                if ($mailadr)
+                                {
+                                    $alert_service->success('E-mail met paswoord
+                                        naar de gebruiker verstuurd.');
                                 }
                                 else
                                 {
-                                    $alert_service->warning('De E-mail functies zijn uitgeschakeld.
-                                        Geen E-mail met paswoord naar de gebruiker verstuurd.');
+                                    $alert_service->warning('Er werd geen E-mail
+                                        met passwoord naar de gebruiker verstuurd
+                                        want er is geen E-mail adres voor deze
+                                        gebruiker ingesteld.');
                                 }
+
+                                self::send_activation_mail(
+                                    $mail_queue,
+                                    $mail_addr_system_service,
+                                    $mail_addr_user_service,
+                                    $mailadr ? true : false,
+                                    $password,
+                                    $id,
+                                    $pp->schema()
+                                );
                             }
                             else
                             {
-                                $alert_service->warning('Geen E-mail met paswoord naar
-                                    de gebruiker verstuurd.');
+                                $alert_service->warning('De E-mail functies zijn uitgeschakeld.
+                                    Geen E-mail met paswoord naar de gebruiker verstuurd.');
                             }
                         }
-
-                        if ($user['status'] == 2 | $user['status'] == 1)
+                        else
                         {
-                            $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
+                            $alert_service->warning('Geen E-mail met
+                                paswoord naar de gebruiker verstuurd.');
                         }
-
-                        if ($user['status'] == 7)
-                        {
-                            $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                        }
-
-                        $intersystems_service->clear_cache($su->schema());
-
-                        $link_render->redirect($vr->get('users'), $pp->ary(), ['id' => $id]);
-                    }
-                    else
-                    {
-                        $alert_service->error('Gebruiker niet opgeslagen.');
                     }
                 }
-                else if ($is_edit)
+
+                if (in_array($status, ['1', '2'])
+                    || ($is_edit && in_array($stored_user['status'], [1, 2])))
                 {
-                    $user_stored = $user_cache_service->get($id, $pp->schema());
-
-                    $user['mdate'] = gmdate('Y-m-d H:i:s');
-
-                    if (!$user_stored['adate'] && $user['status'] == 1)
-                    {
-                        $user['adate'] = gmdate('Y-m-d H:i:s');
-
-                        if ($password)
-                        {
-                            $user['password'] = hash('sha512', $password);
-                        }
-                    }
-
-                    if ($db->update($pp->schema() . '.users', $user, ['id' => $id]))
-                    {
-
-                        $fullname_access_role = AccessCnst::TO_XDB[$fullname_access];
-
-                        $xdb_service->set('user_fullname_access', (string) $id, [
-                            'fullname_access' => $fullname_access_role,
-                        ], $pp->schema());
-
-                        $user_cache_service->clear($id, $pp->schema());
-                        $user = $user_cache_service->get($id, $pp->schema());
-
-                        $alert_service->success('Gebruiker aangepast.');
-
-                        if ($pp->is_admin())
-                        {
-                            $stored_contacts = [];
-
-                            $rs = $db->prepare('select c.id,
-                                    tc.abbrev, c.value, c.flag_public
-                                from ' . $pp->schema() . '.type_contact tc, ' .
-                                    $pp->schema() . '.contact c
-                                WHERE tc.id = c.id_type_contact
-                                    AND c.id_user = ?');
-                            $rs->bindValue(1, $id);
-
-                            $rs->execute();
-
-                            while ($row = $rs->fetch())
-                            {
-                                $stored_contacts[$row['id']] = $row;
-                            }
-
-                            foreach ($contact as $contact_ary)
-                            {
-                                $contact_id = $contact_ary['id'];
-                                $stored_contact = $stored_contacts[$contact_id] ?? [];
-
-                                if (!$contact_ary['value'])
-                                {
-                                    if ($stored_contact)
-                                    {
-                                        $db->delete($pp->schema() . '.contact',
-                                            ['id_user' => $id, 'id' => $contact_ary['id']]);
-                                    }
-                                    continue;
-                                }
-
-                                if ($stored_contact
-                                    && $stored_contact['abbrev'] == $contact_ary['abbrev']
-                                    && $stored_contact['value'] == $contact_ary['value']
-                                    && $stored_contact['flag_public'] == $contact_ary['flag_public'])
-                                {
-                                    continue;
-                                }
-
-                                if ($contact_ary['abbrev'] === 'adr')
-                                {
-                                    $geocode_queue->cond_queue([
-                                        'adr'		=> $contact_ary['value'],
-                                        'uid'		=> $id,
-                                        'schema'	=> $pp->schema(),
-                                    ], 0);
-                                }
-
-                                if (!isset($stored_contact))
-                                {
-                                    $insert = [
-                                        'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
-                                        'value'				=> trim($contact_ary['value']),
-                                        'flag_public'		=> $contact_ary['flag_public'],
-                                        'id_user'			=> $id,
-                                    ];
-
-                                    $db->insert($pp->schema() . '.contact', $insert);
-                                    continue;
-                                }
-
-                                $contact_update = $contact_ary;
-
-                                unset($contact_update['id'], $contact_update['abbrev'],
-                                    $contact_update['access']);
-
-                                $db->update($pp->schema() . '.contact',
-                                    $contact_update,
-                                    ['id' => $contact_ary['id'], 'id_user' => $id]);
-                            }
-
-                            if ($user['status'] == 1 && !$user_prefetch['adate'])
-                            {
-                                if ($notify && $password)
-                                {
-                                    if ($config_service->get('mailenabled', $pp->schema()))
-                                    {
-                                        if ($mailadr)
-                                        {
-                                            $alert_service->success('E-mail met paswoord
-                                                naar de gebruiker verstuurd.');
-                                        }
-                                        else
-                                        {
-                                            $alert_service->warning('Er werd geen E-mail
-                                                met passwoord naar de gebruiker verstuurd
-                                                want er is geen E-mail adres voor deze
-                                                gebruiker ingesteld.');
-                                        }
-
-                                        self::send_activation_mail(
-                                            $mail_queue,
-                                            $mail_addr_system_service,
-                                            $mail_addr_user_service,
-                                            $mailadr ? true : false,
-                                            $password,
-                                            $id,
-                                            $pp->schema()
-                                        );
-                                    }
-                                    else
-                                    {
-                                        $alert_service->warning('De E-mail functies zijn uitgeschakeld.
-                                            Geen E-mail met paswoord naar de gebruiker verstuurd.');
-                                    }
-                                }
-                                else
-                                {
-                                    $alert_service->warning('Geen E-mail met
-                                        paswoord naar de gebruiker verstuurd.');
-                                }
-                            }
-
-                            if ($user['status'] == 1
-                                || $user['status'] == 2
-                                || $user_stored['status'] == 1
-                                || $user_stored['status'] == 2)
-                            {
-                                $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                            }
-
-                            if ($user['status'] == 7
-                                || $user_stored['status'] == 7)
-                            {
-                                $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                            }
-
-                            $intersystems_service->clear_cache($su->schema());
-                        }
-
-                        $link_render->redirect($vr->get('users_show'), $pp->ary(),
-                            ['id' => $id]);
-                    }
-                    else
-                    {
-                        $alert_service->error('Gebruiker niet aangepast.');
-                    }
+                    $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
                 }
-            }
-            else
-            {
-                $alert_service->error($errors);
 
-                if ($is_edit)
+                if ($status === '7'
+                    || ($is_edit && $stored_user['status'] == 7))
                 {
-                    $user['adate'] = $user_prefetch['adate'];
+                    $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
                 }
 
-                $user['minlimit'] = $user['minlimit'] === -999999999 ? '' : ($user['minlimit'] ?? '');
-                $user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : ($user['maxlimit'] ?? '');
+                $typeahead_service->delete_thumbprint('account_codes', $pp->ary(), []);
+                $typeahead_service->delete_thumbprint('usernames', $pp->ary(), []);
+                $typeahead_service->delete_thumbprint('postcodes', $pp->ary(), []);
+
+                $intersystems_service->clear_cache($su->schema());
+
+                $link_render->redirect($vr->get('users_show'),
+                    $pp->ary(), ['id' => $id]);
             }
+
+            $alert_service->error($errors);
         }
-        else
+
+        if ($request->isMethod('GET'))
         {
+            $code = '';
+            $name = '';
+            $fullname = '';
+            $fullname_access = '';
+            $postcode = '';
+            $birthday = '';
+            $hobbies = '';
+            $comments = '';
+            $accountrole = 'user';
+            $status = '1';
+            $admincomment = '';
+            $minlimit = $config_service->get('preset_minlimit', $pp->schema());
+            $maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
+            $cron_saldo	= true;
+
+            $contact = $db->fetchAll('select name, abbrev,
+                \'\' as value, 0 as id
+                from ' . $pp->schema() . '.type_contact
+                where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
+
+            if ($is_add && $intersystem_code)
+            {
+                if ($group = $db->fetchAssoc('select *
+                    from ' . $pp->schema() . '.letsgroups
+                    where localletscode = ?
+                        and apimethod <> \'internal\'', [$intersystem_code]))
+                {
+                    $name = $fullname = $group['groupname'];
+
+                    if ($group['url']
+                        && ($systems_service->get_schema_from_legacy_eland_origin($group['url'])))
+                    {
+                        $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
+
+                        $admin_mail = $config_service->get('admin', $remote_schema);
+
+                        foreach ($contact as $k => $c)
+                        {
+                            if ($c['abbrev'] == 'mail')
+                            {
+                                $contact[$k]['value'] = $admin_mail;
+                                break;
+                            }
+                        }
+
+                        // name from source is preferable
+                        $name = $fullname = $config_service->get('systemname', $remote_schema);
+                    }
+                }
+
+                $cron_saldo = false;
+                $status = '7';
+                $accountrole = 'interlets';
+                $code = $intersystem_code;
+            }
+
             if ($is_edit)
             {
-                $user = $user_cache_service->get($id, $pp->schema());
-                $fullname_access = AccessCnst::FROM_XDB[$user['fullname_access']];
-            }
+                $code = $stored_user['letscode'] ?? '';
+                $name = $stored_user['name'] ?? '';
+                $fullname = $stored_user['fullname'] ?? '';
+                $fullname_access = $stored_user['fullname_access'] ?? 'admin';
+                $postcode = $stored_user['postcode'] ?? '';
+                $birthday = $stored_user['birthday'] ?? '';
+                $hobbies = $stored_user['hobbies'] ?? '';
+                $comments = $stored_user['comments'] ?? '';
+                $accountrole = $stored_user['accountrole'] ?? 'user';
+                $status = (string) ($stored_user['status'] ?? '1');
+                $admincomment = $stored_user['admincomment'] ?? '';
+                $minlimit = $stored_user['minlimit'] ?? '';
+                $maxlimit = $stored_user['maxlimit'] ?? '';
+                $cron_saldo = $stored_user['cron_saldo'] ?? false;
 
-            if ($pp->is_admin())
-            {
-                $contact = $db->fetchAll('select name, abbrev,
-                    \'\' as value, 0 as id
-                    from ' . $pp->schema() . '.type_contact
-                    where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
-            }
+                // Fetch contacts
 
-            if ($is_edit && $pp->is_admin())
-            {
                 $contact_keys = [];
 
                 foreach ($contact as $key => $c)
@@ -810,67 +781,7 @@ class UsersEditAdminController extends AbstractController
                     $contact[] = $row;
                 }
             }
-            else if ($pp->is_admin())
-            {
-                $user = [
-                    'minlimit'		=> $config_service->get('preset_minlimit', $pp->schema()),
-                    'maxlimit'		=> $config_service->get('preset_maxlimit', $pp->schema()),
-                    'accountrole'	=> 'user',
-                    'status'		=> '1',
-                    'cron_saldo'	=> 1,
-                ];
-
-                if ($intersystem_code)
-                {
-                    if ($group = $db->fetchAssoc('select *
-                        from ' . $pp->schema() . '.letsgroups
-                        where localletscode = ?
-                            and apimethod <> \'internal\'', [$intersystem_code]))
-                    {
-                        $user['name'] = $user['fullname'] = $group['groupname'];
-
-                        if ($group['url']
-                            && ($systems_service->get_schema_from_legacy_eland_origin($group['url'])))
-                        {
-                            $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
-
-                            $admin_mail = $config_service->get('admin', $remote_schema);
-
-                            foreach ($contact as $k => $c)
-                            {
-                                if ($c['abbrev'] == 'mail')
-                                {
-                                    $contact[$k]['value'] = $admin_mail;
-                                    break;
-                                }
-                            }
-
-                            // name from source is preferable
-                            $user['name'] = $user['fullname'] = $config_service->get('systemname', $remote_schema);
-                        }
-                    }
-
-                    $user['cron_saldo'] = 0;
-                    $user['status'] = '7';
-                    $user['accountrole'] = 'interlets';
-                    $user['letscode'] = $intersystem_code;
-                }
-                else
-                {
-                    $user['cron_saldo'] = 1;
-                    $user['status'] = '1';
-                    $user['accountrole'] = 'user';
-                }
-            }
         }
-
-        if ($is_edit)
-        {
-            $edit_user_cached = $user_cache_service->get($id, $pp->schema());
-        }
-
-        array_walk($user, function(&$value){ $value = trim(htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8')); });
-        array_walk($contact, function(&$value){ $value['value'] = trim(htmlspecialchars((string) $value['value'], ENT_QUOTES, 'UTF-8')); });
 
         $assets_service->add([
             'datepicker',
@@ -907,16 +818,16 @@ class UsersEditAdminController extends AbstractController
         if ($pp->is_admin())
         {
             $out .= '<div class="form-group">';
-            $out .= '<label for="letscode" class="control-label">';
+            $out .= '<label for="code" class="control-label">';
             $out .= 'Account Code';
             $out .= '</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-user"></span></span>';
             $out .= '<input type="text" class="form-control" ';
-            $out .= 'id="letscode" name="letscode" ';
+            $out .= 'id="code" name="code" ';
             $out .= 'value="';
-            $out .= $user['letscode'] ?? '';
+            $out .= self::esc($code);
             $out .= '" required maxlength="20" ';
             $out .= 'data-typeahead="';
 
@@ -925,7 +836,7 @@ class UsersEditAdminController extends AbstractController
                 ->str([
                     'render'	=> [
                         'check'	=> 10,
-                        'omit'	=> $edit_user_cached['letscode'] ?? '',
+                        'omit'	=> $stored_code ?? '',
                     ]
                 ]);
 
@@ -953,7 +864,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="name" name="name" ';
             $out .= 'value="';
-            $out .= $user['name'] ?? '';
+            $out .= self::esc($name);
             $out .= '" required maxlength="50" ';
             $out .= 'data-typeahead="';
 
@@ -962,7 +873,7 @@ class UsersEditAdminController extends AbstractController
                 ->str([
                     'render'	=> [
                         'check'	=> 10,
-                        'omit'	=> $edit_user_cached['name'] ?? '',
+                        'omit'	=> $stored_name ?? '',
                     ]
                 ]);
 
@@ -990,18 +901,13 @@ class UsersEditAdminController extends AbstractController
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="fullname" name="fullname" ';
             $out .= 'value="';
-            $out .= $user['fullname'] ?? '';
+            $out .= self::esc($fullname);
             $out .= '" maxlength="100">';
             $out .= '</div>';
             $out .= '<p>';
             $out .= 'Voornaam en Achternaam';
             $out .= '</p>';
             $out .= '</div>';
-        }
-
-        if (!isset($fullname_access))
-        {
-            $fullname_access = !$is_edit && !$intersystem_code ? '' : 'admin';
         }
 
         $out .= $item_access_service->get_radio_buttons(
@@ -1021,7 +927,7 @@ class UsersEditAdminController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="postcode" name="postcode" ';
         $out .= 'value="';
-        $out .= $user['postcode'] ?? '';
+        $out .= self::esc($postcode);
         $out .= '" ';
         $out .= 'required maxlength="6" ';
         $out .= 'data-typeahead="';
@@ -1044,9 +950,9 @@ class UsersEditAdminController extends AbstractController
         $out .= 'id="birthday" name="birthday" ';
         $out .= 'value="';
 
-        if (isset($user['birthday']) && !empty($user['birtday']))
+        if ($birthday)
         {
-            $out .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
+            $out .= $date_format_service->get($birthday, 'day', $pp->schema());
         }
 
         $out .= '" ';
@@ -1075,7 +981,7 @@ class UsersEditAdminController extends AbstractController
         $out .= 'Hobbies, interesses</label>';
         $out .= '<textarea name="hobbies" id="hobbies" ';
         $out .= 'class="form-control" maxlength="500">';
-        $out .= $user['hobbies'] ?? '';
+        $out .= self::esc($hobbies);
         $out .= '</textarea>';
         $out .= '</div>';
 
@@ -1087,7 +993,7 @@ class UsersEditAdminController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="comments" name="comments" ';
         $out .= 'value="';
-        $out .= $user['comments'] ?? '';
+        $out .= self::esc($comments);
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';
@@ -1102,7 +1008,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="fa fa-hand-paper-o"></span></span>';
             $out .= '<select id="accountrole" name="accountrole" ';
             $out .= 'class="form-control">';
-            $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $user['accountrole']);
+            $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $accountrole);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';
@@ -1114,12 +1020,12 @@ class UsersEditAdminController extends AbstractController
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-star-o"></span></span>';
             $out .= '<select id="status" name="status" class="form-control">';
-            $out .= $select_render->get_options(StatusCnst::LABEL_ARY, $user['status']);
+            $out .= $select_render->get_options(StatusCnst::LABEL_ARY, $status);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';
 
-            if (empty($user['adate']) && $pp->is_admin())
+            if ($pp->is_admin() &&!$is_activated)
             {
                 $out .= '<div id="activate" class="bg-success pan-sub">';
 
@@ -1131,9 +1037,7 @@ class UsersEditAdminController extends AbstractController
                 $out .= '<span class="fa fa-key"></span></span>';
                 $out .= '<input type="text" class="form-control" ';
                 $out .= 'id="password" name="password" ';
-                $out .= 'value="';
-                $out .= $password ?? '';
-                $out .= '" required>';
+                $out .= 'value="" required>';
                 $out .= '<span class="input-group-btn">';
                 $out .= '<button class="btn btn-default" ';
                 $out .= 'type="button" ';
@@ -1145,8 +1049,8 @@ class UsersEditAdminController extends AbstractController
                 $out .= '</div>';
 
                 $out .= '<div class="form-group">';
-                $out .= '<label for="notify" class="control-label">';
-                $out .= '<input type="checkbox" name="notify" id="notify"';
+                $out .= '<label for="password_notify" class="control-label">';
+                $out .= '<input type="checkbox" name="password_notify" id="password_notify"';
                 $out .= ' checked="checked"';
                 $out .= '> ';
                 $out .= 'Verstuur een E-mail met het ';
@@ -1165,7 +1069,7 @@ class UsersEditAdminController extends AbstractController
             $out .= 'Commentaar van de admin</label>';
             $out .= '<textarea name="admincomment" id="admincomment" ';
             $out .= 'class="form-control" maxlength="200">';
-            $out .= $user['admincomment'] ?? '';
+            $out .= self::esc($admincomment);
             $out .= '</textarea>';
             $out .= 'Deze informatie is enkel zichtbaar voor de admins';
             $out .= '</div>';
@@ -1174,7 +1078,7 @@ class UsersEditAdminController extends AbstractController
 
             $out .= '<h2>Limieten&nbsp;';
 
-            if ($user['minlimit'] === '' && $user['maxlimit'] === '')
+            if ($minlimit === '' && $maxlimit === '')
             {
                 $out .= '<button class="btn btn-default" ';
                 $out .= 'title="Limieten instellen" data-toggle="collapse" ';
@@ -1186,7 +1090,7 @@ class UsersEditAdminController extends AbstractController
 
             $out .= '<div id="limits_pan"';
 
-            if ($user['minlimit'] === '' && $user['maxlimit'] === '')
+            if ($minlimit === '' && $maxlimit === '')
             {
                 $out .= ' class="collapse"';
             }
@@ -1204,7 +1108,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="minlimit" name="minlimit" ';
             $out .= 'value="';
-            $out .= $user['minlimit'] ?? '';
+            $out .= $minlimit ?? '';
             $out .= '">';
             $out .= '</div>';
             $out .= '<p>Vul enkel in wanneer je een individueel ';
@@ -1260,7 +1164,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="maxlimit" name="maxlimit" ';
             $out .= 'value="';
-            $out .= $user['maxlimit'] ?? '';
+            $out .= $maxlimit ?? '';
             $out .= '">';
             $out .= '</div>';
 
@@ -1321,53 +1225,53 @@ class UsersEditAdminController extends AbstractController
 
             foreach ($contact as $key => $c)
             {
-                $name = 'contact[' . $key . '][value]';
-                $abbrev = $c['abbrev'];
-                $access_name = 'contact[' . $key . '][access]';
+                $c_name = 'contact[' . $key . '][value]';
+                $c_abbrev = $c['abbrev'];
+                $c_access_name = 'contact[' . $key . '][access]';
 
                 $out .= '<div class="pan-sab">';
 
                 $out .= '<div class="form-group">';
                 $out .= '<label for="';
-                $out .= $name;
+                $out .= $c_name;
                 $out .= '" class="control-label">';
-                $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['lbl'] ?? $c['abbrev'];
+                $out .= ContactInputCnst::FORMAT_ARY[$c_abbrev]['lbl'] ?? $c_abbrev;
                 $out .= '</label>';
                 $out .= '<div class="input-group">';
                 $out .= '<span class="input-group-addon">';
                 $out .= '<i class="fa fa-';
-                $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['fa'] ?? 'question-mark';
+                $out .= ContactInputCnst::FORMAT_ARY[$c_abbrev]['fa'] ?? 'question-mark';
                 $out .= '"></i>';
                 $out .= '</span>';
                 $out .= '<input class="form-control" id="';
-                $out .= $name;
+                $out .= $c_name;
                 $out .= '" name="';
-                $out .= $name;
+                $out .= $c_name;
                 $out .= '" ';
                 $out .= 'value="';
-                $out .= $c['value'] ?? '';
+                $out .= self::esc($c['value'] ?? '');
                 $out .= '" type="';
-                $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['type'] ?? 'text';
+                $out .= ContactInputCnst::FORMAT_ARY[$c_abbrev]['type'] ?? 'text';
                 $out .= '" ';
-                $out .= isset(ContactInputCnst::FORMAT_ARY[$c['abbrev']]['disabled']) ? 'disabled ' : '';
+                $out .= isset(ContactInputCnst::FORMAT_ARY[$c_abbrev]['disabled']) ? 'disabled ' : '';
                 $out .= 'data-access="';
-                $out .= $access_name;
+                $out .= $c_access_name;
                 $out .= '">';
                 $out .= '</div>';
 
-                if (isset(ContactInputCnst::FORMAT_ARY[$abbrev]['explain']))
+                if (isset(ContactInputCnst::FORMAT_ARY[$c_abbrev]['explain']))
                 {
                     $out .= '<p>';
-                    $out .= ContactInputCnst::FORMAT_ARY[$abbrev]['explain'];
+                    $out .= ContactInputCnst::FORMAT_ARY[$c_abbrev]['explain'];
                     $out .= '</p>';
                 }
 
                 $out .= '</div>';
 
                 $out .= $item_access_service->get_radio_buttons(
-                    $access_name,
+                    $c_access_name,
                     $item_access_service->get_value_from_flag_public($c['flag_public'] ?? ''),
-                    $abbrev
+                    $c_abbrev
                 );
 
                 $out .= '<input type="hidden" ';
@@ -1384,7 +1288,7 @@ class UsersEditAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="cron_saldo" class="control-label">';
         $out .= '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
-        $out .= $user['cron_saldo'] ? ' checked="checked"' : '';
+        $out .= $cron_saldo ? ' checked="checked"' : '';
         $out .= '>	';
         $out .= 'Periodieke Overzichts E-mail';
         $out .= '</label>';
@@ -1452,5 +1356,10 @@ class UsersEditAdminController extends AbstractController
                 'password'	=> $password,
             ],
         ], 5100);
+    }
+
+    private static function esc(string $str):string
+    {
+        return trim(htmlspecialchars((string) $str, ENT_QUOTES, 'UTF-8'));
     }
 }
