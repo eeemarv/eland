@@ -225,11 +225,6 @@ class UsersEditAdminController extends AbstractController
                         $errors[] = 'Vul een zichtbaarheid in.';
                         continue;
                     }
-
-                    if (isset($c['access']))
-                    {
-                        $contact[$key]['flag_public'] = AccessCnst::TO_FLAG_PUBLIC[$c['access']];
-                    }
                 }
 
                 foreach ($contact as $key => $c)
@@ -538,7 +533,7 @@ class UsersEditAdminController extends AbstractController
                     $stored_contacts = [];
 
                     $rs = $db->prepare('select c.id,
-                            tc.abbrev, c.value, c.flag_public
+                            tc.abbrev, c.value, c.access
                         from ' . $pp->schema() . '.type_contact tc, ' .
                             $pp->schema() . '.contact c
                         WHERE tc.id = c.id_type_contact
@@ -568,9 +563,9 @@ class UsersEditAdminController extends AbstractController
                         }
 
                         if ($stored_contact
-                            && $stored_contact['abbrev'] == $contact_ary['abbrev']
-                            && $stored_contact['value'] == $contact_ary['value']
-                            && $stored_contact['flag_public'] == $contact_ary['flag_public'])
+                            && $stored_contact['abbrev'] === $contact_ary['abbrev']
+                            && $stored_contact['value'] === $contact_ary['value']
+                            && $stored_contact['access'] === $contact_ary['access'])
                         {
                             continue;
                         }
@@ -589,7 +584,7 @@ class UsersEditAdminController extends AbstractController
                             $insert = [
                                 'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
                                 'value'				=> trim($contact_ary['value']),
-                                'flag_public'		=> $contact_ary['flag_public'],
+                                'access'		    => $contact_ary['access'],
                                 'id_user'			=> $id,
                             ];
 
@@ -760,7 +755,7 @@ class UsersEditAdminController extends AbstractController
                     $contact_keys[$c['abbrev']] = $key;
                 }
 
-                $st = $db->prepare('select tc.abbrev, c.value, tc.name, c.flag_public, c.id
+                $st = $db->prepare('select tc.abbrev, c.value, tc.name, c.access, c.id
                     from ' . $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.contact c
                     where tc.id = c.id_type_contact
@@ -1270,7 +1265,7 @@ class UsersEditAdminController extends AbstractController
 
                 $out .= $item_access_service->get_radio_buttons(
                     $c_access_name,
-                    $item_access_service->get_value_from_flag_public($c['flag_public'] ?? ''),
+                    $c['access'] ?? '',
                     $c_abbrev
                 );
 

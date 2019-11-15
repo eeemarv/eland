@@ -142,7 +142,7 @@ class RegisterTokenController extends AbstractController
 
             $mail = [
                 'id_user'			=> $user_id,
-                'flag_public'		=> AccessCnst::TO_FLAG_PUBLIC['admin'],
+                'access'            => 'admin',
                 'value'				=> $data['email'],
                 'id_type_contact'	=> $tc['mail'],
             ];
@@ -155,7 +155,7 @@ class RegisterTokenController extends AbstractController
                 {
                     $gsm = [
                         'id_user'			=> $user_id,
-                        'flag_public'		=> AccessCnst::TO_FLAG_PUBLIC['admin'],
+                        'access'            => 'admin',
                         'value'				=> $data['gsm'],
                         'id_type_contact'	=> $tc['gsm'],
                     ];
@@ -167,7 +167,7 @@ class RegisterTokenController extends AbstractController
                 {
                     $tel = [
                         'id_user'			=> $user_id,
-                        'flag_public'		=> AccessCnst::TO_FLAG_PUBLIC['admin'],
+                        'access'            => 'admin',
                         'value'				=> $data['tel'],
                         'id_type_contact'	=> $tc['tel'],
                     ];

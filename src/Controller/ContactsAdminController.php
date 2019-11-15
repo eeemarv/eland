@@ -98,31 +98,10 @@ class ContactsAdminController extends AbstractController
             $params['f']['abbrev'] = $filter['abbrev'];
         }
 
-        if (isset($filter['access']) && $filter['access'] != 'all')
+        if (isset($filter['access']) && $filter['access'] !== 'all')
         {
-            switch ($filter['access'])
-            {
-                case 'admin':
-                    $acc = 0;
-                    break;
-                case 'users':
-                    $acc = 1;
-                    break;
-                case 'interlets':
-                    $acc = 2;
-                    break;
-                default:
-                    $filter['access'] = 'all';
-                    break;
-            }
-
-            if ($filter['access'] !== 'all')
-            {
-                $where_sql[] = 'c.flag_public = ?';
-                $params_sql[] = $acc;
-
-            }
-
+            $where_sql[] = 'c.access = ?';
+            $params_sql[] = $filter['access'];
             $params['f']['access'] = $filter['access'];
         }
 
@@ -217,7 +196,7 @@ class ContactsAdminController extends AbstractController
             'c.comments'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Commentaar',
                 'data_hide'	=> 'phone,tablet']),
-            'c.flag_public' => array_merge($asc_preset_ary, [
+            'c.access' => array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Zichtbaar',
                 'data_hide'	=> 'phone, tablet']),
             'del' 			=> array_merge($asc_preset_ary, [
@@ -508,7 +487,7 @@ class ContactsAdminController extends AbstractController
                 $td[] = '&nbsp;';
             }
 
-            $td[] = $item_access_service->get_label_flag_public($c['flag_public']);
+            $td[] = $item_access_service->get_label($c['access']);
 
             $td[] = $link_render->link_fa('contacts_del_admin', $pp->ary(),
                 ['id' => $c['id']], 'Verwijderen',

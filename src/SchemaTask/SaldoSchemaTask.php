@@ -108,7 +108,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 	// fetch mail addresses & cron_saldo
 
-		$st = $this->db->prepare('select u.id, c.value, c.flag_public
+		$st = $this->db->prepare('select u.id, c.value, c.access
 			from ' . $schema . '.users u, ' .
 				$schema . '.contact c, ' .
 				$schema . '.type_contact tc
@@ -138,9 +138,9 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		// fetch addresses
 
-			$addr = $addr_public = $addr_p = [];
+			$addr = $addr_access = [];
 
-			$rs = $this->db->prepare('select u.id, c.value, c.flag_public
+			$rs = $this->db->prepare('select u.id, c.value, c.access
 				from ' . $schema . '.users u, ' .
 					$schema . '.contact c, ' .
 					$schema . '.type_contact tc
@@ -154,7 +154,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			while ($row = $rs->fetch())
 			{
 				$addr[$row['id']] = $row['value'];
-				$addr_public[$row['id']] = $row['flag_public'];
+				$addr_access[$row['id']] = $row['access'];
 				$users[$row['id']]['adr'] = $row['value'];
 			}
 
@@ -177,7 +177,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			while ($row = $rs->fetch())
 			{
 				$uid = $row['id_user'];
-				$adr = isset($addr_public[$uid]) && $addr_public[$uid] ? $addr[$uid] : '';
+				$adr = isset($addr_access[$uid]) && in_array($addr_access[$uid], ['user', 'guest']) ? $addr[$uid] : '';
 
 				$image_file_ary = array_values(json_decode($row['image_files'] ?? '[]', true));
 				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';

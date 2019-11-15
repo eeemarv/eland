@@ -25,6 +25,12 @@ class AccessCnst
         'guest' => 'guest',
     ];
 
+    const FROM_ACCOUNTROLE = [
+        'admin'         => 'admin',
+        'user'          => 'user',
+        'interlets'     => 'guest',
+    ];
+
     const FROM_LOCAL = [
         0   => 'guest',
         1   => 'user',
@@ -34,18 +40,6 @@ class AccessCnst
         'guest' => 0,
         'user'  => 1,
         'admin' => 1,
-    ];
-
-    const FROM_FLAG_PUBLIC = [
-        0   => 'admin',
-        1   => 'user',
-        2   => 'guest',
-    ];
-
-    const TO_FLAG_PUBLIC = [
-        'admin' => 0,
-        'user'  => 1,
-        'guest' => 2,
     ];
 
     const FROM_XDB = [

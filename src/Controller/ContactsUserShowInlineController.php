@@ -102,7 +102,7 @@ class ContactsUserShowInlineController extends AbstractController
 
                 $tr[] = $c['abbrev'];
 
-                if (!$item_access_service->is_visible_flag_public($c['flag_public']) && !$s_owner)
+                if (!$item_access_service->is_visible($c['access']) && !$s_owner)
                 {
                     $tr_c = '<span class="btn btn-default">verborgen</span>';
                     $tr[] = $tr_c;
@@ -190,7 +190,7 @@ class ContactsUserShowInlineController extends AbstractController
 
                 if ($pp->is_admin() || $s_owner)
                 {
-                    $tr[] = $item_access_service->get_label_flag_public($c['flag_public']);
+                    $tr[] = $item_access_service->get_label($c['access']);
 
                     if ($pp->is_admin())
                     {

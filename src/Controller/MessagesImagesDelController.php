@@ -37,7 +37,7 @@ class MessagesImagesDelController extends AbstractController
     {
         $errors = [];
 
-        $message = messages_show::get_message($db, $id, $pp->schema());
+        $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
         $s_owner = $su->id() && $su->id() === $message['id_user'];
 

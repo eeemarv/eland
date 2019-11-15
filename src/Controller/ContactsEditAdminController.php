@@ -16,7 +16,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Service\assetsService;
+use App\Service\AssetsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 
@@ -67,7 +67,7 @@ class ContactsEditAdminController extends AbstractController
         $contact = self::get_contact(
             $db, $id, $pp->schema());
 
-        return self::form(
+        $content = self::form(
             $request,
             $contact['id_user'],
             $id,
@@ -84,6 +84,11 @@ class ContactsEditAdminController extends AbstractController
             $pp,
             $geocode_queue
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function form(
@@ -102,7 +107,7 @@ class ContactsEditAdminController extends AbstractController
         AccountRender $account_render,
         PageParamsService $pp,
         GeocodeQueue $geocode_queue
-    ):Response
+    ):string
     {
         $errors = [];
 
@@ -245,7 +250,7 @@ class ContactsEditAdminController extends AbstractController
                 'id_type_contact'   => $id_type_contact,
                 'value'             => $value,
                 'comments'          => $comments,
-                'flag_public'       => AccessCnst::TO_FLAG_PUBLIC[$access],
+                'access'            => $access,
             ];
 
             if(!count($errors))
@@ -392,10 +397,7 @@ class ContactsEditAdminController extends AbstractController
 
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 
     public static function get_contact(
@@ -415,8 +417,6 @@ class ContactsEditAdminController extends AbstractController
             throw new NotFoundHttpException(
                 'Het contact met id ' . $contact_id . ' bestaat niet.');
         }
-
-        $contact['access'] = AccessCnst::FROM_FLAG_PUBLIC[$contact['flag_public']];
 
         return $contact;
     }

@@ -37,7 +37,7 @@ class ContactsDelAdminController extends AbstractController
     {
         $contact = ContactsEditAdminController::get_contact($db, $id,  $pp->schema());
 
-        return self::form(
+        $content = self::form(
             $request,
             $contact['id_user'],
             $id,
@@ -53,6 +53,11 @@ class ContactsDelAdminController extends AbstractController
             $pp,
             $link_render
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function form(
@@ -70,11 +75,11 @@ class ContactsDelAdminController extends AbstractController
         AccountRender $account_render,
         PageParamsService $pp,
         LinkRender $link_render
-    ):Response
+    ):string
     {
         $errors = [];
 
-        $contact = ContactsEditController::get_contact($db, $id,  $pp->schema());
+        $contact = ContactsEditAdminController::get_contact($db, $id,  $pp->schema());
 
         if ($user_id !== $contact['id_user'])
         {
@@ -203,6 +208,8 @@ class ContactsDelAdminController extends AbstractController
         $out .= '</div>';
 
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
+
+        return $out;
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

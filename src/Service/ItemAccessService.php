@@ -57,9 +57,14 @@ class ItemAccessService
 		return false;
 	}
 
-	public function get_fetch_ary():array
+	public function get_visible_ary_for_role(string $role):array
 	{
-		return array_keys(AccessCnst::ACCESS[$this->pp->role()]);
+		return array_keys(AccessCnst::ACCESS[$role]);
+	}
+
+	public function get_visible_ary_for_page():array
+	{
+		return $this->get_visible_ary_for_role($this->pp->role());
 	}
 
 	public function is_visible_xdb(string $access_xdb):bool
@@ -70,16 +75,6 @@ class ItemAccessService
 		}
 
 		return $this->is_visible(AccessCnst::FROM_XDB[$access_xdb]);
-	}
-
-	public function is_visible_flag_public(int $access_flag_public):bool
-	{
-		if (!isset(AccessCnst::FROM_FLAG_PUBLIC[$access_flag_public]))
-		{
-			return false;
-		}
-
-		return $this->is_visible(AccessCnst::FROM_FLAG_PUBLIC[$access_flag_public]);
 	}
 
 	public function is_visible_local(bool $local):bool
@@ -121,18 +116,6 @@ class ItemAccessService
 		return $ary;
 	}
 
-	public function get_visible_ary_flag_public():array
-	{
-		$ary = [];
-
-		foreach ($this->get_visible_ary() as $role)
-		{
-			$ary[] = AccessCnst::TO_FLAG_PUBLIC[$role];
-		}
-
-		return $ary;
-	}
-
 	public function get_label(
 		string $access
 	):string
@@ -152,21 +135,6 @@ class ItemAccessService
 	public function get_label_xdb(string $access_xdb):string
 	{
 		return $this->get_label(AccessCnst::FROM_XDB[$access_xdb]);
-	}
-
-	public function get_label_flag_public(int $flag_public):string
-	{
-		return $this->get_label(AccessCnst::FROM_FLAG_PUBLIC[$flag_public]);
-	}
-
-	public function get_value_from_flag_public($flag_public):string
-	{
-		if (!isset($flag_public) || !isset(AccessCnst::FROM_FLAG_PUBLIC[$flag_public]))
-		{
-			return '';
-		}
-
-		return AccessCnst::FROM_FLAG_PUBLIC[$flag_public];
 	}
 
 	public function get_radio_buttons(

@@ -43,25 +43,25 @@ contact_types:
   path: /contact-types
   methods: GET
 
-contacts_del:
-  controller: App\Controller\ContactsDelController
+contacts_del_admin:
+  controller: App\Controller\ContactsDelAdminController
   path: /contacts/{id<%assert.id%>}/del
   methods: GET|POST
 
-contacts_edit:
-  controller: App\Controller\ContactsEditController
+contacts_edit_admin:
+  controller: App\Controller\ContactsEditAdminController
   path: /contacts/{id<%assert.id%>}/edit
   methods: GET|POST
 
-contacts_add:
-  controller: App\Controller\ContactsAddController
+contacts_add_admin:
+  controller: App\Controller\ContactsAddAdminController
   path: /contacts/add
   methods: GET|POST
 
 contacts:
-  controller: App\Controller\ContactsController
-  path: /contacts/add
-  methods: GET|POST
+  controller: App\Controller\ContactsAdminController
+  path: /contacts
+  methods: GET
 
 users_contacts_edit_admin:
   controller: App\Controller\UsersContactsEditAdminController

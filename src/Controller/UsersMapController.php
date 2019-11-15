@@ -62,7 +62,7 @@ class UsersMapController extends AbstractController
         $adr_ary = [];
 
         $rs = $db->prepare('select
-                c.id, c.id_user as user_id, c.value, c.flag_public
+                c.id, c.id_user as user_id, c.value, c.access
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where tc.id = c.id_type_contact
@@ -109,7 +109,7 @@ class UsersMapController extends AbstractController
             {
                 $adr = $adr_ary[$user['id']];
 
-                if ($item_access_service->is_visible_flag_public($adr['flag_public']))
+                if ($item_access_service->is_visible($adr['access']))
                 {
                     $geo = $cache_service->get('geo_' . $adr['value']);
 

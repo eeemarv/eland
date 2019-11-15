@@ -14,6 +14,7 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\UserCacheService;
 
 class UsersContactsDelAdminController extends AbstractController
@@ -30,10 +31,11 @@ class UsersContactsDelAdminController extends AbstractController
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        PageParamsService $pp,
         LinkRender $link_render
     ):Response
     {
-        return ContactsDelController::form(
+        $content = ContactsDelAdminController::form(
             $request,
             $user_id,
             $contact_id,
@@ -46,7 +48,13 @@ class UsersContactsDelAdminController extends AbstractController
             $item_access_service,
             $heading_render,
             $account_render,
+            $pp,
             $link_render
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }

@@ -118,7 +118,7 @@ class ContactsAddAdminController extends AbstractController
                 $errors[] = 'Vul zichtbaarheid in.';
             }
 
-            if (!isset(AccessCnst::TO_FLAG_PUBLIC[$access]))
+            if (!isset(AccessCnst::ACCESS[$access]))
             {
                 throw new BadRequestHttpException('Ongeldige waarde zichtbaarheid');
             }
@@ -213,8 +213,8 @@ class ContactsAddAdminController extends AbstractController
                     'id_type_contact'		=> $id_type_contact,
                     'value'					=> $value,
                     'comments' 				=> $comments,
-                    'flag_public'			=> AccessCnst::TO_FLAG_PUBLIC[$access],
                     'id_user'				=> $user_id,
+                    'access'                => $access,
                 ];
 
                 if ($db->insert($pp->schema() . '.contact', $insert_ary))

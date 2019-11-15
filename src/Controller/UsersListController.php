@@ -218,13 +218,11 @@ class UsersListController extends AbstractController
                     from ' . $pp->schema() . '.type_contact
                     where abbrev = ?', [$abbrev]);
 
-                $flag_public = AccessCnst::TO_FLAG_PUBLIC[$bulk_field_value];
-
                 $db->executeUpdate('update ' . $pp->schema() . '.contact
-                    set flag_public = ?
+                    set access = ?
                     where id_user in (?) and id_type_contact = ?',
-                        [$flag_public, $user_ids, $id_type_contact],
-                        [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
+                        [$bulk_field_value, $user_ids, $id_type_contact],
+                        [\PDO::PARAM_STR, Db::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
                 $logger->info('bulk: Set ' . $bulk_field_action .
                     ' to ' . $bulk_field_value .
@@ -658,7 +656,7 @@ class UsersListController extends AbstractController
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
         {
             $c_ary = $db->fetchAll('select tc.abbrev,
-                    c.id_user, c.value, c.flag_public
+                    c.id_user, c.value, c.access
                 from ' . $pp->schema() . '.contact c, ' .
                     $pp->schema() . '.type_contact tc, ' .
                     $pp->schema() . '.users u
@@ -673,7 +671,7 @@ class UsersListController extends AbstractController
             {
                 $contacts[$c['id_user']][$c['abbrev']][] = [
                     'value'         => $c['value'],
-                    'flag_public'   => $c['flag_public'],
+                    'access'        => $c['access'],
                 ];
             }
         }
@@ -1331,15 +1329,15 @@ class UsersListController extends AbstractController
                         [$adr_1, $adr_2] = explode(trim($adr_split), $contacts[$id]['adr'][0]['value']);
 
                         $out .= self::get_contacts_str($item_access_service, [[
-                            'value'         => $adr_1,
-                            'flag_public'   => $contacts[$id]['adr'][0][1]]],
+                            'value'     => $adr_1,
+                            'access'    => $contacts[$id]['adr'][0]['access']]],
                         'adr');
 
                         $out .= '</td><td>';
 
                         $out .= self::get_contacts_str($item_access_service, [[
-                            'value'         => $adr_2,
-                            'flag_public'   => $contacts[$id]['adr'][0][1]]],
+                            'value'    => $adr_2,
+                            'access'   => $contacts[$id]['adr'][0]['access']]],
                         'adr');
                     }
                     else if (isset($contacts[$id][$key]))
@@ -1361,9 +1359,9 @@ class UsersListController extends AbstractController
 
                 $adr_ary = $contacts[$id]['adr'][0] ?? [];
 
-                if (isset($adr_ary['flag_public']))
+                if (isset($adr_ary['access']))
                 {
-                    if ($item_access_service->is_visible_flag_public($adr_ary['flag_public']))
+                    if ($item_access_service->is_visible($adr_ary['access']))
                     {
                         if (count($adr_ary) && $adr_ary['value'])
                         {
@@ -1817,7 +1815,7 @@ class UsersListController extends AbstractController
 
             foreach ($contacts as $key => $contact)
             {
-                if ($item_access_service->is_visible_flag_public($contact['flag_public']))
+                if ($item_access_service->is_visible($contact['access']))
                 {
                     $ret .= sprintf($tpl, htmlspecialchars($contact['value'], ENT_QUOTES));
 

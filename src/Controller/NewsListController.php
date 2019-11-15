@@ -144,7 +144,7 @@ class NewsListController extends AbstractController
         $query .= 'order by itemdate ';
         $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
 
-        $access_ary = $item_access_service->get_fetch_ary();
+        $access_ary = $item_access_service->get_visible_ary_for_page();
 
         $rows = $db->executeQuery($query, [$access_ary], [Db::PARAM_STR_ARRAY]);
 
