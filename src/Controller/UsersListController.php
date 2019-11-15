@@ -206,32 +206,13 @@ class UsersListController extends AbstractController
 
             $redirect = false;
 
-            if (!count($errors) && $bulk_submit_action === 'fullname_access')
+            $user_tab_data = BulkCnst::USER_TABS[$bulk_submit_action] ?? [];
+
+            if (!count($errors)
+                && isset($user_tab_data['contact_abbrev'])
+                && isset($user_tab_data['item_access']))
             {
-                $bulk_fullname_access_xdb = AccessCnst::TO_XDB[$bulk_field_value];
-
-                foreach ($user_ids as $user_id)
-                {
-                    $xdb_service->set('user_fullname_access', (string) $user_id, [
-                        'fullname_access' => $bulk_fullname_access_xdb,
-                    ], $pp->schema());
-
-                    $user_cache_service->clear($user_id, $pp->schema());
-                }
-
-                $logger->info('bulk: Set fullname_access to ' .
-                    $bulk_field_value . ' for users ' .
-                    $users_log, ['schema' => $pp->schema()]);
-
-                $alert_service->success('De zichtbaarheid van de
-                    volledige naam werd aangepast.');
-
-                $redirect = true;
-            }
-            else if (!count($errors)
-                && isset(BulkCnst::USER_TABS[$bulk_submit_action]['item_access']))
-            {
-                [$abbrev] = explode('_', $bulk_field_action);
+                $abbrev = $user_tab_data['contact_abbrev'];
 
                 $id_type_contact = $db->fetchColumn('select id
                     from ' . $pp->schema() . '.type_contact
@@ -281,7 +262,7 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
-                && isset(BulkCnst::USER_TABS[$bulk_submit_action]))
+                && $user_tab_data)
             {
                 $store_value = $bulk_field_value;
 
@@ -290,7 +271,7 @@ class UsersListController extends AbstractController
                     $store_value = $store_value === '' ? null : $store_value;
                 }
 
-                $field_type = BulkCnst::USER_TABS[$bulk_field]['string'] ? \PDO::PARAM_STR : \PDO::PARAM_INT;
+                $field_type = isset($user_tab_data['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
                 $db->executeUpdate('update ' . $pp->schema() . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',

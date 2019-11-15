@@ -17,23 +17,28 @@ class BulkCnst
     const USER_TABS = [
         'fullname_access'	=> [
             'lbl'				=> 'Zichtbaarheid Volledige Naam',
+            'string'        => true,
             'item_access'	=> true,
         ],
         'adr_access'		=> [
             'lbl'		=> 'Zichtbaarheid adres',
             'item_access'	=> true,
+            'contact_abbrev' => 'adr',
         ],
         'mail_access'		=> [
             'lbl'		=> 'Zichtbaarheid E-mail adres',
             'item_access'	=> true,
+            'contact_abbrev' => 'mail',
         ],
         'tel_access'		=> [
             'lbl'		=> 'Zichtbaarheid telefoonnummer',
             'item_access'	=> true,
+            'contact_abbrev' => 'tel',
         ],
         'gsm_access'		=> [
             'lbl'		=> 'Zichtbaarheid GSM-nummer',
             'item_access'	=> true,
+            'contact_abbrev' => 'gsm',
         ],
         'comments'			=> [
             'lbl'		=> 'Commentaar',

@@ -2,14 +2,12 @@
 
 namespace App\Service;
 
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 
 class UserCacheService
 {
 	protected $db;
-	protected $xdb_service;
 	protected $predis;
 	protected $ttl = 2592000;
 	protected $is_cli;
@@ -18,12 +16,10 @@ class UserCacheService
 
 	public function __construct(
 		Db $db,
-		XdbService $xdb_service,
 		Predis $predis
 	)
 	{
 		$this->db = $db;
-		$this->xdb_service = $xdb_service;
 		$this->predis = $predis;
 
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
@@ -95,25 +91,6 @@ class UserCacheService
 		if (!is_array($user))
 		{
 			return [];
-		}
-
-		// hack eLAS compatibility (in eLAND limits can be null)
-		$user['minlimit'] = $user['minlimit'] == -999999999 ? '' : $user['minlimit'];
-		$user['maxlimit'] = $user['maxlimit'] == 999999999 ? '' : $user['maxlimit'];
-
-		$row = $this->xdb_service->get('user_fullname_access',
-			(string) $id, $schema);
-
-		if ($row)
-		{
-			$user += ['fullname_access' => $row['data']['fullname_access']];
-		}
-		else
-		{
-			$user += ['fullname_access' => 'admin'];
-
-			$this->xdb_service->set('user_fullname_access',
-				(string) $id, ['fullname_access' => 'admin'], $schema);
 		}
 
 		return $user;
