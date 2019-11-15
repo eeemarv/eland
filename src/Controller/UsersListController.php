@@ -600,31 +600,6 @@ class UsersListController extends AbstractController
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.letscode asc', $sql_bind);
 
-    // hack eLAS compatibility (in eLAND limits can be null)
-
-        if (isset($show_columns['u']['minlimit']) || isset($show_columns['u']['maxlimit']))
-        {
-            foreach ($users as &$user)
-            {
-                $user['minlimit'] = $user['minlimit'] === -999999999 ? '' : ($user['minlimit'] ?? '');
-                $user['maxlimit'] = $user['maxlimit'] === 999999999 ? '' : ($user['maxlimit'] ?? '');
-            }
-        }
-
-        if (isset($show_columns['u']['fullname']))
-        {
-            foreach ($users as &$user)
-            {
-                $user['fullname_access'] = $xdb_service->get(
-                    'user_fullname_access',
-                    (string) $user['id'],
-                    $pp->schema()
-                )['data']['fullname_access'] ?? 'admin';
-
-                error_log($user['fullname_access']);
-            }
-        }
-
         if (isset($show_columns['u']['saldo_date']))
         {
             if ($saldo_date)
@@ -1237,7 +1212,7 @@ class UsersListController extends AbstractController
             $row_stat = $u['status'];
 
             if (isset($u['adate'])
-                && $u['status'] == 1
+                && $u['status'] === 1
                 && $config_service->get_new_user_treshold($pp->schema()) < strtotime($u['adate']))
             {
                 $row_stat = 3;
@@ -1293,9 +1268,7 @@ class UsersListController extends AbstractController
                     }
                     else if ($key === 'fullname')
                     {
-                        if ($pp->is_admin()
-                            || $u['fullname_access'] === 'interlets'
-                            || ($pp->is_user() && $u['fullname_access'] !== 'admin'))
+                        if ($item_access_service->is_visible($u['fullname_access']))
                         {
                             if ($can_link)
                             {
