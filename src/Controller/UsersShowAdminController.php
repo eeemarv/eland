@@ -484,7 +484,7 @@ class UsersShowAdminController extends AbstractController
             $out .= '</dd>';
         }
 
-        if ($pp->is_admin())
+        if ($pp->is_admin() || $s_owner)
         {
             $out .= '<dt>';
             $out .= 'Zichtbaarheid Volledige Naam';
