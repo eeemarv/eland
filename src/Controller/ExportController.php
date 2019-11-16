@@ -72,10 +72,10 @@ class ExportController extends AbstractController
 
             if ($download_sql)
             {
-                $exec = 'pg_dump --dbname=';
+                $exec = 'pg_dump -d ';
                 $exec .= $env_database_url;
-                $exec .= ' --schema=' . $pp->schema();
-                $exec .= ' --no-owner --no-acl > ' . $file_path;
+                $exec .= ' -n ' . $pp->schema();
+                $exec .= ' -O -x > ' . $file_path;
             }
             else if ($download_ag_csv || $download_ev_csv)
             {
