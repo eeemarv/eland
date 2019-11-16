@@ -40,7 +40,7 @@ class ContactsAddAdminController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
-        return self::form(
+        $content = self::form(
             $request,
             0,
             true,
@@ -58,6 +58,11 @@ class ContactsAddAdminController extends AbstractController
             $pp,
             $heading_render
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function form(
@@ -77,7 +82,7 @@ class ContactsAddAdminController extends AbstractController
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
         HeadingRender $heading_render
-    ):Response
+    ):string
     {
         $errors = [];
 
@@ -335,7 +340,7 @@ class ContactsAddAdminController extends AbstractController
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon" id="value_addon">';
         $out .= '<i class="fa fa-';
-        $out .= ContactsEditController::FORMAT[$abbrev]['fa'] ?? 'circle-o';
+        $out .= ContactsEditAdminController::FORMAT[$abbrev]['fa'] ?? 'circle-o';
         $out .= '"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
@@ -343,7 +348,7 @@ class ContactsAddAdminController extends AbstractController
         $out .= $value;
         $out .= '" required disabled maxlength="130" ';
         $out .= 'data-contacts-format="';
-        $out .= htmlspecialchars(json_encode(ContactsEditController::FORMAT));
+        $out .= htmlspecialchars(json_encode(ContactsEditAdminController::FORMAT));
         $out .= '">';
         $out .= '</div>';
         $out .= '<p id="contact-explain">';
@@ -391,9 +396,6 @@ class ContactsAddAdminController extends AbstractController
 
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 }

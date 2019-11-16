@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\ContactsEditController;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\GeocodeQueue;
 use App\Render\AccountRender;
@@ -14,7 +13,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Service\assetsService;
+use App\Service\AssetsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -38,7 +37,7 @@ class UsersContactsEditController extends AbstractController
         GeocodeQueue $geocode_queue
     ):Response
     {
-        return ContactsEditController::form(
+        $content = ContactsEditAdminController::form(
             $request,
             $su->id(),
             $contact_id,
@@ -55,5 +54,10 @@ class UsersContactsEditController extends AbstractController
             $pp,
             $geocode_queue
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }

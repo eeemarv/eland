@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\ContactsDelController;
 use App\Render\AccountRender;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
@@ -14,6 +13,7 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 
@@ -30,11 +30,12 @@ class UsersContactsDelController extends AbstractController
         ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         AccountRender $account_render,
+        PageParamsService $pp,
         SessionUserService $su,
         LinkRender $link_render
     ):Response
     {
-        return ContactsDelController::form(
+        $content = ContactsDelAdminController::form(
             $request,
             $su->id(),
             $contact_id,
@@ -47,7 +48,13 @@ class UsersContactsDelController extends AbstractController
             $item_access_service,
             $heading_render,
             $account_render,
+            $pp,
             $link_render
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }

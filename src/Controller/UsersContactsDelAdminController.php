@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\ContactsDelController;
 use App\Render\AccountRender;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;

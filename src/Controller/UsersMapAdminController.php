@@ -17,7 +17,6 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Controller\UsersListController;
 use Doctrine\DBAL\Connection as Db;
 
 class UsersMapAdminController extends AbstractController

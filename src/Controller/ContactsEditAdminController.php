@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
-use App\Cnst\AccessCnst;
 use App\Queue\GeocodeQueue;
 use App\Render\AccountRender;
 use App\Service\AlertService;

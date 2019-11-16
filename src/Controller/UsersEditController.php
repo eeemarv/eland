@@ -31,7 +31,6 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersEditController extends AbstractController

@@ -8,7 +8,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

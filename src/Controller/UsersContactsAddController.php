@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\ContactsAddController;
 use App\Queue\GeocodeQueue;
 use App\Render\AccountRender;
 use Doctrine\DBAL\Connection as Db;
@@ -41,7 +40,7 @@ class UsersContactsAddController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
-        return ContactsAddController::form(
+        $content = ContactsAddAdminController::form(
             $request,
             $su->id(),
             false,
@@ -59,5 +58,10 @@ class UsersContactsAddController extends AbstractController
             $pp,
             $heading_render
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }
