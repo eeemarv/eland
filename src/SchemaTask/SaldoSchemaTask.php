@@ -213,7 +213,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
 					where m.id_user = u.id
-						and m.local = \'f\'
+						and m.access = \'guest\'
 						and u.status in (1, 2)
 						and m.cdate >= ?
 					order by m.cdate DESC');

@@ -77,11 +77,6 @@ class ItemAccessService
 		return $this->is_visible(AccessCnst::FROM_XDB[$access_xdb]);
 	}
 
-	public function is_visible_local(bool $local):bool
-	{
-		return $this->is_visible($local ? 'user' : 'guest');
-	}
-
 	public function get_visible_ary():array
 	{
 		$ary = AccessCnst::ARY;

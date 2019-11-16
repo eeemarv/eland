@@ -188,19 +188,19 @@ class MessagesShowController extends AbstractController
             'files'         => array_values(json_decode($message['image_files'] ?? '[]', true)),
         ];
 
-        $and_local = $pp->is_guest() ? ' and local = \'f\' ' : '';
+        $sql_where_guest = $pp->is_guest() ? ' and access = \'guest\' ' : '';
 
         $prev = $db->fetchColumn('select id
             from ' . $pp->schema() . '.messages
             where id > ?
-            ' . $and_local . '
+            ' . $sql_where_guest . '
             order by id asc
             limit 1', [$id]);
 
         $next = $db->fetchColumn('select id
             from ' . $pp->schema() . '.messages
             where id < ?
-            ' . $and_local . '
+            ' . $sql_where_guest . '
             order by id desc
             limit 1', [$id]);
 
@@ -485,8 +485,6 @@ class MessagesShowController extends AbstractController
         {
             throw new NotFoundHttpException('Dit bericht bestaat niet of werd verwijderd.');
         }
-
-        $message['access'] = AccessCnst::FROM_LOCAL[$message['local']];
 
         $message['type'] = MessageTypeCnst::FROM_DB[$message['msg_type']];
         $message['is_offer'] = $message['type'] === 'offer';

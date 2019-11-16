@@ -31,17 +31,6 @@ class AccessCnst
         'interlets'     => 'guest',
     ];
 
-    const FROM_LOCAL = [
-        0   => 'guest',
-        1   => 'user',
-    ];
-
-    const TO_LOCAL = [
-        'guest' => 0,
-        'user'  => 1,
-        'admin' => 1,
-    ];
-
     const FROM_XDB = [
         'admin'     => 'admin',
         'users'     => 'user',

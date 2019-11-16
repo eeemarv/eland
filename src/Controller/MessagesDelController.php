@@ -109,7 +109,7 @@ class MessagesDelController extends AbstractController
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';
-            $out .= $item_access_service->get_label($message['local'] ? 'user' : 'guest');
+            $out .= $item_access_service->get_label($message['access']);
             $out .= '</dd>';
         }
 

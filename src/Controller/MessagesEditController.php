@@ -213,7 +213,7 @@ class MessagesEditController extends AbstractController
                 $access = 'user';
             }
 
-            if (!isset(AccessCnst::TO_LOCAL[$access]))
+            if (!count($errors) && !in_array($access, ['user', 'guest']))
             {
                 throw new BadRequestHttpException('Ongeldige zichtbaarheid.');
             }
@@ -275,7 +275,7 @@ class MessagesEditController extends AbstractController
                     'id_category'       => $id_category,
                     'amount'            => $amount,
                     'units'             => $units,
-                    'local'             => AccessCnst::TO_LOCAL[$access],
+                    'access'            => $access,
                     'image_files'       => $image_files,
                 ];
 
@@ -406,6 +406,8 @@ class MessagesEditController extends AbstractController
                 $units = $message['units'];
                 $id_category = $message['id_category'];
                 $type = $message['type'];
+                $access = $message['access'];
+                $image_files = $message['image_files'];
 
                 $validity_days = (int) round((strtotime($message['validity'] . ' UTC') - time()) / 86400);
                 $validity_days = $validity_days < 1 ? 0 : $validity_days;
@@ -413,10 +415,6 @@ class MessagesEditController extends AbstractController
                 $user = $user_cache_service->get($message['id_user'], $pp->schema());
 
                 $account_code = $user['letscode'] . ' ' . $user['name'];
-
-                $access = AccessCnst::FROM_LOCAL[$message['local']] ?? 'user';
-
-                $image_files = $message['image_files'];
             }
 
             if ($add_mode)

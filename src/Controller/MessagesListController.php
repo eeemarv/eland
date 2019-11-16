@@ -179,7 +179,7 @@ class MessagesListController extends AbstractController
             if ($bulk_submit_action === 'access' && !count($errors))
             {
                 $msg_update = [
-                    'local' => AccessCnst::TO_LOCAL[$bulk_field_value],
+                    'access' => $bulk_field_value,
                     'mdate' => gmdate('Y-m-d H:i:s'),
                 ];
 
@@ -435,7 +435,7 @@ class MessagesListController extends AbstractController
             if ($show_visibility_column)
             {
                 $out .= '<td>';
-                $out .= $item_access_service->get_label($msg['local'] ? 'user' : 'guest');
+                $out .= $item_access_service->get_label($msg['access']);
                 $out .= '</td>';
             }
 
@@ -687,7 +687,7 @@ class MessagesListController extends AbstractController
         if ($show_visibility_column)
         {
             $table_header_ary += [
-                'm.local' => array_merge($asc_preset_ary, [
+                'm.access' => array_merge($asc_preset_ary, [
                     'lbl' 	=> 'Zichtbaarheid',
                     'data_hide'	=> 'phone, tablet',
                 ]),
@@ -887,7 +887,7 @@ class MessagesListController extends AbstractController
 
         if ($pp->is_guest())
         {
-            $where_sql[] = 'm.local = \'f\'';
+            $where_sql[] = 'm.access = \'guest\'';
         }
 
         if (count($where_sql))
