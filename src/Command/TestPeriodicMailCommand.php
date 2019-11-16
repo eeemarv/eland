@@ -14,21 +14,20 @@ class TestPeriodicMailCommand extends Command
 
     protected $saldo_schema_task;
 
+    public function __construct(
+        SaldoSchemaTask $saldo_schema_task
+    )
+    {
+        parent::__construct();
+        $this->saldo_schema_task = $saldo_schema_task;
+    }
+
     protected function configure()
     {
         $this->setDescription('Test sending a periodic mail');
         $this->setDefinition([
             new InputArgument('schema', InputArgument::REQUIRED, 'The schema'),
         ]);
-    }
-
-    public function __construct(
-        SaldoSchemaTask $saldo_schema_task
-    )
-    {
-        parent::__construct();
-
-        $this->saldo_schema_task = $saldo_schema_task;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\SchemaTask\UserExpMsgsSchemaTask;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,6 +11,16 @@ use Symfony\Component\Console\Input\InputArgument;
 class TestExpiredMessagesCommand extends Command
 {
     protected static $defaultName = 'test:expired_messages';
+
+    protected $user_exp_msgs_schema_task;
+
+    public function __construct(
+        UserExpMsgsSchemaTask $user_exp_msgs_schema_task
+    )
+    {
+        parent::__construct();
+        $this->user_exp_msgs_schema_task = $user_exp_msgs_schema_task;
+    }
 
     protected function configure()
     {
@@ -23,9 +34,7 @@ class TestExpiredMessagesCommand extends Command
     {
         $schema = $input->getArgument('schema');
 
-        $systems_service->get_schemas();
-        $app['schema_task.user_exp_msgs']->set_schema($schema);
-        $app['schema_task.user_exp_msgs']->process(false);
+        $this->user_exp_msgs_schema_task->run($schema, false);
 
         error_log('Ok.');
     }
