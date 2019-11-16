@@ -24,7 +24,6 @@ class DocsAddController extends AbstractController
     public function __invoke(
         Request $request,
         LoggerInterface $logger,
-        string $map_id,
         XdbService $xdb_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -39,6 +38,8 @@ class DocsAddController extends AbstractController
     ):Response
     {
         $errors = [];
+
+        $map_id = $request->query->get('map_id', '');
 
         if ($request->isMethod('POST'))
         {
@@ -114,7 +115,7 @@ class DocsAddController extends AbstractController
                             $map_id = reset($rows)['eland_id'];
                         }
 
-                        if (!$map)
+                        if (!isset($map) || !$map)
                         {
                             $map_id = substr(sha1(random_bytes(16)), 0, 24);
 

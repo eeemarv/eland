@@ -204,8 +204,8 @@ docs_del:
   methods: GET|POST
 
 docs_add:
-  controller: App\Controller\DocsDelController
-  path: /docs/add/{map_id<%assert.doc_id%>?}
+  controller: App\Controller\DocsAddController
+  path: /docs/add
   methods: GET|POST
 
 docs_map_edit:
