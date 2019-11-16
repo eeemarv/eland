@@ -214,7 +214,8 @@ class LoginController extends AbstractController
                 $errors[] = 'Het account is niet actief.';
             }
 
-            if (!in_array($user['accountrole'], ['user', 'admin'])
+            if (!count($errors)
+                && !in_array($user['accountrole'], ['user', 'admin'])
                 && !$config_service->get_intersystem_en($pp->schema()))
             {
                 $errors[] = 'Het account is een interSysteem-gast account,
