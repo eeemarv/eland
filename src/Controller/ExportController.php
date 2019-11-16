@@ -28,7 +28,7 @@ class ExportController extends AbstractController
 
         set_time_limit(300);
 
-        error_log($cache_dir);
+        exec('echo "Throw exception when php exec() function is not available" > /dev/null');
 
         $download_sql = $request->query->has('_sql');
         $download_ag_csv = $request->query->has('_ag_csv');
@@ -51,8 +51,6 @@ class ExportController extends AbstractController
 
         $download_en = $download_sql || $download_ag_csv || $download_ev_csv || isset($download_table_csv);
 
-        $exec_en = function_exists('exec');
-
         if ($download_en)
         {
             $send_file = true;
@@ -72,39 +70,37 @@ class ExportController extends AbstractController
 
             $file_path = $cache_dir . '/' . $filename;
 
-            if ($download_sql && $exec_en)
+            if ($download_sql)
             {
                 $exec = 'pg_dump --dbname=';
                 $exec .= $env_database_url;
                 $exec .= ' --schema=' . $pp->schema();
                 $exec .= ' --no-owner --no-acl > ' . $file_path;
-
-                exec($exec);
             }
             else if ($download_ag_csv || $download_ev_csv)
             {
-                $exec = 'copy ';
-                $exec .= '(select * ';
+                $exec = 'psql -d ' . $env_database_url . ' -c "';
+                $exec .= '\\copy (select * ';
                 $exec .= 'from xdb.';
                 $exec .= $download_ag_csv ? 'aggs ' : 'events ';
                 $exec .= 'where agg_schema = \'';
                 $exec .= $pp->schema() . '\') ';
                 $exec .= 'to \'' . $file_path . '\' ';
                 $exec .= 'delimiter \',\' ';
-                $exec .= 'csv header';
-
-                $db->exec($exec);
+                $exec .= 'csv header;"';
             }
             else if (isset($download_table_csv))
             {
-                $exec = 'copy ' . $pp->schema() . '.' . $download_table_csv . ' to \'';
-                $exec .= $file_path . '\' delimiter \',\' csv header';
-                $db->exec($exec);
+                $exec = 'psql -d ' . $env_database_url . ' -c "';
+                $exec .= '\\copy ' . $pp->schema() . '.' . $download_table_csv . ' to \'';
+                $exec .= $file_path . '\' delimiter \',\' csv header;"';
             }
             else
             {
-                $send_file = false;
+                $exec .= 'echo "Interne fout" > ' . $file_path;
             }
+
+            exec($exec);
 
             if ($send_file)
             {
@@ -144,17 +140,14 @@ class ExportController extends AbstractController
 
         $out = '<form>';
 
-        if ($exec_en)
-        {
-            $out .= '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
-            $out .= '<h3>Database download (SQL)';
-            $out .= '</h3>';
-            $out .= '</div>';
-            $out .= '<div class="panel-heading">';
-            $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
-            $out .= '</div></div>';
-        }
+        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
+        $out .= '<h3>Database download (SQL)';
+        $out .= '</h3>';
+        $out .= '</div>';
+        $out .= '<div class="panel-heading">';
+        $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
+        $out .= '</div></div>';
 
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
