@@ -73,7 +73,7 @@ class ExportController extends AbstractController
                     'abbrev',
                     'comments',
                     'value',
-                    'flag_public',
+                    'access',
                 ],
             ],
             'categories'	=> [

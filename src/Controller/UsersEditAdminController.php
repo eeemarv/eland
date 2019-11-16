@@ -513,7 +513,6 @@ class UsersEditAdminController extends AbstractController
             if (!count($errors))
             {
                 $user_cache_service->clear($id, $pp->schema());
-//                $user = $user_cache_service->get($id, $pp->schema());
 
                 if ($pp->is_admin())
                 {
@@ -595,7 +594,6 @@ class UsersEditAdminController extends AbstractController
 
                         unset($contact_update['id']);
                         unset($contact_update['abbrev']);
-                        unset($contact_update['access']);
 
                         $db->update($pp->schema() . '.contact',
                             $contact_update,
