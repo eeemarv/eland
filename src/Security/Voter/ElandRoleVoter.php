@@ -47,7 +47,12 @@ class ElandRoleVoter extends Voter
             return false;
         }
 
-        if ($attribute === 'guest')
+        return isset(RoleCnst::SHORT[$attribute]);
+    }
+
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    {
+        if ($attribute === 'guest' || $attribute === 'user')
         {
             $schema = $this->systems_service->get_schema($this->system);
 
@@ -56,17 +61,18 @@ class ElandRoleVoter extends Voter
                 return false;
             }
 
-            if (!$this->config_service->get_intersystem_en($schema))
+            if ($this->config_service->get('maintenance', $schema))
+            {
+                return false;
+            }
+
+            if ($attribute === 'guest'
+                && !$this->config_service->get_intersystem_en($schema))
             {
                 return false;
             }
         }
 
-        return isset(RoleCnst::SHORT[$attribute]);
-    }
-
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
-    {
         return AccessCnst::ACCESS[$this->su->role()][$attribute] ?? false;
     }
 }
