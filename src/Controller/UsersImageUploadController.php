@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 
 class UsersImageUploadController extends AbstractController
 {
-    public function users_image_upload(
+    public function __invoke(
         Request $request,
         Db $db,
         LoggerInterface $logger,

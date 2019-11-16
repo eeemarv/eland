@@ -131,7 +131,7 @@ logs:
 users_image_del_admin:
   controller: App\Controller\UsersImageDelAdminController
   path: /users/{id<%assert.id%>}/image/del
-  methods: POST
+  methods: GET|POST
 
 users_image_upload_admin:
   controller: App\Controller\UsersImageUploadAdminController
