@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Render\HeadingRender;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,303 +19,187 @@ class ExportController extends AbstractController
         LoggerInterface $logger,
         HeadingRender $heading_render,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        MenuService $menu_service,
+        string $cache_dir,
+        string $env_database_url
     ):Response
     {
-        set_time_limit(60);
+        $table_ary = [];
 
-        $db_elas = $request->query->get('db_elas', '') ? true : false;
-        $db_eland_aggs = !$db_elas && ($request->query->get('db_eland_aggs', '') ? true : false);
-        $db_eland_events = !$db_eland_aggs && ($request->query->get('db_eland_events', '') ? true : false);
-        $db_download = $db_elas || $db_eland_aggs || $db_eland_events;
+        set_time_limit(300);
+
+        error_log($cache_dir);
+
+        $download_sql = $request->query->has('_sql');
+        $download_ag_csv = $request->query->has('_ag_csv');
+        $download_ev_csv = $request->query->has('_ev_csv');
+
+        $stmt = $db->prepare('select table_name from information_schema.tables
+            where table_schema = ?');
+        $stmt->bindValue(1, $pp->schema());
+        $stmt->execute();
+
+        while($table_name = $stmt->fetchColumn(0))
+        {
+            $table_ary[] = $table_name;
+
+            if ($request->query->has($table_name))
+            {
+                $download_table_csv = $table_name;
+            }
+        }
+
+        $download_en = $download_sql || $download_ag_csv || $download_ev_csv || isset($download_table_csv);
 
         $exec_en = function_exists('exec');
 
-        $export_ary = [
-            'users'		=> [
-                'label'		=> 'Gebruikers',
-                'sql'		=> 'select *
-                    from ' . $pp->schema() . '.users
-                    order by letscode',
-                'columns'	=> [
-                    'letscode',
-                    'cdate',
-                    'comments',
-                    'hobbies',
-                    'name',
-                    'postcode',
-                    'login',
-                    'mailinglist',
-                    'password',
-                    'accountrole',
-                    'status',
-                    'lastlogin',
-                    'minlimit',
-                    'maxlimit',
-                    'fullname',
-                    'admincomment',
-                    'adate' => 'activeringsdatum'
-                ],
-            ],
-            'contacts'	=> [
-                'label'	=> 'Contactgegevens',
-                'sql'	=> 'select c.*, tc.abbrev, u.letscode, u.name
-                    from ' . $pp->schema() . '.contact c, ' .
-                        $pp->schema() . '.type_contact tc, ' .
-                        $pp->schema() . '.users u
-                    where c.id_type_contact = tc.id
-                        and c.id_user = u.id',
-                'columns'	=> [
-                    'letscode',
-                    'username',
-                    'abbrev',
-                    'comments',
-                    'value',
-                    'access',
-                ],
-            ],
-            'categories'	=> [
-                'label'		=> 'Categorieën',
-                'sql'		=> 'select * from ' . $pp->schema() . '.categories',
-                'columns'	=> [
-                    'name',
-                    'id_parent',
-                    'description',
-                    'cdate',
-                    'fullname',
-                    'leafnote',
-                ],
-            ],
-            'messages'	=> [
-                'label'		=> 'Vraag en Aanbod',
-                'sql'		=> 'select m.*, u.name as username, u.letscode
-                    from ' . $pp->schema() . '.messages m, ' .
-                        $pp->schema() . '.users u
-                    where m.id_user = u.id
-                        and validity > ?',
-                'sql_bind'	=> [gmdate('Y-m-d H:i:s')],
-                'columns'	=> [
-                    'letscode',
-                    'username',
-                    'cdate',
-                    'validity',
-                    'content',
-                    'msg_type',
-                ],
-            ],
-            'transactions'	=> [
-                'label'		=> 'Transacties',
-                'sql'		=> 'select t.transid, t.description,
-                                    concat(fu.letscode, \' \', fu.name) as from_user,
-                                    concat(tu.letscode, \' \', tu.name) as to_user,
-                                    t.cdate, t.real_from, t.real_to, t.amount
-                                from ' . $pp->schema() . '.transactions t, ' .
-                                    $pp->schema() . '.users fu, ' .
-                                    $pp->schema() . '.users tu
-                                where t.id_to = tu.id
-                                    and t.id_from = fu.id
-                                order by t.cdate desc',
-                'columns'	=> [
-                    'cdate'			=> 'Datum',
-                    'from_user'		=> 'Van',
-                    'real_from'		=> 'interSysteem',
-                    'to_user'		=> 'Aan',
-                    'real_to'		=> 'interSysteem',
-                    'amount'		=> 'Bedrag',
-                    'description'	=> 'Dienst',
-                    'transid'		=> 'transactie id',
-                ],
-            ],
-        ];
-
-        $buttons = '';
-        $r = "\r\n";
-
-        if ($exec_en && $db_download)
+        if ($download_en)
         {
+            $send_file = true;
+
+            $download_id = $download_sql ? 'db' : '';
+            $download_id = $download_ag_csv ? 'extra-data' : $download_id;
+            $download_id = $download_ev_csv ? 'extra-events' : $download_id;
+            $download_id = isset($download_table_csv) ? $download_table_csv : $download_id;
+            $download_ext = $download_sql ? 'sql' : 'csv';
+
             $filename = $pp->schema() . '-';
-            $filename .= $db_elas ? 'elas-db' : 'eland-xdb';
-            $filename .= $db_eland_aggs ? '-aggs' : '';
-            $filename .= $db_eland_events ? '-events' : '';
+            $filename .= $download_id;
             $filename .= gmdate('-Y-m-d-H-i-s-');
             $filename .= substr(sha1(microtime()), 0, 4);
             $filename .= '.';
-            $filename .= $db_elas ? 'sql' : 'csv';
+            $filename .= $download_ext;
 
-            if ($db_elas)
+            $file_path = $cache_dir . '/' . $filename;
+
+            if ($download_sql && $exec_en)
             {
                 $exec = 'pg_dump --dbname=';
-                $exec .= getenv('DATABASE_URL');
+                $exec .= $env_database_url;
                 $exec .= ' --schema=' . $pp->schema();
-                $exec .= ' --no-owner --no-acl > ' . $filename;
+                $exec .= ' --no-owner --no-acl > ' . $file_path;
+
+                exec($exec);
+            }
+            else if ($download_ag_csv || $download_ev_csv)
+            {
+                $exec = 'copy ';
+                $exec .= '(select * ';
+                $exec .= 'from xdb.';
+                $exec .= $download_ag_csv ? 'aggs ' : 'events ';
+                $exec .= 'where agg_schema = \'';
+                $exec .= $pp->schema() . '\') ';
+                $exec .= 'to \'' . $file_path . '\' ';
+                $exec .= 'delimiter \',\' ';
+                $exec .= 'csv header';
+
+                $db->exec($exec);
+            }
+            else if (isset($download_table_csv))
+            {
+                $exec = 'copy ' . $pp->schema() . '.' . $download_table_csv . ' to \'';
+                $exec .= $file_path . '\' delimiter \',\' csv header';
+                $db->exec($exec);
             }
             else
             {
-                $exec = 'psql -d ';
-                $exec .= getenv('DATABASE_URL');
-                $exec .= ' -c "\\copy ';
-                $exec .= '(select * ';
-                $exec .= 'from xdb.';
-                $exec .= $db_eland_aggs ? 'aggs' : 'events';
-                $exec .= ' where agg_schema = \'';
-                $exec .= $pp->schema() . '\')';
-                $exec .= ' TO ' . $filename;
-                $exec .= ' with delimiter \',\' ';
-                $exec .= 'csv header;"';
+                $send_file = false;
             }
 
-            exec($exec);
-
-            $handle = fopen($filename, 'rb');
-
-            if (!$handle)
+            if ($send_file)
             {
-                exit;
-            }
+                $handle = fopen($file_path, 'rb');
 
-            $out = '';
-
-            while (!feof($handle))
-            {
-                $out .= fread($handle, 8192);
-            }
-
-            fclose($handle);
-
-            unlink($filename);
-
-            $download_log = $db_elas ? 'elas db sql' : 'eland xdb csv ';
-            $download_log .= $db_eland_aggs ? 'aggs' : '';
-            $download_log .= $db_eland_events ? 'events' : '';
-
-            $logger->info($download_log . ' downloaded',
-                ['schema' => $pp->schema()]);
-
-            $response = new Response($out);
-
-            $response->headers->set('Content-Type', 'application/octet-stream');
-            $response->headers->set('Content-Disposition', 'attachment; filename=' . $filename);
-            $response->headers->set('Content-Transfer-Encoding', 'binary');
-
-            return $response;
-        }
-
-        foreach ($export_ary as $ex_key => $export)
-        {
-            if (isset($_GET[$ex_key]))
-            {
-                $columns = $fields = [];
-
-                $sql_bind = $export['sql_bind'] ?? [];
-
-                $data = $db->fetchAll($export['sql'], $sql_bind);
-
-                foreach($export['columns'] as $key => $name)
+                if (!$handle)
                 {
-                    $fields[] = $name;
-
-                    $columns[] = (ctype_digit((string) $key)) ? $name : $key;
+                    exit;
                 }
 
-                $out = '"' . implode('","', $fields) . '"' . $r;
+                $out = '';
 
-                foreach($data as $row)
+                while (!feof($handle))
                 {
-                    $fields = [];
-
-                    foreach($columns as $c)
-                    {
-                        $fields[] = $row[$c] ?? '';
-                    }
-
-                    $out .= '"' . implode('","', $fields) . '"' . $r;
+                    $out .= fread($handle, 8192);
                 }
 
-                $logger->info('csv ' . $ex_key . ' exported.',
+                fclose($handle);
+
+                unlink($file_path);
+
+                $logger->info($filename . ' downloaded',
                     ['schema' => $pp->schema()]);
-
-                $filename = 'elas-' . $ex_key . '-'.date('Y-m-d-H-i-S').'.csv';
 
                 $response = new Response($out);
 
-                $response->headers->set('Content-Type', 'text/csv');
+                $response->headers->set('Content-Type', 'application/octet-stream');
                 $response->headers->set('Content-Disposition', 'attachment; filename=' . $filename);
+                $response->headers->set('Content-Transfer-Encoding', 'binary');
 
                 return $response;
             }
-
-            $buttons .= '<form><input type="submit" name="' . $ex_key . '" ';
-            $buttons .= 'value="' . $export['label'] . '" class="btn btn-default margin-bottom btn-lg">';
-            $buttons .= '<input type="hidden" value="admin" name="r">';
-            $buttons .= '<input type="hidden" value="' . $su->id() . '" name="u">';
-            $buttons .= '</form>';
         }
 
         $heading_render->add('Export');
         $heading_render->fa('download');
 
+        $out = '<form>';
+
         if ($exec_en)
         {
-            $out = '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
-            $out .= '<h3>eLAS database download (SQL)';
-            $out .= '</h3>';
-            $out .= '</div>';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<form>';
-            $out .= '<input type="submit" value="Download" name="db_elas" class="btn btn-default btn-lg margin-bottom">';
-            $out .= '<input type="hidden" value="admin" name="r">';
-            $out .= '<input type="hidden" value="';
-            $out .= $su->id();
-            $out .= '" name="u">';
-            $out .= '</form>';
-
-            $out .= '</div></div>';
-
             $out .= '<div class="panel panel-info">';
             $out .= '<div class="panel-heading">';
-            $out .= '<h3>eLAND extra data (CSV)';
+            $out .= '<h3>Database download (SQL)';
             $out .= '</h3>';
             $out .= '</div>';
             $out .= '<div class="panel-heading">';
-            $out .= '<p>';
-            $out .= 'Naast de eLAS database bevat eLAND nog ';
-            $out .= 'deze extra data die je hier kan downloaden ';
-            $out .= 'als csv-file. ';
-            $out .= '"Data" bevat de huidige staat en "Events" de ';
-            $out .= 'gebeurtenissen die de huidige staat veroorzaakt hebben.';
-            $out .= '</p>';
-            $out .= '</div>';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<form>';
-            $out .= '<input type="submit" value="Download Data" ';
-            $out .= 'name="db_eland_aggs" ';
-            $out .= 'class="btn btn-default btn-lg margin-bottom">';
-            $out .= '&nbsp;';
-            $out .= '<input type="submit" value="Download Events" ';
-            $out .= 'name="db_eland_events" ';
-            $out .= 'class="btn btn-default btn-lg margin-bottom">';
-            $out .= '<input type="hidden" value="admin" name="r">';
-            $out .= '<input type="hidden" value="';
-            $out .= $su->id();
-            $out .= '" name="u">';
-            $out .= '</form>';
-
+            $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
             $out .= '</div></div>';
         }
 
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
-        $out .= '<h3>eLAS Csv export</h3>';
+        $out .= '<h3>eLAND extra data (CSV)';
+        $out .= '</h3>';
+        $out .= '</div>';
+        $out .= '<div class="panel-heading">';
+        $out .= '<p>';
+        $out .= 'Naast de database bevat eLAND nog ';
+        $out .= 'deze extra data die je hier kan downloaden ';
+        $out .= 'als csv-file. ';
+        $out .= '"Data" bevat de huidige staat en "Events" de ';
+        $out .= 'gebeurtenissen die de huidige staat veroorzaakt hebben.';
+        $out .= '</p>';
         $out .= '</div>';
         $out .= '<div class="panel-heading">';
 
-        $out .= $buttons;
+        $out .= '<input type="submit" value="Data" ';
+        $out .= 'name="_ag_csv" ';
+        $out .= 'class="btn btn-default btn-lg margin-bottom">';
+        $out .= '&nbsp;';
+        $out .= '<input type="submit" value="Events" ';
+        $out .= 'name="_ev_csv" ';
+        $out .= 'class="btn btn-default btn-lg margin-bottom">';
 
         $out .= '</div></div>';
+
+        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
+        $out .= '<h3>CSV export</h3>';
+        $out .= '<p>Per database tabel</p>';
+        $out .= '</div>';
+        $out .= '<div class="panel-heading">';
+
+        foreach ($table_ary as $table)
+        {
+            $out .= '<input type="submit" value="';
+            $out .= $table;
+            $out .= '" name="';
+            $out .= $table;
+            $out .= '" class="btn btn-default btn-lg margin-bottom">&nbsp;';
+        }
+
+        $out .= '</div></div>';
+        $out .= '</form>';
 
         $menu_service->set('export');
 

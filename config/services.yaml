@@ -44,6 +44,9 @@ services:
             $env_app_scheme: '%env(APP_SCHEME)%'
             $env_app_init_enabled: '%env(APP_INIT_ENABLED)%'
             $env_app_system_redirects: '%env(base64:APP_SYSTEM_REDIRECTS)%'
+            $env_database_url: '%env(DATABASE_URL)%'
+            $project_dir: '%kernel.project_dir%'
+            $cache_dir: '%kernel.cache_dir%'
 
     App\:
         resource: '../src/*'
