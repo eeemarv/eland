@@ -45,7 +45,7 @@ class NewsAddController extends AbstractController
 
         $itemdate = trim($request->request->get('itemdate', ''));
         $location = trim($request->request->get('location', ''));
-        $sticky = $request->request->get('sticky', '') ? true : false;
+        $sticky = $request->request->has('sticky');
         $newsitem = trim($request->request->get('newsitem', ''));
         $headline = trim($request->request->get('headline', ''));
         $access = $request->request->get('access', '');
