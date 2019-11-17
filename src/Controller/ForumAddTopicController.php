@@ -62,6 +62,11 @@ class ForumAddTopicController extends AbstractController
                 $errors[] = $token_error;
             }
 
+            if ($su->is_master())
+            {
+                $errors[] = 'Het master account kan geen topics aanmaken.';
+            }
+
             if (!$subject)
             {
                  $errors[] = 'Vul een onderwerp in.';
@@ -75,11 +80,6 @@ class ForumAddTopicController extends AbstractController
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
-            }
-
-            if (!$su->is_master())
-            {
-                $errors[] = 'Het master account kan geen topics aanmaken.';
             }
 
             if (!count($errors))

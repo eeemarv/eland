@@ -49,7 +49,7 @@ class ForumDelTopicController extends AbstractController
 
         if (!($s_topic_owner || $su->is_admin()))
         {
-            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze pagina.');
+            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om dit topic te verwijderen.');
         }
 
         if ($request->isMethod('POST'))
@@ -82,6 +82,7 @@ class ForumDelTopicController extends AbstractController
             ['id' => $id], $forum_topic['subject']));
         $heading_render->add(' verwijderen?');
 
+        $heading_render->add_sub_raw('<p class="text-danger">Alle reacties worden verwijderd.</p>');
 
         $heading_render->fa('comments-o');
 

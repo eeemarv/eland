@@ -120,7 +120,7 @@ class ForumController extends AbstractController
         $out .= '<th data-hide="phone, tablet">Gebruiker</th>';
         $out .= '<th data-hide="phone, tablet" data-sort-initial="descending" ';
         $out .= 'data-type="numeric">Aanmaak</th>';
-        $out .= $show_access ? '<th data-hide="phone, tablet">Zichtbaarheid</th>' : '';
+        $out .= $show_access ? '<th data-hide="phone, tablet">Toegang</th>' : '';
         $out .= '</tr>';
 
         $out .= '</thead>';

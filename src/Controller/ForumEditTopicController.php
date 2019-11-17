@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -39,67 +38,33 @@ class ForumEditTopicController extends AbstractController
     {
         $errors = [];
 
+        $subject = $request->request->get('subject', '');
+        $content = $request->request->get('content', '');
+        $access = $request->request->get('access', '');
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
-        $row = $xdb_service->get('forum', $forum_id, $pp->schema());
+        $forum_topic = ForumTopicController::get_forum_topic($id, $db, $pp, $item_access_service);
 
-        if ($row)
+        $s_topic_owner = $forum_topic['user_id'] === $su->id()
+            && $su->is_system_self() && !$pp->is_guest();
+
+        if (!($s_topic_owner || $su->is_admin()))
         {
-            $forum_post = $row['data'];
+            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om dit topic aan te passen.');
         }
 
-        if (!isset($forum_post))
-        {
-            $alert_service->error('Post niet gevonden.');
-            $link_render->redirect('forum', $pp->ary(), []);
-        }
-
-        $s_owner = $forum_post['uid']
-            && (int) $forum_post['uid'] === $su->id();
-
-        $is_topic = !isset($forum_post['parent_id']);
-
-        if (!$is_topic)
-        {
-            $topic_id = $forum_post['parent_id'];
-        }
-
-        if (!($pp->is_admin() || $s_owner))
-        {
-            if ($is_topic)
-            {
-                $alert_service->error('Je hebt onvoldoende rechten om dit onderwerp aan te passen.');
-                $link_render->redirect('forum_topic', $pp->ary(),
-                    ['topic_id' => $forum_id]);
-            }
-
-            $alert_service->error('Je hebt onvoldoende rechten om deze reactie aan te passen.');
-            $link_render->redirect('forum_topic', $pp->ary(),
-                ['topic_id' => $topic_id]);
-        }
-
-        if (!$is_topic)
-        {
-            $row = $xdb_service->get('forum', $topic_id, $pp->schema());
-
-            if ($row)
-            {
-                $topic_post = $row['data'];
-            }
-
-            if (!$item_access_service->is_visible_xdb($topic_post['access']))
-            {
-                $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
-                $link_render->redirect('forum', $pp->ary(), []);
-            }
-        }
+        $forum_post = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.forum_posts
+            where topic_id = ?
+            order by created_at asc
+            limit 1', [$id]);
 
         if ($request->isMethod('POST'))
         {
-            $content = $request->request->get('content', '');
             $content = trim(preg_replace('/(<br>)+$/', '', $content));
             $content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
             $content = trim($content);
@@ -109,72 +74,72 @@ class ForumEditTopicController extends AbstractController
             $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
             $content = $htmlpurifier->purify($content);
 
-            $forum_post = ['content' => $content];
-
-            if ($is_topic)
-            {
-                $forum_post['subject'] = $request->request->get('subject', '');
-
-                if (!$forum_post['subject'])
-                {
-                    $errors[] = 'Vul een onderwerp in.';
-                }
-
-                $access = $request->request->get('access', '');
-
-                if (!$access)
-                {
-                    $errors[] = 'Vul een zichtbaarheid in.';
-                }
-                else
-                {
-                    $forum_post['access'] = AccessCnst::TO_XDB[$access];
-                }
-            }
-
-            if (strlen($forum_post['content']) < 2)
-            {
-                $errors[] = 'De inhoud van je bericht is te kort.';
-            }
-
             if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
+            if ($su->is_master())
+            {
+                $errors[] = 'Het master account kan geen topics aanpassen.';
+            }
+
+            if (!$subject)
+            {
+                 $errors[] = 'Vul een onderwerp in.';
+            }
+
+            if (strlen($content) < 2)
+            {
+                 $errors[] = 'De inhoud van je bericht is te kort.';
+            }
+
+            if (!$access)
+            {
+                $errors[] = 'Vul een zichtbaarheid in.';
+            }
+
             if (!count($errors))
             {
-                $xdb_service->set('forum', $forum_id, $forum_post, $pp->schema());
+                $topic_update = [
+                    'last_edit_at'  => gmdate('Y-m-d H:i:s'),
+                    'subject'       => $subject,
+                    'access'        => $access,
+                ];
 
-                if ($is_topic)
-                {
-                    $alert_service->success('Onderwerp aangepast.');
-                    $link_render->redirect('forum_topic', $pp->ary(),
-                        ['topic_id' => $forum_id]);
-                }
+                $db->update($pp->schema() . '.forum_topics',
+                    $topic_update,
+                    ['id' => $id]
+                );
 
-                $alert_service->success('Reactie aangepast.');
+                $post_update = [
+                    'last_edit_at'  => gmdate('Y-m-d H:i:s'),
+                    'content'       => $content,
+                    'edit_count'    => $forum_post['edit_count'] + 1,
+                ];
+
+                $db->update($pp->schema() . '.forum_posts',
+                    $post_update,
+                    ['id' => $forum_post['id']]
+                );
+
+                $alert_service->success('Onderwerp aangepast.');
                 $link_render->redirect('forum_topic', $pp->ary(),
-                    ['topic_id' => $topic_id]);
+                    ['id' => $id]);
             }
 
             $alert_service->error($errors);
         }
-        else if ($is_topic)
+        else
         {
-            $access = AccessCnst::FROM_XDB[$forum_post['access']];
+            $subject = $forum_topic['subject'];
+            $content = $forum_post['content'];
+            $access = $forum_topic['access'];
         }
 
         $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
-        if ($is_topic)
-        {
-            $heading_render->add('Forum onderwerp aanpassen');
-        }
-        else
-        {
-            $heading_render->add('Reactie aanpassen');
-        }
+        $heading_render->add('Forum onderwerp aanpassen');
 
         $heading_render->fa('comments-o');
 
@@ -183,38 +148,27 @@ class ForumEditTopicController extends AbstractController
 
         $out .= '<form method="post">';
 
-        if ($is_topic)
-        {
-            $out .= '<div class="form-group">';
-            $out .= '<input type="text" class="form-control" ';
-            $out .= 'id="subject" name="subject" ';
-            $out .= 'placeholder="Onderwerp" ';
-            $out .= 'value="';
-            $out .= $forum_post['subject'];
-            $out .= '" required>';
-            $out .= '</div>';
-        }
+        $out .= '<div class="form-group">';
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'id="subject" name="subject" ';
+        $out .= 'placeholder="Onderwerp" ';
+        $out .= 'value="';
+        $out .= $subject;
+        $out .= '" required>';
+        $out .= '</div>';
 
         $out .= '<div class="form-group">';
         $out .= '<textarea name="content" ';
         $out .= 'class="form-control summernote" ';
         $out .= 'id="content" rows="4" required>';
-        $out .= $forum_post['content'];
+        $out .= $content;
         $out .= '</textarea>';
         $out .= '</div>';
 
-        if ($is_topic)
-        {
-            $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $pp->is_user());
+        $out .= $item_access_service->get_radio_buttons('access', $access, 'forum_topic', $pp->is_user());
 
-            $out .= $link_render->btn_cancel('forum_topic',
-                $pp->ary(), ['topic_id' => $forum_id]);
-        }
-        else
-        {
-            $out .= $link_render->btn_cancel('forum_topic',
-                $pp->ary(), ['topic_id' => $topic_id]);
-        }
+        $out .= $link_render->btn_cancel('forum_topic',
+            $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" ';
