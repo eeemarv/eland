@@ -89,7 +89,7 @@ class NewsEditController extends AbstractController
                     'headline'  => $headline,
                     'newsitem'  => $newsitem,
                     'location'  => $location,
-                    'sticky'    => $sticky,
+                    'sticky'    => $sticky ? 't' : 'f',
                     'itemdate'  => $itemdate,
                     'access'    => $access,
                 ];
