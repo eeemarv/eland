@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
+use Doctrine\DBAL\Connection as Db;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -16,14 +16,13 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\XdbService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumAddTopicController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        XdbService $xdb_service,
+        Db $db,
         ConfigService $config_service,
         AlertService $alert_service,
         LinkRender $link_render,
@@ -43,9 +42,12 @@ class ForumAddTopicController extends AbstractController
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
+        $subject = $request->request->get('content', '');
+        $content = $request->request->get('content', '');
+        $access = $request->request->get('access', '');
+
         if ($request->isMethod('POST'))
         {
-            $content = $request->request->get('content', '');
             $content = trim(preg_replace('/(<br>)+$/', '', $content));
             $content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
             $content = trim($content);
@@ -55,60 +57,58 @@ class ForumAddTopicController extends AbstractController
             $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
             $content = $htmlpurifier->purify($content);
 
-            $topic = ['content' => $content];
-
-            $topic['subject'] = $request->request->get('subject', '');
-            $topic['uid'] = $su->id();
-
-            if (!$topic['subject'])
-            {
-                 $errors[] = 'Vul een onderwerp in.';
-            }
-
-            if (strlen($topic['content']) < 2)
-            {
-                 $errors[] = 'De inhoud van je bericht is te kort.';
-            }
-
-            $access = $request->request->get('access', '');
-
-            if (!$access)
-            {
-                $errors[] = 'Vul een zichtbaarheid in.';
-            }
-            else
-            {
-                $topic['access'] = AccessCnst::TO_XDB[$access];
-            }
-
             if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
-            if (count($errors))
+            if (!$subject)
             {
-                $alert_service->error($errors);
+                 $errors[] = 'Vul een onderwerp in.';
             }
-            else
-            {
-                $topic_id = substr(sha1(random_bytes(16)), 0, 24);
 
-                $xdb_service->set('forum', $topic_id, $topic, $pp->schema());
+            if (strlen($content) < 2)
+            {
+                 $errors[] = 'De inhoud van je bericht is te kort.';
+            }
+
+            if (!$access)
+            {
+                $errors[] = 'Vul een zichtbaarheid in.';
+            }
+
+            if (!$su->is_master())
+            {
+                $errors[] = 'Het master account kan geen topics aanmaken.';
+            }
+
+            if (!count($errors))
+            {
+                $forum_topic_insert = [
+                    'subject'   => $subject,
+                    'access'    => $access,
+                    'user_id'   => $su->id(),
+                ];
+
+                $db->insert($pp->schema() . '.forum_topics', $forum_topic_insert);
+
+                $id = (int) $db->lastInsertId($pp->schema() . '.forum_topics_id_seq');
+
+                $forum_post_insert = [
+                    'content'   => $content,
+                    'topic_id'  => $id,
+                    'user_id'   => $su->id(),
+                ];
+
+                $db->insert($pp->schema() . '.forum_posts', $forum_post_insert);
 
                 $alert_service->success('Onderwerp toegevoegd.');
 
                 $link_render->redirect('forum_topic', $pp->ary(),
-                    ['topic_id' => $topic_id]);
+                    ['id' => $id]);
             }
-        }
-        else
-        {
-            $access = '';
-            $topic = [
-                'subject'   => '',
-                'content'   => '',
-            ];
+
+            $alert_service->error($errors);
         }
 
         $assets_service->add(['summernote', 'summernote_forum_post.js']);
@@ -126,7 +126,7 @@ class ForumAddTopicController extends AbstractController
         $out .= 'id="subject" name="subject" ';
         $out .= 'placeholder="Onderwerp" ';
         $out .= 'value="';
-        $out .= $topic['subject'];
+        $out .= $subject;
         $out .= '" required>';
         $out .= '</div>';
 
@@ -134,7 +134,7 @@ class ForumAddTopicController extends AbstractController
         $out .= '<textarea name="content" ';
         $out .= 'class="form-control summernote" ';
         $out .= 'id="content" rows="4" required>';
-        $out .= $topic['content'];
+        $out .= $content;
         $out .= '</textarea>';
         $out .= '</div>';
 

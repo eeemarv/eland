@@ -95,12 +95,12 @@ news_add:
 
 forum_edit:
   controller: App\Controller\ForumEditController
-  path: /forum/{forum_id<%assert.doc_id%>}/edit
+  path: /forum/{id<%assert.id%>}/edit
   methods: GET|POST
 
 forum_del:
   controller: App\Controller\ForumDelController
-  path: /forum/{forum_id<%assert.doc_id%>}/del
+  path: /forum/{id<%assert.id%>}/del
   methods: GET|POST
 
 forum_add_topic:
