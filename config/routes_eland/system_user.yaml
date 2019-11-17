@@ -93,14 +93,24 @@ news_add:
   path: /news/add
   methods: GET|POST
 
-forum_edit:
-  controller: App\Controller\ForumEditController
-  path: /forum/{id<%assert.id%>}/edit
+forum_edit_post:
+  controller: App\Controller\ForumEditPostController
+  path: /forum/{id<%assert.id%>}/edit-post
   methods: GET|POST
 
-forum_del:
-  controller: App\Controller\ForumDelController
-  path: /forum/{id<%assert.id%>}/del
+forum_del_post:
+  controller: App\Controller\ForumDelPostController
+  path: /forum/{id<%assert.id%>}/del-post
+  methods: GET|POST
+
+forum_edit_topic:
+  controller: App\Controller\ForumEditTopicController
+  path: /forum/{id<%assert.id%>}/edit-topic
+  methods: GET|POST
+
+forum_del_topic:
+  controller: App\Controller\ForumDelTopicController
+  path: /forum/{id<%assert.id%>}/del-topic
   methods: GET|POST
 
 forum_add_topic:
