@@ -12,7 +12,7 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +22,7 @@ class ForumController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        XdbService $xdb_service,
+        Db $db,
         AccountRender $account_render,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
@@ -42,29 +42,19 @@ class ForumController extends AbstractController
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
+        // to do: filter after page loaded
         $q = $request->query->get('q', '');
 
-        $rows = $xdb_service->get_many([
-            'agg_schema' => $pp->schema(),
-            'agg_type' => 'forum',
-            'access' => $item_access_service->get_visible_ary_xdb()],
-                'order by event_time desc');
+        $stmt = $db->executeQuery('select t.*, count(p.*) - 1 as reply_count
+            from ' . $pp->schema() . '.forum_topics t
+            inner join ' . $pp->schema() . '.forum_posts p on p.topic_id = t.id
+            where t.access in (?)
+            group by t.id
+            order by t.last_edit_at desc',
+            [$item_access_service->get_visible_ary_for_page()],
+            [Db::PARAM_STR_ARRAY]);
 
-        if (count($rows))
-        {
-            foreach ($rows as $row)
-            {
-                $replies = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-                    'agg_type' => 'forum',
-                    'data->>\'parent_id\'' => $row['eland_id']]);
-
-                $forum_posts[] = $row['data'] + [
-                    'id' 		=> $row['eland_id'],
-                    'ts' 		=> $row['event_time'],
-                    'replies'	=> count($replies),
-                ];
-            }
-        }
+        $forum_topics = $stmt->fetchAll();
 
         if ($pp->is_admin() || $pp->is_user())
         {
@@ -77,7 +67,7 @@ class ForumController extends AbstractController
             $btn_nav_render->csv();
         }
 
-        $show_visibility = (!$pp->is_guest()
+        $show_access = (!$pp->is_guest()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
@@ -104,18 +94,7 @@ class ForumController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $forum_empty = true;
-
-        foreach($forum_posts as $p)
-        {
-            if ($item_access_service->is_visible_xdb($p['access']))
-            {
-                $forum_empty = false;
-                break;
-            }
-        }
-
-        if ($forum_empty)
+        if (!count($forum_topics))
         {
             $out .= '<div class="panel panel-default">';
             $out .= '<div class="panel-heading">';
@@ -142,47 +121,32 @@ class ForumController extends AbstractController
         $out .= '<th>Reacties</th>';
         $out .= '<th data-hide="phone, tablet">Gebruiker</th>';
         $out .= '<th data-hide="phone, tablet" data-sort-initial="descending" ';
-        $out .= 'data-type="numeric">Tijdstip</th>';
-        $out .= $show_visibility ? '<th data-hide="phone, tablet">Zichtbaarheid</th>' : '';
+        $out .= 'data-type="numeric">Aanmaak</th>';
+        $out .= $show_access ? '<th data-hide="phone, tablet">Zichtbaarheid</th>' : '';
         $out .= '</tr>';
 
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        foreach($forum_posts as $p)
+        foreach($forum_topics as $topic)
         {
-            if (!$item_access_service->is_visible_xdb($p['access']))
+            $id = $topic['id'];
+            $td = [];
+
+            $td[] = $link_render->link_no_attr('forum_topic', $pp->ary(),
+                ['id' => $id], $topic['subject']);
+            $td[] = $topic['reply_count'];
+            $td[] = $account_render->link((int) $topic['user_id'], $pp->ary());
+            $td[] = $date_format_service->get($topic['created_at'], 'min', $pp->schema());
+
+            if ($show_access)
             {
-                continue;
+                $td[] = $item_access_service->get_label($topic['access']);
             }
 
-            $pid = $p['id'];
-
-            $out .= '<tr>';
-
-            $out .= '<td>';
-            $out .= $link_render->link_no_attr('forum_topic', $pp->ary(),
-                ['topic_id' => $pid], $p['subject']);
-            $out .= '</td>';
-
-            $out .= '<td>';
-            $out .= $p['replies'];
-            $out .= '</td>';
-
-            $out .= '<td>';
-            $out .= $account_render->link((int) $p['uid'], $pp->ary());
-            $out .= '</td>';
-
-            $out .= $date_format_service->get_td($p['ts'], 'min', $pp->schema());
-
-            if ($show_visibility)
-            {
-                $out .= '<td>';
-                $out .= $item_access_service->get_label_xdb($p['access']);
-                $out .= '</td>';
-            }
-
-            $out .= '</tr>';
+            $out .= '<tr><td>';
+            $out .= implode('</td><td>', $td);
+            $out .= '</td></tr>';
         }
 
         $out .= '</tbody>';

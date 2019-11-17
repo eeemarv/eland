@@ -26,7 +26,7 @@ class ForumTopicController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $topic_id,
+        int $id,
         XdbService $xdb_service,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -129,7 +129,7 @@ class ForumTopicController extends AbstractController
 
                 $alert_service->success('Reactie toegevoegd.');
                 $link_render->redirect('forum_topic', $pp->ary(),
-                    ['topic_id' => $topic_id]);
+                    ['id' => $id]);
             }
 
             $alert_service->error($errors);
