@@ -16,10 +16,11 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumTopicController extends AbstractController
@@ -27,7 +28,7 @@ class ForumTopicController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        XdbService $xdb_service,
+        Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -46,56 +47,34 @@ class ForumTopicController extends AbstractController
     {
         $errors = [];
 
+        $content = $request->request->get('content', '');
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
-        $show_visibility = ($pp->is_user()
+        $show_access = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
-        $forum_posts = [];
+        $forum_topic = self::get_forum_topic($id, $db, $pp, $item_access_service);
 
-        $row = $xdb_service->get('forum', $topic_id, $pp->schema());
+        $s_topic_owner = $forum_topic['user_id'] === $su->id()
+            && $su->is_system_self() && !$pp->is_guest();
 
-        if ($row)
-        {
-            $topic_post = $row['data'];
-            $topic_post['ts'] = $row['event_time'];
-
-            if ($row['agg_version'] > 1)
-            {
-                $topic_post['edit_count'] = $row['agg_version'] - 1;
-            }
-        }
-        else
-        {
-            $alert_service->error('Dit forum onderwerp bestaat niet');
-            $link_render->redirect('forum', $pp->ary(), []);
-        }
-
-        $topic_post['id'] = $topic_id;
-
-        $s_owner = $topic_post['uid']
-            && (int) $topic_post['uid'] === $su->id()
-            && $pp->is_user();
-
-        if (!$item_access_service->is_visible_xdb($topic_post['access']) && !$s_owner)
-        {
-            $alert_service->error('Je hebt geen toegang tot dit forum onderwerp.');
-            $link_render->redirect('forum', $pp->ary(), []);
-        }
+        $forum_posts = $db->fetchAll('select *
+            from ' . $pp->schema() . '.forum_posts
+            where topic_id = ?
+            order by created_at asc', [$id]);
 
         if ($request->isMethod('POST'))
         {
             if (!($pp->is_user() || $pp->is_admin()))
             {
-                $alert_service->error('Actie niet toegelaten.');
-                $link_render->redirect('forum', $pp->ary(), []);
+                throw new AccessDeniedHttpException('Actie niet toegelaten.');
             }
 
-            $content = $request->request->get('content', '');
             $content = trim(preg_replace('/(<br>)+$/', '', $content));
             $content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
             $content = trim($content);
@@ -105,27 +84,25 @@ class ForumTopicController extends AbstractController
             $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
             $content = $htmlpurifier->purify($content);
 
-            $reply = [
-                'content'   => $content,
-                'parent_id' => $topic_id,
-                'uid'       => $su->id(),
-            ];
+            if ($token_error = $form_token_service->get_error())
+            {
+                $errors[] = $token_error;
+            }
 
             if (strlen($content) < 2)
             {
                 $errors[] = 'De inhoud van je bericht is te kort.';
             }
 
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
             if (!count($errors))
             {
-                $new_id = substr(sha1(microtime() . $pp->schema()), 0, 24);
+                $forum_post = [
+                    'content'   => $content,
+                    'topic_id'  => $id,
+                    'user_id'   => $su->id(),
+                ];
 
-                $xdb_service->set('forum', $new_id, $reply, $pp->schema());
+                $db->insert($pp->schema() . '.forum_posts', $forum_post);
 
                 $alert_service->success('Reactie toegevoegd.');
                 $link_render->redirect('forum_topic', $pp->ary(),
@@ -135,55 +112,47 @@ class ForumTopicController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $forum_posts[] = $topic_post;
+        $stmt_prev = $db->executeQuery('select id
+            from ' . $pp->schema() . '.forum_topics
+            where last_edit_at > ?
+                and access in (?)
+            order by last_edit_at asc
+            limit 1', [
+                $forum_topic['last_edit_at'],
+                $item_access_service->get_visible_ary_for_page()
+            ], [
+                \PDO::PARAM_STR,
+                Db::PARAM_STR_ARRAY,
+            ]);
 
-        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-            'agg_type' => 'forum',
-            'data->>\'parent_id\'' => $topic_id], 'order by event_time asc');
+        $prev = $stmt_prev->fetchColumn();
 
-        if (count($rows))
+        $stmt_next = $db->executeQuery('select id
+            from ' . $pp->schema() . '.forum_topics
+            where last_edit_at < ?
+                and access in (?)
+            order by last_edit_at desc
+            limit 1', [
+                $forum_topic['last_edit_at'],
+                $item_access_service->get_visible_ary_for_page()
+            ], [
+                \PDO::PARAM_STR,
+                Db::PARAM_STR_ARRAY,
+            ]);
+
+        $next = $stmt_next->fetchColumn();
+
+        if ($pp->is_admin() || $s_topic_owner)
         {
-            foreach ($rows as $row)
-            {
-                $data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
+            $btn_top_render->edit('forum_edit_topic', $pp->ary(),
+                ['id' => $id], 'Onderwerp aanpassen');
 
-                if ($row['agg_version'] > 1)
-                {
-                    $data['edit_count'] = $row['agg_version'] - 1;
-                }
-
-                $forum_posts[] = $data;
-            }
+            $btn_top_render->del('forum_del_topic', $pp->ary(),
+                ['id' => $id], 'Onderwerp verwijderen');
         }
 
-        $rows = $xdb_service->get_many([
-            'agg_schema' => $pp->schema(),
-            'agg_type' => 'forum',
-            'event_time' => ['>' => $topic_post['ts']],
-            'access' => $item_access_service->get_visible_ary_xdb(),
-        ], 'order by event_time asc limit 1');
-
-        $prev = count($rows) ? reset($rows)['eland_id'] : false;
-
-        $rows = $xdb_service->get_many([
-            'agg_schema' => $pp->schema(),
-            'agg_type' => 'forum',
-            'event_time' => ['<' => $topic_post['ts']],
-            'access' => $item_access_service->get_visible_ary_xdb(),
-        ], 'order by event_time desc limit 1');
-
-        $next = count($rows) ? reset($rows)['eland_id'] : false;
-
-        if ($pp->is_admin() || $s_owner)
-        {
-            $btn_top_render->edit('forum_edit', $pp->ary(),
-                ['forum_id' => $topic_id], 'Onderwerp aanpassen');
-            $btn_top_render->del('forum_del', $pp->ary(),
-                ['forum_id' => $topic_id], 'Onderwerp verwijderen');
-        }
-
-        $prev_ary = $prev ? ['topic_id' => $prev] : [];
-        $next_ary = $next ? ['topic_id' => $next] : [];
+        $prev_ary = $prev ? ['id' => $prev] : [];
+        $next_ary = $next ? ['id' => $next] : [];
 
         $btn_nav_render->nav('forum_topic', $pp->ary(),
             $prev_ary, $next_ary, false);
@@ -193,49 +162,66 @@ class ForumTopicController extends AbstractController
 
         $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
-        $heading_render->add($topic_post['subject']);
+        $heading_render->add($forum_topic['subject']);
         $heading_render->fa('comments-o');
 
         $out = '';
 
-        if ($show_visibility)
+        if ($show_access)
         {
-            $out .= '<p>Zichtbaarheid: ';
-            $out .= $item_access_service->get_label_xdb($topic_post['access']);
+            $out .= '<p>Toegang: ';
+            $out .= $item_access_service->get_label($forum_topic['access']);
             $out .= '</p>';
         }
 
-        foreach ($forum_posts as $p)
+        $first_post = true;
+
+        foreach ($forum_posts as $post)
         {
-            $s_owner = $p['uid']
-                && $p['uid'] == $su->id()
+            $s_post_owner = $post['user_id'] === $su->id()
                 && $su->is_system_self()
                 && !$pp->is_guest();
 
-            $pid = $p['id'];
+            $post_id = $post['id'];
 
             $out .= '<div class="panel panel-default printview">';
 
             $out .= '<div class="panel-body">';
-            $out .= $p['content'];
+            $out .= $post['content'];
             $out .= '</div>';
 
             $out .= '<div class="panel-footer">';
             $out .= '<p>';
-            $out .= $account_render->link((int) $p['uid'], $pp->ary());
+            $out .= $account_render->link((int) $post['user_id'], $pp->ary());
             $out .= ' @';
-            $out .= $date_format_service->get($p['ts'], 'min', $pp->schema());
-            $out .= isset($p['edit_count']) ? ' Aangepast: ' . $p['edit_count'] : '';
+            $out .= $date_format_service->get($post['created_at'], 'min', $pp->schema());
+            $out .= $post['edit_count'] ? ' Aangepast: ' . $post['edit_count'] : '';
 
-            if ($pp->is_admin() || $s_owner)
+            if ($pp->is_admin() || $s_post_owner)
             {
                 $out .= '<span class="inline-buttons pull-right">';
-                $out .= $link_render->link_fa('forum_edit', $pp->ary(),
-                    ['forum_id' => $pid], 'Aanpassen',
-                    ['class' => 'btn btn-primary'], 'pencil');
-                $out .= $link_render->link_fa('forum_del', $pp->ary(),
-                    ['forum_id' => $pid], 'Verwijderen',
-                    ['class' => 'btn btn-danger'], 'times');
+
+                if ($first_post)
+                {
+                    $out .= $link_render->link_fa('forum_edit_topic', $pp->ary(),
+                        ['id' => $id], 'Aanpassen',
+                        ['class' => 'btn btn-primary'], 'pencil');
+
+                    $out .= $link_render->link_fa('forum_del_topic', $pp->ary(),
+                        ['id' => $id], 'Verwijderen',
+                        ['class' => 'btn btn-danger'], 'times');
+                }
+                else
+                {
+                    $out .= $link_render->link_fa('forum_edit_post', $pp->ary(),
+                        ['id' => $post_id], 'Aanpassen',
+                        ['class' => 'btn btn-primary'], 'pencil');
+
+                    $out .= $link_render->link_fa('forum_del_post', $pp->ary(),
+                        ['id' => $post_id], 'Verwijderen',
+                        ['class' => 'btn btn-danger'], 'times');
+                }
+
                 $out .= '</span>';
             }
 
@@ -243,6 +229,8 @@ class ForumTopicController extends AbstractController
             $out .= '</div>';
 
             $out .= '</div>';
+
+            $first_post = false;
         }
 
         if ($pp->is_user() || $pp->is_admin())
@@ -257,7 +245,7 @@ class ForumTopicController extends AbstractController
             $out .= '<textarea name="content" ';
             $out .= 'class="form-control summernote" ';
             $out .= 'id="content" rows="4" required>';
-            $out .= $content ?? '';
+            $out .= $content;
             $out .= '</textarea>';
             $out .= '</div>';
 
@@ -278,5 +266,29 @@ class ForumTopicController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
+    }
+
+    public static function get_forum_topic(
+        int $id,
+        Db $db,
+        PageParamsService $pp,
+        ItemAccessService $item_access_service
+    ):array
+    {
+        $forum_topic = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.forum_topics
+            where id = ?', [$id]);
+
+        if (!isset($forum_topic) || !$forum_topic)
+        {
+            throw new NotFoundHttpException('Forum onderwerp niet gevonden.');
+        }
+
+        if (!$item_access_service->is_visible($forum_topic['access']))
+        {
+            throw new AccessDeniedHttpException('Je hebt geen toegang tot dit forum onderwerp.');
+        }
+
+        return $forum_topic;
     }
 }

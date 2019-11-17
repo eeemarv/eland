@@ -16,15 +16,15 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ForumEditController extends AbstractController
+class ForumEditPostController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $forum_id,
-        XdbService $xdb_service,
+        int $id,
+        Db $db,
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,

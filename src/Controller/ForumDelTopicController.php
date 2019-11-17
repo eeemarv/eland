@@ -10,18 +10,18 @@ use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ForumDelController extends AbstractController
+class ForumDelTopicController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $forum_id,
-        XdbService $xdb_service,
+        int $id,
+        Db $db,
         LinkRender $link_render,
         HeadingRender $heading_render,
         FormTokenService $form_token_service,

@@ -35,8 +35,6 @@ class ForumController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $forum_posts = [];
-
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
