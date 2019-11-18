@@ -31,7 +31,7 @@
 	<img src="{{- s3_url(msg.image_file) -}}" height="200" alt="afbeelding">
 	<br />
 {%- endif -%}
-{{- msg.description -}}
+{{- msg.description|raw -}}
 <br />
 {{- context_url_open('users_show', mpp_ary(user_id, schema),
 	{'id': msg.id_user})|raw -}}

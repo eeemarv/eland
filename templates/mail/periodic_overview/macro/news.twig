@@ -18,7 +18,7 @@
 {{- n.headline -}}
 </a>
 </h4>
-{{- n.newsitem -}}<br />
+{{- n.newsitem|raw -}}<br />
 {%- if n.location -%}
 	{{- 'label.location'|trans -}}:
 	&nbsp;<strong>
@@ -66,7 +66,7 @@
 
 {{ n.headline|underline('.') }}
 
-{{ n.newsitem }}
+{{ n.newsitem_plain_text }}
 
 {% if n.location %}
 {{ 'label.location'|trans }}: {{ n.location }}

@@ -2,6 +2,7 @@
 
 namespace App\SchemaTask;
 
+use App\HtmlProcess\HtmlToMarkdownConverter;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\XdbService;
 use App\Service\CacheService;
@@ -23,6 +24,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 	protected $config_service;
 	protected $mail_addr_user_service;
 	protected $account_str_render;
+	protected $html_to_markdown_converter;
 
 	public function __construct(
 		Db $db,
@@ -33,7 +35,8 @@ class SaldoSchemaTask implements SchemaTaskInterface
 		IntersystemsService $intersystems_service,
 		ConfigService $config_service,
 		MailAddrUserService $mail_addr_user_service,
-		AccountStrRender $account_str_render
+		AccountStrRender $account_str_render,
+		HtmlToMarkdownConverter $html_to_markdown_converter
 	)
 	{
 		$this->db = $db;
@@ -45,6 +48,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 		$this->config_service = $config_service;
 		$this->mail_addr_user_service = $mail_addr_user_service;
 		$this->account_str_render = $account_str_render;
+		$this->html_to_markdown_converter = $html_to_markdown_converter;
 	}
 
 	public static function get_default_index_name():string
@@ -182,6 +186,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 				$image_file_ary = array_values(json_decode($row['image_files'] ?? '[]', true));
 				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';
 
+				$row['description_plain_text'] = $this->html_to_markdown_converter->convert($row['description']);
 				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 				$row['offer'] = $row['type'] == 'offer' ? true : false;
 				$row['want'] = $row['type'] == 'want' ? true : false;
@@ -266,6 +271,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 			while ($row = $rs->fetch())
 			{
+				$row['newsitem_plain_text'] = $this->html_to_markdown_converter->convert($row['newsitem']);
 				$news[] = $row;
 			}
 		}
@@ -347,7 +353,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 			$stmt = $this->db->executeQuery('select *
 				from ' . $schema . '.forum_topics
-				where access in (\'user\', \'guest\')
+				where access in (\'user\', \'guest\', \'anonymous\')
 				order by last_edit_at desc');
 
 			$all_visible_forum_topics = $stmt->fetchAll();
