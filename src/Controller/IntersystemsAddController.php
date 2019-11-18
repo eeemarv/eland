@@ -43,11 +43,14 @@ class IntersystemsAddController extends AbstractController
                 $form_token_service
             );
 
-            if ($db->fetchColumn('select id
-                from ' . $pp->schema() . '.letsgroups
-                where url = ?', [$group['url']]))
+            if ($group['url'] !== '')
             {
-                $errors[] = 'Er bestaat al een interSysteem met deze URL.';
+                if ($db->fetchColumn('select id
+                    from ' . $pp->schema() . '.letsgroups
+                    where url = ?', [$group['url']]))
+                {
+                    $errors[] = 'Er bestaat al een interSysteem met deze URL.';
+                }
             }
 
             if ($db->fetchColumn('select id

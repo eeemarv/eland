@@ -57,12 +57,14 @@
     </strong>
 </p>
 
+{%- block html_transaction_link -%}
 <p>
 {{- context_url_open('transactions_show', mpp_ary(user_id, schema),
     {'id': transaction.id})|raw -}}
 {{- 'label.link'|trans -}}
 </a>
 </p>
+{%- endblock html_transaction_link -%}
 
 {%- block html_trans_id -%}{%- endblock -%}
 
@@ -92,8 +94,10 @@
 {{ 'label.description'|trans }}
 {{ transaction.description }}
 
+{% block text_transaction_link %}
 {{ 'label.link'|trans }}: {{ context_url('transactions_show',
     mpp_ary(user_id, schema), {'id': transaction.id}) }}
+{% endblock text_transaction_link %}
 
 {% block text_trans_id %}{% endblock %}
 

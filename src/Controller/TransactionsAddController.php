@@ -40,13 +40,10 @@ class TransactionsAddController extends AbstractController
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
-        CacheService $cache_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
-        MailAddrSystemService $mail_addr_system_service,
-        MailQueue $mail_queue,
         TransactionService $transaction_service,
         MailTransactionService $mail_transaction_service,
         SystemsService $systems_service,
@@ -119,7 +116,7 @@ class TransactionsAddController extends AbstractController
                 }
                 else
                 {
-                    $group['domain'] = strtolower(parse_url($group['url'], PHP_URL_HOST));
+                    $group['domain'] = strtolower(parse_url($group['url'] ?? '', PHP_URL_HOST) ?? '');
                 }
             }
 
@@ -305,7 +302,7 @@ class TransactionsAddController extends AbstractController
 
             if (isset($group['url']))
             {
-                $group_domain = strtolower(parse_url($group['url'], PHP_URL_HOST));
+                $group_domain = strtolower(parse_url($group['url'] ?? '', PHP_URL_HOST) ?? '');
             }
             else
             {
