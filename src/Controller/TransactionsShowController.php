@@ -275,7 +275,7 @@ class TransactionsShowController extends AbstractController
             }
             else
             {
-                $out .= $assets_service->get('here-from-inter.png');
+                $out .= $assets_service->get('here-to-inter.png');
             }
 
             $out .= '">';
@@ -380,7 +380,7 @@ class TransactionsShowController extends AbstractController
             }
             else
             {
-                $out .= $assets_service->get('there-from-inter.png');
+                $out .= $assets_service->get('there-to-inter.png');
             }
 
             $out .= '">';
