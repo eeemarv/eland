@@ -102,7 +102,7 @@ class IntersystemsEditController extends AbstractController
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-primary btn-lg">';
 
-        return self::render_form(
+        $content = self::render_form(
             $group,
             $btn,
             $db,
@@ -116,9 +116,14 @@ class IntersystemsEditController extends AbstractController
             $vr,
             $menu_service
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
-    private static function get_post_errors(
+    public static function get_post_errors(
         Request $request,
         FormTokenService $form_token_service
     ):array
@@ -196,7 +201,7 @@ class IntersystemsEditController extends AbstractController
         return [$group, $errors];
     }
 
-    private static function render_form(
+    public static function render_form(
         array $group,
         string $btn,
         Db $db,
@@ -209,7 +214,7 @@ class IntersystemsEditController extends AbstractController
         PageParamsService $pp,
         VarRouteService $vr,
         MenuService $menu_service
-    ):Response
+    ):string
     {
         $heading_render->fa('share-alt');
 
@@ -368,9 +373,6 @@ class IntersystemsEditController extends AbstractController
 
         $menu_service->set('intersystems');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
+        return $out;
     }
 }

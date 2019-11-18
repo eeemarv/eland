@@ -108,7 +108,7 @@ class IntersystemsAddController extends AbstractController
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
         $btn .= 'class="btn btn-success btn-lg">';
 
-        return IntersystemsEditController::render_form(
+        $content = IntersystemsEditController::render_form(
             $group,
             $btn,
             $db,
@@ -122,5 +122,10 @@ class IntersystemsAddController extends AbstractController
             $vr,
             $menu_service
         );
+
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $content,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }
