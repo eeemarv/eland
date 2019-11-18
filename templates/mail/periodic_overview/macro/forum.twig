@@ -10,7 +10,7 @@
 	<ul>
 	{%- for f in forum -%}
 	<li>
-	{{- context_url_open('forum_topic', mpp_ary(user_id, schema), {'topic_id': f.id})|raw -}}
+	{{- context_url_open('forum_topic', mpp_ary(user_id, schema), {'id': f.id})|raw -}}
 	{{- f.subject -}}
 	</a>
 	{#	&nbsp;[{{ msg.new_reply_count }}]  #}

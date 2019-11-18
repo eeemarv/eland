@@ -339,72 +339,40 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 	// forum
 
-		$forum_topics = $forum_topics_replied = [];
+		$forum = [];
 
 		if (isset($block_options['forum']))
 		{
-			// new topics
+			$all_visible_forum_topics = [];
 
-			$rows = $this->xdb_service->get_many([
-				'agg_schema' => $schema,
-				'agg_type' => 'forum',
-				'data->>\'subject\'' => ['is not null'],
-				'ts' => ['>' => $treshold_time],
-				'access' => ['users', 'interlets']], 'order by event_time desc');
+			$stmt = $this->db->executeQuery('select *
+				from ' . $schema . '.forum_topics
+				where access in (\'user\', \'guest\')
+				order by last_edit_at desc');
 
-			if (count($rows))
+			$all_visible_forum_topics = $stmt->fetchAll();
+
+			$new_replies = [];
+
+			$rows = $this->db->executeQuery('select *
+				from ' . $schema . '.forum_posts
+				where created_at > ?',
+				[$treshold_time]);
+
+			foreach($rows as $row)
 			{
-				foreach ($rows as $row)
-				{
-					$data = $row['data'];
-
-					$forum[] = [
-						'subject'	=> $data['subject'],
-						'content'	=> $data['content'],
-						'id'		=> $row['eland_id'],
-						'ts'		=> $row['ts'],
-					];
-
-					$forum_topics[$row['eland_id']] = true;
-				}
+				$new_replies[$row['topic_id']] = true;
 			}
 
-			// new replies
-
-			$rows = $this->xdb_service->get_many(['agg_schema' => $schema,
-				'agg_type' => 'forum',
-				'data->>\'parent_id\'' => ['is not null'],
-				'ts' => ['>' => $treshold_time]], 'order by event_time desc');
-
-			foreach ($rows as $row)
+			foreach($all_visible_forum_topics as $forum_topic)
 			{
-				$data = $row['data'];
-
-				if (!isset($forum_topics[$data['parent_id']]))
+				if ($forum_topic['created_at'] <= $treshold_time
+					&& !isset($new_replies[$forum_topic['id']]))
 				{
-					$forum_topics_replied[] = $schema . '_forum_' . $data['parent_id'];
+					continue;
 				}
-			}
 
-			if (count($forum_topics_replied))
-			{
-				$rows = $this->xdb_service->get_many(['agg_id_ary' => $forum_topics_replied,
-					'access' => ['users', 'interlets']]);
-
-				if (count($rows))
-				{
-					foreach ($rows as $row)
-					{
-						$data = $row['data'];
-
-						$forum[] = [
-							'subject'	=> $data['subject'],
-							'content'	=> $data['content'],
-							'id'		=> $row['eland_id'],
-							'ts'		=> $row['ts'],
-						];
-					}
-				}
+				$forum[] = $forum_topic;
 			}
 		}
 
