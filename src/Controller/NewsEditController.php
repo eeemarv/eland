@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +31,8 @@ class NewsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
-        PageParamsService $pp
+        PageParamsService $pp,
+        HtmlPurifier $html_purifier
     ):Response
     {
         $errors = [];
@@ -44,6 +46,8 @@ class NewsEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
+            $newsitem = $html_purifier->purify($newsitem);
+
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
@@ -115,7 +119,11 @@ class NewsEditController extends AbstractController
             $access = $news['access'];
         }
 
-        $assets_service->add(['datepicker']);
+        $assets_service->add([
+            'datepicker',
+            'summernote',
+            'summernote_forum_post.js',
+        ]);
 
         $heading_render->add('Nieuwsbericht aanpassen');
         $heading_render->fa('calendar-o');
@@ -133,6 +141,15 @@ class NewsEditController extends AbstractController
         $out .= 'value="';
         $out .= $headline;
         $out .= '" required maxlength="200">';
+        $out .= '</div>';
+
+        $out .= '<div class="form-group">';
+        $out .= '<label for="newsitem" class="control-label">';
+        $out .= 'Bericht</label>';
+        $out .= '<textarea name="newsitem" id="newsitem" ';
+        $out .= 'class="form-control summernote" rows="10" required>';
+        $out .= $newsitem ?? '';
+        $out .= '</textarea>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
@@ -184,15 +201,6 @@ class NewsEditController extends AbstractController
         $out .= $location ?? '';
         $out .= '" maxlength="128">';
         $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="newsitem" class="control-label">';
-        $out .= 'Bericht</label>';
-        $out .= '<textarea name="newsitem" id="newsitem" ';
-        $out .= 'class="form-control" rows="10" required>';
-        $out .= $newsitem ?? '';
-        $out .= '</textarea>';
         $out .= '</div>';
 
         $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $pp->is_user());

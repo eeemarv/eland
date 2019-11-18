@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,7 +38,8 @@ class NewsAddController extends AbstractController
         MailQueue $mail_queue,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr
+        VarRouteService $vr,
+        HtmlPurifier $html_purifier
     ):Response
     {
         $news = [];
@@ -56,6 +58,8 @@ class NewsAddController extends AbstractController
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
             }
+
+            $newsitem = $html_purifier->purify($newsitem);
 
             if ($itemdate)
             {
@@ -148,7 +152,11 @@ class NewsAddController extends AbstractController
             $itemdate = gmdate('Y-m-d');
         }
 
-        $assets_service->add(['datepicker']);
+        $assets_service->add([
+            'datepicker',
+            'summernote',
+            'summernote_forum_post.js',
+        ]);
 
         $heading_render->add('Nieuwsbericht toevoegen');
         $heading_render->fa('calendar-o');
@@ -223,7 +231,7 @@ class NewsAddController extends AbstractController
         $out .= '<label for="newsitem" class="control-label">';
         $out .= 'Bericht</label>';
         $out .= '<textarea name="newsitem" id="newsitem" ';
-        $out .= 'class="form-control" rows="10" required>';
+        $out .= 'class="form-control summernote" rows="10" required>';
         $out .= $newsitem;
         $out .= '</textarea>';
         $out .= '</div>';

@@ -43,6 +43,7 @@ class ForumController extends AbstractController
         // to do: filter after page loaded
         $q = $request->query->get('q', '');
 
+        // to do: order by last post edit desc
         $stmt = $db->executeQuery('select t.*, count(p.*) - 1 as reply_count
             from ' . $pp->schema() . '.forum_topics t
             inner join ' . $pp->schema() . '.forum_posts p on p.topic_id = t.id
@@ -82,7 +83,8 @@ class ForumController extends AbstractController
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-search"></i>';
         $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" name="q" value="' . $q . '" ';
+        $out .= '<input type="text" class="form-control" id="q" name="q" value="';
+        $out .= $q . '" ';
         $out .= 'placeholder="Zoeken">';
         $out .= '</div>';
         $out .= '</div>';

@@ -59,70 +59,17 @@ class NewsDelController extends AbstractController
         $heading_render->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
         $heading_render->fa('calendar-o');
 
-        $out = '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-body';
-        $out .= $news['approved'] ? '' : ' bg-inactive';
-        $out .= '">';
-
-        $out .= '<dl>';
-
-        $out .= '<dt>Goedgekeurd en gepubliceerd door Admin</dt>';
-        $out .= '<dd>';
-        $out .= $news['approved'] ? 'Ja' : 'Nee';
-        $out .= '</dd>';
-
-        $out .= '<dt>Agendadatum</dt>';
-
-        $out .= '<dd>';
-
-        if ($news['itemdate'])
-        {
-            $out .= $date_format_service->get($news['itemdate'], 'day', $pp->schema());
-        }
-        else
-        {
-            $out .= '<i class="fa fa-times"></i>';
-        }
-
-        $out .= '</dd>';
-
-        $out .= '<dt>Behoud na Datum?</dt>';
-        $out .= '<dd>';
-        $out .= $news['sticky'] ? 'Ja' : 'Nee';
-        $out .= '</dd>';
-
-        $out .= '<dt>Locatie</dt>';
-        $out .= '<dd>';
-
-        if ($news['location'])
-        {
-            $out .= htmlspecialchars($news['location'], ENT_QUOTES);
-        }
-        else
-        {
-            $out .= '<i class="fa fa-times"></i>';
-        }
-
-        $out .= '</dd>';
-
-        $out .= '<dt>Bericht/Details</dt>';
-        $out .= '<dd>';
-        $out .= nl2br(htmlspecialchars($news['newsitem'],ENT_QUOTES));
-        $out .= '</dd>';
-
-        $out .= '<dt>Zichtbaarheid</dt>';
-        $out .= '<dd>';
-        $out .= $item_access_service->get_label($news['access']);
-        $out .= '</dd>';
-
-        $out .= '<dt>Ingegeven door</dt>';
-        $out .= '<dd>';
-        $out .= $account_render->link($news['id_user'], $pp->ary());
-        $out .= '</dd>';
-
-        $out .= '</dl>';
-
-        $out .= '</div></div>';
+        $out = NewsExtendedController::render_news_item(
+            $news,
+            true,
+            false,
+            false,
+            $pp,
+            $link_render,
+            $account_render,
+            $date_format_service,
+            $item_access_service
+        );
 
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
