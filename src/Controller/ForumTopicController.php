@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -42,7 +43,8 @@ class ForumTopicController extends AbstractController
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
-        MenuService $menu_service
+        MenuService $menu_service,
+        HtmlPurifier $html_purifier
     ):Response
     {
         $errors = [];
@@ -75,14 +77,7 @@ class ForumTopicController extends AbstractController
                 throw new AccessDeniedHttpException('Actie niet toegelaten.');
             }
 
-            $content = trim(preg_replace('/(<br>)+$/', '', $content));
-            $content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
-            $content = trim($content);
-
-            $config_htmlpurifier = \HTMLPurifier_Config::createDefault();
-            $config_htmlpurifier->set('Cache.DefinitionImpl', null);
-            $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
-            $content = $htmlpurifier->purify($content);
+            $content = $html_purifier->purify($content);
 
             if ($token_error = $form_token_service->get_error())
             {

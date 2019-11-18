@@ -126,15 +126,17 @@ class MessagesShowController extends AbstractController
             {
                 $to_user_role = AccessCnst::FROM_ACCOUNTROLE[$user['accountrole']];
 
-                $from_contacts = $db->executeQuery('select c.value, tc.abbrev
+                $stmt = $db->executeQuery('select c.value, tc.abbrev
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
                     where c.access in (?)
                         and c.id_user = ?
                         and c.id_type_contact = tc.id',
-                        [$item_access_service->get_visible_ary_for_role($to_user_role)(), $su->id()],
+                        [$item_access_service->get_visible_ary_for_role($to_user_role), $su->id()],
                         [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
                     );
+
+                $from_contacts = $stmt->fetchAll();
 
                 $from_user = $user_cache_service->get($su->id(), $su->schema());
 

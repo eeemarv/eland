@@ -2,8 +2,8 @@
 
 namespace App\Queue;
 
+use App\HtmlProcess\HtmlToMarkdownConverter;
 use App\Queue\QueueInterface;
-use League\HTMLToMarkdown\HtmlConverter;
 use Psr\Log\LoggerInterface;
 use Twig_Environment as Twig;
 use App\Service\ConfigService;
@@ -14,12 +14,13 @@ use App\Service\SystemsService;
 
 class MailQueue implements QueueInterface
 {
-	protected $converter;
+	protected $html_converter;
 	protected $mailer;
 	protected $queue_service;
 	protected $logger;
 	protected $twig;
 	protected $config_service;
+	protected $html_to_markdown_converter;
 	protected $mail_addr_system_service;
 	protected $email_validate_service;
 	protected $systems_service;
@@ -32,6 +33,7 @@ class MailQueue implements QueueInterface
 		MailAddrSystemService $mail_addr_system_service,
 		EmailValidateService $email_validate_service,
 		SystemsService $systems_service,
+		HtmlToMarkdownConverter $html_to_markdown_converter,
 		string $env_smtp_host,
 		string $env_smtp_port,
 		string $env_smtp_username,
@@ -42,6 +44,7 @@ class MailQueue implements QueueInterface
 		$this->logger = $logger;
 		$this->twig = $twig;
 		$this->config_service = $config_service;
+		$this->html_to_markdown_converter = $html_to_markdown_converter;
 		$this->mail_addr_system_service = $mail_addr_system_service;
 		$this->email_validate_service = $email_validate_service;
 		$this->systems_service = $systems_service;
@@ -52,11 +55,6 @@ class MailQueue implements QueueInterface
 		$this->mailer = new \Swift_Mailer($transport);
 		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
 		$this->mailer->getTransport()->stop();
-
-		$this->converter = new HtmlConverter();
-		$converter_config = $this->converter->getConfig();
-		$converter_config->setOption('strip_tags', true);
-		$converter_config->setOption('remove_nodes', 'img');
 	}
 
 	public function process(array $data):void
@@ -85,7 +83,7 @@ class MailQueue implements QueueInterface
 			{
 				$pre_html_template = $this->twig->createTemplate($data['pre_html_template']);
 				$data['vars']['html'] = $pre_html_template->render($data['vars']);
-				$data['vars']['text'] = $this->converter->convert($data['vars']['html']);
+				$data['vars']['text'] = $this->html_to_markdown_converter->convert($data['vars']['html']);
 			}
 			catch (\Exception $e)
 			{

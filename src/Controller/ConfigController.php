@@ -5,8 +5,8 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
+use App\HtmlProcess\HtmlPurifier;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
@@ -24,7 +24,6 @@ class ConfigController extends AbstractController
     public function __invoke(
         Request $request,
         string $tab,
-        Db $db,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
@@ -36,6 +35,7 @@ class ConfigController extends AbstractController
         IntersystemsService $intersystems_service,
         SelectRender $select_render,
         PageParamsService $pp,
+        HtmlPurifier $html_purifier,
         string $env_s3_url
     ):Response
     {
@@ -140,10 +140,7 @@ class ConfigController extends AbstractController
                 if ($validator['type'] === 'text'
                     || $validator['type'] === 'textarea')
                 {
-                    $config_htmlpurifier = \HTMLPurifier_Config::createDefault();
-                    $config_htmlpurifier->set('Cache.DefinitionImpl', null);
-                    $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
-                    $posted_value = $htmlpurifier->purify($posted_value);
+                    $posted_value = $html_purifier->purify($posted_value);
                 }
 
                 $posted_value = strip_tags($posted_value) !== '' ? $posted_value : '';

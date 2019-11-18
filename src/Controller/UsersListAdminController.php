@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +29,6 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -59,13 +59,13 @@ class UsersListAdminController extends AbstractController
         SelectRender $select_render,
         ThumbprintAccountsService $thumbprint_accounts_service,
         TypeaheadService $typeahead_service,
-        XdbService  $xdb_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
         UsersListController $users_list_controller,
-        MenuService $menu_service
+        MenuService $menu_service,
+        HtmlPurifier $html_purifier
     ):Response
     {
         return $users_list_controller(
@@ -92,12 +92,12 @@ class UsersListAdminController extends AbstractController
             $select_render,
             $thumbprint_accounts_service,
             $typeahead_service,
-            $xdb_service,
             $user_cache_service,
             $pp,
             $su,
             $vr,
-            $menu_service
+            $menu_service,
+            $html_purifier
         );
     }
 }

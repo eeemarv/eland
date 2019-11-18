@@ -9,6 +9,7 @@ use App\Render\LinkRender;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
+use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -31,7 +32,6 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
@@ -63,12 +63,12 @@ class UsersListController extends AbstractController
         SelectRender $select_render,
         ThumbprintAccountsService $thumbprint_accounts_service,
         TypeaheadService $typeahead_service,
-        XdbService  $xdb_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        MenuService $menu_service
+        MenuService $menu_service,
+        HtmlPurifier $html_purifier
     ):Response
     {
         $errors = [];
@@ -313,10 +313,7 @@ class UsersListController extends AbstractController
 
                 $alert_users_sent_ary = $mail_users_sent_ary = [];
 
-                $config_htmlpurifier = \HTMLPurifier_Config::createDefault();
-                $config_htmlpurifier->set('Cache.DefinitionImpl', null);
-                $htmlpurifier = new \HTMLPurifier($config_htmlpurifier);
-                $bulk_mail_content = $htmlpurifier->purify($bulk_mail_content);
+                $bulk_mail_content = $html_purifier->purify($bulk_mail_content);
 
                 $sel_users = $db->executeQuery('select u.*, c.value as mail
                     from ' . $pp->schema() . '.users u, ' .
@@ -354,7 +351,7 @@ class UsersListController extends AbstractController
                         'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
                         'vars'				=> $vars,
                         'template'			=> 'skeleton',
-                    ], random_int(1000, 4000));
+                    ], random_int(200, 2000));
 
                     $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
                     $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $pp->ary());
