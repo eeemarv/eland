@@ -9,14 +9,14 @@ $(document).ready(function(){
 		$self.summernote({
 			minHeight: 200,
 			lang: 'nl-NL',
-
-			 toolbar: [
+			toolbar: [
 				['style', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['insert', ['hr', 'link']],
 				['misc', ['fullscreen']]
 			],
+			fontSizes: ['10', '11', '12', '14', '18', '24'],
 		});
 
 		$('form').submit(function(){
