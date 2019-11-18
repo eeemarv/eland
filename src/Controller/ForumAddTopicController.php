@@ -44,7 +44,7 @@ class ForumAddTopicController extends AbstractController
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
-        $subject = $request->request->get('content', '');
+        $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $access = $request->request->get('access', '');
 

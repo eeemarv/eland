@@ -34,7 +34,7 @@
 {{ 'periodic_overview.forum.title'|trans|underline }}
 
 {% for f in forum %}
-* {{ f.subject }} {{ context_url('forum_topic', mpp_ary(user_id, schema), {'topic_id': f.id}) }}
+* {{ f.subject }} {{ context_url('forum_topic', mpp_ary(user_id, schema), {'id': f.id}) }}
 {% else %}
 {{ 'periodic_overview.forum.none'|trans({
 	'%link_open%' : '',
