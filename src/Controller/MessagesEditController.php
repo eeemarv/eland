@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Controller\MessagesShowController;
 use App\Cnst\MessageTypeCnst;
-use App\Cnst\AccessCnst;
+use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
@@ -52,6 +52,7 @@ class MessagesEditController extends AbstractController
         SessionUserService $su,
         VarRouteService $vr,
         UserCacheService $user_cache_service,
+        HtmlPurifier $html_purifier,
         S3Service $s3_service,
         string $env_s3_url
     ):Response
@@ -77,6 +78,7 @@ class MessagesEditController extends AbstractController
             $su,
             $vr,
             $user_cache_service,
+            $html_purifier,
             $s3_service,
             $env_s3_url
         );
@@ -108,6 +110,7 @@ class MessagesEditController extends AbstractController
         SessionUserService $su,
         VarRouteService $vr,
         UserCacheService $user_cache_service,
+        HtmlPurifier $html_purifier,
         S3Service $s3_service,
         string $env_s3_url
     ):string
@@ -157,6 +160,8 @@ class MessagesEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
+            $description = $html_purifier->purify($description);
+
             if ($error_form = $form_token_service->get_error())
             {
                 $errors[] = $error_form;
@@ -457,6 +462,8 @@ class MessagesEditController extends AbstractController
         $assets_service->add([
             'fileupload',
             'sortable',
+            'summernote',
+            'summernote_forum_post.js',
             'messages_edit_images_upload.js',
         ]);
 
@@ -522,7 +529,8 @@ class MessagesEditController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="description" class="control-label">';
         $out .= 'Omschrijving</label>';
-        $out .= '<textarea name="description" class="form-control" id="description" rows="4" maxlength="2000">';
+        $out .= '<textarea name="description" ';
+        $out .= 'class="form-control summernote" id="description" rows="4" maxlength="2000">';
         $out .= self::format($description);
         $out .= '</textarea>';
         $out .= '</div>';

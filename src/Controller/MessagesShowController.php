@@ -355,7 +355,7 @@ class MessagesShowController extends AbstractController
 
         if ($message['Description'])
         {
-            $out .= htmlspecialchars($message['Description'], ENT_QUOTES);
+            $out .= nl2br($message['Description']);
         }
         else
         {

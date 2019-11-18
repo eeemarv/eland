@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,6 +46,7 @@ class MessagesAddController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
+        HtmlPurifier $html_purifier,
         S3Service $s3_service,
         string $env_s3_url
     ):Response
@@ -70,6 +72,7 @@ class MessagesAddController extends AbstractController
             $su,
             $vr,
             $user_cache_service,
+            $html_purifier,
             $s3_service,
             $env_s3_url
         );
