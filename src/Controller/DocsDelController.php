@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
+use Doctrine\DBAL\Connection as Db;
 
 class DocsDelController extends AbstractController
 {

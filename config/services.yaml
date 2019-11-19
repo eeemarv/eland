@@ -10,7 +10,6 @@ parameters:
     assert.role_short.user: '[ua]'
     assert.role_short.admin: 'a'
     assert.id: \d++
-    assert.doc_id: '[0-9a-f]{24}'
     assert.view: 'extended|list|map|tiles'
     assert.config_tab: 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|messages|users|news|forum|system'
     assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'

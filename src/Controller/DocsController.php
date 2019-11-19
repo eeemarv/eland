@@ -15,11 +15,13 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 
 class DocsController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        Db $db,
         XdbService $xdb_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
@@ -35,67 +37,36 @@ class DocsController extends AbstractController
     {
         $q = $request->query->get('q', '');
 
-        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-            'agg_type' => 'doc',
-            'data->>\'map_name\'' => ['<>' => '']], 'order by event_time asc');
+        $maps = $docs = [];
 
-        $maps = [];
+        $stmt = $db->executeQuery('select id, name
+            from ' . $pp->schema() . '.doc_maps
+            order by name asc');
 
-        if (count($rows))
+        while ($row = $stmt->fetch())
         {
-            foreach ($rows as $row)
-            {
-                $data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
-
-                if ($row['agg_version'] > 1)
-                {
-                    $data['edit_count'] = $row['agg_version'] - 1;
-                }
-
-                $maps[$row['eland_id']] = $data;
-            }
+            $maps[$row['id']] = [
+                'name'          => $row['name'],
+                'doc_count'     => 0,
+            ];
         }
 
-        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-            'agg_type' => 'doc',
-            'data->>\'map_name\'' => ['is null'],
-            'access' => $item_access_service->get_visible_ary_xdb()],
-            'order by event_time asc');
+        $stmt = $db->executeQuery('select *
+            from ' . $pp->schema() . '.docs
+            where access in (?)
+            order by name, original_filename asc',
+            [$item_access_service->get_visible_ary_for_page()],
+            [Db::PARAM_STR_ARRAY]);
 
-        $docs = [];
-
-        if (count($rows))
+        while ($row = $stmt->fetch())
         {
-            foreach ($rows as $row)
+            if (isset($row['map_id']))
             {
-                $data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
-
-                if ($row['agg_version'] > 1)
-                {
-                    $data['edit_count'] = $row['agg_version'] - 1;
-                }
-
-                $docs[] = $data;
+                $maps[$row['map_id']]['doc_count']++;
+                continue;
             }
-        }
 
-        foreach ($docs as $k => $d)
-        {
-            if (isset($d['map_id']))
-            {
-                if (!isset($maps[$d['map_id']]))
-                {
-                    continue;
-                }
-
-                if (!isset($maps[$d['map_id']]['count']))
-                {
-                    $maps[$d['map_id']]['count'] = 0;
-                }
-
-                $maps[$d['map_id']]['count']++;
-                unset($docs[$k]);
-            }
+            $docs[] = $row;
         }
 
         if ($pp->is_admin())
@@ -133,59 +104,67 @@ class DocsController extends AbstractController
 
         if (count($maps))
         {
-            $out .= '<div class="panel panel-default printview">';
+            $maps_table = '<div class="panel panel-default printview">';
 
-            $out .= '<div class="table-responsive">';
-            $out .= '<table class="table table-bordered table-striped table-hover footable"';
-            $out .= ' data-filter="#q" data-filter-minimum="1">';
-            $out .= '<thead>';
+            $maps_table .= '<div class="table-responsive">';
+            $maps_table .= '<table class="table table-bordered table-striped table-hover footable"';
+            $maps_table .= ' data-filter="#q" data-filter-minimum="1">';
+            $maps_table .= '<thead>';
 
-            $out .= '<tr>';
-            $out .= '<th data-sort-initial="true">Map</th>';
-            $out .= $pp->is_admin() ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
-            $out .= '</tr>';
+            $maps_table .= '<tr>';
+            $maps_table .= '<th data-sort-initial="true">Map</th>';
+            $maps_table .= $pp->is_admin() ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
+            $maps_table .= '</tr>';
 
-            $out .= '</thead>';
-            $out .= '<tbody>';
+            $maps_table .= '</thead>';
+            $maps_table .= '<tbody>';
 
-            foreach($maps as $d)
+            $maps_table_rows = '';
+
+            foreach($maps as $map_id => $map)
             {
-                $did = $d['id'];
-
-                if (isset($d['count']) && $d['count'])
+                if (!$map['doc_count'])
                 {
-                    $td = [];
-
-                    $td[] = $link_render->link_no_attr('docs_map', $pp->ary(),
-                        ['map_id' => $did], $d['map_name'] . ' (' . $d['count'] . ')');
-
-                    if ($pp->is_admin())
-                    {
-                        $td[] = $link_render->link_fa('docs_map_edit', $pp->ary(),
-                            ['map_id' => $did], 'Aanpassen',
-                            ['class' => 'btn btn-primary'], 'pencil');
-                    }
-
-                    $out .= '<tr class="info"><td>';
-                    $out .= implode('</td><td>', $td);
-                    $out .= '</td></tr>';
+                    continue;
                 }
+
+                $td = [];
+
+                $td[] = $link_render->link_no_attr('docs_map', $pp->ary(),
+                    ['id' => $map_id], $map['name'] . ' (' . $map['doc_count'] . ')');
+
+                if ($pp->is_admin())
+                {
+                    $td[] = $link_render->link_fa('docs_map_edit', $pp->ary(),
+                        ['id' => $map_id], 'Aanpassen',
+                        ['class' => 'btn btn-primary'], 'pencil');
+                }
+
+                $maps_table_rows .= '<tr class="info"><td>';
+                $maps_table_rows .= implode('</td><td>', $td);
+                $maps_table_rows .= '</td></tr>';
             }
 
-            $out .= '</tbody>';
-            $out .= '</table>';
+            if ($maps_table_rows !== '')
+            {
+                $out .= $maps_table;
+                $out .= $maps_table_rows;
 
-            $out .= '</div>';
-            $out .= '</div>';
+                $out .= '</tbody>';
+                $out .= '</table>';
+
+                $out .= '</div>';
+                $out .= '</div>';
+            }
         }
 
         if (count($docs))
         {
-            $show_visibility = ($pp->is_user()
+            $show_access = ($pp->is_user()
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
 
-            $out .= '<div class="panel panel-default printview">';
+            $out  .= '<div class="panel panel-default printview">';
 
             $out .= '<div class="table-responsive">';
             $out .= '<table class="table table-bordered ';
@@ -199,7 +178,7 @@ class DocsController extends AbstractController
             $out .= '<th data-hide="phone, tablet">';
             $out .= 'Tijdstip</th>';
 
-            if ($show_visibility)
+            if ($show_access)
             {
                 $out .= '<th data-hide="phone, tablet">';
                 $out .= 'Zichtbaarheid</th>';
@@ -211,34 +190,32 @@ class DocsController extends AbstractController
             $out .= '</thead>';
             $out .= '<tbody>';
 
-            foreach($docs as $d)
+            foreach($docs as $doc)
             {
-                $did = $d['id'];
-
                 $td = [];
 
                 $td_c = '<a href="';
-                $td_c .= $env_s3_url . $d['filename'];
+                $td_c .= $env_s3_url . $doc['filename'];
                 $td_c .= '" target="_self">';
-                $td_c .= (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
+                $td_c .= htmlspecialchars($doc['name'] ?? $doc['original_filename'], ENT_QUOTES);
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $date_format_service->get($d['ts'], 'min', $pp->schema());
+                $td[] = $date_format_service->get($doc['created_at'], 'min', $pp->schema());
 
-                if ($show_visibility)
+                if ($show_access)
                 {
-                    $td[] = $item_access_service->get_label_xdb($d['access']);
+                    $td[] = $item_access_service->get_label($doc['access']);
                 }
 
                 if ($pp->is_admin())
                 {
                     $td_c = $link_render->link_fa('docs_edit', $pp->ary(),
-                        ['doc_id' => $did], 'Aanpassen',
+                        ['id' => $doc['id']], 'Aanpassen',
                         ['class' => 'btn btn-primary'], 'pencil');
                     $td_c .= '&nbsp;';
                     $td_c .= $link_render->link_fa('docs_del', $pp->ary(),
-                        ['doc_id' => $did], 'Verwijderen',
+                        ['id' => $doc['id']], 'Verwijderen',
                         ['class' => 'btn btn-danger'], 'times');
                     $td[] = $td_c;
                 }

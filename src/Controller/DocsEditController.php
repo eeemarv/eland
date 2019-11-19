@@ -14,6 +14,7 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 
 class DocsEditController extends AbstractController
 {

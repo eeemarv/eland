@@ -17,7 +17,7 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\XdbService;
-
+use Doctrine\DBAL\Connection as Db;
 
 class DocsMapController extends AbstractController
 {

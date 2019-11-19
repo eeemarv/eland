@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
@@ -16,7 +15,6 @@ use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as Db;
 
@@ -26,7 +24,6 @@ class DocsAddController extends AbstractController
         Request $request,
         Db $db,
         LoggerInterface $logger,
-        XdbService $xdb_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,

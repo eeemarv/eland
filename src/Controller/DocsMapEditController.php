@@ -13,6 +13,7 @@ use App\Render\LinkRender;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 
 class DocsMapEditController extends AbstractController
 {
