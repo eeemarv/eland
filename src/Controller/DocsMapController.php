@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -16,7 +15,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -26,7 +24,6 @@ class DocsMapController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        AlertService $alert_service,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,

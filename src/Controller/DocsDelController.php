@@ -16,13 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsDelController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $doc_id,
-        XdbService $xdb_service,
+        int $id,
+        Db $db,
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -37,17 +38,10 @@ class DocsDelController extends AbstractController
     {
         $errors = [];
 
-        $row = $xdb_service->get('doc', $doc_id, $pp->schema());
+        $doc = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.docs
+            where id = ?', [$id]);
 
-        if ($row)
-        {
-            $doc = $row['data'];
-        }
-        else
-        {
-            $alert_service->error('Document niet gevonden');
-            $link_render->redirect('docs', $pp->ary(), []);
-        }
 
         if ($request->isMethod('POST'))
         {
@@ -68,13 +62,13 @@ class DocsDelController extends AbstractController
 
                 if (isset($doc['map_id']))
                 {
-                    $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-                        'agg_type'	=> 'doc',
-                        'data->>\'map_id\'' => $doc['map_id']]);
+                    $doc_count = $db->fetchColumn('select count(*)
+                        from ' . $pp->schema() . '.docs
+                        where map_id = ?', [$doc['map_id']]);
 
-                    if (count($rows) < 2)
+                    if ($doc_count < 2)
                     {
-                        $xdb_service->del('doc', $doc['map_id'], $pp->schema());
+                        $db->delete($pp->schema() . '.doc_maps', ['id' => $doc['map_id']]);
 
                         $typeahead_service->delete_thumbprint('doc_map_names',
                             $pp->ary(), []);
@@ -83,14 +77,14 @@ class DocsDelController extends AbstractController
                     }
                 }
 
-                $xdb_service->del('doc', $doc_id, $pp->schema());
+                $db->delete($pp->schema() . '.docs', ['id' => $id]);
 
                 $alert_service->success('Het document werd verwijderd.');
 
                 if (isset($doc['map_id']))
                 {
                     $link_render->redirect('docs_map', $pp->ary(),
-                        ['map_id' => $doc['map_id']]);
+                        ['id' => $doc['map_id']]);
                 }
 
                 $link_render->redirect('docs', $pp->ary(), []);
@@ -109,14 +103,14 @@ class DocsDelController extends AbstractController
         $out .= '<a href="';
         $out .= $env_s3_url . $doc['filename'];
         $out .= '" target="_self">';
-        $out .= $doc['name'] ?? $doc['org_filename'];
+        $out .= htmlspecialchars($doc['name'] ?? $doc['original_filename'], ENT_QUOTES);
         $out .= '</a>';
         $out .= '</p>';
 
         if (isset($doc['map_id']))
         {
             $out .= $link_render->btn_cancel('docs_map', $pp->ary(),
-                ['map_id' => $doc['map_id']]);
+                ['id' => $doc['map_id']]);
         }
         else
         {
