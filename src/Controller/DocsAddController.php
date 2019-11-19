@@ -18,11 +18,13 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
+use Doctrine\DBAL\Connection as Db;
 
 class DocsAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        Db $db,
         LoggerInterface $logger,
         XdbService $xdb_service,
         AlertService $alert_service,
@@ -40,10 +42,17 @@ class DocsAddController extends AbstractController
         $errors = [];
 
         $map_id = $request->query->get('map_id', '');
+        $name = trim($request->request->get('name', ''));
+        $map_name = trim($request->request->get('map_name', ''));
+        $access = $request->request->get('access', '');
+        $f_file = $request->files->get('file');
 
         if ($request->isMethod('POST'))
         {
-            $f_file = $request->files->get('file');
+            if ($token_error = $form_token_service->get_error())
+            {
+                $errors[] = $token_error;
+            }
 
             if (!$f_file)
             {
@@ -62,105 +71,82 @@ class DocsAddController extends AbstractController
                 }
             }
 
-            $access = $request->request->get('access', '');
-
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in';
             }
 
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-            else
+            if (!count($errors))
             {
                 $doc_id = substr(sha1(random_bytes(16)), 0, 24);
-
                 $filename = $pp->schema() . '_d_' . $doc_id . '.' . $ext;
-
                 $error = $s3_service->doc_upload($filename, $tmpfile);
 
                 if ($error)
                 {
-                    $logger->error('doc upload fail: ' . $error);
-                    $alert_service->error('Bestand opladen mislukt.',
+                    $errors[] = 'Opladen document mislukt.';
+                    $logger->error('doc upload fail: ' . $error,
                         ['schema' => $pp->schema()]);
                 }
-                else
-                {
-                    $doc = [
-                        'filename'		=> $filename,
-                        'org_filename'	=> $original_filename,
-                        'access'		=> AccessCnst::TO_XDB[$access],
-                        'user_id'		=> $su->id(),
-                    ];
-
-                    $map_name = trim($request->request->get('map_name', ''));
-
-                    if (strlen($map_name))
-                    {
-                        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-                            'agg_type' => 'doc',
-                            'data->>\'map_name\'' => $map_name], 'limit 1');
-
-                        if (count($rows))
-                        {
-                            $map = reset($rows)['data'];
-                            $map_id = reset($rows)['eland_id'];
-                        }
-
-                        if (!isset($map) || !$map)
-                        {
-                            $map_id = substr(sha1(random_bytes(16)), 0, 24);
-
-                            $map = ['map_name' => $map_name];
-
-                            $xdb_service->set('doc', $map_id, $map, $pp->schema());
-
-                            $typeahead_service->delete_thumbprint('doc_map_names',
-                                $pp->ary(), []);
-                        }
-
-                        $doc['map_id'] = $map_id;
-                    }
-
-                    $name = trim($request->request->get('name', ''));
-
-                    if ($name)
-                    {
-                        $doc['name'] = $name;
-                    }
-
-                    $xdb_service->set('doc', $doc_id, $doc, $pp->schema());
-
-
-                    $alert_service->success('Het bestand is opgeladen.');
-
-                    if (isset($doc['map_id']))
-                    {
-                        $link_render->redirect('docs_map', $pp->ary(),
-                            ['map_id' => $doc['map_id']]);
-                    }
-
-                    $link_render->redirect('docs', $pp->ary(), []);
-                }
             }
+
+            if (!count($errors))
+            {
+                $doc = [
+                    'filename'		=> $filename,
+                    'org_filename'	=> $original_filename,
+                    'access'		=> $access,
+                    'user_id'		=> $su->id(),
+                ];
+
+                if ($name)
+                {
+                    $doc['name'] = $name;
+                }
+
+                if (strlen($map_name))
+                {
+                    $map_id = $db->fetchColumn('select id
+                        from ' . $pp->schema() . 'doc_maps
+                        where lower(name) = ?', [$map_name]);
+
+                    if (!isset($map_id))
+                    {
+                        $db->insert($pp->schema . '.doc_maps', [
+                            'name'      => $map_name,
+                            'user_id'   => $su->id(),
+                        ]);
+
+                        $map_id = (int) $db->lastInsertId($pp->schema() . '.doc_maps_id_seq');
+
+                        $typeahead_service->delete_thumbprint('doc_map_names',
+                            $pp->ary(), []);
+                    }
+
+                    $doc['map_id'] = $map_id;
+                }
+
+                $db->insert($pp->schema() . '.docs', $doc);
+
+                $alert_service->success('Het bestand is opgeladen.');
+
+                if (isset($doc['map_id']))
+                {
+                    $link_render->redirect('docs_map', $pp->ary(),
+                        ['map_id' => $doc['map_id']]);
+                }
+
+                $link_render->redirect('docs', $pp->ary(), []);
+            }
+
+            $alert_service->error($errors);
         }
 
         if ($map_id)
         {
-            $row = $xdb_service->get('doc', $map_id, $pp->schema());
-
-            if ($row)
-            {
-                $map_name = $row['data']['map_name'];
-            }
+            $map_name = $db->fetchColumn('select name
+                from ' . $pp->schema() . 'doc_maps
+                where id = ?', [$map_id]) ?? '';
         }
 
         $heading_render->add('Nieuw document opladen');

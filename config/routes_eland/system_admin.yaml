@@ -195,12 +195,12 @@ news_approve:
 
 docs_edit:
   controller: App\Controller\DocsEditController
-  path: /docs/{doc_id<%assert.doc_id%>}/edit
+  path: /docs/{id<%assert.id%>}/edit
   methods: GET|POST
 
 docs_del:
   controller: App\Controller\DocsDelController
-  path: /docs/{doc_id<%assert.doc_id%>}/del
+  path: /docs/{id<%assert.id%>}/del
   methods: GET|POST
 
 docs_add:
@@ -210,7 +210,7 @@ docs_add:
 
 docs_map_edit:
   controller: App\Controller\DocsMapEditController
-  path: /docs/map/{map_id<%assert.doc_id%>}/edit
+  path: /docs/map/{id<%assert.id%>}/edit
   methods: GET|POST
 
 typeahead_doc_map_names:

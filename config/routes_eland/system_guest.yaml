@@ -65,7 +65,7 @@ news_list:
 
 docs_map:
   controller: App\Controller\DocsMapController
-  path: /news/{map_id<%assert.doc_id%>}
+  path: /docs/{id<%assert.id%>}
   methods: GET
 
 docs:
