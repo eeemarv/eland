@@ -105,7 +105,7 @@ class DocsAddController extends AbstractController
                 {
                     $map_id = $db->fetchColumn('select id
                         from ' . $pp->schema() . '.doc_maps
-                        where lower(name) = ?', [$map_name]);
+                        where lower(name) = ?', [strtolower($map_name)]);
 
                     if (!$map_id)
                     {

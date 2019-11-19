@@ -12,15 +12,15 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsMapEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $map_id,
-        XdbService $xdb_service,
+        int $id,
+        Db $db,
         AlertService $alert_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
@@ -32,17 +32,15 @@ class DocsMapEditController extends AbstractController
     {
         $errors = [];
 
-        $row = $xdb_service->get('doc', $map_id, $pp->schema());
+        $name = trim($request->request->get('name', ''));
 
-        if ($row)
-        {
-            $map_name = $row['data']['map_name'];
-        }
+        $map = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.doc_maps
+            where id = ?', [$id]);
 
-        if (!$map_name)
+        if (!$map)
         {
-            $alert_service->error('Map niet gevonden.');
-            $link_render->redirect('docs', $pp->ary(), []);
+            throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
         }
 
         if ($request->isMethod('POST'))
@@ -52,32 +50,33 @@ class DocsMapEditController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            $posted_map_name = trim($request->request->get('map_name', ''));
-
-            if (!strlen($posted_map_name))
+            if (!strlen($name))
             {
                 $errors[] = 'Geen map naam ingevuld!';
             }
 
             if (!count($errors))
             {
+                $test_name = $db->fetchColumn('select id
+                    from ' . $pp->schema() . '.doc_maps
+                    where id <> ?
+                        and lower(name) = ?',
+                    [$id, strtolower($name)]);
 
-                $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-                    'agg_type' => 'doc',
-                    'eland_id' => ['<>' => $map_id],
-                    'data->>\'map_name\'' => $posted_map_name]);
-
-                if (count($rows))
+                if ($test_name)
                 {
-                    $errors[] = 'Er bestaat al een map met deze naam!';
+                    $errors[] = 'Er bestaat al een map met deze naam.';
                 }
             }
 
             if (!count($errors))
             {
-                $xdb_service->set('doc', $map_id, [
-                        'map_name' => $posted_map_name
-                    ], $pp->schema());
+                $db->update($pp->schema() . '.doc_maps', [
+                    'name' => $name,
+                    'last_edit_at' => gmdate('Y-m-d H:i:s'),
+                ], [
+                    'id' => $id,
+                ]);
 
                 $alert_service->success('Map naam aangepast.');
 
@@ -85,15 +84,17 @@ class DocsMapEditController extends AbstractController
                     $pp->ary(), []);
 
                 $link_render->redirect('docs_map', $pp->ary(),
-                    ['map_id' => $map_id]);
+                    ['id' => $id]);
             }
 
             $alert_service->error($errors);
         }
 
+        $name = $map['name'];
+
         $heading_render->add('Map aanpassen: ');
         $heading_render->add_raw($link_render->link_no_attr('docs_map', $pp->ary(),
-            ['map_id' => $map_id], $map_name));
+            ['id' => $id], $name));
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -101,27 +102,42 @@ class DocsMapEditController extends AbstractController
         $out .= '<form method="post">';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="map_name" class="control-label">';
+        $out .= '<label for="name" class="control-label">';
         $out .= 'Map naam</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<span class="fa fa-folder-o"></span></span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="map_name" name="map_name" ';
+        $out .= 'id="name" name="name" ';
         $out .= 'data-typeahead="';
 
         $out .= $typeahead_service->ini($pp->ary())
             ->add('doc_map_names', [])
-            ->str();
+            ->str([
+                'render'    => [
+                    'check' => 10,
+                    'omit'  => $name,
+                ],
+            ]);
 
         $out .= '" ';
         $out .= 'value="';
-        $out .= $map_name;
+        $out .= $name;
         $out .= '">';
         $out .= '</div>';
+
+        $out .= '<span class="help-block hidden exists_query_results">';
+        $out .= 'Bestaat reeds: ';
+        $out .= '<span class="query_results">';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<span class="help-block hidden exists_msg">';
+        $out .= 'Deze map bestaat al!';
+        $out .= '</span>';
+
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('docs_map', $pp->ary(), ['map_id' => $map_id]);
+        $out .= $link_render->btn_cancel('docs_map', $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';

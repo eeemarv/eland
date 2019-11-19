@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
@@ -73,8 +72,8 @@ class DocsMapController extends AbstractController
             $btn_nav_render->csv();
         }
 
-        $heading_render->add_raw($link_render->link_no_attr('docs', $pp->ary(), [], 'Documenten'));
-        $heading_render->add(': map "' . $name . '"');
+        $heading_render->add('Documenten map "');
+        $heading_render->add($name . '"');
         $heading_render->fa('files-o');
 
         $out = '<div class="panel panel-info">';
