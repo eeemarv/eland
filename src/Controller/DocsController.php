@@ -22,7 +22,6 @@ class DocsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        XdbService $xdb_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,

@@ -18,20 +18,13 @@ class TypeaheadDocMapNamesController extends AbstractController
     {
         $map_names = [];
 
-        $st = $db->prepare('select distinct data->>\'map_name\' as map_name
-            from xdb.aggs
-            where agg_type = \'doc\'
-                and agg_schema = ?
-                and data->>\'map_name\' <> \'\'
-            order by data->>\'map_name\' asc');
+        $st = $db->executeQuery('select name
+            from ' . $pp->schema() . '.doc_maps
+            order by name asc');
 
-        $st->bindValue(1, $pp->schema());
-
-        $st->execute();
-
-        while ($row = $st->fetch())
+        while ($name = $st->fetchColumn())
         {
-            $map_names[] = $row['map_name'];
+            $map_names[] = $name;
         }
 
         $crc = (string) crc32(json_encode($map_names));

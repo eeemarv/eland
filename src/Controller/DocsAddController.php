@@ -90,10 +90,10 @@ class DocsAddController extends AbstractController
             if (!count($errors))
             {
                 $doc = [
-                    'filename'		=> $filename,
-                    'org_filename'	=> $original_filename,
-                    'access'		=> $access,
-                    'user_id'		=> $su->id(),
+                    'filename'		    => $filename,
+                    'original_filename' => $original_filename,
+                    'access'		    => $access,
+                    'user_id'		    => $su->id(),
                 ];
 
                 if ($name)
@@ -104,12 +104,12 @@ class DocsAddController extends AbstractController
                 if (strlen($map_name))
                 {
                     $map_id = $db->fetchColumn('select id
-                        from ' . $pp->schema() . 'doc_maps
+                        from ' . $pp->schema() . '.doc_maps
                         where lower(name) = ?', [$map_name]);
 
-                    if (!isset($map_id))
+                    if (!isset($map_id) || !$map_id)
                     {
-                        $db->insert($pp->schema . '.doc_maps', [
+                        $db->insert($pp->schema() . '.doc_maps', [
                             'name'      => $map_name,
                             'user_id'   => $su->id(),
                         ]);
@@ -130,7 +130,7 @@ class DocsAddController extends AbstractController
                 if (isset($doc['map_id']))
                 {
                     $link_render->redirect('docs_map', $pp->ary(),
-                        ['map_id' => $doc['map_id']]);
+                        ['id' => $doc['map_id']]);
                 }
 
                 $link_render->redirect('docs', $pp->ary(), []);
@@ -142,7 +142,7 @@ class DocsAddController extends AbstractController
         if ($map_id)
         {
             $map_name = $db->fetchColumn('select name
-                from ' . $pp->schema() . 'doc_maps
+                from ' . $pp->schema() . '.doc_maps
                 where id = ?', [$map_id]) ?? '';
         }
 
@@ -204,7 +204,7 @@ class DocsAddController extends AbstractController
         if ($map_id)
         {
             $out .= $link_render->btn_cancel('docs_map', $pp->ary(),
-                ['map_id' => $map_id]);
+                ['id' => $map_id]);
         }
         else
         {

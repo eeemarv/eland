@@ -18,13 +18,14 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsMapController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $map_id,
-        XdbService $xdb_service,
+        int $id,
+        Db $db,
         AlertService $alert_service,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
@@ -40,6 +41,31 @@ class DocsMapController extends AbstractController
     {
         $q = $request->query->get('q', '');
 
+        $docs = [];
+
+        $name = $db->fetchColumn('select name
+            from ' . $pp->schema() . '.doc_maps
+            where id = ?', [$id]);
+
+        if (!isset($name))
+        {
+            throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
+        }
+
+        $stmt = $db->executeQuery('select *
+            from ' . $pp->schema() . '.docs
+            where access in (?)
+                and map_id = ?
+            order by name, original_filename asc',
+            [$item_access_service->get_visible_ary_for_page(), $id],
+            [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+
+        while ($row = $stmt->fetch())
+        {
+            $docs[] = $row;
+        }
+
+/*
         $row = $xdb_service->get('doc', $map_id, $pp->schema());
 
         if ($row)
@@ -75,20 +101,21 @@ class DocsMapController extends AbstractController
                 $docs[] = $data;
             }
         }
+    */
 
         if ($pp->is_admin())
         {
             $btn_top_render->add('docs_add', $pp->ary(),
-                ['map_id' => $map_id], 'Document opladen');
+                ['map_id' => $id], 'Document opladen');
 
             $btn_top_render->edit('docs_map_edit', $pp->ary(),
-                ['map_id' => $map_id], 'Map aanpassen');
+                ['id' => $id], 'Map aanpassen');
 
             $btn_nav_render->csv();
         }
 
         $heading_render->add_raw($link_render->link_no_attr('docs', $pp->ary(), [], 'Documenten'));
-        $heading_render->add(': map "' . $map_name . '"');
+        $heading_render->add(': map "' . $name . '"');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -114,7 +141,7 @@ class DocsMapController extends AbstractController
 
         if (count($docs))
         {
-            $show_visibility = ($pp->is_user()
+            $show_access = ($pp->is_user()
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
 
@@ -132,7 +159,7 @@ class DocsMapController extends AbstractController
             $out .= '<th data-hide="phone, tablet">';
             $out .= 'Tijdstip</th>';
 
-            if ($show_visibility)
+            if ($show_access)
             {
                 $out .= '<th data-hide="phone, tablet">';
                 $out .= 'Zichtbaarheid</th>';
@@ -144,34 +171,32 @@ class DocsMapController extends AbstractController
             $out .= '</thead>';
             $out .= '<tbody>';
 
-            foreach($docs as $d)
+            foreach($docs as $doc)
             {
-                $did = $d['id'];
-
                 $td = [];
 
                 $td_c = '<a href="';
-                $td_c .= $env_s3_url . $d['filename'];
+                $td_c .= $env_s3_url . $doc['filename'];
                 $td_c .= '" target="_self">';
-                $td_c .= (isset($d['name']) && $d['name'] != '') ? $d['name'] : $d['org_filename'];
+                $td_c .= htmlspecialchars($doc['name'] ?? $doc['original_filename'], ENT_QUOTES);
                 $td_c .= '</a>';
                 $td[] = $td_c;
 
-                $td[] = $date_format_service->get($d['ts'], 'min', $pp->schema());
+                $td[] = $date_format_service->get($doc['created_at'], 'min', $pp->schema());
 
-                if ($show_visibility)
+                if ($show_access)
                 {
-                    $td[] = $item_access_service->get_label_xdb($d['access']);
+                    $td[] = $item_access_service->get_label($doc['access']);
                 }
 
                 if ($pp->is_admin())
                 {
                     $td_c = $link_render->link_fa('docs_edit', $pp->ary(),
-                        ['doc_id' => $did], 'Aanpassen',
+                        ['id' => $doc['id']], 'Aanpassen',
                         ['class' => 'btn btn-primary'], 'pencil');
                     $td_c .= '&nbsp;';
                     $td_c .= $link_render->link_fa('docs_del', $pp->ary(),
-                        ['doc_id' => $did], 'Verwijderen',
+                        ['id' => $doc['id']], 'Verwijderen',
                         ['class' => 'btn btn-danger'], 'times');
                     $td[] = $td_c;
                 }
