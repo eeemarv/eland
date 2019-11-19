@@ -59,3 +59,17 @@
 {% block text_unsubscribe %}
 {% include 'mail/unsubscribe/admin.text.twig' %}
 {% endblock text_unsubscribe %}
+
+{%- block html_transaction_link -%}
+<p>
+{{- context_url_open('transactions_show', mpp_admin_ary(schema),
+    {'id': transaction.id})|raw -}}
+{{- 'label.link'|trans -}}
+</a>
+</p>
+{%- endblock html_transaction_link -%}
+
+{% block text_transaction_link %}
+{{ 'label.link'|trans }}: {{ context_url('transactions_show',
+    mpp_admin_ary(schema), {'id': transaction.id}) }}
+{% endblock text_transaction_link %}

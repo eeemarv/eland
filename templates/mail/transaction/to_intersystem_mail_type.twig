@@ -108,6 +108,21 @@
 
 {% endblock text_trans_id %}
 
+
+{%- block html_transaction_link -%}
+<p>
+{{- context_url_open('transactions_show', mpp_guest_ary(schema),
+    {'id': transaction.id})|raw -}}
+{{- 'label.link'|trans -}}
+</a>
+</p>
+{%- endblock html_transaction_link -%}
+
+{% block text_transaction_link %}
+{{ 'label.link'|trans }}: {{ context_url('transactions_show',
+    mpp_guest_ary(schema), {'id': transaction.id}) }}
+{% endblock text_transaction_link %}
+
 {%- block html_account_info -%}{%- endblock -%}
 {% block text_account_info %}{% endblock %}
 

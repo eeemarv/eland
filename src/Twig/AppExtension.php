@@ -41,6 +41,7 @@ class AppExtension extends AbstractExtension
 			new TwigFunction('account_max', [AccountRuntime::class, 'get_max']),
 			new TwigFunction('mpp_ary', [MppAryRuntime::class, 'get'], ['needs_context' => true]),
 			new TwigFunction('mpp_anon_ary', [MppAryRuntime::class, 'get_anon'], ['needs_context' => true]),
+			new TwigFunction('mpp_guest_ary', [MppAryRuntime::class, 'get_guest'], ['needs_context' => true]),
 			new TwigFunction('mpp_admin_ary', [MppAryRuntime::class, 'get_admin'], ['needs_context' => true]),
 			new TwigFunction('assets', [AssetsRuntime::class, 'get']),
 			new TwigFunction('assets_ary', [AssetsRuntime::class, 'get_ary']),

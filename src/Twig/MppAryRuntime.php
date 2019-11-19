@@ -59,6 +59,11 @@ class MppAryRuntime implements RuntimeExtensionInterface
 		return $this->get_ary('a', $context['et'] ?? '', $schema);
 	}
 
+	public function get_guest(array $context, string $schema):array
+	{
+		return $this->get_ary('g', $context['et'] ?? '', $schema);
+	}
+
 	public function get_anon(array $context, string $schema):array
 	{
 		return $this->get_ary('', $context['et'] ?? '', $schema);

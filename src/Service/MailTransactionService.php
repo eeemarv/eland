@@ -62,7 +62,7 @@ class MailTransactionService
 
 		$this->mail_queue->queue([
 			'schema'	=> $schema,
-			'to' 		=> $this->mail_addr_user_service->get_active($transaction['id_to'], $schema),
+			'to' 		=> $this->mail_addr_user_service->get($transaction['id_to'], $schema),
 			'reply_to' 	=> $this->mail_addr_system_service->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type',
 			'vars'		=> array_merge($vars, [

@@ -129,7 +129,8 @@ class MailQueue implements QueueInterface
 			if ($this->mailer->send($message, $failed_recipients))
 			{
 				$this->logger->info('mail queue process, sent to ' .
-					json_encode($data['to']) . ' subject: ' . $subject,
+					json_encode($data['to']) . ' template: ' . $data['template'] .
+					' subject: ' . $subject,
 					['schema' => $schema]);
 			}
 			else
