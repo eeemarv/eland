@@ -44,7 +44,7 @@ class DocsMapController extends AbstractController
             from ' . $pp->schema() . '.doc_maps
             where id = ?', [$id]);
 
-        if (!isset($name))
+        if (!$name)
         {
             throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
         }
@@ -62,44 +62,6 @@ class DocsMapController extends AbstractController
             $docs[] = $row;
         }
 
-/*
-        $row = $xdb_service->get('doc', $map_id, $pp->schema());
-
-        if ($row)
-        {
-            $map_name = $row['data']['map_name'];
-        }
-
-        if (!$map_name)
-        {
-            $alert_service->error('Onbestaande map id.');
-            $link_render->redirect('docs', $pp->ary(), []);
-        }
-
-        $rows = $xdb_service->get_many(['agg_schema' => $pp->schema(),
-            'agg_type' => 'doc',
-            'data->>\'map_id\'' => $map_id,
-            'access' => $item_access_service->get_visible_ary_xdb()],
-            'order by event_time asc');
-
-        $docs = [];
-
-        if (count($rows))
-        {
-            foreach ($rows as $row)
-            {
-                $data = $row['data'] + ['ts' => $row['event_time'], 'id' => $row['eland_id']];
-
-                if ($row['agg_version'] > 1)
-                {
-                    $data['edit_count'] = $row['agg_version'] - 1;
-                }
-
-                $docs[] = $data;
-            }
-        }
-    */
-
         if ($pp->is_admin())
         {
             $btn_top_render->add('docs_add', $pp->ary(),
@@ -113,6 +75,7 @@ class DocsMapController extends AbstractController
 
         $heading_render->add_raw($link_render->link_no_attr('docs', $pp->ary(), [], 'Documenten'));
         $heading_render->add(': map "' . $name . '"');
+        $heading_render->fa('files-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

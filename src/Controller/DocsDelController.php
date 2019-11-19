@@ -42,6 +42,10 @@ class DocsDelController extends AbstractController
             from ' . $pp->schema() . '.docs
             where id = ?', [$id]);
 
+        if (!$doc)
+        {
+            throw new NotFoundHttpException('Document met id ' . $id . ' niet gevonden.');
+        }
 
         if ($request->isMethod('POST'))
         {

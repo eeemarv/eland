@@ -107,7 +107,7 @@ class DocsAddController extends AbstractController
                         from ' . $pp->schema() . '.doc_maps
                         where lower(name) = ?', [$map_name]);
 
-                    if (!isset($map_id) || !$map_id)
+                    if (!$map_id)
                     {
                         $db->insert($pp->schema() . '.doc_maps', [
                             'name'      => $map_name,

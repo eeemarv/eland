@@ -5,144 +5,150 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 
 class DocsEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $doc_id,
-        XdbService $xdb_service,
+        int $id,
+        Db $db,
         AlertService $alert_service,
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
         MenuService $menu_service,
+        FormTokenService $form_token_service,
         PageParamsService $pp,
+        SessionUserService $su,
         string $env_s3_url
     ):Response
     {
         $errors = [];
 
-        $row = $xdb_service->get('doc', $doc_id, $pp->schema());
+        $access = $request->request->get('access', '');
+        $name = trim($request->request->get('name', ''));
+        $map_name = trim($request->request->get('map_name', ''));
 
-        if ($row)
-        {
-            $doc = $row['data'];
+        $doc = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.docs
+            where id = ?', [$id]);
 
-            $access = AccessCnst::FROM_XDB[$doc['access']];
-            $doc['ts'] = $row['event_time'];
-        }
-        else
+        if (!$doc)
         {
-            $alert_service->error('Document niet gevonden');
-            $link_render->redirect('docs', $pp->ary(), []);
+            throw new NotFoundHttpException('Document met id ' . $id . ' niet gevonden.');
         }
 
         if ($request->isMethod('POST'))
         {
-            $access = $request->request->get('access', '');
+            if ($error_token = $form_token_service->get_error())
+            {
+                $errors[] = $error_token;
+            }
 
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
-                $access_xdb = '';
-            }
-            else
-            {
-                $access_xdb = AccessCnst::TO_XDB[$access];
             }
 
             $update = [
-                'user_id'		=> $doc['user_id'],
-                'filename'		=> $doc['filename'],
-                'org_filename'	=> $doc['org_filename'],
-                'name'			=> trim($request->request->get('name', '')),
-                'access'		=> $access_xdb,
+                'last_edit_at'  => gmdate('Y-m-d H:i:s'),
+                'name'			=> $name === '' ? null : $name,
+                'access'		=> $access,
             ];
 
             if (!count($errors))
             {
-                $map_name = trim($request->request->get('map_name', ''));
-
-                if (strlen($map_name))
+                if (isset($doc['map_id']))
                 {
-                    $rows = $xdb_service->get_many(['agg_type' => 'doc',
-                        'agg_schema' => $pp->schema(),
-                        'data->>\'map_name\'' => $map_name], 'limit 1');
-
-                    if (count($rows))
-                    {
-                        $map = reset($rows)['data'];
-                        $map['id'] = reset($rows)['eland_id'];
-                    }
-                    else
-                    {
-                        $map = ['map_name' => $map_name];
-
-                        $mid = substr(sha1(random_bytes(16)), 0, 24);
-
-                        $xdb_service->set('doc', $mid, $map, $pp->schema());
-
-                        $map['id'] = $mid;
-                    }
-
-                    $update['map_id'] = $map['id'];
+                    $map_doc_count = $db->fetchColumn('select count(*)
+                        from ' . $pp->schema() . '.docs
+                        where map_id = ?', [$doc['map_id']]);
                 }
                 else
                 {
-                    $update['map_id'] = '';
+                    $map_doc_count = 0;
                 }
 
-                if (isset($doc['map_id'])
-                    && ((isset($update['map_id']) && $update['map_id'] !== $doc['map_id'])
-                        || !strlen($map_name)))
+                if (strlen($map_name))
                 {
-                    $rows = $xdb_service->get_many(['agg_type' => 'doc',
-                        'agg_schema' => $pp->schema(),
-                        'data->>\'map_id\'' => $doc['map_id']]);
+                    $map_id = $db->fetchColumn('select id
+                        from ' . $pp->schema() . '.doc_maps
+                        where lower(name) = ?', [$map_name]);
 
-                    if (count($rows) < 2)
+                    if (!$map_id)
                     {
-                        $xdb_service->del('doc', $doc['map_id'], $pp->schema());
+                        $db->insert($pp->schema() . '.doc_maps', [
+                            'name'      => $map_name,
+                            'user_id'   => $su->id(),
+                        ]);
+
+                        $map_id = (int) $db->lastInsertId($pp->schema() . '.doc_maps_id_seq');
+
+                        $delete_thumbprint = true;
+                    }
+
+                    if ($map_doc_count === 1 && $map_id !== $doc['map_id'])
+                    {
+                        $delete_map = true;
                     }
                 }
+                else if ($map_doc_count === 1)
+                {
+                    $delete_map = true;
+                }
 
-                $xdb_service->set('doc', $doc_id, $update, $pp->schema());
+                $update['map_id'] = $map_id ?? null;
 
-                $typeahead_service->delete_thumbprint('doc_map_names',
-                    $pp->ary(), []);
+                if (isset($delete_map) && $delete_map)
+                {
+                    $db->delete($pp->schema() . '.doc_maps', ['id' => $doc['map_id']]);
+                    $delete_thumbprint = true;
+                }
+
+                if (isset($delete_thumbprint) && $delete_thumbprint)
+                {
+                    $typeahead_service->delete_thumbprint('doc_map_names',
+                        $pp->ary(), []);
+                }
+
+                $db->update($pp->schema() . '.docs', $update, ['id' => $id]);
 
                 $alert_service->success('Document aangepast');
 
-                if (!$update['map_id'])
+                if (!isset($update['map_id']))
                 {
                     $link_render->redirect('docs', $pp->ary(), []);
                 }
 
                 $link_render->redirect('docs_map', $pp->ary(),
-                    ['map_id' => $update['map_id']]);
+                    ['id' => $update['map_id']]);
             }
 
             $alert_service->error($errors);
         }
 
-        if (isset($doc['map_id']) && $doc['map_id'] != '')
+        if ($request->isMethod('GET'))
         {
-            $map_id = $doc['map_id'];
+            if (isset($doc['map_id']))
+            {
+                $map_name = $db->fetchColumn('select name
+                    from ' . $pp->schema() . '.doc_maps
+                    where id = ?', [$doc['map_id']]);
+            }
 
-            $map = $xdb_service->get('doc', $map_id,
-                $pp->schema())['data'];
+            $name = $doc['name'] ?? '';
+            $access = $doc['access'];
         }
 
         $heading_render->add('Document aanpassen');
@@ -173,7 +179,7 @@ class DocsEditController extends AbstractController
         $out .= '<span class="fa fa-file-o"></span></span>';
         $out .= '<input type="text" class="form-control" id="org_filename" ';
         $out .= 'name="org_filename" value="';
-        $out .= $doc['org_filename'];
+        $out .= $doc['original_filename'] ?? '';
         $out .= '" readonly>';
         $out .= '</div>';
         $out .= '</div>';
@@ -186,14 +192,12 @@ class DocsEditController extends AbstractController
         $out .= '<span class="fa fa-file-o"></span></span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" value="';
-        $out .= $doc['name'];
+        $out .= $name ?? '';
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';
 
         $out .= $item_access_service->get_radio_buttons('access', $access, 'docs');
-
-        $map_name = $map['map_name'] ?? '';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="map_name" class="control-label">';
@@ -203,7 +207,7 @@ class DocsEditController extends AbstractController
         $out .= '<i class="fa fa-folder-o"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="map_name" name="map_name" value="';
-        $out .= $map_name;
+        $out .= $map_name ?? '';
         $out .= '" ';
         $out .= 'data-typeahead="';
 
@@ -222,6 +226,7 @@ class DocsEditController extends AbstractController
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
 
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $out .= '</div>';
