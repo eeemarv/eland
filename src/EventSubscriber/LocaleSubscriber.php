@@ -3,7 +3,7 @@
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class LocaleSubscriber implements EventSubscriberInterface
@@ -13,7 +13,7 @@ class LocaleSubscriber implements EventSubscriberInterface
         'en'    => 'en_GB.UTF-8',
     ];
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         $locale = $event->getRequest()->getLocale();
 

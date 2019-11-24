@@ -24,7 +24,7 @@ class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
 
     public function onExceptionEvent(ExceptionEvent $event)
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
 
         if ($exception instanceof AccessDeniedException)
         {

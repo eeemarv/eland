@@ -14,7 +14,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegisterTokenController extends AbstractController
 {
