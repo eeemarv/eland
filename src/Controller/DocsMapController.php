@@ -61,6 +61,32 @@ class DocsMapController extends AbstractController
             $docs[] = $row;
         }
 
+        $stmt_prev = $db->executeQuery('select m.id
+            from ' . $pp->schema() . '.doc_maps m
+            inner join ' . $pp->schema() . '.docs d
+                on d.map_id = m.id
+            where d.access in (?)
+                and m.name < ?
+            order by m.name desc
+            limit 1',
+        [$item_access_service->get_visible_ary_for_page(), $name],
+        [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
+
+        $prev = $stmt_prev->fetchColumn();
+
+        $stmt_next = $db->executeQuery('select m.id
+            from ' . $pp->schema() . '.doc_maps m
+            inner join ' . $pp->schema() . '.docs d
+                on d.map_id = m.id
+            where d.access in (?)
+                and m.name > ?
+            order by m.name asc
+            limit 1',
+        [$item_access_service->get_visible_ary_for_page(), $name],
+        [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
+
+        $next = $stmt_next->fetchColumn();
+
         if ($pp->is_admin())
         {
             $btn_top_render->add('docs_add', $pp->ary(),
@@ -71,6 +97,15 @@ class DocsMapController extends AbstractController
 
             $btn_nav_render->csv();
         }
+
+        $prev_ary = $prev ? ['id' => $prev] : [];
+        $next_ary = $next ? ['id' => $next] : [];
+
+        $btn_nav_render->nav('docs_map', $pp->ary(),
+            $prev_ary, $next_ary, false);
+
+        $btn_nav_render->nav_list('docs', $pp->ary(),
+            [], 'Overzicht', 'files-o');
 
         $heading_render->add('Documenten map "');
         $heading_render->add($name . '"');
