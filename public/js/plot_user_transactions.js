@@ -3,8 +3,6 @@ $(document).ready(function(){
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');
 
-	var $ecanvas = $('.jqplot-event-canvas');
-
 	var path_plot_users_transactions = $chart.data('plot-user-transactions');
 
 	$.get(path_plot_users_transactions)

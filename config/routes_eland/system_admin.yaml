@@ -247,3 +247,13 @@ logo_del:
   controller: App\Controller\LogoDelController
   path: /logo/del
   methods: GET|POST
+
+static_content_image_upload:
+  controller: App\Controller\StaticContentImageUploadController
+  path: /static-content/image-upload
+  methods: POST
+
+static_content:
+  controller: App\Controller\StaticContentController
+  path: /static-content
+  methods: POST

@@ -13,8 +13,7 @@ $(document).ready(function(){
 				['style', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
-				['insert', ['hr', 'link']],
-				['misc', ['fullscreen']]
+				['insert', ['hr', 'link']]
 			],
 			fontSizes: ['10', '11', '12', '14', '18', '24'],
 		});

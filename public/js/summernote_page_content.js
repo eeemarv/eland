@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
 	var $summernote = $('textarea.summernote');
+	var image_upload = $summernote.data('image-upload');
 
 	$summernote.each(function(){
 
@@ -14,9 +15,12 @@ $(document).ready(function(){
 				['style', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
-				['insert', ['hr', 'link']],
+				['table', ['table']],
+				['insert', ['hr', 'link', 'picture']],
 				['misc', ['fullscreen', 'codeview']]
 			],
+
+			styleTags: ['p', 'quote', 'h1', 'h2', 'h3', 'h4'],
 
 			codemirror: {
 				theme: 'monokai',
@@ -31,6 +35,24 @@ $(document).ready(function(){
 				foldGutter: true,
 				styleActiveLine: true,
 				colorpicker: true
+			},
+
+			callbacks: {
+				onImageUpload: function(images){
+					var data = new FormData();
+					data.append('image', images[0]);
+
+					$.post(image_upload, data)
+					.done(function(ret){
+						var $insert = $('<img>')
+							.attr('src', ret.base_url + ret.file)
+							.attr('data-base-url', ret.base_url)
+							.attr('data-file', ret.file);
+						$self.summernote('insertNode', $insert);
+					}).fail(function(){
+						alert('Afbeelding opladen mislukt.');
+					});
+				}
 			}
 		});
 
