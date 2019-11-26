@@ -76,7 +76,7 @@ services:
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
             - '@Predis\Client'
-            - {prefix: session_}
+            - {prefix: session_, ttl: 864000}
 
     Bramus\Monolog\Formatter\ColoredLineFormatter: ~
 
