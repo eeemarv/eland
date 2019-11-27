@@ -134,8 +134,8 @@ class IntersystemsEditController extends AbstractController
             'url' 				=> $request->request->get('url', ''),
             'groupname' 		=> $request->request->get('groupname', ''),
             'apimethod' 		=> $request->request->get('apimethod', ''),
-            'shortname' 		=> $request->request->get('shortname', ''),
-            'prefix' 			=> $request->request->get('prefix', ''),
+            'shortname' 		=> '',
+            'prefix' 			=> '',
             'remoteapikey' 		=> $request->request->get('remoteapikey', ''),
             'localletscode' 	=> $request->request->get('localletscode', ''),
             'myremoteletscode'	=> $request->request->get('myremoteletscode', ''),
@@ -147,21 +147,6 @@ class IntersystemsEditController extends AbstractController
         if (strlen($group['groupname']) > 128)
         {
             $errors[] = 'De Systeem Naam mag maximaal 128 tekens lang zijn.';
-        }
-
-        if (strlen($group['shortname']) > 50)
-        {
-            $errors[] = 'De korte naam mag maximaal 50 tekens lang zijn.';
-        }
-
-        if (strlen($group['prefix']) > 5)
-        {
-            $errors[] = 'De Prefix mag maximaal 5 tekens lang zijn.';
-        }
-
-        if (strlen($group['remoteapikey']) > 80)
-        {
-            $errors[] = 'De Remote Apikey mag maximaal 80 tekens lang zijn.';
         }
 
         if (strlen($group['localletscode']) > 20)
@@ -184,19 +169,10 @@ class IntersystemsEditController extends AbstractController
             $errors[] = 'De eLAS soap URL mag maximaal 256 tekens lang zijn.';
         }
 
-        if (strlen($group['presharedkey']) > 80)
-        {
-            $errors[] = 'De Preshared Key mag maximaal 80 tekens lang zijn.';
-        }
-
         if ($error_token = $form_token_service->get_error())
         {
             $errors[] = $error_token;
         }
-
-        $shortname = str_replace(' ', '', $group['groupname']);
-        $shortname = substr($shortname, 0, 50);
-        $group['shortname'] = strtolower($shortname);
 
         return [$group, $errors];
     }
@@ -256,26 +232,6 @@ class IntersystemsEditController extends AbstractController
         $out .= '</div>';
         $out .= '<p>';
         $out .= 'Het type connectie naar het andere Systeem. ';
-        $out .= '"Intern" is een technisch type dat alleen in eLAS gebruikt wordt. ';
-        $out .= 'In eLAND (hier) is dit type niet nodig.';
-        $out .= '</p>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="remoteapikey" class="control-label">';
-        $out .= 'Remote API Key ';
-        $out .= '</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-key"></span></span>';
-        $out .= '<input type="text" class="form-control" id="remoteapikey" name="remoteapikey" ';
-        $out .= 'value="';
-        $out .= $group['remoteapikey'];
-        $out .= '" maxlength="80">';
-        $out .= '</div>';
-        $out .= '<p>';
-        $out .= 'Dit is enkel in te vullen wanneer het ';
-        $out .= 'andere Systeem onder eLAS draait.';
         $out .= '</p>';
         $out .= '</div>';
 
@@ -338,22 +294,6 @@ class IntersystemsEditController extends AbstractController
         $out .= '</lu>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="presharedkey" class="control-label">';
-        $out .= 'Preshared Key';
-        $out .= '</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-key"></span></span>';
-        $out .= '<input type="text" class="form-control" id="presharedkey" name="presharedkey" ';
-        $out .= 'value="';
-        $out .= $group['presharedkey'];
-        $out .= '" maxlength="80">';
-        $out .= '</div>';
-        $out .= '<p>';
-        $out .= 'Enkel in te vullen wanneer het andere Systeem draait op eLAS.';
-        $out .= '</p>';
-        $out .= '</div>';
         $out .= $btn;
         $out .= $form_token_service->get_hidden_input();
 
