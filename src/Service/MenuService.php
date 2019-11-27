@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Cnst\MenuCnst;
+use App\Render\BtnNavRender;
 
 class MenuService
 {
@@ -17,6 +18,7 @@ class MenuService
 
 	protected $config_service;
 	protected $item_access_service;
+	protected $btn_nav_render;
 	protected $pp;
 	protected $vr;
 	protected $active_menu;
@@ -24,18 +26,31 @@ class MenuService
 	public function __construct(
 		ConfigService $config_service,
 		ItemAccessService $item_access_service,
+		BtnNavRender $btn_nav_render,
 		PageParamsService $pp,
 		VarRouteService $vr
 	)
 	{
 		$this->config_service = $config_service;
 		$this->item_access_service = $item_access_service;
+		$this->btn_nav_render = $btn_nav_render;
 		$this->pp = $pp;
 		$this->vr = $vr;
 	}
 
 	public function set(string $active_menu):void
 	{
+		if ($this->pp->is_admin())
+		{
+			$this->btn_nav_render->local_admin($active_menu, $this->pp->ary());
+
+			if (isset(MenuCnst::LOCAL_ADMIN_MAIN[$active_menu]))
+			{
+				$this->active_menu = MenuCnst::LOCAL_ADMIN_MAIN[$active_menu];
+				return;
+			}
+		}
+
 		$this->active_menu = $active_menu;
 	}
 

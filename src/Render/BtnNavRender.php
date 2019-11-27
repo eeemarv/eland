@@ -2,30 +2,36 @@
 
 namespace App\Render;
 
+use App\Cnst\MenuCnst;
 use App\Render\LinkRender;
 use App\Render\TagRender;
 use App\Service\AssetsService;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class BtnNavRender
 {
 	const ORDER_AND_GROUP = [
-		'csv'				=> false,
+		'admin'				=> true,
 		'columns_show'		=> false,
 		'view'				=> true,
 		'nav'				=> true,
 	];
 
+	protected $request_stack;
 	protected $link_render;
 	protected $tag_render;
 	protected $assets_service;
 	protected $out = [];
+	protected $local_admin = [];
 
 	public function __construct(
+		RequestStack $request_stack,
 		LinkRender $link_render,
 		TagRender $tag_render,
 		AssetsService $assets_service
 	)
 	{
+		$this->request_stack = $request_stack;
 		$this->link_render = $link_render;
 		$this->tag_render = $tag_render;
 		$this->assets_service = $assets_service;
@@ -34,6 +40,22 @@ class BtnNavRender
 	public function get():string
 	{
 		$out = [];
+
+		if ($this->local_admin)
+		{
+			$local_admin = '<div class="btn-group pull-right" role="group">';
+			$local_admin .= '<button type="button" class="btn btn-info btn-lg dropdown-toggle" ';
+			$local_admin .= 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+			$local_admin .= '<i class="fa fa-cog" title="Admin functies"></i>&nbsp;';
+			$local_admin .= '<span class="caret"></span>';
+			$local_admin .= '</button>';
+			$local_admin .= '<ul class="dropdown-menu dropleft">';
+			$local_admin .= implode('', $this->local_admin);
+			$local_admin .= '</ul>';
+			$local_admin .= '</div>';
+
+			$this->out['admin'][] = $local_admin;
+		}
 
 		foreach (self::ORDER_AND_GROUP as $key => $is_group)
 		{
@@ -92,7 +114,6 @@ class BtnNavRender
 		bool $active
 	):string
 	{
-
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
 				'class'	=> 'btn btn-default btn-lg' . ($active ? ' active' : ''),
@@ -156,12 +177,51 @@ class BtnNavRender
 	{
 		$this->assets_service->add(['csv.js']);
 
-		$this->out['csv'] = $this->tag_render->get('a', [
+		$this->out['admin'][] = $this->tag_render->get('a', [
 				'class'	=> 'csv btn btn-info btn-lg',
 				'title'	=> 'Download CSV',
 			],
 			$this->tag_render->fa('file')
 		);
+	}
+
+	public function local_admin(
+		string $menu,
+		array $params_context
+	):void
+	{
+		$main_menu = MenuCnst::LOCAL_ADMIN_MAIN[$menu] ?? $menu;
+
+		if (!isset(MenuCnst::LOCAL_ADMIN[$main_menu]))
+		{
+			return;
+		}
+
+		foreach(MenuCnst::LOCAL_ADMIN[$main_menu] as $menu_key => $ary)
+		{
+			if (isset($ary['divider']))
+			{
+				$this->local_admin[] = '<li class="divider"></li>';
+				continue;
+			}
+
+			$item = '<li';
+
+			if ($menu === $menu_key)
+			{
+				$item .= ' class="active"';
+			}
+
+			$item .= '>';
+
+			$item .= $this->link_render->link_fa(
+				$ary['route'], $params_context, $ary['params'] ?? [],
+				$ary['label'], [], $ary['fa']);
+
+			$item .= '</li>';
+
+			$this->local_admin[] = $item;
+		}
 	}
 
 	public function columns_show():void

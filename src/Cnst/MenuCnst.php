@@ -5,23 +5,6 @@ namespace App\Cnst;
 class MenuCnst
 {
     const SIDEBAR = [
-        'login'     => [
-            'access'    => 'anonymous',
-            'fa'        => 'sign-in',
-            'label'     => 'Login',
-        ],
-        'contact'   => [
-            'access'    => 'anonymous',
-            'fa'        => 'comment-o',
-            'label'     => 'Contact',
-            'config_en' => 'contact_form_en',
-        ],
-        'register'  => [
-            'access'    => 'anonymous',
-            'fa'        => 'check-square-o',
-            'label'     => 'Inschrijven',
-            'config_en' => 'registration_en',
-        ],
         'messages'		=> [
             'access'    => 'guest',
             'fa'        => 'newspaper-o',
@@ -62,6 +45,23 @@ class MenuCnst
             'fa'            => 'ambulance',
             'label'         => 'Probleem melden',
         ],
+        'login'     => [
+            'access'    => 'anonymous',
+            'fa'        => 'sign-in',
+            'label'     => 'Login',
+        ],
+        'contact'   => [
+            'access'    => 'anonymous',
+            'fa'        => 'comment-o',
+            'label'     => 'Contact',
+            'config_en' => 'contact_form_en',
+        ],
+        'register'  => [
+            'access'    => 'anonymous',
+            'fa'        => 'check-square-o',
+            'label'     => 'Inschrijven',
+            'config_en' => 'registration_en',
+        ],
     ];
 
     const NAV_USER = [
@@ -95,89 +95,6 @@ class MenuCnst
     ];
 
     const NAV_ADMIN = [
-        'status'			=> [
-            'fa'        => 'exclamation-triangle',
-            'label'     => 'Status',
-            'route'     => 'status',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'categories'	 	=> [
-            'fa'        => 'clone',
-            'label'     => 'Categorieën',
-            'route'     => 'categories',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'contact_types'		=> [
-            'fa'        => 'circle-o-notch',
-            'label'     => 'Contact Types',
-            'route'     => 'contact_types',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'contacts'			=> [
-            'fa'        => 'map-marker',
-            'label'     => 'Contacten',
-            'route'     => 'contacts',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'config'			=> [
-            'fa'        => 'gears',
-            'label'     => 'Instellingen',
-            'route'     => 'config',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'intersystems'		=> [
-            'fa'        => 'share-alt',
-            'label'     => 'InterSysteem',
-            'route'     => 'intersystems',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'export'			=> [
-            'fa'        => 'download',
-            'label'     => 'Export',
-            'route'     => 'export',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'autominlimit'		=> [
-            'fa'        => 'arrows-v',
-            'label'     => 'Auto Min Limiet',
-            'route'     => 'autominlimit',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'mass_transaction'	=> [
-            'fa'        => 'exchange',
-            'label'     => 'Massa-Transactie',
-            'route'     => 'mass_transaction',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'logs'				=> [
-            'fa'        => 'history',
-            'label'     => 'Logs',
-            'route'     => 'logs',
-            'params'    => [
-                'role_short'    => 'a',
-            ],
-        ],
-        'divider_1'     => [
-            'divider'   => true,
-        ],
         'admin_mode'    => [
             'fa'            => 'cog',
             'label'         => 'Admin modus',
@@ -197,6 +114,87 @@ class MenuCnst
             'label'         => 'Gast modus',
             'params'        => [
                 'role_short'    => 'g',
+            ],
+        ],
+        'divider_1' => [
+            'divider'   => true,
+        ],
+        'config'			=> [
+            'fa'        => 'gears',
+            'label'     => 'Instellingen',
+            'route'     => 'config',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
+        ],
+        'export'			=> [
+            'fa'        => 'download',
+            'label'     => 'Export',
+            'route'     => 'export',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
+        ],
+        'logs'				=> [
+            'fa'        => 'history',
+            'label'     => 'Logs',
+            'route'     => 'logs',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
+        ],
+    ];
+
+    const LOCAL_ADMIN_MAIN = [
+        'categories'        => 'messages',
+        'status'            => 'users',
+        'contacts'          => 'users',
+        'contact_types'     => 'users',
+        'intersystems'      => 'users',
+        'autominlimit'      => 'transactions',
+        'mass_transaction'  => 'transactions',
+    ];
+
+    const LOCAL_ADMIN = [
+        'messages'  => [
+            'categories'	 	=> [
+                'fa'        => 'clone',
+                'label'     => 'Categorieën',
+                'route'     => 'categories',
+            ],
+        ],
+        'users' => [
+            'status'			=> [
+                'fa'        => 'exclamation-triangle',
+                'label'     => 'Status',
+                'route'     => 'status',
+            ],
+            'contacts'			=> [
+                'fa'        => 'map-marker',
+                'label'     => 'Contacten',
+                'route'     => 'contacts',
+            ],
+            'contact_types'		=> [
+                'fa'        => 'circle-o-notch',
+                'label'     => 'Contact Types',
+                'route'     => 'contact_types',
+            ],
+            'intersystems'		=> [
+                'fa'        => 'share-alt',
+                'label'     => 'InterSysteem',
+                'route'     => 'intersystems',
+            ],
+        ],
+        'transactions' => [
+            'autominlimit'		=> [
+                'fa'        => 'arrows-v',
+                'label'     => 'Auto Min Limiet',
+                'route'     => 'autominlimit',
+            ],
+            'mass_transaction'	=> [
+                'fa'        => 'exchange',
+                'label'     => 'Massa-Transactie',
+                'route'     => 'mass_transaction',
             ],
         ],
     ];
