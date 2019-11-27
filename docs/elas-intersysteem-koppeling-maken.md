@@ -6,7 +6,7 @@ Voor interSysteem is het vereist dat het Systeem geconfigureerd is als Tijdsbank
 Onderstaande tekst werd aangepast vanuit [de eLAS documentatie](http://old.elasproject.org/content/hoe-maak-ik-een-interlets-koppeling). (orgineel geschreven door gvansanden op do, 03/01/2012 - 12:46)
 
 **In eLAS wordt interSysteem interLETS genoemd, maar omdat LETS geen munt
-met tijdsbasis is en omdat LETS expliciet ontworpen is als middel om de eigen gemeenschap onafhankelijker van externe economische invloed te maken, worden
+met tijdbasis is en omdat LETS expliciet ontworpen is als middel om de eigen gemeenschap onafhankelijker van externe economische invloed te maken, worden
 deze verbindingen in eLAND interSysteem genoemd.** (Zie de [LETS-documentatie](https://manual.letsa.net/nl/1.3.html))
 
 ## Hoe maak ik een eLAS interSysteem koppeling
@@ -27,7 +27,7 @@ Stuur een mailtje naar de beheerders van andere Systeem met volgende gegevens du
 * API Key (uit stap 3 hierboven)
 * Account Code (uit stap 4 hierboven)
 * Preshared Key (uit stap 4 hierboven)
-* De URL van je Systeem (uit de adresbalk van je browser, bv. `http://elas.tijdsbankgeel.org`)
+* De URL van je Systeem (uit de adresbalk van je browser, bv. `http://elas.tijdbankgeel.org`)
 
 Een voorbeeld van zo'n mailtje kan zijn:
 
@@ -38,7 +38,7 @@ Een voorbeeld van zo'n mailtje kan zijn:
     Apikey: d8e8fca2dc0f896fd7cb4cb0031ba249
     Account Code: TT000
     Preshared Key: KHQyhOv2mFinbr68QDyV
-    URL: http://elas.tijdsbankgeel.org
+    URL: http://elas.tijdbankgeel.org
 
     Als wij de gegevens van jullie kant hebben ontvangen werkt de interSysteem-verbinding in 2 richtingen.
 
@@ -50,14 +50,14 @@ Van het Systeem waarmee je wil koppelen heb je een gelijkaardige mail als hierbo
 * In het beheer blok, kies InterSysteem > Toevoegen (in eLAS: LETS Groepen > Groep toevoegen)
 * Vul volgende velden in:
   * Systeem Naam: naam van het Systeem waarmee je een verbinding legt, bv Tijdsbank Geel
-  * (niet in eLAND) korte naam: korte naam zonder hoofdletters of spaties van het Systeem waarmee je koppelt, bv tijdsbankgeel
+  * (niet in eLAND) korte naam: korte naam zonder hoofdletters of spaties van het Systeem waarmee je koppelt, bv tijdbankgeel
   * (niet in eLAND:) prefix: LEEG laten
   * API Method: elassaop (standaardwaarde)
   * Remote API Key: de apikey uit de mail die je aankreeg
   * Lokale Account Code: de Account Code die je aanmaakte in 'maak je eigen Systeem klaar'
   * Remote code: de Account Code uit de mail die je aankreeg
   * URL: de URL uit de mail die je aankreeg
-  * (niet in eLAND:) SOAP URL: de URL uit de mail die je aankreeg met /soap erachter, bv `http://elas.tijdsbankgeel.org/soap`
+  * (niet in eLAND:) SOAP URL: de URL uit de mail die je aankreeg met /soap erachter, bv `http://elas.tijdbankgeel.org/soap`
   * Preshared Key: de Preshared Key uit de mail die je aankreeg
 
 Na het afronden van bovenstaande stappen aan de 2 kanten is de interSysteem-verbinding actief.

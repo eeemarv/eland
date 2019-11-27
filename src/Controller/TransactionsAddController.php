@@ -1040,7 +1040,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<li id="info_remote_amount_unknown" ';
         $out .= 'class="hidden">De omrekening ';
-        $out .= 'naar de externe tijdsvaluta ';
+        $out .= 'naar de externe tijdvaluta ';
         $out .= 'is niet gekend omdat het andere ';
         $out .= 'Systeem zich niet op dezelfde ';
         $out .= 'eLAND-server bevindt.</li>';

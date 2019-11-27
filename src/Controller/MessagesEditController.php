@@ -665,7 +665,8 @@ class MessagesEditController extends AbstractController
 
         $out .= '<p>Toegestane formaten: jpg/jpeg, png, gif. ';
         $out .= 'Je kan ook afbeeldingen hierheen ';
-        $out .= 'verslepen.</p>';
+        $out .= 'verslepen. ';
+        $out .= 'De volgorde kan veranderd worden door te verslepen.</p>';
         $out .= '</div>';
 
         $out .= '<input type="hidden" name="image_files" value="';

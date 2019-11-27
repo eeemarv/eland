@@ -84,14 +84,14 @@ class IntersystemsController extends AbstractController
         $btn_top_render->add('intersystems_add', $pp->ary(),
             [], 'InterSysteem toevoegen');
 
-        $heading_render->add('eLAS/eLAND InterSysteem');
+        $heading_render->add('eLAND InterSysteem');
         $heading_render->fa('share-alt');
 
         $out = '<p>';
-        $out .= 'Een eLAS/eLAND interSysteem verbinding laat intertrading toe tussen ';
-        $out .= 'je eigen Systeem en een ander Systeem dat draait op eLAS of eLAND software.';
+        $out .= 'Een eLAND interSysteem verbinding laat intertrading toe tussen ';
+        $out .= 'je eigen Systeem en een ander Systeem op deze eLAND server.';
         $out .= 'Beide Systemen dienen hiervoor een munteenheid te hebben die gebaseerd is ';
-        $out .= 'op tijd. Ze zijn dus Tijdsbanken en dienen zo ';
+        $out .= 'op tijd. Ze zijn dus Tijdbanken en dienen zo ';
         $out .= 'geconfigureerd te zijn (Zie Admin > Instellingen > Systeem). ';
         $out .= 'Wanneer je deze pagina kan zien is dit reeds het geval.';
         $out .= '</p>';
@@ -180,9 +180,9 @@ class IntersystemsController extends AbstractController
                     if (!$config_service->get('template_lets', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
-                        $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdsbank.">';
+                        $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdbank.">';
                         $out .= '<i class="fa fa-exclamation-triangle"></i> ';
-                        $out .= 'geen Tijdsbank</span>';
+                        $out .= 'geen Tijdbank</span>';
                     }
 
                     if (!$config_service->get('interlets_en', $sys['schema']))
@@ -250,14 +250,10 @@ class IntersystemsController extends AbstractController
         $out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
         $out .= '</div>';
         $out .= '<ul>';
-        $out .= '<li> Je kan een ander Tijdsbank-Systeem dat dezelfde eLAND-server gebruikt ';
-        $out .= 'op vereenvoudigde manier verbinding leggen zonder ';
-        $out .= 'het uitwisselen van Api Key, Preshared Key en Remote Account Code. ';
-        $out .= '</li>';
         $out .= '<li> ';
         $out .= 'Contacteer altijd eerst vooraf de beheerders van het andere Systeem ';
         $out .= 'waarmee je een interSysteem verbinding wil opzetten. ';
-        $out .= 'En verifiëer of zij ook een Tijdsbank-Systeem hebben en of zij geïnteresseerd zijn.</li>';
+        $out .= 'En verifiëer of zij ook een Tijdbank-Systeem hebben en of zij geïnteresseerd zijn.</li>';
         $out .= '<li> Voor het leggen van een InterSysteem-verbinding, kijk in de tabel hieronder. ';
         $out .= 'Maak het interSysteem aan door op \'Creëer\' in ';
         $out .= 'kolom \'lok.interSysteem\' te klikken en vervolgens op Toevoegen. ';
@@ -381,7 +377,7 @@ class IntersystemsController extends AbstractController
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="Dit Systeem is niet ';
-                $out .= 'geconfigureerd als Tijdsbank.">';
+                $out .= 'geconfigureerd als Tijdbank.">';
                 $out .= '<i class="fa fa-exclamation-triangle">';
                 $out .= '</i></span>';
             }

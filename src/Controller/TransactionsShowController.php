@@ -254,8 +254,8 @@ class TransactionsShowController extends AbstractController
             $out .= 'Een interSysteem transactie bestaat ';
             $out .= 'altijd uit twee gekoppelde transacties, die ';
             $out .= 'elks binnen hun eigen Systeem plaatsvinden, ';
-            $out .= 'elks uitgedrukt in de eigen tijdsmunt, maar met ';
-            $out .= 'gelijke tijdswaarde in beide transacties. ';
+            $out .= 'elks uitgedrukt in de eigen tijdmunt, maar met ';
+            $out .= 'gelijke tijdwaarde in beide transacties. ';
             $out .= 'De zogenaamde interSysteem Accounts ';
             $out .= '(in stippellijn) ';
             $out .= 'doen dienst als intermediair.';
@@ -310,7 +310,7 @@ class TransactionsShowController extends AbstractController
             {
                 $str = 'De transactie in het andere ';
                 $str .= 'Systeem uitgedrukt ';
-                $str .= 'in de eigen tijdsmunt.';
+                $str .= 'in de eigen tijdmunt.';
 
                 if ($inter_transaction
                     && isset($eland_intersystem_ary[$inter_schema]))
@@ -329,7 +329,7 @@ class TransactionsShowController extends AbstractController
             {
                 $out .= 'De transactie in dit ';
                 $out .= 'Systeem uitgedrukt ';
-                $out .= 'in de eigen tijdsmunt';
+                $out .= 'in de eigen tijdmunt';
                 $out .= ' (';
                 $out .= $transaction['amount'];
                 $out .= ' ';
@@ -423,19 +423,19 @@ class TransactionsShowController extends AbstractController
             if ($real_from)
             {
                 $out .= 'De transactie in dit Systeem uitgedrukt ';
-                $out .= 'in de eigen tijdsmunt ';
+                $out .= 'in de eigen tijdmunt ';
                 $out .= '(';
                 $out .= $transaction['amount'] . ' ';
                 $out .= $config_service->get('currency', $pp->schema());
                 $out .= ') ';
-                $out .= 'met gelijke tijdswaarde als Tr-1.';
+                $out .= 'met gelijke tijdwaarde als Tr-1.';
             }
             else
             {
                 $str = 'De transactie in het andere ';
                 $str .= 'Systeem uitgedrukt ';
-                $str .= 'in de eigen tijdsmunt ';
-                $str .= 'met gelijke tijdswaarde als Tr-1.';
+                $str .= 'in de eigen tijdmunt ';
+                $str .= 'met gelijke tijdwaarde als Tr-1.';
 
                 if ($inter_transaction
                     && isset($eland_intersystem_ary[$inter_schema]))
