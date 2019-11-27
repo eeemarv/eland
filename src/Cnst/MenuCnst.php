@@ -99,54 +99,91 @@ class MenuCnst
             'fa'        => 'exclamation-triangle',
             'label'     => 'Status',
             'route'     => 'status',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'categories'	 	=> [
             'fa'        => 'clone',
             'label'     => 'Categorieën',
             'route'     => 'categories',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'contact_types'		=> [
             'fa'        => 'circle-o-notch',
             'label'     => 'Contact Types',
             'route'     => 'contact_types',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'contacts'			=> [
             'fa'        => 'map-marker',
             'label'     => 'Contacten',
             'route'     => 'contacts',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'config'			=> [
             'fa'        => 'gears',
             'label'     => 'Instellingen',
             'route'     => 'config',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'intersystems'		=> [
             'fa'        => 'share-alt',
             'label'     => 'InterSysteem',
             'route'     => 'intersystems',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'export'			=> [
             'fa'        => 'download',
             'label'     => 'Export',
             'route'     => 'export',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'autominlimit'		=> [
             'fa'        => 'arrows-v',
             'label'     => 'Auto Min Limiet',
             'route'     => 'autominlimit',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'mass_transaction'	=> [
             'fa'        => 'exchange',
             'label'     => 'Massa-Transactie',
             'route'     => 'mass_transaction',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'logs'				=> [
             'fa'        => 'history',
             'label'     => 'Logs',
             'route'     => 'logs',
+            'params'    => [
+                'role_short'    => 'a',
+            ],
         ],
         'divider_1'     => [
             'divider'   => true,
+        ],
+        'admin_mode'    => [
+            'fa'            => 'cog',
+            'label'         => 'Admin modus',
+            'params'        => [
+                'role_short'    => 'a',
+            ],
         ],
         'user_mode'    => [
             'fa'            => 'user',

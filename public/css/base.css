@@ -127,6 +127,13 @@ p.info.tt-suggestion, .bg-info
 {
 	background-color: #d9edf7;
 }
+.navbar-nav > li > a.bg-info:hover,
+.navbar-nav > li > a.bg-info:focus
+{
+  background-color: #c8eafb;
+}
+
+
 p.inactive.tt-suggestion, .bg-inactive
 {
 	background-color: #ddd;

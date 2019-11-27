@@ -55,13 +55,17 @@ class MenuService
 
 	public function get_nav_admin():array
 	{
-		$m_ary = MenuCnst::NAV_ADMIN;
+		$m_ary = [];
+		$system = $this->pp->system();
 
-		$m_ary['user_mode']['params']['system'] = $this->pp->system();
-		$m_ary['guest_mode']['params']['system'] = $this->pp->system();
+		foreach (MenuCnst::NAV_ADMIN as $key => $def)
+		{
+			$m_ary[$key] = array_merge($def, ['system' => $system]);
+		}
 
 		$fallback_route = $this->get_fallback_route();
 
+		$m_ary['admin_mode']['same_route'] = true;
 		$m_ary['user_mode']['route'] = $fallback_route;
 		$m_ary['guest_mode']['route'] = $fallback_route;
 
@@ -73,6 +77,19 @@ class MenuService
 		if (isset($m_ary[$this->active_menu]))
 		{
 			$m_ary[$this->active_menu]['active'] = true;
+		}
+
+		switch($this->pp->role())
+		{
+			case 'admin':
+				$m_ary['admin_mode']['active_group'] = true;
+			break;
+			case 'user':
+				$m_ary['user_mode']['active_group'] = true;
+			break;
+			case 'guest':
+				$m_ary['guest_mode']['active_group'] = true;
+			break;
 		}
 
 		return $m_ary;
