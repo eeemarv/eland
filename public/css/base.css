@@ -817,6 +817,11 @@ a.logo {
   color: #777;
   background-color: #f5f5f5;
 }
-li.nav-config-only.active a{
+.nav-config-only a:hover {
+  color: #444;
+  background-color: #eee;
+}
+li.nav-config-only.active a,
+li.nav-config-only.active a:hover{
   background-color: #777;
 }

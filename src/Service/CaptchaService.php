@@ -41,7 +41,7 @@ class CaptchaService
 		return $this->request->request->get('captcha');
 	}
 
-	public function get_form_field():string
+	public function get_form_field(bool $disabled = false):string
 	{
 		$out = '<div class="form-group">';
 		$out .= '<label for="captcha">';
@@ -52,7 +52,9 @@ class CaptchaService
 		$out .= '<i class="fa fa-code"></i>';
 		$out .= '</span>';
 		$out .= '<input type="text" class="form-control" id="captcha" name="captcha" ';
-		$out .= 'value="" required>';
+		$out .= 'value="" required';
+		$out .= $disabled ? ' disabled' : '';
+		$out .= '>';
 		$out .= '</div>';
 		$out .= '<p>';
 		$out .= 'Typ de code die hieronder getoond wordt.';

@@ -121,8 +121,11 @@ class RegisterAdminController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
+
+        $out .= '<p>Dit formulier is enkel illustratief ';
+        $out .= 'in de admin modus.</p>';
 
         $out .= '<form method="post">';
 
@@ -133,9 +136,7 @@ class RegisterAdminController extends AbstractController
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="first_name" name="first_name" ';
-        $out .= 'value="';
-        $out .= $reg['first_name'] ?? '';
-        $out .= '" required>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -146,9 +147,7 @@ class RegisterAdminController extends AbstractController
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="last_name" name="last_name" ';
-        $out .= 'value="';
-        $out .= $reg['last_name'] ?? '';
-        $out .= '" required>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -159,9 +158,7 @@ class RegisterAdminController extends AbstractController
         $out .= '<i class="fa fa-envelope-o"></i>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
-        $out .= 'value="';
-        $out .= $reg['email'] ?? '';
-        $out .= '" required>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -172,9 +169,7 @@ class RegisterAdminController extends AbstractController
         $out .= '<i class="fa fa-map-marker"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="postcode" name="postcode" ';
-        $out .= 'value="';
-        $out .= $reg['postcode'] ?? '';
-        $out .= '" required>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -185,9 +180,7 @@ class RegisterAdminController extends AbstractController
         $out .= '<i class="fa fa-mobile"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="gsm" name="gsm" ';
-        $out .= 'value="';
-        $out .= $reg['gsm'] ?? '';
-        $out .=  '">';
+        $out .= 'value="" disabled>';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -198,15 +191,14 @@ class RegisterAdminController extends AbstractController
         $out .= '<i class="fa fa-phone"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="tel" name="tel" ';
-        $out .= 'value="';
-        $out .= $reg['tel'] ?? '';
-        $out .= '">';
+        $out .= 'value="" disabled>';
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $captcha_service->get_form_field();
+        $out .= $captcha_service->get_form_field(true);
 
-        $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Inschrijven" name="zend">';
+        $out .= '<input type="submit" class="btn btn-primary btn-lg" ';
+        $out .= 'value="Inschrijven" name="zend" disabled>';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';

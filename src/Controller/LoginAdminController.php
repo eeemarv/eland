@@ -263,17 +263,14 @@ class LoginAdminController extends AbstractController
             $alert_service->error($errors);
         }
 
-        if($config_service->get('maintenance', $pp->schema()))
-        {
-            $alert_service->warning('De website is niet beschikbaar
-                wegens onderhoudswerken.  Enkel admins kunnen inloggen');
-        }
-
         $heading_render->add('Login');
         $heading_render->fa('sign-in');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
+
+        $out .= '<p>Dit formulier is enkel illustratief ';
+        $out .= 'in de admin modus.</p>';
 
         $out .= '<form method="post">';
 
@@ -285,9 +282,7 @@ class LoginAdminController extends AbstractController
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="login" name="login" ';
-        $out .= 'value="';
-        $out .= $login;
-        $out .= '" required>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '<p>';
         $out .= 'E-mail, Account Code of Gebruikersnaam';
@@ -302,7 +297,7 @@ class LoginAdminController extends AbstractController
         $out .= '</span>';
         $out .= '<input type="password" class="form-control" ';
         $out .= 'id="password" name="password" ';
-        $out .= 'value="" required>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '<p>';
         $out .= $link_render->link_no_attr('password_reset',
@@ -312,7 +307,7 @@ class LoginAdminController extends AbstractController
         $out .= '</div>';
 
         $out .= '<input type="submit" class="btn btn-info btn-lg" ';
-        $out .= 'value="Inloggen" name="zend">';
+        $out .= 'value="Inloggen" name="zend" disabled>';
 
         $out .= '</form>';
 

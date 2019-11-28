@@ -148,8 +148,11 @@ class ContactAdminController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
+
+        $out .= '<p>Dit formulier is enkel illustratief ';
+        $out .= 'in de admin modus.</p>';
 
         $out .= '<form method="post">';
 
@@ -162,11 +165,7 @@ class ContactAdminController extends AbstractController
         $out .= '<i class="fa fa-envelope-o"></i>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
-        $out .= 'value="';
-        $out .= $email;
-        $out .= '" required';
-        $out .= $form_disabled ? ' disabled' : '';
-        $out .= '>';
+        $out .= 'value="" required disabled>';
         $out .= '</div>';
         $out .= '<p>';
         $out .= 'Er wordt een validatielink die je moet ';
@@ -177,18 +176,14 @@ class ContactAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="message">Je Bericht</label>';
         $out .= '<textarea name="message" id="message" ';
-        $out .= $form_disabled ? 'disabled ' : '';
-        $out .= 'class="form-control" rows="4">';
-        $out .= $message;
+        $out .= 'class="form-control" rows="4" disabled>';
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $captcha_service->get_form_field();
+        $out .= $captcha_service->get_form_field(true);
 
-        $out .= '<input type="submit" name="zend" ';
-        $out .= $form_disabled ? 'disabled ' : '';
+        $out .= '<input type="submit" name="zend" disabled ';
         $out .= 'value="Verzenden" class="btn btn-info btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 
