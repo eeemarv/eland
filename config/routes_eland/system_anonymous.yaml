@@ -49,7 +49,7 @@ system_init:
   prefix: /init
   resource: system_init.yaml
 
-home_system:
+home:
   path: /
-  controller: App\Controller\HomeSystemController
+  controller: App\Controller\HomeController
   methods: GET

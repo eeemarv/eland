@@ -257,3 +257,23 @@ static_content:
   controller: App\Controller\StaticContentController
   path: /static-content
   methods: POST
+
+login_admin:
+  path: /login
+  controller: App\Controller\LoginAdminController
+  methods: GET
+
+contact_admin:
+  path: /contact
+  controller: App\Controller\ContactAdminController
+  methods: GET
+
+register_admin:
+  path: /register
+  controller: App\Controller\RegisterAdminController
+  methods: GET
+
+home_admin:
+  path: /
+  controller: App\Controller\HomeAdminController
+  methods: GET

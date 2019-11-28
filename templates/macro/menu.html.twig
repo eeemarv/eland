@@ -1,6 +1,6 @@
 {%- macro menu_sidebar() -%}
     {%- for m in menu_sidebar() -%}
-        <li{%- if m.active %} class="active"{%- endif -%}>
+        <li{%- if m.active %} class="active{%- if m.config_only %} nav-config-only{%- endif -%}"{%- elseif m.config_only %} class="nav-config-only"{%- endif -%}>
             <a href="{{- path(m.route, pp_ary()) -}}">
             <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
             {{- m.label -}}

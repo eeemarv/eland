@@ -15,8 +15,8 @@ class VarRouteService
 	protected $session;
 	protected $pp;
 
-	protected $view_ary;
-	protected $var_route_ary = [];
+	protected $var_route_ary;
+	protected $is_admin;
 
 	public function __construct(
 		RequestStack $request_stack,
@@ -35,6 +35,7 @@ class VarRouteService
 
 	private function init():void
 	{
+		$this->is_admin = $this->pp->is_admin();
 		$request = $this->request_stack->getCurrentRequest();
 		$route = $request->attributes->get('_route');
 
@@ -51,14 +52,8 @@ class VarRouteService
 			}
 		}
 
-		$r_users = 'users_' . $view_ary['users'];
-		$r_users .= $r_users !== 'users_map'
-			&& $this->pp->is_admin() ? '_admin' : '';
-
 		$this->var_route_ary = [
-			'users'			=> $r_users,
-			'users_show'	=> $this->pp->is_admin() ? 'users_show_admin' : 'users_show',
-			'users_edit'	=> $this->pp->is_admin() ? 'users_edit_admin' : 'users_edit',
+			'users'			=> 'users_' . $view_ary['users'],
 			'messages'		=> 'messages_' . $view_ary['messages'],
 			'news'			=> 'news_' . $view_ary['news'],
 		];
@@ -69,6 +64,8 @@ class VarRouteService
 
 	public function get(string $menu_route):string
 	{
-		return $this->var_route_ary[$menu_route] ?? $menu_route;
+		$route = $this->var_route_ary[$menu_route] ?? $menu_route;
+		$route .= isset(PagesCnst::ADMIN_ROUTE[$route]) && $this->is_admin ? '_admin' : '';
+		return $route;
 	}
 }

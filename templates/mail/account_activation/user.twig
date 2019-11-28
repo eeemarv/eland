@@ -10,7 +10,7 @@
 {% block html_content -%}
 <p>
 {{- 'account_activation.welcome'|trans({
-    '%link_open%': context_url_open('home_system', mpp_anon_ary(schema), {}),
+    '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
     '%link_close%': '</a>',
     '%system_name%': config('systemname', schema)
 })|raw -}}
@@ -39,10 +39,10 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ context_url('home_system', mpp_anon_ary(schema), {})|raw }}
+{{ context_url('home', mpp_anon_ary(schema), {})|raw }}
 
 {{ 'account_activation.login'|trans({
-    '%login_url%': context_url('home_system', mpp_anon_ary(schema), {})|raw
+    '%login_url%': context_url('home', mpp_anon_ary(schema), {})|raw
 }) }}
 
 {{ 'label.login'|trans }}: {{ account_code(user_id, schema) }}

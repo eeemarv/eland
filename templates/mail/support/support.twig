@@ -8,7 +8,7 @@
 {% block html_content -%}
 <p>
     {{- 'support.explain'|trans({
-        '%link_open%': context_url_open('home_system',
+        '%link_open%': context_url_open('home',
             mpp_anon_ary(schema), {}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema),

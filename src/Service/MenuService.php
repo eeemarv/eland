@@ -94,18 +94,7 @@ class MenuService
 			$m_ary[$this->active_menu]['active'] = true;
 		}
 
-		switch($this->pp->role())
-		{
-			case 'admin':
-				$m_ary['admin_mode']['active_group'] = true;
-			break;
-			case 'user':
-				$m_ary['user_mode']['active_group'] = true;
-			break;
-			case 'guest':
-				$m_ary['guest_mode']['active_group'] = true;
-			break;
-		}
+		$m_ary[$this->pp->role() . '_mode']['active_group'] = true;
 
 		return $m_ary;
 	}
@@ -114,26 +103,30 @@ class MenuService
 	{
 		$menu_ary = [];
 
-		foreach (MenuCnst::SIDEBAR as $m_route => $item)
+		foreach (MenuCnst::SIDEBAR as $menu_route => $item)
 		{
-			if (!$this->item_access_service->is_visible($item['access']))
+			if (!$this->pp->is_admin())
 			{
-				continue;
-			}
-
-			if (isset($item['config_en']))
-			{
-				if (!$this->config_service->get($item['config_en'], $this->pp->schema()))
+				if (!$this->item_access_service->is_visible($item['access']))
 				{
 					continue;
+				}
+
+				if (isset($item['config_en']))
+				{
+					if (!$this->config_service->get($item['config_en'], $this->pp->schema()))
+					{
+						continue;
+					}
 				}
 			}
 
 			$menu_ary[] = [
-				'route'			=> $this->vr->get($m_route),
+				'route'			=> $this->vr->get($menu_route),
 				'label'			=> $item['label'],
 				'fa'			=> $item['fa'],
-				'active'		=> $m_route === $this->active_menu,
+				'active'		=> $menu_route === $this->active_menu,
+				'config_only'	=> $this->pp->is_admin() && $item['access'] === 'anonymous',
 			];
 		}
 

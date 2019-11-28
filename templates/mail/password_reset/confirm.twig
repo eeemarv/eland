@@ -23,7 +23,7 @@
 <p>
     {{- 'password_reset_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
-        '%link_open%': context_url_open('home_system', mpp_anon_ary(schema), {}),
+        '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>

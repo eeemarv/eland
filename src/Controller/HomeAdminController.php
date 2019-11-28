@@ -8,7 +8,7 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
-class HomeSystemController extends AbstractController
+class HomeAdminController extends AbstractController
 {
     public function __invoke(
         ConfigService $config_service,
@@ -22,7 +22,7 @@ class HomeSystemController extends AbstractController
         $out .= '</h1>';
         $out .= '</div>';
 
-        $menu_service->set('home_system');
+        $menu_service->set('home');
 
         return $this->render('base/sidebar.html.twig', [
             'content'   => $out,

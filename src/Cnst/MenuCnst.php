@@ -45,6 +45,11 @@ class MenuCnst
             'fa'            => 'ambulance',
             'label'         => 'Probleem melden',
         ],
+        'home'      => [
+            'access'    => 'anonymous',
+            'fa'        => 'home',
+            'label'     => 'Home',
+        ],
         'login'     => [
             'access'    => 'anonymous',
             'fa'        => 'sign-in',
