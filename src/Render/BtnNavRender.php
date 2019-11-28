@@ -187,7 +187,8 @@ class BtnNavRender
 
 	public function local_admin(
 		string $menu,
-		array $params_context
+		array $params_context,
+		array $disabled_items
 	):void
 	{
 		$main_menu = MenuCnst::LOCAL_ADMIN_MAIN[$menu] ?? $menu;
@@ -199,6 +200,11 @@ class BtnNavRender
 
 		foreach(MenuCnst::LOCAL_ADMIN[$main_menu] as $menu_key => $ary)
 		{
+			if (isset($disabled_items[$menu_key]))
+			{
+				continue;
+			}
+
 			if (isset($ary['divider']))
 			{
 				$this->local_admin[] = '<li class="divider"></li>';
