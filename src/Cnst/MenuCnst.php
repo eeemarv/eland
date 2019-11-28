@@ -103,6 +103,7 @@ class MenuCnst
         'admin_mode'    => [
             'fa'            => 'cog',
             'label'         => 'Admin modus',
+            'same_route'    => true,
             'params'        => [
                 'role_short'    => 'a',
             ],
@@ -110,6 +111,7 @@ class MenuCnst
         'user_mode'    => [
             'fa'            => 'user',
             'label'         => 'Leden modus',
+            'fallback_route'    => true,
             'params'        => [
                 'role_short'    => 'u',
             ],
@@ -117,11 +119,23 @@ class MenuCnst
         'guest_mode'    => [
             'fa'            => 'share-alt',
             'label'         => 'Gast modus',
+            'fallback_route'    => true,
             'params'        => [
                 'role_short'    => 'g',
             ],
         ],
         'divider_1' => [
+            'divider'   => true,
+        ],
+        'edit_mode' => [
+            'fa'            => 'pencil',
+            'label'         => 'Edit content',
+            'same_route'    => true,
+            'params'        => [
+                'edit'      => '1',
+            ],
+        ],
+        'divider_2' => [
             'divider'   => true,
         ],
         'config'			=> [

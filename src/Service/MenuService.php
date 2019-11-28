@@ -72,21 +72,17 @@ class MenuService
 	{
 		$m_ary = [];
 		$system = $this->pp->system();
+		$fallback_route = $this->get_fallback_route();
 
 		foreach (MenuCnst::NAV_ADMIN as $key => $def)
 		{
-			$m_ary[$key] = array_merge($def, ['system' => $system]);
-		}
+			$m_ary[$key] = $def;
+			$m_ary[$key]['system'] = $system;
 
-		$fallback_route = $this->get_fallback_route();
-
-		$m_ary['admin_mode']['same_route'] = true;
-		$m_ary['user_mode']['route'] = $fallback_route;
-		$m_ary['guest_mode']['route'] = $fallback_route;
-
-		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
-		{
-			unset($m_ary['intersystems'], $m_ary['guest_mode']);
+			if (isset($def['fallback_route']))
+			{
+				$m_ary[$key]['route'] = $fallback_route;
+			}
 		}
 
 		if (isset($m_ary[$this->active_menu]))
@@ -95,6 +91,11 @@ class MenuService
 		}
 
 		$m_ary[$this->pp->role() . '_mode']['active_group'] = true;
+
+		if ($this->pp->edit_enabled())
+		{
+			$m_ary['edit_mode']['active_group'] = true;
+		}
 
 		return $m_ary;
 	}

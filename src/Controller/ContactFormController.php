@@ -17,7 +17,7 @@ use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 
-class ContactController extends AbstractController
+class ContactFormController extends AbstractController
 {
     public function __invoke(
         Request $request,

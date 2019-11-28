@@ -149,7 +149,7 @@ class ConfigCnst
         ],
 
         'systemtag' => [
-            'lbl'		=> 'Tag',
+            'lbl'		=> 'E-mail tag',
             'explain'	=> 'Prefix tussen haken [tag] in onderwerp
                 van alle E-mail-berichten',
             'required'	=> true,

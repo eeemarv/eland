@@ -265,12 +265,17 @@ login_admin:
 
 contact_admin:
   path: /contact
-  controller: App\Controller\ContactAdminController
+  controller: App\Controller\ContactFormAdminController
   methods: GET
 
 register_admin:
   path: /register
   controller: App\Controller\RegisterAdminController
+  methods: GET
+
+password_reset_admin:
+  path: /password-reset
+  controller: App\Controller\PasswordResetAdminController
   methods: GET
 
 home_admin:
