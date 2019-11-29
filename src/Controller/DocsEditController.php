@@ -62,7 +62,6 @@ class DocsEditController extends AbstractController
             }
 
             $update = [
-                'last_edit_at'  => gmdate('Y-m-d H:i:s'),
                 'name'			=> $name === '' ? null : $name,
                 'access'		=> $access,
             ];
