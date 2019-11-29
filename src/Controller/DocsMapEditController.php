@@ -73,7 +73,6 @@ class DocsMapEditController extends AbstractController
             {
                 $db->update($pp->schema() . '.doc_maps', [
                     'name' => $name,
-                    'last_edit_at' => gmdate('Y-m-d H:i:s'),
                 ], [
                     'id' => $id,
                 ]);

@@ -97,7 +97,6 @@ class ForumEditTopicController extends AbstractController
             if (!count($errors))
             {
                 $topic_update = [
-                    'last_edit_at'  => gmdate('Y-m-d H:i:s'),
                     'subject'       => $subject,
                     'access'        => $access,
                 ];
@@ -108,7 +107,6 @@ class ForumEditTopicController extends AbstractController
                 );
 
                 $post_update = [
-                    'last_edit_at'  => gmdate('Y-m-d H:i:s'),
                     'content'       => $content,
                     'edit_count'    => $forum_post['edit_count'] + 1,
                 ];

@@ -100,7 +100,6 @@ class ForumEditPostController extends AbstractController
             if (!count($errors))
             {
                 $post_update = [
-                    'last_edit_at'  => gmdate('Y-m-d H:i:s'),
                     'content'       => $content,
                     'edit_count'    => $forum_post['edit_count'] + 1,
                 ];
