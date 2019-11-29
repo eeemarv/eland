@@ -108,7 +108,7 @@ class ForumEditTopicController extends AbstractController
 
                 $post_update = [
                     'content'       => $content,
-                    'edit_count'    => $forum_post['edit_count'] + 1,
+//                    'edit_count'    => $forum_post['edit_count'] + 1,
                 ];
 
                 $db->update($pp->schema() . '.forum_posts',
