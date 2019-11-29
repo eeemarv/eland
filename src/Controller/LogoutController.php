@@ -11,11 +11,14 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpFoundation\Request;
 
 class LogoutController extends AbstractController
 {
     public function __invoke(
-        XdbService $xdb_service,
+        Request $request,
+        Db $db,
         SessionInterface $session,
         LoggerInterface $logger,
         AlertService $alert_service,
@@ -24,9 +27,18 @@ class LogoutController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        foreach($su->logins() as $sch => $uid)
+        foreach($su->logins() as $schema => $user_id)
         {
-            $xdb_service->set('logout', (string) $uid, ['time' => time()], $sch);
+            if ($user_id === 'master')
+            {
+                continue;
+            }
+
+            $db->insert($schema . '.logout', [
+                'user_id'   => $user_id,
+                'agent'     => $request->server->get('HTTP_USER_AGENT'),
+                'ip'        => $request->getClientIp(),
+            ]);
         }
 
         $session->invalidate();

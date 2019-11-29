@@ -35,7 +35,8 @@ class ExportController extends AbstractController
         $download_ev_csv = $request->query->has('_ev_csv');
 
         $stmt = $db->prepare('select table_name from information_schema.tables
-            where table_schema = ?');
+            where table_schema = ?
+            order by table_name asc');
         $stmt->bindValue(1, $pp->schema());
         $stmt->execute();
 

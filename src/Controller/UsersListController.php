@@ -486,7 +486,7 @@ class UsersListController extends AbstractController
                 'cdate'			=> 'Gecreëerd',
                 'mdate'			=> 'Aangepast',
                 'adate'			=> 'Geactiveerd',
-                'lastlogin'		=> 'Laatst ingelogd',
+                'last_login'		=> 'Laatst ingelogd',
             ];
         }
 
@@ -647,6 +647,24 @@ class UsersListController extends AbstractController
                     $user['saldo_date'] -= $trans_out[$user['id']] ?? 0;
                 });
             }
+        }
+
+        if (isset($show_columns['u']['last_login']))
+        {
+            $last_login_ary = [];
+
+            $stmt = $db->executeQuery('select user_id, max(created_at) as last_login
+                from ' . $pp->schema() . '.login
+                group by user_id');
+
+            while ($row = $stmt->fetch())
+            {
+                $last_login_ary[$row['user_id']] = $row['last_login'];
+            }
+
+            array_walk($users, function(&$user) use ($last_login_ary){
+                $user['last_login'] = $last_login_ary[$user['id']] ?? '';
+            });
         }
 
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
@@ -1099,7 +1117,7 @@ class UsersListController extends AbstractController
             'cdate'			=> true,
             'mdate'			=> true,
             'adate'			=> true,
-            'lastlogin'		=> true,
+            'last_login'	=> true,
         ];
 
         $link_user_keys = [
