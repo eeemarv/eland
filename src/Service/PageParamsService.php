@@ -43,7 +43,7 @@ class PageParamsService
 	private function init():void
 	{
 		$this->request = $this->request_stack->getCurrentRequest();
-		$this->edit_enabled = $this->request->query->has('edit');
+		$this->edit_enabled = $this->request->query->get('edit', '') ? true : false;
 		$this->role_short = $this->request->attributes->get('role_short', '');
 		$this->role = RoleCnst::LONG[$this->role_short] ?? 'anonymous';
 

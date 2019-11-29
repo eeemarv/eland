@@ -129,7 +129,7 @@ class MenuCnst
         ],
         'edit_mode' => [
             'fa'            => 'pencil',
-            'label'         => 'Edit content',
+            'label'         => 'Edit modus',
             'same_route'    => true,
             'params'        => [
                 'edit'      => '1',

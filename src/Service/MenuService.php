@@ -111,6 +111,7 @@ class MenuService
 		if ($this->pp->edit_enabled())
 		{
 			$m_ary['edit_mode']['active_group'] = true;
+			$m_ary['edit_mode']['params']['edit'] = '';
 		}
 
 		return $m_ary;
