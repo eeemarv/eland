@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "59a62d64a01739cc7b97eeb265ec9c1a",
+    "content-hash": "b56c0b23299f5f0e1d9860d4cb432e6a",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -349,16 +349,16 @@
         },
         {
             "name": "doctrine/cache",
-            "version": "1.9.1",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "89a5c76c39c292f7798f964ab3c836c3f8192a55"
+                "reference": "382e7f4db9a12dc6c19431743a2b096041bcdd62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/89a5c76c39c292f7798f964ab3c836c3f8192a55",
-                "reference": "89a5c76c39c292f7798f964ab3c836c3f8192a55",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/382e7f4db9a12dc6c19431743a2b096041bcdd62",
+                "reference": "382e7f4db9a12dc6c19431743a2b096041bcdd62",
                 "shasum": ""
             },
             "require": {
@@ -425,10 +425,9 @@
                 "memcached",
                 "php",
                 "redis",
-                "riak",
                 "xcache"
             ],
-            "time": "2019-11-15T14:31:57+00:00"
+            "time": "2019-11-29T15:36:20+00:00"
         },
         {
             "name": "doctrine/collections",
@@ -1465,61 +1464,6 @@
             "time": "2019-10-24T07:13:31+00:00"
         },
         {
-            "name": "econea/nusoap",
-            "version": "v0.9.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/econea/nusoap.git",
-                "reference": "6f9dbb82bdd64d537947707dd7873248aa152003"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/econea/nusoap/zipball/6f9dbb82bdd64d537947707dd7873248aa152003",
-                "reference": "6f9dbb82bdd64d537947707dd7873248aa152003",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4"
-            },
-            "require-dev": {
-                "jakub-onderka/php-parallel-lint": "~1.0.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-0.9.x": "0.9.7.x-dev",
-                    "dev-develop": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "Milan Felix Šulc",
-                    "homepage": "https://f3l1x.io"
-                }
-            ],
-            "description": "Fixed NuSOAP for PHP 5.6 - 7.3",
-            "homepage": "https://github.com/econea/nusoap",
-            "keywords": [
-                "client",
-                "http",
-                "nusoap",
-                "php",
-                "soap",
-                "transport",
-                "xml"
-            ],
-            "time": "2019-11-20T09:03:39+00:00"
-        },
-        {
             "name": "egulias/email-validator",
             "version": "2.1.11",
             "source": {
@@ -2211,16 +2155,16 @@
         },
         {
             "name": "mollie/mollie-api-php",
-            "version": "v2.12.0",
+            "version": "v2.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mollie/mollie-api-php.git",
-                "reference": "a8540896e069fca409cf18351b33ec10f58622c6"
+                "reference": "04e2c1840533cba377130291336cde3d392cc214"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mollie/mollie-api-php/zipball/a8540896e069fca409cf18351b33ec10f58622c6",
-                "reference": "a8540896e069fca409cf18351b33ec10f58622c6",
+                "url": "https://api.github.com/repos/mollie/mollie-api-php/zipball/04e2c1840533cba377130291336cde3d392cc214",
+                "reference": "04e2c1840533cba377130291336cde3d392cc214",
                 "shasum": ""
             },
             "require": {
@@ -2293,7 +2237,7 @@
                 "sofortbanking",
                 "subscriptions"
             ],
-            "time": "2019-09-26T12:36:04+00:00"
+            "time": "2019-11-29T10:27:50+00:00"
         },
         {
             "name": "monolog/monolog",

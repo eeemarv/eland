@@ -246,6 +246,13 @@ class UsersShowAdminController extends AbstractController
             $intersystem_id = false;
         }
 
+        if ($pp->is_admin())
+        {
+            $last_login = $db->fetchColumn('select max(created_at)
+                from ' . $pp->schema() . '.login
+                where user_id = ?', [$id]);
+        }
+
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
             $db,
@@ -563,9 +570,9 @@ class UsersShowAdminController extends AbstractController
             $out .= 'Laatste login';
             $out .= '</dt>';
 
-            if (isset($user['lastlogin']))
+            if (isset($last_login))
             {
-                $out .= $this->get_dd($date_format_service->get($user['lastlogin'], 'min', $pp->schema()));
+                $out .= $this->get_dd($date_format_service->get($last_login, 'min', $pp->schema()));
             }
             else
             {

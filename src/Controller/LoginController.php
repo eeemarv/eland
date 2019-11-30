@@ -27,7 +27,6 @@ class LoginController extends AbstractController
         Request $request,
         Db $db,
         EncoderFactoryInterface $encoder_factory,
-        XdbService $xdb_service,
         AlertService $alert_service,
         LoggerInterface $logger,
         MenuService $menu_service,
@@ -239,15 +238,11 @@ class LoginController extends AbstractController
                     $account_render->str_id($user_id, $pp->schema()) .
                     ' logged in, agent: ' . $agent, $log_ary);
 
-                $db->update($pp->schema() . '.users',
-                    ['lastlogin' => gmdate('Y-m-d H:i:s')],
-                    ['id' => $user_id]);
-
-                $user_cache_service->clear($user_id, $pp->schema());
-
-                $xdb_service->set('login', (string) $user_id, [
-                    'browser' => $agent,
-                ], $su->schema());
+                $db->insert($pp->schema() . '.login', [
+                    'user_id'       => $user_id,
+                    'agent'         => $agent,
+                    'ip'            => $request->getClientIp(),
+                ]);
 
                 $alert_service->success('Je bent ingelogd.');
 
