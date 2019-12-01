@@ -278,6 +278,31 @@ password_reset_admin:
   controller: App\Controller\PasswordResetAdminController
   methods: GET
 
+mollie_config:
+  path: /mollie/config
+  controller: App\Controller\MollieConfigController
+  methods: GET|POST
+
+mollie_payment_requests_bulk_add:
+  path: /mollie/payments-requests/bulk-add
+  controller: App\Controller\MolliePaymentRequestsBulkAddController
+  methods: GET|POST
+
+mollie_payment_requests_bulk:
+  path: /mollie/payments-requests/bulk
+  controller: App\Controller\MolliePaymentRequestsBulkController
+  methods: GET
+
+mollie_payment_requests_edit:
+  path: /mollie/payment-requests/{id}/edit
+  controller: App\Controller\MolliePaymentRequestsEditController
+  methods: GET|POST
+
+mollie_payment_requests:
+  path: /mollie/payment-requests
+  controller: App\Controller\MolliePaymentRequestsController
+  methods: GET
+
 home_admin:
   path: /
   controller: App\Controller\HomeAdminController

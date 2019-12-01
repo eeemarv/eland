@@ -203,6 +203,11 @@ class MenuCnst
                 'label'     => 'InterSysteem',
                 'route'     => 'intersystems',
             ],
+            'mollie_payment_requests' => [
+                'fa'        => 'eur',
+                'label'     => 'Mollie betaalverzoeken',
+                'route'     => 'mollie_payment_requests',
+            ],
         ],
         'transactions' => [
             'autominlimit'		=> [

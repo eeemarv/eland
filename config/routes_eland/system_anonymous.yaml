@@ -33,6 +33,11 @@ password_reset_token:
   controller: App\Controller\PasswordResetTokenController
   methods: GET|POST
 
+mollie_webhook:
+  path: /mollie/webhook
+  controller: App\Controller\MollieWebhookController
+  methods: GET
+
 system_admin:
   prefix: /{role_short<%assert.role_short.admin%>}
   resource: system_admin.yaml
