@@ -22,7 +22,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 
 class MolliePaymentRequestsController extends AbstractController
@@ -79,7 +78,6 @@ class MolliePaymentRequestsController extends AbstractController
     ];
 
     public function __invoke(
-        Predis $predis,
         Request $request,
         Db $db,
         LoggerInterface $logger,
@@ -107,20 +105,16 @@ class MolliePaymentRequestsController extends AbstractController
 
         $users = [];
 
-        $rs = $db->prepare(
-            'select id, name, letscode,
-                accountrole, status, saldo,
-                minlimit, maxlimit, adate,
-                postcode
-            from ' . $pp->schema() . '.users
-            where status IN (0, 1, 2, 5, 6)
-            order by letscode');
+        $rs = $db->prepare('select *
+            from ' . $pp->schema() . '.mollie_payment_requests
+            order by created_at desc
+            limit 25');
 
         $rs->execute();
 
         while ($row = $rs->fetch())
         {
-            $users[$row['id']] = $row;
+            $payment_requests[$row['id']] = $row;
         }
 
         $amount = $request->request->get('amount', []);

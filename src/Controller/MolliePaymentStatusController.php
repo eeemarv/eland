@@ -12,13 +12,16 @@ use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class MollieTokenController extends AbstractController
+class MolliePaymentStatusController extends AbstractController
 {
     public function __invoke(
-        string $token,
+        int $id,
         Db $db,
         TranslatorInterface $translator,
         ConfigService $config_service,
@@ -28,16 +31,23 @@ class MollieTokenController extends AbstractController
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
         PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('registration_en', $pp->schema()))
+        $payment = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.mollie_payment_requests
+            where id = ?', [$id]);
+
+        if (!$payment)
         {
-            $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $link_render->redirect('login', $pp->ary(), []);
+            NotFoundHttpException('Betaling met id ' . $id . ' niet gevonden.');
         }
 
-        $data = $data_token_service->retrieve($token, 'register', $pp->schema());
+        if (!$su->is_owner($payment['user_id']))
+        {
+            AccessDeniedHttpException('Je hebt geen toegang tot status van betaling met id ' . $id);
+        }
 
         if (!$data)
         {

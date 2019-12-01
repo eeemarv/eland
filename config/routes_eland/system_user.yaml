@@ -145,5 +145,5 @@ mollie_checkout:
 
 mollie_payment_status:
   path: /mollie/payment-status/{id<%assert.id%>}
-  controller: App\Controller\MollieTokenController
+  controller: App\Controller\MolliePaymentStatusController
   methods: GET
