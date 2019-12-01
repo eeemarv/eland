@@ -40,9 +40,7 @@ class MessagesImagesInstantDelController extends AbstractController
             throw new NotFoundHttpException('Bericht niet gevonden.');
         }
 
-        $s_owner = $su->id() === $message['id_user'];
-
-        if (!($s_owner || $pp->is_admin()))
+        if (!($su->is_owner($message['id_user']) || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
         }

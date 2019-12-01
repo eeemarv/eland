@@ -146,12 +146,7 @@ class MessagesEditController extends AbstractController
         {
             $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-            $s_owner = !$pp->is_guest()
-                && $su->is_system_self()
-                && $su->id() === $message['id_user']
-                && $message['id_user'];
-
-            if (!($pp->is_admin() || $s_owner))
+            if (!($pp->is_admin() || $su->is_owner($message['id_user'])))
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
                     $message['label']['type_this'] . ' aan te passen.');

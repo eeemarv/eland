@@ -43,12 +43,7 @@ class MessagesDelController extends AbstractController
     {
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-        $s_owner = !$pp->is_guest()
-            && $su->is_system_self()
-            && $su->id() === $message['id_user']
-            && $message['id_user'];
-
-        if (!($s_owner || $pp->is_admin()))
+        if (!($su->is_owner($message['id_user']) || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException(
                 'Je hebt onvoldoende rechten om dit bericht te verwijderen.');

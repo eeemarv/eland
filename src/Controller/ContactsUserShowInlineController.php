@@ -28,10 +28,6 @@ class ContactsUserShowInlineController extends AbstractController
         string $env_mapbox_token
     ):Response
     {
-        $s_owner = $su->id() === $uid
-            && !$pp->is_guest()
-            && $su->is_system_self();
-
         $contacts = $db->fetchAll('select c.*, tc.abbrev
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
@@ -59,7 +55,7 @@ class ContactsUserShowInlineController extends AbstractController
                 'class'	=> 'btn btn-success',
             ], 'plus');
         }
-        else if ($s_owner)
+        else if ($su->is_owner($uid))
         {
             $out .= $link_render->link('users_contacts_add', $pp->ary(),
                 [], 'Toevoegen', [
@@ -84,7 +80,7 @@ class ContactsUserShowInlineController extends AbstractController
             $out .= '<th>Waarde</th>';
             $out .= '<th data-hide="phone, tablet">Commentaar</th>';
 
-            if ($pp->is_admin() || $s_owner)
+            if ($pp->is_admin() || $su->is_owner($uid))
             {
                 $out .= '<th data-hide="phone, tablet">Zichtbaarheid</th>';
                 $out .= '<th data-sort-ignore="true" ';
@@ -102,13 +98,13 @@ class ContactsUserShowInlineController extends AbstractController
 
                 $tr[] = $c['abbrev'];
 
-                if (!$item_access_service->is_visible($c['access']) && !$s_owner)
+                if (!$item_access_service->is_visible($c['access']) && !$su->is_owner($uid))
                 {
                     $tr_c = '<span class="btn btn-default">verborgen</span>';
                     $tr[] = $tr_c;
                     $tr[] = $tr_c;
                 }
-                else if ($s_owner || $pp->is_admin())
+                else if ($su->is_owner($uid) || $pp->is_admin())
                 {
                     if ($pp->is_admin())
                     {
@@ -188,7 +184,7 @@ class ContactsUserShowInlineController extends AbstractController
                     $tr[] = htmlspecialchars($c['comments'] ?? '', ENT_QUOTES);
                 }
 
-                if ($pp->is_admin() || $s_owner)
+                if ($pp->is_admin() || $su->is_owner($uid))
                 {
                     $tr[] = $item_access_service->get_label($c['access']);
 

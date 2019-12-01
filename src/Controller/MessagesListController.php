@@ -299,7 +299,7 @@ class MessagesListController extends AbstractController
         $categories = $fetch_and_filter['categories'];
         $categories_move_options = $fetch_and_filter['categories_move_options'];
         $cat_params = $fetch_and_filter['cat_params'];
-        $s_owner = $fetch_and_filter['s_owner'];
+        $is_owner = $fetch_and_filter['is_owner'];
         $out = $fetch_and_filter['out'];
 
         self::set_view_btn_nav(
@@ -386,7 +386,7 @@ class MessagesListController extends AbstractController
 
             $out .= '<td>';
 
-            if ($pp->is_admin() || $s_owner)
+            if ($pp->is_admin() || $is_owner)
             {
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
@@ -450,7 +450,7 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        if (($pp->is_admin() || $s_owner) && count($messages))
+        if (($pp->is_admin() || $is_owner) && count($messages))
         {
             $extend_options = [
                 '7'		=> '1 week',
@@ -725,11 +725,8 @@ class MessagesListController extends AbstractController
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $s_owner = !$pp->is_guest()
-            && $su->is_system_self()
-            && isset($filter['uid'])
-            && $su->id() === (int) $filter['uid']
-            && $su->id();
+        $is_owner = isset($filter['uid'])
+            && $su->is_owner((int) $filter['uid']);
 
         $params = [
             's'	=> [
@@ -983,7 +980,7 @@ class MessagesListController extends AbstractController
 
         if ($pp->is_admin() || $pp->is_user())
         {
-            if ($s_owner || !isset($filter['uid']))
+            if ($is_owner || !isset($filter['uid']))
             {
                 $btn_top_render->add('messages_add', $pp->ary(),
                     [], 'Vraag of aanbod toevoegen');
@@ -991,7 +988,7 @@ class MessagesListController extends AbstractController
 
             if (isset($filter['uid']))
             {
-                if ($pp->is_admin() && !$s_owner)
+                if ($pp->is_admin() && !$is_owner)
                 {
                     $str = 'Vraag of aanbod voor ';
                     $str .= $account_render->str((int) $filter['uid'], $pp->schema());
@@ -1013,7 +1010,7 @@ class MessagesListController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            if ($s_owner)
+            if ($is_owner)
             {
                 $heading_render->add('Mijn vraag en aanbod');
             }
@@ -1207,7 +1204,7 @@ class MessagesListController extends AbstractController
             'categories'                => $categories,
             'cat_params'                => $cat_params,
             'categories_move_options'   => $categories_move_options,
-            's_owner'                   => $s_owner,
+            'is_owner'                   => $is_owner,
             'out'                       => $out,
         ];
     }

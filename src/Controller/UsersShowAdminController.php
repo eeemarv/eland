@@ -73,11 +73,6 @@ class UsersShowAdminController extends AbstractController
 
         $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
-        $s_owner = !$pp->is_guest()
-            && $su->is_system_self()
-            && $su->id() === $id
-            && $id;
-
         $user = $user_cache_service->get($id, $pp->schema());
 
         if (!$user)
@@ -273,7 +268,7 @@ class UsersShowAdminController extends AbstractController
             'plot_user_transactions.js',
         ]);
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($id))
         {
             $assets_service->add([
                 'fileupload',
@@ -281,7 +276,7 @@ class UsersShowAdminController extends AbstractController
             ]);
         }
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($id))
         {
             $title = $pp->is_admin() ? 'Gebruiker' : 'Mijn gegevens';
 
@@ -293,21 +288,21 @@ class UsersShowAdminController extends AbstractController
                 $btn_top_render->edit_pw('users_password_admin', $pp->ary(),
                 ['id' => $id], 'Paswoord aanpassen');
             }
-            else if ($s_owner)
+            else if ($su->is_owner($id))
             {
                 $btn_top_render->edit_pw('users_password', $pp->ary(),
                     [], 'Paswoord aanpassen');
             }
         }
 
-        if ($pp->is_admin() && !$count_transactions && !$s_owner)
+        if ($pp->is_admin() && !$count_transactions && !$su->is_owner($id))
         {
             $btn_top_render->del('users_del_admin', $pp->ary(),
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
         if ($pp->is_admin()
-            || (!$s_owner && $user['status'] !== 7
+            || (!$su->is_owner($id) && $user['status'] !== 7
                 && !($pp->is_guest() && $su->is_system_self())))
         {
             $tus = ['tuid' => $id];
@@ -343,7 +338,7 @@ class UsersShowAdminController extends AbstractController
         $h_status_ary = StatusCnst::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
 
-        if ($s_owner && !$pp->is_admin())
+        if ($su->is_owner($id) && !$pp->is_admin())
         {
             $heading_render->add('Mijn gegevens: ');
         }
@@ -415,7 +410,7 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '</div>';
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($id))
         {
             $btn_del_attr = ['id'	=> 'btn_remove'];
 
@@ -484,7 +479,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '</dt>';
 
         if ($pp->is_admin()
-            || $s_owner
+            || $su->is_owner($id)
             || $item_access_service->is_visible($fullname_access))
         {
             $out .= $this->get_dd($user['fullname'] ?? '');
@@ -497,7 +492,7 @@ class UsersShowAdminController extends AbstractController
             $out .= '</dd>';
         }
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($id))
         {
             $out .= '<dt>';
             $out .= 'Zichtbaarheid Volledige Naam';
@@ -512,7 +507,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '</dt>';
         $out .= $this->get_dd($user['postcode'] ?? '');
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($id))
         {
             $out .= '<dt>';
             $out .= 'Geboortedatum';
@@ -637,7 +632,7 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '</dd>';
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($id))
         {
             $out .= '<dt>';
             $out .= 'Periodieke Overzichts E-mail';
@@ -760,12 +755,6 @@ class UsersShowAdminController extends AbstractController
         SessionUserService $su
     ):string
     {
-        $s_owner = !$pp->is_guest()
-            && !$su->is_master()
-            && $su->is_system_self()
-            && $su->id() === $user_id
-            && $user_id;
-
         $mail_from = $mail_addr_user_service->get($su->id(), $su->schema());
         $mail_to = $mail_addr_user_service->get($user_id, $pp->schema());
 
@@ -775,7 +764,7 @@ class UsersShowAdminController extends AbstractController
         {
             $placeholder = 'Het master account kan geen berichten versturen.';
         }
-        else if ($s_owner)
+        else if ($su->is_owner($user_id))
         {
             $placeholder = 'Je kan geen E-mail berichten naar jezelf verzenden.';
         }

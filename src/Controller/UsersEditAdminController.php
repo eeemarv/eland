@@ -175,15 +175,14 @@ class UsersEditAdminController extends AbstractController
         $cron_saldo = $request->request->has('cron_saldo');
         $contact = $request->request->get('contact', []);
 
-        $s_owner = $is_edit
-            && $su->id()
-            && $id === $su->id();
+        $is_owner = $is_edit
+            && $su->is_owner($id);
 
         if ($pp->is_admin())
         {
             $username_edit_en = $fullname_edit_en = true;
         }
-        else if ($s_owner)
+        else if ($is_owner)
         {
             $username_edit_en = $config_service->get('users_can_edit_username', $pp->schema()) ? true : false;
             $fullname_edit_en = $config_service->get('users_can_edit_fullname', $pp->schema()) ? true : false;
@@ -781,7 +780,7 @@ class UsersEditAdminController extends AbstractController
             'user_edit.js',
         ]);
 
-        if ($s_owner && !$pp->is_admin() && $is_edit)
+        if ($is_owner && !$pp->is_admin() && $is_edit)
         {
             $heading_render->add('Je profiel aanpassen');
         }
