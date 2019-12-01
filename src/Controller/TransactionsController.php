@@ -62,10 +62,8 @@ class TransactionsController extends AbstractController
         $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
             [$su->schema() => true]);
 
-        $s_owner = !$pp->is_guest()
-            && $su->is_system_self()
-            && isset($filter['uid'])
-            && $su->id() === $filter['uid'];
+        $is_owner = isset($filter['uid'])
+            && $su->is_owner($filter['uid']);
 
         $params_sql = $where_sql = $where_code_sql = [];
 
@@ -305,7 +303,7 @@ class TransactionsController extends AbstractController
             {
                 if ($user['status'] != 7)
                 {
-                    if ($s_owner)
+                    if ($is_owner)
                     {
                         $btn_top_render->add('transactions_add', $pp->ary(),
                             ['add' => 1], 'Transactie toevoegen');
@@ -339,7 +337,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            if ($s_owner)
+            if ($is_owner)
             {
                 $heading_render->add('Mijn transacties');
             }

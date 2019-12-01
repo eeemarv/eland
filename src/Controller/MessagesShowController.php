@@ -77,11 +77,6 @@ class MessagesShowController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
         }
 
-        $s_owner = !$pp->is_guest()
-            && $su->is_system_self()
-            && $su->id() === $message['id_user']
-            && $message['id_user'] > 0;
-
         $user = $user_cache_service->get($message['id_user'], $pp->schema());
 
         // process mail form
@@ -226,7 +221,7 @@ class MessagesShowController extends AbstractController
             'messages_show_images_slider.js',
         ]);
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($message['id_user']))
         {
             $assets_service->add([
                 'fileupload',
@@ -234,7 +229,7 @@ class MessagesShowController extends AbstractController
             ]);
         }
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($message['id_user']))
         {
             $btn_top_render->edit('messages_edit', $pp->ary(),
                 ['id' => $id],	ucfirst($message['label']['type']) . ' aanpassen');
@@ -245,7 +240,7 @@ class MessagesShowController extends AbstractController
 
         if ($message['is_offer']
             && ($pp->is_admin()
-                || (!$s_owner
+                || (!$su->is_owner($message['id_user'])
                     && $user['status'] !== 7
                     && !($pp->is_guest() && $su->is_system_self()))))
         {
@@ -306,7 +301,7 @@ class MessagesShowController extends AbstractController
 
         $out .= '</div>';
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($message['id_user']))
         {
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
@@ -408,7 +403,7 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['validity'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        if ($pp->is_admin() || $s_owner)
+        if ($pp->is_admin() || $su->is_owner($message['id_user']))
         {
             $out .= '<dt>Verlengen</dt>';
             $out .= '<dd>';

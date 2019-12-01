@@ -10,6 +10,7 @@ use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class MessagesExtendController extends AbstractController
 {
@@ -25,16 +26,10 @@ class MessagesExtendController extends AbstractController
     {
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-        $s_owner = $su->id()
-            && $message['id_user']
-            && $message['id_user'] === $su->id();
-
-        if (!($s_owner || $pp->is_admin()))
+        if (!($su->is_owner($message['id_user']) || $pp->is_admin()))
         {
-            $alert_service->error('Je hebt onvoldoende rechten om ' .
+            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
                 $message['label']['type_this'] . ' te verlengen.');
-
-            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
         $validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $days));
