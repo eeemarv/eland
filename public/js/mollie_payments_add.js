@@ -6,10 +6,18 @@ $(document).ready(function(){
 
 	function recalc_sum(){
 		var sum = 0;
+		var transaction_count = 0;
+
 		$('table input[type="number"]:visible').each(function() {
-			sum += Number($(this).val());
+			var am = Number($(this).val());
+			sum += am;
+			if (am){
+				transaction_count++;
+			}
 		});
+
 		$('input#total').val(sum);
+		$('span#transaction_count').text(transaction_count);
 	}
 
 	$('table').footable().bind({

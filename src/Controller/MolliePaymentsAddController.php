@@ -359,7 +359,9 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="total" readonly>';
         $out .= '</div>';
-        $out .= '<p>Exclusief <a href="https://www.mollie.com/nl/pricing/">Mollie transactie-kosten</a>.';
+        $out .= '<p>Exclusief <a href="https://www.mollie.com/nl/pricing/">Mollie transactie-kosten</a>. ';
+
+        $out .= 'Totaal aantal transacties: <strong><span id="transaction_count">0</span></strong>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
