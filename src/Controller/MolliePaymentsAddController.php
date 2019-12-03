@@ -312,7 +312,19 @@ class MolliePaymentsAddController extends AbstractController
             $td_inp .= 'value="';
             $td_inp .= $amount[$user_id] ?? '';
             $td_inp .= '" ';
-            $td_inp .= 'min="0">';
+            $td_inp .= 'min="0"';
+
+            if ($user_status === 3)
+            {
+                $td_inp .= ' data-new-account';
+            }
+
+            if ($user_status === 2)
+            {
+                $td_inp .= ' data-leaving-account';
+            }
+
+            $td_inp .= '>';
             $td_inp .= '</div>';
 
             $td[] = $td_inp;

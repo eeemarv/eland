@@ -36,12 +36,24 @@ $(document).ready(function(){
 	function fill_in(w_bal, t_in, t_out){
 
 		var fixed = Number($('#fixed').val());
+		var omit_new = $('#omit_new').prop('checked');
+		var omit_leaving = $('#omit_leaving').prop('checked');
 
 		$('table input[type="number"]:visible').each(function() {
 
 			if (fixed === 0){
 				$(this).val('');
 				return;
+			}
+
+			if (omit_new && $(this).is('[data-new-account]')){
+				$(this).val('');
+				return true;
+			}
+
+			if (omit_leaving && $(this).is('[data-leaving-account]')){
+				$(this).val('');
+				return true;
 			}
 
 			$(this).val(fixed);
