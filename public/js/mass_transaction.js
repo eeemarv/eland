@@ -108,6 +108,8 @@ $(document).ready(function(){
 		var var_max = Number(var_max);
 
 		var respect_minlimit = $('#respect_minlimit').prop('checked');
+		var omit_new = $('#omit_new').prop('checked');
+		var omit_leaving = $('#omit_leaving').prop('checked');
 
 		$('table input[type="number"]:visible').each(function() {
 
@@ -117,6 +119,16 @@ $(document).ready(function(){
 				$(this).val('');
 				return true;
 			};
+
+			if (omit_new && $(this).is('[data-new-account]')){
+				$(this).val('');
+				return true;
+			}
+
+			if (omit_leaving && $(this).is('[data-leaving-account]')){
+				$(this).val('');
+				return true;
+			}
 
 			var balance = Number($(this).data('balance'));
 

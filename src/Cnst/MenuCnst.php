@@ -170,6 +170,7 @@ class MenuCnst
         'contacts'          => 'users',
         'contact_types'     => 'users',
         'intersystems'      => 'users',
+        'mollie_payments'   => 'users',
         'autominlimit'      => 'transactions',
         'mass_transaction'  => 'transactions',
     ];
@@ -203,10 +204,10 @@ class MenuCnst
                 'label'     => 'InterSysteem',
                 'route'     => 'intersystems',
             ],
-            'mollie_payment_requests' => [
+            'mollie_payments' => [
                 'fa'        => 'eur',
                 'label'     => 'Mollie betaalverzoeken',
-                'route'     => 'mollie_payment_requests',
+                'route'     => 'mollie_payments',
             ],
         ],
         'transactions' => [

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -32,11 +33,6 @@ class MassTransactionController extends AbstractController
             'lbl'	=> 'Actief',
             'st'	=> 1,
             'hsh'	=> '58d267',
-        ],
-        'without-new-and-leaving' => [
-            'lbl'	=> 'Actief zonder uit- en instappers',
-            'st'	=> '123',
-            'hsh'	=> '096024',
         ],
         'new'		=> [
             'lbl'	=> 'Instappers',
@@ -81,7 +77,6 @@ class MassTransactionController extends AbstractController
         5	=> 'info-packet',
         6	=> 'info-moment',
         7	=> 'extern',
-        123 => 'without-new-and-leaving',
     ];
 
     public function __invoke(
@@ -110,7 +105,7 @@ class MassTransactionController extends AbstractController
         $errors = [];
 
         $q = $request->get('q', '');
-        $hsh = $request->get('hsh', '096024');
+        $hsh = $request->get('hsh', '58d267');
 
         $selected_users = $request->request->get('selected_users', '');
         $selected_users = ltrim($selected_users, '.');
@@ -700,6 +695,16 @@ class MassTransactionController extends AbstractController
             $out .= '</ul>';
         }
 
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'omit_new',
+            '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
+        ]);
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'omit_leaving',
+            '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
+        ]);
+
         $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
         $out .= 'Vul in</button>';
 
@@ -826,7 +831,6 @@ class MassTransactionController extends AbstractController
 
             $hsh = self::STATUS_RENDER[$status_key]['hsh'] ?: '';
             $hsh .= $status_key == 'leaving' || $status_key == 'new' ? self::STATUS_RENDER['active']['hsh'] : '';
-            $hsh .= $status_key == 'active' ? self::STATUS_RENDER['without-new-and-leaving']['hsh'] : '';
 
             $class = isset(self::STATUS_RENDER[$status_key]['cl']) ? ' class="' . self::STATUS_RENDER[$status_key]['cl'] . '"' : '';
 
@@ -857,6 +861,17 @@ class MassTransactionController extends AbstractController
             $out .= 'data-user-id="' . $user_id . '" ';
             $out .= 'data-balance="' . $user['saldo'] . '" ';
             $out .= 'data-minlimit="' . $user['minlimit'] . '"';
+
+            if ($status_key === 'new')
+            {
+                $out .= ' data-new-account';
+            }
+
+            if ($status_key === 'leaving')
+            {
+                $out .= ' data-leaving-account';
+            }
+
             $out .= '>';
             $out .= '</td>';
 

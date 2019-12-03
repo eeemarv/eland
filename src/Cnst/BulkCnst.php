@@ -7,6 +7,13 @@ use App\Cnst\StatusCnst;
 
 class BulkCnst
 {
+    const MOLLIE_TPL_VARS = [
+        'betaal_link'           => 'payment_link',
+        'naam' 					=> 'name',
+        'volledige_naam'		=> 'fullname',
+        'account_code'			=> 'letscode',
+    ];
+
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
         'volledige_naam'		=> 'fullname',

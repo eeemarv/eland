@@ -9,8 +9,6 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\BtnNavRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -61,7 +59,7 @@ class MollieConfigController extends AbstractController
                     ['id' => 'mollie']);
 
                 $alert_service->success('De Mollie Apikey is aangepast.');
-                $link_render->redirect('mollie_payment_requests', $pp->ary(), []);
+                $link_render->redirect('mollie_payments', $pp->ary(), []);
             }
 
             $alert_service->error($errors);
@@ -79,14 +77,13 @@ class MollieConfigController extends AbstractController
         }
 
         $heading_render->add('Mollie configuratie');
-        $heading_render->fa('money');
+        $heading_render->fa('eur');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading"><p>';
         $out .= 'Om betalingen met <a href="https://www.mollie.com/nl/">Mollie</a> te ontvangen moet ';
         $out .= 'moet je op de <a href="https://www.mollie.com/nl/">Mollie-website</a> een account aanmaken voor je organisatie.';
         $out .= 'Dit kan enkel voor organisaties met handelsregisternummer en zakelijk bankaccount. ';
-        $out .= 'Op de <a href="https://www.mollie.com/nl/">Mollie website</a> vind je de tarieven.';
         $out .= '</p>';
 
         $out .= '<form method="post">';
@@ -109,8 +106,9 @@ class MollieConfigController extends AbstractController
         $out .= '(Met <code>test_</code> kan je enkel testen en geen betalingen ontvangen.)</p>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('mollie_payment_requests', $pp->ary(), []);
+        $out .= $link_render->btn_cancel('mollie_payments', $pp->ary(), []);
 
+        $out .= '&nbsp;';
         $out .= '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary btn-lg">';
         $out .= $form_token_service->get_hidden_input();
 
@@ -119,7 +117,7 @@ class MollieConfigController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set('mollie_payment_requests');
+        $menu_service->set('mollie_payments');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

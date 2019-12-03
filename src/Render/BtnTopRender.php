@@ -110,6 +110,34 @@ class BtnTopRender
 			], 'key');
 	}
 
+	public function create(
+		string $route,
+		array $context_params,
+		array $params,
+		string $title = 'Toevoegen'):void
+	{
+		$this->out[] = $this->link_render->link_fa_collapse($route,
+			$context_params, $params,
+			'Aanmaken', [
+				'class'	=> 'btn btn-success btn-lg',
+				'title'	=> $title,
+			], 'plus');
+	}
+
+	public function config(
+		string $route,
+		array $context_params,
+		array $params,
+		string $title = 'Configuratie'):void
+	{
+		$this->out[] = $this->link_render->link_fa_collapse($route,
+			$context_params, $params,
+			'Configuratie', [
+				'class'	=> 'btn btn-info btn-lg',
+				'title'	=> $title,
+			], 'cog');
+	}
+
 	public function local(string $link, string $title, string $fa):void
 	{
 		$out = '<a href="';

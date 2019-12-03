@@ -553,7 +553,6 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-
         $out .= $pagination_render->get();
 
         if (!count($transactions))

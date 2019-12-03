@@ -283,24 +283,24 @@ mollie_config:
   controller: App\Controller\MollieConfigController
   methods: GET|POST
 
-mollie_payment_requests_bulk_add:
+mollie_payment_requests_add:
   path: /mollie/payments-requests/bulk-add
-  controller: App\Controller\MolliePaymentRequestsBulkAddController
+  controller: App\Controller\MolliePaymentRequestsAddController
   methods: GET|POST
 
-mollie_payment_requests_bulk:
-  path: /mollie/payments-requests/bulk
-  controller: App\Controller\MolliePaymentRequestsBulkController
+mollie_payments_add:
+  path: /mollie/payments/add/{status<%assert.account_status%>?active}
+  controller: App\Controller\MolliePaymentsAddController
   methods: GET
 
-mollie_payment_requests_edit:
-  path: /mollie/payment-requests/{id}/edit
-  controller: App\Controller\MolliePaymentRequestsEditController
+mollie_payments_edit:
+  path: /mollie/payments/{id}/edit
+  controller: App\Controller\MolliePaymentsEditController
   methods: GET|POST
 
-mollie_payment_requests:
-  path: /mollie/payment-requests
-  controller: App\Controller\MolliePaymentRequestsController
+mollie_payments:
+  path: /mollie/payments
+  controller: App\Controller\MolliePaymentsController
   methods: GET
 
 home_admin:
