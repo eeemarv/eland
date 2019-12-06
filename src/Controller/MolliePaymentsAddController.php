@@ -71,6 +71,8 @@ class MolliePaymentsAddController extends AbstractController
         $description = trim($request->request->get('description', ''));
         $verify = $request->request->get('verify');
 
+//---------
+
         $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
             where id = \'mollie\'');
@@ -91,6 +93,8 @@ class MolliePaymentsAddController extends AbstractController
                 $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
                 '. Betalingen kunnen niet uitgevoerd worden!');
         }
+
+//--------
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
@@ -345,7 +349,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<tr>';
         $out .= '<th data-sort-initial="true">Account</th>';
         $out .= '<th data-sort-ignore="true">Bedrag</th>';
-        $out .= '<th>Vorige</th>';
+        $out .= '<th title="Het vorige betaalverzoek">Vorige</th>';
         $out .= '</tr>';
 
         $out .= '</thead>';

@@ -53,7 +53,6 @@ class MolliePaymentsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        LoggerInterface $logger,
         AlertService $alert_service,
         AccountRender $account_render,
         PaginationRender $pagination_render,
@@ -92,6 +91,31 @@ class MolliePaymentsController extends AbstractController
         $bulk_cancel_verify = $request->request->has('bulk_cancel_verify');
         $bulk_cancel_submit = $request->request->has('bulk_cancel_submit');
 
+//----------
+
+        $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
+            from ' . $pp->schema() . '.config
+            where id = \'mollie\'');
+
+        if (!$mollie_apikey ||
+            !(strpos($mollie_apikey, 'test_') === 0
+            || strpos($mollie_apikey, 'live_') === 0))
+        {
+            $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
+                er is geen Mollie apikey ingesteld in de ' .
+                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
+
+                $no_mollie_apikey = true;
+        }
+        else if (strpos($mollie_apikey, 'live_') !== 0)
+        {
+            $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
+                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
+                '. Betalingen kunnen niet uitgevoerd worden!');
+        }
+
+//-------------
+
         $where_sql = [];
         $params_sql = [];
 
@@ -106,6 +130,104 @@ class MolliePaymentsController extends AbstractController
             ],
         ];
 
+        if (isset($filter['uid']))
+        {
+            $filter['code'] = $account_render->str($filter['uid'], $pp->schema());
+            $params['f']['uid'] = $filter['uid'];
+        }
+
+        if (isset($filter['q']) && $filter['q'])
+        {
+            $where_sql[] = 'r.description ilike ?';
+            $params_sql[] = '%' . $filter['q'] . '%';
+            $params['f']['q'] = $filter['q'];
+        }
+
+        if (isset($filter['code']) && $filter['code'])
+        {
+            [$code] = explode(' ', trim($filter['code']));
+            $code = trim($code);
+
+            $uid = $db->fetchColumn('select id
+                from ' . $pp->schema() . '.users
+                where letscode = ?', [$code]);
+
+            $where_sql[] = 'u.id = ?';
+            $params_sql[] = $uid ?: 0;
+
+            if ($uid)
+            {
+                $code = $account_render->str($uid, $pp->schema());
+            }
+
+            $params['f']['code'] = $code;
+        }
+
+        $filter_status = isset($filter['status']) &&
+            !(isset($filter['status']['open'])
+                && isset($filter['status']['payed'])
+                && isset($filter['status']['canceled']));
+
+        if ($filter_status)
+        {
+            $where_status_sql = [];
+
+            if (isset($filter['status']['open']))
+            {
+                $where_status_sql[] = '(p.is_payed = \'f\'::bool and p.is_canceled = \'f\'::bool)';
+                $params['f']['status']['open'] = 'on';
+            }
+
+            if (isset($filter['status']['payed']))
+            {
+                $where_status_sql[] = 'p.is_payed = \'t\'::bool';
+                $params['f']['status']['payed'] = 'on';
+            }
+
+            if (isset($filter['status']['canceled']))
+            {
+                $where_status_sql[] = 'p.is_canceled = \'t\'::bool';
+                $params['f']['status']['canceled'] = 'on';
+            }
+
+            if (count($where_status_sql))
+            {
+                $where_sql[] = '(' . implode(' or ', $where_status_sql) . ')';
+            }
+        }
+
+        if (isset($filter['fdate']) && $filter['fdate'])
+        {
+            $fdate_sql = $date_format_service->reverse($filter['fdate'], $pp->schema());
+
+            if ($fdate_sql === '')
+            {
+                $alert_service->warning('De begindatum is fout geformateerd.');
+            }
+            else
+            {
+                $where_sql[] = 'p.created_at >= ?';
+                $params_sql[] = $fdate_sql;
+                $params['f']['fdate'] = $fdate = $filter['fdate'];
+            }
+        }
+
+        if (isset($filter['tdate']) && $filter['tdate'])
+        {
+            $tdate_sql = $date_format_service->reverse($filter['tdate'], $pp->schema());
+
+            if ($tdate_sql === '')
+            {
+                $alert_service->warning('De einddatum is fout geformateerd.');
+            }
+            else
+            {
+                $where_sql[] = 'p.created_at <= ?';
+                $params_sql[] = $tdate_sql;
+                $params['f']['tdate'] = $tdate = $filter['tdate'];
+            }
+        }
+
         if (count($where_sql))
         {
             $where_sql = ' and ' . implode(' and ', $where_sql);
@@ -117,7 +239,7 @@ class MolliePaymentsController extends AbstractController
 
         $payments = [];
 
-        $rs = $db->prepare('select p.*, r.description,
+        $rs = $db->executeQuery('select p.*, r.description,
             u.letscode, u.name, u.fullname, u.status, u.adate,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p,
@@ -134,9 +256,8 @@ class MolliePaymentsController extends AbstractController
             order by p.' . $params['s']['orderby'] . '
             ' . ($params['s']['asc'] ? 'asc' : 'desc') . '
             limit ' . $params['p']['limit'] . '
-            offset ' . $params['p']['start']);
-
-        $rs->execute();
+            offset ' . $params['p']['start'],
+        $params_sql);
 
         while ($row = $rs->fetch())
         {
@@ -152,8 +273,12 @@ class MolliePaymentsController extends AbstractController
         }
 
         $row = $db->fetchAssoc('select count(p.*), sum(p.amount)
-            from ' . $pp->schema() . '.mollie_payments p ' .
-            $where_sql, $params_sql);
+            from ' . $pp->schema() . '.mollie_payments p,
+                ' . $pp->schema() . '.mollie_payment_requests r,
+                ' . $pp->schema() . '.users u
+            where p.request_id = r.id
+                and p.user_id = u.id
+                ' . $where_sql, $params_sql);
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
@@ -216,6 +341,11 @@ class MolliePaymentsController extends AbstractController
                         where p.is_canceled = \'f\'::bool
                             and p.is_payed = \'f\'::bool)');
 
+                foreach ($users_cancel_ary as $user_id => $dummy)
+                {
+                    $user_cache_service->clear((int) $user_id, $pp->schema());
+                }
+
                 $success = [];
 
                 switch(count($cancel_ary))
@@ -262,6 +392,11 @@ class MolliePaymentsController extends AbstractController
             if (!$bulk_mail_verify)
             {
                 $errors[] = 'Het nazichtsvakje is niet aangevinkt.';
+            }
+
+            if (isset($no_mollie_apikey))
+            {
+                $errors[] = 'Er is geen Mollie Apikey ingesteld.';
             }
 
             if ($su->is_master())
@@ -423,7 +558,9 @@ class MolliePaymentsController extends AbstractController
         $btn_nav_render->csv();
 
         $filtered = !isset($filter['uid']) && (
-            (isset($filter['code']) && $filter['code'] !== '')
+            (isset($filter['q']) && $filter['q'] !== '')
+            || (isset($filter['code']) && $filter['code'] !== '')
+            || isset($filter['status'])
             || (isset($filter['fdate']) && $filter['fdate'] !== '')
             || (isset($filter['tdate']) && $filter['tdate'] !== ''));
 
@@ -431,6 +568,8 @@ class MolliePaymentsController extends AbstractController
         $heading_render->fa('eur');
         $heading_render->add_filtered($filtered);
         $heading_render->btn_filter();
+
+//------------------
 
         $out = '<div class="panel panel-info';
         $out .= $filtered ? '' : ' collapse';
@@ -441,24 +580,20 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '<div class="row">';
 
-        $out .= '<div class="col-sm-12">';
+        $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-search"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" value="';
         $out .= $filter['q'] ?? '';
-        $out .= '" name="f[q]" placeholder="Zoekterm">';
+        $out .= '" name="f[q]" placeholder="Omschrijving">';
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '</div>';
-
-        $out .= '<div class="row">';
-
-        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">Van ';
+        $out .= '<span class="input-group-addon" id="code_addon">';
         $out .= '<span class="fa fa-user"></span></span>';
 
         $out .= '<input type="text" class="form-control" ';
@@ -487,20 +622,26 @@ class MolliePaymentsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tcode_addon">Naar ';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'data-typeahead-source="code" ';
-        $out .= 'placeholder="Account Code" ';
-        $out .= 'aria-describedby="code_addon" ';
-        $out .= 'name="f[code]" value="';
-        $out .= $code ?? '';
-        $out .= '">';
-        $out .= '</div>';
         $out .= '</div>';
 
+        $out .= '<div class="col-md-12">';
+        $out .= '<div class="input-group margin-bottom">';
+
+        foreach (self::STATUS_RENDER as $key => $render)
+        {
+            $name = 'f[status][' . $key . ']';
+            $out .= '<label class="checkbox-inline" for="' . $name . '">';
+            $out .= '<input type="checkbox" id="' . $name . '" ';
+            $out .= 'name="' . $name . '"';
+            $out .= isset($filter['status'][$key]) ? ' checked' : '';
+            $out .= '>&nbsp;';
+            $out .= '<span class="label label-' . $render['class'] . '">';
+            $out .= $render['label'];
+            $out .= '</span>';
+            $out .= '</label>';
+        }
+
+        $out .= '</div>';
         $out .= '</div>';
 
         $out .= '<div class="row">';
@@ -598,12 +739,14 @@ class MolliePaymentsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out = $pagination_render->get();
+//---------------------------------
+
+        $out .= $pagination_render->get();
 
         $out .= '<div class="panel panel-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover panel-body footable" ';
+        $out .= 'table-hover panel-body footable csv" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1">';
         $out .= '<thead>';
 
@@ -808,5 +951,30 @@ class MolliePaymentsController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
+    }
+
+    public static function get_checkbox_filter(
+        array $checkbox_ary,
+        string $filter_id,
+        array $filter_ary
+    ):string
+    {
+        $out = '';
+
+        foreach ($checkbox_ary as $key => $label)
+        {
+            $id = 'f_' . $filter_id . '_' . $key;
+            $out .= '<label class="checkbox-inline" for="' . $id . '">';
+            $out .= '<input type="checkbox" id="' . $id . '" ';
+            $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
+            $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
+            $out .= '>&nbsp;';
+            $out .= '<span class="btn btn-default">';
+            $out .= $label;
+            $out .= '</span>';
+            $out .= '</label>';
+        }
+
+        return $out;
     }
 }

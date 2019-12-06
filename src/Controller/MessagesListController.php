@@ -926,7 +926,7 @@ class MessagesListController extends AbstractController
         }
 
         $pagination_render->init($vr->get('messages'), $pp->ary(),
-            $row_count, $params);
+            (int) $row_count, $params);
 
         $categories_filter_options = ['' => '-- alle categorieën --'];
         $categories_move_options = ['' => ''];
