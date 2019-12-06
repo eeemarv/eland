@@ -69,4 +69,6 @@ $(document).ready(function(){
 
 		recalc_sum();
 	}
+
+	recalc_sum();
 });

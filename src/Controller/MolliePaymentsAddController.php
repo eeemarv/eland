@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Cnst\BulkCnst;
 use App\Cnst\StatusCnst;
+use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
@@ -12,6 +13,7 @@ use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
+use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
@@ -20,6 +22,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,12 +40,14 @@ class MolliePaymentsAddController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         AlertService $alert_service,
+        UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
         AccountRender $account_render,
         HeadingRender $heading_render,
+        DateFormatService $date_format_service,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -52,6 +57,7 @@ class MolliePaymentsAddController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
+        HtmlPurifier $html_purifier,
         AssetsService $assets_service
     ):Response
     {
@@ -63,10 +69,28 @@ class MolliePaymentsAddController extends AbstractController
         $q = $request->get('q', '');
         $amount = $request->request->get('amount', []);
         $description = trim($request->request->get('description', ''));
-        $mail_subject = $request->request->get('mail_subject', '');
-        $mail_content = $request->request->get('mail_content', '');
-        $mail_cc = $request->request->has('mail_cc');
-        $verify = $request->request->has('verify');
+        $verify = $request->request->get('verify');
+
+        $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
+            from ' . $pp->schema() . '.config
+            where id = \'mollie\'');
+
+        if (!$mollie_apikey ||
+            !(strpos($mollie_apikey, 'test_') === 0
+            || strpos($mollie_apikey, 'live_') === 0))
+        {
+            $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
+                er is geen Mollie apikey ingesteld in de ' .
+                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
+
+                $no_mollie_apikey = true;
+        }
+        else if (strpos($mollie_apikey, 'live_') !== 0)
+        {
+            $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
+                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
+                '. Betalingen kunnen niet uitgevoerd worden!');
+        }
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
@@ -83,23 +107,43 @@ class MolliePaymentsAddController extends AbstractController
 
         $users = [];
 
-        $users = $db->fetchAll(
-            'select u.id, u.name, u.letscode,
-                u.accountrole, u.status, u.adate
+        $stmt = $db->executeQuery(
+            'select u.id, u.name, u.fullname, u.letscode,
+                u.accountrole, u.status, u.adate,
+                p1.is_payed, p1.is_canceled, p1.created_at as last_created_at,
+                p1.amount, p1.description
             from ' . $pp->schema() . '.users u
-                left join ' . $pp->schema() . '.contact c
-                    on c.id_user = c.id
+            left join lateral (select p.*, r.description
+                from ' . $pp->schema() . '.mollie_payments p,
+                    ' . $pp->schema() . '.mollie_payment_requests r
+                where p.user_id = u.id
+                    and r.id = p.request_id
+                order by p.created_at desc
+                limit 1) p1
+            on \'t\'::bool
             where ' . $where_sql . '
-            order by letscode asc', $params_sql);
+            order by u.letscode asc', $params_sql);
+
+        while($row = $stmt->fetch())
+        {
+            $users[$row['id']] = $row;
+        }
 
         if ($request->isMethod('POST'))
         {
+            $user_id_ary = [];
+
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
             }
 
-            if (!$request->request->has('verify'))
+            if (isset($no_mollie_apikey))
+            {
+                $errors[] = 'Er is geen Mollie apikey geconfigureerd.';
+            }
+
+            if (!$verify)
             {
                 $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
             }
@@ -109,13 +153,14 @@ class MolliePaymentsAddController extends AbstractController
                 $errors[] = 'Vul een omschrijving in.';
             }
 
-            $count = 0;
+            $count_amounts = 0;
 
-            foreach ($amount as $uid => $amo)
+            foreach ($amount as $user_id => $amo)
             {
-                if (!isset($selected_users[$uid]))
+                if (!isset($users[$user_id]['letscode'])
+                    || $users[$user_id]['letscode'] === '')
                 {
-                    continue;
+                    $errors[] = 'Er is geen Account Code ingesteld voor gebruiker met naam ' . $users[$user_id]['name'];
                 }
 
                 if (!$amo)
@@ -123,42 +168,72 @@ class MolliePaymentsAddController extends AbstractController
                     continue;
                 }
 
-                $count++;
+                $count_amounts++;
 
-                if (!filter_var($amo, FILTER_VALIDATE_INT, $filter_options))
+                $amo = strtr($amo, ',', '.');
+
+                if (preg_match('/^([1-9]\d*)(\.\d{2})?$/', $amo) !== 1)
                 {
                     $errors[] = 'Ongeldig bedrag ingevuld.';
                     break;
                 }
+
+                $user_id_ary[] = (int) $user_id;
             }
 
-            if (!$count)
+            if (!$count_amounts)
             {
                 $errors[] = 'Er is geen enkel bedrag ingevuld.';
             }
 
             if (!count($errors))
             {
+                $db->insert($pp->schema() . '.mollie_payment_requests', [
+                    'description'   => $description,
+                    'created_by'    => $su->id(),
+                ]);
 
-                // process
+                $request_id = (int) $db->lastInsertId($pp->schema() . '.mollie_payment_requests_id_seq');
 
-                $alert_service->success('E-mails verzonden.');
+                foreach($user_id_ary as $user_id)
+                {
+                    $user = $users[$user_id];
+                    $amo = strtr($amount[$user_id], ',', '.');
 
+                    $db->insert($pp->schema() . '.mollie_payments', [
+                        'request_id'    => $request_id,
+                        'amount'        => $amo,
+                        'user_id'       => $user_id,
+                        'currency'      => 'EUR',
+                        'created_by'    => $su->id(),
+                    ]);
+
+                    $db->update($pp->schema() . '.users', [
+                        'has_open_mollie_payment'   => 't',
+                    ], ['id' => $user_id]);
+
+                    $user_cache_service->clear($user_id, $pp->schema());
+                }
+
+                $success = [];
+
+                if (count($user_id_ary) === 1)
+                {
+                    $success[] = 'Betaalverzoek met omschrijving "' . $description . '" aangemaakt.';
+                }
+                else
+                {
+                    $success[] = 'Betaalverzoeken met omschrijving "' . $description . '" aangemaakt.';
+                }
+
+                $alert_service->success($success);
                 $link_render->redirect('mollie_payments', $pp->ary(), []);
             }
 
             $alert_service->error($errors);
         }
 
-        if ($request->isMethod('GET'))
-        {
-            $mail_cc = true;
-        }
-
         $assets_service->add([
-            'codemirror',
-            'summernote',
-            'summernote_email.js',
             'mollie_payments_add.js',
         ]);
 
@@ -178,22 +253,25 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<i class="fa fa-eur"></i>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
-        $out .= 'min="0">';
+        $out .= 'min="0" value="" step="0.01">';
         $out .= '</div>';
         $out .= '<p>Hiermee vul je dit bedrag in voor alle accounts hieronder. ';
         $out .= 'Je kan daarna nog individuele bedragen aanpassen ';
         $out .= 'of wissen (op nul zetten) alvorens het ';
-        $out .= 'betaalverzoek te creëren.</p>';
+        $out .= 'betaalverzoek te creëren. ';
+        $out .= 'Enkel gehele getallen zijn mogelijk (geen cijfers na de komma).</p>';
         $out .= '</div>';
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'omit_new',
             '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
+            '%attr%'    => '',
         ]);
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'omit_leaving',
             '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
+            '%attr%'    => '',
         ]);
 
         $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
@@ -267,7 +345,6 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<tr>';
         $out .= '<th data-sort-initial="true">Account</th>';
         $out .= '<th data-sort-ignore="true">Bedrag</th>';
-        $out .= '<th>E-mail</th>';
         $out .= '<th>Vorige</th>';
         $out .= '</tr>';
 
@@ -276,9 +353,8 @@ class MolliePaymentsAddController extends AbstractController
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
-        foreach($users as $user)
+        foreach($users as $user_id => $user)
         {
-            $user_id = $user['id'];
             $user_status = $user['status'];
 
             if (isset($user['adate'])
@@ -297,18 +373,18 @@ class MolliePaymentsAddController extends AbstractController
                 $out .= '"';
             }
 
-            $out .= '"><td>';
+            $out .= '><td>';
 
             $td = [];
 
-            $td[] = $account_render->link($user_id, $pp->ary());
+            $td[] = $account_render->link((int) $user_id, $pp->ary());
 
             $td_inp = '<div class="input-group">';
             $td_inp .= '<span class="input-group-addon">';
             $td_inp .= '<i class="fa fa-eur"></i>';
             $td_inp .= '</span>';
             $td_inp .= '<input type="number" name="amount[' . $user_id . ']" ';
-            $td_inp .= 'class="form-control" ';
+            $td_inp .= 'class="form-control" step="0.01" ';
             $td_inp .= 'value="';
             $td_inp .= $amount[$user_id] ?? '';
             $td_inp .= '" ';
@@ -329,16 +405,38 @@ class MolliePaymentsAddController extends AbstractController
 
             $td[] = $td_inp;
 
-            if (!isset($user['email']) || !$user['email'])
+            if (isset($user['amount']))
             {
-                $td[] = '<i class="fa fa-ok" title="E-mail adres ingesteld"></i>';
+                $payment_str = '<span title="';
+                $payment_str .= htmlspecialchars($user['description'], ENT_QUOTES);
+                $payment_str .= "\n";
+                $payment_str .= 'EUR ' . strtr($user['amount'], '.', ',');
+                $payment_str .= "\n";
+                $payment_str .= ' @';
+                $payment_str .= $date_format_service->get($user['last_created_at'], 'day', $pp->schema());
+                $payment_str .= '" ';
+                $payment_str .= 'class="label label-';
+
+                if ($user['is_canceled'])
+                {
+                    $payment_str .= 'default">geannuleerd';
+                }
+                else if ($user['is_payed'])
+                {
+                    $payment_str .= 'success">betaald';
+                }
+                else
+                {
+                    $payment_str .= 'warning">open';
+                }
+
+                $td[] = $payment_str . '</span>';
+
             }
             else
             {
-                $td[] = '<i class="fa fa-times" title="Geen E-mail adres ingesteld"></i>';
+                $td[] = '<i class="fa fa-times" title="Geen betaalverzoeken"></i>';
             }
-
-            $td[] = 'vorige';
 
             $out .= implode('</td><td>', $td);
 
@@ -357,7 +455,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-eur"></i>';
         $out .= '</span>';
-        $out .= '<input type="number" class="form-control" id="total" readonly>';
+        $out .= '<input type="number" class="form-control" id="total" readonly step="0.01">';
         $out .= '</div>';
         $out .= '<p>Exclusief <a href="https://www.mollie.com/nl/pricing/">Mollie transactie-kosten</a>. ';
 
@@ -387,41 +485,6 @@ class MolliePaymentsAddController extends AbstractController
         $out .= 'tekens. Meer tekens worden afgekapt. </p>';
         $out .= '</div>';
 
-        $out .= '<div class="pan-sub bg-warning">';
-        $out .= '<h3>Betaalverzoek E-mail</h3>';
-        $out .= '<p>Deze E-mail wordt verstuurd naar alle accounts ';
-        $out .= 'waar een E-mail adres is ingesteld. Zorg ervoor dat ';
-        $out .= 'de variable <code>{{ betaal_link }}</code> is opgenomen ';
-        $out .= 'in de E-mail (Gebruik de <code>Variabelen</code> knop).';
-
-        $out .= '<div class="form-group">';
-        $out .= '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
-        $out .= 'placeholder="Onderwerp" ';
-        $out .= 'value="';
-        $out .= $mail_subject;
-        $out .= '" required>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<textarea name="bulk_mail_content" ';
-        $out .= 'class="form-control summernote" ';
-        $out .= 'id="bulk_mail_content" rows="8" ';
-        $out .= 'data-template-vars="';
-        $out .= implode(',', array_keys(BulkCnst::MOLLIE_TPL_VARS));
-        $out .= '" ';
-        $out .= 'required>';
-        $out .= $mail_content;
-        $out .= '</textarea>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'mail_cc',
-            '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
-            '%attr%'    => $mail_cc ? ' checked' : '',
-        ]);
-
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'verify',
             '%label%'   => 'Ik heb alles nagekeken.',
@@ -440,12 +503,9 @@ class MolliePaymentsAddController extends AbstractController
 
         $out .= '</form>';
 
-        $out .= '<p>Een betaalverzoek wordt op twee wijzen kenbaar gemaakt ';
-        $out .= 'aan de gebruikers: </p>';
-        $out .= '<ul><li>Met een betaalverzoek E-mail</li>';
-        $out .= '<li>Met een betaalverzoek boodschap bovenaan elke pagina wanneer de gebruiker ';
-        $out .= 'ingelogd is. De boodschap verdwijnt van zodra de betaling uitgevoerd is of ';
-        $out .= 'geannuleerd door een admin.</li></ul>';
+        $out .= '<p>Wanneer ingelogd ziet de gebruiker met een openstaand betaalverzoek ';
+        $out .= 'bovenaan elke pagina een link om de betaling via de Mollie website ';
+        $out .= 'uit te voeren.</p>';
 
         $menu_service->set('mollie_payments');
 

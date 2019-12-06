@@ -79,7 +79,7 @@ class UsersListController extends AbstractController
         $selected_users = $request->request->get('sel', []);
         $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
         $bulk_mail_content = $request->request->get('bulk_mail_content', '');
-        $bulk_mail_cc = $request->request->get('bulk_mail_cc', '') ? true : false;
+        $bulk_mail_cc = $request->request->has('bulk_mail_cc');
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
         $bulk_submit = $request->request->get('bulk_submit', []);
@@ -311,7 +311,9 @@ class UsersListController extends AbstractController
                     $sel_ary = $selected_users;
                 }
 
-                $alert_users_sent_ary = $mail_users_sent_ary = [];
+                $alert_users_sent_ary = [];
+                $mail_users_sent_ary = [];
+                $sent_to_ary = [];
 
                 $bulk_mail_content = $html_purifier->purify($bulk_mail_content);
 
@@ -353,12 +355,24 @@ class UsersListController extends AbstractController
                         'template'			=> 'skeleton',
                     ], random_int(200, 2000));
 
+                    $sent_to_ary[] = (int) $sel_user['id'];
                     $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
                     $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $pp->ary());
                 }
 
                 if (count($alert_users_sent_ary))
                 {
+                    if ($bulk_submit_action === 'mail')
+                    {
+                        $db->insert($pp->schema() . '.emails', [
+                            'subject'       => $bulk_mail_subject,
+                            'content'       => $bulk_mail_content,
+                            'route'         => $request->attributes->get('_route'),
+                            'sent_to'       => json_encode($sent_to_ary),
+                            'created_by'    => $su->id(),
+                        ]);
+                    }
+
                     $msg_users_sent = 'E-mail verzonden naar ';
                     $msg_users_sent .= count($alert_users_sent_ary);
                     $msg_users_sent .= ' ';

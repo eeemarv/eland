@@ -39,9 +39,11 @@ class MollieConfigController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            if (strpos($apikey, 'live_') !== 0 && strpos($apikey, 'test_') !== 0)
+            if ($apikey !== ''
+                && strpos($apikey, 'live_') !== 0
+                && strpos($apikey, 'test_') !== 0)
             {
-                $errors[] = 'De Mollie apikey moet beginnen met live_ of test_';
+                $errors[] = 'De Mollie apikey moet beginnen met <code>live_</code> of <code>test_</code>';
             }
 
             if (!count($errors))

@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use App\Cnst\StatusCnst;
+use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -23,6 +25,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +35,21 @@ use Psr\Log\LoggerInterface;
 
 class MolliePaymentsController extends AbstractController
 {
+    const STATUS_RENDER = [
+        'open'      => [
+            'label'     => 'open',
+            'class'     => 'warning',
+        ],
+        'payed'     => [
+            'label'     => 'betaald',
+            'class'     => 'success',
+        ],
+        'canceled'  => [
+            'label'     => 'geannuleerd',
+            'class'     => 'default',
+        ],
+    ];
+
     public function __invoke(
         Request $request,
         Db $db,
@@ -54,16 +72,28 @@ class MolliePaymentsController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
+        UserCacheService $user_cache_service,
+        HtmlPurifier $html_purifier,
         AssetsService $assets_service
     ):Response
     {
         $errors = [];
 
-        $where_sql = $params_sql = [];
-
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
+
+        $selected = $request->request->get('sel', []);
+        $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
+        $bulk_mail_content = $request->request->get('bulk_mail_content', '');
+        $bulk_mail_cc = $request->request->has('bulk_mail_cc');
+        $bulk_mail_verify = $request->request->has('bulk_mail_verify');
+        $bulk_mail_submit = $request->request->has('bulk_mail_submit');
+        $bulk_cancel_verify = $request->request->has('bulk_cancel_verify');
+        $bulk_cancel_submit = $request->request->has('bulk_cancel_submit');
+
+        $where_sql = [];
+        $params_sql = [];
 
         $params = [
             's'	=> [
@@ -75,8 +105,6 @@ class MolliePaymentsController extends AbstractController
                 'limit'		=> $pag['limit'] ?? 100,
             ],
         ];
-
-
 
         if (count($where_sql))
         {
@@ -90,10 +118,16 @@ class MolliePaymentsController extends AbstractController
         $payments = [];
 
         $rs = $db->prepare('select p.*, r.description,
-            u.letscode, u.name, u.status, u.adate
+            u.letscode, u.name, u.fullname, u.status, u.adate,
+            c.value as mail
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
                 ' . $pp->schema() . '.users u
+            left join ' . $pp->schema() . '.contact c
+                on c.id_user = u.id
+                    and c.id_type_contact = (select t.id
+                        from ' . $pp->schema() . '.type_contact t
+                        where t.abbrev = \'mail\')
             where p.request_id = r.id
                 and p.user_id = u.id
                 ' . $where_sql . '
@@ -106,7 +140,15 @@ class MolliePaymentsController extends AbstractController
 
         while ($row = $rs->fetch())
         {
-            $payments[$row['id']] = $row;
+            if (!isset($payments[$row['id']]))
+            {
+                $payments[$row['id']] = $row;
+            }
+
+            if (isset($row['mail']))
+            {
+                $payments[$row['id']]['has_email'] = true;
+            }
         }
 
         $row = $db->fetchAssoc('select count(p.*), sum(p.amount)
@@ -121,15 +163,255 @@ class MolliePaymentsController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
+            if ($error_token = $form_token_service->get_error())
+            {
+                $errors[] = $error_token;
+            }
 
+            if (!$selected)
+            {
+                $errors[] = 'Er is geen enkel betaalverzoek geselecteerd.';
+            }
         }
-        else
-        {
 
+        if ($request->isMethod('POST')
+            && $bulk_cancel_submit
+            && !count($errors))
+        {
+            if (!$bulk_cancel_verify)
+            {
+                $errors[] = 'Het nazichtsvakje is niet aangevinkt.';
+            }
+
+            $cancel_ary = [];
+            $users_cancel_ary = [];
+
+            foreach ($selected as $payment_id => $dummy)
+            {
+                $payment = $payments[$payment_id];
+
+                if (!$payment['is_payed'] && !$payment['is_canceled'])
+                {
+                    $cancel_ary[] = (int) $payment_id;
+                    $users_cancel_ary[$payment['user_id']] = true;
+                }
+            }
+
+            if (!count($cancel_ary))
+            {
+                $errors[] = 'Geen betaalverzoeken geselecteerd die geannuleerd kunnen worden.';
+            }
+
+            if (!count($errors))
+            {
+                $db->executeUpdate('update ' . $pp->schema() . '.mollie_payments
+                    set canceled_by = ? where id in (?)',
+                    [$su->id(), $cancel_ary],
+                    [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY]);
+
+                $db->executeUpdate('update ' . $pp->schema() . '.users u
+                    set has_open_mollie_payment = \'f\'::bool
+                    where u.id not in (select p.user_id
+                        from ' . $pp->schema() . '.mollie_payments p
+                        where p.is_canceled = \'f\'::bool
+                            and p.is_payed = \'f\'::bool)');
+
+                $success = [];
+
+                switch(count($cancel_ary))
+                {
+                    case 0:
+                        //
+                    break;
+                    case 1:
+                        $success[] = 'Betaalverzoek geannuleerd:';
+                    break;
+                    default:
+                        $success[] = 'Betaalverzoeken geannuleerd:';
+                    break;
+                }
+
+                foreach($cancel_ary as $payment_id)
+                {
+                    $payment = $payments[$payment_id];
+                    $cancel_str = $account_render->link($payment['user_id'], $pp->ary());
+                    $cancel_str .= ', ';
+                    $cancel_str .= strtr($payment['amount'], '.', ',') . ' EUR, "';
+                    $cancel_str .= htmlspecialchars($payment['description'], ENT_QUOTES);
+                    $cancel_str .= '"';
+                    $success[] = $cancel_str;
+                }
+
+                $alert_service->success($success);
+                $link_render->redirect('mollie_payments', $pp->ary(), []);
+            }
+        }
+
+        if ($request->isMethod('POST')
+            && $bulk_mail_submit
+            && !count($errors))
+        {
+            $sent_to_ary = [];
+            $not_sent_ary = [];
+
+            if (!$config_service->get('mailenabled', $pp->schema()))
+            {
+                $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
+            }
+
+            if (!$bulk_mail_verify)
+            {
+                $errors[] = 'Het nazichtsvakje is niet aangevinkt.';
+            }
+
+            if ($su->is_master())
+            {
+                $errors[] = 'Het master account kan geen E-mails verzenden.';
+            }
+
+            if (!$bulk_mail_subject)
+            {
+                $errors[] = 'Vul een onderwerp in voor je E-mail.';
+            }
+
+            if (!$bulk_mail_content)
+            {
+                $errors[] = 'De E-mail is leeg.';
+            }
+
+            foreach ($selected as $payment_id => $dummy_value)
+            {
+                if (isset($payments[$payment_id]['has_email']))
+                {
+                    $sent_to_ary[] = (int) $payments[$payment_id]['user_id'];
+                }
+                else
+                {
+                    $not_sent_ary[] = (int) $payments[$payment_id]['user_id'];
+                }
+            }
+
+            if (!count($sent_to_ary))
+            {
+                $errors[] = 'Geen enkele gebruiker van de geselecteerde betaalverzoeken met E-mail adres.';
+            }
+
+            if (!count($errors))
+            {
+                $bulk_mail_content = $html_purifier->purify($bulk_mail_content);
+
+                $db->insert($pp->schema() . '.emails', [
+                    'subject'       => $bulk_mail_subject,
+                    'content'       => $bulk_mail_content,
+                    'sent_to'       => json_encode($sent_to_ary),
+                    'route'         => $request->attributes->get('_route'),
+                    'created_by'    => $su->id(),
+                ]);
+
+                $email_id = (int) $db->lastInsertId($pp->schema() . '.emails_id_seq');
+
+                $pp_user_ary = [
+                    'system'        => $pp->system(),
+                    'role_short'    => 'u',
+                ];
+
+                foreach($selected as $payment_id => $dummy)
+                {
+                    $payment = $payments[$payment_id];
+
+                    if (!isset($payment['has_email']))
+                    {
+                        continue;
+                    }
+
+                    $emails_sent = json_decode($payment['emails_sent'], true) ?? [];
+                    $emails_sent[] = $email_id;
+
+                    $db->update($pp->schema() . '.mollie_payments', [
+                        'emails_sent'   => json_encode($emails_sent),
+                    ], ['id' => $payment_id]);
+
+                    $payment_url = $link_render->context_url('mollie_checkout', $pp_user_ary, ['id' => $payment_id]);
+                    $payment_link = '<a href="';
+                    $payment_link .= $payment_url;
+                    $payment_link .= '">';
+                    $payment_link .= $payment_url;
+                    $payment_link .= '</a>';
+
+                    $payment['payment_link'] = $payment_link;
+
+                    $vars = [
+                        'subject'	=> $bulk_mail_subject,
+                    ];
+
+                    foreach (BulkCnst::MOLLIE_TPL_VARS as $key => $val)
+                    {
+                        $vars[$key] = $payment[$val];
+                    }
+
+                    $mail_queue->queue([
+                        'schema'			=> $pp->schema(),
+                        'to' 				=> $mail_addr_user_service->get((int) $payment['user_id'], $pp->schema()),
+                        'pre_html_template' => $bulk_mail_content,
+                        'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
+                        'vars'				=> $vars,
+                        'template'			=> 'skeleton',
+                    ], random_int(200, 2000));
+                }
+
+                $success = [];
+
+                switch(count($sent_to_ary))
+                {
+                    case 0:
+                        //
+                    break;
+                    case 1:
+                        $success[] = 'E-mail verzonden naar:';
+                    break;
+                    default:
+                        $success[] = 'E-mails verzonden naar:';
+                    break;
+                }
+
+                foreach($sent_to_ary as $user_id)
+                {
+                    $success[] = $account_render->link($user_id, $pp->ary());
+                }
+
+                switch(count($not_sent_ary))
+                {
+                    case 0:
+                    break;
+                    case 1:
+                        $success[] = 'Wegens ontbreken adres, geen E-mail verzonden naar:';
+                    break;
+                    default:
+                        $success[] = 'Wegens ontbreken adressen, geen E-mails verzonden naar:';
+                    break;
+                }
+
+                foreach($not_sent_ary as $user_id)
+                {
+                    $success[] = $account_render->link($user_id, $pp->ary());
+                }
+
+                $alert_service->success($success);
+                $link_render->redirect('mollie_payments', $pp->ary(), []);
+            }
+        }
+
+        if (count($errors))
+        {
+            $alert_service->error($errors);
         }
 
         $assets_service->add([
+            'codemirror',
+            'summernote',
+            'summernote_email.js',
             'datepicker',
+            'table_sel.js',
         ]);
 
         $btn_top_render->create('mollie_payments_add', $pp->ary(),
@@ -330,6 +612,8 @@ class MolliePaymentsController extends AbstractController
         $out .= '<th>Bedrag (EUR)</th>';
         $out .= '<th>Status</th>';
         $out .= '<th>Omschrijving</th>';
+        $out .= '<th>Datum</th>';
+        $out .= '<th title="Aantal verzonden E-mails">E-mails</th>';
         $out .= '</tr>';
 
         $out .= '</thead>';
@@ -360,17 +644,52 @@ class MolliePaymentsController extends AbstractController
             $out .= '>';
 
             $td = [];
-            $td[] = $account_render->link($payment['user_id'], $pp->ary());
-            $td[] = $payment['amount'];
-            $td[] = $link_render->link('mollie_payment_requests',
-                $pp->ary(), ['id' => $payment['request_id']],
+
+            $account_str = strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+                '%id%'      => $id,
+                '%attr%'    => isset($selected[$id]) ? ' checked' : '',
+                '%label%'   => ' ',
+            ]);
+
+            $account_str .= $account_render->link($payment['user_id'], $pp->ary());
+
+            $td[] = $account_str;
+            $td[] = strtr($payment['amount'], '.', ',');
+
+            $status_label = '<span class="label label-';
+
+            if ($payment['is_canceled'])
+            {
+                $status_label .= 'default">geannuleerd';
+            }
+            else if ($payment['is_payed'])
+            {
+                $status_label .= 'success">betaald';
+            }
+            else
+            {
+                $status_label .= 'warning">open';
+            }
+
+            $td[] = $status_label . '</span>';
+
+            $td[] = $link_render->link('mollie_payments',
+                $pp->ary(), ['request_id' => $payment['request_id']],
                 $payment['description'], []);
 
-            $out .= '<tr';
+            $td[] = $date_format_service->get($payment['created_at'], 'day', $pp->schema());
 
+            $td_emails = count(json_decode($payment['emails_sent'], true));
 
+            if (!isset($payment['has_email']))
+            {
+                $td_emails .= '&nbsp;<span class="label label-danger" title="Er is geen ';
+                $td_emails .= 'E-mail adres ingesteld voor de gebruiker.">';
+                $td_emails .= '<i class="fa fa-exclamation-triangle"></i></span>';
+            }
 
-            $out .= '><td>';
+            $td[] = $td_emails;
+
             $out .= implode('</td><td>', $td);
             $out .= '</td></tr>';
         }
@@ -382,46 +701,106 @@ class MolliePaymentsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-/*
+        $out .= BulkCnst::TPL_SELECT_BUTTONS;
+
+        $out .= '<h3>Bulk acties met geselecteerde betaalverzoeken</h3>';
+        $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
+        $out .= '<ul class="nav nav-tabs" role="tablist">';
+
+        $out .= '<li class="active">';
+        $out .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
+        $out .= '<li>';
+
+        $out .= '<a href="#cancel_tab" data-toggle="tab">';
+        $out .= 'Annuleren';
+        $out .= '</a>';
+        $out .= '</li>';
+        $out .= '</ul>';
+
+        $out .= '<div class="tab-content">';
+//-----------------------
+
+        $out .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
+
+        $out .= '<form method="post">';
+
+        $out .= '<h3>E-Mail verzenden</h3>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="mail_en" class="control-label">';
-        $out .= '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
-        $out .= $mail_en ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Verstuur notificatie mails</label>';
+        $out .= '<input type="text" class="form-control" ';
+        $out .= 'id="bulk_mail_subject" name="bulk_mail_subject" ';
+        $out .= 'placeholder="Onderwerp" ';
+        $out .= 'value="';
+        $out .= $bulk_mail_subject;
+        $out .= '" required>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label>';
-        $out .= '<input type="checkbox" name="verify" ';
-        $out .= 'value="1" required> ';
-        $out .= 'Ik heb nagekeken dat de juiste ';
-        $out .= 'bedragen en de juiste "Van" of "Aan" ';
-        $out .= 'Account Code ingevuld zijn.';
-        $out .= '</label>';
+        $out .= '<textarea name="bulk_mail_content" ';
+        $out .= 'class="form-control summernote" ';
+        $out .= 'id="bulk_mail_content" rows="8" ';
+        $out .= 'data-template-vars="';
+        $out .= implode(',', array_keys(BulkCnst::MOLLIE_TPL_VARS));
+        $out .= '" ';
+        $out .= 'required>';
+        $out .= $bulk_mail_content;
+        $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $link_render->btn_cancel('transactions', $pp->ary(), []);
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'bulk_mail_cc',
+            '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
+            '%attr%'    => $bulk_mail_cc ? ' checked' : '',
+        ]);
 
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Massa transactie uitvoeren" ';
-        $out .= 'name="zend" class="btn btn-success btn-lg">';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'bulk_mail_verify',
+            '%label%'   => 'Ik heb alles nagekeken.',
+            '%attr%'    => ' required',
+        ]);
+
+        $out .= '<input type="submit" value="Verzend" name="bulk_mail_submit" ';
+        $out .= 'class="btn btn-info btn-lg">';
+
         $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-
-        $out .= '<input type="hidden" value="';
-        $out .= $transid;
-        $out .= '" name="transid">';
-
         $out .= '</form>';
-*/
+
+        $out .= '</div>';
+
+//--------------------------------------
+
+        $out .= '<div role="tabpanel" class="tab-pane" ';
+        $out .= 'id="cancel_tab">';
+
+        $out .= '<form method="post">';
+
+        $out .= '<h3>Betaalverzoek annuleren</h3>';
+
+        $out .= '<p>Annuleer geselecteerde ';
+        $out .= '<span class="label label-warning">open</span> ';
+        $out .= 'betaalverzoeken</p>';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'bulk_cancel_verify',
+            '%label%'   => 'Ik heb alles nagekeken.',
+            '%attr%'    => ' required',
+        ]);
+
+        $out .= '<input type="submit" value="Annuleer" ';
+        $out .= 'name="bulk_cancel_submit" class="btn btn-primary btn-lg">';
+
+        $out .= $form_token_service->get_hidden_input();
+        $out .= '</form>';
+
+        $out .= '</div>';
+
+//--------------------------------
+
+        $out .= '</div>';
+        $out .= '</div>';
+        $out .= '</div>';
 
         $menu_service->set('mollie_payments');
 
