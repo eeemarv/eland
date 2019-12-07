@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class MolliePaymentStatusController extends AbstractController
+class MolliePaymentStatusController__ extends AbstractController
 {
     public function __invoke(
         int $id,

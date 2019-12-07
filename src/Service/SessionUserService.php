@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Cnst\RoleCnst;
 use App\Service\UserCacheService;
 use App\Service\PageParamsService;
+use PhpParser\Node\Expr\BinaryOp\BooleanOr;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SessionUserService
@@ -197,5 +198,11 @@ class SessionUserService
 		}
 
 		return $item_owner_id === $this->id;
+	}
+
+	public function has_open_mollie_payment():bool
+	{
+		return isset($this->user['has_open_mollie_payment'])
+			&& $this->user['has_open_mollie_payment'];
 	}
 }

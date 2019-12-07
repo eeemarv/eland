@@ -817,7 +817,12 @@ class MolliePaymentsController extends AbstractController
             $td[] = $status_label . '</span>';
 
             $td[] = $link_render->link('mollie_payments',
-                $pp->ary(), ['request_id' => $payment['request_id']],
+                $pp->ary(), [
+                    'request_id'    => $payment['request_id'],
+                    'f' => [
+                        'q' => $payment['description'],
+                    ],
+                ],
                 $payment['description'], []);
 
             $td[] = $date_format_service->get($payment['created_at'], 'day', $pp->schema());

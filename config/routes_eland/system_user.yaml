@@ -139,8 +139,8 @@ typeahead_postcodes:
   methods: GET
 
 mollie_checkout:
-  path: /mollie/checkout/{id<%assert.id%>}
-  controller: App\Controller\MollieCheckoutController
+  path: /mollie/payments/{id<%assert.id%>}
+  controller: App\Controller\MolliePaymentsStatusController
   methods: GET|POST
 
 mollie_payment_status:
