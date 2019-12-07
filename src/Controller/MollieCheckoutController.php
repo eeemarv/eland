@@ -33,7 +33,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class MolliePaymentsStatusController extends AbstractController
+class MollieCheckoutController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -171,7 +171,8 @@ class MolliePaymentsStatusController extends AbstractController
 
         $out .= '<br>';
 
-        $out .= '<button type="submit" href="#" class="btn btn-primary btn-lg">Online betalen</a>';
+        $out .= '<input type="submit" name="pay" ';
+        $out .= 'value="Online betalen" class="btn btn-lg btn-primary">';
         $out .= '<p>Je wordt geleid naar het beveiligde Mollie ';
         $out .= 'platform voor online betalen.</p>';
 

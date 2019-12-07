@@ -38,6 +38,11 @@ mollie_webhook:
   controller: App\Controller\MollieWebhookController
   methods: GET
 
+mollie_checkout_anonymous:
+  path: /mollie/checkout/{token<%assert.big_token%>}
+  controller: App\Controller\MollieCheckoutAnonymousController
+  methods: GET|POST
+
 system_admin:
   prefix: /{role_short<%assert.role_short.admin%>}
   resource: system_admin.yaml
