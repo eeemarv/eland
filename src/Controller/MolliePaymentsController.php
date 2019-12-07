@@ -14,24 +14,19 @@ use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
-use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
-use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TransactionService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Psr\Log\LoggerInterface;
 
 class MolliePaymentsController extends AbstractController
 {
@@ -65,12 +60,10 @@ class MolliePaymentsController extends AbstractController
         HeadingRender $heading_render,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
-        MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         UserCacheService $user_cache_service,
         HtmlPurifier $html_purifier,
         AssetsService $assets_service
@@ -101,17 +94,23 @@ class MolliePaymentsController extends AbstractController
             !(strpos($mollie_apikey, 'test_') === 0
             || strpos($mollie_apikey, 'live_') === 0))
         {
-            $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
-                er is geen Mollie apikey ingesteld in de ' .
-                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
+            if ($request->isMethod('GET'))
+            {
+                $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
+                    er is geen Mollie apikey ingesteld in de ' .
+                    $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
+            }
 
-                $no_mollie_apikey = true;
+            $no_mollie_apikey = true;
         }
         else if (strpos($mollie_apikey, 'live_') !== 0)
         {
-            $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
-                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
-                '. Betalingen kunnen niet uitgevoerd worden!');
+            if ($request->isMethod('GET'))
+            {
+                $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
+                    $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
+                    '. Betalingen kunnen niet uitgevoerd worden!');
+            }
         }
 
 //-------------
@@ -445,9 +444,8 @@ class MolliePaymentsController extends AbstractController
 
                 $email_id = (int) $db->lastInsertId($pp->schema() . '.emails_id_seq');
 
-                $pp_user_ary = [
+                $pp_anonymous_ary = [
                     'system'        => $pp->system(),
-                    'role_short'    => 'u',
                 ];
 
                 foreach($selected as $payment_id => $dummy)
@@ -466,7 +464,8 @@ class MolliePaymentsController extends AbstractController
                         'emails_sent'   => json_encode($emails_sent),
                     ], ['id' => $payment_id]);
 
-                    $payment_url = $link_render->context_url('mollie_checkout', $pp_user_ary, ['id' => $payment_id]);
+                    $payment_url = $link_render->context_url('mollie_checkout_anonymous',
+                        $pp_anonymous_ary, ['token' => $payment['token']]);
                     $payment_link = '<a href="';
                     $payment_link .= $payment_url;
                     $payment_link .= '">';
@@ -483,6 +482,10 @@ class MolliePaymentsController extends AbstractController
                     {
                         $vars[$key] = $payment[$val];
                     }
+
+                    $bulk_mail_content = strtr($bulk_mail_content, [
+                        '{{ betaal_link }}'     => '{{ betaal_link|raw }}'
+                    ]);
 
                     $mail_queue->queue([
                         'schema'			=> $pp->schema(),

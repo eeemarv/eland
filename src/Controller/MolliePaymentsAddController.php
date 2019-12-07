@@ -4,41 +4,30 @@ namespace App\Controller;
 
 use App\Cnst\BulkCnst;
 use App\Cnst\StatusCnst;
-use App\HtmlProcess\HtmlPurifier;
-use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
-use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
-use App\Service\MailAddrSystemService;
-use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TransactionService;
-use App\Service\TypeaheadService;
+use App\Service\TokenGeneratorService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
-use Psr\Log\LoggerInterface;
 
 class MolliePaymentsAddController extends AbstractController
 {
     public function __invoke(
-        Predis $predis,
         Request $request,
         string $status,
         Db $db,
-        LoggerInterface $logger,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
@@ -48,16 +37,9 @@ class MolliePaymentsAddController extends AbstractController
         AccountRender $account_render,
         HeadingRender $heading_render,
         DateFormatService $date_format_service,
-        MailQueue $mail_queue,
-        TypeaheadService $typeahead_service,
-        MailAddrSystemService $mail_addr_system_service,
-        MailAddrUserService $mail_addr_user_service,
-        AutoMinLimitService $autominlimit_service,
-        TransactionService $transaction_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        HtmlPurifier $html_purifier,
+        TokenGeneratorService $token_generator_service,
         AssetsService $assets_service
     ):Response
     {
@@ -81,17 +63,24 @@ class MolliePaymentsAddController extends AbstractController
             !(strpos($mollie_apikey, 'test_') === 0
             || strpos($mollie_apikey, 'live_') === 0))
         {
-            $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
-                er is geen Mollie apikey ingesteld in de ' .
-                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
+            if ($request->isMethod('GET'))
+            {
+                $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
+                    er is geen Mollie apikey ingesteld in de ' .
+                    $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
 
-                $no_mollie_apikey = true;
+            }
+
+            $no_mollie_apikey = true;
         }
         else if (strpos($mollie_apikey, 'live_') !== 0)
         {
-            $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
-                $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
-                '. Betalingen kunnen niet uitgevoerd worden!');
+            if ($request->isMethod('GET'))
+            {
+                $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
+                    $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
+                    '. Betalingen kunnen niet uitgevoerd worden!');
+            }
         }
 
 //--------
@@ -205,6 +194,7 @@ class MolliePaymentsAddController extends AbstractController
                     $amo = strtr($amount[$user_id], ',', '.');
 
                     $db->insert($pp->schema() . '.mollie_payments', [
+                        'token'         => $token_generator_service->gen(20),
                         'request_id'    => $request_id,
                         'amount'        => $amo,
                         'user_id'       => $user_id,

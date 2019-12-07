@@ -5,7 +5,7 @@ namespace App\Queue;
 use App\HtmlProcess\HtmlToMarkdownConverter;
 use App\Queue\QueueInterface;
 use Psr\Log\LoggerInterface;
-use Twig_Environment as Twig;
+use Twig\Environment as Twig;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\EmailValidateService;

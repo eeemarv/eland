@@ -28,7 +28,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
-use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -92,7 +91,10 @@ class MollieCheckoutController extends AbstractController
             }
             else if (strpos($mollie_apikey, 'live_') !== 0)
             {
-                $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.');
+                if ($request->isMethod('GET'))
+                {
+                    $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.');
+                }
             }
         }
 

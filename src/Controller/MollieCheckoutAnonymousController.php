@@ -2,34 +2,19 @@
 
 namespace App\Controller;
 
-use App\Cnst\BulkCnst;
-use App\Cnst\StatusCnst;
-use App\HtmlProcess\HtmlPurifier;
-use App\Queue\MailQueue;
-use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
-use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\FormTokenService;
-use App\Service\MailAddrSystemService;
-use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
-use Predis\Client as Predis;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -39,24 +24,14 @@ class MollieCheckoutAnonymousController extends AbstractController
         Request $request,
         string $token,
         Db $db,
-        LoggerInterface $logger,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        AccountRender $account_render,
         HeadingRender $heading_render,
-        DateFormatService $date_format_service,
-        MailQueue $mail_queue,
-        TypeaheadService $typeahead_service,
-        MailAddrSystemService $mail_addr_system_service,
-        MailAddrUserService $mail_addr_user_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        HtmlPurifier $html_purifier
+        PageParamsService $pp
     ):Response
     {
         $errors = [];
@@ -65,23 +40,18 @@ class MollieCheckoutAnonymousController extends AbstractController
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
-                and p.id = ?', [$id]);
+                and p.token = ?', [$token]);
 
         if (!$payment)
         {
             throw new NotFoundHttpException('Betaling niet gevonden.');
         }
 
-        if (!$su->is_owner($payment['user_id']) && !$su->is_admin())
-        {
-            throw new AccessDeniedHttpException('Je hebt geen toegang tot deze pagina.');
-        }
-
         $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
             where id = \'mollie\'');
 
-        if ((!$payment['is_payed'] || !$payment['is_canceled']))
+        if (!($payment['is_payed'] || $payment['is_canceled']))
         {
             if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -92,7 +62,10 @@ class MollieCheckoutAnonymousController extends AbstractController
             }
             else if (strpos($mollie_apikey, 'live_') !== 0)
             {
-                $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.');
+                if ($request->isMethod('GET'))
+                {
+                    $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.');
+                }
             }
         }
 
@@ -120,13 +93,12 @@ class MollieCheckoutAnonymousController extends AbstractController
                         'value'     => $payment['amount'],
                     ],
                     'description' => $description,
-                    'redirectUrl' => $link_render->context_url('mollie_payments_status', $pp->ary(), ['id' => $id]),
+                    'redirectUrl' => $link_render->context_url('mollie_status_anonymous', $pp->ary(), ['token' => $token]),
                     'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
                 ]);
-            }
 
-            $alert_service->success('');
-            $link_render->redirect('users_show', $pp->ary(), ['id' => $user_id]);
+
+            }
 
             $alert_service->error($errors);
         }

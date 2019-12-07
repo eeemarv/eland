@@ -57,7 +57,24 @@ class MollieSubscriber implements EventSubscriberInterface
 
     public function onKernelController(ControllerEvent $event)
     {
-        if (!$this->pp->is_admin() || !$this->pp->is_user())
+        $request = $event->getRequest();
+
+        if (!$request->isMethod('GET'))
+        {
+            return;
+        }
+
+        if (!$request->attributes->has('system'))
+        {
+            return;
+        }
+
+        if (!$this->pp->system())
+        {
+            return;
+        }
+
+        if (!($this->pp->is_admin() || $this->pp->is_user()))
         {
             return;
         }
@@ -67,9 +84,12 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $request = $event->getRequest();
         $route = $request->attributes->get('_route');
 
+        if ($route === 'mollie_checkout')
+        {
+            return;
+        }
 
         $payments = $this->db->fetchAll('select p.*, r.description
             from ' . $this->pp->schema() . '.mollie_payments p,
@@ -98,10 +118,10 @@ class MollieSubscriber implements EventSubscriberInterface
         {
             $description = $this->su->code() . ' ' . $payment['description'];
             $info[] = strtr(self::PAYMENT_REQUEST,[
-                '%link%'    => $this->link_render->context_path('mollie_checkout',
+                '%link%'            => $this->link_render->context_path('mollie_checkout',
                     $this->pp->ary(), ['id' => $payment['id']]),
-                '%description%' => htmlspecialchars($description, ENT_QUOTES),
-                '%amount%'       => strtr($payment['amount'], '.', ',');
+                '%description%'     => htmlspecialchars($description, ENT_QUOTES),
+                '%amount%'          => strtr($payment['amount'], '.', ','),
             ]);
         }
 
