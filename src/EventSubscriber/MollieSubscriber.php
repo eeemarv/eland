@@ -64,6 +64,11 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if ($request->isXmlHttpRequest())
+        {
+            return;
+        }
+
         if (!$request->attributes->has('system'))
         {
             return;
@@ -86,7 +91,7 @@ class MollieSubscriber implements EventSubscriberInterface
 
         $route = $request->attributes->get('_route');
 
-        if ($route === 'mollie_checkout')
+        if (strpos($route, 'mollie_') === 0)
         {
             return;
         }

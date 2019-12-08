@@ -143,7 +143,7 @@ mollie_checkout:
   controller: App\Controller\MollieCheckoutController
   methods: GET|POST
 
-mollie_payment_status:
-  path: /mollie/payment-status/{id<%assert.id%>}
-  controller: App\Controller\MolliePaymentStatusController
+mollie_status:
+  path: /mollie/status/{id<%assert.id%>}
+  controller: App\Controller\MollieStatusController
   methods: GET

@@ -38,7 +38,17 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
+        if (!$request->isMethod('GET'))
+        {
+            return;
+        }
+
         if (!$request->attributes->has('system'))
+        {
+            return;
+        }
+
+        if ($request->isXmlHttpRequest())
         {
             return;
         }

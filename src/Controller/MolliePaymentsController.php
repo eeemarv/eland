@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
 
 class MolliePaymentsController extends AbstractController
 {
@@ -66,6 +67,7 @@ class MolliePaymentsController extends AbstractController
         SessionUserService $su,
         UserCacheService $user_cache_service,
         HtmlPurifier $html_purifier,
+        LoggerInterface $logger,
         AssetsService $assets_service
     ):Response
     {
@@ -120,7 +122,7 @@ class MolliePaymentsController extends AbstractController
 
         $params = [
             's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'created_at',
+                'orderby'	=> $sort['orderby'] ?? 'p.created_at',
                 'asc'		=> $sort['asc'] ?? 0,
             ],
             'p'	=> [
@@ -239,7 +241,7 @@ class MolliePaymentsController extends AbstractController
         $payments = [];
 
         $rs = $db->executeQuery('select p.*, r.description,
-            u.letscode, u.name, u.fullname, u.status, u.adate,
+            u.letscode as code, u.name, u.status, u.adate,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
@@ -252,7 +254,7 @@ class MolliePaymentsController extends AbstractController
             where p.request_id = r.id
                 and p.user_id = u.id
                 ' . $where_sql . '
-            order by p.' . $params['s']['orderby'] . '
+            order by ' . $params['s']['orderby'] . '
             ' . ($params['s']['asc'] ? 'asc' : 'desc') . '
             limit ' . $params['p']['limit'] . '
             offset ' . $params['p']['start'],
@@ -284,6 +286,40 @@ class MolliePaymentsController extends AbstractController
 
         $pagination_render->init('mollie_payments', $pp->ary(),
             $row_count, $params);
+
+        $asc_preset_ary = [
+            'asc'	=> 0,
+            'fa' 	=> 'sort',
+        ];
+
+        $tableheader_ary = [
+            'code' => array_merge($asc_preset_ary, [
+                'lbl' => 'Account',
+            ]),
+            'p.amount' => array_merge($asc_preset_ary, [
+                'lbl' => 'Bedrag (EUR)',
+            ]),
+            'status'	=> array_merge($asc_preset_ary, [
+                'lbl' 	=> 'Status',
+                'no_sort' => true,
+            ]),
+            'r.description' => array_merge($asc_preset_ary, [
+                'lbl' 		=> 'Omschrijving',
+            ]),
+            'p.created_at' => array_merge($asc_preset_ary, [
+                'lbl' 		=> 'Tijdstip',
+            ]),
+            'emails' => array_merge($asc_preset_ary, [
+                'lbl' 		=> 'E-mails',
+                'title'     => 'Aantal verzonden E-mails',
+                'no_sort'   => true,
+            ]),
+        ];
+
+        $tableheader_ary[$params['s']['orderby']]['asc']
+            = $params['s']['asc'] ? 0 : 1;
+        $tableheader_ary[$params['s']['orderby']]['fa']
+            = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
         if ($request->isMethod('POST'))
         {
@@ -444,10 +480,6 @@ class MolliePaymentsController extends AbstractController
 
                 $email_id = (int) $db->lastInsertId($pp->schema() . '.emails_id_seq');
 
-                $pp_anonymous_ary = [
-                    'system'        => $pp->system(),
-                ];
-
                 foreach($selected as $payment_id => $dummy)
                 {
                     $payment = $payments[$payment_id];
@@ -465,7 +497,7 @@ class MolliePaymentsController extends AbstractController
                     ], ['id' => $payment_id]);
 
                     $payment_url = $link_render->context_url('mollie_checkout_anonymous',
-                        $pp_anonymous_ary, ['token' => $payment['token']]);
+                        ['system' => $pp->system()], ['token' => $payment['token']]);
                     $payment_link = '<a href="';
                     $payment_link .= $payment_url;
                     $payment_link .= '">';
@@ -473,6 +505,7 @@ class MolliePaymentsController extends AbstractController
                     $payment_link .= '</a>';
 
                     $payment['payment_link'] = $payment_link;
+                    $payment['amount'] = strtr($payment['amount'], '.', ',');
 
                     $vars = [
                         'subject'	=> $bulk_mail_subject,
@@ -532,6 +565,33 @@ class MolliePaymentsController extends AbstractController
                 foreach($not_sent_ary as $user_id)
                 {
                     $success[] = $account_render->link($user_id, $pp->ary());
+                }
+
+                if ($bulk_mail_cc)
+                {
+                    $vars = [
+                        'subject'	=> 'Kopie: ' . $bulk_mail_subject,
+                    ];
+
+                    foreach (BulkCnst::MOLLIE_TPL_VARS as $key => $trans)
+                    {
+                        $vars[$key] = '{{ ' . $key . ' }}';
+                    }
+
+                    $mail_info = implode('<br />', $success);
+                    $mail_info .= '<hr /><br />';
+
+                    $mail_queue->queue([
+                        'schema'			=> $pp->schema(),
+                        'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
+                        'template'			=> 'skeleton',
+                        'pre_html_template'	=> $mail_info . $bulk_mail_content,
+                        'vars'				=> $vars,
+                    ], 8000);
+
+                    $logger->debug('mollie_payments mail:: ' .
+                        $mail_info . $bulk_mail_content,
+                        ['schema' => $pp->schema()]);
                 }
 
                 $alert_service->success($success);
@@ -750,16 +810,38 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover panel-body footable csv" ';
-        $out .= 'data-filter="#combined-filter" data-filter-minimum="1">';
+        $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
+        $out .= 'data-sort="false">';
         $out .= '<thead>';
 
         $out .= '<tr>';
-        $out .= '<th>Account</th>';
-        $out .= '<th>Bedrag (EUR)</th>';
-        $out .= '<th>Status</th>';
-        $out .= '<th>Omschrijving</th>';
-        $out .= '<th>Datum</th>';
-        $out .= '<th title="Aantal verzonden E-mails">E-mails</th>';
+
+        foreach ($tableheader_ary as $key_orderby => $data)
+        {
+            $out .= '<th';
+            $out .= isset($data['title']) ? ' title="' . $data['title'] . '"' : '';
+            $out .= '>';
+
+            if (isset($data['no_sort']))
+            {
+                $out .= $data['lbl'];
+            }
+            else
+            {
+                $h_params = $params;
+
+                $h_params['s'] = [
+                    'orderby' 	=> $key_orderby,
+                    'asc'		=> $data['asc'],
+                ];
+
+                $out .= $link_render->link_fa('mollie_payments', $pp->ary(),
+                    $h_params, $data['lbl'], [], $data['fa']);
+            }
+
+            $out .= '</th>';
+        }
+
         $out .= '</tr>';
 
         $out .= '</thead>';

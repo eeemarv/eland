@@ -43,6 +43,11 @@ mollie_checkout_anonymous:
   controller: App\Controller\MollieCheckoutAnonymousController
   methods: GET|POST
 
+mollie_status_anonymous:
+  path: /mollie/status/{token<%assert.big_token%>}
+  controller: App\Controller\MollieStatusAnonymousController
+  methods: GET
+
 system_admin:
   prefix: /{role_short<%assert.role_short.admin%>}
   resource: system_admin.yaml
