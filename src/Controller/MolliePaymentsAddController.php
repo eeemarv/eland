@@ -231,7 +231,7 @@ class MolliePaymentsAddController extends AbstractController
             'mollie_payments_add.js',
         ]);
 
-        $heading_render->add('Mollie Betaalverzoek aanmaken');
+        $heading_render->add('Mollie Betaalverzoeken aanmaken');
         $heading_render->fa('eur');
 
         $out = '<div class="panel panel-warning">';
@@ -251,8 +251,8 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</div>';
         $out .= '<p>Hiermee vul je dit bedrag in voor alle accounts hieronder. ';
         $out .= 'Je kan daarna nog individuele bedragen aanpassen ';
-        $out .= 'of wissen (op nul zetten) alvorens het ';
-        $out .= 'betaalverzoek te creëren. ';
+        $out .= 'of wissen (op nul zetten) alvorens ';
+        $out .= 'betaalverzoeken te creëren. ';
         $out .= 'Enkel gehele getallen zijn mogelijk (geen cijfers na de komma).</p>';
         $out .= '</div>';
 
@@ -488,7 +488,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= $link_render->btn_cancel('mollie_payments', $pp->ary(), []);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Betaalverzoek aanmaken" ';
+        $out .= '<input type="submit" value="Betaalverzoeken aanmaken" ';
         $out .= 'name="zend" class="btn btn-success btn-lg">';
         $out .= $form_token_service->get_hidden_input();
 

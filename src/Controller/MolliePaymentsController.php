@@ -613,7 +613,7 @@ class MolliePaymentsController extends AbstractController
         ]);
 
         $btn_top_render->create('mollie_payments_add', $pp->ary(),
-            [], 'Betaalverzoek aanmaken');
+            [], 'Betaalverzoeken aanmaken');
 
         $btn_top_render->config('mollie_config', $pp->ary(),
             [], 'Mollie configuratie');

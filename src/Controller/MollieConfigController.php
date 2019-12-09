@@ -95,7 +95,7 @@ class MollieConfigController extends AbstractController
         $out .= 'Mollie apikey</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="fa fa-key"></span></span>';
         $out .= '<input type="text" name="apikey" ';
         $out .= 'value="';
         $out .= $apikey ?? '';
