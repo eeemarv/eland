@@ -142,8 +142,3 @@ mollie_checkout:
   path: /mollie/checkout/{id<%assert.id%>}
   controller: App\Controller\MollieCheckoutController
   methods: GET|POST
-
-mollie_status:
-  path: /mollie/status/{id<%assert.id%>}
-  controller: App\Controller\MollieStatusController
-  methods: GET
