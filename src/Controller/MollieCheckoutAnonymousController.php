@@ -36,13 +36,13 @@ class MollieCheckoutAnonymousController extends AbstractController
     {
         $errors = [];
 
-        $payment = $db->fetchAssoc('select p.*, r.description
+        $mollie_payment = $db->fetchAssoc('select p.*, r.description
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
                 and p.token = ?', [$token]);
 
-        if (!$payment)
+        if (!$mollie_payment)
         {
             throw new NotFoundHttpException('Betaling niet gevonden.');
         }
@@ -51,7 +51,7 @@ class MollieCheckoutAnonymousController extends AbstractController
             from ' . $pp->schema() . '.config
             where id = \'mollie\'');
 
-        if (!($payment['is_payed'] || $payment['is_canceled']))
+        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
         {
             if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -69,11 +69,11 @@ class MollieCheckoutAnonymousController extends AbstractController
             }
         }
 
-        $user = $user_cache_service->get($payment['user_id'], $pp->schema());
+        $user = $user_cache_service->get($mollie_payment['user_id'], $pp->schema());
 
 //--------
 
-        $description = $user['letscode'] . ' ' . $payment['description'];
+        $description = $user['letscode'] . ' ' . $mollie_payment['description'];
 
         if ($request->isMethod('POST'))
         {
@@ -90,12 +90,22 @@ class MollieCheckoutAnonymousController extends AbstractController
                 $payment = $mollie->payments->create([
                     'amount' => [
                         'currency'  => 'EUR',
-                        'value'     => $payment['amount'],
+                        'value'     => $mollie_payment['amount'],
                     ],
                     'description' => $description,
-                    'redirectUrl' => $link_render->context_url('mollie_status_anonymous', $pp->ary(), ['token' => $token]),
+                    'redirectUrl' => $link_render->context_url('mollie_checkout_anonymous', $pp->ary(), ['token' => $token]),
                     'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
+                    'metadata' => [
+                        'token' => $mollie_payment['token'],
+                    ],
                 ]);
+
+                $db->update($pp->schema() . '.mollie_payments', [
+                    'mollie_payment_id' => $payment->id,
+                ], ['token' => $token]);
+
+                header('Location: ' . $payment->getCheckoutUrl(), true, 303);
+                exit;
 
 
             }
@@ -105,11 +115,11 @@ class MollieCheckoutAnonymousController extends AbstractController
 
         $heading_render->fa('eur');
 
-        if ($payment['is_canceled'])
+        if ($mollie_payment['is_canceled'])
         {
             $heading_render->add('Deze betaling is geannuleerd');
         }
-        else if ($payment['is_payed'])
+        else if ($mollie_payment['is_payed'])
         {
             $heading_render->add('Betaling geslaagd');
         }
@@ -121,17 +131,20 @@ class MollieCheckoutAnonymousController extends AbstractController
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= '<form method="post">';
+        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        {
+            $out .= '<form method="post">';
 
-        $out .= '<p>Je kreeg van <strong>' . $config_service->get('systemname', $pp->schema());
-        $out .= '</strong> het volgende verzoek tot betaling:</p>';
+            $out .= '<p>Je kreeg van <strong>' . $config_service->get('systemname', $pp->schema());
+            $out .= '</strong> het volgende verzoek tot betaling:</p>';
+        }
 
         $out .= '<dl>';
         $out .= '<dt>';
         $out .= 'Bedrag';
         $out .= '</dt>';
         $out .= '<dd>';
-        $out .= strtr($payment['amount'], '.', ',') . ' EUR';
+        $out .= strtr($mollie_payment['amount'], '.', ',') . ' EUR';
         $out .= '</dd>';
         $out .= '<dt>';
         $out .= 'Omschrijving';
@@ -141,15 +154,18 @@ class MollieCheckoutAnonymousController extends AbstractController
         $out .= '</dd>';
         $out .= '</dd>';
 
-        $out .= '<br>';
+        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        {
+            $out .= '<br>';
 
-        $out .= '<input type="submit" name="pay" ';
-        $out .= 'value="Online betalen" class="btn btn-lg btn-primary">';
-        $out .= '<p>Je wordt geleid naar het beveiligde Mollie ';
-        $out .= 'platform voor online betalen.</p>';
+            $out .= '<input type="submit" name="pay" ';
+            $out .= 'value="Online betalen" class="btn btn-lg btn-primary">';
+            $out .= '<p>Je wordt geleid naar het beveiligde Mollie ';
+            $out .= 'platform voor online betalen.</p>';
 
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
+            $out .= $form_token_service->get_hidden_input();
+            $out .= '</form>';
+        }
 
         $out .= '</div>';
         $out .= '</div>';

@@ -2,33 +2,20 @@
 
 namespace App\Controller;
 
-use App\Cnst\BulkCnst;
-use App\Cnst\StatusCnst;
-use App\HtmlProcess\HtmlPurifier;
-use App\Queue\MailQueue;
-use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
-use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\FormTokenService;
-use App\Service\MailAddrSystemService;
-use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -38,40 +25,31 @@ class MollieCheckoutController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        LoggerInterface $logger,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        AccountRender $account_render,
         HeadingRender $heading_render,
-        DateFormatService $date_format_service,
-        MailQueue $mail_queue,
-        TypeaheadService $typeahead_service,
-        MailAddrSystemService $mail_addr_system_service,
-        MailAddrUserService $mail_addr_user_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        HtmlPurifier $html_purifier
+        SessionUserService $su
     ):Response
     {
         $errors = [];
 
-        $payment = $db->fetchAssoc('select p.*, r.description
+        $mollie_payment = $db->fetchAssoc('select p.*, r.description
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
                 and p.id = ?', [$id]);
 
-        if (!$payment)
+        if (!$mollie_payment)
         {
             throw new NotFoundHttpException('Betaling niet gevonden.');
         }
 
-        if (!$su->is_owner($payment['user_id']) && !$su->is_admin())
+        if (!$su->is_owner($mollie_payment['user_id']) && !$su->is_admin())
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze pagina.');
         }
@@ -80,7 +58,7 @@ class MollieCheckoutController extends AbstractController
             from ' . $pp->schema() . '.config
             where id = \'mollie\'');
 
-        if ((!$payment['is_payed'] || !$payment['is_canceled']))
+        if ((!$mollie_payment['is_payed'] || !$mollie_payment['is_canceled']))
         {
             if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -98,11 +76,11 @@ class MollieCheckoutController extends AbstractController
             }
         }
 
-        $user = $user_cache_service->get($payment['user_id'], $pp->schema());
+        $user = $user_cache_service->get($mollie_payment['user_id'], $pp->schema());
 
 //--------
 
-        $description = $user['letscode'] . ' ' . $payment['description'];
+        $description = $user['letscode'] . ' ' . $mollie_payment['description'];
 
         if ($request->isMethod('POST'))
         {
@@ -119,29 +97,36 @@ class MollieCheckoutController extends AbstractController
                 $payment = $mollie->payments->create([
                     'amount' => [
                         'currency'  => 'EUR',
-                        'value'     => $payment['amount'],
+                        'value'     => $mollie_payment['amount'],
                     ],
                     'description' => $description,
-                    'redirectUrl' => $link_render->context_url('mollie_payments_status', $pp->ary(), ['id' => $id]),
+                    'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['id' => $id]),
                     'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
+                    'metadata'      => [
+                        'token' => $mollie_payment['token'],
+                    ],
                 ]);
-            }
 
-            $alert_service->success('');
-            $link_render->redirect('users_show', $pp->ary(), ['id' => $user_id]);
+                $db->update($pp->schema() . '.mollie_payments', [
+                    'mollie_payment_id' => $payment->id,
+                ], ['id' => $id]);
+
+                header('Location: ' . $payment->getCheckoutUrl(), true, 303);
+                exit;
+            }
 
             $alert_service->error($errors);
         }
 
         $heading_render->fa('eur');
 
-        if ($payment['is_canceled'])
+        if ($mollie_payment['is_canceled'])
         {
             $heading_render->add('Deze betaling is geannuleerd');
         }
-        else if ($payment['is_payed'])
+        else if ($mollie_payment['is_payed'])
         {
-            $heading_render->add('Betaling geslaagd');
+            $heading_render->add('Betaling geslaagd!');
         }
         else
         {
@@ -151,17 +136,20 @@ class MollieCheckoutController extends AbstractController
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= '<form method="post">';
+        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        {
+            $out .= '<form method="post">';
 
-        $out .= '<p>Je kreeg van <strong>' . $config_service->get('systemname', $pp->schema());
-        $out .= '</strong> het volgende verzoek tot betaling:</p>';
+            $out .= '<p>Je kreeg van <strong>' . $config_service->get('systemname', $pp->schema());
+            $out .= '</strong> het volgende verzoek tot betaling:</p>';
+        }
 
         $out .= '<dl>';
         $out .= '<dt>';
         $out .= 'Bedrag';
         $out .= '</dt>';
         $out .= '<dd>';
-        $out .= strtr($payment['amount'], '.', ',') . ' EUR';
+        $out .= strtr($mollie_payment['amount'], '.', ',') . ' EUR';
         $out .= '</dd>';
         $out .= '<dt>';
         $out .= 'Omschrijving';
@@ -171,15 +159,18 @@ class MollieCheckoutController extends AbstractController
         $out .= '</dd>';
         $out .= '</dd>';
 
-        $out .= '<br>';
+        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        {
+            $out .= '<br>';
 
-        $out .= '<input type="submit" name="pay" ';
-        $out .= 'value="Online betalen" class="btn btn-lg btn-primary">';
-        $out .= '<p>Je wordt geleid naar het beveiligde Mollie ';
-        $out .= 'platform voor online betalen.</p>';
+            $out .= '<input type="submit" name="pay" ';
+            $out .= 'value="Online betalen" class="btn btn-lg btn-primary">';
+            $out .= '<p>Je wordt geleid naar het beveiligde Mollie ';
+            $out .= 'platform voor online betalen.</p>';
 
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
+            $out .= $form_token_service->get_hidden_input();
+            $out .= '</form>';
+        }
 
         $out .= '</div>';
         $out .= '</div>';

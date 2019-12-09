@@ -450,3 +450,13 @@ periodic_overview:
       %account% [%system_name%]
     none: >-
       Er zijn geen recente transacties.
+
+mollie_is_paid:
+  subject: >-
+    Betaling ontvangen
+  message: >-
+    We hebben je betaling goed ontvangen! Dank je wel.
+  description: >-
+    Omschrijving
+  amount: >-
+    Bedrag

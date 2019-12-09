@@ -1,0 +1,38 @@
+{% extends 'mail/base/no_reply.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'mollie_is_paid.subject'|trans -}}
+{%- endblock -%}
+
+{% block html_content -%}
+    <p>
+        {{- 'mollie_is_paid.message'|trans -}}
+    </p>
+    <dl>
+        <dt>
+            {{- 'mollie_is_paid.amount'|trans -}}
+        </dt>
+        <dd>
+            {{- amount -}}&nbsp;EUR
+        </dd>
+        <dt>
+            {{- 'mollie_is_paid.description'|trans -}}
+        </dt>
+        <dd>
+            {{- description -}}
+        </dd>
+    </dl>
+{%- endblock %}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'mollie_is_paid.message'|trans }}
+
+{{ 'mollie_is_paid.amount'|trans }}: {{ amount }} EUR
+
+{{ 'mollie_is_paid.description'|trans }}: {{ description }}
+
+{% endautoescape %}
+{% endblock -%}
