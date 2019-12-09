@@ -49,7 +49,7 @@ class MollieCheckoutController extends AbstractController
             throw new NotFoundHttpException('Betaling niet gevonden.');
         }
 
-        if (!$su->is_owner($mollie_payment['user_id']) && !$su->is_admin())
+        if (!$su->is_owner($mollie_payment['user_id']))
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze pagina.');
         }

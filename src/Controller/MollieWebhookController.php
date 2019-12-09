@@ -7,7 +7,6 @@ use App\Service\MailAddrUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
-use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +17,6 @@ class MollieWebhookController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        UserCacheService $user_cache_service,
         PageParamsService $pp,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service
