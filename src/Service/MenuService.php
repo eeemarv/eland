@@ -123,7 +123,7 @@ class MenuService
 
 		foreach (MenuCnst::SIDEBAR as $menu_route => $item)
 		{
-			if (!$this->pp->is_admin())
+			if (true) //!$this->pp->is_admin())
 			{
 				if (!$this->item_access_service->is_visible($item['access']))
 				{

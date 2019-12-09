@@ -127,6 +127,7 @@ class MenuCnst
         'divider_1' => [
             'divider'   => true,
         ],
+/*
         'edit_mode' => [
             'fa'            => 'pencil',
             'label'         => 'Edit modus',
@@ -138,6 +139,7 @@ class MenuCnst
         'divider_2' => [
             'divider'   => true,
         ],
+*/
         'config'			=> [
             'fa'        => 'gears',
             'label'     => 'Instellingen',
