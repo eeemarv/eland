@@ -99,6 +99,8 @@ class MollieCheckoutController extends AbstractController
                         'currency'  => 'EUR',
                         'value'     => $mollie_payment['amount'],
                     ],
+                    'locale'        => 'nl_BE',
+                    'method'        => ['bancontact', 'belfius', 'creditcard', 'inghomepay', 'kbc', 'paypal'],
                     'description' => $description,
                     'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['id' => $id]),
                     'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
