@@ -93,7 +93,6 @@ class MollieCheckoutAnonymousController extends AbstractController
                         'value'     => $mollie_payment['amount'],
                     ],
                     'locale'        => 'nl_BE',
-                    'method'        => ['bancontact', 'belfius', 'creditcard', 'inghomepay', 'kbc', 'paypal'],
                     'description' => $description,
                     'redirectUrl' => $link_render->context_url('mollie_checkout_anonymous', $pp->ary(), ['token' => $token]),
                     'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
@@ -108,8 +107,6 @@ class MollieCheckoutAnonymousController extends AbstractController
 
                 header('Location: ' . $payment->getCheckoutUrl(), true, 303);
                 exit;
-
-
             }
 
             $alert_service->error($errors);
