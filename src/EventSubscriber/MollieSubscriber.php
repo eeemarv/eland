@@ -130,7 +130,7 @@ class MollieSubscriber implements EventSubscriberInterface
             ]);
         }
 
-        $this->alert_service->info($info);
+        $this->alert_service->info($info, false);
     }
 
     public static function getSubscribedEvents()

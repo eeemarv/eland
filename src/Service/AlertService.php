@@ -29,7 +29,7 @@ class AlertService
 		$this->flashbag = $this->session->getFlashBag();
 	}
 
-	protected function add(string $type, $message):void
+	protected function add(string $type, $message, bool $log_en):void
 	{
 		$uri = $this->request->getRequestUri();
 
@@ -42,12 +42,19 @@ class AlertService
 		{
 			$log = implode(' -- & ', $message);
 			$message = implode('<br>', $message);
-			$this->logger->debug('[alert ' . $type . ' ' . $uri . '] ' . $log,
-				$log_ary);
+
+			if ($log_en)
+			{
+				$this->logger->debug('[alert ' . $type . ' ' . $uri . '] ' . $log,
+					$log_ary);
+			}
 		}
 		else
 		{
-			$this->logger->debug('[alert ' . $type . ' ' . $uri . '] ' . $message, $log_ary);
+			if ($log_en)
+			{
+				$this->logger->debug('[alert ' . $type . ' ' . $uri . '] ' . $message, $log_ary);
+			}
 		}
 
 		$this->flashbag->add('alert', [
@@ -56,23 +63,23 @@ class AlertService
 		]);
 	}
 
-	public function error($message):void
+	public function error($message, bool $log_en = true):void
 	{
-		$this->add('error', $message);
+		$this->add('error', $message, $log_en);
 	}
 
-	function success($message):void
+	function success($message, bool $log_en = true):void
 	{
-		$this->add('success', $message);
+		$this->add('success', $message, $log_en);
 	}
 
-	public function info($message):void
+	public function info($message, bool $log_en = true):void
 	{
-		$this->add('info', $message);
+		$this->add('info', $message, $log_en);
 	}
 
-	public function warning($message):void
+	public function warning($message, bool $log_en = true):void
 	{
-		$this->add('warning', $message);
+		$this->add('warning', $message, $log_en);
 	}
 }
