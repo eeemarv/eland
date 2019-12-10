@@ -121,20 +121,25 @@ class MollieCheckoutController extends AbstractController
 
         $heading_render->fa('eur');
 
+        $out = '<div class="panel panel-';
+
         if ($mollie_payment['is_canceled'])
         {
             $heading_render->add('Deze betaling is geannuleerd');
+            $out .= 'default';
         }
         else if ($mollie_payment['is_payed'])
         {
             $heading_render->add('Betaling geslaagd!');
+            $out .= 'success';
         }
         else
         {
             $heading_render->add('Euro-betaling uitvoeren');
+            $out .= 'info';
         }
 
-        $out = '<div class="panel panel-info">';
+        $out .= '">';
         $out .= '<div class="panel-heading">';
 
         if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
