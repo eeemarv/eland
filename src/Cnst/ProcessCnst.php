@@ -20,11 +20,6 @@ class ProcessCnst
             'monitor'   => 28800,
             'log'       => 1,
         ],
-        'fetch_elas_intersystem'    => [
-            'wait'      => 450,
-            'monitor'   => 3600,
-            'log'       => 100,
-        ],
         'geocode'    => [
             'wait'      => 120,
             'monitor'   => 900,
