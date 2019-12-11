@@ -15,12 +15,8 @@ class HtmlPurifier
 
 	public function purify(string $content):string
 	{
-
-/*
-		$content = trim(preg_replace('/(<br>)+$/', '', $content));
-		$content = str_replace(["\n", "\r", '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
+		$content = str_replace(['<p></p>', '<p>&nbsp;</p>', '<p><br></p>'], '', $content);
 		$content = trim($content);
-*/
 
 		return $this->purifier->purify($content);
 	}
