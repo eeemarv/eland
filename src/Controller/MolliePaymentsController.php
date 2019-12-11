@@ -98,7 +98,7 @@ class MolliePaymentsController extends AbstractController
         {
             if ($request->isMethod('GET'))
             {
-                $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
+                $alert_service->warning('Betalingen met Mollie zijn niet mogelijk want
                     er is geen Mollie apikey ingesteld in de ' .
                     $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
             }
