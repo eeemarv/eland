@@ -1,6 +1,6 @@
 # eLAS interSysteem koppeling maken
 
-Voor interSysteem is het vereist dat het Systeem geconfigureerd is als Tijdsbank
+Voor interSysteem is het vereist dat het Systeem geconfigureerd is als Tijdbank
 (het is een munt met tijdbasis) en dat de 'interSysteem' functionaliteit ingeschakeld is. Zie hiervoor in de configuratie onder "Systeem".
 
 Onderstaande tekst werd aangepast vanuit [de eLAS documentatie](http://old.elasproject.org/content/hoe-maak-ik-een-interlets-koppeling). (orgineel geschreven door gvansanden op do, 03/01/2012 - 12:46)
@@ -18,7 +18,7 @@ Elk systeem kan zelf een interSysteem koppeling met een ander systeem opzetten i
 * Log in je Systeem in eLAND (of eLAS) als admin
 * In het beheerblok, kies Apikeys > Apikey toevoegen  Voer de naam in van het andere Systeem bij de Commentaar.
 * Kopieer de Apikey in het overzichtscherm naar een tekstbestandje of een e-mail
-* Kies Gebruikers > Toevoegen en maak een Account voor het andere Systeem aan. Vul de naam van het Systeem in bij Gebruikersnaam (bv Tijdsbank Geel), een unieke Account Code en rechten "interSysteem" (interlets in eLAS), status extern. Voer ook een Preshared Key in. Genereer hiervoor een veilig wachtwoord dat lang genoeg is (20 karakters) op bv [Wachtwoord Generator](http://www.onlinewachtwoordgenerator.nl/)
+* Kies Gebruikers > Toevoegen en maak een Account voor het andere Systeem aan. Vul de naam van het Systeem in bij Gebruikersnaam (bv Tijdbank Geel), een unieke Account Code en rechten "interSysteem" (interlets in eLAS), status extern. Voer ook een Preshared Key in. Genereer hiervoor een veilig wachtwoord dat lang genoeg is (20 karakters) op bv [Wachtwoord Generator](http://www.onlinewachtwoordgenerator.nl/)
 
 ### Stuur je gegevens door naar de beheerders van het andere Systeem
 
@@ -33,7 +33,7 @@ Een voorbeeld van zo'n mailtje kan zijn:
 
     Beste Jef
 
-    Hier zijn de gegevens voor een interSysteem-verbinding tussen jullie Systeem (Tijdsbank Paars) met ons Systeem, Tijdsbank Geel.
+    Hier zijn de gegevens voor een interSysteem-verbinding tussen jullie Systeem (Tijdbank Paars) met ons Systeem, Tijdbank Geel.
 
     Apikey: d8e8fca2dc0f896fd7cb4cb0031ba249
     Account Code: TT000
@@ -49,7 +49,7 @@ Van het Systeem waarmee je wil koppelen heb je een gelijkaardige mail als hierbo
 * Log in als admin
 * In het beheer blok, kies InterSysteem > Toevoegen (in eLAS: LETS Groepen > Groep toevoegen)
 * Vul volgende velden in:
-  * Systeem Naam: naam van het Systeem waarmee je een verbinding legt, bv Tijdsbank Geel
+  * Systeem Naam: naam van het Systeem waarmee je een verbinding legt, bv Tijdbank Geel
   * (niet in eLAND) korte naam: korte naam zonder hoofdletters of spaties van het Systeem waarmee je koppelt, bv tijdbankgeel
   * (niet in eLAND:) prefix: LEEG laten
   * API Method: elassaop (standaardwaarde)

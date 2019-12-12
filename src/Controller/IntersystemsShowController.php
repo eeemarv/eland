@@ -85,7 +85,7 @@ class IntersystemsShowController extends AbstractController
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
-                $out .= 'Niet geconfigureerd als Tijdsbank</span>';
+                $out .= 'Niet geconfigureerd als Tijdbank</span>';
             }
 
             if (!$config_service->get('interlets_en', $group_schema))
