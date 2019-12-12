@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ class StaticContentImageUploadController extends AbstractController
         LoggerInterface $logger,
         ImageUploadService $image_upload_service,
         PageParamsService $pp,
+        SessionUserService $su,
         string $env_s3_url
     ):Response
     {
@@ -34,6 +36,7 @@ class StaticContentImageUploadController extends AbstractController
 
         $db->insert($pp->schema() . '.static_content_images', [
             'file'          => $file,
+            'created_by'    => $su->id(),
         ]);
 
         $logger->info('Static Content image ' . $filename .
