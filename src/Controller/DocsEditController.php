@@ -15,6 +15,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsEditController extends AbstractController
 {
@@ -83,7 +84,7 @@ class DocsEditController extends AbstractController
                 {
                     $map_id = $db->fetchColumn('select id
                         from ' . $pp->schema() . '.doc_maps
-                        where lower(name) = ?', [$map_name]);
+                        where lower(name) = ?', [strtolower($map_name)]);
 
                     if (!$map_id)
                     {
