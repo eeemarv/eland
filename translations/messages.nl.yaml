@@ -67,15 +67,11 @@ admin_modus: Admin modus
 
 access:
   admin: Admin
-  users: Leden
-  interlets: InterLETS
-  public: Publiek
+  user: Leden
+  guest: InterSystem
+  anonymous: Publiek
 
 badge:
-  admin: Admin
-  users: Leden
-  interlets: InterLETS
-  public: Publiek
   offer: Aanbod
   want: Vraag
   service: Dienst
