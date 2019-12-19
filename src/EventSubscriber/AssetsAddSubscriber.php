@@ -25,6 +25,7 @@ class AssetsAddSubscriber implements EventSubscriberInterface
             'fontawesome',
             'footable',
 //            'base.css',
+            'touchswipe',
             'base.js',
         ]);
 

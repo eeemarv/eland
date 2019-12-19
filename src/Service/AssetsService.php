@@ -72,6 +72,11 @@ class AssetsService
 				'jquery/3.4.1/jquery.min.js',
 			],
 		],
+		'touchswipe' => [
+			'js'	=> [
+				'jquery.touchswipe/1.6.19/jquery.touchSwipe.min.js',
+			],
+		],
 		'fileupload'	=> [
 			'js'	=>	[
 				'blueimp-file-upload/9.25.1/js/vendor/jquery.ui.widget.min.js',

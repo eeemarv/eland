@@ -100,9 +100,8 @@
 
 <div class="container-fluid">
 	{%- block page_container -%}
-		<div class="row container-offcanvas">
 		<div class="row row-offcanvas">
-			<div class="sidebar-offcanvas">
+			<div class="menu-offcanvas">
 				<div class="nav nav-pills flex-column" aria-orientation="vertical">
 					{%- for menu_item in menu_sidebar() -%}
 						<a href="{{- path(menu_item.route, pp_ary()) -}}" class="nav-link{% if menu_item.active %} active{% endif %}{% if menu_item.config_only %} nav-config-only{% endif %}">
@@ -113,10 +112,11 @@
 				</div>
 				{%- block text_left -%}{% endblock -%}
 			</div>
+			<div class="sidebar-offcanvas"></div>
 			<div class="col">
+				<div class="content-container-overlay"></div>
 				{%- block content_container -%}{%- endblock -%}
 			</div>
-		</div>
 		</div>
 
 	{%- endblock page_container -%}

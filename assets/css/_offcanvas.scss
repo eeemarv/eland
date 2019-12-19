@@ -8,68 +8,55 @@ body {
     padding-top: 60px;
 /*    background-color: #e8e8f3; */
 }
-/*
+
 footer {
-    padding: 30px 0;
+    padding-top: 60px;
 }
-*/
 
 /*
 * Off Canvas
 * ----------
 */
 
-.container-offcanvas {
+.row-offcanvas {
     position: relative;
 }
 
-.row-offcanvas {
-    position: absolute;
+.menu-offcanvas {
+    position: fixed;
+    width: 12rem;
 }
 
-.sidebar-offcanvas {
-    /*    position: absolute;
-        left: -12rem; */
-        width: 12rem;
-    /*    transition: all .25s ease-out; */
+.sidebar-offcanvas{
+    width: 12rem;
+}
+
+div.content-container-overlay{
+    position: absolute;
+    width: 0;
+    height: 0;
 }
 
 @media screen and (max-width: 767px) {
-.row-offcanvas {
-    left: -12rem;
-    transition: all .25s ease-out;
-    width: calc(100% + 12rem);
-}
+    .menu-offcanvas {
+        left: -12rem;
+        transition: all .3s ease-out;
+        background: white;
+        z-index: 1200;
+    }
 
-/*
-.sidebar-offcanvas {
-    left: -12rem;
-}
-*/
+    .sidebar-offcanvas {
+        width: 0;
+    }
 
-/*
-.row-offcanvas.active
-.sidebar-offcanvas {
-    left: 0;
-}
-*/
-/*
-.row-offcanvas.active {
-    left: 12rem;
-}
-*/
+    .row-offcanvas.active .menu-offcanvas{
+        left: 0;
+    }
 
-
-
-/*
-.row-offcanvas.active
-.sidebar-offcanvas{
-    left: -12rem;
-}
-*/
-
-.row-offcanvas.active {
-    left: 0;
-}
-
+    .row-offcanvas.active .content-container-overlay{
+        background-color: rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        width: 100%;
+        height: 100%;
+    }
 }
