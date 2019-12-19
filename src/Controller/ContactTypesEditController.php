@@ -32,7 +32,7 @@ class ContactTypesEditController extends AbstractController
             from ' . $pp->schema() . '.type_contact
             where id = ?', [$id]);
 
-        if (in_array($tc_prefetch['abbrev'], contact_types::PROTECTED))
+        if (in_array($tc_prefetch['abbrev'], ContactTypesController::PROTECTED))
         {
             $alert_service->warning('Beschermd contact type.');
             $link_render->redirect('contact_types', $pp->ary(), []);
