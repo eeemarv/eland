@@ -272,8 +272,10 @@ class TransactionsEditController extends AbstractController
         $out .= '<label for="description" class="control-label">';
         $out .= 'Nieuwe omschrijving</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-pencil"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="description" name="description" ';

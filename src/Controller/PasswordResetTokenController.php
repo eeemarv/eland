@@ -105,8 +105,10 @@ class PasswordResetTokenController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="password">Nieuw paswoord</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-key"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="password" name="password" ';
         $out .= 'value="';

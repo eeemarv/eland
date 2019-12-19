@@ -612,7 +612,8 @@ class ConfigController extends AbstractController
                 if (isset($input['addon']) || isset($input['addon_fa']))
                 {
                     $out .= '<div class="input-group">';
-                    $out .= '<span class="input-group-addon">';
+                    $out .= '<span class="input-group-prepend">';
+                    $out .= '<span class="input-group-text">';
 
                     if (isset($input['addon']))
                     {
@@ -626,6 +627,7 @@ class ConfigController extends AbstractController
                         $out .= '"></i>';
                     }
 
+                    $out .= '</span>';
                     $out .= '</span>';
                 }
 

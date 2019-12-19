@@ -158,8 +158,10 @@ class DocsAddController extends AbstractController
         $out .= '<label for="file" class="control-label">';
         $out .= 'Bestand</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-file-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="file" class="form-control" id="file" name="file" ';
         $out .= 'required>';
@@ -170,8 +172,11 @@ class DocsAddController extends AbstractController
         $out .= '<label for="name" class="control-label">';
         $out .= 'Naam (optioneel)</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-file-o"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-file-o"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name">';
         $out .= '</div>';
@@ -183,8 +188,10 @@ class DocsAddController extends AbstractController
         $out .= '<label for="map_name" class="control-label">';
         $out .= 'Map</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-folder-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="map_name" name="map_name" value="';
         $out .= $map_name ?? '';

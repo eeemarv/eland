@@ -1046,8 +1046,10 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" value="';
         $out .= $filter['q'] ?? '';
@@ -1057,8 +1059,10 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="col-sm-5 col-xs-10">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-clone"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" id="cid" name="f[cid]">';
 

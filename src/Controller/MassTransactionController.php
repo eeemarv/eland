@@ -514,8 +514,10 @@ class MassTransactionController extends AbstractController
         $out .= '<label for="fixed" class="control-label">';
         $out .= 'Vast bedrag</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
         $out .= 'min="0">';
@@ -533,8 +535,11 @@ class MassTransactionController extends AbstractController
         $out .= '<label for="fixed" class="control-label">';
         $out .= 'Over periode</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'dagen</span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'dagen';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="number" ';
         $out .= 'class="form-control margin-bottom" id="var_days" ';
         $out .= 'min="0">';
@@ -559,9 +564,12 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '</span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
         $out .= ': basis';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_base">';
         $out .= '</div>';
@@ -585,9 +593,11 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'excl. ';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="var_ex_code_in" ';
@@ -613,9 +623,11 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'excl. ';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="var_ex_code_out" ';
@@ -635,9 +647,11 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="col-sm-6">';
 
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
         $out .= ': min';
+        $out .= '</span>';
         $out .= '</span>';
 
         $out .= '<input type="number" ';
@@ -647,9 +661,11 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
         $out .= ': max';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_max">';
         $out .= '</div>';
@@ -720,8 +736,10 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="row">';
         $out .= '<div class="col-xs-12">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="q" name="q" value="';
@@ -766,8 +784,11 @@ class MassTransactionController extends AbstractController
         $out .= 'Van Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-user"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="from_letscode" name="from_letscode" ';
         $out .= 'value="';
@@ -910,8 +931,10 @@ class MassTransactionController extends AbstractController
         $out .= '<label for="total" class="control-label">Totaal';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="total" readonly>';
         $out .= '</div>';
@@ -922,8 +945,11 @@ class MassTransactionController extends AbstractController
         $out .= 'Aan Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-user"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="to_letscode" name="to_letscode" ';
         $out .= 'value="';
@@ -941,8 +967,10 @@ class MassTransactionController extends AbstractController
         $out .= '<label for="description" class="control-label">';
         $out .= 'Omschrijving</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-pencil"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-pencil"></span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="description" ';
         $out .= 'name="description" ';
         $out .= 'value="';

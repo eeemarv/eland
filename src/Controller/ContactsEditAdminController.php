@@ -360,8 +360,10 @@ class ContactsEditAdminController extends AbstractController
         $out .= '<label for="comments" class="control-label">';
         $out .= 'Commentaar</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-comment-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="comments" name="comments" ';
         $out .= 'value="';

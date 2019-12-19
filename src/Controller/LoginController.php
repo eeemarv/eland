@@ -294,11 +294,11 @@ class LoginController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="password">Paswoord</label>';
         $out .= '<div class="input-group">';
-        $out .= '<div class="input-group-prepend">';
+        $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-key"></i>';
         $out .= '</span>';
-        $out .= '</div>';
+        $out .= '</span>';
         $out .= '<input type="password" class="form-control" ';
         $out .= 'id="password" name="password" ';
         $out .= 'value="" required>';

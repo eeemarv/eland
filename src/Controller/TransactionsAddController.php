@@ -830,8 +830,10 @@ class TransactionsAddController extends AbstractController
         $out .= 'Van Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="letscode_from" name="letscode_from" ';
@@ -852,8 +854,10 @@ class TransactionsAddController extends AbstractController
             $out .= '<label for="group_id" class="control-label">';
             $out .= 'Aan Systeem</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
             $out .= '<i class="fa fa-share-alt"></i>';
+            $out .= '</span>';
             $out .= '</span>';
 
             $out .= '<select type="text" class="form-control" ';
@@ -957,8 +961,10 @@ class TransactionsAddController extends AbstractController
         $out .= 'Aan Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="letscode_to" name="letscode_to" ';
@@ -1024,8 +1030,10 @@ class TransactionsAddController extends AbstractController
         $out .= '<div class="col-sm-12" id="amount_container">';
 
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" ';
@@ -1066,7 +1074,9 @@ class TransactionsAddController extends AbstractController
         $out .= 'id="remote_amount_container">';
 
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="remote_amount" name="remote_amount" ';
@@ -1091,8 +1101,10 @@ class TransactionsAddController extends AbstractController
         $out .= '<label for="description" class="control-label">';
         $out .= 'Omschrijving</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-pencil"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="description" name="description" ';

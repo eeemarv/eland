@@ -257,8 +257,10 @@ class ContactsAdminController extends AbstractController
 
         $out .= '<div class="col-sm-4">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" value="';
         $out .= $filter['q'] ?? '';
@@ -268,8 +270,10 @@ class ContactsAdminController extends AbstractController
 
         $out .= '<div class="col-sm-4">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'Type';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
         $out .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
@@ -291,8 +295,10 @@ class ContactsAdminController extends AbstractController
 
         $out .= '<div class="col-sm-4">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'Zichtbaar';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" id="access" name="f[access]">';
         $out .= $select_render->get_options($access_options, $filter['access'] ?? 'all');
@@ -317,9 +323,11 @@ class ContactsAdminController extends AbstractController
 
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'Status ';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" ';
         $out .= 'id="ustatus" name="f[ustatus]">';

@@ -180,8 +180,10 @@ class NewsAddController extends AbstractController
         $out .= '<label for="itemdate" class="control-label">';
         $out .= 'Agenda datum</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
         $out .= 'data-provide="datepicker" ';
@@ -216,8 +218,10 @@ class NewsAddController extends AbstractController
         $out .= '<label for="location" class="control-label">';
         $out .= 'Locatie</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-map-marker"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="location" name="location" ';

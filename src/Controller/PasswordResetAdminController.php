@@ -44,8 +44,10 @@ class PasswordResetAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="email" class="control-label">Je E-mail adres</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-envelope-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
         $out .= 'value="" required disabled>';
