@@ -16,6 +16,10 @@ $(document).ready(function() {
 		treshold: 30
 	});
 
+	$('div.content-container-overlay').click(function(ev){
+		$row_offcanvas.removeClass('active');
+	});
+
 	$('.footable').footable();
 
 	$('form[method="get"]').submit(function(){
