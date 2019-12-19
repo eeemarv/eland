@@ -4,6 +4,8 @@
 
 	<title>{%- block title -%}{%- endblock -%}</title>
 
+	{{ encore_entry_link_tags('app') }}
+
 	{%- for c in assets_ary('css') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
 	{%- endfor -%}
@@ -13,7 +15,7 @@
 	{%- endfor -%}
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -36,37 +38,103 @@
 </head>
 <body{%- block body_attr -%}{%- endblock -%}>
 
+    {%- block body_prepend -%}{%- endblock -%}
+
+{#
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+#}
+
 {%- block navbar -%}
-	<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
-		<div class="container-fluid">
-			<div class="navbar-header">
+	<nav class="navbar fixed-top navbar-epand-lg navbar-light bg-{%- if pp_role('admin') %}info{%- elseif pp_role('guest') %}warning{%- else -%}light{%- endif -%}">
 
-			{%- block navbar_toggle_button -%}{%- endblock -%}
+		<button type="button" class="btn btn-secondary d-md-none" data-toggle="offcanvas" title="Menu">
+			<i class="fa fa-chevron-left"></i>
+		</button>
 
+		<a href="{%- block system_link -%}#{%- endblock -%}" class="navbar-brand pull-left">
 			{%- block logo -%}{%- endblock -%}
 
-			<a href="{%- block system_link -%}#{%- endblock -%}" class="navbar-brand">
 			{{- block('title') -}}
-			</a>
-			</div>
+		</a>
+
+		{%- block navbar_toggle_button -%}{%- endblock -%}
 
 		{%- block navbar_collapse -%}{%- endblock -%}
-
-		</div>
-	</div>
+	</nav>
 {%- endblock navbar -%}
 
-{%- block page_container -%}{%- endblock -%}
+<div class="container-fluid">
+	{%- block page_container -%}
+		<div class="row container-offcanvas">
+		<div class="row row-offcanvas">
+			<div class="sidebar-offcanvas">
+				<div class="nav nav-pills flex-column" aria-orientation="vertical">
+					{%- for menu_item in menu_sidebar() -%}
+						<a href="{{- path(menu_item.route, pp_ary()) -}}" class="nav-link{% if menu_item.active %} active{% endif %}{% if menu_item.config_only %} nav-config-only{% endif %}">
+							<i class="fa fa-{{- menu_item.fa -}}"></i>&nbsp;
+							{{- menu_item.label -}}
+						</a>
+					{%- endfor -%}
+				</div>
+				{%- block text_left -%}{% endblock -%}
+			</div>
+			<div class="col">
+				{%- block content_container -%}{%- endblock -%}
+			</div>
+		</div>
+		</div>
 
-{%- block extra_footer -%}{%- endblock -%}
+	{%- endblock page_container -%}
 
-<footer class="footer">
-	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
-	{%- block index_link -%}
-		<p><a href="{{- path('index') -}}">Index</a></p>
-	{%- endblock index_link -%}
-</footer>
+	{%- block extra_footer -%}{%- endblock -%}
 
+	<footer class="footer">
+		<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+		{%- block index_link -%}
+			<p><a href="{{- path('index') -}}">Index</a></p>
+		{%- endblock index_link -%}
+	</footer>
+
+</div>
+
+
+
+{{ encore_entry_script_tags('app') }}
 
 {%- for j in assets_ary('js') -%}
 	<script src="{{- j -}}"></script>

@@ -1,0 +1,40 @@
+{%- import 'macro/asset.html.twig' as a -%}
+
+{% spaceless -%}
+
+    <!doctype html>
+    <html lang="{{- app.request.locale -}}">
+        <head>
+            <title>
+                {%- block title -%}
+                    eLAND
+                {%- endblock title -%}
+            </title>
+
+            {{- a.css('build/vendor.css') -}}
+            {%- block css -%}{%- endblock -%}
+
+            {%- embed 'embed/meta.html.twig' -%}
+            {%- endembed -%}
+        </head>
+
+        <body{%- block body_attr -%}{%- endblock -%}>
+
+            {%- block body_prepend -%}{%- endblock -%}
+
+            {%- block loading_img -%}{%- endblock -%}
+
+            {%- block navbar -%}{%- endblock -%}
+
+            <div class="container-fluid">
+                {%- block inner_container -%}{%- endblock -%}
+            </div>
+
+            {{- a.js('build/manifest.js') -}}
+            {{- a.js('build/vendor.js') -}}
+
+            {%- block js -%}{%- endblock -%}
+
+        </body>
+    </html>
+{%- endspaceless %}

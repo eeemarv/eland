@@ -1,6 +1,5 @@
 {%- extends 'base/base.html.twig' -%}
 {%- import 'macro/alert.html.twig' as a -%}
-{%- import 'macro/menu.html.twig' as m -%}
 
 {%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
 
@@ -8,9 +7,7 @@
 
 {%- block logo -%}
 	{%- if config('logo', schema) -%}
-		<a href="{{- block('system_link') -}}" class="navbar-left hidden-xs logo">
-			<img src="{{- s3_url(config('logo', schema)) -}}" height="50">
-		</a>
+			<img src="{{- s3_url(config('logo', schema)) -}}" class="logo d-none d-md-inline-block">
 	{%- endif -%}
 {%- endblock logo -%}
 
@@ -24,41 +21,50 @@
 	{%- endif -%}
 {%- endblock -%}
 
-{%- block page_container -%}
+{%- block content_container -%}
 
+{#
 	<div class="swiper-container">
 	<div class="row-offcanvas row-offcanvas-left">
 	<div id="sidebar" class="sidebar-offcanvas">
 
 	<br>
-	<ul class="nav nav-pills nav-stacked">
+	<div class="nav nav-pills flex-column" aria-orientation="vertical">
 
 	{%- block menu_sidebar -%}
-		{{- m.menu_sidebar() -}}
+		{%- for menu_item in menu_sidebar() -%}
+			<a href="{{- path(menu_item.route, pp_ary()) -}}" class="nav-link{% if menu_item.active %} active{% endif %}{% if menu_item.config_only %} nav-config-only{% endif %}">
+				<i class="fa fa-{{- menu_item.fa -}}"></i>&nbsp;
+				{{- menu_item.label -}}
+			</a>
+		{%- endfor -%}
 	{%- endblock menu_sidebar -%}
 
-	</ul>
+	</div>
 
 	</div>
 
 	<div id="wrap">
 	<div id="main" class="container-fluid clear-top{%- if pp_role('admin') %} admin{%- endif -%}">
+#}
 
 	{{- a.alert() -}}
 
 	<div class="row">
-	<div class="col-md-12 top-buttons">
+		<div class="col-md-12 top-buttons">
 
-	<div class="visible-xs pull-left button-offcanvas menu-button">
-		<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">
-			<i class="fa fa-chevron-left"></i>
-		</button>
-	</div>
+{#
+			<div class="visible-xs pull-left button-offcanvas menu-button">
+				<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">
+					<i class="fa fa-chevron-left"></i>
+				</button>
+			</div>
+#}
 
-	{{- btn_top() -}}
-	{{- btn_nav() -}}
+		{{- btn_top() -}}
+		{{- btn_nav() -}}
 
-	</div>
+		</div>
 	</div>
 
 	{{- heading() -}}
@@ -66,7 +72,9 @@
 
 	{%- block content -%}{{- content|raw -}}{%- endblock -%}
 
+{#
 	</div>
 	</div>
 	</div>
-{%- endblock page_container -%}
+#}
+{%- endblock content_container -%}

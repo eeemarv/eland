@@ -18,17 +18,22 @@ class AssetsService
 	];
 
 	const ASSETS_ARY = [
-		'bootstrap' => [
+		'bootstrap' => [ // was 3.3.7
 			'css'	=> [
-				'twitter-bootstrap/3.3.7/css/bootstrap.min.css',
+				'twitter-bootstrap/4.4.1/css/bootstrap.min.css',
 			],
 			'js'	=> [
-				'twitter-bootstrap/3.3.7/js/bootstrap.min.js',
+				'twitter-bootstrap/4.4.1/js/bootstrap.min.js',
 			],
 		],
 		'bootstrap-tagsinput' => [
 			'js'	=> [
 				'bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js',
+			],
+		],
+		'popper' => [
+			'js' => [
+				'popper.js/1.16.0/popper.min.js',
 			],
 		],
 		'fontawesome'	=> [
