@@ -70,9 +70,10 @@ class AutoMinLimitController extends AbstractController
         $heading_render->add('Automatische minimum limiet');
         $heading_render->fa('arrows-v');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
-        $out .= '<div class="panel-heading"><p>';
+        $out .= '<p>';
         $out .= 'Met dit formulier kan een Automatische Minimum Limiet ingesteld worden. ';
         $out .= 'De individuele Minimum Limiet van Accounts zal zo automatisch lager ';
         $out .= 'worden door ontvangen transacties ';

@@ -153,8 +153,8 @@ class DocsEditController extends AbstractController
 
         $heading_render->add('Document aanpassen');
 
-        $out = '<div class="panel panel-info" id="add">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 

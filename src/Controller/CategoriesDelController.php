@@ -52,7 +52,7 @@ class CategoriesDelController extends AbstractController
         $heading_render->add($fullname);
         $heading_render->fa('clone');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= "<p><font color='#F56DB5'><strong>Ben je zeker dat deze categorie";

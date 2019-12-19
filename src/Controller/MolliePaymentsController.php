@@ -634,7 +634,7 @@ class MolliePaymentsController extends AbstractController
 
 //------------------
 
-        $out = '<div class="panel panel-info';
+        $out = '<div class="card bg-info';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
         $out .= '<div class="panel-heading">';
@@ -808,7 +808,7 @@ class MolliePaymentsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover panel-body footable csv" ';
@@ -939,7 +939,7 @@ class MolliePaymentsController extends AbstractController
         $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
         $out .= '<h3>Bulk acties met geselecteerde betaalverzoeken</h3>';
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<ul class="nav nav-tabs" role="tablist">';

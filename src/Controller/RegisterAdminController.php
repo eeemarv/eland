@@ -43,8 +43,8 @@ class RegisterAdminController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p><i>Formulier niet actief ';
         $out .= 'in admin modus.</i></p>';

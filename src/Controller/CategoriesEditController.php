@@ -128,7 +128,7 @@ class CategoriesEditController extends AbstractController
         $heading_render->add($cat['name']);
         $heading_render->fa('clone');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';

@@ -80,8 +80,8 @@ class MessagesDelController extends AbstractController
         $heading_render->add(' verwijderen?');
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="panel panel-info printview">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<dl>';
 
@@ -116,7 +116,7 @@ class MessagesDelController extends AbstractController
         $out .= nl2br($message['Description']);
         $out .= '</div>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>';
         $out .= '<span class="danger">';
         $out .= 'Ben je zeker dat ' . $message['label']['type_this'];

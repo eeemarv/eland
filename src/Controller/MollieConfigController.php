@@ -81,7 +81,7 @@ class MollieConfigController extends AbstractController
         $heading_render->add('Mollie configuratie');
         $heading_render->fa('eur');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
         $out .= '<div class="panel-heading"><p>';
         $out .= 'Om betalingen met <a href="https://www.mollie.com/nl/">Mollie</a> te ontvangen moet ';
         $out .= 'moet je op de <a href="https://www.mollie.com/nl/">Mollie-website</a> een account aanmaken voor je organisatie.';

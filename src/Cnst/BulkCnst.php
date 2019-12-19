@@ -130,8 +130,8 @@ class BulkCnst
     TPL;
 
     const TPL_SELECT_BUTTONS = <<<'TPL'
-    <div class="panel panel-default" id="bulk_actions">
-    <div class="panel-heading">
+    <div class="card bg-default" id="bulk_actions">
+    <div class="card-body">
     <input type="button"
     class="btn btn-default btn-lg"
     data-table-sel="invert"

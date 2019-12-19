@@ -149,8 +149,8 @@ class DocsAddController extends AbstractController
         $heading_render->add('Nieuw document opladen');
         $heading_render->fa('files-o');
 
-        $out = '<div class="panel panel-info" id="add">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info" id="add">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post" enctype="multipart/form-data">';
 

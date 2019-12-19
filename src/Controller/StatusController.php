@@ -458,7 +458,7 @@ class StatusController extends AbstractController
         }
         else
         {
-            $out .= '<div class="panel panel-info">';
+            $out .= '<div class="card bg-info">';
             $out .= '<div class="panel-body">';
             $out .= '<p>Geen bijzonderheden</p>';
             $out .= '</div>';

@@ -141,21 +141,21 @@ class ExportController extends AbstractController
 
         $out = '<form>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>Database download (SQL)';
         $out .= '</h3>';
         $out .= '</div>';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
         $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
         $out .= '</div></div>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>eLAND extra data (CSV)';
         $out .= '</h3>';
         $out .= '</div>';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
         $out .= '<p>';
         $out .= 'Naast de database bevat eLAND nog ';
         $out .= 'deze extra data die je hier kan downloaden ';
@@ -164,7 +164,7 @@ class ExportController extends AbstractController
         $out .= 'gebeurtenissen die de huidige staat veroorzaakt hebben.';
         $out .= '</p>';
         $out .= '</div>';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<input type="submit" value="Data" ';
         $out .= 'name="_ag_csv" ';
@@ -176,12 +176,12 @@ class ExportController extends AbstractController
 
         $out .= '</div></div>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>CSV export</h3>';
         $out .= '<p>Per database tabel</p>';
         $out .= '</div>';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         foreach ($table_ary as $table)
         {

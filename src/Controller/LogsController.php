@@ -173,8 +173,8 @@ class LogsController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('history');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 

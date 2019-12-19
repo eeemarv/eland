@@ -94,7 +94,7 @@ class ForumDelPostController extends AbstractController
 
         $heading_render->fa('comments-o');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<p>';

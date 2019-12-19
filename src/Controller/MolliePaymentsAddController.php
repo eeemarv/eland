@@ -278,7 +278,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="get">';
@@ -326,7 +326,7 @@ class MolliePaymentsAddController extends AbstractController
 
         $out .= '<form method="post" autocomplete="off">';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover footable panel-body csv" ';

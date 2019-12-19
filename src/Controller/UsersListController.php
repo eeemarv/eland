@@ -882,7 +882,7 @@ class UsersListController extends AbstractController
 
         $f_col = '';
 
-        $f_col .= '<div class="panel panel-info collapse" ';
+        $f_col .= '<div class="card bg-info collapse" ';
         $f_col .= 'id="columns_show">';
         $f_col .= '<div class="panel-heading">';
         $f_col .= '<h2>Weergave kolommen</h2>';
@@ -1496,7 +1496,7 @@ class UsersListController extends AbstractController
             $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerde gebruikers</h3>';
-            $out .= '<div class="panel panel-info">';
+            $out .= '<div class="card bg-info">';
             $out .= '<div class="panel-heading">';
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
@@ -1762,7 +1762,7 @@ class UsersListController extends AbstractController
 
         $out .= '<br>';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<div class="row">';

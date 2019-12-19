@@ -245,7 +245,7 @@ class ContactsAdminController extends AbstractController
         $heading_render->btn_filter();
         $heading_render->fa('map-marker');
 
-        $out = '<div id="filter" class="panel panel-info';
+        $out = '<div id="filter" class="card bg-info';
         $out .= $panel_collapse ? ' collapse' : '';
         $out .= '">';
 

@@ -213,8 +213,8 @@ class IntersystemsController extends AbstractController
         }
         else
         {
-            $out .= '<div class="panel panel-primary">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-primary">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen interSysteem-verbindingen.</p>';
             $out .= '</div></div>';
         }
@@ -245,8 +245,8 @@ class IntersystemsController extends AbstractController
         LinkRender $link_render
     ):string
     {
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
         $out .= '</div>';
         $out .= '<ul>';
@@ -332,7 +332,7 @@ class IntersystemsController extends AbstractController
             }
         }
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>Systemen op deze eLAND server</h3>';
         $out .= '</div>';
 

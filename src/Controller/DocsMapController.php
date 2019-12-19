@@ -111,8 +111,8 @@ class DocsMapController extends AbstractController
         $heading_render->add($name . '"');
         $heading_render->fa('files-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
@@ -210,7 +210,7 @@ class DocsMapController extends AbstractController
         }
         else
         {
-            $out .= '<div class="panel panel-default">';
+            $out .= '<div class="card bg-default">';
             $out .= '<div class="panel-heading">';
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
             $out .= '</div></div>';

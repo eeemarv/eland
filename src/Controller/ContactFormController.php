@@ -148,7 +148,7 @@ class ContactFormController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';

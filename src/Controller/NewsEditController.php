@@ -128,7 +128,7 @@ class NewsEditController extends AbstractController
         $heading_render->add('Nieuwsbericht aanpassen');
         $heading_render->fa('calendar-o');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';

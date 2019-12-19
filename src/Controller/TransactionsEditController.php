@@ -139,7 +139,7 @@ class TransactionsEditController extends AbstractController
         $out .= 'bij vergissing.</li>';
         $out .= '</ul></i>';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form  method="post" autocomplete="off">';

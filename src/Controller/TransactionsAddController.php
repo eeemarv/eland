@@ -367,7 +367,7 @@ class TransactionsAddController extends AbstractController
             {
                 // Previously eLAS intersystem
 
-                $alert_service-error('Geen verbinding met interSysteem ' . $group['groupname']).
+                $alert_service->error('Geen verbinding met interSysteem ' . $group['groupname']).
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
             else
@@ -598,7 +598,7 @@ class TransactionsAddController extends AbstractController
                         $db->commit();
 
                     }
-                    catch(Exception $e)
+                    catch(\Exception $e)
                     {
                         $db->rollback();
                         $alert_service->error('Transactie niet gelukt.');
@@ -818,7 +818,7 @@ class TransactionsAddController extends AbstractController
         $heading_render->add('Nieuwe transactie');
         $heading_render->fa('exchange');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form  method="post" autocomplete="off">';

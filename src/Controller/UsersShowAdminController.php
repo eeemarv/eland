@@ -786,7 +786,7 @@ class UsersShowAdminController extends AbstractController
         $out .= 'Stuur een bericht naar ';
         $out .=  $account_render->link($user_id, $pp->ary());
         $out .= '</h3>';
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post"">';

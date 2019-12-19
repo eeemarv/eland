@@ -352,7 +352,7 @@ class ConfigController extends AbstractController
 
         $out .= '<form method="post">';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
         $out .= '<div class="panel-heading"><h4>';
         $out .= $pane['lbl_pane'] ?? $pane['lbl'];
         $out .= '</h4>';

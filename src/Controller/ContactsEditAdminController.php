@@ -307,8 +307,8 @@ class ContactsEditAdminController extends AbstractController
             $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
         }
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 

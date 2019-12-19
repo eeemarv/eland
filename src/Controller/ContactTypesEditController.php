@@ -82,8 +82,8 @@ class ContactTypesEditController extends AbstractController
         $heading_render->add('Contact type aanpassen');
         $heading_render->fa('circle-o-notch');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<form method="post">';
 
         $out .= '<div class="form-group">';

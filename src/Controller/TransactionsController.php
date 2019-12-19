@@ -366,7 +366,7 @@ class TransactionsController extends AbstractController
 
         $assets_service->add(['datepicker']);
 
-        $out .= '<div class="panel panel-info';
+        $out .= '<div class="card bg-info';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
         $out .= '<div class="panel-heading">';

@@ -184,8 +184,8 @@ class NewsListController extends AbstractController
         MenuService $menu_service
     ):string
     {
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
         $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
         $out .= '</div></div>';
 

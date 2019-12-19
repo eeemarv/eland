@@ -325,7 +325,7 @@ class MassTransactionController extends AbstractController
 
                     $db->commit();
                 }
-                catch (Exception $e)
+                catch (\Exception $e)
                 {
                     $alert_service->error('Fout bij het opslaan.');
                     $db->rollback();
@@ -473,15 +473,15 @@ class MassTransactionController extends AbstractController
         $heading_render->add('Massa transactie');
         $heading_render->fa('exchange');
 
-        $out = '<div class="panel panel-warning">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-warning">';
+        $out .= '<div class="card-body">';
         $out .= '<button class="btn btn-default btn-lg" ';
         $out .= 'title="Toon invul-hulp" data-toggle="collapse" ';
         $out .= 'data-target="#help" type="button">';
         $out .= '<i class="fa fa-question"></i>';
         $out .= ' Invul-hulp</button>';
         $out .= '</div>';
-        $out .= '<div class="panel-heading collapse" id="help">';
+        $out .= '<div class="card-body collapse" id="help">';
 
         $out .= '<p>Met deze invul-hulp kan je snel alle ';
         $out .= 'bedragen van de massa-transactie invullen. ';
@@ -729,8 +729,8 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
@@ -776,8 +776,8 @@ class MassTransactionController extends AbstractController
         $out .= '<input type="hidden" value="" ';
         $out .= 'name="selected_users" id="selected_users">';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="from_letscode" class="control-label">';
@@ -925,7 +925,7 @@ class MassTransactionController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="total" class="control-label">Totaal';
