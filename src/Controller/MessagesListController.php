@@ -468,7 +468,7 @@ class MessagesListController extends AbstractController
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
             $out .= '<div class="card bg-info">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card-body">';
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
 
@@ -1038,7 +1038,7 @@ class MessagesListController extends AbstractController
         $heading_render->fa('newspaper-o');
 
         $out = '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 

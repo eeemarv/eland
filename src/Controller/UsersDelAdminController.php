@@ -121,7 +121,7 @@ class UsersDelAdminController extends AbstractController
         $out .= ' worden verwijderd.</font></p>';
 
         $out .= '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post"">';
 

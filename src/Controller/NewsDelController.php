@@ -72,7 +72,7 @@ class NewsDelController extends AbstractController
         );
 
         $out .= '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p class="text-danger"><strong>';
         $out .= 'Ben je zeker dat dit nieuwsbericht ';

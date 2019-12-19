@@ -53,7 +53,7 @@ class CategoriesDelController extends AbstractController
         $heading_render->fa('clone');
 
         $out = '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= "<p><font color='#F56DB5'><strong>Ben je zeker dat deze categorie";
         $out .= " moet verwijderd worden?</strong></font></p>";

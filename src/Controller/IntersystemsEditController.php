@@ -195,7 +195,7 @@ class IntersystemsEditController extends AbstractController
         $heading_render->fa('share-alt');
 
         $out = '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 

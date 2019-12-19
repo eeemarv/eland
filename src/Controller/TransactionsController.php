@@ -369,7 +369,7 @@ class TransactionsController extends AbstractController
         $out .= '<div class="card bg-info';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 

@@ -340,8 +340,8 @@ class MessagesShowController extends AbstractController
 
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default printview">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p><b>Omschrijving</b></p>';
         $out .= '</div>';
@@ -360,8 +360,8 @@ class MessagesShowController extends AbstractController
         $out .= '</p>';
         $out .= '</div></div>';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default printview">';
+        $out .= '<div class="card-body">';
 
         $out .= '<dl>';
         $out .= '<dt>';

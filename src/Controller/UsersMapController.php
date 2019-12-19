@@ -186,8 +186,8 @@ class UsersMapController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
         $out .= '<p>';
 
         $out .= 'In dit kaartje wordt van elke gebruiker slechts het eerste ';

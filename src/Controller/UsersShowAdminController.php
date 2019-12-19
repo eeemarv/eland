@@ -468,8 +468,8 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default printview">';
+        $out .= '<div class="card-body">';
         $out .= '<dl>';
 
         $fullname_access = $user['fullname_access'] ?: 'admin';
@@ -787,7 +787,7 @@ class UsersShowAdminController extends AbstractController
         $out .=  $account_render->link($user_id, $pp->ary());
         $out .= '</h3>';
         $out .= '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post"">';
 

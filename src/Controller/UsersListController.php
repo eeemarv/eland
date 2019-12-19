@@ -884,7 +884,7 @@ class UsersListController extends AbstractController
 
         $f_col .= '<div class="card bg-info collapse" ';
         $f_col .= 'id="columns_show">';
-        $f_col .= '<div class="panel-heading">';
+        $f_col .= '<div class="card-body">';
         $f_col .= '<h2>Weergave kolommen</h2>';
 
         $f_col .= '<div class="row">';
@@ -1497,7 +1497,7 @@ class UsersListController extends AbstractController
 
             $out .= '<h3>Bulk acties met geselecteerde gebruikers</h3>';
             $out .= '<div class="card bg-info">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card-body">';
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
 
@@ -1763,7 +1763,7 @@ class UsersListController extends AbstractController
         $out .= '<br>';
 
         $out .= '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<div class="row">';
         $out .= '<div class="col-xs-12">';

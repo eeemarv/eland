@@ -353,7 +353,7 @@ class ConfigController extends AbstractController
         $out .= '<form method="post">';
 
         $out .= '<div class="card bg-info">';
-        $out .= '<div class="panel-heading"><h4>';
+        $out .= '<div class="card-body"><h4>';
         $out .= $pane['lbl_pane'] ?? $pane['lbl'];
         $out .= '</h4>';
 
@@ -529,8 +529,8 @@ class ConfigController extends AbstractController
                 $out .= '<div class="row">';
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
+                $out .= '<div class="card bg-default">';
+                $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_active']))
                 {
@@ -555,8 +555,8 @@ class ConfigController extends AbstractController
                 $out .= '</div>'; // col
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
+                $out .= '<div class="card bg-default">';
+                $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_inactive']))
                 {
@@ -728,7 +728,7 @@ class ConfigController extends AbstractController
 
         $out .= '</ul>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<input type="hidden" name="tab" value="' . $tab . '">';
 

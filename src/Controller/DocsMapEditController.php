@@ -96,7 +96,7 @@ class DocsMapEditController extends AbstractController
             ['id' => $id], $name));
 
         $out = '<div class="card bg-info" id="add">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 

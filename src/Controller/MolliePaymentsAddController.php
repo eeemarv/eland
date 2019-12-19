@@ -234,8 +234,8 @@ class MolliePaymentsAddController extends AbstractController
         $heading_render->add('Mollie Betaalverzoeken aanmaken');
         $heading_render->fa('eur');
 
-        $out = '<div class="panel panel-warning">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-warning">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form class="form" id="fill_in_aid">';
 
@@ -279,7 +279,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
@@ -444,7 +444,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="total" class="control-label">Totaal';

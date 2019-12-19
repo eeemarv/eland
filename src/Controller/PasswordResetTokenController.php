@@ -98,7 +98,7 @@ class PasswordResetTokenController extends AbstractController
         ]);
 
         $out = '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post" role="form">';
 

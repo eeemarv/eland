@@ -249,7 +249,7 @@ class ContactsAdminController extends AbstractController
         $out .= $panel_collapse ? ' collapse' : '';
         $out .= '">';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 

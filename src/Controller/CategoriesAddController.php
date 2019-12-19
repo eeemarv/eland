@@ -103,7 +103,7 @@ class CategoriesAddController extends AbstractController
         $heading_render->fa('clone');
 
         $out = '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form  method="post">';
 

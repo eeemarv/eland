@@ -74,7 +74,7 @@ class ForumController extends AbstractController
         $heading_render->fa('comments-o');
 
         $out = '<div class="card bg-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
@@ -98,8 +98,8 @@ class ForumController extends AbstractController
 
         if (!count($forum_topics))
         {
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-default">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
             $out .= '</div></div>';
 

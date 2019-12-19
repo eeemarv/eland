@@ -140,7 +140,7 @@ class MollieCheckoutController extends AbstractController
         }
 
         $out .= '">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
         {
