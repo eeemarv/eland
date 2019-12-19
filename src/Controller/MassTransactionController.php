@@ -325,7 +325,7 @@ class MassTransactionController extends AbstractController
 
                     $db->commit();
                 }
-                catch (Exception $e)
+                catch (\Exception $e)
                 {
                     $alert_service->error('Fout bij het opslaan.');
                     $db->rollback();

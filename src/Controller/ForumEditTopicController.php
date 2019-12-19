@@ -17,6 +17,7 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumEditTopicController extends AbstractController

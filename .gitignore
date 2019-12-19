@@ -5,6 +5,8 @@
 /cache/
 /.env*
 
+/public/build/
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
