@@ -1,8 +1,10 @@
-
-$primary: $purple;
-
-/*
 $theme-colors: (
-  primary: $purple
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "success":    $success,
+    "info":       rgb(217, 237, 247),
+    "warning":    $warning,
+    "danger":     $danger,
+    "light":      $light,
+    "dark":       $dark
 );
-*/

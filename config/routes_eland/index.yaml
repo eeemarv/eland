@@ -2,7 +2,11 @@ legacy_register:
   path: /register.php
   controller: App\Controller\LegacyController::register
 
-
+theme:
+  path: /theme
+  controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+  defaults:
+    template: static/theme.html.twig
 
 
 

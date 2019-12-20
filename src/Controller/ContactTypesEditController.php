@@ -11,7 +11,6 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contact_types;
 use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesEditController extends AbstractController
