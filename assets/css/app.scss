@@ -31,18 +31,21 @@
 @import "~bootstrap/scss/badge";
 @import "~bootstrap/scss/jumbotron";
 @import "~bootstrap/scss/alert";
-@import "~bootstrap/scss/progress";
+// @import "~bootstrap/scss/progress";
 @import "~bootstrap/scss/media";
 @import "~bootstrap/scss/list-group";
 @import "~bootstrap/scss/close";
 @import "~bootstrap/scss/toasts";
-@import "~bootstrap/scss/modal";
-@import "~bootstrap/scss/tooltip";
-@import "~bootstrap/scss/popover";
-@import "~bootstrap/scss/carousel";
-@import "~bootstrap/scss/spinners";
+// @import "~bootstrap/scss/modal";
+// @import "~bootstrap/scss/tooltip";
+// @import "~bootstrap/scss/popover";
+// @import "~bootstrap/scss/carousel";
+// @import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/utilities";
 @import "~bootstrap/scss/print";
+
+//
+@import "~footable/css/footable.core.css";
 
 // self
 @import "typeahead";

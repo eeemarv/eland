@@ -1,4 +1,4 @@
-$(document).ready(function() {
+module.exports = function() {
 
 	var $row_offcanvas = $('.row-offcanvas');
 
@@ -20,15 +20,4 @@ $(document).ready(function() {
 	$('div.content-container-overlay').click(function(ev){
 		$row_offcanvas.removeClass('active');
 	});
-
-	$('.footable').footable();
-
-	$('form[method="get"]').submit(function(){
-		$(this).find(':input').each(function() {
-			var inp = $(this);
-			if (!inp.val()) {
-				inp.prop('disabled', true);
-			}
-		});
-	});
-});
+};

@@ -23,9 +23,9 @@ class AssetsAddSubscriber implements EventSubscriberInterface
         $this->assets_service->add([
 //            'jquery', 'bootstrap',
             'fontawesome',
-            'footable',
+//            'footable',
 //            'base.css',
-            'touchswipe',
+//            'touchswipe',
             'base.js',
         ]);
 
