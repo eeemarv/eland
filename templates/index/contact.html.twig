@@ -4,8 +4,7 @@
 {%- block title -%}eLAND Contact{%- endblock -%}
 {%- block navbar -%}{%- endblock -%}
 
-{%- block page_container -%}
-
+{%- block jumbotron -%}
 	<div class="jumbotron">
 		<div class="container eland-jumbo">
 
@@ -17,6 +16,10 @@
 			<div class="eland-contact"></div>
 		</div>
 	</div>
+
+{%- endblock jumbotron -%}
+
+{%- block page_container -%}
 
 	<div class="container">
 
@@ -44,8 +47,10 @@
 				<div class="form-group">
 					<label for="mail" class="control-label">Je E-mail adres</label>
 					<div class="input-group">
-						<span class="input-group-addon">
-							<i class="fa fa-envelope-o"></i>
+						<span class="input-group-prepend">
+							<span class="input-group-text">
+								<i class="fa fa-envelope-o"></i>
+							</span>
 						</span>
 						<input type="email" class="form-control" id="mail" name="mail" value="{{- mail -}}" required>
 					</div>

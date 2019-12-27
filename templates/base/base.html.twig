@@ -98,6 +98,8 @@
 	</nav>
 {%- endblock navbar -%}
 
+{%- block jumbotron -%}{%- endblock -%}
+
 <div class="container-fluid">
 	{%- block page_container -%}
 		<div class="row row-offcanvas">
@@ -121,18 +123,16 @@
 
 	{%- endblock page_container -%}
 
-	{%- block extra_footer -%}{%- endblock -%}
-
-	<footer class="footer">
-		<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
-		{%- block index_link -%}
-			<p><a href="{{- path('index') -}}">Index</a></p>
-		{%- endblock index_link -%}
-	</footer>
-
 </div>
 
+{%- block extra_footer -%}{%- endblock -%}
 
+<footer class="footer">
+	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	{%- block index_link -%}
+		<p><a href="{{- path('index') -}}">Index</a></p>
+	{%- endblock index_link -%}
+</footer>
 
 {{ encore_entry_script_tags('app') }}
 

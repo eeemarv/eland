@@ -15,6 +15,7 @@
     "@symfony/webpack-encore": "^0.28.2",
     "bootstrap": "^4.4.1",
     "core-js": "^3.6.0",
+    "font-awesome": "^4.7.0",
     "footable": "^2.0.6",
     "gitbook-cli": "^2.3.2",
     "jquery": "^3.4.1",
