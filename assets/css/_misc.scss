@@ -68,11 +68,11 @@ div.users_map {
 }
 
 div.eland-index {
-    background-image: url('/img/index.png');
-    background-repeat: repeat;
-    background-position: center;
-    background-size: 400px;
-  }
+  background-image: url('/img/index.png');
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 30rem;
+}
 
 div.eland-jumbo {
   position: relative;
@@ -80,34 +80,28 @@ div.eland-jumbo {
 
 div.eland-jumbo-image {
   position: relative;
+  margin-bottom: 0;
 }
 
 div.eland-contact, div.eland-exception {
     position: absolute;
-    bottom: -30px;
-    right: 30px;
-    width: 160px;
-    height: 240px;
+    bottom: -4em;
+    right: 2em;
+    width: 10em;
+    height: 15em;
     background-repeat: no-repeat;
     background-clip: border-box;
     background-position: bottom right;
 }
 
 div.eland-contact {
-background-image: url('/img/contact.png');
-background-size: 100px;
+  background-image: url('/img/contact.png');
+  background-size: 6.5em;
 }
 
 div.eland-exception {
-background-image: url('/img/exception.png');
-background-size: 140px;
-}
-
-@media screen and (min-width: 768px) {
-div.eland-contact, div.eland-exception {
-    bottom: -50px;
-    background-size: 140px;
-}
+  background-image: url('/img/exception.png');
+  background-size: 9em;
 }
 
 .logo {

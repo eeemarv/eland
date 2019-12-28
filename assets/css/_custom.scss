@@ -1,0 +1,92 @@
+$b-white:    #fff;
+$b-gray-100: #f8f9fa;
+$b-gray-200: #e9ecef;
+$b-gray-300: #dee2e6;
+$b-gray-400: #ced4da;
+$b-gray-500: #adb5bd;
+$b-gray-600: #6c757d;
+$b-gray-700: #495057;
+$b-gray-800: #343a40;
+$b-gray-900: #212529;
+$b-black:    #000;
+
+$b-blue:    #007bff;
+$b-indigo:  #6610f2;
+$b-purple:  #6f42c1;
+$b-pink:    #e83e8c;
+$b-red:     #dc3545;
+$b-orange:  #fd7e14;
+$b-yellow:  #ffc107;
+$b-green:   #28a745;
+$b-teal:    #20c997;
+$b-cyan:    #17a2b8;
+
+/*
+$primary:       #007bff;
+$secondary:     #6c757d;
+$success:       #28a745;
+$info:          #17a2b8;
+$warning:       #ffc107;
+$danger:        #dc3545;
+$light:         #f8f9fa;
+$dark:          #343a40;
+*/
+
+$b-primary:       $b-blue;
+$b-secondary:     $b-gray-600;
+$b-success:       $b-green;
+$b-info:          $b-cyan;
+$b-warning:       $b-yellow;
+$b-danger:        $b-red;
+$b-light:         $b-gray-100;
+$b-dark:          $b-gray-800;
+
+/*
+$primary: adjust-hue($b-primary, 40);
+$secondary: adjust-hue($b-secondary, 20);
+$success: adjust-hue($b-success, 10);
+$info: adjust-hue($b-info, 10);
+$warning: adjust-hue($b-warning, -10);
+$danger: adjust-hue($b-danger, 10);
+$light: $b-light;
+$dark: $b-dark;
+*/
+
+$primary:         #337ab7;
+$success:         #5cb85c;
+$info:            #5bc0de;
+$warning:         #f0ad4e;
+$danger:          #d9534f;
+
+$secondary: $b-gray-600;
+
+$theme-colors: (
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "success":    $success,
+    "info":       $info,
+    "warning":    $warning,
+    "danger":     $danger,
+/*
+    "light":      $light,
+    "dark":       $dark,
+*/
+    "primary-li":   lighten($primary, 20),
+    "secondary-li": lighten($secondary, 20),
+    "success-li":   lighten($success, 20),
+    "info-li":      lighten($info, 50),
+    "warning-li":   lighten($warning, 20),
+    "danger-li":    lighten($danger, 20),
+);
+
+$component-active-bg: $primary;
+
+
+// $enable-gradients: true;
+// $enable-shadows: true;
+
+$border-radius:               .45rem;
+$border-radius-lg:            .5rem; // was 3rem
+$border-radius-sm:            .4rem;
+
+$yiq-contrasted-threshold:  170;
