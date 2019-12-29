@@ -73,9 +73,10 @@ class PaginationRender
 			return $this->out;
 		}
 
-		$this->out .= '<div class="row print-hide">';
-		$this->out .= '<div class="col-md-12">';
-		$this->out .= '<ul class="pagination">';
+		$this->out = '<div class="row mb-2">';
+		$this->out .= '<div class="col-12">';
+		$this->out .= '<nav aria-label="Page navigation">';
+		$this->out .= '<ul class="pagination float-left">';
 
 		$min_adjacent = $this->page - $this->adjacent_num;
 		$max_adjacent = $this->page + $this->adjacent_num;
@@ -100,7 +101,7 @@ class PaginationRender
 
 		$this->out .= '</ul>';
 
-		$this->out .= '<div class="pull-right hidden-xs">';
+		$this->out .= '<div class="float-right hidden-xs">';
 		$this->out .= '<div>';
 		$this->out .= 'Totaal ';
 		$this->out .= $this->row_count;
@@ -143,10 +144,12 @@ class PaginationRender
 		}
 
 		$this->out .= '</form>';
-		$this->out .= '</div>';
 
 		$this->out .= '</div>';
-		$this->out .= '</div></div>';
+		$this->out .= '</div>';
+		$this->out .= '</nav>';
+		$this->out .= '</div>';
+		$this->out .= '</div>';
 
 		return $this->out;
 	}
@@ -160,12 +163,12 @@ class PaginationRender
 			'limit'	=> $this->limit,
 		];
 
-		$out = '<li';
-		$out .= $page == $this->page ? ' class="active"' : '';
-		$out .= '>';
+		$out = '<li class="page-item';
+		$out .= $page == $this->page ? ' active' : '';
+		$out .= '">';
 
-		$out .= $this->link_render->link_no_attr($this->route, $this->pp_ary,
-			$params, (string) ($page + 1));
+		$out .= $this->link_render->link($this->route, $this->pp_ary,
+			$params, (string) ($page + 1), ['class' => 'page-link']);
 
 		$out .= '</li>';
 

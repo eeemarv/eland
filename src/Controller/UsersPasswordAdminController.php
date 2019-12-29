@@ -171,10 +171,10 @@ class UsersPasswordAdminController extends AbstractController
         $out .= 'value="';
         $out .= $password;
         $out .= '" required>';
-        $out .= '<span class="input-group-btn">';
+        $out .= '<div class="input-group-append">';
         $out .= '<button class="btn btn-default" type="button" ';
         $out .= 'data-generate-password>Genereer</button>';
-        $out .= '</span>';
+        $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
 

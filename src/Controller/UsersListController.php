@@ -1766,7 +1766,7 @@ class UsersListController extends AbstractController
         $out .= '<div class="card-body">';
 
         $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
+        $out .= '<div class="col">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';

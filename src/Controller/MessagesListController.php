@@ -1045,7 +1045,7 @@ class MessagesListController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
@@ -1058,7 +1058,7 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5 col-xs-10">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-clone"></i>';
@@ -1096,7 +1096,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
 
@@ -1112,7 +1112,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
 
@@ -1129,7 +1129,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
 
@@ -1141,12 +1141,15 @@ class MessagesListController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-10">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Van&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="fcode_addon" ';
         $out .= 'data-typeahead="';
 
         $out .= $typeahead_service->ini($pp->ary())

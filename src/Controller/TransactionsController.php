@@ -373,10 +373,10 @@ class TransactionsController extends AbstractController
 
         $out .= '<form method="get" class="form-horizontal">';
 
-        $out .= '<div class="row">';
+        $out .= '<div class="row mb-2">';
 
         $out .= '<div class="col-sm-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
@@ -390,12 +390,16 @@ class TransactionsController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= '<div class="row">';
+        $out .= '<div class="row mb-2">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Van&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active']);
@@ -413,7 +417,6 @@ class TransactionsController extends AbstractController
         }
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="fcode_addon" ';
 
         $out .= 'data-typeahead="';
 
@@ -439,19 +442,22 @@ class TransactionsController extends AbstractController
         ];
 
         $out .= '<div class="col-sm-2">';
-        $out .= '<select class="form-control margin-bottom" name="f[andor]">';
+        $out .= '<select class="form-control" name="f[andor]">';
         $out .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
         $out .= '</select>';
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tcode_addon">Naar ';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Naar&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" ';
         $out .= 'data-typeahead-source="fcode" ';
         $out .= 'placeholder="Account Code" ';
-        $out .= 'aria-describedby="tcode_addon" ';
         $out .= 'name="f[tcode]" value="';
         $out .= $tcode ?? '';
         $out .= '">';
@@ -463,11 +469,14 @@ class TransactionsController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="fdate_addon" ';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Vanaf&nbsp;';
+        $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" ';
 
         $out .= 'id="fdate" name="f[fdate]" ';
         $out .= 'value="';
@@ -492,11 +501,14 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="tdate_addon" ';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Tot&nbsp;';
+        $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" ';
 
         $out .= 'id="tdate" name="f[tdate]" ';
         $out .= 'value="';

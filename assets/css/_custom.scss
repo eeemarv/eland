@@ -67,6 +67,7 @@ $theme-colors: (
     "info":       $info,
     "warning":    $warning,
     "danger":     $danger,
+    "default":    #fff,
 /*
     "light":      $light,
     "dark":       $dark,
@@ -79,6 +80,13 @@ $theme-colors: (
     "danger-li":    lighten($danger, 20),
 );
 
+/*
+
+@btn-default-color:              #333;
+@btn-default-bg:                 #fff;
+@btn-default-border:             #ccc;
+*/
+
 $component-active-bg: $primary;
 
 
@@ -90,3 +98,9 @@ $border-radius-lg:            .5rem; // was 3rem
 $border-radius-sm:            .4rem;
 
 $yiq-contrasted-threshold:  170;
+
+$font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+// @font-family-serif:       Georgia, "Times New Roman", Times, serif;
+
+// $font-family-sans-serif:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+// $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;

@@ -181,12 +181,14 @@ class LogsController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="q_addon">';
-        $out .= '<i class="fa fa-search"></i></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="q_addon" ';
         $out .= 'name="f[q]" id="q" placeholder="Zoek Event" ';
         $out .= 'value="';
         $out .= $filter['q'] ?? '';
@@ -195,12 +197,14 @@ class LogsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="type_addon">';
-        $out .= 'Type</span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Type';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="type_addon" ';
         $out .= 'data-typeahead="';
 
         $out .= $typeahead_service->ini($pp->ary())
@@ -216,12 +220,14 @@ class LogsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
         $out .= $typeahead_service->ini($pp->ary())
