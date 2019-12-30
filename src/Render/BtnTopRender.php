@@ -146,7 +146,7 @@ class BtnTopRender
 		$out .= $title;
 		$out .= '"><i class="fa fa-';
 		$out .= $fa;
-		$out .= '"></i><span class="hidden-xs hidden-sm">&nbsp;';
+		$out .= '"></i><span class="d-none d-lg-inline">&nbsp;';
 		$out .= $title;
 		$out .= '</span></a>';
 		$this->out[] = $out;

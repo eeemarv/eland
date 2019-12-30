@@ -338,13 +338,18 @@ class ConfigController extends AbstractController
 
         foreach (ConfigCnst::TAB_PANES as $tab_id => $tab_pane_data)
         {
-            $out .= '<li role="presentation"';
-            $out .= $tab_id === $tab ? ' class="active"' : '';
-            $out .= '>';
-            $out .= $link_render->link_no_attr('config',
+            $out .= '<li role="presentation" ';
+            $out .= 'class="nav-item">';
+
+            $class = 'nav-link';
+            $class .= $tab_id === $tab ? ' active' : '';
+
+            $out .= $link_render->link('config',
                 $pp->ary(),
                 ['tab' => $tab_id],
-                $tab_pane_data['lbl']);
+                $tab_pane_data['lbl'],
+                ['class' => $class]
+            );
             $out .= '</li>';
         }
 
@@ -803,6 +808,11 @@ class ConfigController extends AbstractController
 
         foreach ($items as $a)
         {
+            if (!isset($input_ary[$a]))
+            {
+                continue;
+            }
+
             $options = $input_ary[$a];
 
             if (!count($options))

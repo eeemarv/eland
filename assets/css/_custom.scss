@@ -64,15 +64,14 @@ $theme-colors: (
     "primary":    $primary,
     "secondary":  $secondary,
     "success":    $success,
-    "info":       $info,
-    "warning":    $warning,
+    "info":       darken($info, 5),
+    "warning":    darken($warning, 15),
     "danger":     $danger,
     "default":    #fff,
 /*
     "light":      $light,
     "dark":       $dark,
 */
-    "primary-li":   lighten($primary, 20),
     "secondary-li": lighten($secondary, 20),
     "success-li":   lighten($success, 20),
     "info-li":      lighten($info, 50),
@@ -97,7 +96,7 @@ $border-radius:               .45rem;
 $border-radius-lg:            .5rem; // was 3rem
 $border-radius-sm:            .4rem;
 
-$yiq-contrasted-threshold:  170;
+$yiq-contrasted-threshold:  190;
 
 $font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
 // @font-family-serif:       Georgia, "Times New Roman", Times, serif;

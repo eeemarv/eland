@@ -176,7 +176,7 @@ class LinkRender
 
 		$out .= '>';
 		$out .= '<i class="fa fa-' . $fa .'"></i>';
-		$out .= '<span class="hidden-xs hidden-sm">&nbsp;';
+		$out .= '<span class="d-none d-lg-inline">&nbsp;';
 		$out .= htmlspecialchars($label, ENT_QUOTES);
 		$out .= '</span>';
 		$out .= '</a>';

@@ -1499,25 +1499,31 @@ class UsersListController extends AbstractController
             $out .= '<div class="card bg-info">';
             $out .= '<div class="card-body">';
 
-            $out .= '<ul class="nav nav-tabs" role="tablist">';
+            $out .= '<ul class="nav nav-tabs">';
 
-            $out .= '<li class="active">';
-            $out .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
-            $out .= '<li class="dropdown">';
+            $out .= '<li class="nav-item">';
+            $out .= '<a href="#mail_tab" ';
+            $out .= 'class="nav-link active" ';
+            $out .= 'data-toggle="tab">';
+            $out .= 'Mail</a></li>';
+            $out .= '<li class="nav-item dropdown">';
 
-            $out .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
+            $out .= '<a class="nav-link dropdown-toggle" ';
+            $out .= 'data-toggle="dropdown" href="#" ';
+            $out .= 'role="button" aria-haspopup="true" aria-expanded="false">';
+            $out .= 'Veld aanpassen';
             $out .= '<span class="caret"></span></a>';
-            $out .= '<ul class="dropdown-menu">';
+            $out .= '<div class="dropdown-menu">';
 
             foreach (BulkCnst::USER_TABS as $k => $t)
             {
-                $out .= '<li>';
-                $out .= '<a href="#' . $k . '_tab" data-toggle="tab">';
+                $out .= '<a href="#' . $k . '_tab" ';
+                $out .= 'class="dropdown-item" data-toggle="tab">';
                 $out .= $t['lbl'];
-                $out .= '</a></li>';
+                $out .= '</a>';
             }
 
-            $out .= '</ul>';
+            $out .= '</div>';
             $out .= '</li>';
             $out .= '</ul>';
 
@@ -1797,18 +1803,18 @@ class UsersListController extends AbstractController
         {
             $nav_params['status'] = $k;
 
-            $out .= '<li';
-            $out .= $params['status'] === $k ? ' class="active"' : '';
-            $out .= '>';
+            $out .= '<li class="nav-item">';
 
-            $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
+            $class = 'nav-link';
+            $class .= isset($tab['cl']) ? ' bg-' . $tab['cl'] : '';
+            $class .= $params['status'] === $k ? ' active' : '';
 
             $out .= $link_render->link(
                 $vr->get('users'),
                 $pp->ary(),
                 $nav_params,
                 $tab['lbl'],
-                $class_ary
+                ['class' => $class]
             );
 
             $out .= '</li>';

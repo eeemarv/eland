@@ -98,8 +98,11 @@ class BulkCnst
     <div class="form-group">
     <label for="%name%" class="control-label">%label%</label>
     <div class="input-group">
-    <span class="input-group-addon">
-    <span class="fa fa-%fa%"></span></span>
+    <span class="input-group-prepend">
+    <span class="input-group-text">
+    <i class="fa fa-%fa%"></i>
+    </span>
+    </span>
     <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
     </div>
     %explain%
@@ -118,8 +121,11 @@ class BulkCnst
     <label for="%name%" class="control-label">
     %label%</label>
     <div class="input-group">
-    <span class="input-group-addon">
-    <span class="fa fa-%fa%"></span></span>
+    <span class="input-group-prepend">
+    <span class="input-group-text">
+    <i class="fa fa-%fa%"></i>
+    </span>
+    </span>
     <select name="%name%" id="%name%"
     class="form-control"%attr%>
     %options%

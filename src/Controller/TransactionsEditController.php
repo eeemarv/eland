@@ -72,7 +72,6 @@ class TransactionsEditController extends AbstractController
             $inter_transaction = false;
         }
 
-
         if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
         {
             $alert_service->error('De omschrijving van een transactie
