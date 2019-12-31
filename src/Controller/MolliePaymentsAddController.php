@@ -378,8 +378,10 @@ class MolliePaymentsAddController extends AbstractController
             $td[] = $account_render->link((int) $user_id, $pp->ary());
 
             $td_inp = '<div class="input-group">';
-            $td_inp .= '<span class="input-group-addon">';
+            $td_inp .= '<span class="input-group-prepend">';
+            $td_inp .= '<span class="input-group-text">';
             $td_inp .= '<i class="fa fa-eur"></i>';
+            $td_inp .= '</span>';
             $td_inp .= '</span>';
             $td_inp .= '<input type="number" name="amount[' . $user_id . ']" ';
             $td_inp .= 'class="form-control" step="0.01" ';

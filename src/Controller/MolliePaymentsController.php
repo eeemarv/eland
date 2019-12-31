@@ -658,11 +658,13 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
 
@@ -713,10 +715,13 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Vanaf&nbsp;';
+        $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="fdate_addon" ';
 
         $out .= 'id="fdate" name="f[fdate]" ';
         $out .= 'value="';
@@ -742,10 +747,13 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Tot&nbsp;';
+        $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="tdate_addon" ';
 
         $out .= 'id="tdate" name="f[tdate]" ';
         $out .= 'value="';

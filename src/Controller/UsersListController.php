@@ -927,8 +927,10 @@ class UsersListController extends AbstractController
                 $f_col .= 'In periode';
                 $f_col .= '</label>';
                 $f_col .= '<div class="input-group">';
-                $f_col .= '<span class="input-group-addon">';
+                $f_col .= '<span class="input-group-prepend">';
+                $f_col .= '<span class="input-group-text">';
                 $f_col .= 'dagen';
+                $f_col .= '</span>';
                 $f_col .= '</span>';
                 $f_col .= '<input type="number" ';
                 $f_col .= 'id="p_activity_days" ';
@@ -961,8 +963,10 @@ class UsersListController extends AbstractController
                 $f_col .= 'Exclusief tegenpartij';
                 $f_col .= '</label>';
                 $f_col .= '<div class="input-group">';
-                $f_col .= '<span class="input-group-addon">';
+                $f_col .= '<span class="input-group-prepend">';
+                $f_col .= '<span class="input-group-text">';
                 $f_col .= '<i class="fa fa-user"></i>';
+                $f_col .= '</span>';
                 $f_col .= '</span>';
                 $f_col .= '<input type="text" ';
                 $f_col .= 'name="sh[p][a][code]" ';
@@ -1046,8 +1050,10 @@ class UsersListController extends AbstractController
                 if ($key === 'saldo_date')
                 {
                     $f_col .= '<div class="input-group">';
-                    $f_col .= '<span class="input-group-addon">';
+                    $f_col .= '<span class="input-group-prepend">';
+                    $f_col .= '<span class="input-group-text">';
                     $f_col .= '<i class="fa fa-calendar"></i>';
+                    $f_col .= '</span>';
                     $f_col .= '</span>';
                     $f_col .= '<input type="text" ';
                     $f_col .= 'class="form-control" ';

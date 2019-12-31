@@ -340,10 +340,13 @@ class ContactsAdminController extends AbstractController
 
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Van&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="letscode_addon" ';
 
         $out .= 'data-typeahead="';
         $out .= $typeahead_service->ini($pp->ary())

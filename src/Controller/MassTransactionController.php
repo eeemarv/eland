@@ -554,7 +554,11 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="col-sm-6">';
 
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">&permil;</span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '&permil;';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="number" ';
         $out .= 'class="form-control margin-bottom" id="var_balance">';
         $out .= '</div>';
@@ -586,7 +590,11 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="row">';
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">&permil;</span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '&permil;';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_trans_in">';
         $out .= '</div>';
         $out .= '</div>';
@@ -616,7 +624,11 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="row">';
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">&permil;</span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '&permil';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_trans_out">';
         $out .= '</div>';
         $out .= '</div>';

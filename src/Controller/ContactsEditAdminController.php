@@ -338,10 +338,12 @@ class ContactsEditAdminController extends AbstractController
         $out .= '<label for="value" class="control-label">';
         $out .= 'Waarde</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="value_addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-';
         $out .= self::FORMAT[$abbrev]['fa'] ?? 'circle-o';
         $out .= '"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
         $out .= 'value="';
