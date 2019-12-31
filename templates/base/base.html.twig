@@ -80,7 +80,7 @@
 #}
 
 {%- block navbar -%}
-	<nav class="navbar fixed-top navbar-epand-lg navbar-light bg-{%- if pp_role('admin') %}info{%- elseif pp_role('guest') %}warning{%- else -%}light{%- endif -%}">
+	<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-{%- if pp_role('admin') -%}info-li{%- elseif pp_role('guest') %}warning-li{%- else -%}light{%- endif -%}">
 
 		<button type="button" class="btn btn-secondary d-md-none" data-toggle="offcanvas" title="Menu">
 			<i class="fa fa-chevron-left"></i>
@@ -92,9 +92,8 @@
 			{{- block('title') -}}
 		</a>
 
-		{%- block navbar_toggle_button -%}{%- endblock -%}
-
-		{%- block navbar_collapse -%}{%- endblock -%}
+		{%- block navbar_collapse -%}
+		{%- endblock -%}
 	</nav>
 {%- endblock navbar -%}
 

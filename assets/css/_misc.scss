@@ -14,7 +14,7 @@ body.guest
 }
 
 body.body-navbar {
-  padding-top: 60px;
+  padding-top: 4rem;
 }
 
 .footer {
@@ -55,8 +55,8 @@ div.pag
 
 /*** group menu highlight ****/
 
-li.active-group a, li.active-group a:link,
-li.active-group a:visited, li.active-group a:hover
+a.active-group, a.active-group:link,
+a.active-group:hover, a.active-group:visited
 {
   background-color: #FFC765;
 }

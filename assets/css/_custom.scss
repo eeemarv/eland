@@ -74,8 +74,8 @@ $theme-colors: (
 */
     "secondary-li": lighten($secondary, 20),
     "success-li":   lighten($success, 20),
-    "info-li":      lighten($info, 50),
-    "warning-li":   lighten($warning, 20),
+    "info-li":      lighten($info, 25),
+    "warning-li":   lighten(saturate($warning, 100), 30),
     "danger-li":    lighten($danger, 20),
 );
 
@@ -92,11 +92,13 @@ $component-active-bg: $primary;
 // $enable-gradients: true;
 // $enable-shadows: true;
 
+/*
 $border-radius:               .45rem;
 $border-radius-lg:            .5rem; // was 3rem
 $border-radius-sm:            .4rem;
+*/
 
-$yiq-contrasted-threshold:  190;
+$yiq-contrasted-threshold:  200;
 
 $font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
 // @font-family-serif:       Georgia, "Times New Roman", Times, serif;

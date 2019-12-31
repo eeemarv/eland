@@ -43,15 +43,15 @@ class BtnNavRender
 
 		if ($this->local_admin)
 		{
-			$local_admin = '<div class="btn-group pull-right" role="group">';
+			$local_admin = '<div class="btn-group" role="group">';
 			$local_admin .= '<button type="button" class="btn btn-info btn-lg dropdown-toggle" ';
 			$local_admin .= 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
 			$local_admin .= '<i class="fa fa-cog" title="Admin functies"></i>&nbsp;';
 			$local_admin .= '<span class="caret"></span>';
 			$local_admin .= '</button>';
-			$local_admin .= '<ul class="dropdown-menu dropleft">';
+			$local_admin .= '<div class="dropdown-menu dropdown-menu-right">';
 			$local_admin .= implode('', $this->local_admin);
-			$local_admin .= '</ul>';
+			$local_admin .= '</div>';
 			$local_admin .= '</div>';
 
 			$this->out['admin'][] = $local_admin;
@@ -211,22 +211,13 @@ class BtnNavRender
 				continue;
 			}
 
-			$item = '<li';
+			$class = 'dropdown-item';
+			$class .= $menu === $menu_key ? ' active' : '';
 
-			if ($menu === $menu_key)
-			{
-				$item .= ' class="active"';
-			}
-
-			$item .= '>';
-
-			$item .= $this->link_render->link_fa(
+			$this->local_admin[] = $this->link_render->link_fa(
 				$ary['route'], $params_context, $ary['params'] ?? [],
-				$ary['label'], [], $ary['fa']);
-
-			$item .= '</li>';
-
-			$this->local_admin[] = $item;
+				$ary['label'], ['class' => $class],
+				$ary['fa']);
 		}
 	}
 

@@ -1,54 +1,36 @@
-{%- macro navbar_toggle_button() -%}
-    <button type="button" class="navbar-toggle collapsed"
-    data-toggle="collapse" data-target="#navbar-collapse-1"
-	aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-	</button>
-{%- endmacro navbar_toggle_button -%}
-
 {%- macro navbar_menu_dropdown_button(label, fa, menu_items, is_admin) -%}
-	<li class="dropdown">
-	<a href="#" class="dropdown-toggle{%- if is_admin|default(false) %} bg-info{%- endif -%}" data-toggle="dropdown" role="button" aria-expanded="false">
+	<li class="nav-item dropdown{%- if is_admin|default(false) %} bg-info-li{%- endif -%}">
+	<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 		<span class="fa fa-{{- fa -}}"></span>&nbsp;{{- label -}}&nbsp;<span class="caret"></span>
 	</a>
-	<ul class="dropdown-menu" role="menu">
+	<div class="dropdown-menu dropdown-menu-right" role="menu">
 		{%- for m in menu_items -%}
 			{%- if m.header is defined -%}
-				<li class="dropdown-header">{{- m.label -}}</li>
+				<h5 class="dropdown-header">{{- m.label -}}</h5>
 			{%- elseif m.divider is defined -%}
-				<li class="divider"></li>
+				<div class="dropdown-divider"></div>
 			{%- elseif m.params is defined -%}
-				<li{%- if m.active is defined %} class="active"{%- elseif m.active_group is defined %}  class="active-group"{%- endif -%}>
-					{%- if m.same_route is defined -%}
-						<a href="{{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge(m.params)) -}}">
-					{%- else -%}
-						<a href="{{- path(m.route, pp_ary()|merge(m.params)) -}}">
-					{%- endif -%}
-						{%- if m.fa is defined -%}
-							<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-						{%- endif -%}
-						{{- m.label -}}
-					</a>
-				</li>
-			{%- elseif m.route is defined -%}
-				<li{%- if m.active is defined %} class="active"{%- endif -%}>
-					<a href="{{- path(m.route, pp_ary()) -}}">
+				<a class="dropdown-item{%- if m.active is defined %} active{%- elseif m.active_group is defined %}  active-group{%- endif -%}" href="
+				{%- if m.same_route is defined -%}
+					{{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge(m.params)) -}}
+				{%- else -%}
+					{{- path(m.route, pp_ary()|merge(m.params)) -}}
+				{%- endif -%}
+				">
+
+				{%- if m.fa is defined -%}
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-						{{- m.label -}}
-					</a>
-				</li>
+				{%- endif -%}
+
+				{{- m.label -}}
+				</a>
+			{%- elseif m.route is defined -%}
+				<a class="dropdown-item{%- if m.active is defined %} active{%- endif -%}" href="{{- path(m.route, pp_ary()) -}}">
+				<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+					{{- m.label -}}
+				</a>
 			{%- endif -%}
-			{#
-			{%- else -%}
-				<li{%- for k, v in m.attr %} {{ k -}}="{{- v -}}"{%- endfor -%}>
-					<a href="{{- m.link -}}">{{- m.label -}}</a>
-				</li>
-			{%- endif -%}
-			#}
 		{%- endfor -%}
-	</ul>
+	</div>
 	</li>
 {%- endmacro navbar_menu_dropdown_button -%}
