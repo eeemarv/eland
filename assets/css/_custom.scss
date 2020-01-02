@@ -60,6 +60,8 @@ $danger:          #d9534f;
 
 $secondary: $b-gray-600;
 
+$b-extern: $b-indigo;
+
 $theme-colors: (
     "primary":    $primary,
     "secondary":  $secondary,
@@ -72,12 +74,15 @@ $theme-colors: (
     "light":      $light,
     "dark":       $dark,
 */
-    "secondary-li": lighten($secondary, 20),
-    "success-li":   lighten($success, 20),
+    "secondary-li": lighten($secondary, 35),
+    "success-li":   lighten($success, 35),
     "info-li":      lighten($info, 25),
     "warning-li":   lighten(saturate($warning, 100), 30),
-    "danger-li":    lighten($danger, 20),
+    "danger-li":    lighten($danger, 30),
+    "extern-li":    lighten($b-extern, 40)
 );
+
+$nav-tabs-border-color: #000;
 
 /*
 

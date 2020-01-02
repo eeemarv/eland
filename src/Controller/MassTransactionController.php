@@ -33,39 +33,41 @@ class MassTransactionController extends AbstractController
             'lbl'	=> 'Actief',
             'st'	=> 1,
             'hsh'	=> '58d267',
+            'cl'    => 'bg-light',
         ],
         'new'		=> [
             'lbl'	=> 'Instappers',
             'st'	=> 3,
             'hsh'	=> 'e25b92',
-            'cl'	=> 'success',
+            'cl'	=> 'bg-success-li',
         ],
         'leaving'	=> [
             'lbl'	=> 'Uitstappers',
             'st'	=> 2,
             'hsh'	=> 'ea4d04',
-            'cl'	=> 'danger',
+            'cl'	=> 'bg-danger-li',
         ],
         'inactive'	=> [
             'lbl'	=> 'Inactief',
             'st'	=> 0,
             'hsh'	=> '79a240',
-            'cl'	=> 'inactive',
+            'cl'	=> 'bg-secondary-li',
         ],
         'info-packet'	=> [
             'lbl'	=> 'Info-pakket',
             'st'	=> 5,
             'hsh'	=> '2ed157',
-            'cl'	=> 'warning',
+            'cl'	=> 'bg-warning-li',
         ],
         'info-moment'	=> [
             'lbl'	=> 'Info-moment',
             'st'	=> 6,
             'hsh'	=> '065878',
-            'cl'	=> 'info',
+            'cl'	=> 'bg-info-li',
         ],
         'all'		=> [
             'lbl'	=> 'Alle',
+            'cl'    => 'bg-light',
         ],
     ];
 
@@ -770,10 +772,11 @@ class MassTransactionController extends AbstractController
         foreach (self::STATUS_RENDER as $k => $s)
         {
             $shsh = $s['hsh'] ?? '';
-            $class_li = $shsh == $hsh ? ' class="active"' : '';
-            $class_a  = $s['cl'] ?? 'white';
 
-            $out .= '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
+            $out .= '<li class="nav-item">';
+            $out .= '<a href="#" class="nav-link ' . $s['cl'];
+            $out .= $shsh == $hsh ? ' active"' : '';
+            $out .= '" ';
             $out .= 'data-filter="' . $shsh . '">' . $s['lbl'] . '</a></li>';
         }
 

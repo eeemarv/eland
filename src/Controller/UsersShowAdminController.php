@@ -442,7 +442,7 @@ class UsersShowAdminController extends AbstractController
             $out .= 'data-image-crop="true" ';
             $out .= 'data-image-max-height="400"></span>';
 
-            $out .= '<p class="text-warning">';
+            $out .= '<p>';
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook een foto hierheen verslepen.</p>';
 

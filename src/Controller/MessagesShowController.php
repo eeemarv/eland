@@ -318,7 +318,7 @@ class MessagesShowController extends AbstractController
             $out .= 'data-max-file-size="999000" ';
             $out .= 'multiple></span>';
 
-            $out .= '<p class="text-warning">';
+            $out .= '<p>';
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 

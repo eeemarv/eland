@@ -1,101 +1,10 @@
-
-.nav-tabs
+.nav-tabs li a.nav-link
 {
-   border-bottom: 0px;
-   margin-bottom: 5px;
+  border-bottom: 2px solid #777;
 }
 
-.nav-tabs > li > a
+.nav-tabs li a.active.nav-link
 {
-  border-bottom: 2px solid grey;
-}
-
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover,
-.nav-tabs > li.active > a:focus
-{
-  border: 2px solid grey;
+  border: 2px solid #777;
   border-bottom-color: transparent;
-}
-
-.nav-tabs > li.active > a.bg-danger,
-.nav-tabs > li.active > a.bg-danger:focus,
-div.bg-danger > div.thumbnail
-{
-  background-color: #f2dede;
-}
-
-.nav-tabs > li > a.bg-danger:hover
-{
-  background-color: #e4b9b9;
-}
-
-.nav-tabs > li.active > a.bg-success,
-.nav-tabs > li.active > a.bg-success:focus,
-div.bg-success > div.thumbnail
-{
-  background-color: #dff0d8;
-}
-
-.nav-tabs > li > a.bg-success:hover
-{
-  background-color: #c1e2b3;
-}
-
-.nav-tabs > li.active > a.bg-warning,
-.nav-tabs > li.active > a.bg-warning:focus,
-div.bg-warning > div.thumbnail
-{
-  background-color: #fcf8e3;
-}
-.nav-tabs > li > a.bg-warning:hover
-{
-  background-color: #faf2cc;
-}
-
-.nav-tabs > li.active > a.bg-info,
-.nav-tabs > li.active > a.bg-info:focus,
-div.bg-info > div.thumbnail
-{
-  background-color: #d9edf7;
-}
-
-.nav-tabs > li > a.bg-info:hover
-{
-  background-color: #c4e3f3;
-}
-
-.nav-tabs > li > a.bg-extern,
-.nav-tabs > li > a.bg-extern:focus,
-table tr.extern > td,
-div.bg-extern > div.thumbnail
-{
-  background-color: #ffdbfc;
-}
-
-.nav-tabs > li:not(.active) > a.bg-extern:hover,
-table tr.extern:hover > td
-{
-  background-color: #ffd0f1;
-}
-
-.nav-tabs > li > a.bg-inactive,
-.nav-tabs > li > a.bg-inactive:focus,
-table tr.inactive > td,
-div.bg-inactive > div.thumbnail
-{
-  background-color: #d8d8d8;
-}
-
-.nav-tabs > li:not(.active) > a.bg-inactive:hover,
-table tr.inactive:hover > td
-{
-  background-color: #d0d0d0;
-}
-
-.nav-tabs > li > a,
-.nav-tabs > li > a:hover,
-.nav-tabs > li > a:focus
-{
-  border-bottom-color: #777;
 }

@@ -1697,19 +1697,20 @@ class UsersListController extends AbstractController
             'active'	=> [
                 'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
                 'sql'	=> 'u.status in (1, 2)',
+                'cl'    => 'bg-light',
                 'st'	=> [1, 2],
             ],
             'new'		=> [
                 'lbl'	=> 'Instappers',
                 'sql'	=> 'u.status = 1 and u.adate > ?',
                 'sql_bind'	=> gmdate('Y-m-d H:i:s', $new_user_treshold),
-                'cl'	=> 'success',
+                'cl'	=> 'bg-success-li',
                 'st'	=> 3,
             ],
             'leaving'	=> [
                 'lbl'	=> 'Uitstappers',
                 'sql'	=> 'u.status = 2',
-                'cl'	=> 'danger',
+                'cl'	=> 'bg-danger-li',
                 'st'	=> 2,
             ],
         ];
@@ -1720,30 +1721,31 @@ class UsersListController extends AbstractController
                 'inactive'	=> [
                     'lbl'	=> 'Inactief',
                     'sql'	=> 'u.status = 0',
-                    'cl'	=> 'inactive',
+                    'cl'	=> 'bg-secondary-li',
                     'st'	=> 0,
                 ],
                 'ip'		=> [
                     'lbl'	=> 'Info-pakket',
                     'sql'	=> 'u.status = 5',
-                    'cl'	=> 'warning',
+                    'cl'	=> 'bg-warning-li',
                     'st'	=> 5,
                 ],
                 'im'		=> [
                     'lbl'	=> 'Info-moment',
                     'sql'	=> 'u.status = 6',
-                    'cl'	=> 'info',
+                    'cl'	=> 'bg-info-li',
                     'st'	=> 6
                 ],
                 'extern'	=> [
                     'lbl'	=> 'Extern',
                     'sql'	=> 'u.status = 7',
-                    'cl'	=> 'extern',
+                    'cl'	=> 'bg-extern-li',
                     'st'	=> 7,
                 ],
                 'all'		=> [
                     'lbl'	=> 'Alle',
                     'sql'	=> '1 = 1',
+                    'cl'    => 'bg-light',
                 ],
             ];
         }
@@ -1811,8 +1813,7 @@ class UsersListController extends AbstractController
 
             $out .= '<li class="nav-item">';
 
-            $class = 'nav-link';
-            $class .= isset($tab['cl']) ? ' bg-' . $tab['cl'] : '';
+            $class = 'nav-link ' . $tab['cl'];
             $class .= $params['status'] === $k ? ' active' : '';
 
             $out .= $link_render->link(

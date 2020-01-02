@@ -956,14 +956,10 @@ class ConfigController extends AbstractController
         $out .= 'data-max-file-size="999000">';
         $out .= '</span>';
 
-        $out .= '<p class="text-warning">';
+        $out .= '<p>';
         $out .= 'Toegestane formaten: png en gif. ';
         $out .= 'Je kan ook een afbeelding hierheen verslepen. ';
-        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat. ';
-        $out .= 'De afbeelding neemt de hele hoogte van de navigatie-balk in. ';
-        $out .= 'Voeg eventueel vooraf boven en/of onder een doorzichtige strook ';
-        $out .= 'toe met een foto-bewerking programma ';
-        $out .= '(bvb. <a href="https://gimp.org">GIMP</a>") om te positioneren';
+        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat.';
         $out .= '</p>';
 
         $out .= $link_render->link_fa('logo_del', $pp->ary(),
