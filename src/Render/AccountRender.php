@@ -89,12 +89,14 @@ class AccountRender
 
 	public function inter_link(
 		int $id,
-		string $schema
+		string $schema,
+		array $pp_ary_self
 	):string
 	{
 		$pp_ary = [
 			'role_short'	=> 'g',
 			'system'		=> $this->systems_service->get_system($schema),
+			'org_system'	=> $pp_ary_self['system'],
 		];
 
 		return $this->link_render->link_no_attr('users_show', $pp_ary,
