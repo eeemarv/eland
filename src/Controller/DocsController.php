@@ -107,7 +107,8 @@ class DocsController extends AbstractController
             $maps_table = '<div class="panel panel-default printview">';
 
             $maps_table .= '<div class="table-responsive">';
-            $maps_table .= '<table class="table table-bordered table-striped table-hover footable"';
+            $maps_table .= '<table class="table table-bordered ';
+            $maps_table .= 'table-striped table-hover footable bg-default"';
             $maps_table .= ' data-filter="#q" data-filter-minimum="1">';
             $maps_table .= '<thead>';
 
@@ -168,7 +169,7 @@ class DocsController extends AbstractController
 
             $out .= '<div class="table-responsive">';
             $out .= '<table class="table table-bordered ';
-            $out .= 'table-striped table-hover footable csv" ';
+            $out .= 'table-striped table-hover footable csv bg-default" ';
             $out .= 'data-filter="#q" data-filter-minimum="1">';
             $out .= '<thead>';
 

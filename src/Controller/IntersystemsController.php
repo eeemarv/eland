@@ -101,7 +101,8 @@ class IntersystemsController extends AbstractController
             $out .= '<div class="panel panel-primary printview">';
 
             $out .= '<div class="table-responsive">';
-            $out .= '<table class="table table-bordered table-hover table-striped footable">';
+            $out .= '<table class="table table-bordered table-hover ';
+            $out .= 'table-striped footable bg-default">';
             $out .= '<thead>';
             $out .= '<tr>';
             $out .= '<th data-sort-initial="true">Account</th>';
@@ -337,7 +338,7 @@ class IntersystemsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered ';
-        $out .= 'table-hover table-striped footable">';
+        $out .= 'table-hover table-striped footable bg-default">';
         $out .= '<thead>';
         $out .= '<tr>';
         $out .= '<th data-sort-initial="true">Systeem Naam</th>';

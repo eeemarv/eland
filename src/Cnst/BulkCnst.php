@@ -136,18 +136,18 @@ class BulkCnst
     TPL;
 
     const TPL_SELECT_BUTTONS = <<<'TPL'
-    <div class="card bg-default" id="bulk_actions">
+    <div class="card bg-secondary-li" id="bulk_actions">
     <div class="card-body">
     <input type="button"
-    class="btn btn-default btn-lg"
+    class="btn btn-default btn-lg border"
     data-table-sel="invert"
     value="Selectie omkeren">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg"
+    class="btn btn-default btn-lg border"
     data-table-sel="all"
     value="Selecteer alle">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg"
+    class="btn btn-default btn-lg border"
     data-table-sel="none"
     value="De-selecteer alle">
     </div>

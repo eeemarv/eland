@@ -521,7 +521,7 @@ class MassTransactionController extends AbstractController
         $out .= $config_service->get('currency', $pp->schema());
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
+        $out .= '<input type="number" class="form-control" id="fixed" ';
         $out .= 'min="0">';
         $out .= '</div>';
         $out .= '</div>';
@@ -543,7 +543,7 @@ class MassTransactionController extends AbstractController
         $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" ';
-        $out .= 'class="form-control margin-bottom" id="var_days" ';
+        $out .= 'class="form-control" id="var_days" ';
         $out .= 'min="0">';
         $out .= '</div>';
         $out .= '</div>';
@@ -562,7 +562,7 @@ class MassTransactionController extends AbstractController
         $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" ';
-        $out .= 'class="form-control margin-bottom" id="var_balance">';
+        $out .= 'class="form-control" id="var_balance">';
         $out .= '</div>';
         $out .= '<p>Berekend op gewogen gemiddelde van saldo. ';
         $out .= 'Kan ook negatief zijn!</p>';
@@ -669,7 +669,7 @@ class MassTransactionController extends AbstractController
         $out .= '</span>';
 
         $out .= '<input type="number" ';
-        $out .= 'class="form-control margin-bottom" id="var_min">';
+        $out .= 'class="form-control" id="var_min">';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -832,7 +832,7 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover panel-body footable" ';
+        $out .= 'table-hover panel-body footable bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
         $out .= 'data-minlimit="';
         $out .= $system_minlimit;

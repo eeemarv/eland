@@ -70,7 +70,8 @@ class ContactsUserShowInlineController extends AbstractController
             $out .= '<div class="panel panel-danger">';
             $out .= '<div class="table-responsive">';
             $out .= '<table class="table table-hover ';
-            $out .= 'table-striped table-bordered footable" ';
+            $out .= 'table-striped table-bordered ';
+            $out .= 'footable bg-default" ';
             $out .= 'data-sort="false">';
 
             $out .= '<thead>';

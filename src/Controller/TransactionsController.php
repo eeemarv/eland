@@ -589,7 +589,7 @@ class TransactionsController extends AbstractController
         $out .= '<div class="panel panel-primary printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover footable csv transactions" ';
+        $out .= 'table-hover footable csv transactions bg-default" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
         $out .= '<tr>';

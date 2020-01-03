@@ -114,7 +114,8 @@ class ForumController extends AbstractController
         $out .= '<div class="panel panel-default printview">';
 
         $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-bordered table-striped table-hover footable csv"';
+        $out .= '<table class="table table-bordered ';
+        $out .= 'table-striped table-hover footable csv bg-default"';
         $out .= ' data-filter="#q" data-filter-minimum="1">';
         $out .= '<thead>';
 

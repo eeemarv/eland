@@ -93,7 +93,7 @@ class BtnNavRender
 		if (count($params) < 1)
 		{
 			return $this->tag_render->get('button', [
-					'class' 	=> 'btn btn-default btn-lg',
+					'class' 	=> 'btn btn-default btn-lg border',
 					'title'		=> $title,
 					'disabled'	=> 'disabled',
 				],
@@ -116,7 +116,7 @@ class BtnNavRender
 	{
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default btn-lg' . ($active ? ' active' : ''),
+				'class'	=> 'btn btn-default btn-lg border' . ($active ? ' active' : ''),
 				'title'	=> $title,
 			],
 			$fa);
@@ -132,7 +132,7 @@ class BtnNavRender
 	{
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default btn-lg',
+				'class'	=> 'btn btn-default btn-lg border',
 				'title'	=> $title,
 			],
 			$fa);
@@ -224,7 +224,7 @@ class BtnNavRender
 	public function columns_show():void
 	{
 		$this->out['columns_show'] = $this->tag_render->get('button', [
-				'class'			=> 'btn btn-default btn-lg',
+				'class'			=> 'btn btn-default btn-lg border',
 				'title'			=> 'Weergave kolommen',
 				'data-toggle'	=> 'collapse',
 				'data-target'	=> '#columns_show',

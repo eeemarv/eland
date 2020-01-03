@@ -248,7 +248,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<i class="fa fa-eur"></i>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
+        $out .= '<input type="number" class="form-control" id="fixed" ';
         $out .= 'min="0" value="" step="0.01">';
         $out .= '</div>';
         $out .= '<p>Hiermee vul je dit bedrag in voor alle accounts hieronder. ';
@@ -329,7 +329,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<div class="card bg-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover footable panel-body csv" ';
+        $out .= 'table-hover footable panel-body csv bg-default" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';

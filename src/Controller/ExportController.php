@@ -147,7 +147,8 @@ class ExportController extends AbstractController
         $out .= '</h3>';
         $out .= '</div>';
         $out .= '<div class="card-body">';
-        $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
+        $out .= '<input type="submit" value="Download" name="_sql" ';
+        $out .= 'class="btn btn-default btn-lg">';
         $out .= '</div></div>';
 
         $out .= '<div class="card bg-info">';
@@ -168,11 +169,11 @@ class ExportController extends AbstractController
 
         $out .= '<input type="submit" value="Data" ';
         $out .= 'name="_ag_csv" ';
-        $out .= 'class="btn btn-default btn-lg margin-bottom">';
+        $out .= 'class="btn btn-default btn-lg">';
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Events" ';
         $out .= 'name="_ev_csv" ';
-        $out .= 'class="btn btn-default btn-lg margin-bottom">';
+        $out .= 'class="btn btn-default btn-lg">';
 
         $out .= '</div></div>';
 
@@ -189,7 +190,7 @@ class ExportController extends AbstractController
             $out .= $table;
             $out .= '" name="';
             $out .= $table;
-            $out .= '" class="btn btn-default btn-lg margin-bottom">&nbsp;';
+            $out .= '" class="btn btn-default btn-lg">&nbsp;';
         }
 
         $out .= '</div></div>';

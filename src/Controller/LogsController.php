@@ -291,7 +291,9 @@ class LogsController extends AbstractController
         $out .= '<div class="panel panel-default printview">';
 
         $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-hover table-bordered table-striped footable csv" ';
+        $out .= '<table class="table table-hover ';
+        $out .= 'table-bordered table-striped ';
+        $out .= 'footable csv bg-default" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
         $out .= '<tr>';

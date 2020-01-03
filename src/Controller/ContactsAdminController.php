@@ -256,7 +256,7 @@ class ContactsAdminController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
@@ -269,7 +269,7 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Type';
@@ -294,7 +294,7 @@ class ContactsAdminController extends AbstractController
         }
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Zichtbaar';
@@ -322,7 +322,7 @@ class ContactsAdminController extends AbstractController
         ];
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Status ';
@@ -339,7 +339,7 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Van&nbsp;';
@@ -428,7 +428,8 @@ class ContactsAdminController extends AbstractController
         $out .= '<div class="panel panel-danger">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-hover ';
-        $out .= 'table-striped table-bordered footable csv" ';
+        $out .= 'table-striped table-bordered ';
+        $out .= 'footable csv bg-default" ';
         $out .= 'data-sort="false">';
 
         $out .= '<thead>';

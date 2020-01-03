@@ -67,7 +67,7 @@ class NewsListController extends AbstractController
         $out = '<div class="panel panel-warning printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped ';
-        $out .= 'table-hover table-bordered footable csv">';
+        $out .= 'table-hover table-bordered footable csv bg-default">';
 
         $out .= '<thead>';
         $out .= '<tr>';

@@ -644,7 +644,7 @@ class MolliePaymentsController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
@@ -657,7 +657,7 @@ class MolliePaymentsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-user"></i>';
@@ -692,7 +692,7 @@ class MolliePaymentsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         foreach (self::STATUS_RENDER as $key => $render)
         {
@@ -714,14 +714,14 @@ class MolliePaymentsController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Vanaf&nbsp;';
         $out .= '<i class="fa fa-calendar"></i>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= '<input type="text" class="form-control" ';
 
         $out .= 'id="fdate" name="f[fdate]" ';
         $out .= 'value="';
@@ -746,14 +746,14 @@ class MolliePaymentsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Tot&nbsp;';
         $out .= '<i class="fa fa-calendar"></i>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= '<input type="text" class="form-control" ';
 
         $out .= 'id="tdate" name="f[tdate]" ';
         $out .= 'value="';
@@ -819,7 +819,7 @@ class MolliePaymentsController extends AbstractController
         $out .= '<div class="card bg-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover panel-body footable csv" ';
+        $out .= 'table-hover panel-body footable csv bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
