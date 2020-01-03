@@ -682,7 +682,7 @@ class TransactionsController extends AbstractController
                             if ($s_inter_schema_check[$t['inter_schema']])
                             {
                                 $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
-                                    $t['inter_schema']);
+                                    $t['inter_schema'], $pp->ary());
                             }
                             else
                             {
@@ -714,7 +714,7 @@ class TransactionsController extends AbstractController
                             if ($s_inter_schema_check[$t['inter_schema']])
                             {
                                 $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
-                                    $t['inter_schema']);
+                                    $t['inter_schema'], $pp->ary());
                             }
                             else
                             {
@@ -776,7 +776,7 @@ class TransactionsController extends AbstractController
                         if ($s_inter_schema_check[$t['inter_schema']])
                         {
                             $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
-                                $t['inter_schema']);
+                                $t['inter_schema'], $pp->ary());
                         }
                         else
                         {
@@ -810,7 +810,7 @@ class TransactionsController extends AbstractController
                         if ($s_inter_schema_check[$t['inter_schema']])
                         {
                             $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
-                                $t['inter_schema']);
+                                $t['inter_schema'], $pp->ary());
                         }
                         else
                         {

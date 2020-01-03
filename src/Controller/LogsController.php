@@ -357,7 +357,7 @@ class LogsController extends AbstractController
                     }
                     else
                     {
-                        $td[] = $account_render->inter_link($row['user_id'], $row['user_schema']);
+                        $td[] = $account_render->inter_link($row['user_id'], $row['user_schema'], $pp->ary());
                     }
                 }
                 else

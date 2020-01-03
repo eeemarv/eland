@@ -152,7 +152,7 @@ class TransactionsShowController extends AbstractController
                 if ($s_inter_schema_check[$inter_schema])
                 {
                     $user_from = $account_render->inter_link($inter_transaction['id_from'],
-                        $inter_schema);
+                        $inter_schema, $pp->ary());
                 }
                 else
                 {
@@ -203,7 +203,7 @@ class TransactionsShowController extends AbstractController
                 if ($s_inter_schema_check[$inter_schema])
                 {
                     $user_to = $account_render->inter_link($inter_transaction['id_to'],
-                        $inter_schema);
+                        $inter_schema, $pp->ary());
                 }
                 else
                 {
