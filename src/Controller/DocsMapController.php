@@ -141,8 +141,6 @@ class DocsMapController extends AbstractController
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
 
-            $out .= '<div class="panel panel-default printview">';
-
             $out .= '<div class="table-responsive">';
             $out .= '<table class="table table-bordered ';
             $out .= 'table-striped table-hover footable csv bg-default" ';
@@ -206,14 +204,14 @@ class DocsMapController extends AbstractController
             $out .= '</table>';
 
             $out .= '</div>';
-            $out .= '</div>';
         }
         else
         {
             $out .= '<div class="card bg-default">';
             $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
         $menu_service->set('docs');

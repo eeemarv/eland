@@ -288,8 +288,6 @@ class LogsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="panel panel-default printview">';
-
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-hover ';
         $out .= 'table-bordered table-striped ';
@@ -377,7 +375,7 @@ class LogsController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= $pagination_render->get();
 

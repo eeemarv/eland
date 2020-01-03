@@ -1105,11 +1105,10 @@ class UsersListController extends AbstractController
             $vr
         );
 
-        $out .= '<div class="panel panel-success printview">';
         $out .= '<div class="table-responsive">';
-
         $out .= '<table class="table table-bordered ';
-        $out .= 'table-striped table-hover footable csv bg-default" ';
+        $out .= 'table-striped table-hover ';
+        $out .= 'footable csv bg-default" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';
@@ -1490,7 +1489,7 @@ class UsersListController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= '<div class="row"><div class="col-md-12">';
         $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';

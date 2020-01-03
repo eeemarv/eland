@@ -139,15 +139,15 @@ class BulkCnst
     <div class="card bg-secondary-li" id="bulk_actions">
     <div class="card-body">
     <input type="button"
-    class="btn btn-default btn-lg border"
+    class="btn btn-default btn-lg border border-dark"
     data-table-sel="invert"
     value="Selectie omkeren">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg border"
+    class="btn btn-default btn-lg border border-dark"
     data-table-sel="all"
     value="Selecteer alle">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg border"
+    class="btn btn-default btn-lg border border-dark"
     data-table-sel="none"
     value="De-selecteer alle">
     </div>

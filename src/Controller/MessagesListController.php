@@ -331,8 +331,6 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="card bg-info printview">';
-
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped ';
         $out .= 'table-bordered table-hover footable csv bg-default" ';
@@ -445,7 +443,6 @@ class MessagesListController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table>';
 
-        $out .= '</div>';
         $out .= '</div>';
 
         $out .= $pagination_render->get();

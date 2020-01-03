@@ -64,7 +64,6 @@ class NewsListController extends AbstractController
             ]);
         }
 
-        $out = '<div class="panel panel-warning printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped ';
         $out .= 'table-hover table-bordered footable csv bg-default">';
@@ -114,7 +113,8 @@ class NewsListController extends AbstractController
         }
 
         $out .= '</tbody>';
-        $out .= '</table></div></div>';
+        $out .= '</table>';
+        $out .= '</div>';
 
         $menu_service->set('news');
 

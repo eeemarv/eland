@@ -101,7 +101,8 @@ class ForumController extends AbstractController
             $out .= '<div class="card bg-default">';
             $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
 
             $menu_service->set('forum');
 
@@ -110,8 +111,6 @@ class ForumController extends AbstractController
                 'schema'    => $pp->schema(),
             ]);
         }
-
-        $out .= '<div class="panel panel-default printview">';
 
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-bordered ';
@@ -154,7 +153,6 @@ class ForumController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div>';
         $out .= '</div>';
 
         $menu_service->set('forum');

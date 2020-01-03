@@ -104,8 +104,6 @@ class DocsController extends AbstractController
 
         if (count($maps))
         {
-            $maps_table = '<div class="panel panel-default printview">';
-
             $maps_table .= '<div class="table-responsive">';
             $maps_table .= '<table class="table table-bordered ';
             $maps_table .= 'table-striped table-hover footable bg-default"';
@@ -155,7 +153,6 @@ class DocsController extends AbstractController
                 $out .= '</table>';
 
                 $out .= '</div>';
-                $out .= '</div>';
             }
         }
 
@@ -164,8 +161,6 @@ class DocsController extends AbstractController
             $show_access = ($pp->is_user()
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
-
-            $out  .= '<div class="panel panel-default printview">';
 
             $out .= '<div class="table-responsive">';
             $out .= '<table class="table table-bordered ';
@@ -230,14 +225,14 @@ class DocsController extends AbstractController
             $out .= '</table>';
 
             $out .= '</div>';
-            $out .= '</div>';
         }
         else if (!count($maps))
         {
             $out .= '<div class="card bg-default">';
             $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
         $menu_service->set('docs');

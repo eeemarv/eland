@@ -46,8 +46,6 @@ class CategoriesController extends AbstractController
         $heading_render->add('Categorieën');
         $heading_render->fa('clone');
 
-        $out = '<div class="panel panel-default printview">';
-
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped table-hover ';
         $out .= 'table-bordered footable bg-default" ';
@@ -157,7 +155,7 @@ class CategoriesController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= '<p><ul><li>Categorieën met berichten ';
         $out .= 'of hoofdcategorieën met subcategorieën kan je niet verwijderen.</li>';

@@ -16,12 +16,12 @@ class StatusCnst
     ];
 
     const CLASS_ARY = [
-        0 => 'inactive',
-        2 => 'danger',
-        3 => 'success',
-        5 => 'warning',
-        6 => 'info',
-        7 => 'extern',
+        0 => 'bg-secondary-li',
+        2 => 'bg-danger-li',
+        3 => 'bg-success-li',
+        5 => 'bg-warning-li',
+        6 => 'bg-info-li',
+        7 => 'bg-extern-li',
     ];
 
     const THUMBPINT_ARY = [

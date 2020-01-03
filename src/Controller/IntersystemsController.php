@@ -98,8 +98,6 @@ class IntersystemsController extends AbstractController
 
         if (count($intersystems))
         {
-            $out .= '<div class="panel panel-primary printview">';
-
             $out .= '<div class="table-responsive">';
             $out .= '<table class="table table-bordered table-hover ';
             $out .= 'table-striped footable bg-default">';
@@ -210,14 +208,15 @@ class IntersystemsController extends AbstractController
 
             $out .= '</tbody>';
             $out .= '</table>';
-            $out .= '</div></div>';
+            $out .= '</div>';
         }
         else
         {
             $out .= '<div class="card bg-primary">';
             $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen interSysteem-verbindingen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
         $out .= self::get_schemas_groups(

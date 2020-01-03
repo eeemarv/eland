@@ -586,7 +586,6 @@ class TransactionsController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="panel panel-primary printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover footable csv transactions bg-default" ';
@@ -639,7 +638,7 @@ class TransactionsController extends AbstractController
 
                 if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
                 {
-                    $out .= ' class="warning"';
+                    $out .= ' class="bg-warning-li"';
                 }
 
                 $out .= '>';
@@ -675,7 +674,7 @@ class TransactionsController extends AbstractController
                 {
                     if ($t['real_to'])
                     {
-                        $out .= '<span class="btn btn-default">';
+                        $out .= '<span class="btn btn-default border border-secondary">';
                         $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                         if (isset($t['inter_transaction']))
@@ -707,7 +706,7 @@ class TransactionsController extends AbstractController
                 {
                     if ($t['real_from'])
                     {
-                        $out .= '<span class="btn btn-default">';
+                        $out .= '<span class="btn btn-default border border-secondary">';
                         $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                         if (isset($t['inter_transaction']))
@@ -748,7 +747,7 @@ class TransactionsController extends AbstractController
 
                 if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
                 {
-                    $out .= ' class="warning"';
+                    $out .= ' class="bg-warning-li"';
                 }
 
                 $out .= '>';
@@ -769,7 +768,7 @@ class TransactionsController extends AbstractController
 
                 if ($t['real_from'])
                 {
-                    $out .= '<span class="btn btn-default">';
+                    $out .= '<span class="btn btn-default border border-secondary">';
                     $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                     if (isset($t['inter_transaction']))
@@ -803,7 +802,7 @@ class TransactionsController extends AbstractController
 
                 if ($t['real_to'])
                 {
-                    $out .= '<span class="btn btn-default">';
+                    $out .= '<span class="btn btn-default border border-secondary">';
                     $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                     if (isset($t['inter_transaction']))
@@ -836,7 +835,8 @@ class TransactionsController extends AbstractController
             }
         }
 
-        $out .= '</table></div></div>';
+        $out .= '</table>';
+        $out .= '</div>';
 
         $out .= $pagination_render->get();
 
