@@ -2,6 +2,7 @@ const $ = require('jquery');
 // global.$ = global.jQuery = $;
 
 require('bootstrap');
+
 require('jquery-touchswipe/jquery.touchSwipe.min.js');
 
 require('footable/js/footable.js');
@@ -20,3 +21,6 @@ $(document).ready(function() {
 });
 
 require('../css/app.scss');
+
+const imagesContext = require.context('../images', true, /\.(png|jpg|jpeg|gif|ico|svg|webp)$/);
+imagesContext.keys().forEach(imagesContext);
