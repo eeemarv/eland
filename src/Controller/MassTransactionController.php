@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
+use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -90,6 +91,7 @@ class MassTransactionController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
+        AccountRender $account_render,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -808,8 +810,7 @@ class MassTransactionController extends AbstractController
         $out .= '<thead>';
 
         $out .= '<tr>';
-        $out .= '<th data-sort-initial="true">Code</th>';
-        $out .= '<th data-filter="#filter">Naam</th>';
+        $out .= '<th data-sort-initial="true">Account</th>';
         $out .= '<th data-sort-ignore="true">Bedrag</th>';
         $out .= '<th data-hide="phone">Saldo</th>';
         $out .= '<th data-hide="phone">Min.limit</th>';
@@ -838,15 +839,7 @@ class MassTransactionController extends AbstractController
 
             $out .= '<td>';
 
-            $out .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
-                ['id' => $user_id], $user['letscode']);
-
-            $out .= '</td>';
-
-            $out .= '<td>';
-
-            $out .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
-                ['id' => $user_id], $user['name']);
+            $out .= $account_render->link($user_id, $pp->ary());
 
             $out .= '</td>';
 
