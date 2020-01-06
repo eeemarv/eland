@@ -816,8 +816,6 @@ class MolliePaymentsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="card bg-info">';
-
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover panel-body footable csv bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
@@ -939,8 +937,6 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-
-        $out .= '</div>';
 
         $out .= $pagination_render->get();
 
