@@ -366,7 +366,7 @@ class TransactionsController extends AbstractController
 
         $assets_service->add(['datepicker']);
 
-        $out .= '<div class="card bg-info';
+        $out .= '<div class="card bg-info-li mb-3';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
         $out .= '<div class="card-body">';
@@ -586,9 +586,9 @@ class TransactionsController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="table-responsive">';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover footable csv transactions bg-default" ';
+        $out .= 'table-hover footable csv transactions bg-default mb-0" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
         $out .= '<tr>';

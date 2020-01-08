@@ -64,8 +64,8 @@ class NewsListController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-striped ';
+        $out = '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-striped mb-0 ';
         $out .= 'table-hover table-bordered footable csv bg-default">';
 
         $out .= '<thead>';

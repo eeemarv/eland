@@ -104,8 +104,9 @@ class DocsController extends AbstractController
 
         if (count($maps))
         {
-            $maps_table .= '<div class="table-responsive">';
-            $maps_table .= '<table class="table table-bordered ';
+            $maps_table = '<div class="table-responsive ';
+            $maps_table .= 'border border-dark rounded mb-3">';
+            $maps_table .= '<table class="table table-bordered mb-0 ';
             $maps_table .= 'table-striped table-hover footable bg-default"';
             $maps_table .= ' data-filter="#q" data-filter-minimum="1">';
             $maps_table .= '<thead>';
@@ -162,9 +163,9 @@ class DocsController extends AbstractController
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
 
-            $out .= '<div class="table-responsive">';
+            $out .= '<div class="table-responsive border border-dark rounded mb-3">';
             $out .= '<table class="table table-bordered ';
-            $out .= 'table-striped table-hover footable csv bg-default" ';
+            $out .= 'table-striped table-hover footable csv bg-default mb-0" ';
             $out .= 'data-filter="#q" data-filter-minimum="1">';
             $out .= '<thead>';
 

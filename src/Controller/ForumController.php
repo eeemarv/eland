@@ -112,8 +112,8 @@ class ForumController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-bordered ';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-bordered mb-0 ';
         $out .= 'table-striped table-hover footable csv bg-default"';
         $out .= ' data-filter="#q" data-filter-minimum="1">';
         $out .= '<thead>';

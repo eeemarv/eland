@@ -882,7 +882,7 @@ class UsersListController extends AbstractController
 
         $f_col = '';
 
-        $f_col .= '<div class="card bg-info collapse" ';
+        $f_col .= '<div class="card bg-info collapse mb-3" ';
         $f_col .= 'id="columns_show">';
         $f_col .= '<div class="card-body">';
         $f_col .= '<h2>Weergave kolommen</h2>';
@@ -1105,10 +1105,10 @@ class UsersListController extends AbstractController
             $vr
         );
 
-        $out .= '<div class="table-responsive">';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
         $out .= '<table class="table table-bordered ';
         $out .= 'table-striped table-hover ';
-        $out .= 'footable csv bg-default" ';
+        $out .= 'footable csv bg-default mb-0" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';
@@ -1774,9 +1774,7 @@ class UsersListController extends AbstractController
 
         $out .= $before;
 
-        $out .= '<br>';
-
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card bg-info mb-3">';
         $out .= '<div class="card-body">';
 
         $out .= '<div class="row">';

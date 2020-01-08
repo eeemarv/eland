@@ -136,7 +136,7 @@ class BulkCnst
     TPL;
 
     const TPL_SELECT_BUTTONS = <<<'TPL'
-    <div class="card bg-light" id="bulk_actions mb-2">
+    <div class="card bg-light mb-3" id="bulk_actions">
     <div class="card-body">
     <input type="button"
     class="btn btn-default btn-lg border border-dark"

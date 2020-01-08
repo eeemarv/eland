@@ -98,8 +98,8 @@ class IntersystemsController extends AbstractController
 
         if (count($intersystems))
         {
-            $out .= '<div class="table-responsive">';
-            $out .= '<table class="table table-bordered table-hover ';
+            $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+            $out .= '<table class="table table-bordered table-hover mb-0 ';
             $out .= 'table-striped footable bg-default">';
             $out .= '<thead>';
             $out .= '<tr>';

@@ -331,8 +331,8 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-striped ';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-striped mb-0 ';
         $out .= 'table-bordered table-hover footable csv bg-default" ';
         $out .= 'id="msgs" data-sort="false">';
 
@@ -1034,7 +1034,7 @@ class MessagesListController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card bg-info-li mb-3">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
@@ -1085,7 +1085,7 @@ class MessagesListController extends AbstractController
         $out .= $filter_panel_open ? '' : ' class="collapse"';
         $out .= '>';
 
-        $out .= '<div class="row">';
+        $out .= '<div class="row mt-2">';
 
         $offerwant_options = [
             'want'		=> 'Vraag',

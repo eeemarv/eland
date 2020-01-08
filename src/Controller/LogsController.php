@@ -288,10 +288,10 @@ class LogsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="table-responsive">';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
         $out .= '<table class="table table-hover ';
         $out .= 'table-bordered table-striped ';
-        $out .= 'footable csv bg-default" ';
+        $out .= 'footable csv bg-default mb-0" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
         $out .= '<tr>';
