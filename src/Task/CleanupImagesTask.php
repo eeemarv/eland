@@ -120,7 +120,7 @@ class CleanupImagesTask
 		else if ($type === 'm' && ctype_digit((string) $id))
 		{
 			$image_files = $this->db->fetchColumn('select image_files
-				from ' . $sch . '.message
+				from ' . $sch . '.messages
 				where id = ?', ['id' => $id]);
 
 			$image_file_ary = json_decode($image_files ?? '[]', true);

@@ -8,26 +8,26 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.130.3",
+            "version": "3.132.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "916356edb5c30fa564d02de94bde51a9c0bb4469"
+                "reference": "d1ea3332539a07d122e5cf397c0eb3a1fb75eede"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/916356edb5c30fa564d02de94bde51a9c0bb4469",
-                "reference": "916356edb5c30fa564d02de94bde51a9c0bb4469",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/d1ea3332539a07d122e5cf397c0eb3a1fb75eede",
+                "reference": "d1ea3332539a07d122e5cf397c0eb3a1fb75eede",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-pcre": "*",
                 "ext-simplexml": "*",
-                "guzzlehttp/guzzle": "^5.3.3|^6.2.1",
-                "guzzlehttp/promises": "~1.0",
+                "guzzlehttp/guzzle": "^5.3.3|^6.2.1|^7.0",
+                "guzzlehttp/promises": "^1.0",
                 "guzzlehttp/psr7": "^1.4.1",
-                "mtdowling/jmespath.php": "~2.2",
+                "mtdowling/jmespath.php": "^2.5",
                 "php": ">=5.5"
             },
             "require-dev": {
@@ -88,7 +88,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-01-02T19:13:50+00:00"
+            "time": "2020-01-07T19:13:51+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -585,16 +585,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.10.0",
+            "version": "v2.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "0c9a646775ef549eb0a213a4f9bd4381d9b4d934"
+                "reference": "c2b8e6e82732a64ecde1cddf9e1e06cb8556e3d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/0c9a646775ef549eb0a213a4f9bd4381d9b4d934",
-                "reference": "0c9a646775ef549eb0a213a4f9bd4381d9b4d934",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c2b8e6e82732a64ecde1cddf9e1e06cb8556e3d8",
+                "reference": "c2b8e6e82732a64ecde1cddf9e1e06cb8556e3d8",
                 "shasum": ""
             },
             "require": {
@@ -673,7 +673,7 @@
                 "sqlserver",
                 "sqlsrv"
             ],
-            "time": "2019-11-03T16:50:43+00:00"
+            "time": "2020-01-04T12:56:21+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -2502,16 +2502,16 @@
         },
         {
             "name": "php-http/discovery",
-            "version": "1.7.3",
+            "version": "1.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-http/discovery.git",
-                "reference": "2e0ad94833ec8473280454590a9011a0cd2dfc56"
+                "reference": "82dbef649ccffd8e4f22e1953c3a5265992b83c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-http/discovery/zipball/2e0ad94833ec8473280454590a9011a0cd2dfc56",
-                "reference": "2e0ad94833ec8473280454590a9011a0cd2dfc56",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/82dbef649ccffd8e4f22e1953c3a5265992b83c0",
+                "reference": "82dbef649ccffd8e4f22e1953c3a5265992b83c0",
                 "shasum": ""
             },
             "require": {
@@ -2563,7 +2563,7 @@
                 "message",
                 "psr7"
             ],
-            "time": "2019-12-27T19:51:10+00:00"
+            "time": "2020-01-03T11:25:47+00:00"
         },
         {
             "name": "php-http/guzzle6-adapter",
