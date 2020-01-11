@@ -882,7 +882,7 @@ class UsersListController extends AbstractController
 
         $f_col = '';
 
-        $f_col .= '<div class="card bg-info collapse mb-3" ';
+        $f_col .= '<div class="card bg-info-li collapse mb-3" ';
         $f_col .= 'id="columns_show">';
         $f_col .= '<div class="card-body">';
         $f_col .= '<h2>Weergave kolommen</h2>';
@@ -1774,7 +1774,7 @@ class UsersListController extends AbstractController
 
         $out .= $before;
 
-        $out .= '<div class="card bg-info mb-3">';
+        $out .= '<div class="card bg-info-li mb-3">';
         $out .= '<div class="card-body">';
 
         $out .= '<div class="row">';
