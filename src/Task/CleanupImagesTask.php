@@ -121,7 +121,7 @@ class CleanupImagesTask
 		{
 			$image_files = $this->db->fetchColumn('select image_files
 				from ' . $sch . '.messages
-				where id = ?', ['id' => $id]);
+				where id = ?', [$id]);
 
 			$image_file_ary = json_decode($image_files ?? '[]', true);
 			$key = array_search($object['Key'], $image_file_ary);
