@@ -123,7 +123,10 @@ class CleanupImagesTask
 				from ' . $sch . '.messages
 				where id = ?', [$id]);
 
-			$image_file_ary = json_decode($image_files ?? '[]', true);
+			$image_files = $image_files ?? '[]';
+			$image_files = $image_files === false ? '[]' : $image_files;
+
+			$image_file_ary = json_decode($image_files, true);
 			$key = array_search($object['Key'], $image_file_ary);
 
 			if ($key === false)
