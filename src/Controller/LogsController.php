@@ -65,11 +65,19 @@ class LogsController extends AbstractController
         if (isset($filter['code'])
             && $filter['code'])
         {
-            [$l_code] = explode(' ', $filter['code']);
+            [$filter_code] = explode(' ', $filter['code']);
 
-            $where_sql[] = 'letscode = ?';
-            $params_sql[] = strtolower($l_code);
-            $params['f']['code'] = $filter['code'];
+            $filter_user_id = $db->fetchColumn('select id
+                from ' . $pp->schema() . '.users
+                where letscode = ?', [$filter_code]);
+
+            if ($filter_user_id)
+            {
+                $where_sql[] = 'user_id = ? and user_schema = ?';
+                $params_sql[] = $filter_user_id;
+                $params_sql[] = $pp->schema();
+                $params['f']['code'] = $filter['code'];
+            }
         }
 
         if (isset($filter['type'])
