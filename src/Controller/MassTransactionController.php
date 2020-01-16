@@ -159,7 +159,6 @@ class MassTransactionController extends AbstractController
 
         $amount = $request->request->get('amount', []);
         $description = trim($request->request->get('description', ''));
-        $transid = $request->request->get('transid', '');
         $mail_en = $request->request->get('mail_en', false);
 
         if ($request->isMethod('POST'))
@@ -167,6 +166,11 @@ class MassTransactionController extends AbstractController
             if (!$request->request->get('verify', false))
             {
                 $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
+            }
+
+            if ($error_token = $form_token_service->get_error())
+            {
+                $errors[] = $error_token;
             }
 
             if (!$description)
@@ -238,23 +242,6 @@ class MassTransactionController extends AbstractController
                 $errors[] = 'Er is geen enkel bedrag ingevuld.';
             }
 
-            if (!$transid)
-            {
-                $errors[] = 'Geen geldig transactie id';
-            }
-
-            if ($db->fetchColumn('select id
-                from ' . $pp->schema() . '.transactions
-                where transid = ?', [$transid]))
-            {
-                $errors[] = 'Een dubbele boeking van een transactie werd voorkomen.';
-            }
-
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
-
             if (count($errors))
             {
                 $alert_service->error($errors);
@@ -305,7 +292,7 @@ class MassTransactionController extends AbstractController
                             'amount' 		=> $amo,
                             'description' 	=> $description,
                             'cdate' 		=> $cdate,
-                            'transid'		=> $transid,
+                            'transid'		=> $transaction_service->generate_transid($su->id(), $pp->system()),
                             'creator'		=> $su->is_master() ? 0 : $su->id(),
                         ];
 
@@ -317,8 +304,6 @@ class MassTransactionController extends AbstractController
                             where id = ?', [$amo, $many_uid]);
 
                         $total_amount += $amo;
-
-                        $transid = $transaction_service->generate_transid($su->id(), $pp->system());
 
                         $transactions[] = $transaction;
                     }
@@ -444,8 +429,6 @@ class MassTransactionController extends AbstractController
         {
             $mail_en = true;
         }
-
-        $transid = $transaction_service->generate_transid($su->id(), $pp->system());
 
         if ($to_letscode)
         {
@@ -1016,10 +999,6 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '</div>';
-
-        $out .= '<input type="hidden" value="';
-        $out .= $transid;
-        $out .= '" name="transid">';
 
         $out .= '</form>';
 
