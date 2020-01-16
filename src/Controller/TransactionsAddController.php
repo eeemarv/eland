@@ -2,18 +2,15 @@
 
 namespace App\Controller;
 
-use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\AutoMinLimitService;
-use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\MailAddrSystemService;
 use App\Service\MailTransactionService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -34,7 +31,6 @@ class TransactionsAddController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        Predis $predis,
         LoggerInterface $logger,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -65,18 +61,16 @@ class TransactionsAddController extends AbstractController
 
         $transaction = [];
 
-        $redis_transid_key = $pp->schema() . '_transid_u_' . $su->id();
-
         if ($request->isMethod('POST'))
         {
-            $stored_transid = $predis->get($redis_transid_key);
-
-            if (!$stored_transid)
+            if ($error_token = $form_token_service->get_error())
             {
-                $errors[] = 'Formulier verlopen.';
+                $errors[] = $error_token;
             }
 
-            $transaction['transid'] = trim($request->request->get('transid', ''));
+            $transaction['transid'] = $transaction_service->generate_transid(
+                $su->id(), $pp->system());
+
             $transaction['description'] = trim($request->request->get('description', ''));
 
             [$letscode_from] = explode(' ', trim($request->request->get('letscode_from', '')));
@@ -86,18 +80,6 @@ class TransactionsAddController extends AbstractController
             $transaction['creator'] = $su->is_master() ? 0 : $su->id();
 
             $group_id = trim($request->request->get('group_id', ''));
-
-            if ($stored_transid != $transaction['transid'])
-            {
-                $errors[] = 'Fout transactie id.';
-            }
-
-            if ($db->fetchColumn('select transid
-                from ' . $pp->schema() . '.transactions
-                where transid = ?', [$stored_transid]))
-            {
-                $errors[] = 'Een herinvoer van de transactie werd voorkomen.';
-            }
 
             if (strlen($transaction['description']) > 60)
             {
@@ -291,11 +273,6 @@ class TransactionsAddController extends AbstractController
                     $err .= ' ontvangen.';
                     $errors[] = $err;
                 }
-            }
-
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
             }
 
             $contact_admin = $pp->is_admin() ? '' : ' Contacteer een admin.';
@@ -643,18 +620,11 @@ class TransactionsAddController extends AbstractController
         {
             //GET form
 
-            $transid = $transaction_service->generate_transid(
-                $su->id(), $pp->system());
-
-            $predis->set($redis_transid_key, $transid);
-            $predis->expire($redis_transid_key, 3600);
-
             $transaction = [
                 'letscode_from'	=> $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema()),
                 'letscode_to'	=> '',
                 'amount'		=> '',
                 'description'	=> '',
-                'transid'		=> $transid,
             ];
 
             $group_id = 'self';
@@ -1108,10 +1078,6 @@ class TransactionsAddController extends AbstractController
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Overschrijven" class="btn btn-success btn-lg">';
         $out .= $form_token_service->get_hidden_input();
-        $out .= '<input type="hidden" name="transid" ';
-        $out .= 'value="';
-        $out .= $transaction['transid'];
-        $out .= '">';
 
         $out .= '</form>';
         $out .= '</div>';
