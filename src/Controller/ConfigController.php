@@ -801,6 +801,11 @@ class ConfigController extends AbstractController
 
         foreach ($items as $a)
         {
+            if (!isset($input_ary[$a]))
+            {
+                continue;
+            }
+
             $options = $input_ary[$a];
 
             if (!count($options))
