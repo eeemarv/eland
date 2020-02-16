@@ -48,10 +48,7 @@ class TypeaheadService
 			return $this;
 		}
 
-		if (!isset($this->build_ary['paths']))
-		{
-			$this->build_ary['paths'] = [];
-		}
+		$this->build_ary['paths'] ??= [];
 
 		$this->build_ary['paths'][] = [
 			'route'		=> $route,
