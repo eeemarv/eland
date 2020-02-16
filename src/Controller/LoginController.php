@@ -11,12 +11,12 @@ use App\Render\LinkRender;
 use App\Security\User;
 use App\Service\AlertService;
 use App\Service\ConfigService;
+use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
@@ -35,6 +35,7 @@ class LoginController extends AbstractController
         ConfigService $config_service,
         AccountRender $account_render,
         UserCacheService $user_cache_service,
+        FormTokenService $form_token_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -61,6 +62,11 @@ class LoginController extends AbstractController
             $password = trim($request->request->get('password'));
 
             $encoder = $encoder_factory->getEncoder(new User());
+
+            if ($token_error = $form_token_service->get_error())
+            {
+                $errors[] = $token_error;
+            }
 
             if (!($lc_login && $password))
             {
@@ -308,6 +314,8 @@ class LoginController extends AbstractController
 
         $out .= '<input type="submit" class="btn btn-info btn-lg" ';
         $out .= 'value="Inloggen" name="zend">';
+
+        $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
 

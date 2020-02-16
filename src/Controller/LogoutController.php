@@ -6,7 +6,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
