@@ -90,7 +90,7 @@ class TypeaheadService
 			];
 		}
 
-		unset ($this->build_ary);
+		unset($this->build_ary);
 
 		if (!isset($this->assets_included))
 		{

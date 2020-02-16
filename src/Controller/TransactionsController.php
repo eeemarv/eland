@@ -151,7 +151,7 @@ class TransactionsController extends AbstractController
             $where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
         }
 
-        $where_sql = array_merge($where_sql, $where_code_sql);
+        $where_sql = [...$where_sql, ...$where_code_sql];
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
