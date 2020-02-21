@@ -99,7 +99,7 @@ class S3Service
 				],
 			]);
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			return 'Opladen mislukt: ' . $e->getMessage();
 		}
@@ -137,7 +137,7 @@ class S3Service
 				],
 			]);
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			return 'Opladen mislukt: ' . $e->getMessage();
 		}
@@ -163,7 +163,7 @@ class S3Service
 				'ContentType'	=> $result['ContentType'],
 			]);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			error_log('s3 copy : ' . $e->getMessage());
 		}
@@ -180,7 +180,7 @@ class S3Service
 				'Key'		=> $filename,
 			]);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			error_log('s3 del: ' . $e->getMessage());
 		}
@@ -200,7 +200,7 @@ class S3Service
 
 			return $objects;
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			error_log('s3 list: ' . $e->getMessage());
 		}

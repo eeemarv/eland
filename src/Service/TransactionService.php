@@ -59,7 +59,7 @@ class TransactionService
 			$this->db->commit();
 
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			$this->db->rollback();
 			throw $e;
