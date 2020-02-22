@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use Aws\S3\S3Client;
+use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7\CachingStream;
 
 class S3Service
 {
@@ -54,6 +56,7 @@ class S3Service
 		'css'		=> 'text/css',
 		'html'		=> 'text/html',
 		'md'		=> 'text/markdown',
+		'pdf'		=> 'application/pdf',
 	];
 
 	public function __construct(
@@ -91,12 +94,15 @@ class S3Service
 		}
 
 		try {
-
-			$this->client->upload($this->env_aws_s3_bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
-				'params'	=> [
-					'CacheControl'	=> 'public, max-age=31536000',
-					'ContentType'	=> $content_type,
-				],
+			$this->client->putObject([
+				'Bucket' 		=> $this->env_aws_s3_bucket,
+				'Key'    		=> $filename,
+				'Body'          => new CachingStream(
+					new Stream(fopen($tmpfile, 'rb'))
+				),
+				'ACL'           => 'public-read',
+				'CacheControl'	=> 'public, max-age=31536000',
+				'ContentType'	=> $content_type,
 			]);
 		}
 		catch(\Exception $e)
@@ -130,11 +136,15 @@ class S3Service
 
 		try
 		{
-			$this->client->upload($this->env_aws_s3_bucket, $filename, fopen($tmpfile, 'rb'), 'public-read', [
-				'params'	=> [
-					'CacheControl'	=> 'public, max-age=31536000',
-					'ContentType'	=> $content_type,
-				],
+			$this->client->putObject([
+				'Bucket' 		=> $this->env_aws_s3_bucket,
+				'Key'    		=> $filename,
+				'Body'          => new CachingStream(
+					new Stream(fopen($tmpfile, 'rb'))
+				),
+				'ACL'           => 'public-read',
+				'CacheControl'	=> 'public, max-age=31536000',
+				'ContentType'	=> $content_type,
 			]);
 		}
 		catch(\Exception $e)
