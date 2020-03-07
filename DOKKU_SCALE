@@ -3,6 +3,4 @@ worker=1
 log=1
 mail=1
 geocode=1
-cleanup_cache=1
-cleanup_logs=1
-cleanup_images=1
+cleanup=1

@@ -125,6 +125,11 @@ class MonitorProcessService
 		$this->loop_count++;
 	}
 
+	public function get_loop_count():int
+	{
+		return $this->loop_count;
+	}
+
 	public function monitor()
 	{
 		try
