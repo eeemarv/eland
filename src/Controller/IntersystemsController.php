@@ -118,7 +118,7 @@ class IntersystemsController extends AbstractController
                 $out .= '<tr>';
                 $out .= '<td>';
 
-                if ($sys['apimethod'] === 'elassoap')
+                if (in_array($sys['apimethod'], ['elassoap', 'mail']))
                 {
                     $user = $users_letscode[$sys['localletscode']] ?? [];
 
@@ -165,6 +165,7 @@ class IntersystemsController extends AbstractController
                         }
                     }
                 }
+
                 $out .= '</td>';
 
                 $out .= '<td>';
