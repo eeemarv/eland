@@ -5,11 +5,6 @@ namespace App\Cnst;
 class ProcessCnst
 {
     const INTERVAL = [
-        'cleanup'    => [
-            'wait'      => 900,
-            'monitor'   => 3600,
-            'log'       => 100,
-        ],
         'cleanup_cache'    => [
             'wait'      => 7200,
             'monitor'   => 14400,
