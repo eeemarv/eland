@@ -220,6 +220,7 @@ class IntersystemsController extends AbstractController
             $out .= '</div></div>';
         }
 
+/*
         $out .= self::get_schemas_groups(
             $db,
             $config_service,
@@ -228,6 +229,7 @@ class IntersystemsController extends AbstractController
             $vr,
             $link_render
         );
+*/
 
         $menu_service->set('intersystems');
 
