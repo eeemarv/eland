@@ -7,7 +7,6 @@ use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -25,7 +24,6 @@ class IntersystemsShowController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         ConfigService $config_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         HeadingRender $heading_render,
@@ -117,11 +115,6 @@ class IntersystemsShowController extends AbstractController
         $out .= $group['apimethod'];
         $out .= '</dd>';
 
-        $out .= '<dt>API key</dt>';
-        $out .= '<dd>';
-        $out .= $group['remoteapikey'];
-        $out .= '</dd>';
-
         $out .= '<dt>Lokale Account Code</dt>';
         $out .= '<dd>';
 
@@ -181,14 +174,9 @@ class IntersystemsShowController extends AbstractController
         $out .= $group['url'];
         $out .= '</dd>';
 
-        $out .= '<dt>Preshared Key</dt>';
-        $out .= '<dd>';
-        $out .= $group['presharedkey'];
-        $out .= '</dd>';
-        $out .= '</dl>';
-
         $out .= '</div></div>';
 
+/*
         $out .= IntersystemsController::get_schemas_groups(
             $db,
             $config_service,
@@ -197,6 +185,7 @@ class IntersystemsShowController extends AbstractController
             $vr,
             $link_render
         );
+*/
 
         $menu_service->set('intersystems');
 

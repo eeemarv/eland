@@ -46,11 +46,7 @@ class CategoriesEditController extends AbstractController
 
         foreach ($cats as $cat)
         {
-            if (!isset($child_count_ary[$cat['id_parent']]))
-            {
-                $child_count_ary[$cat['id_parent']] = 0;
-            }
-
+            $child_count_ary[$cat['id_parent']] ??= 0;
             $child_count_ary[$cat['id_parent']]++;
         }
 

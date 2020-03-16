@@ -117,7 +117,7 @@ class IntersystemsController extends AbstractController
                 $out .= '<tr>';
                 $out .= '<td>';
 
-                if ($sys['apimethod'] === 'elassoap')
+                if (in_array($sys['apimethod'], ['elassoap', 'mail']))
                 {
                     $user = $users_letscode[$sys['localletscode']] ?? [];
 
@@ -134,7 +134,7 @@ class IntersystemsController extends AbstractController
                         {
                             $out .= ' ';
                             $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
-                                ['edit' => $user['id']], 'Status!',
+                                ['id' => $user['id']], 'Status!',
                                 [
                                     'class'	=> 'btn btn-danger',
                                     'title'	=> 'Het interSysteem-account heeft een ongeldige status. De status moet van het type extern, actief of uitstapper zijn.',
@@ -145,7 +145,7 @@ class IntersystemsController extends AbstractController
                         {
                             $out .= ' ';
                             $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
-                                ['edit' => $user['id']], 'Rol!',
+                                ['id' => $user['id']], 'Rol!',
                                 [
                                     'class'	=> 'btn btn-danger',
                                     'title'	=> 'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
@@ -164,6 +164,7 @@ class IntersystemsController extends AbstractController
                         }
                     }
                 }
+
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -219,6 +220,7 @@ class IntersystemsController extends AbstractController
             $out .= '</div>';
         }
 
+/*
         $out .= self::get_schemas_groups(
             $db,
             $config_service,
@@ -227,6 +229,7 @@ class IntersystemsController extends AbstractController
             $vr,
             $link_render
         );
+*/
 
         $menu_service->set('intersystems');
 
@@ -447,7 +450,7 @@ class IntersystemsController extends AbstractController
                         if ($loc_acc['accountrole'] != 'interlets')
                         {
                             $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
-                                ['edit' => $loc_acc['id']], 'rol',
+                                ['id' => $loc_acc['id']], 'rol',
                                 [
                                     'class'	=> 'btn btn-warning',
                                     'title'	=> 'De rol van het account moet van het type interSysteem zijn.',
@@ -456,7 +459,7 @@ class IntersystemsController extends AbstractController
                         else if (!in_array($loc_acc['status'], [1, 2, 7]))
                         {
                             $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
-                                ['edit' => $loc_acc['id']], 'status',
+                                ['id' => $loc_acc['id']], 'status',
                                 [
                                     'class'	=> 'btn btn-warning',
                                     'title'	=> 'De status van het account moet actief, uitstapper of extern zijn.',

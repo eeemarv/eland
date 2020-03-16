@@ -236,7 +236,7 @@ class TransactionsShowController extends AbstractController
 
         $out .= '<dt>Omschrijving</dt>';
         $out .= '<dd>';
-        $out .= $transaction['description'];
+        $out .= htmlspecialchars($transaction['description'], ENT_QUOTES);
         $out .= '</dd>';
 
         $out .= '</dl>';

@@ -818,13 +818,10 @@ class UsersListController extends AbstractController
 
             foreach ($trans_in_ary as $trans_in)
             {
-                if (!isset($activity[$trans_in['id_to']]))
-                {
-                    $activity[$trans_in['id_to']] = [
-                        'trans'	=> ['total' => 0],
-                        'amount' => ['total' => 0],
-                    ];
-                }
+                $activity[$trans_in['id_to']] ??= [
+                    'trans'	    => ['total' => 0],
+                    'amount'    => ['total' => 0],
+                ];
 
                 $activity[$trans_in['id_to']]['trans']['in'] = $trans_in['count'];
                 $activity[$trans_in['id_to']]['amount']['in'] = $trans_in['sum'];
@@ -834,13 +831,10 @@ class UsersListController extends AbstractController
 
             foreach ($trans_out_ary as $trans_out)
             {
-                if (!isset($activity[$trans_out['id_from']]))
-                {
-                    $activity[$trans_out['id_from']] = [
-                        'trans'	=> ['total' => 0],
-                        'amount' => ['total' => 0],
-                    ];
-                }
+                $activity[$trans_out['id_from']] ??= [
+                    'trans'	    => ['total' => 0],
+                    'amount'    => ['total' => 0],
+                ];
 
                 $activity[$trans_out['id_from']]['trans']['out'] = $trans_out['count'];
                 $activity[$trans_out['id_from']]['amount']['out'] = $trans_out['sum'];

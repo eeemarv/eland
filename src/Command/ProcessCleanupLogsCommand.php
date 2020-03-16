@@ -42,7 +42,7 @@ class ProcessCleanupLogsCommand extends Command
                 continue;
             }
 
-            // $schema is not used, logs from all schemas are cleaned up.
+            // $chema is not used, logs from all schemas are cleaned up.
 
             $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
 

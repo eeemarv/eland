@@ -824,3 +824,9 @@ li.nav-config-only.active a,
 li.nav-config-only.active a:hover{
   background-color: #777;
 }
+
+/* config: periodic mail */
+ul#list_active li[data-block],
+ul#list_inactive li[data-block] {
+  cursor: move;
+}

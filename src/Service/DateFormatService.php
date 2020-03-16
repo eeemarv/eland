@@ -65,12 +65,12 @@ class DateFormatService
 
 		if (!$format || !isset(self::FORMATS[$format]))
 		{
-			throw \Exception('No valid date format in date_format: ' . $format);
+			throw new \Exception('No valid date format in date_format: ' . $format);
 		}
 
 		if (!isset(self::FORMATS[$format][$precision]))
 		{
-			throw \Exception('No valid precision in date_format: ' . $precision);
+			throw new \Exception('No valid precision in date_format: ' . $precision);
 		}
 
 		return self::FORMATS[$format][$precision];

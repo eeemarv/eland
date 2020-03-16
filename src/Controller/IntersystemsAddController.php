@@ -86,11 +86,9 @@ class IntersystemsAddController extends AbstractController
             $group = [
                 'groupname' 		=> '',
                 'apimethod'			=> 'elassoap',
-                'remoteapikey'		=> '',
                 'localletscode'		=> '',
                 'myremoteletscode'	=> '',
                 'url'				=> '',
-                'presharedkey'		=> '',
             ];
 
             if ($add_schema = $request->query->get('add_schema'))

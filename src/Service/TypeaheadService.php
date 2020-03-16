@@ -48,10 +48,7 @@ class TypeaheadService
 			return $this;
 		}
 
-		if (!isset($this->build_ary['paths']))
-		{
-			$this->build_ary['paths'] = [];
-		}
+		$this->build_ary['paths'] ??= [];
 
 		$this->build_ary['paths'][] = [
 			'route'		=> $route,
@@ -90,7 +87,7 @@ class TypeaheadService
 			];
 		}
 
-		unset ($this->build_ary);
+		unset($this->build_ary);
 
 		if (!isset($this->assets_included))
 		{
