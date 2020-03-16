@@ -25,7 +25,6 @@ class SystemsService
 
 	const TEMP_ALT = [
 		'letsdurme'			=> 'durme',
-		'letsdendermonde'	=> 'dendermonde',
 	];
 
 	public function __construct(
