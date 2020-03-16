@@ -115,11 +115,6 @@ class IntersystemsShowController extends AbstractController
         $out .= $group['apimethod'];
         $out .= '</dd>';
 
-        $out .= '<dt>API key</dt>';
-        $out .= '<dd>';
-        $out .= $group['remoteapikey'];
-        $out .= '</dd>';
-
         $out .= '<dt>Lokale Account Code</dt>';
         $out .= '<dd>';
 
@@ -178,12 +173,6 @@ class IntersystemsShowController extends AbstractController
         $out .= '<dd>';
         $out .= $group['url'];
         $out .= '</dd>';
-
-        $out .= '<dt>Preshared Key</dt>';
-        $out .= '<dd>';
-        $out .= $group['presharedkey'];
-        $out .= '</dd>';
-        $out .= '</dl>';
 
         $out .= '</div></div>';
 

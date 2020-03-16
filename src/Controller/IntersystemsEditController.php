@@ -134,15 +134,9 @@ class IntersystemsEditController extends AbstractController
             'url' 				=> $request->request->get('url', ''),
             'groupname' 		=> $request->request->get('groupname', ''),
             'apimethod' 		=> $request->request->get('apimethod', ''),
-            'shortname' 		=> '',
-            'prefix' 			=> '',
-            'remoteapikey' 		=> $request->request->get('remoteapikey', ''),
             'localletscode' 	=> $request->request->get('localletscode', ''),
             'myremoteletscode'	=> $request->request->get('myremoteletscode', ''),
-            'presharedkey' 		=> $request->request->get('presharedkey', ''),
         ];
-
-        $group['elassoapurl'] = $group['url'] . '/soap';
 
         if (strlen($group['groupname']) > 128)
         {
@@ -162,11 +156,6 @@ class IntersystemsEditController extends AbstractController
         if (strlen($group['url']) > 256)
         {
             $errors[] = 'De url mag maximaal 256 tekens lang zijn.';
-        }
-
-        if (strlen($group['elassoapurl']) > 256)
-        {
-            $errors[] = 'De eLAS soap URL mag maximaal 256 tekens lang zijn.';
         }
 
         if ($error_token = $form_token_service->get_error())
