@@ -100,9 +100,9 @@ class DistanceService
 		return count($this->to_map_data) > 0;
 	}
 
-	public function get_map_markers():string
+	public function get_map_markers():array
 	{
-		return htmlspecialchars(json_encode($this->to_map_data));
+		return $this->to_map_data;
 	}
 
 	public function calc():self

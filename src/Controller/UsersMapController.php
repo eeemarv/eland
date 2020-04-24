@@ -37,7 +37,8 @@ class UsersMapController extends AbstractController
         SessionUserService $su,
         VarRouteService $vr,
         MenuService $menu_service,
-        string $env_mapbox_token
+        string $env_map_access_token,
+        string $env_map_tiles_url
     ):Response
     {
         $ref_geo = [];
@@ -171,10 +172,11 @@ class UsersMapController extends AbstractController
         UsersListController::heading($heading_render);
 
         $data_map = json_encode([
-            'users' => $data_users,
-            'lat'   => $ref_geo['lat'] ?? '',
-            'lng'   => $ref_geo['lng'] ?? '',
-            'token' => $env_mapbox_token,
+            'users'     => $data_users,
+            'lat'       => $ref_geo['lat'] ?? '',
+            'lng'       => $ref_geo['lng'] ?? '',
+            'token'     => $env_map_access_token,
+            'tiles_url' => $env_map_tiles_url,
         ]);
 
         $out = '<div class="row">';

@@ -60,7 +60,8 @@ class UsersShowAdminController extends AbstractController
         MenuService $menu_service,
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
         string $env_s3_url,
-        string $env_mapbox_token
+        string $env_map_access_token,
+        string $env_map_tiles_url
     ):Response
     {
         $errors = [];
@@ -258,7 +259,8 @@ class UsersShowAdminController extends AbstractController
             $su,
             $distance_service,
             $account_render,
-            $env_mapbox_token
+            $env_map_access_token,
+            $env_map_tiles_url
         );
 
         $contacts_content = $contacts_response->getContent();

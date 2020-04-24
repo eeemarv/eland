@@ -4,10 +4,10 @@ $(document).ready(function() {
 
 	var map = L.map('map').setView([data.lat, data.lng], 14);
 
-	L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token={accessToken}', {
+	L.tileLayer('https://' + data.tiles_url + '/{z}/{x}/{y}?access_token={accessToken}', {
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		maxZoom: 17,
-		minZoom: 10,
+		maxZoom: 18,
+		minZoom: 9,
 		accessToken: data.token
 	}).addTo(map);
 

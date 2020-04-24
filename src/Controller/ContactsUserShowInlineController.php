@@ -25,7 +25,8 @@ class ContactsUserShowInlineController extends AbstractController
         SessionUserService $su,
         DistanceService $distance_service,
         AccountRender $account_render,
-        string $env_mapbox_token
+        string $env_map_access_token,
+        string $env_map_tiles_url
     ):Response
     {
         $contacts = $db->fetchAll('select c.*, tc.abbrev
@@ -212,12 +213,15 @@ class ContactsUserShowInlineController extends AbstractController
 
             if ($distance_service->has_map_data())
             {
+                $data_map = json_encode([
+                    'markers'   => $distance_service->get_map_markers(),
+                    'token'     => $env_map_access_token,
+                    'tiles_url' => $env_map_tiles_url,
+                ]);
+
                 $out .= '<div class="panel-footer">';
-                $out .= '<div class="user_map" id="map" data-markers="';
-                $out .= $distance_service->get_map_markers();
-                $out .= '" ';
-                $out .= 'data-token="';
-                $out .= $env_mapbox_token;
+                $out .= '<div class="user_map" id="map" data-map="';
+                $out .= htmlspecialchars($data_map);
                 $out .= '"></div>';
                 $out .= '</div>';
             }

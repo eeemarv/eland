@@ -55,7 +55,8 @@ class UsersShowController extends AbstractController
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
         UsersShowAdminController $users_show_admin_controller,
         string $env_s3_url,
-        string $env_mapbox_token
+        string $env_map_access_token,
+        string $env_map_tiles_url
     ):Response
     {
         return $users_show_admin_controller(
@@ -84,7 +85,8 @@ class UsersShowController extends AbstractController
             $menu_service,
             $contacts_user_show_inline_controller,
             $env_s3_url,
-            $env_mapbox_token
+            $env_map_access_token,
+            $env_map_tiles_url
         );
     }
 }
