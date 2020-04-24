@@ -2,20 +2,20 @@
 
 namespace App\EventSubscriber;
 
-use App\Service\EmailValidateService;
+use App\Service\EmailVerifyService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class EmailValidateSubscriber implements EventSubscriberInterface
+class EmailVerifySubscriber implements EventSubscriberInterface
 {
-    protected $email_validate_service;
+    protected EmailVerifyService $email_verify_service;
 
     public function __construct(
-        EmailValidateService $email_validate_service
+        EmailVerifyService $email_verify_service
     )
     {
-        $this->email_validate_service = $email_validate_service;
+        $this->email_verify_service = $email_verify_service;
     }
 
     public function onKernelController(ControllerEvent $event)
@@ -24,7 +24,7 @@ class EmailValidateSubscriber implements EventSubscriberInterface
 
         if ($request->query->get('et') !== null)
         {
-            $this->email_validate_service->validate($request->query->get('et'));
+            $this->email_verify_service->verify($request->query->get('et'));
         }
     }
 

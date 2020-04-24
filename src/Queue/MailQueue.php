@@ -8,22 +8,22 @@ use Psr\Log\LoggerInterface;
 use Twig\Environment as Twig;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
-use App\Service\EmailValidateService;
+use App\Service\EmailVerifyService;
 use App\Service\QueueService;
 use App\Service\SystemsService;
+use League\HTMLToMarkdown\HtmlConverter;
 
 class MailQueue implements QueueInterface
 {
-	protected $html_converter;
 	protected $mailer;
-	protected $queue_service;
-	protected $logger;
-	protected $twig;
-	protected $config_service;
-	protected $html_to_markdown_converter;
-	protected $mail_addr_system_service;
-	protected $email_validate_service;
-	protected $systems_service;
+	protected QueueService $queue_service;
+	protected LoggerInterface $logger;
+	protected Twig $twig;
+	protected ConfigService $config_service;
+	protected HtmlToMarkdownConverter $html_to_markdown_converter;
+	protected MailAddrSystemService $mail_addr_system_service;
+	protected EmailVerifyService $email_verify_service;
+	protected SystemsService $systems_service;
 
 	public function __construct(
 		QueueService $queue_service,
@@ -31,7 +31,7 @@ class MailQueue implements QueueInterface
 		Twig $twig,
 		ConfigService $config_service,
 		MailAddrSystemService $mail_addr_system_service,
-		EmailValidateService $email_validate_service,
+		EmailVerifyService $email_verify_service,
 		SystemsService $systems_service,
 		HtmlToMarkdownConverter $html_to_markdown_converter,
 		string $env_smtp_host,
@@ -46,7 +46,7 @@ class MailQueue implements QueueInterface
 		$this->config_service = $config_service;
 		$this->html_to_markdown_converter = $html_to_markdown_converter;
 		$this->mail_addr_system_service = $mail_addr_system_service;
-		$this->email_validate_service = $email_validate_service;
+		$this->email_verify_service = $email_verify_service;
 		$this->systems_service = $systems_service;
 
 		$transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, 'tls'))
@@ -221,7 +221,7 @@ class MailQueue implements QueueInterface
 			$val_data = $data;
 			$val_data['to'] = [$email => $name];
 
-			$email_token = $this->email_validate_service->get_token($email, $schema, $data['template']);
+			$email_token = $this->email_verify_service->get_token($email, $schema, $data['template']);
 			$val_data['vars']['et'] = $email_token;
 
 			$this->queue_service->set('mail', $val_data, $priority);
