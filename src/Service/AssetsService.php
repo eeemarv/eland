@@ -104,10 +104,10 @@ class AssetsService
 		],
 		'leaflet'	=> [
 			'js'	=> [
-				'leaflet/1.3.4/leaflet.js',
+				'leaflet/1.6.0/leaflet.js',
 			],
 			'css'	=> [
-				'leaflet/1.3.4/leaflet.css',
+				'leaflet/1.6.0/leaflet.css',
 			]
 		],
 		'summernote' => [
