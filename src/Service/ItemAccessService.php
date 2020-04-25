@@ -7,9 +7,9 @@ use App\Cnst\AccessCnst;
 
 class ItemAccessService
 {
-	protected $assets_service;
-	protected $config_service;
-	protected $pp;
+	protected AssetsService $assets_service;
+	protected ConfigService $config_service;
+	protected PageParamsService $pp;
 
 	public function __construct(
 		AssetsService $assets_service,

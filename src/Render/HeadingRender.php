@@ -4,11 +4,11 @@ namespace App\Render;
 
 class HeadingRender
 {
-	protected $str = '';
-	protected $str_sub = '';
-	protected $fa;
-	protected $btn_filter = false;
-	protected $filtered = false;
+	protected string $str = '';
+	protected string $str_sub = '';
+	protected string $fa;
+	protected bool $btn_filter = false;
+	protected bool $filtered = false;
 
 	const BTN_FILTER = [
 		'<div class="pull-right">',

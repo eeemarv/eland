@@ -7,12 +7,13 @@ use Predis\Client as Predis;
 
 class UserCacheService
 {
-	protected $db;
-	protected $predis;
-	protected $ttl = 2592000;
-	protected $is_cli;
+	const TTL = 2592000;
 
-	protected $local;
+	protected Db $db;
+	protected Predis $predis;
+	protected bool $is_cli;
+
+	protected array $local = [];
 
 	public function __construct(
 		Db $db,
@@ -75,7 +76,7 @@ class UserCacheService
 		if (isset($user))
 		{
 			$this->predis->set($redis_key, serialize($user));
-			$this->predis->expire($redis_key, $this->ttl);
+			$this->predis->expire($redis_key, self::TTL);
 			$this->local[$schema][$id] = $user;
 		}
 
@@ -121,7 +122,7 @@ class UserCacheService
 		}
 
 		$this->predis->set($redis_key, $user);
-		$this->predis->expire($redis_key, $this->ttl);
+		$this->predis->expire($redis_key, self::TTL);
 		unset($this->local[$schema][$id]);
 	}
 }

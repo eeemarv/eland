@@ -11,11 +11,10 @@ use App\Service\MailAddrSystemService;
 use App\Service\EmailVerifyService;
 use App\Service\QueueService;
 use App\Service\SystemsService;
-use League\HTMLToMarkdown\HtmlConverter;
 
 class MailQueue implements QueueInterface
 {
-	protected $mailer;
+	protected \Swift_Mailer $mailer;
 	protected QueueService $queue_service;
 	protected LoggerInterface $logger;
 	protected Twig $twig;

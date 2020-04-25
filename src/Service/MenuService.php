@@ -16,12 +16,12 @@ class MenuService
 		'transactions'	=> true,
 	];
 
-	protected $config_service;
-	protected $item_access_service;
-	protected $btn_nav_render;
-	protected $pp;
-	protected $vr;
-	protected $active_menu;
+	protected ConfigService $config_service;
+	protected ItemAccessService $item_access_service;
+	protected BtnNavRender $btn_nav_render;
+	protected PageParamsService $pp;
+	protected VarRouteService $vr;
+	protected string $active_menu;
 
 	public function __construct(
 		ConfigService $config_service,

@@ -11,6 +11,8 @@ class RedisHandler extends AbstractProcessingHandler
 {
     const KEY = 'monolog_logs';
 
+    protected Predis $predis;
+
     public function __construct(
         Predis $predis,
         $level = Logger::DEBUG,

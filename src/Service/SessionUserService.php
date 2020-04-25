@@ -9,24 +9,24 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SessionUserService
 {
-	protected $session;
-	protected $pp;
-	protected $user_cache_service;
+	protected SessionInterface $session;
+	protected PageParamsService $pp;
+	protected UserCacheService $user_cache_service;
 
-	protected $schema;
-	protected $system;
-	protected $is_system_self;
-	protected $id;
-	protected $logins;
-	protected $user = [];
-	protected $role;
-	protected $role_short;
-	protected $is_anonymous;
-	protected $is_guest;
-	protected $is_user;
-	protected $is_admin;
-	protected $is_master;
-	protected $ary;
+	protected string $schema;
+	protected string $system;
+	protected bool $is_system_self;
+	protected int $id;
+	protected array $logins;
+	protected array $user = [];
+	protected string $role;
+	protected string $role_short;
+	protected bool $is_anonymous;
+	protected bool $is_guest;
+	protected bool $is_user;
+	protected bool $is_admin;
+	protected bool $is_master;
+	protected array $ary;
 
 	public function __construct(
 		SessionInterface $session,

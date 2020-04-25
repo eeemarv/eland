@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class AccountRuntime implements RuntimeExtensionInterface
 {
-	protected $user_cache_service;
+	protected UserCacheService $user_cache_service;
 
 	public function __construct(UserCacheService $user_cache_service)
 	{

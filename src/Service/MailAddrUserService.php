@@ -7,8 +7,8 @@ use Psr\Log\LoggerInterface;
 
 class MailAddrUserService
 {
-	protected $db;
-	protected $logger;
+	protected Db $db;
+	protected LoggerInterface $logger;
 
 	public function __construct(Db $db, LoggerInterface $logger)
 	{

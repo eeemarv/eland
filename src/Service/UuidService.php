@@ -4,10 +4,6 @@ namespace App\Service;
 
 class UuidService
 {
-	public function __construct()
-	{
-	}
-
 	public function gen()
 	{
 		$rnd = random_bytes(16);

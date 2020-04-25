@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class BtnNavRuntime implements RuntimeExtensionInterface
 {
-	protected $btn_nav_render;
+	protected BtnNavRender $btn_nav_render;
 
 	public function __construct(BtnNavRender $btn_nav_render)
 	{

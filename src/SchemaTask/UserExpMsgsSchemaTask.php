@@ -10,11 +10,11 @@ use App\Service\MailAddrUserService;
 
 class UserExpMsgsSchemaTask implements SchemaTaskInterface
 {
-	protected $db;
-	protected $mail_queue;
-	protected $config_service;
-	protected $user_cache_service;
-	protected $mail_addr_user_service;
+	protected Db $db;
+	protected MailQueue $mail_queue;
+	protected ConfigService $config_service;
+	protected UserCacheService $user_cache_service;
+	protected MailAddrUserService $mail_addr_user_service;
 
 	public function __construct(
 		Db $db,
@@ -68,7 +68,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 			$mail_template .= $message['type'] === 'offer' ? 'offer' : 'want';
 
 			$this->mail_queue->queue([
-				'to' 				=> $this->mail_addr_user_service->get_active($message['id_user'], $schema),
+				'to' 				=> $this->mail_addr_user_service->get_active((int) $message['id_user'], $schema),
 				'schema' 			=> $schema,
 				'template' 			=> $mail_template,
 				'vars' 				=> $vars

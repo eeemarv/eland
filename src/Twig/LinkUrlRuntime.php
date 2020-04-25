@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class LinkUrlRuntime implements RuntimeExtensionInterface
 {
-	protected $url_generator;
+	protected UrlGeneratorInterface $url_generator;
 
 	public function __construct(
 		UrlGeneratorInterface $url_generator

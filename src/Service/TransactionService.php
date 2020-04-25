@@ -11,12 +11,12 @@ use App\Render\AccountRender;
 
 class TransactionService
 {
-	protected $db;
-	protected $logger;
-	protected $user_cache_service;
-	protected $autominlimit_service;
-	protected $config_service;
-	protected $account_render;
+	protected Db $db;
+	protected LoggerInterface $logger;
+	protected UserCacheService $user_cache_service;
+	protected AutoMinLimitService $autominlimit_service;
+	protected ConfigService $config_service;
+	protected AccountRender $account_render;
 
 	public function __construct(
 		Db $db,

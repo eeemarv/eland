@@ -20,7 +20,7 @@ class ElandProcessor implements EventSubscriberInterface
         return $record;
     }
 
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event):void
     {
         if (!$event->isMasterRequest())
         {
@@ -60,7 +60,7 @@ class ElandProcessor implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
             KernelEvents::CONTROLLER => ['onKernelController', 500],

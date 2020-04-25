@@ -3,29 +3,30 @@
 namespace App\Service;
 
 use App\Cnst\RoleCnst;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PageParamsService
 {
-	protected $request_stack;
-	protected $systems_service;
-	protected $env_app_system_redirects;
+	protected RequestStack $request_stack;
+	protected SystemsService $systems_service;
+	protected string $env_app_system_redirects;
 
-	protected $request;
-	protected $role_short;
-	protected $role;
-	protected $system;
-	protected $schema;
-	protected $ary;
+	protected Request $request;
+	protected string $role_short;
+	protected string $role;
+	protected string $system;
+	protected string $schema;
+	protected array $ary;
 
-	protected $is_admin;
-	protected $is_user;
-	protected $is_guest;
-	protected $is_anonymous;
+	protected bool $is_admin;
+	protected bool $is_user;
+	protected bool $is_guest;
+	protected bool $is_anonymous;
 
-	protected $org_system;
-	protected $edit_enabled;
+	protected string $org_system;
+	protected bool $edit_enabled;
 
 	public function __construct(
 		RequestStack $request_stack,

@@ -9,10 +9,10 @@ use App\Service\VarRouteService;
 
 class AccountRender
 {
-	protected $link_render;
-	protected $systems_service;
-	protected $user_cache_service;
-	protected $vr;
+	protected LinkRender $link_render;
+	protected SystemsService $systems_service;
+	protected UserCacheService $user_cache_service;
+	protected VarRouteService $vr;
 
 	public function __construct(
 		LinkRender $link_render,

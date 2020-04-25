@@ -7,8 +7,8 @@ use App\Service\CacheService;
 
 class DistanceService
 {
-	protected $db;
-	protected $cache_service;
+	protected Db $db;
+	protected CacheService $cache_service;
 
 	protected $from_lat;
 	protected $from_lng;

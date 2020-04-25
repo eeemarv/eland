@@ -7,21 +7,21 @@ use App\Render\SelectRender;
 
 class PaginationRender
 {
-	protected $link_render;
-	protected $select_render;
+	protected LinkRender $link_render;
+	protected SelectRender $select_render;
 
-	protected $route;
-	protected $pp_ary;
+	protected string $route;
+	protected array $pp_ary;
 
-	protected $start;
-	protected $limit;
-	protected $page = 0;
+	protected int $start;
+	protected int $limit;
+	protected int $page = 0;
 
-	protected $adjacent_num = 2;
-	protected $row_count = 0;
-	protected $page_num = 0;
-	protected $params = [];
-	protected $out;
+	protected int $adjacent_num = 2;
+	protected int $row_count = 0;
+	protected int $page_num = 0;
+	protected array $params = [];
+	protected string $out = '';
 
 	protected $limit_options = [
 		'10' 		=> '10',
@@ -68,7 +68,7 @@ class PaginationRender
 
 	public function get():string
 	{
-		if (isset($this->out))
+		if ($this->out !== '')
 		{
 			return $this->out;
 		}

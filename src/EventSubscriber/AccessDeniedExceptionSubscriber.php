@@ -10,8 +10,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
 {
-    protected $link_render;
-    protected $request_stack;
+    protected LinkRender $link_render;
+    protected RequestStack $request_stack;
 
     public function __construct(
         RequestStack $request_stack,
@@ -45,7 +45,7 @@ class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
             ExceptionEvent::class => ['onExceptionEvent', 1000],

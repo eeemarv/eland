@@ -6,9 +6,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class User implements UserInterface
 {
-    private $username = '';
-    private $roles = [];
-    private $password; // hashed password
+    protected string $username = '';
+    protected array $roles = [];
+    protected string $password; // hashed password
 
     public function getUsername(): string
     {
@@ -26,7 +26,7 @@ class User implements UserInterface
         return array_unique($this->roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles):self
     {
         $this->roles = $roles;
 
@@ -39,7 +39,7 @@ class User implements UserInterface
         return (string) $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(string $password):self
     {
         // hashed password
         $this->password = $password;

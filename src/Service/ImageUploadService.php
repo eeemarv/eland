@@ -23,8 +23,8 @@ class ImageUploadService
     const FILENAME_WITH_ID_TPL = '%schema%_%type%_%id%_%hash%.%ext%';
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
 
-	protected $logger;
-    protected $s3_service;
+	protected LoggerInterface $logger;
+    protected S3Service $s3_service;
 
 	public function __construct(
 		LoggerInterface $logger,

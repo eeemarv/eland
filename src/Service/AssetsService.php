@@ -7,9 +7,9 @@ use App\Service\CacheService;
 
 class AssetsService
 {
-	protected $cache_service;
-	protected $file_hash_ary = [];
-	protected $include_ary = [];
+	protected CacheService $cache_service;
+	protected array $file_hash_ary = [];
+	protected array $include_ary = [];
 
 	const CACHE_HASH_KEY = 'assets_files_hashes';
 

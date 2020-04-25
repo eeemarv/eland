@@ -5,18 +5,19 @@ namespace App\Service;
 use App\Cnst\PagesCnst;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class VarRouteService
 {
-	protected $request_stack;
-	protected $request;
-	protected $session;
-	protected $pp;
+	protected RequestStack $request_stack;
+	protected Request $request;
+	protected SessionInterface $session;
+	protected PageParamsService $pp;
 
-	protected $var_route_ary;
-	protected $is_admin;
+	protected array $var_route_ary;
+	protected bool $is_admin;
 
 	public function __construct(
 		RequestStack $request_stack,

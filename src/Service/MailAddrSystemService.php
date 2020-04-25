@@ -7,8 +7,8 @@ use App\Service\ConfigService;
 
 class MailAddrSystemService
 {
-	protected $config_service;
-	protected $logger;
+	protected ConfigService $config_service;
+	protected LoggerInterface $logger;
 
 	public function __construct(
 		LoggerInterface $logger,

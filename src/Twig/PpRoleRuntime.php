@@ -8,8 +8,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class PpRoleRuntime implements RuntimeExtensionInterface
 {
-	protected $pp;
-	protected $su;
+	protected PageParamsService $pp;
+	protected SessionUserService $su;
 
 	public function __construct(
 		PageParamsService $pp,

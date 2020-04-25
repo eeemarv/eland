@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class LinkRender
 {
-	protected $url_generator;
+	protected UrlGeneratorInterface $url_generator;
 
 	public function __construct(
 		UrlGeneratorInterface $url_generator

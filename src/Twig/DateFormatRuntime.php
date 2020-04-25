@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class DateFormatRuntime implements RuntimeExtensionInterface
 {
-	protected $date_format_service;
+	protected DateFormatService $date_format_service;
 
 	public function __construct(DateFormatService $date_format_service)
 	{

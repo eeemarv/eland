@@ -6,8 +6,8 @@ use App\Render\LinkRender;
 
 class BtnTopRender
 {
-	protected $link_render;
-	protected $out = [];
+	protected LinkRender $link_render;
+	protected array $out = [];
 
 	public function __construct(
 		LinkRender $link_render

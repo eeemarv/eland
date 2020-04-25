@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class SRoleRuntime implements RuntimeExtensionInterface
 {
-	protected $su;
+	protected SessionUserService $su;
 
 	public function __construct(
 		SessionUserService $su

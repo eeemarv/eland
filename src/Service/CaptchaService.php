@@ -5,14 +5,15 @@ namespace App\Service;
 use Predis\Client as Predis;
 use App\Service\FormTokenService;
 use Gregwar\Captcha\CaptchaBuilder;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CaptchaService
 {
-	protected $request;
-	protected $predis;
-	protected $form_token_service;
-	protected $build;
+	protected Request $request;
+	protected Predis $predis;
+	protected FormTokenService $form_token_service;
+	protected CaptchaBuilder $builder;
 
 	const TTL = 14400; // 4 hours
 
@@ -26,12 +27,12 @@ class CaptchaService
 		$this->predis = $predis;
 		$this->form_token_service = $form_token_service;
 
-		$this->build = new CaptchaBuilder();
-		$this->build->setDistortion(false);
-		$this->build->setIgnoreAllEffects(true);
-		$this->build->build();
+		$this->builder = new CaptchaBuilder();
+		$this->builder->setDistortion(false);
+		$this->builder->setIgnoreAllEffects(true);
+		$this->builder->build();
 
-		$key = $this->get_key($this->form_token_service->get(), $this->build->getPhrase());
+		$key = $this->get_key($this->form_token_service->get(), $this->builder->getPhrase());
 		$this->predis->set($key, '1');
 		$this->predis->expire($key, self::TTL);
 	}
@@ -60,7 +61,7 @@ class CaptchaService
 		$out .= 'Typ de code die hieronder getoond wordt.';
 		$out .= '</p>';
 		$out .= '<img src="';
-		$out .= $this->build->inline();
+		$out .= $this->builder->inline();
 		$out .= '" alt="Code niet geladen.">';
 		$out .= '</div>';
 

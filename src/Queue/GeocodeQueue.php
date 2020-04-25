@@ -12,13 +12,13 @@ use App\Service\QueueService;
 
 class GeocodeQueue implements QueueInterface
 {
-	protected $queue_service;
-	protected $logger;
-	protected $cache_service;
-	protected $db;
-	protected $geocode_service;
-	protected $account_str;
-	protected $geo_block;
+	protected QueueService $queue_service;
+	protected LoggerInterface $logger;
+	protected CacheService $cache_service;
+	protected Db $db;
+	protected GeocodeService $geocode_service;
+	protected AccountStrRender $account_str_render;
+	protected string $env_geo_block;
 
 	public function __construct(
 		Db $db,

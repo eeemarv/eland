@@ -7,8 +7,8 @@ use App\Service\IntersystemsService;
 
 class ThumbprintAccountsService
 {
-	protected $typeahead_service;
-	protected $intersystems_service;
+	protected TypeaheadService $typeahead_service;
+	protected IntersystemsService $intersystems_service;
 
 	public function __construct(
 		TypeaheadService $typeahead_service,

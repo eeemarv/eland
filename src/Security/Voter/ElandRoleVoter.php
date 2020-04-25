@@ -13,11 +13,11 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ElandRoleVoter extends Voter
 {
-    protected $su;
-    protected $request_stack;
-    protected $system;
-    protected $config_service;
-    protected $systems_service;
+    protected SessionUserService $su;
+    protected RequestStack $request_stack;
+    protected string $system;
+    protected ConfigService $config_service;
+    protected SystemsService $systems_service;
 
     public function __construct(
         SessionUserService $su,
@@ -40,7 +40,7 @@ class ElandRoleVoter extends Voter
         $this->system = $request->attributes->get('system', '');
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject):bool
     {
         if ($this->system === '')
         {

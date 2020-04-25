@@ -19,9 +19,9 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
     boven in de navigatiebalk.
     TPL;
 
-    protected $alert_service;
-    protected $pp;
-    protected $config_service;
+    protected AlertService $alert_service;
+    protected PageParamsService $pp;
+    protected ConfigService $config_service;
 
     public function __construct(
         AlertService $alert_service,
@@ -34,7 +34,7 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
         $this->config_service = $config_service;
     }
 
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event):void
     {
         $request = $event->getRequest();
 
@@ -83,7 +83,7 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
         $this->alert_service->info($msg);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
            KernelEvents::CONTROLLER => 'onKernelController',

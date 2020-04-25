@@ -7,8 +7,8 @@ use App\Service\UserCacheService;
 
 class SyncUserCacheSchemaTask implements SchemaTaskInterface
 {
-	protected $db;
-	protected $user_cache_service;
+	protected Db $db;
+	protected UserCacheService $user_cache_service;
 
 	public function __construct(
 		Db $db,

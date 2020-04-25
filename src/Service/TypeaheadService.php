@@ -10,15 +10,16 @@ use App\Service\AssetsService;
 
 class TypeaheadService
 {
-	protected $predis;
-	protected $logger;
-	protected $url_generator;
-	protected $systems_service;
-	protected $assets_service;
 	const TTL = 5184000; // 60 days
 
-	protected $build_ary;
-	protected $assets_included;
+	protected Predis $predis;
+	protected LoggerInterface $logger;
+	protected UrlGeneratorInterface $url_generator;
+	protected SystemsService $systems_service;
+	protected AssetsService $assets_service;
+
+	protected array $build_ary;
+	protected bool $assets_included = false;
 
 	public function __construct(
 		Predis $predis,
@@ -89,7 +90,7 @@ class TypeaheadService
 
 		unset($this->build_ary);
 
-		if (!isset($this->assets_included))
+		if (!$this->assets_included)
 		{
 			$this->assets_service->add(['typeahead', 'typeahead.js']);
 			$this->assets_included = true;

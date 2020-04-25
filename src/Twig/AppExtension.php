@@ -8,7 +8,7 @@ use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
-	public function getFilters()
+	public function getFilters():array
 	{
 		return [
 			new TwigFilter('underline', [$this, 'underline']),
@@ -21,7 +21,7 @@ class AppExtension extends AbstractExtension
 		];
 	}
 
-	public function getFunctions()
+	public function getFunctions():array
 	{
 		return [
 			new TwigFunction('datepicker_format', [DateFormatRuntime::class, 'datepicker_format']),
@@ -67,13 +67,13 @@ class AppExtension extends AbstractExtension
 		];
 	}
 
-	public function underline(string $input, string $char = '-')
+	public function underline(string $input, string $char = '-'):string
 	{
 		$len = strlen($input);
 		return $input . "\r\n" . str_repeat($char, $len);
 	}
 
-	public function replace_when_zero(int $input, $replace = null)
+	public function replace_when_zero(int $input, $replace = null):string
 	{
 		return $input === 0 ? $replace : $input;
 	}

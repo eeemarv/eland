@@ -6,8 +6,8 @@ use App\Cnst\MenuCnst;
 
 class MenuNavUserService
 {
-	protected $su;
-	protected $vr;
+	protected SessionUserService $su;
+	protected VarRouteService $vr;
 
 	public function __construct(
 		SessionUserService $su,

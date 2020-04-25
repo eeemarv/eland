@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class PpAryRuntime implements RuntimeExtensionInterface
 {
-	protected $pp;
+	protected PageParamsService $pp;
 
 	public function __construct(
 		PageParamsService $pp

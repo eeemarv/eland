@@ -7,9 +7,8 @@ use App\Service\TokenGeneratorService;
 
 class DataTokenService
 {
-	protected $predis;
-	protected $token_generator_service;
-	protected $token;
+	protected Predis $predis;
+	protected TokenGeneratorService $token_generator_service;
 
 	const KEY = 'data_token_%token%_%name%_%schema%';
 

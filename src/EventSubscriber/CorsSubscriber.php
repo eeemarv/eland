@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class CorsSubscriber implements EventSubscriberInterface
 {
-    protected $env_s3_url;
+    protected string $env_s3_url;
 
     public function __construct(
         string $env_s3_url
@@ -17,7 +17,7 @@ class CorsSubscriber implements EventSubscriberInterface
         $this->env_s3_url = $env_s3_url;
     }
 
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event):void
     {
         $response = $event->getResponse();
 

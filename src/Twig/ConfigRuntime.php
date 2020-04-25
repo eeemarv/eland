@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class ConfigRuntime implements RuntimeExtensionInterface
 {
-	protected $config_service;
+	protected ConfigService $config_service;
 
 	public function __construct(ConfigService $config_service)
 	{

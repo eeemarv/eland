@@ -9,7 +9,7 @@ use Geocoder\StatefulGeocoder;
 
 class GeocodeService
 {
-    protected $geocoder;
+    protected StatefulGeocoder $geocoder;
 
     public function __construct(
         string $env_google_geo_api_key

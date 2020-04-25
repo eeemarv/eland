@@ -6,10 +6,10 @@ use Doctrine\DBAL\Connection as Db;
 
 class SystemsService
 {
-	protected $db;
-	protected $env_legacy_eland_origin_pattern;
-	protected $schemas = [];
-	protected $systems = [];
+	protected Db $db;
+	protected string $env_legacy_eland_origin_pattern;
+	protected array $schemas = [];
+	protected array $systems = [];
 
 	const IGNORE = [
 		'xdb'					=> true,

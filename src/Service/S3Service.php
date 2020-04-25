@@ -8,9 +8,9 @@ use GuzzleHttp\Psr7\CachingStream;
 
 class S3Service
 {
-	protected $env_aws_s3_bucket;
-	protected $env_aws_s3_region;
-	protected $client;
+	protected string $env_aws_s3_bucket;
+	protected string $env_aws_s3_region;
+	protected S3Client $s3_client;
 
 	const IMG_TYPES = [
 		'jpg'	=> 'image/jpeg',
@@ -67,7 +67,7 @@ class S3Service
 		$this->env_aws_s3_bucket = $env_aws_s3_bucket;
 		$this->env_aws_s3_region = $env_aws_s3_region;
 
-		$this->client = S3Client::factory([
+		$$this->s3_client = S3Client::factory([
 			'signature'	=> 'v4',
 			'region'	=> $this->env_aws_s3_region,
 			'version'	=> '2006-03-01',
@@ -76,7 +76,7 @@ class S3Service
 
 	public function exists(string $filename):bool
 	{
-		return $this->client->doesObjectExist($this->env_aws_s3_bucket, $filename);
+		return $$this->s3_client->doesObjectExist($this->env_aws_s3_bucket, $filename);
 	}
 
 	public function img_upload(
@@ -94,7 +94,7 @@ class S3Service
 		}
 
 		try {
-			$this->client->putObject([
+			$$this->s3_client->putObject([
 				'Bucket' 		=> $this->env_aws_s3_bucket,
 				'Key'    		=> $filename,
 				'Body'          => new CachingStream(
@@ -136,7 +136,7 @@ class S3Service
 
 		try
 		{
-			$this->client->putObject([
+			$$this->s3_client->putObject([
 				'Bucket' 		=> $this->env_aws_s3_bucket,
 				'Key'    		=> $filename,
 				'Body'          => new CachingStream(
@@ -159,12 +159,12 @@ class S3Service
 	{
 		try
 		{
-			$result = $this->client->getObject([
+			$result = $$this->s3_client->getObject([
 				'Bucket' => $this->env_aws_s3_bucket,
 				'Key'    => $source,
 			]);
 
-			$this->client->copyObject([
+			$$this->s3_client->copyObject([
 				'Bucket'		=> $this->env_aws_s3_bucket,
 				'CopySource'	=> $this->env_aws_s3_bucket . '/' . $source,
 				'Key'			=> $destination,
@@ -185,7 +185,7 @@ class S3Service
 	{
 		try
 		{
-			$this->client->deleteObject([
+			$$this->s3_client->deleteObject([
 				'Bucket'	=> $this->env_aws_s3_bucket,
 				'Key'		=> $filename,
 			]);
@@ -206,7 +206,7 @@ class S3Service
 
 		try
 		{
-			$objects = $this->client->getIterator('ListObjects', $params);
+			$objects = $$this->s3_client->getIterator('ListObjects', $params);
 
 			return $objects;
 		}

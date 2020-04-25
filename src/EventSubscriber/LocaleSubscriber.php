@@ -13,7 +13,7 @@ class LocaleSubscriber implements EventSubscriberInterface
         'en'    => 'en_GB.UTF-8',
     ];
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event):void
     {
         $locale = $event->getRequest()->getLocale();
 
@@ -23,7 +23,7 @@ class LocaleSubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
            KernelEvents::REQUEST => 'onKernelRequest',

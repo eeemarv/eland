@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
 use Predis\Client as Predis;
 use App\Service\ConfigService;
@@ -10,15 +11,18 @@ use App\Service\ConfigService;
 class StaticContentService
 {
 	protected $xdb_service;
-	protected $predis;
-	protected $config_service;
+	protected Db $db;
+	protected Predis $predis;
+	protected ConfigService $config_service;
 
 	public function __construct(
 		XdbService $xdb_service,
+		Db $db,
 		Predis $predis,
 		ConfigService $config_service
 	)
 	{
+		$this->db = $db;
 		$this->predis = $predis;
 		$this->xdb_service = $xdb_service;
 		$this->config_service = $config_service;

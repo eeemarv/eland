@@ -17,12 +17,12 @@ class BtnNavRender
 		'nav'				=> true,
 	];
 
-	protected $request_stack;
-	protected $link_render;
-	protected $tag_render;
-	protected $assets_service;
-	protected $out = [];
-	protected $local_admin = [];
+	protected RequestStack $request_stack;
+	protected LinkRender $link_render;
+	protected TagRender $tag_render;
+	protected AssetsService $assets_service;
+	protected array $out = [];
+	protected array $local_admin = [];
 
 	public function __construct(
 		RequestStack $request_stack,

@@ -11,19 +11,19 @@ use App\Render\AccountRender;
 
 class AutoMinLimitService
 {
-	protected $logger;
-	protected $xdb_service;
-	protected $db;
-	protected $config_service;
-	protected $user_cache_service;
-	protected $account_render;
+	protected LoggerInterface $logger;
+	protected XdbService $xdb_service;
+	protected Db $db;
+	protected ConfigService $config_service;
+	protected UserCacheService $user_cache_service;
+	protected AccountRender $account_render;
 
 	protected $exclusive;
 	protected $trans_exclusive;
 	protected $enabled = false;
 	protected $trans_percentage;
 	protected $group_minlimit;
-	protected $schema;
+	protected string $schema;
 
 	public function __construct(
 		LoggerInterface $logger,
@@ -66,8 +66,8 @@ class AutoMinLimitService
 		$this->exclusive = array_fill_keys($exclusive, true);
 		$this->trans_exclusive = array_fill_keys($trans_exclusive, true);
 
-		$this->enabled = $data['enabled'];
-		$this->trans_percentage = $data['trans_percentage'];
+		$this->enabled = (bool) $data['enabled'];
+		$this->trans_percentage = (int) $data['trans_percentage'];
 
 		$this->group_minlimit = $this->config_service->get('minlimit', $this->schema);
 

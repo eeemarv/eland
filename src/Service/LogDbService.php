@@ -10,9 +10,9 @@ class LogDbService
 {
 	const MAX_POP = 500;
 
-	protected $db;
-	protected $predis;
-	protected $systems_service;
+	protected Db $db;
+	protected Predis $predis;
+	protected SystemsService $systems_service;
 
 	public function __construct(
 		Db $db,

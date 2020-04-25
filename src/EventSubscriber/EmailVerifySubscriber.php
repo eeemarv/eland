@@ -18,7 +18,7 @@ class EmailVerifySubscriber implements EventSubscriberInterface
         $this->email_verify_service = $email_verify_service;
     }
 
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event):void
     {
         $request = $event->getRequest();
 
@@ -28,7 +28,7 @@ class EmailVerifySubscriber implements EventSubscriberInterface
         }
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
            KernelEvents::CONTROLLER => ['onKernelController', 1000],

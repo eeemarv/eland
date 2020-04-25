@@ -9,8 +9,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class MppAryRuntime implements RuntimeExtensionInterface
 {
-	protected $user_cache_service;
-	protected $systems_service;
+	protected UserCacheService $user_cache_service;
+	protected SystemsService $systems_service;
 
 	public function __construct(
 		UserCacheService $user_cache_service,

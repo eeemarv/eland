@@ -22,8 +22,8 @@ Indexes:
 
 class QueueService
 {
-	protected $db;
-	protected $logger;
+	protected Db $db;
+	protected LoggerInterface $logger;
 
 	public function __construct(Db $db, LoggerInterface $logger)
 	{

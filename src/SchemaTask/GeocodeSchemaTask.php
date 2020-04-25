@@ -10,15 +10,12 @@ use App\Render\AccountStrRender;
 
 class GeocodeSchemaTask implements SchemaTaskInterface
 {
-	protected $queue;
-	protected $logger;
-	protected $cache_service;
-	protected $db;
-	protected $curl;
-	protected $geocoder;
-	protected $geocode_queue;
-	protected $account_str_render;
-	protected $env_geo_block;
+	protected LoggerInterface $logger;
+	protected CacheService $cache_service;
+	protected Db $db;
+	protected GeocodeQueue $geocode_queue;
+	protected AccountStrRender $account_str_render;
+	protected string $env_geo_block;
 
 	public function __construct(
 		Db $db,

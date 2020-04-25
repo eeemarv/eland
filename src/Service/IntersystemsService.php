@@ -14,14 +14,14 @@ class IntersystemsService
 	const TTL = 854000;
 	const TTL_ELAND_ACCOUNTS_SCHEMAS = 864000;
 
-	protected $predis;
-	protected $db;
-	protected $systems_service;
-	protected $config_service;
+	protected Predis $predis;
+	protected Db $db;
+	protected SystemsService $systems_service;
+	protected ConfigService $config_service;
 
-	protected $eland_ary = [];
-	protected $eland_accounts_schemas = [];
-	protected $eland_intersystems = [];
+	protected array $eland_ary = [];
+	protected array $eland_accounts_schemas = [];
+	protected array $eland_intersystems = [];
 
 	public function __construct(
 		Db $db,

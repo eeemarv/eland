@@ -4,7 +4,6 @@ namespace App\SchemaTask;
 
 use App\HtmlProcess\HtmlToMarkdownConverter;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\XdbService;
 use App\Service\CacheService;
 use Psr\Log\LoggerInterface;
 use App\Queue\MailQueue;
@@ -15,20 +14,18 @@ use App\Render\AccountStrRender;
 
 class SaldoSchemaTask implements SchemaTaskInterface
 {
-	protected $db;
-	protected $xdb_service;
-	protected $cache_service;
-	protected $logger;
-	protected $mail_queue;
-	protected $intersystems_service;
-	protected $config_service;
-	protected $mail_addr_user_service;
-	protected $account_str_render;
-	protected $html_to_markdown_converter;
+	protected Db $db;
+	protected CacheService $cache_service;
+	protected LoggerInterface $logger;
+	protected MailQueue $mail_queue;
+	protected IntersystemsService $intersystems_service;
+	protected ConfigService $config_service;
+	protected MailAddrUserService $mail_addr_user_service;
+	protected AccountStrRender $account_str_render;
+	protected HtmlToMarkdownConverter $html_to_markdown_converter;
 
 	public function __construct(
 		Db $db,
-		XdbService $xdb_service,
 		CacheService $cache_service,
 		LoggerInterface $logger,
 		MailQueue $mail_queue,
@@ -40,7 +37,6 @@ class SaldoSchemaTask implements SchemaTaskInterface
 	)
 	{
 		$this->db = $db;
-		$this->xdb_service = $xdb_service;
 		$this->cache_service = $cache_service;
 		$this->logger = $logger;
 		$this->mail_queue = $mail_queue;
@@ -386,24 +382,12 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		if (isset($block_options['docs']))
 		{
-			$rows = $this->xdb_service->get_many(['agg_schema' => $schema,
-				'agg_type' => 'doc',
-				'ts' => ['>' => $treshold_time],
-				'access' => ['users', 'interlets']], 'order by event_time desc');
-
-			if (count($rows))
-			{
-				foreach ($rows as $row)
-				{
-					$data = $row['data'];
-
-					$docs[] = [
-						'name'			=> $data['name'] ?? $data['org_filename'],
-						'filename'		=> $data['filename'],
-						'ts'			=> $row['ts'],
-					];
-				}
-			}
+			$docs = $this->db->executeQuery('select
+					coalesce(name, original_filename) as name,
+					filename, created_at
+				from ' . $schema . '.docs
+				where access in (\'user\', \'guest\')
+					and created_at > ?', [$treshold_time]);
 		}
 
 	//

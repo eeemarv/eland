@@ -8,9 +8,9 @@ use App\Service\ConfigService;
 
 class CleanupMessagesSchemaTask implements SchemaTaskInterface
 {
-	protected $db;
-	protected $logger;
-	protected $config_service;
+	protected Db $db;
+	protected LoggerInterface $logger;
+	protected ConfigService $config_service;
 
 	public function __construct(
 		Db $db,

@@ -10,10 +10,10 @@ class SchemaTaskSchedule
 	const MINIMUM_INTERVAL = 3600;
 	const CACHE_KEY = 'tasks';
 
-	protected $cache_service;
-	protected $systems_service;
-	protected $schema_task_collection;
-	protected $last_run_ary;
+	protected CacheService $cache_service;
+	protected SystemsService $systems_service;
+	protected SchemaTaskCollection $schema_task_collection;
+	protected array $last_run_ary;
 
 	public function __construct(
 		CacheService $cache_service,

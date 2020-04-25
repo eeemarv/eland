@@ -12,11 +12,11 @@ class CleanupImagesTask
 {
 	const DAYS = 365;
 
-	protected $cache_service;
-	protected $db;
-	protected $logger;
-	protected $s3;
-	protected $systems_service;
+	protected CacheService $cache_service;
+	protected Db $db;
+	protected LoggerInterface $logger;
+	protected S3Service $s3_service;
+	protected SystemsService $systems_service;
 
 	public function __construct(
 		CacheService $cache_service,

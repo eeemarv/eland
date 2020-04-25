@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class HeadingRuntime implements RuntimeExtensionInterface
 {
-	protected $heading_render;
+	protected HeadingRender $heading_render;
 
 	public function __construct(HeadingRender $heading_render)
 	{

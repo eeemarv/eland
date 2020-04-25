@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class BtnTopRuntime implements RuntimeExtensionInterface
 {
-	protected $btn_top_render;
+	protected BtnTopRender $btn_top_render;
 
 	public function __construct(BtnTopRender $btn_top_render)
 	{

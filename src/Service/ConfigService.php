@@ -8,9 +8,9 @@ use Predis\Client as Predis;
 
 class ConfigService
 {
-	protected $xdb_service;
-	protected $predis;
-	protected $is_cli;
+	protected XdbService $xdb_service;
+	protected Predis $predis;
+	protected bool $is_cli;
 
 	public function __construct(
 		XdbService $xdb_service,

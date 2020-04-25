@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class SystemRuntime implements RuntimeExtensionInterface
 {
-	protected $systems_service;
+	protected SystemsService $systems_service;
 
 	public function __construct(
 		SystemsService $systems_service

@@ -68,13 +68,11 @@ admin_modus: Admin modus
 access:
   admin: Admin
   users: Leden
-  interlets: InterLETS
   public: Publiek
 
 badge:
   admin: Admin
   users: Leden
-  interlets: InterLETS
   public: Publiek
   offer: Aanbod
   want: Vraag
@@ -187,7 +185,6 @@ btn:
 user_type:
   active: Actief
   all: Alle
-  interlets: interLETS
   leaving: Uitstappers
   new: Instappers
   post_active: Post-actief
@@ -610,9 +607,7 @@ export:
         column:
           cdate: Datum
           from_user: Van
-          real_from: interlets
           to_user: Aan
-          real_to: interlets
           amount: Bedrag
           description: Dienst
           transid: transactie id

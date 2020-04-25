@@ -5,7 +5,6 @@ namespace App\Security;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 

@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class PaginationRuntime implements RuntimeExtensionInterface
 {
-	protected $pagination_render;
+	protected PaginationRender $pagination_render;
 
 	public function __construct(PaginationRender $pagination_render)
 	{

@@ -7,8 +7,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class BaseUrlRuntime implements RuntimeExtensionInterface
 {
-	protected $systems_service;
-	protected $env_app_scheme;
+	protected SystemsService $systems_service;
+	protected string $env_app_scheme;
 
 	public function __construct(
 		SystemsService $systems_service,

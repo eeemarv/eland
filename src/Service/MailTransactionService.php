@@ -10,11 +10,11 @@ use App\Queue\MailQueue;
 
 class MailTransactionService
 {
-	protected $user_cache_service;
-	protected $config_service;
-	protected $mail_addr_system_service;
-	protected $mail_addr_user_service;
-	protected $mail_queue;
+	protected UserCacheService $user_cache_service;
+	protected ConfigService $config_service;
+	protected MailAddrSystemService $mail_addr_system_service;
+	protected MailAddrUserService $mail_addr_user_service;
+	protected MailQueue $mail_queue;
 
 	public function __construct(
 		UserCacheService $user_cache_service,

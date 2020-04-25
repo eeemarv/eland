@@ -9,14 +9,13 @@ use App\Cnst\ProcessCnst;
 
 class MonitorProcessService
 {
-	protected $db;
-	protected $predis;
-	protected $cache_service;
-	protected $ttl = 2592000;
-	protected $is_cli;
-	protected $process_name;
-	protected $boot_count;
-	protected $loop_count = 1;
+	protected Db $db;
+	protected Predis $predis;
+	protected CacheService $cache_service;
+	protected bool $is_cli;
+	protected string $process_name;
+	protected int $boot_count;
+	protected int $loop_count = 1;
 
 	public function __construct(
 		Db $db,

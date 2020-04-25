@@ -4,10 +4,6 @@ namespace App\Service;
 
 class PasswordStrengthService
 {
-	public function __contruct()
-	{
-	}
-
 	public function get(string $password, string $username = ''):int
 	{
 

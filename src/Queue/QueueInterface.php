@@ -4,6 +4,6 @@ namespace App\Queue;
 
 interface QueueInterface
 {
-	public function process(array $data);
-	public function queue(array $data, int $priority);
+	public function process(array $data):void;
+	public function queue(array $data, int $priority):void;
 }

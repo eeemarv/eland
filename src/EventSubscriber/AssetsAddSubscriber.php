@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class AssetsAddSubscriber implements EventSubscriberInterface
 {
-    protected $assets_service;
+    protected AssetsService $assets_service;
 
     public function __construct(
         AssetsService $assets_service
@@ -29,7 +29,7 @@ class AssetsAddSubscriber implements EventSubscriberInterface
 
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
            KernelEvents::CONTROLLER => ['onKernelController', 2000],

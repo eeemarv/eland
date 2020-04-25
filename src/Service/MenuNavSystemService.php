@@ -10,13 +10,13 @@ use App\Service\UserCacheService;
 
 class MenuNavSystemService
 {
-	protected $intersystems_service;
-	protected $systems_service;
-	protected $menu_service;
-	protected $config_service;
-	protected $user_cache_service;
-	protected $pp;
-	protected $su;
+	protected IntersystemsService $intersystems_service;
+	protected SystemsService $systems_service;
+	protected MenuService $menu_service;
+	protected ConfigService $config_service;
+	protected UserCacheService $user_cache_service;
+	protected PageParamsService $pp;
+	protected SessionUserService $su;
 
 	public function __construct(
 		IntersystemsService $intersystems_service,

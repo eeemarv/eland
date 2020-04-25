@@ -20,9 +20,9 @@ Indexes:
 
 class CacheService
 {
-	protected $db;
-	protected $predis;
-	protected $logger;
+	protected Db $db;
+	protected Predis $predis;
+	protected LoggerInterface $logger;
 
 	const PREFIX = 'cache_';
 
@@ -81,17 +81,11 @@ class CacheService
 		$this->db->commit();
 	}
 
-	/**
-	 *
-	 */
 	public function get(string $id):array
 	{
 		return json_decode($this->get_raw($id), true);
 	}
 
-	/**
-	 *
-	 */
 	public function get_raw(string $id):string
 	{
 		if (!strlen($id))
@@ -130,9 +124,6 @@ class CacheService
 		return '{}';
 	}
 
-	/**
-	 *
-	 */
 	public function exists(string $id):bool
 	{
 		if (!strlen($id))
@@ -159,9 +150,6 @@ class CacheService
 		return false;
 	}
 
-	/**
-	 *
-	 */
 	public function expire(string $id, int $time):void
 	{
 		if (!strlen($id))
@@ -176,9 +164,6 @@ class CacheService
 		$this->db->update('xdb.cache', ['expires' => $time], ['id' => $id]);
 	}
 
-	/**
-	 *
-	 */
 	public function del(string $id):void
 	{
 		if (!strlen($id))
@@ -191,9 +176,6 @@ class CacheService
 		$this->db->delete('xdb.cache', ['id' => $id]);
 	}
 
-	/**
-	 *
-	 */
 	public function cleanup():void
 	{
 		$this->db->executeQuery('delete from xdb.cache

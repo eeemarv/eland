@@ -4,7 +4,7 @@ namespace App\HtmlProcess;
 
 class HtmlPurifier
 {
-	protected $purifier;
+	protected \HTMLPurifier $purifier;
 
 	public function __construct()
 	{

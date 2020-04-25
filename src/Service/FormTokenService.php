@@ -4,14 +4,15 @@ namespace App\Service;
 
 use Predis\Client as Predis;
 use App\Service\TokenGeneratorService;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class FormTokenService
 {
-	protected $request;
-	protected $predis;
-	protected $token_generator_service;
-	protected $token;
+	protected Request $request;
+	protected Predis $predis;
+	protected TokenGeneratorService $token_generator_service;
+	protected string $token = '';
 
 	const TTL = 14400; // 4 hours
 	const NAME = 'form_token';
@@ -35,7 +36,7 @@ class FormTokenService
 
 	public function get():string
 	{
-		if (!isset($this->token))
+		if ($this->token === '')
 		{
 			$this->token = $this->token_generator_service->gen();
 			$key = self::STORE_PREFIX . $this->token;

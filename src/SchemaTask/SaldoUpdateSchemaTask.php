@@ -7,8 +7,8 @@ use Psr\Log\LoggerInterface;
 
 class SaldoUpdateSchemaTask implements SchemaTaskInterface
 {
-	protected $db;
-	protected $logger;
+	protected Db $db;
+	protected LoggerInterface $logger;
 
 	public function __construct(
 		Db $db,

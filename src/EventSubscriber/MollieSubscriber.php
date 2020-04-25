@@ -28,13 +28,13 @@ class MollieSubscriber implements EventSubscriberInterface
     <dt>Bedrag</dt><dd>%amount% EUR</dd></dl></a>
     TPL;
 
-    protected $db;
-    protected $alert_service;
-    protected $pp;
-    protected $su;
-    protected $user_cache_service;
-    protected $link_render;
-    protected $config_service;
+    protected Db $db;
+    protected AlertService $alert_service;
+    protected PageParamsService $pp;
+    protected SessionUserService $su;
+    protected UserCacheService $user_cache_service;
+    protected LinkRender $link_render;
+    protected ConfigService $config_service;
 
     public function __construct(
         Db $db,
@@ -55,7 +55,7 @@ class MollieSubscriber implements EventSubscriberInterface
         $this->config_service = $config_service;
     }
 
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event):void
     {
         $request = $event->getRequest();
 
@@ -133,7 +133,7 @@ class MollieSubscriber implements EventSubscriberInterface
         $this->alert_service->info($info, false);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents():array
     {
         return [
            KernelEvents::CONTROLLER => 'onKernelController',
