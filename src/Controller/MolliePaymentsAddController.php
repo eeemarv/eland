@@ -101,7 +101,7 @@ class MolliePaymentsAddController extends AbstractController
         $users = [];
 
         $stmt = $db->executeQuery(
-            'select u.id, u.name, u.fullname, u.letscode,
+            'select u.id, u.name, u.fullname, u.code,
                 u.accountrole, u.status, u.adate,
                 p1.is_payed, p1.is_canceled, p1.created_at as last_created_at,
                 p1.amount, p1.description
@@ -115,7 +115,7 @@ class MolliePaymentsAddController extends AbstractController
                 limit 1) p1
             on \'t\'::bool
             where ' . $where_sql . '
-            order by u.letscode asc', $params_sql);
+            order by u.code asc', $params_sql);
 
         while($row = $stmt->fetch())
         {
@@ -150,8 +150,8 @@ class MolliePaymentsAddController extends AbstractController
 
             foreach ($amount as $user_id => $amo)
             {
-                if (!isset($users[$user_id]['letscode'])
-                    || $users[$user_id]['letscode'] === '')
+                if (!isset($users[$user_id]['code'])
+                    || $users[$user_id]['code'] === '')
                 {
                     $errors[] = 'Er is geen Account Code ingesteld voor gebruiker met naam ' . $users[$user_id]['name'];
                 }

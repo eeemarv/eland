@@ -73,7 +73,7 @@ class MollieCheckoutAnonymousController extends AbstractController
 
 //--------
 
-        $description = $user['letscode'] . ' ' . $mollie_payment['description'];
+        $description = $user['code'] . ' ' . $mollie_payment['description'];
 
         if ($request->isMethod('POST'))
         {

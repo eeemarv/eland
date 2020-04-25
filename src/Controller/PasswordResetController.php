@@ -40,7 +40,7 @@ class PasswordResetController extends AbstractController
             }
             else if($email)
             {
-                $user = $db->fetchAll('select u.id, u.name, u.letscode
+                $user = $db->fetchAll('select u.id, u.name, u.code
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.users u
@@ -65,7 +65,7 @@ class PasswordResetController extends AbstractController
 
                         $mail_queue->queue([
                             'schema'	=> $pp->schema(),
-                            'to' 		=> [$email => $user['letscode'] . ' ' . $user['name']],
+                            'to' 		=> [$email => $user['code'] . ' ' . $user['name']],
                             'template'	=> 'password_reset/confirm',
                             'vars'		=> [
                                 'token'			=> $token,

@@ -51,7 +51,7 @@ class IntersystemsShowController extends AbstractController
         {
             $user = $db->fetchAssoc('select *
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$group['localletscode']]);
+                where code = ?', [$group['localletscode']]);
         }
 
         $btn_top_render->edit('intersystems_edit', $pp->ary(),

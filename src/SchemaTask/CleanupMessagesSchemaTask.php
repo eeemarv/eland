@@ -59,7 +59,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		$users = '';
 		$ids = [];
 
-		$st = $this->db->prepare('select u.id, u.letscode, u.name
+		$st = $this->db->prepare('select u.id, u.code, u.name
 			from ' . $schema . '.users u, ' . $schema . '.messages m
 			where u.status = 0
 				and m.id_user = u.id');
@@ -69,8 +69,9 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		while ($row = $st->fetch())
 		{
 			$ids[] = $row['id'];
-			$users .= '(id: ' . $row['id'] . ') ' . $row['letscode'] . ' ' . $row['name'] . ', ';
+			$users .= '(id: ' . $row['id'] . ') ' . $row['code'] . ' ' . $row['name'] . ', ';
 		}
+
 		$users = trim($users, '\n\r\t ,;:');
 
 		if (count($ids))

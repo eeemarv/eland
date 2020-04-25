@@ -207,7 +207,7 @@ class SessionUserService
 
 	public function code():string
 	{
-		return $this->user['letscode'] ?? '';
+		return $this->user['code'] ?? '';
 	}
 
 	public function name():string

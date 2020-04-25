@@ -19,7 +19,7 @@ class AccountStrRender
 	{
 		$user = $this->user_cache_service->get($id, $schema);
 
-		$code = $user['letscode'] ?? '';
+		$code = $user['code'] ?? '';
 		$name = $user['name'] ?? '';
 
 		$str = trim($code . ' ' . $name);

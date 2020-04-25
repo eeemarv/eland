@@ -212,7 +212,6 @@ email: Email
 password: Paswoord
 message: Bericht
 code: Code
-letscode: LETScode
 group_name: Groepsnaam
 offer: Aanbod
 want: Vraag
@@ -375,7 +374,6 @@ notification_self:
 login:
   title: Login
   login: Email, code of gebruikersnaam
-  login_lets: Email, LETScode of gebruikersnaam
   submit_btn: Login
   password_reset_link: Ik ben mijn paswoord vergeten
 

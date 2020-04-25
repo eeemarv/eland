@@ -58,7 +58,7 @@ class UsersMapController extends AbstractController
         $users = $db->fetchAll('select u.*
             from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
-            order by u.letscode asc', $sql_bind);
+            order by u.code asc', $sql_bind);
 
         $adr_ary = [];
 
@@ -122,7 +122,7 @@ class UsersMapController extends AbstractController
                                 $pp->ary(),
                                 ['id' => $user['id']]),
                             'name'		=> $user['name'],
-                            'code'	    => $user['letscode'],
+                            'code'	    => $user['code'],
                             'lat'		=> $geo['lat'],
                             'lng'		=> $geo['lng'],
                         ];

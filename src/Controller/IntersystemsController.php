@@ -33,13 +33,13 @@ class IntersystemsController extends AbstractController
         $intersystems = $db->fetchAll('select *
             from ' . $pp->schema() . '.letsgroups');
 
-        $letscodes = [];
+        $codes = [];
 
         foreach ($intersystems as $key => $sys)
         {
             $sys_host = strtolower(parse_url($sys['url'], PHP_URL_HOST) ?? '');
 
-            $letscodes[] = $sys['localletscode'];
+            $codes[] = $sys['localletscode'];
 
             $sys_schema = $systems_service->get_schema_from_legacy_eland_origin($sys['url']);
 
@@ -64,17 +64,17 @@ class IntersystemsController extends AbstractController
             }
         }
 
-        $users_letscode = [];
+        $users_code = [];
 
-        $intersystem_users = $db->executeQuery('select id, status, letscode, accountrole
+        $intersystem_users = $db->executeQuery('select id, status, code, accountrole
             from ' . $pp->schema() . '.users
-            where letscode in (?)',
-            [$letscodes],
+            where code in (?)',
+            [$codes],
             [Db::PARAM_INT_ARRAY]);
 
         foreach ($intersystem_users as $u)
         {
-            $users_letscode[$u['letscode']] = [
+            $users_code[$u['code']] = [
                 'id'			=> $u['id'],
                 'status'		=> $u['status'],
                 'accountrole'	=> $u['accountrole'],
@@ -120,7 +120,7 @@ class IntersystemsController extends AbstractController
 
                 if (in_array($sys['apimethod'], ['elassoap', 'mail']))
                 {
-                    $user = $users_letscode[$sys['localletscode']] ?? [];
+                    $user = $users_code[$sys['localletscode']] ?? [];
 
                     if ($user)
                     {
@@ -295,15 +295,15 @@ class IntersystemsController extends AbstractController
             $loc_group_ary[$h] = $group;
         }
 
-        $interlets_accounts = $db->executeQuery('select id, letscode, status, accountrole
+        $interlets_accounts = $db->executeQuery('select id, code, status, accountrole
             from ' . $pp->schema() . '.users
-            where letscode in (?)',
+            where code in (?)',
             [$loc_letscode_ary],
             [Db::PARAM_STR_ARRAY]);
 
         foreach ($interlets_accounts as $u)
         {
-            $loc_account_ary[$u['letscode']] = $u;
+            $loc_account_ary[$u['code']] = $u;
         }
 
         foreach ($systems_service->get_schemas() as $rem_schema)
@@ -324,8 +324,8 @@ class IntersystemsController extends AbstractController
 
                 if ($rem_group['localletscode'])
                 {
-                    $rem_account = $db->fetchAssoc('select id, letscode, status, accountrole
-                        from ' . $rem_schema . '.users where letscode = ?', [$rem_group['localletscode']]);
+                    $rem_account = $db->fetchAssoc('select id, code, status, accountrole
+                        from ' . $rem_schema . '.users where code = ?', [$rem_group['localletscode']]);
 
                     if ($rem_account)
                     {

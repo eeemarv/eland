@@ -17,7 +17,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 	public function get(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return htmlspecialchars($user['letscode'] . ' ' . $user['name']);
+		return htmlspecialchars($user['code'] . ' ' . $user['name']);
 	}
 
 	public function get_fullname(int $id, string $schema):string
@@ -35,7 +35,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 	public function get_code(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return htmlspecialchars($user['letscode']);
+		return htmlspecialchars($user['code']);
 	}
 
 	public function get_balance(int $id, string $schema):int

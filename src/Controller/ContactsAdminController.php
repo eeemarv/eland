@@ -69,7 +69,7 @@ class ContactsAdminController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$code]);
+                where code = ?', [$code]);
 
             if ($fuid)
             {
@@ -146,7 +146,7 @@ class ContactsAdminController extends AbstractController
         $user_table_sql = '';
 
         if ($params['f']['ustatus'] !== 'all'
-            || $params['s']['orderby'] === 'u.letscode')
+            || $params['s']['orderby'] === 'u.code')
         {
             $user_table_sql = ', ' . $pp->schema() . '.users u ';
             $where_sql[] = 'u.id = c.id_user';
@@ -191,7 +191,7 @@ class ContactsAdminController extends AbstractController
                 'lbl' 		=> 'Type']),
             'c.value'		=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Waarde']),
-            'u.letscode'	=> array_merge($asc_preset_ary, [
+            'u.code'	    => array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Gebruiker']),
             'c.comments'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Commentaar',
@@ -335,7 +335,7 @@ class ContactsAdminController extends AbstractController
         $out .= '<span class="input-group-addon" id="code_addon">Van ';
         $out .= '<span class="fa fa-user"></span></span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="letscode_addon" ';
+        $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
         $out .= $typeahead_service->ini($pp->ary())

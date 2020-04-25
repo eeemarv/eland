@@ -12,8 +12,6 @@ event varchar(255),
 data jsonb);
 
 create index on xdb.logs(schema);
-create index on xdb.logs(schema, letscode);
-create index on xdb.logs(letscode);
 create index on xdb.logs(type);
 
 create table if not exists xdb.events (

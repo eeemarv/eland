@@ -13,14 +13,14 @@ class BulkCnst
         'omschrijving'          => 'description',
         'naam' 					=> 'name',
         'volledige_naam'		=> 'fullname',
-        'account_code'			=> 'letscode',
+        'account_code'			=> 'code',
     ];
 
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
         'volledige_naam'		=> 'fullname',
         'saldo'					=> 'saldo',
-        'account_code'			=> 'letscode',
+        'account_code'			=> 'code',
     ];
 
     const USER_TABS = [

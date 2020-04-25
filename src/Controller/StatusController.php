@@ -59,26 +59,26 @@ class StatusController extends AbstractController
 
         //
 
-        $non_unique_letscode = $db->fetchAll('select letscode, count(*)
+        $non_unique_code = $db->fetchAll('select code, count(*)
             from ' . $pp->schema() . '.users
-            where letscode <> \'\'
-            group by letscode
+            where code <> \'\'
+            group by code
             having count(*) > 1');
 
-        if (count($non_unique_letscode))
+        if (count($non_unique_code))
         {
             $st = $db->prepare('select id
                 from ' . $pp->schema() . '.users
-                where letscode = ?');
+                where code = ?');
 
-            foreach ($non_unique_letscode as $key => $ary)
+            foreach ($non_unique_code as $key => $ary)
             {
-                $st->bindValue(1, $ary['letscode']);
+                $st->bindValue(1, $ary['code']);
                 $st->execute();
 
                 while ($row = $st->fetch())
                 {
-                    $non_unique_letscode[$key]['users'][$row['id']] = true;
+                    $non_unique_code[$key]['users'][$row['id']] = true;
                 }
             }
 
@@ -143,20 +143,20 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $empty_letscode = $db->fetchAll('select id
+        $empty_code = $db->fetchAll('select id
             from ' . $pp->schema() . '.users
-            where status in (1, 2) and letscode = \'\'');
+            where status in (1, 2) and code = \'\'');
 
         $empty_name = $db->fetchAll('select id
             from ' . $pp->schema() . '.users
             where name = \'\'');
 
-        if ($unvalid_mail || $empty_letscode || $empty_name)
+        if ($unvalid_mail || $empty_code || $empty_name)
         {
             $status_msgs = true;
         }
 
-        $no_msgs_users = $db->fetchAll('select id, letscode, name, saldo, status
+        $no_msgs_users = $db->fetchAll('select id, code, name, saldo, status
             from ' . $pp->schema() . '.users u
             where status in (1, 2)
                 and not exists (select 1
@@ -223,11 +223,11 @@ class StatusController extends AbstractController
                 $out .= '</li>';
             }
 
-            if (count($non_unique_letscode))
+            if (count($non_unique_code))
             {
                 $out .= '<li class="list-group-item">';
 
-                if (count($non_unique_letscode) == 1)
+                if (count($non_unique_code) == 1)
                 {
                     $out .= 'Een Account Code komt meer ';
                     $out .= 'dan eens voor in dit Systeem. ';
@@ -247,10 +247,11 @@ class StatusController extends AbstractController
                 }
 
                 $out .= '<ul>';
-                foreach ($non_unique_letscode as $ary)
+
+                foreach ($non_unique_code as $ary)
                 {
                     $out .= '<li>';
-                    $out .= $ary['letscode'] . ' (' . $ary['count'] . '): ';
+                    $out .= $ary['code'] . ' (' . $ary['count'] . '): ';
 
                     $user_ary = array();
 
@@ -397,20 +398,20 @@ class StatusController extends AbstractController
                 $out .= '</li>';
             }
 
-            if (count($empty_letscode))
+            if (count($empty_code))
             {
                 $out .= '<li class="list-group-item">';
-                if (count($empty_letscode) == 1)
+                if (count($empty_code) == 1)
                 {
                     $out .= 'Eén actieve gebruiker heeft geen Account Code.';
                 }
                 else
                 {
-                    $out .= count($empty_letscode) . ' actieve gebruikers hebben geen Account Code.';
+                    $out .= count($empty_code) . ' actieve gebruikers hebben geen Account Code.';
                 }
 
                 $out .= '<ul>';
-                foreach ($empty_letscode as $ary)
+                foreach ($empty_code as $ary)
                 {
                     $out .= '<li>';
                     $out .= $account_render->link($ary['id'], $pp->ary());

@@ -16,15 +16,15 @@ $(document).ready(function(){
 		$('input#total').val(sum);
 	}
 
-	$('#to_letscode').bind('typeahead:selected', function(ev, data) {
-		$('#from_letscode').val('');
-		$('table input[data-letscode="' + data.letscode + '"]').val('');
+	$('#to_code').bind('typeahead:selected', function(ev, data) {
+		$('#from_code').val('');
+		$('table input[data-code="' + data.code + '"]').val('');
 		recalc_sum();
 	});
 
-	$('#from_letscode').bind('typeahead:selected', function(ev, data) {
-		$('#to_letscode').val('');
-		$('table input[data-letscode="' + data.letscode + '"]').val('');
+	$('#from_code').bind('typeahead:selected', function(ev, data) {
+		$('#to_code').val('');
+		$('table input[data-code="' + data.code + '"]').val('');
 		recalc_sum();
 	});
 
@@ -88,8 +88,8 @@ $(document).ready(function(){
 
 	function fill_in(w_bal, t_in, t_out){
 
-		var ignore_letscode = $('#to_letscode').val().split(' ');
-		ignore_letscode = ignore_letscode[0];
+		var ignore_code = $('#to_code').val().split(' ');
+		ignore_code = ignore_code[0];
 
 		var fixed = Number($('#fixed').val());
 
@@ -113,9 +113,9 @@ $(document).ready(function(){
 
 		$('table input[type="number"]:visible').each(function() {
 
-			var letscode = $(this).data('letscode');
+			var code = $(this).data('code');
 
-			if (letscode === ignore_letscode){
+			if (code === ignore_code){
 				$(this).val('');
 				return true;
 			};

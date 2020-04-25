@@ -34,7 +34,7 @@ class MollieWebhookController extends AbstractController
         $payment = $mollie->payments->get($id);
         $token = $payment->metadata->token;
 
-        $mollie_payment = $db->fetchAssoc('select p.*, r.description, u.letscode as code
+        $mollie_payment = $db->fetchAssoc('select p.*, r.description, u.code
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
                 ' . $pp->schema() . '.users u

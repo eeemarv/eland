@@ -37,7 +37,7 @@ class MailAddrUserService
 
 		$status_sql = $active_only ? ' and u.status in (1,2)' : '';
 
-		$st = $this->db->prepare('select c.value, u.name, u.letscode
+		$st = $this->db->prepare('select c.value, u.name, u.code
 			from ' . $schema . '.contact c,
 				' . $schema . '.type_contact tc,
 				' . $schema . '.users u
@@ -54,10 +54,10 @@ class MailAddrUserService
 		{
 			$mail = trim($row['value']);
 
-			$code = $row['letscode'] ?? '';
+			$code = $row['code'] ?? '';
 			$name = $row['name'] ?? '';
 
-			$code_name = $code . ' ' . $name;
+			$code_name = trim($code . ' ' . $name);
 
 			if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
 			{

@@ -34,16 +34,16 @@ class TransactionsSumInController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $ex_letscodes = $request->query->get('ex', []);
+        $ex_codes = $request->query->get('ex', []);
 
-        if (!is_array($ex_letscodes))
+        if (!is_array($ex_codes))
         {
             return $this->json([
                 'error' => 'No array for codes (ex parameter)',
             ], 400);
         }
 
-        array_walk($ex_letscodes, function(&$value){ $value = trim($value); });
+        array_walk($ex_codes, function(&$value){ $value = trim($value); });
 
         $res = $in ? 'to' : 'from';
         $inp = $in ? 'from' : 'to';
@@ -56,10 +56,10 @@ class TransactionsSumInController extends AbstractController
         $sql_params = [$begin];
         $sql_types = [\PDO::PARAM_STR];
 
-        if (count($ex_letscodes))
+        if (count($ex_codes))
         {
-            $sql_where[] = 'u.letscode not in (?)';
-            $sql_params[] = $ex_letscodes;
+            $sql_where[] = 'u.code not in (?)';
+            $sql_params[] = $ex_codes;
             $sql_types[] = Db::PARAM_STR_ARRAY;
         }
 

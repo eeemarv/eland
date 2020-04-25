@@ -53,7 +53,7 @@ class UsersTilesController extends AbstractController
         $users = $db->fetchAll('select u.*
             from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
-            order by u.letscode asc', $sql_bind);
+            order by u.code asc', $sql_bind);
 
         $assets_service->add(['isotope', 'users_tiles.js']);
 
@@ -78,7 +78,7 @@ class UsersTilesController extends AbstractController
 
         $out .= '<p>';
         $out .= '<span class="btn-group sort-by" role="group">';
-        $out .= '<button class="btn btn-default active" data-sort-by="letscode">';
+        $out .= '<button class="btn btn-default active" data-sort-by="code">';
         $out .= 'Account Code ';
         $out .= '<i class="fa fa-sort-asc"></i></button>';
         $out .= '<button class="btn btn-default" data-sort-by="name">';
@@ -135,7 +135,7 @@ class UsersTilesController extends AbstractController
             $out .= '<div class="caption">';
 
             $out .= '<a href="' . $url . '">';
-            $out .= '<span class="letscode">' . $u['letscode'] . '</span> ';
+            $out .= '<span class="code">' . $u['code'] . '</span> ';
             $out .= '<span class="name">' . $u['name'] . '</span>';
             $out .= '</a>';
             $out .= '<br><span class="postcode">' . $u['postcode'] . '</span>';

@@ -187,7 +187,7 @@ class MessagesEditController extends AbstractController
                     $account_code_expl = trim($account_code_expl);
                     $user_id = $db->fetchColumn('select id
                         from ' . $pp->schema() . '.users
-                        where letscode = ?
+                        where code = ?
                             and status in (1, 2)', [$account_code_expl]);
 
                     if (!$user_id)
@@ -414,7 +414,7 @@ class MessagesEditController extends AbstractController
 
                 $user = $user_cache_service->get($message['id_user'], $pp->schema());
 
-                $account_code = $user['letscode'] . ' ' . $user['name'];
+                $account_code = $user['code'] . ' ' . $user['name'];
             }
 
             if ($add_mode)
@@ -432,7 +432,7 @@ class MessagesEditController extends AbstractController
 
                 if ($pp->is_admin())
                 {
-                    $account_code = $su->user()['letscode'] ?? '';
+                    $account_code = $su->user()['code'] ?? '';
                     $account_code .= ' ';
                     $account_code .= $su->user()['name'] ?? '';
                     $account_code = trim($account_code);

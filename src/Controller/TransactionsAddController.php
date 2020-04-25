@@ -73,8 +73,8 @@ class TransactionsAddController extends AbstractController
 
             $transaction['description'] = trim($request->request->get('description', ''));
 
-            [$letscode_from] = explode(' ', trim($request->request->get('letscode_from', '')));
-            [$letscode_to] = explode(' ', trim($request->request->get('letscode_to', '')));
+            [$code_from] = explode(' ', trim($request->request->get('code_from', '')));
+            [$code_to] = explode(' ', trim($request->request->get('code_to', '')));
 
             $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');
             $transaction['creator'] = $su->is_master() ? 0 : $su->id();
@@ -112,21 +112,21 @@ class TransactionsAddController extends AbstractController
             {
                 $fromuser = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.users
-                    where letscode = ?', [$letscode_from]);
+                    where code = ?', [$code_from]);
             }
 
-            $letscode_touser = $group_id == 'self' ? $letscode_to : $group['localletscode'];
+            $code_touser = $group_id == 'self' ? $code_to : $group['localletscode'];
 
             $touser = $db->fetchAssoc('select *
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$letscode_touser]);
+                where code = ?', [$code_touser]);
 
             if(empty($fromuser))
             {
                 $errors[] = 'De "Van Account Code" bestaat niet';
             }
 
-            if (!strlen($letscode_to))
+            if (!strlen($code_to))
             {
                 $errors[] = 'Geen bestemmings Account (Aan Account Code) ingevuld';
             }
@@ -203,7 +203,7 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            if(($fromuser['letscode'] == $touser['letscode']) && !count($errors))
+            if(($fromuser['code'] == $touser['code']) && !count($errors))
             {
                 $errors[] = 'Van en Aan Account Code kunnen hetzelfde zijn.';
             }
@@ -307,12 +307,12 @@ class TransactionsAddController extends AbstractController
             }
             else if ($group['apimethod'] == 'mail')
             {
-                $transaction['real_to'] = $letscode_to;
+                $transaction['real_to'] = $code_to;
 
                 if ($id = $transaction_service->insert($transaction, $pp->schema()))
                 {
                     $transaction['id'] = $id;
-                    $transaction['letscode_to'] = $letscode_to;
+                    $transaction['code_to'] = $code_to;
 
                     $mail_transaction_service->queue_mail_type($transaction, $pp->schema());
 
@@ -355,7 +355,7 @@ class TransactionsAddController extends AbstractController
 
                 $to_remote_user = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
-                    where letscode = ?', [$letscode_to]);
+                    where code = ?', [$code_to]);
 
                 if (!$to_remote_user)
                 {
@@ -387,7 +387,7 @@ class TransactionsAddController extends AbstractController
 
                 $remote_interlets_account = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
-                    where letscode = ?', [$remote_group['localletscode']]);
+                    where code = ?', [$remote_group['localletscode']]);
 
                 if (!$remote_interlets_account && !count($errors))
                 {
@@ -536,7 +536,7 @@ class TransactionsAddController extends AbstractController
                 {
                     $transaction['creator'] = $su->is_master() ? 0 : $su->id();
                     $transaction['cdate'] = gmdate('Y-m-d H:i:s');
-                    $transaction['real_to'] = $to_remote_user['letscode'] . ' ' . $to_remote_user['name'];
+                    $transaction['real_to'] = $to_remote_user['code'] . ' ' . $to_remote_user['name'];
 
                     $db->beginTransaction();
 
@@ -599,8 +599,8 @@ class TransactionsAddController extends AbstractController
                         ['schema' => $pp->schema()]);
 
                     $logger->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
-                        ' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['letscode'] . ' ' .
-                        $remote_interlets_account['name'] . ' to user: ' . $to_remote_user['letscode'] . ' ' .
+                        ' amount: ' . $remote_amount . ' from user: ' . $remote_interlets_account['code'] . ' ' .
+                        $remote_interlets_account['name'] . ' to user: ' . $to_remote_user['code'] . ' ' .
                         $to_remote_user['name'], ['schema' => $remote_schema]);
 
                     $autominlimit_service->init($pp->schema())
@@ -611,9 +611,9 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            $transaction['letscode_to'] = $request->request->get('letscode_to', '');
-            $transaction['letscode_from'] = $pp->is_admin() || $su->is_master()
-                ? $request->request->get('letscode_from', '')
+            $transaction['code_to'] = $request->request->get('code_to', '');
+            $transaction['code_from'] = $pp->is_admin() || $su->is_master()
+                ? $request->request->get('code_from', '')
                 : $account_render->str($su->id(), $pp->schema());
         }
         else
@@ -621,8 +621,8 @@ class TransactionsAddController extends AbstractController
             //GET form
 
             $transaction = [
-                'letscode_from'	=> $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema()),
-                'letscode_to'	=> '',
+                'code_from'	=> $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema()),
+                'code_to'	=> '',
                 'amount'		=> '',
                 'description'	=> '',
             ];
@@ -643,7 +643,7 @@ class TransactionsAddController extends AbstractController
                     {
                         $row = $db->fetchAssoc('select
                                 m.content, m.amount, m.id_user,
-                                u.letscode, u.name
+                                u.code, u.name
                             from ' . $tus . '.messages m,
                                 '. $tus . '.users u
                             where u.id = m.id_user
@@ -652,7 +652,7 @@ class TransactionsAddController extends AbstractController
 
                         if ($row)
                         {
-                            $transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+                            $transaction['code_to'] = $row['code'] . ' ' . $row['name'];
                             $transaction['description'] =  substr($row['content'], 0, 60);
                             $amount = $row['amount'];
                             $amount = ($config_service->get('currencyratio', $pp->schema()) * $amount) / $config_service->get('currencyratio', $tus);
@@ -666,7 +666,7 @@ class TransactionsAddController extends AbstractController
 
                         if (in_array($to_user['status'], [1, 2]))
                         {
-                            $transaction['letscode_to'] = $account_render->str($tuid, $tus);
+                            $transaction['code_to'] = $account_render->str($tuid, $tus);
                         }
                     }
                 }
@@ -675,7 +675,7 @@ class TransactionsAddController extends AbstractController
             {
                 $row = $db->fetchAssoc('select
                         m.content, m.amount, m.id_user,
-                        u.letscode, u.name, u.status
+                        u.code, u.name, u.status
                     from ' . $pp->schema() . '.messages m,
                         '. $pp->schema() . '.users u
                     where u.id = m.id_user
@@ -685,7 +685,7 @@ class TransactionsAddController extends AbstractController
                 {
                     if ($row['status'] === 1 || $row['status'] === 2)
                     {
-                        $transaction['letscode_to'] = $row['letscode'] . ' ' . $row['name'];
+                        $transaction['code_to'] = $row['code'] . ' ' . $row['name'];
                         $transaction['description'] =  substr($row['content'], 0, 60);
                         $transaction['amount'] = $row['amount'];
                     }
@@ -694,11 +694,11 @@ class TransactionsAddController extends AbstractController
                     {
                         if ($pp->is_admin())
                         {
-                            $transaction['letscode_from'] = '';
+                            $transaction['code_from'] = '';
                         }
                         else
                         {
-                            $transaction['letscode_to'] = '';
+                            $transaction['code_to'] = '';
                             $transaction['description'] = '';
                             $transaction['amount'] = '';
                         }
@@ -711,18 +711,18 @@ class TransactionsAddController extends AbstractController
 
                 if (in_array($to_user['status'], [1, 2]) || $pp->is_admin())
                 {
-                    $transaction['letscode_to'] = $account_render->str($tuid, $pp->schema());
+                    $transaction['code_to'] = $account_render->str($tuid, $pp->schema());
                 }
 
                 if ($tuid === $su->id())
                 {
                     if ($pp->is_admin())
                     {
-                        $transaction['letscode_from'] = '';
+                        $transaction['code_from'] = '';
                     }
                     else
                     {
-                        $transaction['letscode_to'] = '';
+                        $transaction['code_to'] = '';
                     }
                 }
             }
@@ -772,7 +772,7 @@ class TransactionsAddController extends AbstractController
                 from ' . $pp->schema() . '.letsgroups l, ' .
                     $pp->schema() . '.users u
                 where l.apimethod = \'mail\'
-                    and u.letscode = l.localletscode
+                    and u.code = l.localletscode
                     and u.status in (1, 2, 7)');
 
             foreach ($mail_systems as $sys)
@@ -796,7 +796,7 @@ class TransactionsAddController extends AbstractController
         $out .= '<div class="form-group"';
         $out .= $pp->is_admin() ? '' : ' disabled" ';
         $out .= '>';
-        $out .= '<label for="letscode_from" class="control-label">';
+        $out .= '<label for="code_from" class="control-label">';
         $out .= 'Van Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
@@ -804,12 +804,12 @@ class TransactionsAddController extends AbstractController
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="letscode_from" name="letscode_from" ';
+        $out .= 'id="code_from" name="code_from" ';
         $out .= 'data-typeahead-source="';
-        $out .= $systems_en ? 'group_self' : 'letscode_to';
+        $out .= $systems_en ? 'group_self' : 'code_to';
         $out .= '" ';
         $out .= 'value="';
-        $out .= $transaction['letscode_from'];
+        $out .= $transaction['code_from'];
         $out .= '" required';
         $out .= $pp->is_admin() ? '' : ' disabled';
         $out .= '>';
@@ -923,7 +923,7 @@ class TransactionsAddController extends AbstractController
         }
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="letscode_to" class="control-label">';
+        $out .= '<label for="code_to" class="control-label">';
         $out .= 'Aan Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
@@ -931,7 +931,7 @@ class TransactionsAddController extends AbstractController
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="letscode_to" name="letscode_to" ';
+        $out .= 'id="code_to" name="code_to" ';
 
         if ($systems_en)
         {
@@ -960,7 +960,7 @@ class TransactionsAddController extends AbstractController
         }
 
         $out .= 'value="';
-        $out .= $transaction['letscode_to'];
+        $out .= $transaction['code_to'];
         $out .= '" required>';
         $out .= '</div>';
 

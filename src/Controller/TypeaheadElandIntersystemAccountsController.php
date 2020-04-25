@@ -33,7 +33,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
         }
 
         $fetched_users = $db->fetchAll(
-            'select letscode as c,
+            'select code as c,
                 name as n,
                 extract(epoch from adate) as a,
                 status as s

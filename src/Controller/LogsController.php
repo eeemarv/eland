@@ -69,7 +69,7 @@ class LogsController extends AbstractController
 
             $filter_user_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$filter_code]);
+                where code = ?', [$filter_code]);
 
             if ($filter_user_id)
             {

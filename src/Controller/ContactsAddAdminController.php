@@ -105,7 +105,7 @@ class ContactsAddAdminController extends AbstractController
 
                 $user_id = $db->fetchColumn('select id
                     from ' . $pp->schema() . '.users
-                    where letscode = ?', [$code]);
+                    where code = ?', [$code]);
 
                 if (!$user_id)
                 {

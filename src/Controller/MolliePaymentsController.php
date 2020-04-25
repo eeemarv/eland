@@ -151,7 +151,7 @@ class MolliePaymentsController extends AbstractController
 
             $uid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$code]);
+                where code = ?', [$code]);
 
             $where_sql[] = 'u.id = ?';
             $params_sql[] = $uid ?: 0;
@@ -241,7 +241,7 @@ class MolliePaymentsController extends AbstractController
         $payments = [];
 
         $rs = $db->executeQuery('select p.*, r.description,
-            u.letscode as code, u.name, u.status, u.adate,
+            u.code, u.name, u.status, u.adate,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,

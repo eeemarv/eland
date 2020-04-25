@@ -61,8 +61,8 @@ class IntersystemsService
 		$st = $this->db->prepare('select g.url, u.id
 			from ' . $schema . '.letsgroups g, ' . $schema . '.users u
 			where g.apimethod = \'elassoap\'
-				and u.letscode = g.localletscode
-				and u.letscode <> \'\'
+				and u.code = g.localletscode
+				and u.code <> \'\'
 				and u.accountrole = \'interlets\'
 				and u.status in (1, 2, 7)');
 
@@ -154,8 +154,8 @@ class IntersystemsService
 				from ' . $interschema . '.letsgroups g, ' .
 					$interschema . '.users u
 				where g.apimethod = \'elassoap\'
-					and u.letscode = g.localletscode
-					and u.letscode <> \'\'
+					and u.code = g.localletscode
+					and u.code <> \'\'
 					and u.status in (1, 2, 7)
 					and u.accountrole = \'interlets\'
 					and g.url = ?', [$s_url]);

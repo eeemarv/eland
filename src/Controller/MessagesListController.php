@@ -770,7 +770,7 @@ class MessagesListController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$fcode]);
+                where code = ?', [$fcode]);
 
             if ($fuid)
             {

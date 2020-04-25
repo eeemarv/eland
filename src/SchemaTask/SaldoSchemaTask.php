@@ -95,7 +95,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		$rs = $this->db->prepare('select u.id,
 				u.name, u.saldo, u.status,
-				u.letscode, u.postcode, u.cron_saldo
+				u.code, u.postcode, u.cron_saldo
 			from ' . $schema . '.users u
 			where u.status in (1, 2)');
 

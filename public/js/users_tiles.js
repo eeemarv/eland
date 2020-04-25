@@ -10,11 +10,11 @@ $(document).ready(function() {
 			return (str.indexOf($('#q').val().toLowerCase()) > -1) ? true : false;
 		},
 		getSortData: {
-			letscode: '.letscode',
+			code: '.code',
 			name: '.name',
 			postcode: '.postcode'
 		},
-		sortBy: 'letscode',
+		sortBy: 'code',
 		sortAscending: true
 	});
 

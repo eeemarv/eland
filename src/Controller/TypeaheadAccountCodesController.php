@@ -18,20 +18,20 @@ class TypeaheadAccountCodesController extends AbstractController
     {
         $account_codes = [];
 
-        $st = $db->prepare('select letscode
+        $st = $db->prepare('select code
             from ' . $pp->schema() . '.users
-            order by letscode asc');
+            order by code asc');
 
         $st->execute();
 
         while ($row = $st->fetch())
         {
-            if (empty($row['letscode']))
+            if (empty($row['code']))
             {
                 continue;
             }
 
-            $account_codes[] = $row['letscode'];
+            $account_codes[] = $row['code'];
         }
 
         $crc = (string) crc32(json_encode($account_codes));

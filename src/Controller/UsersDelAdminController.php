@@ -171,7 +171,7 @@ class UsersDelAdminController extends AbstractController
 
         // remove messages
 
-        $usr = $user['letscode'] . ' ' . $user['name'] . ' [id:' . $id . ']';
+        $usr = $user['code'] . ' ' . $user['name'] . ' [id:' . $id . ']';
         $msgs = '';
         $st = $db->prepare('select id, content,
                 id_category, msg_type

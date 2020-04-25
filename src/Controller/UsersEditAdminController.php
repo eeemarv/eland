@@ -150,7 +150,7 @@ class UsersEditAdminController extends AbstractController
         if ($is_edit)
         {
             $stored_user = $user_cache_service->get($id, $pp->schema());
-            $stored_code = $stored_user['letscode'];
+            $stored_code = $stored_user['code'];
             $stored_name = $stored_user['name'];
             $is_activated = isset($stored_user['adate']);
         }
@@ -288,9 +288,9 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            $code_sql = 'select letscode
+            $code_sql = 'select code
                 from ' . $pp->schema() . '.users
-                where letscode = ?';
+                where code = ?';
             $code_sql_params = [$code];
 
             $name_sql = 'select name
@@ -475,7 +475,7 @@ class UsersEditAdminController extends AbstractController
 
                 if ($pp->is_admin())
                 {
-                    $post_user['letscode'] = $code;
+                    $post_user['code'] = $code;
                     $post_user['accountrole'] = $accountrole;
                     $post_user['status'] = (int) $status;
                     $post_user['admincomment'] = $admincomment;
@@ -727,7 +727,7 @@ class UsersEditAdminController extends AbstractController
 
             if ($is_edit)
             {
-                $code = $stored_user['letscode'] ?? '';
+                $code = $stored_user['code'] ?? '';
                 $name = $stored_user['name'] ?? '';
                 $fullname = $stored_user['fullname'] ?? '';
                 $fullname_access = $stored_user['fullname_access'] ?? 'admin';

@@ -136,9 +136,9 @@ class AutoMinLimitService
 			return;
 		}
 
-		if (!$from_user['letscode'])
+		if (!$from_user['code'])
 		{
-			$this->logger->debug('autominlimit: from user has no letscode.',
+			$this->logger->debug('autominlimit: from user has no code.',
 				['schema' => $this->schema]);
 			return;
 		}

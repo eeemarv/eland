@@ -100,7 +100,7 @@ class TransactionsController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$fcode]);
+                where code = ?', [$fcode]);
 
             if ($fuid)
             {
@@ -126,7 +126,7 @@ class TransactionsController extends AbstractController
 
             $tuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where letscode = \'' . $tcode . '\'');
+                where code = \'' . $tcode . '\'');
 
             if ($tuid)
             {

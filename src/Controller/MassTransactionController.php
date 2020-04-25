@@ -117,13 +117,13 @@ class MassTransactionController extends AbstractController
         $users = [];
 
         $rs = $db->prepare(
-            'select id, name, letscode,
+            'select id, name, code,
                 accountrole, status, saldo,
                 minlimit, maxlimit, adate,
                 postcode
             from ' . $pp->schema() . '.users
             where status IN (0, 1, 2, 5, 6)
-            order by letscode');
+            order by code');
 
         $rs->execute();
 
@@ -141,18 +141,18 @@ class MassTransactionController extends AbstractController
             $users[$row['id']] = $row;
         }
 
-        $to_letscode = trim($request->request->get('to_letscode', ''));
+        $to_code = trim($request->request->get('to_code', ''));
 
-        if ($to_letscode !== '')
+        if ($to_code !== '')
         {
-            [$to_letscode] = explode(' ', $to_letscode);
+            [$to_code] = explode(' ', $to_code);
         }
 
-        $from_letscode = trim($request->request->get('from_letscode', ''));
+        $from_code = trim($request->request->get('from_code', ''));
 
-        if ($from_letscode !== '')
+        if ($from_code !== '')
         {
-            [$from_letscode] = explode(' ', $from_letscode);
+            [$from_code] = explode(' ', $from_code);
         }
 
         $amount = $request->request->get('amount', []);
@@ -176,22 +176,22 @@ class MassTransactionController extends AbstractController
                 $errors[] = 'Vul een omschrijving in.';
             }
 
-            if ($to_letscode && $from_letscode)
+            if ($to_code && $from_code)
             {
                 $errors[] = '\'Van Account Code\' en \'Aan Account Code\' kunnen niet beide ingevuld worden.';
             }
-            else if (!($to_letscode || $from_letscode))
+            else if (!($to_code || $from_code))
             {
                 $errors[] = '\'Van Account Code\' OF \'Aan Account Code\' moet ingevuld worden.';
             }
             else
             {
-                $to_one = $to_letscode ? true : false;
-                $letscode = $to_one ? $to_letscode : $from_letscode;
+                $to_one = $to_code ? true : false;
+                $code = $to_one ? $to_code : $from_code;
 
                 $one_uid = $db->fetchColumn('select id
                     from ' . $pp->schema() . '.users
-                    where letscode = ?', [$letscode]);
+                    where code = ?', [$code]);
 
                 if (!$one_uid)
                 {
@@ -276,13 +276,13 @@ class MassTransactionController extends AbstractController
                         $from_user = $users[$from_id];
                         $to_user = $users[$to_id];
 
-                        $alert_success .= 'Transactie van gebruiker ' . $from_user['letscode'] . ' ' . $from_user['name'];
-                        $alert_success .= ' naar ' . $to_user['letscode'] . ' ' . $to_user['name'];
+                        $alert_success .= 'Transactie van gebruiker ' . $from_user['code'] . ' ' . $from_user['name'];
+                        $alert_success .= ' naar ' . $to_user['code'] . ' ' . $to_user['name'];
                         $alert_success .= '  met bedrag ' . $amo .' ';
                         $alert_success .= $config_service->get('currency', $pp->schema());
                         $alert_success .= ' uitgevoerd.<br>';
 
-                        $log_many .= $many_user['letscode'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
+                        $log_many .= $many_user['code'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
 
                         $transaction = [
                             'id_to' 		=> $to_id,
@@ -349,7 +349,7 @@ class MassTransactionController extends AbstractController
                 $alert_success .= $config_service->get('currency', $pp->schema());
                 $alert_service->success($alert_success);
 
-                $log_one = $users[$one_uid]['letscode'] . ' ';
+                $log_one = $users[$one_uid]['code'] . ' ';
                 $log_one .= $users[$one_uid]['name'];
                 $log_one .= '(Total amount: ' . $total_amount . ' ';
                 $log_one .= $config_service->get('currency', $pp->schema());
@@ -428,22 +428,22 @@ class MassTransactionController extends AbstractController
             $mail_en = true;
         }
 
-        if ($to_letscode)
+        if ($to_code)
         {
             if ($to_name = $db->fetchColumn('select name
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$to_letscode]))
+                where code = ?', [$to_code]))
             {
-                $to_letscode .= ' ' . $to_name;
+                $to_code .= ' ' . $to_name;
             }
         }
-        if ($from_letscode)
+        if ($from_code)
         {
             if ($from_name = $db->fetchColumn('select name
                 from ' . $pp->schema() . '.users
-                where letscode = ?', [$from_letscode]))
+                where code = ?', [$from_code]))
             {
-                $from_letscode .= ' ' . $from_name;
+                $from_code .= ' ' . $from_name;
             }
         }
 
@@ -747,16 +747,16 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="panel-heading">';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="from_letscode" class="control-label">';
+        $out .= '<label for="from_code" class="control-label">';
         $out .= 'Van Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<span class="fa fa-user"></span></span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="from_letscode" name="from_letscode" ';
+        $out .= 'id="from_code" name="from_code" ';
         $out .= 'value="';
-        $out .= $from_letscode;
+        $out .= $from_code;
         $out .= '" ';
 
         $out .= 'data-typeahead="';
@@ -833,7 +833,7 @@ class MassTransactionController extends AbstractController
             $out .= $amount[$user_id] ?? '';
             $out .= '" ';
             $out .= 'min="0" ';
-            $out .= 'data-letscode="' . $user['letscode'] . '" ';
+            $out .= 'data-code="' . $user['code'] . '" ';
             $out .= 'data-user-id="' . $user_id . '" ';
             $out .= 'data-balance="' . $user['saldo'] . '" ';
             $out .= 'data-minlimit="' . $user['minlimit'] . '"';
@@ -894,18 +894,18 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="to_letscode" class="control-label">';
+        $out .= '<label for="to_code" class="control-label">';
         $out .= 'Aan Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<span class="fa fa-user"></span></span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="to_letscode" name="to_letscode" ';
+        $out .= 'id="to_code" name="to_code" ';
         $out .= 'value="';
-        $out .= $to_letscode;
+        $out .= $to_code;
         $out .= '" ';
-        $out .= 'data-typeahead-source="from_letscode">';
+        $out .= 'data-typeahead-source="from_code">';
         $out .= '</div>';
         $out .= '<p>Gebruik dit voor een "Veel naar één" transactie. ';
         $out .= 'Bijvoorbeeld, een ledenbijdrage. ';

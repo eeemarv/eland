@@ -189,7 +189,7 @@ class UsersListController extends AbstractController
 
                 $users_log = '';
 
-                $rows = $db->executeQuery('select letscode, name, id
+                $rows = $db->executeQuery('select code, name, id
                     from ' . $pp->schema() . '.users
                     where id in (?)',
                     [$user_ids], [Db::PARAM_INT_ARRAY]);
@@ -478,7 +478,7 @@ class UsersListController extends AbstractController
 
         $columns = [
             'u'		=> [
-                'letscode'		=> 'Code',
+                'code'		=> 'Code',
                 'name'			=> 'Naam',
                 'fullname'		=> 'Volledige naam',
                 'postcode'		=> 'Postcode',
@@ -566,7 +566,7 @@ class UsersListController extends AbstractController
             {
                 $preset_columns = [
                     'u'	=> [
-                        'letscode'	=> 1,
+                        'code'	=> 1,
                         'name'		=> 1,
                         'postcode'	=> 1,
                         'saldo'		=> 1,
@@ -577,7 +577,7 @@ class UsersListController extends AbstractController
             {
                 $preset_columns = [
                     'u' => [
-                        'letscode'	=> 1,
+                        'code'	=> 1,
                         'name'		=> 1,
                         'postcode'	=> 1,
                         'saldo'		=> 1,
@@ -606,7 +606,7 @@ class UsersListController extends AbstractController
         $users = $db->fetchAll('select u.*
             from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
-            order by u.letscode asc', $sql_bind);
+            order by u.code asc', $sql_bind);
 
         if (isset($show_columns['u']['saldo_date']))
         {
@@ -792,7 +792,7 @@ class UsersListController extends AbstractController
             if ($activity_filter_code)
             {
                 [$code_only_activity_filter_code] = explode(' ', $activity_filter_code);
-                $and = ' and u.letscode <> ? ';
+                $and = ' and u.code <> ? ';
                 $sql_bind[] = trim($code_only_activity_filter_code);
             }
             else
@@ -950,7 +950,7 @@ class UsersListController extends AbstractController
                 }
 
                 $f_col .= '<div class="form-group">';
-                $f_col .= '<label for="p_activity_filter_letscode" ';
+                $f_col .= '<label for="p_activity_filter_code" ';
                 $f_col .= 'class="control-label">';
                 $f_col .= 'Exclusief tegenpartij';
                 $f_col .= '</label>';
@@ -1129,7 +1129,7 @@ class UsersListController extends AbstractController
         ];
 
         $link_user_keys = [
-            'letscode'		=> true,
+            'code'		=> true,
             'name'			=> true,
         ];
 
@@ -1190,7 +1190,7 @@ class UsersListController extends AbstractController
                 foreach ($ary as $key => $one)
                 {
                     $data_type =  isset($numeric_keys[$key]) ? ' data-type="numeric"' : '';
-                    $data_sort_initial = $key === 'letscode' ? ' data-sort-initial="true"' : '';
+                    $data_sort_initial = $key === 'code' ? ' data-sort-initial="true"' : '';
 
                     $out .= '<th' . $data_type . $data_sort_initial . '>';
                     $out .= $columns[$group][$key];
@@ -1457,8 +1457,8 @@ class UsersListController extends AbstractController
                                 $out .= $link_render->link_no_attr('transactions', $pp->ary(),
                                     [
                                         'f' => [
-                                            'fcode'	=> $key === 'in' ? '' : $u['letscode'],
-                                            'tcode'	=> $key === 'out' ? '' : $u['letscode'],
+                                            'fcode'	=> $key === 'in' ? '' : $u['code'],
+                                            'tcode'	=> $key === 'out' ? '' : $u['code'],
                                             'andor'	=> $key === 'total' ? 'or' : 'and',
                                             'fdate' => $from_date,
                                         ],

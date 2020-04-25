@@ -58,7 +58,7 @@ class LoginController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $lc_login = strtolower($login);
+            $lowercase_login = strtolower($login);
             $password = trim($request->request->get('password'));
 
             $encoder = $encoder_factory->getEncoder(new User());
@@ -68,12 +68,12 @@ class LoginController extends AbstractController
                 $errors[] = $token_error;
             }
 
-            if (!($lc_login && $password))
+            if (!($lowercase_login && $password))
             {
                 $errors[] = 'Login gefaald. Vul Login en Paswoord in.';
             }
 
-            if ($lc_login === 'master'
+            if ($lowercase_login === 'master'
                 && $env_master_password
                 && $encoder->isPasswordValid($env_master_password, $password, null))
             {
@@ -97,7 +97,7 @@ class LoginController extends AbstractController
 
             $user_id = false;
 
-            if (!count($errors) && filter_var($lc_login, FILTER_VALIDATE_EMAIL))
+            if (!count($errors) && filter_var($lowercase_login, FILTER_VALIDATE_EMAIL))
             {
                 $count_email = $db->fetchColumn('select count(c.*)
                     from ' . $pp->schema() . '.contact c, ' .
@@ -107,7 +107,7 @@ class LoginController extends AbstractController
                         and tc.abbrev = \'mail\'
                         and c.id_user = u.id
                         and u.status in (1, 2)
-                        and lower(c.value) = ?', [$lc_login]);
+                        and lower(c.value) = ?', [$lowercase_login]);
 
                 if ($count_email == 1)
                 {
@@ -119,7 +119,7 @@ class LoginController extends AbstractController
                             and tc.abbrev = \'mail\'
                             and c.id_user = u.id
                             and u.status in (1, 2)
-                            and lower(c.value) = ?', [$lc_login]);
+                            and lower(c.value) = ?', [$lowercase_login]);
                 }
                 else
                 {
@@ -133,11 +133,11 @@ class LoginController extends AbstractController
 
             if (!$user_id && !count($errors))
             {
-                $count_letscode = $db->fetchColumn('select count(u.*)
+                $count_code = $db->fetchColumn('select count(u.*)
                     from ' . $pp->schema() . '.users u
-                    where lower(letscode) = ?', [$lc_login]);
+                    where lower(code) = ?', [$lowercase_login]);
 
-                if ($count_letscode > 1)
+                if ($count_code > 1)
                 {
                     $err = 'Je kan deze Account Code niet gebruiken ';
                     $err .= 'om in te loggen want deze is niet ';
@@ -145,11 +145,11 @@ class LoginController extends AbstractController
                     $err .= 'je E-mail adres of gebruikersnaam.';
                     $errors[] = $err;
                 }
-                else if ($count_letscode == 1)
+                else if ($count_code == 1)
                 {
                     $user_id = $db->fetchColumn('select id
                         from ' . $pp->schema() . '.users
-                        where lower(letscode) = ?', [$lc_login]);
+                        where lower(code) = ?', [$lowercase_login]);
                 }
             }
 
@@ -157,7 +157,7 @@ class LoginController extends AbstractController
             {
                 $count_name = $db->fetchColumn('select count(u.*)
                     from ' . $pp->schema() . '.users u
-                    where lower(name) = ?', [$lc_login]);
+                    where lower(name) = ?', [$lowercase_login]);
 
                 if ($count_name > 1)
                 {
@@ -171,7 +171,7 @@ class LoginController extends AbstractController
                 {
                     $user_id = $db->fetchColumn('select id
                         from ' . $pp->schema() . '.users
-                        where lower(name) = ?', [$lc_login]);
+                        where lower(name) = ?', [$lowercase_login]);
                 }
             }
 
@@ -191,7 +191,7 @@ class LoginController extends AbstractController
                 {
                     $log_ary = [
                         'user_id'	=> $user['id'],
-                        'letscode'	=> $user['letscode'],
+                        'code'	    => $user['code'],
                         'username'	=> $user['name'],
                         'schema' 	=> $pp->schema(),
                     ];

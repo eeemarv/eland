@@ -190,7 +190,7 @@ class UsersShowAdminController extends AbstractController
             where id_from = ?
                 or id_to = ?', [$id, $id]);
 
-        $sql_bind = [$user['letscode']];
+        $sql_bind = [$user['code']];
 
         if ($status && isset($status_def_ary[$status]))
         {
@@ -210,16 +210,16 @@ class UsersShowAdminController extends AbstractController
 
         $next = $db->fetchColumn('select id
             from ' . $pp->schema() . '.users u
-            where u.letscode > ?
+            where u.code > ?
             ' . $and_status . '
-            order by u.letscode asc
+            order by u.code asc
             limit 1', $sql_bind);
 
         $prev = $db->fetchColumn('select id
             from ' . $pp->schema() . '.users u
-            where u.letscode < ?
+            where u.code < ?
             ' . $and_status . '
-            order by u.letscode desc
+            order by u.code desc
             limit 1', $sql_bind);
 
         $intersystem_missing = false;
@@ -230,7 +230,7 @@ class UsersShowAdminController extends AbstractController
         {
             $intersystem_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?', [$user['letscode']]);
+                where localletscode = ?', [$user['code']]);
 
             if (!$intersystem_id)
             {
