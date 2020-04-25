@@ -95,7 +95,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		$rs = $this->db->prepare('select u.id,
 				u.name, u.saldo, u.status,
-				u.code, u.postcode, u.cron_saldo
+				u.code, u.postcode, u.periodic_overview_en
 			from ' . $schema . '.users u
 			where u.status in (1, 2)');
 
@@ -106,7 +106,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			$users[$row['id']] = $row;
 		}
 
-	// fetch mail addresses & cron_saldo
+	// fetch mail addresses & periodic_overview_en
 
 		$st = $this->db->prepare('select u.id, c.value, c.access
 			from ' . $schema . '.users u, ' .
@@ -125,7 +125,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 			$mail = $row['value'];
 			$mailaddr[$user_id][] = $mail;
 
-			if (!$users[$user_id] || !$users[$user_id]['cron_saldo'])
+			if (!$users[$user_id] || !$users[$user_id]['periodic_overview_en'])
 			{
 				continue;
 			}

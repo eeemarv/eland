@@ -129,13 +129,13 @@ class UsersListController extends AbstractController
                 throw new BadRequestHttpException('Ongeldig formulier. Actie waardeveld klopt niet.');
             }
 
-            if (!in_array($bulk_submit_action, ['cron_saldo', 'mail', 'mail_test'])
+            if (!in_array($bulk_submit_action, ['periodic_overview_en', 'mail', 'mail_test'])
                 && !isset($bulk_field_action))
             {
                 throw new BadRequestHttpException('Ongeldig formulier. Waarde veld ontbreekt.');
             }
 
-            if (in_array($bulk_submit_action, ['cron_saldo', 'mail', 'mail_test']))
+            if (in_array($bulk_submit_action, ['periodic_overview_en', 'mail', 'mail_test']))
             {
                 $bulk_field_value = isset($bulk_field[$bulk_submit_action]);
             }
@@ -232,10 +232,10 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
-                && $bulk_submit_action === 'cron_saldo')
+                && $bulk_submit_action === 'periodic_overview_en')
             {
                 $db->executeUpdate('update ' . $pp->schema() . '.users
-                    set cron_saldo = ?
+                    set periodic_overview_en = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
                     [\PDO::PARAM_BOOL, Db::PARAM_INT_ARRAY]);
@@ -495,12 +495,12 @@ class UsersListController extends AbstractController
         if ($pp->is_admin())
         {
             $columns['u'] += [
-                'admincomment'	=> 'Admin commentaar',
-                'cron_saldo'	=> 'Periodieke Overzichts E-mail',
-                'cdate'			=> 'Gecreëerd',
-                'mdate'			=> 'Aangepast',
-                'adate'			=> 'Geactiveerd',
-                'last_login'		=> 'Laatst ingelogd',
+                'admincomment'	        => 'Admin commentaar',
+                'periodic_overview_en'	=> 'Periodieke Overzichts E-mail',
+                'cdate'			        => 'Gecreëerd',
+                'mdate'			        => 'Aangepast',
+                'adate'			        => 'Geactiveerd',
+                'last_login'		    => 'Laatst ingelogd',
             ];
         }
 

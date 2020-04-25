@@ -86,7 +86,7 @@ class BulkCnst
             'type'		=> 'number',
             'fa'		=> 'arrow-up',
         ],
-        'cron_saldo'		=> [
+        'periodic_overview_en'		=> [
             'lbl'	    => 'Periodieke Overzichts E-mail (aan/uit)',
             'type'	    => 'checkbox',
         ],

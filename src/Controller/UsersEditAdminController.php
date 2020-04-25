@@ -172,7 +172,7 @@ class UsersEditAdminController extends AbstractController
         $admincomment = trim($request->request->get('admincomment', ''));
         $minlimit = trim($request->request->get('minlimit', ''));
         $maxlimit = trim($request->request->get('maxlimit', ''));
-        $cron_saldo = $request->request->has('cron_saldo');
+        $periodic_overview_en = $request->request->has('periodic_overview_en');
         $contact = $request->request->get('contact', []);
 
         $is_owner = $is_edit
@@ -431,12 +431,12 @@ class UsersEditAdminController extends AbstractController
             if (!count($errors))
             {
                 $post_user = [
-                    'fullname_access'   => $fullname_access,
-                    'postcode'		    => $postcode,
-                    'birthday'		    => $birthday === '' ? null : $birthday,
-                    'hobbies'		    => $hobbies,
-                    'comments'		    => $comments,
-                    'cron_saldo'	    => $cron_saldo ? 1 : 0,
+                    'fullname_access'       => $fullname_access,
+                    'postcode'		        => $postcode,
+                    'birthday'		        => $birthday === '' ? null : $birthday,
+                    'hobbies'		        => $hobbies,
+                    'comments'		        => $comments,
+                    'periodic_overview_en'  => $periodic_overview_en ? 1 : 0,
                 ];
 
                 if ($is_add)
@@ -682,7 +682,7 @@ class UsersEditAdminController extends AbstractController
             $admincomment = '';
             $minlimit = $config_service->get('preset_minlimit', $pp->schema());
             $maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
-            $cron_saldo	= true;
+            $periodic_overview_en	= true;
 
             $contact = $db->fetchAll('select name, abbrev,
                 \'\' as value, 0 as id
@@ -719,7 +719,7 @@ class UsersEditAdminController extends AbstractController
                     }
                 }
 
-                $cron_saldo = false;
+                $periodic_overview_en = false;
                 $status = '7';
                 $role = 'guest';
                 $code = $intersystem_code;
@@ -740,7 +740,7 @@ class UsersEditAdminController extends AbstractController
                 $admincomment = $stored_user['admincomment'] ?? '';
                 $minlimit = $stored_user['minlimit'] ?? '';
                 $maxlimit = $stored_user['maxlimit'] ?? '';
-                $cron_saldo = $stored_user['cron_saldo'] ?? false;
+                $periodic_overview_en = $stored_user['periodic_overview_en'] ?? false;
 
                 // Fetch contacts
 
@@ -1277,9 +1277,9 @@ class UsersEditAdminController extends AbstractController
         }
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="cron_saldo" class="control-label">';
-        $out .= '<input type="checkbox" name="cron_saldo" id="cron_saldo"';
-        $out .= $cron_saldo ? ' checked="checked"' : '';
+        $out .= '<label for="periodic_overview_en" class="control-label">';
+        $out .= '<input type="checkbox" name="periodic_overview_en" id="periodic_overview_en"';
+        $out .= $periodic_overview_en ? ' checked="checked"' : '';
         $out .= '>	';
         $out .= 'Periodieke Overzichts E-mail';
         $out .= '</label>';
