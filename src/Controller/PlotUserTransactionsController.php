@@ -77,7 +77,7 @@ class PlotUserTransactionsController extends AbstractController
         $query = 'select t.id, t.amount, t.id_from, t.id_to,
                 t.real_from, t.real_to, t.cdate, t.description,
                 u.id as user_id, u.name, u.code,
-                u.accountrole as role, u.status
+                u.role, u.status
             from ' . $pp->schema() . '.transactions t, ' .
                 $pp->schema() . '.users u
             where (t.id_to = ? or t.id_from = ?)

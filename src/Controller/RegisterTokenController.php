@@ -98,7 +98,7 @@ class RegisterTokenController extends AbstractController
             'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
             'postcode'		=> $data['postcode'],
             'status'		=> 5,
-            'accountrole'	=> 'user',
+            'role'	        => 'user',
             'cron_saldo'	=> 't',
             'hobbies'		=> '',
             'cdate'			=> gmdate('Y-m-d H:i:s'),

@@ -176,8 +176,7 @@ class TransactionsAddController extends AbstractController
 
             if (!$pp->is_admin() && !count($errors))
             {
-                if (!isset($fromuser['minlimit'])
-                    || $fromuser['minlimit'] === -999999999)
+                if (!isset($fromuser['minlimit']))
                 {
                     $minlimit = $config_service->get('minlimit', $pp->schema());
 
@@ -210,8 +209,7 @@ class TransactionsAddController extends AbstractController
 
             if (!$pp->is_admin() && !count($errors))
             {
-                if (!isset($touser['maxlimit'])
-                    || $touser['maxlimit'] === 999999999)
+                if (!isset($touser['maxlimit']))
                 {
                     $maxlimit = $config_service->get('maxlimit', $pp->schema());
 
@@ -394,9 +392,9 @@ class TransactionsAddController extends AbstractController
                     $errors[] = 'Er is geen interSysteem Account in het andere Systeem.';
                 }
 
-                if ($remote_interlets_account['accountrole'] !== 'interlets' && !count($errors))
+                if ($remote_interlets_account['role'] !== 'guest' && !count($errors))
                 {
-                    $errors[] = 'Het Account in het andere Systeem is niet ingesteld met rol "interSysteem".';
+                    $errors[] = 'Het Account in het andere Systeem is niet ingesteld met rol "Gast".';
                 }
 
                 if (!in_array($remote_interlets_account['status'], [1, 2, 7]) && !count($errors))
@@ -431,8 +429,7 @@ class TransactionsAddController extends AbstractController
 
                 if (!count($errors))
                 {
-                    if (!isset($remote_interlets_account['minlimit'])
-                        || $remote_interlets_account['minlimit'] === -999999999)
+                    if (!isset($remote_interlets_account['minlimit']))
                     {
                         $minlimit = $config_service->get('minlimit', $remote_schema);
 
@@ -482,8 +479,7 @@ class TransactionsAddController extends AbstractController
 
                 if (!count($errors))
                 {
-                    if (!isset($to_remote_user['maxlimit'])
-                        || $to_remote_user['maxlimit'] === 999999999)
+                    if (!isset($to_remote_user['maxlimit']))
                     {
                         $maxlimit = $config_service->get('maxlimit', $remote_schema);
 

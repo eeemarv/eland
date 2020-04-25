@@ -64,8 +64,7 @@ class SessionUserService
 		if ($this->id)
 		{
 			$this->user = $this->user_cache_service->get($this->id, $this->schema);
-			$role = $this->user['accountrole'];
-			$role = $role === 'interlets' ? 'guest' : $role;
+			$role = $this->user['role'];
 			$role = in_array($role, ['user', 'admin', 'guest']) ? $role : 'anonymous';
 		}
 

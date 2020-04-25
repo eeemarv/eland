@@ -48,7 +48,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
 
 	public function get(array $context, int $id, string $schema):array
 	{
-		$role = $this->user_cache_service->get($id, $schema)['accountrole'];
+		$role = $this->user_cache_service->get($id, $schema)['role'];
 		$role_short = RoleCnst::SHORT[$role] ?? '';
 
 		return $this->get_ary($role_short, $context['et'] ?? '', $schema);

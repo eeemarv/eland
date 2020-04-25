@@ -66,7 +66,7 @@ class IntersystemsController extends AbstractController
 
         $users_code = [];
 
-        $intersystem_users = $db->executeQuery('select id, status, code, accountrole
+        $intersystem_users = $db->executeQuery('select id, status, code, role
             from ' . $pp->schema() . '.users
             where code in (?)',
             [$codes],
@@ -77,7 +77,7 @@ class IntersystemsController extends AbstractController
             $users_code[$u['code']] = [
                 'id'			=> $u['id'],
                 'status'		=> $u['status'],
-                'accountrole'	=> $u['accountrole'],
+                'role'	        => $u['role'],
             ];
         }
 
@@ -142,14 +142,14 @@ class IntersystemsController extends AbstractController
                                 ],
                                 'exclamation-triangle');
                         }
-                        if ($user['accountrole'] != 'interlets')
+                        if ($user['role'] != 'guest')
                         {
                             $out .= ' ';
                             $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
                                 ['id' => $user['id']], 'Rol!',
                                 [
                                     'class'	=> 'btn btn-danger',
-                                    'title'	=> 'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+                                    'title'	=> 'Het interSysteem Account heeft een ongeldige rol. De rol moet van het type Gast zijn.',
                                 ],
                                 'fa-exclamation-triangle');
                         }
@@ -295,7 +295,7 @@ class IntersystemsController extends AbstractController
             $loc_group_ary[$h] = $group;
         }
 
-        $interlets_accounts = $db->executeQuery('select id, code, status, accountrole
+        $interlets_accounts = $db->executeQuery('select id, code, status, role
             from ' . $pp->schema() . '.users
             where code in (?)',
             [$loc_letscode_ary],
@@ -324,7 +324,7 @@ class IntersystemsController extends AbstractController
 
                 if ($rem_group['localletscode'])
                 {
-                    $rem_account = $db->fetchAssoc('select id, code, status, accountrole
+                    $rem_account = $db->fetchAssoc('select id, code, status, role
                         from ' . $rem_schema . '.users where code = ?', [$rem_group['localletscode']]);
 
                     if ($rem_account)
@@ -447,13 +447,13 @@ class IntersystemsController extends AbstractController
 
                     if (is_array($loc_acc = $loc_account_ary[$loc_group['localletscode']]))
                     {
-                        if ($loc_acc['accountrole'] != 'interlets')
+                        if ($loc_acc['role'] != 'guest')
                         {
                             $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
                                 ['id' => $loc_acc['id']], 'rol',
                                 [
                                     'class'	=> 'btn btn-warning',
-                                    'title'	=> 'De rol van het account moet van het type interSysteem zijn.',
+                                    'title'	=> 'De rol van het account moet van het type Gast zijn.',
                                 ]);
                         }
                         else if (!in_array($loc_acc['status'], [1, 2, 7]))
@@ -507,10 +507,10 @@ class IntersystemsController extends AbstractController
                 {
                     $rem_acc = $rem_account_ary[$rem_origin];
 
-                    if ($rem_acc['accountrole'] != 'interlets')
+                    if ($rem_acc['role'] != 'guest')
                     {
                         $out .= '<span class="btn btn-warning" title="De rol van het Account ';
-                        $out .= 'moet van het type interSysteem zijn.">rol</span>';
+                        $out .= 'moet van het type Gast zijn.">rol</span>';
                     }
                     else if (!in_array($rem_acc['status'], [1, 2, 7]))
                     {

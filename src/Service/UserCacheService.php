@@ -49,13 +49,19 @@ class UserCacheService
 
 	public function get_role(int $id, string $schema):string
 	{
-		return $this->get($id, $schema)['accountrole'];
+		return $this->get($id, $schema)['role'];
 	}
 
 	public function get(int $id, string $schema):array
 	{
 		$user = $this->temp_get($id, $schema);
 		$user['code'] ??= $user['letscode'];
+		$user['role'] ??= $user['accountrole'];
+
+		if ($user['role'] === 'interlets')
+		{
+			$user['role'] = 'guest';
+		}
 
 		return $user;
 	}

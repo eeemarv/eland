@@ -118,7 +118,7 @@ class MassTransactionController extends AbstractController
 
         $rs = $db->prepare(
             'select id, name, code,
-                accountrole, status, saldo,
+                role, status, saldo,
                 minlimit, maxlimit, adate,
                 postcode
             from ' . $pp->schema() . '.users
@@ -129,15 +129,6 @@ class MassTransactionController extends AbstractController
 
         while ($row = $rs->fetch())
         {
-            $row['minlimit'] = !isset($row['minlimit'])
-                    || $row['minlimit'] === -999999999
-                ? ''
-                : $row['minlimit'];
-            $row['maxlimit'] = !isset($row['maxlimit'])
-                || $row['maxlimit'] === 999999999
-                ? ''
-                : $row['maxlimit'];
-
             $users[$row['id']] = $row;
         }
 

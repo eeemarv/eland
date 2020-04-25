@@ -220,7 +220,7 @@ class LoginController extends AbstractController
             }
 
             if (!count($errors)
-                && !in_array($user['accountrole'], ['user', 'admin'])
+                && !in_array($user['role'], ['user', 'admin'])
                 && !$config_service->get_intersystem_en($pp->schema()))
             {
                 $errors[] = 'Het account is een interSysteem-gast account,
@@ -229,7 +229,7 @@ class LoginController extends AbstractController
 
             if (!count($errors)
                 && $config_service->get('maintenance', $pp->schema())
-                && $user['accountrole'] !== 'admin')
+                && $user['role'] !== 'admin')
             {
                 $errors[] = 'De website is in onderhoud, probeer later opnieuw';
             }

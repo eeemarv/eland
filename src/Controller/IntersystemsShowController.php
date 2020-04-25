@@ -139,14 +139,14 @@ class IntersystemsShowController extends AbstractController
                     ],
                     'exclamation-triangle');
             }
-            if ($user['accountrole'] != 'interlets')
+            if ($user['role'] != 'guest')
             {
                 $out .= ' ';
                 $out .= $link_render->link_fa('users_edit_admin', $pp->ary(),
                     ['id' => $user['id']], 'Rol!',
                     [
                         'class'	=> 'btn btn-danger',
-                        'title'	=> 'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type interSysteem zijn.',
+                        'title'	=> 'Het interSysteem-account heeft een ongeldige rol. De rol moet van het type Gast zijn.',
                     ],
                     'fa-exclamation-triangle');
             }

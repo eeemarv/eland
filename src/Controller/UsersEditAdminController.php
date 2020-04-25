@@ -165,7 +165,7 @@ class UsersEditAdminController extends AbstractController
         $birthday = trim($request->request->get('birthday', ''));
         $hobbies = trim($request->request->get('hobbies', ''));
         $comments = trim($request->request->get('comments', ''));
-        $accountrole = $request->request->get('accountrole', '');
+        $role = $request->request->get('role', '');
         $status = $request->request->get('status', '');
         $password = trim($request->request->get('password', ''));
         $password_notify = $request->request->has('password_notify');
@@ -476,7 +476,7 @@ class UsersEditAdminController extends AbstractController
                 if ($pp->is_admin())
                 {
                     $post_user['code'] = $code;
-                    $post_user['accountrole'] = $accountrole;
+                    $post_user['role'] = $role;
                     $post_user['status'] = (int) $status;
                     $post_user['admincomment'] = $admincomment;
                     $post_user['minlimit'] = $minlimit === '' ? null : (int) $minlimit;
@@ -677,7 +677,7 @@ class UsersEditAdminController extends AbstractController
             $birthday = '';
             $hobbies = '';
             $comments = '';
-            $accountrole = 'user';
+            $role = 'user';
             $status = '1';
             $admincomment = '';
             $minlimit = $config_service->get('preset_minlimit', $pp->schema());
@@ -721,7 +721,7 @@ class UsersEditAdminController extends AbstractController
 
                 $cron_saldo = false;
                 $status = '7';
-                $accountrole = 'interlets';
+                $role = 'guest';
                 $code = $intersystem_code;
             }
 
@@ -735,7 +735,7 @@ class UsersEditAdminController extends AbstractController
                 $birthday = $stored_user['birthday'] ?? '';
                 $hobbies = $stored_user['hobbies'] ?? '';
                 $comments = $stored_user['comments'] ?? '';
-                $accountrole = $stored_user['accountrole'] ?? 'user';
+                $role = $stored_user['role'] ?? 'user';
                 $status = (string) ($stored_user['status'] ?? '1');
                 $admincomment = $stored_user['admincomment'] ?? '';
                 $minlimit = $stored_user['minlimit'] ?? '';
@@ -992,14 +992,14 @@ class UsersEditAdminController extends AbstractController
         if ($pp->is_admin())
         {
             $out .= '<div class="form-group">';
-            $out .= '<label for="accountrole" class="control-label">';
+            $out .= '<label for="role" class="control-label">';
             $out .= 'Rechten / Rol</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-hand-paper-o"></span></span>';
-            $out .= '<select id="accountrole" name="accountrole" ';
+            $out .= '<select id="role" name="role" ';
             $out .= 'class="form-control">';
-            $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $accountrole);
+            $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $role);
             $out .= '</select>';
             $out .= '</div>';
             $out .= '</div>';

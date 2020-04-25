@@ -72,9 +72,8 @@ class MenuNavSystemService
 			{
 				$role = $this->user_cache_service->get_role($login_id, $login_schema);
 
-				if ($role === 'interlets' || $role === 'guest')
+				if ($role === 'guest')
 				{
-					$role = 'guest';
 					$role_short = 'g';
 				}
 				else if ($role === 'user')

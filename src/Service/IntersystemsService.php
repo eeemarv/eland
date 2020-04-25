@@ -63,7 +63,7 @@ class IntersystemsService
 			where g.apimethod = \'elassoap\'
 				and u.code = g.localletscode
 				and u.code <> \'\'
-				and u.accountrole = \'interlets\'
+				and u.role = \'guest\'
 				and u.status in (1, 2, 7)');
 
 		$st->execute();
@@ -157,7 +157,7 @@ class IntersystemsService
 					and u.code = g.localletscode
 					and u.code <> \'\'
 					and u.status in (1, 2, 7)
-					and u.accountrole = \'interlets\'
+					and u.role = \'guest\'
 					and g.url = ?', [$s_url]);
 
 			if (!$url)

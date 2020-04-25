@@ -25,12 +25,6 @@ class AccessCnst
         'guest' => 'guest',
     ];
 
-    const FROM_ACCOUNTROLE = [
-        'admin'         => 'admin',
-        'user'          => 'user',
-        'interlets'     => 'guest',
-    ];
-
     const FROM_XDB = [
         'admin'     => 'admin',
         'users'     => 'user',

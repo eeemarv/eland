@@ -102,7 +102,7 @@ class MolliePaymentsAddController extends AbstractController
 
         $stmt = $db->executeQuery(
             'select u.id, u.name, u.fullname, u.code,
-                u.accountrole, u.status, u.adate,
+                u.role, u.status, u.adate,
                 p1.is_payed, p1.is_canceled, p1.created_at as last_created_at,
                 p1.amount, p1.description
             from ' . $pp->schema() . '.users u

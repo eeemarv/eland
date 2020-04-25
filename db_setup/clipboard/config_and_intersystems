@@ -525,7 +525,7 @@ LOOP
      UPDATE users u SET remote_schema = (select REGEXP_REPLACE(REGEXP_REPLACE(url, '^(https?://)?(www\.)?', ''), '\.letsa\.net$', '')
           from letsgroups l
           where l.localletscode = u.letscode and l.apimethod = 'elassoap');
-     UPDATE users u SET is_intersystem = 't'::boolean from letsgroups l where (l.localletscode = u.letscode and l.apimethod <> 'internal') or u.accountrole = 'interlets';
+     UPDATE users u SET is_intersystem = 't'::boolean from letsgroups l where (l.localletscode = u.letscode and l.apimethod <> 'internal') or u.role = 'guest';
      UPDATE users u SET remote_schema = null where remote_schema like '%.%';
      UPDATE users u SET remote_schema = 'letsdendermonde' where remote_schema = 'dendermonde';
      UPDATE users u SET remote_schema = 'letsdurme' where remote_schema = 'durme';

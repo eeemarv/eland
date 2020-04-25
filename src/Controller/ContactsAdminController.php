@@ -19,6 +19,7 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
+use App\Cnst\RoleCnst;
 
 class ContactsAdminController extends AbstractController
 {
@@ -279,14 +280,13 @@ class ContactsAdminController extends AbstractController
 
         $access_options = [
             'all'		=> '',
-            'admin'		=> 'admin',
-            'users'		=> 'leden',
-            'interlets'	=> 'interSysteem',
         ];
+
+        $access_options += RoleCnst::LABEL_ARY;
 
         if (!$config_service->get_intersystem_en($pp->schema()))
         {
-            unset($access_options['interlets']);
+            unset($access_options['guest']);
         }
 
         $out .= '<div class="col-sm-4">';

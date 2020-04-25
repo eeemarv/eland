@@ -5,9 +5,9 @@ namespace App\Cnst;
 class RoleCnst
 {
     const LABEL_ARY = [
-        'admin'         => 'Admin',
-        'user'          => 'Gebruiker',
-        'interlets'     => 'InterSysteem',
+        'admin'     => 'Admin',
+        'user'      => 'Gebruiker',
+        'guest'     => 'Gast',
     ];
 
     const SHORT = [

@@ -55,7 +55,7 @@ class BulkCnst
             'string'	=> true,
             'fa'		=> 'comment-o',
         ],
-        'accountrole'		=> [
+        'role'		=> [
             'lbl'		=> 'Rechten',
             'options'	=> RoleCnst::LABEL_ARY,
             'string'	=> true,

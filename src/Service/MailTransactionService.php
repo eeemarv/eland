@@ -104,12 +104,12 @@ class MailTransactionService
 			'transaction'		=> $transaction,
 		];
 
-		if ($from_user['accountrole'] != 'interlets'
+		if ($from_user['role'] != 'guest'
 			&& ($from_user['status'] == 1
 				|| $from_user['status'] == 2))
 		{
 			$tpl = 'transaction/';
-			$tpl .= $to_user['accountrole'] == 'interlets' ? 'to_intersystem' : 'transaction';
+			$tpl .= $to_user['role'] == 'guest' ? 'to_intersystem' : 'transaction';
 
 			$this->mail_queue->queue([
 				'schema'	=> $schema,
@@ -122,12 +122,12 @@ class MailTransactionService
 			], 9000);
 		}
 
-		if ($to_user['accountrole'] != 'interlets'
+		if ($to_user['role'] != 'guest'
 			&& ($to_user['status'] == 1
 				|| $to_user['status'] == 2))
 		{
 			$tpl = 'transaction/';
-			$tpl .= $from_user['accountrole'] == 'interlets' ? 'from_intersystem' : 'transaction';
+			$tpl .= $from_user['role'] == 'guest' ? 'from_intersystem' : 'transaction';
 
 			$this->mail_queue->queue([
 				'to' 		=> $this->mail_addr_user_service->get_active($to_user_id, $schema),

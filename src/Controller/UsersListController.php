@@ -482,7 +482,7 @@ class UsersListController extends AbstractController
                 'name'			=> 'Naam',
                 'fullname'		=> 'Volledige naam',
                 'postcode'		=> 'Postcode',
-                'accountrole'	=> 'Rol',
+                'role'	        => 'Rol',
                 'saldo'			=> 'Saldo',
                 'saldo_date'	=> 'Saldo op ',
                 'minlimit'		=> 'Min',
@@ -1306,9 +1306,9 @@ class UsersListController extends AbstractController
                             $td .= 'verborgen</span>';
                         }
                     }
-                    else if ($key === 'accountrole')
+                    else if ($key === 'role')
                     {
-                        $td .= RoleCnst::LABEL_ARY[$u['accountrole']];
+                        $td .= RoleCnst::LABEL_ARY[$u['role']];
                     }
                     else
                     {

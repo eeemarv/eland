@@ -32,7 +32,7 @@ Then import the users csv file.
 Check the order of the columns.
 
 ```sql
-\copy yourschemaname.users(code, cdate, comments, hobbies, name, postcode, login, password, accountrole, status, lastlogin, minlimit, fullname, admincomment, adate) from 'users.csv' delimiter ',' csv header;
+\copy yourschemaname.users(code, cdate, comments, hobbies, name, postcode, login, password, role, status, lastlogin, minlimit, fullname, admincomment, adate) from 'users.csv' delimiter ',' csv header;
 ```
 
 (replace users.cvs with your actual filename and location)
