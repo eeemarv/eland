@@ -180,10 +180,10 @@ class TransactionsAddController extends AbstractController
                 {
                     $minlimit = $config_service->get('minlimit', $pp->schema());
 
-                    if(($fromuser['saldo'] - $amount) < $minlimit && $minlimit !== '')
+                    if(($fromuser['balance'] - $amount) < $minlimit && $minlimit !== '')
                     {
                         $err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
-                        $err .= 'Je saldo bedraagt ' . $fromuser['saldo'] . ' ' . $currency . ' ';
+                        $err .= 'Je saldo bedraagt ' . $fromuser['balance'] . ' ' . $currency . ' ';
                         $err .= 'en de minimum Systeemslimiet bedraagt ';
                         $err .= $minlimit . ' ' . $currency;
                         $errors[] = $err;
@@ -191,10 +191,10 @@ class TransactionsAddController extends AbstractController
                 }
                 else
                 {
-                    if(($fromuser['saldo'] - $amount) < $fromuser['minlimit'])
+                    if(($fromuser['balance'] - $amount) < $fromuser['minlimit'])
                     {
                         $err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
-                        $err .= 'Je saldo bedraagt ' . $fromuser['saldo'] . ' ';
+                        $err .= 'Je saldo bedraagt ' . $fromuser['balance'] . ' ';
                         $err .= $currency . ' en je minimum limiet bedraagt ';
                         $err .= $fromuser['minlimit'] . ' ' . $currency . '.';
                         $errors[] = $err;
@@ -213,12 +213,12 @@ class TransactionsAddController extends AbstractController
                 {
                     $maxlimit = $config_service->get('maxlimit', $pp->schema());
 
-                    if(($touser['saldo'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
+                    if(($touser['balance'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
                     {
                         $err = 'Het ';
                         $err .= $group_id == 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (in dit Systeem)';
                         $err .= ' heeft haar maximum limiet bereikt. ';
-                        $err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
+                        $err .= 'Het saldo bedraagt ' . $touser['balance'] . ' ' . $currency;
                         $err .= ' en de maximum ';
                         $err .= 'Systeemslimiet bedraagt ' . $maxlimit . ' ' . $currency . '.';
                         $errors[] = $err;
@@ -226,12 +226,12 @@ class TransactionsAddController extends AbstractController
                 }
                 else
                 {
-                    if(($touser['saldo'] + $transaction['amount']) > $touser['maxlimit'])
+                    if(($touser['balance'] + $transaction['amount']) > $touser['maxlimit'])
                     {
                         $err = 'Het ';
                         $err .= $group_id == 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (in dit Systeem)';
                         $err .= ' heeft haar maximum limiet bereikt. ';
-                        $err .= 'Het saldo bedraagt ' . $touser['saldo'] . ' ' . $currency;
+                        $err .= 'Het saldo bedraagt ' . $touser['balance'] . ' ' . $currency;
                         $err .= ' en de Maximum Account ';
                         $err .= 'Limiet bedraagt ' . $touser['maxlimit'] . ' ' . $currency . '.';
                         $errors[] = $err;
@@ -251,7 +251,7 @@ class TransactionsAddController extends AbstractController
             {
                 $balance_eq = $config_service->get('balance_equilibrium', $pp->schema());
 
-                if (($fromuser['status'] == 2) && (($fromuser['saldo'] - $amount) < $balance_eq))
+                if (($fromuser['status'] == 2) && (($fromuser['balance'] - $amount) < $balance_eq))
                 {
                     $err = 'Als Uitstapper kan je geen ';
                     $err .= $amount;
@@ -261,7 +261,7 @@ class TransactionsAddController extends AbstractController
                     $errors[] = $err;
                 }
 
-                if (($touser['status'] == 2) && (($touser['saldo'] + $amount) > $balance_eq))
+                if (($touser['status'] == 2) && (($touser['balance'] + $amount) > $balance_eq))
                 {
                     $err = 'Het ';
                     $err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
@@ -433,12 +433,12 @@ class TransactionsAddController extends AbstractController
                     {
                         $minlimit = $config_service->get('minlimit', $remote_schema);
 
-                        if(($remote_interlets_account['saldo'] - $remote_amount) < $minlimit && $minlimit !== '')
+                        if(($remote_interlets_account['balance'] - $remote_amount) < $minlimit && $minlimit !== '')
                         {
                             $err = 'Het interSysteem Account van dit Systeem ';
                             $err .= 'in het andere Systeem heeft onvoldoende saldo ';
                             $err .= 'beschikbaar. Het saldo bedraagt ';
-                            $err .= $remote_interlets_account['saldo'] . ' ';
+                            $err .= $remote_interlets_account['balance'] . ' ';
                             $err .= $remote_currency . ' ';
                             $err .= 'en de Minimum Systeemslimiet ';
                             $err .= 'in het andere Systeem bedraagt ';
@@ -449,10 +449,10 @@ class TransactionsAddController extends AbstractController
                     }
                     else
                     {
-                        if(($remote_interlets_account['saldo'] - $remote_amount) < $remote_interlets_account['minlimit'])
+                        if(($remote_interlets_account['balance'] - $remote_amount) < $remote_interlets_account['minlimit'])
                         {
-                            $err = 'Het interSysteem Account van dit Systeem in het andere Systeem heeft onvoldoende saldo ';
-                            $err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['saldo'] . ' ';
+                            $err = 'Het interSysteem Account van dit Systeem in het andere Systeem heeft onvoldoende balance ';
+                            $err .= 'beschikbaar. Het saldo bedraagt ' . $remote_interlets_account['balance'] . ' ';
                             $err .= $remote_currency . ' ';
                             $err .= 'en de Minimum Limiet van het Account in het andere Systeem ';
                             $err .= 'bedraagt ' . $remote_interlets_account['minlimit'] . ' ';
@@ -463,7 +463,7 @@ class TransactionsAddController extends AbstractController
                 }
 
                 if (($remote_interlets_account['status'] == 2)
-                    && (($remote_interlets_account['saldo'] - $remote_amount) < $remote_balance_eq)
+                    && (($remote_interlets_account['balance'] - $remote_amount) < $remote_balance_eq)
                     && !count($errors))
                 {
                     $err = 'Het interSysteem Account van dit Systeem in het andere Systeem ';
@@ -483,12 +483,12 @@ class TransactionsAddController extends AbstractController
                     {
                         $maxlimit = $config_service->get('maxlimit', $remote_schema);
 
-                        if(($to_remote_user['saldo'] + $remote_amount) > $maxlimit && $maxlimit !== '')
+                        if(($to_remote_user['balance'] + $remote_amount) > $maxlimit && $maxlimit !== '')
                         {
                             $err = 'Het bestemmings-Account in het andere Systeem ';
                             $err .= 'heeft de maximum Systeemslimiet bereikt. ';
                             $err .= 'Het saldo bedraagt ';
-                            $err .= $to_remote_user['saldo'];
+                            $err .= $to_remote_user['balance'];
                             $err .= ' ';
                             $err .= $remote_currency;
                             $err .= ' en de maximum ';
@@ -499,11 +499,11 @@ class TransactionsAddController extends AbstractController
                     }
                     else
                     {
-                        if(($to_remote_user['saldo'] + $remote_amount) > $to_remote_user['maxlimit'])
+                        if(($to_remote_user['balance'] + $remote_amount) > $to_remote_user['maxlimit'])
                         {
                             $err = 'Het bestemmings-Account in het andere Systeem ';
                             $err .= 'heeft de maximum limiet bereikt. ';
-                            $err .= 'Het saldo bedraagt ' . $to_remote_user['saldo'] . ' ' . $remote_currency;
+                            $err .= 'Het saldo bedraagt ' . $to_remote_user['balance'] . ' ' . $remote_currency;
                             $err .= ' en de maximum ';
                             $err .= 'limiet voor het Account bedraagt ' . $to_remote_user['maxlimit'] . ' ' . $remote_currency . '.';
                             $errors[] = $err;
@@ -512,7 +512,7 @@ class TransactionsAddController extends AbstractController
                 }
 
                 if (($to_remote_user['status'] == 2)
-                    && (($to_remote_user['saldo'] + $remote_amount) > $remote_balance_eq)
+                    && (($to_remote_user['balance'] + $remote_amount) > $remote_balance_eq)
                     && !count($errors))
                 {
                     $err = 'Het bestemmings-Account heeft status uitstapper ';
@@ -541,10 +541,10 @@ class TransactionsAddController extends AbstractController
                         $db->insert($pp->schema() . '.transactions', $transaction);
                         $id = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
                         $db->executeUpdate('update ' . $pp->schema() . '.users
-                            set saldo = saldo + ? where id = ?',
+                            set balance = balance + ? where id = ?',
                             [$transaction['amount'], $transaction['id_to']]);
                         $db->executeUpdate('update ' . $pp->schema() . '.users
-                            set saldo = saldo - ? where id = ?',
+                            set balance = balance - ? where id = ?',
                             [$transaction['amount'], $transaction['id_from']]);
 
                         $trans_org = $transaction;
@@ -561,10 +561,10 @@ class TransactionsAddController extends AbstractController
                         $db->insert($remote_schema . '.transactions', $transaction);
                         $id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
                         $db->executeUpdate('update ' . $remote_schema . '.users
-                            set saldo = saldo + ? where id = ?',
+                            set balance = balance + ? where id = ?',
                             [$remote_amount, $transaction['id_to']]);
                         $db->executeUpdate('update ' . $remote_schema . '.users
-                            set saldo = saldo - ? where id = ?',
+                            set balance = balance - ? where id = ?',
                             [$transaction['amount'], $transaction['id_from']]);
                         $transaction['id'] = $id;
 

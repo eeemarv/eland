@@ -483,8 +483,8 @@ class UsersListController extends AbstractController
                 'fullname'		=> 'Volledige naam',
                 'postcode'		=> 'Postcode',
                 'role'	        => 'Rol',
-                'saldo'			=> 'Saldo',
-                'saldo_date'	=> 'Saldo op ',
+                'balance'		=> 'Saldo',
+                'balance_date'	=> 'Saldo op ',
                 'minlimit'		=> 'Min',
                 'maxlimit'		=> 'Max',
                 'comments'		=> 'Commentaar',
@@ -547,7 +547,7 @@ class UsersListController extends AbstractController
                 'code'	=> '.',
             ],
             'u'	=> [
-                'saldo_date'	=> '.',
+                'balance_date'	=> '.',
             ],
         ];
 
@@ -569,7 +569,7 @@ class UsersListController extends AbstractController
                         'code'	=> 1,
                         'name'		=> 1,
                         'postcode'	=> 1,
-                        'saldo'		=> 1,
+                        'balance'		=> 1,
                     ],
                 ];
             }
@@ -580,7 +580,7 @@ class UsersListController extends AbstractController
                         'code'	=> 1,
                         'name'		=> 1,
                         'postcode'	=> 1,
-                        'saldo'		=> 1,
+                        'balance'		=> 1,
                     ],
                     'c'	=> [
                         'gsm'	=> 1,
@@ -600,33 +600,33 @@ class UsersListController extends AbstractController
         $activity_days = $show_columns['p']['a']['days'] ?? 365;
         $activity_days = $activity_days < 1 ? 365 : $activity_days;
         $activity_filter_code = $show_columns['p']['a']['code'] ?? '';
-        $saldo_date = $show_columns['p']['u']['saldo_date'] ?? '';
-        $saldo_date = trim($saldo_date);
+        $balance_date = $show_columns['p']['u']['balance_date'] ?? '';
+        $balance_date = trim($balance_date);
 
         $users = $db->fetchAll('select u.*
             from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.code asc', $sql_bind);
 
-        if (isset($show_columns['u']['saldo_date']))
+        if (isset($show_columns['u']['balance_date']))
         {
-            if ($saldo_date)
+            if ($balance_date)
             {
-                $saldo_date_rev = $date_format_service->reverse($saldo_date, 'min', $pp->schema());
+                $balance_date_rev = $date_format_service->reverse($balance_date, 'min', $pp->schema());
             }
 
-            if ($saldo_date_rev === '' || $saldo_date == '')
+            if ($balance_date_rev === '' || $balance_date == '')
             {
-                $saldo_date = $date_format_service->get('', 'day', $pp->schema());
+                $balance_date = $date_format_service->get('', 'day', $pp->schema());
 
                 array_walk($users, function(&$user, $user_id){
-                    $user['saldo_date'] = $user['saldo'];
+                    $user['balance_date'] = $user['balance'];
                 });
             }
             else
             {
                 $trans_in = $trans_out = [];
-                $datetime = new \DateTime($saldo_date_rev);
+                $datetime = new \DateTime($balance_date_rev);
 
                 $rs = $db->prepare('select id_to, sum(amount)
                     from ' . $pp->schema() . '.transactions
@@ -656,9 +656,9 @@ class UsersListController extends AbstractController
                 }
 
                 array_walk($users, function(&$user) use ($trans_out, $trans_in){
-                    $user['saldo_date'] = 0;
-                    $user['saldo_date'] += $trans_in[$user['id']] ?? 0;
-                    $user['saldo_date'] -= $trans_out[$user['id']] ?? 0;
+                    $user['balance_date'] = 0;
+                    $user['balance_date'] += $trans_in[$user['id']] ?? 0;
+                    $user['balance_date'] -= $trans_out[$user['id']] ?? 0;
                 });
             }
         }
@@ -1037,7 +1037,7 @@ class UsersListController extends AbstractController
                     $f_col .= '">';
                 }
 
-                if ($key === 'saldo_date')
+                if ($key === 'balance_date')
                 {
                     $f_col .= '<div class="input-group">';
                     $f_col .= '<span class="input-group-addon">';
@@ -1045,7 +1045,7 @@ class UsersListController extends AbstractController
                     $f_col .= '</span>';
                     $f_col .= '<input type="text" ';
                     $f_col .= 'class="form-control" ';
-                    $f_col .= 'name="sh[p][u][saldo_date]" ';
+                    $f_col .= 'name="sh[p][u][balance_date]" ';
                     $f_col .= 'data-provide="datepicker" ';
                     $f_col .= 'data-date-format="';
                     $f_col .= $date_format_service->datepicker_format($pp->schema());
@@ -1060,11 +1060,11 @@ class UsersListController extends AbstractController
                     $f_col .= $date_format_service->datepicker_placeholder($pp->schema());
                     $f_col .= '" ';
                     $f_col .= 'value="';
-                    $f_col .= $saldo_date;
+                    $f_col .= $balance_date;
                     $f_col .= '">';
                     $f_col .= '</div>';
 
-                    $columns['u']['saldo_date'] = 'Saldo op ' . $saldo_date;
+                    $columns['u']['balance_date'] = 'Saldo op ' . $balance_date;
                 }
 
                 $f_col .= '</label>';
@@ -1117,8 +1117,8 @@ class UsersListController extends AbstractController
         $out .= '<tr>';
 
         $numeric_keys = [
-            'saldo'			=> true,
-            'saldo_date'	=> true,
+            'balance'			=> true,
+            'balance_date'	=> true,
         ];
 
         $date_keys = [
@@ -1250,7 +1250,7 @@ class UsersListController extends AbstractController
             }
 
             $out .= ' data-balance="';
-            $out .= $u['saldo'];
+            $out .= $u['balance'];
             $out .= '">';
 
             if (isset($show_columns['u']))

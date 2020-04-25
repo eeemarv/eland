@@ -348,7 +348,7 @@ class TransactionsController extends AbstractController
             }
 
             $heading_render->add_sub_raw('Huidig saldo: <span class="label label-info">');
-            $heading_render->add_sub((string) $user['saldo']);
+            $heading_render->add_sub((string) $user['balance']);
             $heading_render->add_sub_raw('</span>&nbsp;');
             $heading_render->add_sub($config_service->get('currency', $pp->schema()));
         }

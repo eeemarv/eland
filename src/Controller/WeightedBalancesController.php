@@ -21,14 +21,14 @@ class WeightedBalancesController extends AbstractController
 
         $balance = [];
 
-        $rs = $db->prepare('select id, saldo
+        $rs = $db->prepare('select id, balance
             from ' . $pp->schema() . '.users');
 
         $rs->execute();
 
         while ($row = $rs->fetch())
         {
-            $balance[$row['id']] = $row['saldo'];
+            $balance[$row['id']] = $row['balance'];
         }
 
         $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);

@@ -65,7 +65,7 @@ class PlotUserTransactionsController extends AbstractController
             $intersystem_names[$code] = $name;
         }
 
-        $end_balance = (int) $user['saldo'];
+        $end_balance = (int) $user['balance'];
         $balance = 0;
 
         $begin_unix = time() - (86400 * $days);

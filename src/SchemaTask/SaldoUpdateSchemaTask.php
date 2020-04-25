@@ -5,7 +5,7 @@ namespace App\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-class SaldoUpdateSchemaTask implements SchemaTaskInterface
+class BalanceUpdateSchemaTask implements SchemaTaskInterface
 {
 	protected Db $db;
 	protected LoggerInterface $logger;
@@ -21,21 +21,21 @@ class SaldoUpdateSchemaTask implements SchemaTaskInterface
 
 	public static function get_default_index_name():string
 	{
-		return 'saldo_update';
+		return 'balance_update';
 	}
 
 	public function run(string $schema, bool $update):void
 	{
 		$user_balances = $min = $plus = [];
 
-		$rs = $this->db->prepare('select id, saldo
+		$rs = $this->db->prepare('select id, balance
 			from ' . $schema . '.users');
 
 		$rs->execute();
 
 		while ($row = $rs->fetch())
 		{
-			$user_balances[$row['id']] = $row['saldo'];
+			$user_balances[$row['id']] = $row['balance'];
 		}
 
 		$rs = $this->db->prepare('select id_from, sum(amount)
@@ -73,7 +73,7 @@ class SaldoUpdateSchemaTask implements SchemaTaskInterface
 			}
 
 			$this->db->update($schema . '.users',
-				['saldo' => $calculated], ['id' => $id]);
+				['balance' => $calculated], ['id' => $id]);
 
 			$m = 'User id ' . $id . ' balance updated, old: ' .
 				$balance . ', new: ' . $calculated;

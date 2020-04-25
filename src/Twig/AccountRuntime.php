@@ -41,7 +41,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 	public function get_balance(int $id, string $schema):int
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return $user['saldo'];
+		return $user['balance'];
 	}
 
 	public function get_min(int $id, string $schema):string

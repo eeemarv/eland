@@ -64,6 +64,7 @@ class UserCacheService
 		}
 
 		$user['periodic_overview_en'] ??= $user['cron_saldo'];
+		$user['balance'] ??= $user['saldo'];
 
 		return $user;
 	}

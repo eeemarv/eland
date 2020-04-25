@@ -118,7 +118,7 @@ class MassTransactionController extends AbstractController
 
         $rs = $db->prepare(
             'select id, name, code,
-                role, status, saldo,
+                role, status, balance,
                 minlimit, maxlimit, adate,
                 postcode
             from ' . $pp->schema() . '.users
@@ -289,7 +289,7 @@ class MassTransactionController extends AbstractController
                         $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
 
                         $db->executeUpdate('update ' . $pp->schema() . '.users
-                            set saldo = saldo ' . (($to_one) ? '- ' : '+ ') . '?
+                            set balance = balance ' . (($to_one) ? '-' : '+') . ' ?
                             where id = ?', [$amo, $many_uid]);
 
                         $total_amount += $amo;
@@ -298,7 +298,7 @@ class MassTransactionController extends AbstractController
                     }
 
                     $db->executeUpdate('update ' . $pp->schema() . '.users
-                        set saldo = saldo ' . (($to_one) ? '+ ' : '- ') . '?
+                        set balance = balance ' . (($to_one) ? '+' : '-') . ' ?
                         where id = ?', [$total_amount, $one_uid]);
 
                     $db->commit();
@@ -826,7 +826,7 @@ class MassTransactionController extends AbstractController
             $out .= 'min="0" ';
             $out .= 'data-code="' . $user['code'] . '" ';
             $out .= 'data-user-id="' . $user_id . '" ';
-            $out .= 'data-balance="' . $user['saldo'] . '" ';
+            $out .= 'data-balance="' . $user['balance'] . '" ';
             $out .= 'data-minlimit="' . $user['minlimit'] . '"';
 
             if ($status_key === 'new')
@@ -844,7 +844,7 @@ class MassTransactionController extends AbstractController
 
             $out .= '<td>';
 
-            $balance = $user['saldo'];
+            $balance = $user['balance'];
 
             $minlimit = $user['minlimit'] === '' ? $system_minlimit : $user['minlimit'];
             $maxlimit = $user['maxlimit'] === '' ? $system_maxlimit : $user['maxlimit'];

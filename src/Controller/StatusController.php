@@ -156,7 +156,7 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $no_msgs_users = $db->fetchAll('select id, code, name, saldo, status
+        $no_msgs_users = $db->fetchAll('select id, code, name, balance, status
             from ' . $pp->schema() . '.users u
             where status in (1, 2)
                 and not exists (select 1
@@ -443,8 +443,8 @@ class StatusController extends AbstractController
                     $out .= '<li>';
                     $out .= $account_render->link($u['id'], $pp->ary());
                     $out .= $u['status'] == 2 ? ' <span class="text-danger">Uitstapper</span>' : '';
-                    $out .= ', saldo: ';
-                    $out .= $u['saldo'];
+                    $out .= ', balance: ';
+                    $out .= $u['balance'];
                     $out .= ' ';
                     $out .= $currency;
                     $out .= '</li>';

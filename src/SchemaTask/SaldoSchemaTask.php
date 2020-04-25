@@ -59,7 +59,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
 		$forum = $intersystem = $docs = [];
-		$mailaddr = $saldo_mail = [];
+		$mailaddr = $periodic_overvew_ary = [];
 
 	// get blocks
 
@@ -94,7 +94,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 	// fetch all active users
 
 		$rs = $this->db->prepare('select u.id,
-				u.name, u.saldo, u.status,
+				u.name, u.balance, u.status,
 				u.code, u.postcode, u.periodic_overview_en
 			from ' . $schema . '.users u
 			where u.status in (1, 2)');
@@ -130,7 +130,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			$saldo_mail[$user_id] = true;
+			$periodic_overvew_ary[$user_id] = true;
 		}
 
 		if (isset($block_options['messages']))
@@ -409,7 +409,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		$log_to = [];
 
-		foreach ($saldo_mail as $id => $b)
+		foreach ($periodic_overvew_ary as $id => $b)
 		{
 			$to = $this->mail_addr_user_service->get_active($id, $schema);
 
@@ -438,12 +438,12 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		if (count($log_to))
 		{
-			$this->logger->info('Saldomail queued: ' .
+			$this->logger->info('Periodic overview queued: ' .
 				implode(', ', $log_to), ['schema' => $schema]);
 		}
 		else
 		{
-			$this->logger->info('Saldomail NOT queued (no users)',
+			$this->logger->info('Periodic overview NOT queued (no users)',
 				['schema' => $schema]);
 		}
 

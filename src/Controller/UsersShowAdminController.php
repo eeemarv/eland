@@ -593,7 +593,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '<dt>Saldo</dt>';
         $out .= '<dd>';
         $out .= '<span class="label label-info">';
-        $out .= $user['saldo'];
+        $out .= $user['balance'];
         $out .= '</span>&nbsp;';
         $out .= $config_service->get('currency', $pp->schema());
         $out .= '</dd>';
@@ -660,7 +660,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '<div class="col-md-12">';
 
         $out .= '<h3>Huidig saldo: <span class="label label-info">';
-        $out .= $user['saldo'];
+        $out .= $user['balance'];
         $out .= '</span> ';
         $out .= $config_service->get('currency', $pp->schema());
         $out .= '</h3>';

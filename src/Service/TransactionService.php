@@ -54,8 +54,8 @@ class TransactionService
 		{
 			$this->db->insert($schema . '.transactions', $transaction);
 			$id = (int) $this->db->lastInsertId($schema . '.transactions_id_seq');
-			$this->db->executeUpdate('update ' . $schema . '.users set saldo = saldo + ? where id = ?', [$transaction['amount'], $transaction['id_to']]);
-			$this->db->executeUpdate('update ' . $schema . '.users set saldo = saldo - ? where id = ?', [$transaction['amount'], $transaction['id_from']]);
+			$this->db->executeUpdate('update ' . $schema . '.users set balance = balance + ? where id = ?', [$transaction['amount'], $transaction['id_to']]);
+			$this->db->executeUpdate('update ' . $schema . '.users set balance = balance - ? where id = ?', [$transaction['amount'], $transaction['id_from']]);
 			$this->db->commit();
 
 		}
