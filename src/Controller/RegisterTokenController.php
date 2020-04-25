@@ -94,14 +94,14 @@ class RegisterTokenController extends AbstractController
         }
 
         $user = [
-            'name'			=> $name,
-            'fullname'		=> $data['first_name'] . ' ' . $data['last_name'],
-            'postcode'		=> $data['postcode'],
-            'status'		=> 5,
-            'role'	        => 'user',
-            'cron_saldo'	=> 't',
-            'hobbies'		=> '',
-            'cdate'			=> gmdate('Y-m-d H:i:s'),
+            'name'			        => $name,
+            'fullname'		        => $data['first_name'] . ' ' . $data['last_name'],
+            'postcode'		        => $data['postcode'],
+            'status'		        => 5,
+            'role'	                => 'user',
+            'periodic_overview_en'	=> 't',
+            'hobbies'		        => '',
+            'cdate'			        => gmdate('Y-m-d H:i:s'),
         ];
 
         $preset_minlimit = $config_service->get('preset_minlimit', $pp->schema());

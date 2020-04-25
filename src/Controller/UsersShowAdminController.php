@@ -637,7 +637,7 @@ class UsersShowAdminController extends AbstractController
             $out .= '<dt>';
             $out .= 'Periodieke Overzichts E-mail';
             $out .= '</dt>';
-            $out .= $user['cron_saldo'] ? 'Aan' : 'Uit';
+            $out .= $user['periodic_overview_en'] ? 'Aan' : 'Uit';
             $out .= '</dl>';
         }
 
