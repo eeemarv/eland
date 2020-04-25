@@ -54,6 +54,14 @@ class UserCacheService
 
 	public function get(int $id, string $schema):array
 	{
+		$user = $this->temp_get($id, $schema);
+		$user['code'] ??= $user['letscode'];
+
+		return $user;
+	}
+
+	public function temp_get(int $id, string $schema):array
+	{
 		if (!$id)
 		{
 			return [];
