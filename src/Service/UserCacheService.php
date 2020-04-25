@@ -52,6 +52,10 @@ class UserCacheService
 		return $this->get($id, $schema)['role'];
 	}
 
+	/**
+	 * TEMP FIX
+	 */
+
 	public function get(int $id, string $schema):array
 	{
 		$user = $this->temp_get($id, $schema);
