@@ -5,8 +5,6 @@ create table if not exists xdb.logs (
 schema varchar(60) not null,
 user_id int not null default 0,
 user_schema varchar(60),
-letscode varchar(20),
-username varchar(255),
 ip varchar(60),
 ts timestamp without time zone default (now() at time zone 'utc'),
 type varchar(60),
@@ -68,4 +66,3 @@ id varchar(255) primary key not null,
 data jsonb,
 ts timestamp without time zone default timezone('utc'::text, now()),
 expires timestamp without time zone);
-

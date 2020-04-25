@@ -41,11 +41,11 @@ dokku domains:set your-eland-app yourschemaname.your-domain.com
 
 ```
 
-Note: this cannot be a wildcard because it's not supported by the Letsencrypt plugin.
+Note: this cannot be a wildcard because it's not supported by the Dokku Letsencrypt plugin.
 
 Also set (when intersystem connections with eLAS needed) a DNS A record with wildcard to the VPS ip.
 
-* Use the [Letsencrypt dokku](https://github.com/dokku/dokku-letsencrypt) plugin to enable https
+* Use the [Dokku Letsencrypt](https://github.com/dokku/dokku-letsencrypt) plugin to enable https
 
 * Set the environment varables for links in emails. (emails get sent in a background process that does not have a request context.)
 

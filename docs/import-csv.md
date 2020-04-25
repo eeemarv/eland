@@ -18,13 +18,13 @@ alter schema public rename to yourschemaname;
 
 Set a default and remove the not null constraint on several columns.
 
-Do this for columns letscode, hobbies, lang, postcode, name, login, maxlimit
+Do this for columns code, hobbies, lang, postcode, name, login, maxlimit
 
 In psql:
 
 ```sql
-alter table yourschemaname.users alter column letscode set default '';
-alter table yourschemaname.users alter column letscode drop not null;
+alter table yourschemaname.users alter column code set default '';
+alter table yourschemaname.users alter column code drop not null;
 ```
 
 Delete the "mailinglist" column from the csv file with a spreadsheet program (like Open Office)
@@ -32,7 +32,7 @@ Then import the users csv file.
 Check the order of the columns.
 
 ```sql
-\copy yourschemaname.users(letscode, cdate, comments, hobbies, name, postcode, login, password, accountrole, status, lastlogin, minlimit, fullname, admincomment, adate) from 'users.csv' delimiter ',' csv header;
+\copy yourschemaname.users(code, cdate, comments, hobbies, name, postcode, login, password, accountrole, status, lastlogin, minlimit, fullname, admincomment, adate) from 'users.csv' delimiter ',' csv header;
 ```
 
 (replace users.cvs with your actual filename and location)
@@ -40,12 +40,12 @@ Check the order of the columns.
 ## Import contacts
 
 The cvs export from eLAS does not contain user ids.
-We have to use the letscode (Account Code) to link the contacts to the users.
+We have to use the code (Account Code) to link the contacts to the users.
 
-Add a column to the contact table to store the letscode (Account Code):
+Add a column to the contact table to store the code (Account Code):
 
 ```sql
-alter table yourschemaname.contact add column letscode character varying(20) default '';
+alter table yourschemaname.contact add column code character varying(20) default '';
 ```
 
 Also add a column to the contact table to store the contact type abbreviation.
@@ -69,13 +69,13 @@ Then import the contacts csv file.
 Check the order of the columns.
 
 ```sql
-\copy yourschemaname.contact(letscode, abbrev, comments, value, flag_public) from 'contacts.csv' delimiter ',' csv header;
+\copy yourschemaname.contact(code, abbrev, comments, value, flag_public) from 'contacts.csv' delimiter ',' csv header;
 ```
 
 ## Link users to the contacts
 
 ```sql
-update yourschemaname.contact c set id_user = u.id from yourschemaname.users u where u.letscode = c.letscode;
+update yourschemaname.contact c set id_user = u.id from yourschemaname.users u where u.code = c.code;
 ```
 
 ## Link contacts to the contact_types table
@@ -99,11 +99,11 @@ When all contact types are present, you can link the contact types:
 update yourschemaname.contact c set id_type_contact = tc.id from yourschemaname.type_contact tc where c.abbrev = tc.abbrev;
 ```
 
-Afterwards, the letscode (Account Code) and abbrev columns can be removed from the contact table:
+Afterwards, the code (Account Code) and abbrev columns can be removed from the contact table:
 
 ```sql
 alter table yourschemaname.contact drop column abbrev;
-alter table yourschemaname.contact drop column letscode;
+alter table yourschemaname.contact drop column code;
 ```
 
 Records that were not linked to users or types can be removed:
