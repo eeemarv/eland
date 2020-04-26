@@ -382,12 +382,14 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		if (isset($block_options['docs']))
 		{
-			$docs = $this->db->executeQuery('select
+			$stmt = $this->db->executeQuery('select
 					coalesce(name, original_filename) as name,
 					filename, created_at
 				from ' . $schema . '.docs
 				where access in (\'user\', \'guest\')
 					and created_at > ?', [$treshold_time]);
+
+			$docs = $stmt->fetchAll();
 		}
 
 	//
