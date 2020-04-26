@@ -12,7 +12,7 @@ use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use App\Render\AccountStrRender;
 
-class SaldoSchemaTask implements SchemaTaskInterface
+class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 {
 	protected Db $db;
 	protected CacheService $cache_service;
@@ -59,7 +59,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
 		$forum = $intersystem = $docs = [];
-		$mailaddr = $periodic_overvew_ary = [];
+		$mailaddr = $periodic_overview_ary = [];
 
 	// get blocks
 
@@ -130,7 +130,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			$periodic_overvew_ary[$user_id] = true;
+			$periodic_overview_ary[$user_id] = true;
 		}
 
 		if (isset($block_options['messages']))
@@ -409,7 +409,7 @@ class SaldoSchemaTask implements SchemaTaskInterface
 
 		$log_to = [];
 
-		foreach ($periodic_overvew_ary as $id => $b)
+		foreach ($periodic_overview_ary as $id => $b)
 		{
 			$to = $this->mail_addr_user_service->get_active($id, $schema);
 
