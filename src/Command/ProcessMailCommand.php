@@ -55,5 +55,7 @@ class ProcessMailCommand extends Command
 
             $this->monitor_process_service->periodic_log();
         }
+
+        return 0;
     }
 }

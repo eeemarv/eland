@@ -45,5 +45,7 @@ class ProcessLogCommand extends Command
             $this->log_db_service->update();
             $this->monitor_process_service->periodic_log();
         }
+
+        return 0;
     }
 }

@@ -45,5 +45,7 @@ class ProcessCleanupCacheCommand extends Command
             $this->cache_service->cleanup();
             $this->monitor_process_service->periodic_log();
         }
+
+        return 0;
     }
 }

@@ -39,5 +39,7 @@ class TestPeriodicOverviewCommand extends Command
         $this->periodic_overview_schema_task->run($schema, false);
 
         error_log('Ok.');
+
+        return 0;
     }
 }

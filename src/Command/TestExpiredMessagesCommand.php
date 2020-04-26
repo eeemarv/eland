@@ -37,5 +37,7 @@ class TestExpiredMessagesCommand extends Command
         $this->user_exp_msgs_schema_task->run($schema, false);
 
         error_log('Ok.');
+
+        return 0;
     }
 }

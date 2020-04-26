@@ -69,5 +69,7 @@ class ProcessWorkerCommand extends Command
 
             $this->monitor_process_service->periodic_log();
         }
+
+        return 0;
     }
 }

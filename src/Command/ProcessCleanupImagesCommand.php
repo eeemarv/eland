@@ -45,5 +45,7 @@ class ProcessCleanupImagesCommand extends Command
             $this->cleanup_images_task->process();
             $this->monitor_process_service->periodic_log();
         }
+
+        return 0;
     }
 }
