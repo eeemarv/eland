@@ -184,20 +184,34 @@ class MessagesShowController extends AbstractController
             'files'         => array_values(json_decode($message['image_files'] ?? '[]', true)),
         ];
 
-        $sql_where_guest = $pp->is_guest() ? ' and access = \'guest\' ' : '';
+        $sql_where = [];
 
-        $prev = $db->fetchColumn('select id
-            from ' . $pp->schema() . '.messages
-            where id > ?
-            ' . $sql_where_guest . '
-            order by id asc
+        if ($pp->is_guest())
+        {
+            $sql_where[] = 'm.access = \'guest\'';
+        }
+
+        if (!$pp->is_admin())
+        {
+            $sql_where[] = 'u.status in (1, 2)';
+        }
+
+        $sql_where = count($sql_where) ? ' and ' . implode(' and ', $sql_where) : '';
+
+        $prev = $db->fetchColumn('select m.id
+            from ' . $pp->schema() . '.messages m,
+                ' . $pp->schema() . '.users u
+            where m.id > ?
+            ' . $sql_where . '
+            order by m.id asc
             limit 1', [$id]);
 
-        $next = $db->fetchColumn('select id
-            from ' . $pp->schema() . '.messages
-            where id < ?
-            ' . $sql_where_guest . '
-            order by id desc
+        $next = $db->fetchColumn('select m.id
+            from ' . $pp->schema() . '.messages m,
+                ' . $pp->schema() . '.users u
+            where m.id < ?
+            ' . $sql_where . '
+            order by m.id desc
             limit 1', [$id]);
 
         $contacts_response = $contacts_user_show_inline_controller(
