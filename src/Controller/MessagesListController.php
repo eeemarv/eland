@@ -359,7 +359,7 @@ class MessagesListController extends AbstractController
             }
             else
             {
-                $out .= ucfirst($msg['label']['type']);
+                $out .= ucfirst($msg['label']['offer_want']);
             }
 
             $out .= '</td>';
