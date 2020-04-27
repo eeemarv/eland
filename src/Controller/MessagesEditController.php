@@ -122,7 +122,7 @@ class MessagesEditController extends AbstractController
 
         $validity_days = $request->request->get('validity_days', '');
         $account_code = $request->request->get('account_code', '');
-        $content = $request->request->get('content', '');
+        $subject = $request->request->get('subject', '');
         $description = $request->request->get('description', '');
         $type = $request->request->get('type', '');
         $id_category = $request->request->get('id_category', '');
@@ -237,12 +237,12 @@ class MessagesEditController extends AbstractController
                 throw new BadRequestHttpException('Categorie bestaat niet!');
             }
 
-            if (!$content)
+            if (!$subject)
             {
                 $errors[] = 'De titel ontbreekt.';
             }
 
-            if(strlen($content) > 200)
+            if(strlen($subject) > 200)
             {
                 $errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
             }
@@ -268,7 +268,7 @@ class MessagesEditController extends AbstractController
             {
                 $post_message = [
                     'validity'          => $validity,
-                    'content'           => $content,
+                    'subject'           => $subject,
                     '"Description"'     => $description,
                     'msg_type'          => MessageTypeCnst::TO_DB[$type],
                     'id_user'           => $user_id,
@@ -401,7 +401,7 @@ class MessagesEditController extends AbstractController
             if ($edit_mode)
             {
                 $description = $message['Description'];
-                $content = $message['content'];
+                $subject = $message['subject'];
                 $amount = $message['amount'];
                 $units = $message['units'];
                 $id_category = $message['id_category'];
@@ -420,7 +420,7 @@ class MessagesEditController extends AbstractController
             if ($add_mode)
             {
                 $description = '';
-                $content = '';
+                $subject = '';
                 $amount = '';
                 $units = '';
                 $id_category = '';
@@ -512,12 +512,12 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="content" class="control-label">';
+        $out .= '<label for="subject" class="control-label">';
         $out .= 'Titel</label>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="content" name="content" ';
+        $out .= 'id="subject" name="subject" ';
         $out .= 'value="';
-        $out .= self::format($content);
+        $out .= self::format($subject);
         $out .= '" maxlength="200" required>';
         $out .= '</div>';
 

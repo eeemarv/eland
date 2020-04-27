@@ -76,7 +76,7 @@ class MessagesImagesDelController extends AbstractController
         $heading_render->add('Afbeeldingen verwijderen voor ');
         $heading_render->add($message['label']['type']);
         $heading_render->add(' "');
-        $heading_render->add($message['content']);
+        $heading_render->add($message['subject']);
         $heading_render->add('"');
 
         $heading_render->fa('newspaper-o');
@@ -134,7 +134,7 @@ class MessagesImagesDelController extends AbstractController
         $out .= '<h3>Alle afbeeldingen verwijderen voor ';
         $out .= $message['label']['type_this'];
         $out .= ' "';
-        $out .= $message['content'];
+        $out .= $message['subject'];
         $out .= '"?</h3>';
 
         $out .= $link_render->btn_cancel('messages_show', $pp->ary(), ['id' => $id]);

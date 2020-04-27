@@ -183,7 +183,7 @@ class UsersDelAdminController extends AbstractController
 
         while ($row = $st->fetch())
         {
-            $msgs .= $row['id'] . ': ' . $row['content'] . ', ';
+            $msgs .= $row['id'] . ': ' . $row['subject'] . ', ';
         }
         $msgs = trim($msgs, '\n\r\t ,;:');
 

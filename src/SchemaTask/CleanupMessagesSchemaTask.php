@@ -33,7 +33,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('msgexpcleanupdays', $schema) * 86400);
 
-		$st = $this->db->prepare('select id, content, id_category, msg_type
+		$st = $this->db->prepare('select id, subject, id_category, msg_type
 			from ' . $schema . '.messages
 			where validity < ?');
 
@@ -42,7 +42,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 		while ($row = $st->fetch())
 		{
-			$msgs .= $row['id'] . ': ' . $row['content'] . ', ';
+			$msgs .= $row['id'] . ': ' . $row['subject'] . ', ';
 		}
 
 		$msgs = trim($msgs, '\n\r\t ,;:');

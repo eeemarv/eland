@@ -3,13 +3,13 @@
 
 {% block subject_line -%}
     {{- 'message_extend_want.subject'|trans({
-        '%message_title%': message.content
+        '%message_subject%': message.subject
     })|raw -}}
 {%- endblock subject_line -%}
 
 {%- block html_explain -%}
 {{- 'message_extend_want.explain'|trans({
-    '%message_title%': message.content,
+    '%message_subject%': message.subject,
     '%link_open%': context_url_open('messages_show', mpp_ary(user_id, schema), {'id': message.id}),
     '%link_close%': '</a>',
     '%days%': config('msgexpcleanupdays', schema)
@@ -18,7 +18,7 @@
 
 {% block text_explain %}
 {{ 'message_extend_want.explain'|trans({
-    '%message_title%': message.content,
+    '%message_subject%': message.subject,
     '%link_open%': '',
     '%link_close%': '',
     '%days%': config('msgexpcleanupdays', schema)

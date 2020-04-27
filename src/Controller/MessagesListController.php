@@ -141,7 +141,7 @@ class MessagesListController extends AbstractController
                 if (!$pp->is_admin() && !$su->is_owner($row['id_user']))
                 {
                     throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
-                        $row['content'] . ' ( ' . $row['id'] . ')');
+                        $row['subject'] . ' ( ' . $row['id'] . ')');
                 }
 
                 $update_msgs_ary[$row['id']] = $row;
@@ -404,7 +404,7 @@ class MessagesListController extends AbstractController
             $out .= '<td>';
 
             $out .= $link_render->link_no_attr('messages_show', $pp->ary(),
-                ['id' => $msg['id']], $msg['content']);
+                ['id' => $msg['id']], $msg['subject']);
 
             $out .= '</td>';
 
@@ -649,7 +649,7 @@ class MessagesListController extends AbstractController
         $table_header_ary = [
             'm.msg_type' => array_merge($asc_preset_ary, [
                 'lbl' => 'V/A']),
-            'm.content' => array_merge($asc_preset_ary, [
+            'm.subject' => array_merge($asc_preset_ary, [
                 'lbl' => 'Wat']),
         ];
 
@@ -756,7 +756,7 @@ class MessagesListController extends AbstractController
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $where_sql[] = '(m.content ilike ? or m."Description" ilike ?)';
+            $where_sql[] = '(m.subject ilike ? or m."Description" ilike ?)';
             $params_sql[] = '%' . $filter['q'] . '%';
             $params_sql[] = '%' . $filter['q'] . '%';
             $params['f']['q'] = $filter['q'];

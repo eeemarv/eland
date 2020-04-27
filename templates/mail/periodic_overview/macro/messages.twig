@@ -22,7 +22,7 @@
 			{%- else -%}
 				{{- 'label.want'|trans -}}
 			{%- endif -%}:&nbsp;
-			{{ msg.content -}}
+			{{ msg.subject -}}
 		</a>
 	</strong>
 <br />
@@ -40,7 +40,7 @@
 
 {%- for mail in msg.mail -%}
 	{%- if not loop.last -%}|{%- endif -%}&nbsp;
-	<a href="mailto:{{- mail -}}?subject={{- msg.content|url_encode -}}">
+	<a href="mailto:{{- mail -}}?subject={{- msg.subject|url_encode -}}">
 	{{- 'label.email'|trans -}}
 	</a>
 {%- endfor -%}
@@ -85,7 +85,7 @@
 	{{- 'label.offer'|trans -}}
 {%- else -%}
 	{{- 'label.want'|trans -}}
-{%- endif -%}: {{ msg.content }}
+{%- endif -%}: {{ msg.subject }}
 {{ context_url('messages_show', mpp_ary(user_id, schema), {'id': msg.id}) }}
 {{ account(msg.id_user, schema) }}
 

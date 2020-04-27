@@ -160,7 +160,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		// fetch messages
 
-			$rs = $this->db->prepare('select m.id, m.content,
+			$rs = $this->db->prepare('select m.id, m.subject,
 					m."Description" as description,
 					m.msg_type, m.id_user,
 					m.amount, m.units, m.image_files
@@ -207,7 +207,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			{
 				$intersystem_msgs = [];
 
-				$rs = $this->db->prepare('select m.id, m.content,
+				$rs = $this->db->prepare('select m.id, m.subject,
 						m."Description" as description,
 						m.msg_type, m.id_user as user_id,
 						m.amount, m.units

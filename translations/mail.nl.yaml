@@ -289,48 +289,48 @@ user_msg_copy_intersystem:
 
 message_msg:
   subject_offer: >-
-    Reactie op je Aanbod "%message_title%"
+    Reactie op je Aanbod "%message_subject%"
   subject_want: >-
-    Reactie op je Vraag "%message_title%"
+    Reactie op je Vraag "%message_subject%"
   explain_offer: >-
     Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
     stuurt je via de webtoepassing een reactie op je aanbod
-    "%link_message_open%%message_title%%link_message_close%".
+    "%link_message_open%%message_subject%%link_message_close%".
   explain_want: >-
     Gebruiker %link_from_account_open%%from_account%%link_from_account_close%
     zendt je via de webtoepassing een reactie op je vraag
-    "%link_message_open%%message_title%%link_message_close%".
+    "%link_message_open%%message_subject%%link_message_close%".
 message_msg_copy:
   subject_offer: >-
-    Kopie van je Reactie op het Aanbod "%message_title%"
+    Kopie van je Reactie op het Aanbod "%message_subject%"
   subject_want:
-    Kopie van je Reactie op de Vraag "%message_title%"
+    Kopie van je Reactie op de Vraag "%message_subject%"
   explain_offer: >-
     Dit is een kopie van je reactie via de webtoepassing
     aan %link_to_account_open%%to_account%%link_to_account_close%
-    op het aanbod "%link_message_open%%message_title%%link_message_close%".
+    op het aanbod "%link_message_open%%message_subject%%link_message_close%".
   explain_want: >-
     Dit is een kopie van je reactie via de webtoepassing
     aan %link_to_account_open%%to_account%%link_to_account_close%
-    op de vraag "%link_message_open%%message_title%%link_message_close%".
+    op de vraag "%link_message_open%%message_subject%%link_message_close%".
 message_msg_intersystem:
   explain_offer: >-
     Gebruiker %from_account% van %from_system_name%
     stuurt je via de webtoepassing een reactie op je aanbod
-    "%link_message_open%%message_title%%link_message_close%".
+    "%link_message_open%%message_subject%%link_message_close%".
   explain_want: >-
     Gebruiker %from_account% van %from_system_name%
     zendt je via de webtoepassing een reactie op je vraag
-    "%link_message_open%%message_title%%link_message_close%".
+    "%link_message_open%%message_subject%%link_message_close%".
 message_msg_copy_intersystem:
   explain_offer: >-
     Dit is een kopie van je reactie via de webtoepassing
     aan %to_account% van %to_system_name%
-    op het aanbod "%message_title%".
+    op het aanbod "%message_subject%".
   explain_want: >-
     Dit is een kopie van je reactie via de webtoepassing
     aan %to_account% van %to_system_name%
-    op de vraag "%message_title%".
+    op de vraag "%message_subject%".
 
 message_extend:
   1_week: 1 week
@@ -343,9 +343,9 @@ message_extend:
 
 message_extend_offer:
   subject: >-
-    Je aanbod "%message_title%" is vervallen
+    Je aanbod "%message_subject%" is vervallen
   explain: >-
-    Je aanbod "%link_open%%message_title%%link_close%"
+    Je aanbod "%link_open%%message_subject%%link_close%"
     is vervallen en zal over %days% dagen van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.
@@ -353,9 +353,9 @@ message_extend_offer:
     worden in te loggen.
 message_extend_want:
   subject: >-
-    Je vraag "%message_title%" is vervallen
+    Je vraag "%message_subject%" is vervallen
   explain: >-
-    Je vraag "%link_open%%message_title%%link_close%"
+    Je vraag "%link_open%%message_subject%%link_close%"
     is vervallen en zal over %days% van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.

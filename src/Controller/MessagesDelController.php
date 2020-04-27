@@ -75,7 +75,7 @@ class MessagesDelController extends AbstractController
         $heading_render->add(ucfirst($message['label']['type_this']) . ' ');
 
         $heading_render->add_raw($link_render->link_no_attr('messages_show', $pp->ary(),
-            ['id' => $id], $message['content']));
+            ['id' => $id], $message['subject']));
 
         $heading_render->add(' verwijderen?');
         $heading_render->fa('newspaper-o');

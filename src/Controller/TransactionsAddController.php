@@ -638,7 +638,7 @@ class TransactionsAddController extends AbstractController
                     if ($mid)
                     {
                         $row = $db->fetchAssoc('select
-                                m.content, m.amount, m.id_user,
+                                m.subject, m.amount, m.id_user,
                                 u.code, u.name
                             from ' . $tus . '.messages m,
                                 '. $tus . '.users u
@@ -649,7 +649,7 @@ class TransactionsAddController extends AbstractController
                         if ($row)
                         {
                             $transaction['code_to'] = $row['code'] . ' ' . $row['name'];
-                            $transaction['description'] =  substr($row['content'], 0, 60);
+                            $transaction['description'] =  substr($row['subject'], 0, 60);
                             $amount = $row['amount'];
                             $amount = ($config_service->get('currencyratio', $pp->schema()) * $amount) / $config_service->get('currencyratio', $tus);
                             $amount = (int) round($amount);
@@ -670,7 +670,7 @@ class TransactionsAddController extends AbstractController
             else if ($mid)
             {
                 $row = $db->fetchAssoc('select
-                        m.content, m.amount, m.id_user,
+                        m.subject, m.amount, m.id_user,
                         u.code, u.name, u.status
                     from ' . $pp->schema() . '.messages m,
                         '. $pp->schema() . '.users u
@@ -682,7 +682,7 @@ class TransactionsAddController extends AbstractController
                     if ($row['status'] === 1 || $row['status'] === 2)
                     {
                         $transaction['code_to'] = $row['code'] . ' ' . $row['name'];
-                        $transaction['description'] =  substr($row['content'], 0, 60);
+                        $transaction['description'] =  substr($row['subject'], 0, 60);
                         $transaction['amount'] = $row['amount'];
                     }
 

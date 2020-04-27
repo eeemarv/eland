@@ -265,7 +265,7 @@ class MessagesShowController extends AbstractController
             [], 'Lijst', 'newspaper-o');
 
         $heading_render->add(ucfirst($message['label']['type']));
-        $heading_render->add(': ' . $message['content']);
+        $heading_render->add(': ' . $message['subject']);
         $heading_render->add_raw(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
         $heading_render->fa('newspaper-o');
 
