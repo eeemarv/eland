@@ -57,7 +57,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			$message['type'] = $message['msg_type'] ? 'offer' : 'want';
+			$message['offer_want'] = $message['is_offer'] ? 'offer' : 'want';
 
 			$vars = [
 				'message' 		=> $message,
@@ -65,7 +65,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 			];
 
 			$mail_template = 'message_extend/';
-			$mail_template .= $message['type'] === 'offer' ? 'offer' : 'want';
+			$mail_template .= $message['is_offer'] ? 'offer' : 'want';
 
 			$this->mail_queue->queue([
 				'to' 				=> $this->mail_addr_user_service->get_active((int) $message['id_user'], $schema),
@@ -73,9 +73,6 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 				'template' 			=> $mail_template,
 				'vars' 				=> $vars
 			], random_int(0, 5000));
-
-			error_log($mail_template);
-			error_log(json_encode($vars));
 		}
 
 		if ($update)

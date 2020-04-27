@@ -58,14 +58,14 @@ class MessagesDelController extends AbstractController
 
             if ($db->delete($pp->schema() . '.messages', ['id' => $id]))
             {
-                $alert_service->success(ucfirst($message['label']['type_this']) . ' is verwijderd.');
+                $alert_service->success(ucfirst($message['label']['offer_want_this']) . ' is verwijderd.');
                 $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
 
-            $alert_service->error(ucfirst($message['label']['type_this']) . ' is niet verwijderd.');
+            $alert_service->error(ucfirst($message['label']['offer_want_this']) . ' is niet verwijderd.');
         }
 
-        $heading_render->add(ucfirst($message['label']['type_this']) . ' ');
+        $heading_render->add(ucfirst($message['label']['offer_want_this']) . ' ');
 
         $heading_render->add_raw($link_render->link_no_attr('messages_show', $pp->ary(),
             ['id' => $id], $message['subject']));
@@ -112,7 +112,7 @@ class MessagesDelController extends AbstractController
         $out .= '<div class="panel-heading">';
         $out .= '<h3>';
         $out .= '<span class="danger">';
-        $out .= 'Ben je zeker dat ' . $message['label']['type_this'];
+        $out .= 'Ben je zeker dat ' . $message['label']['offer_want_this'];
         $out .= ' moet verwijderd worden?</span>';
 
         $out .= '</h3>';

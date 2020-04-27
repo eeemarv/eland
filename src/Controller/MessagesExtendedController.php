@@ -126,7 +126,7 @@ class MessagesExtendedController extends AbstractController
 
             $out .= $link_render->link_no_attr('messages_show', $pp->ary(),
                 ['id' => $msg['id']],
-                ucfirst($msg['label']['type']) . ': ' . $msg['subject']);
+                ucfirst($msg['label']['offer_want']) . ': ' . $msg['subject']);
 
             if ($exp)
             {

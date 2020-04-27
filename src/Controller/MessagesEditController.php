@@ -124,7 +124,7 @@ class MessagesEditController extends AbstractController
         $account_code = $request->request->get('account_code', '');
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
-        $type = $request->request->get('type', '');
+        $offer_want = $request->request->get('offer_want', '');
         $id_category = $request->request->get('id_category', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
@@ -149,7 +149,7 @@ class MessagesEditController extends AbstractController
             if (!($pp->is_admin() || $su->is_owner($message['id_user'])))
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
-                    $message['label']['type_this'] . ' aan te passen.');
+                    $message['label']['offer_want_this'] . ' aan te passen.');
             }
         }
 
@@ -162,7 +162,7 @@ class MessagesEditController extends AbstractController
                 $errors[] = $error_form;
             }
 
-            if (!isset(MessageTypeCnst::TO_DB[$type]))
+            if (!in_array($offer_want, ['offer', 'want']))
             {
                 throw new BadRequestHttpException('Ongeldig bericht type.');
             }
@@ -270,7 +270,8 @@ class MessagesEditController extends AbstractController
                     'validity'          => $validity,
                     'subject'           => $subject,
                     'content'           => $content,
-                    'msg_type'          => MessageTypeCnst::TO_DB[$type],
+                    'is_offer'          => $offer_want === 'offer' ? 't' : 'f',
+                    'is_want'           => $offer_want === 'want' ? 't' : 'f',
                     'id_user'           => $user_id,
                     'id_category'       => $id_category,
                     'amount'            => $amount,
@@ -384,7 +385,7 @@ class MessagesEditController extends AbstractController
                 $amount = $message['amount'];
                 $units = $message['units'];
                 $id_category = $message['id_category'];
-                $type = $message['type'];
+                $offer_want = $message['is_offer'] ? 'offer' : 'want';
                 $access = $message['access'];
                 $image_files = $message['image_files'];
 
@@ -403,7 +404,7 @@ class MessagesEditController extends AbstractController
                 $amount = '';
                 $units = '';
                 $id_category = '';
-                $type = '';
+                $offer_want = '';
                 $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
                 $account_code = '';
                 $access = '';
@@ -487,7 +488,12 @@ class MessagesEditController extends AbstractController
         }
 
         $out .= '<div class="form-group">';
-        $out .= self::get_radio(MessageTypeCnst::TO_LABEL, 'type', $type, true);
+
+        $out .= self::get_radio([
+            'offer'     => 'Aanbod',
+            'want'      => 'Vraag',
+        ], 'offer_want', $offer_want, true);
+
         $out .= '</div>';
 
         $out .= '<div class="form-group">';

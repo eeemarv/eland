@@ -246,10 +246,10 @@ class MessagesShowController extends AbstractController
         if ($pp->is_admin() || $su->is_owner($message['id_user']))
         {
             $btn_top_render->edit('messages_edit', $pp->ary(),
-                ['id' => $id],	ucfirst($message['label']['type']) . ' aanpassen');
+                ['id' => $id],	ucfirst($message['label']['offer_want']) . ' aanpassen');
 
             $btn_top_render->del('messages_del', $pp->ary(),
-                ['id' => $id], ucfirst($message['label']['type']) . ' verwijderen');
+                ['id' => $id], ucfirst($message['label']['offer_want']) . ' verwijderen');
         }
 
         if ($message['is_offer']
@@ -278,7 +278,7 @@ class MessagesShowController extends AbstractController
         $btn_nav_render->nav_list($vr->get('messages'), $pp->ary(),
             [], 'Lijst', 'newspaper-o');
 
-        $heading_render->add(ucfirst($message['label']['type']));
+        $heading_render->add(ucfirst($message['label']['offer_want']));
         $heading_render->add(': ' . $message['subject']);
         $heading_render->add_raw(strtotime($message['validity']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
         $heading_render->fa('newspaper-o');
@@ -304,7 +304,7 @@ class MessagesShowController extends AbstractController
         $out .= 'class="text-center center-body">';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
-        $out .= $message['label']['type_this'] . '</p>';
+        $out .= $message['label']['offer_want_this'] . '</p>';
         $out .= '</div>';
 
         $out .= '<div id="images_con" ';
@@ -497,21 +497,18 @@ class MessagesShowController extends AbstractController
             throw new NotFoundHttpException('Dit bericht bestaat niet of werd verwijderd.');
         }
 
-        $message['type'] = MessageTypeCnst::FROM_DB[$message['msg_type']];
-        $message['is_offer'] = $message['type'] === 'offer';
-        $message['is_want'] = $message['type'] === 'want';
-
-        $message['label'] = self::get_label($message['type']);
+        $message['offer_want'] = $message['is_offer'] ? 'offer' : 'want';
+        $message['label'] = self::get_label($message['offer_want']);
 
         return $message;
     }
 
-    public static function get_label(string $type):array
+    public static function get_label(string $offer_want):array
     {
         return [
-            'type'  => MessageTypeCnst::TO_LABEL[$type],
-            'type_the'  => MessageTypeCnst::TO_THE_LABEL[$type],
-            'type_this' => MessageTypeCnst::TO_THIS_LABEL[$type],
+            'offer_want'        => MessageTypeCnst::TO_LABEL[$offer_want],
+            'offer_want_the'    => MessageTypeCnst::TO_THE_LABEL[$offer_want],
+            'offer_want_this'   => MessageTypeCnst::TO_THIS_LABEL[$offer_want],
         ];
     }
 }

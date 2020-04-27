@@ -49,7 +49,7 @@ class MessagesImagesDelController extends AbstractController
 
         if (!count($images))
         {
-            $alert_service->error(ucfirst($message['label']['type_the']) . ' heeft geen afbeeldingen.');
+            $alert_service->error(ucfirst($message['label']['offer_want_the']) . ' heeft geen afbeeldingen.');
             $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
@@ -64,7 +64,7 @@ class MessagesImagesDelController extends AbstractController
             {
                 $db->update($pp->schema() . '.messages', ['image_files' => '[]'], ['id' => $id]);
 
-                $alert_service->success('De afbeeldingen voor ' . $message['label']['type_this'] .
+                $alert_service->success('De afbeeldingen voor ' . $message['label']['offer_want_this'] .
                     ' zijn verwijderd.');
 
                 $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
@@ -74,7 +74,7 @@ class MessagesImagesDelController extends AbstractController
         }
 
         $heading_render->add('Afbeeldingen verwijderen voor ');
-        $heading_render->add($message['label']['type']);
+        $heading_render->add($message['label']['offer_want']);
         $heading_render->add(' "');
         $heading_render->add($message['subject']);
         $heading_render->add('"');
@@ -132,7 +132,7 @@ class MessagesImagesDelController extends AbstractController
         $out .= '<div class="panel-heading">';
 
         $out .= '<h3>Alle afbeeldingen verwijderen voor ';
-        $out .= $message['label']['type_this'];
+        $out .= $message['label']['offer_want_this'];
         $out .= ' "';
         $out .= $message['subject'];
         $out .= '"?</h3>';

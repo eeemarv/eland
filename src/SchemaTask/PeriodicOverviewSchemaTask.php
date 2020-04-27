@@ -160,9 +160,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		// fetch messages
 
-			$rs = $this->db->prepare('select m.id, m.subject,
-					m.content,
-					m.msg_type, m.id_user,
+			$rs = $this->db->prepare('select m.id,
+					m.subject, m.content,
+					m.id_user,
+					m.is_offer, m.is_want,
 					m.amount, m.units, m.image_files
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
@@ -183,9 +184,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';
 
 				$row['content_plain_text'] = $this->html_to_markdown_converter->convert($row['content']);
-				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
-				$row['offer'] = $row['type'] == 'offer' ? true : false;
-				$row['want'] = $row['type'] == 'want' ? true : false;
+				$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
 				$row['image_file'] = $image_file;
 				$row['mail'] = $mailaddr[$uid] ?? '';
 				$row['addr'] = str_replace(' ', '+', $adr);
@@ -194,8 +193,6 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$messages[] = $row;
 			}
 		}
-
-		error_log(json_encode($block_options));
 
 	// interSystem messages
 
@@ -209,7 +206,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				$rs = $this->db->prepare('select m.id, m.subject,
 						m.content,
-						m.msg_type, m.id_user as user_id,
+						m.is_offer, m.is_want,
+						m.id_user as user_id,
 						m.amount, m.units
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
@@ -224,9 +222,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				while ($row = $rs->fetch())
 				{
-					$row['type'] = $row['msg_type'] ? 'offer' : 'want';
-					$row['offer'] = $row['type'] == 'offer' ? true : false;
-					$row['want'] = $row['type'] == 'want' ? true : false;
+					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
 
 					$intersystem_msgs[] = $row;
 				}

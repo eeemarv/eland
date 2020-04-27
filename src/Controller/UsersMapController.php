@@ -81,7 +81,8 @@ class UsersMapController extends AbstractController
             if ($pp->is_guest() && !$su->is_system_self())
             {
                 $my_adr = $db->fetchColumn('select c.value
-                    from ' . $su->schema() . '.contact c, ' . $su->schema() . '.type_contact tc
+                    from ' . $su->schema() . '.contact c, ' .
+                        $su->schema() . '.type_contact tc
                     where c.id_user = ?
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'adr\'', [$su->id()]);

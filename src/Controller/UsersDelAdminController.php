@@ -171,8 +171,8 @@ class UsersDelAdminController extends AbstractController
 
         $usr = $user['code'] . ' ' . $user['name'] . ' [id:' . $id . ']';
         $msgs = '';
-        $st = $db->prepare('select id, content,
-                id_category, msg_type
+
+        $st = $db->prepare('select id, subject
             from ' . $pp->schema() . '.messages
             where id_user = ?');
 
@@ -183,6 +183,7 @@ class UsersDelAdminController extends AbstractController
         {
             $msgs .= $row['id'] . ': ' . $row['subject'] . ', ';
         }
+
         $msgs = trim($msgs, '\n\r\t ,;:');
 
         if ($msgs)

@@ -17,7 +17,7 @@
 <li>
 	<strong>
 		{{- context_url_open('messages_show', mpp_ary(user_id, schema), {'id': msg.id})|raw -}}
-			{%- if msg.offer -%}
+			{%- if msg.is_offer -%}
 				{{- 'label.offer'|trans -}}
 			{%- else -%}
 				{{- 'label.want'|trans -}}
@@ -81,7 +81,7 @@
 }) }}
 {% for msg in messages %}
 
-{% if msg.offer -%}
+{% if msg.is_offer -%}
 	{{- 'label.offer'|trans -}}
 {%- else -%}
 	{{- 'label.want'|trans -}}

@@ -33,7 +33,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('msgexpcleanupdays', $schema) * 86400);
 
-		$st = $this->db->prepare('select id, subject, id_category, msg_type
+		$st = $this->db->prepare('select id, subject
 			from ' . $schema . '.messages
 			where validity < ?');
 
@@ -57,10 +57,11 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		}
 
 		$users = '';
-		$ids = [];
+		$user_ids = [];
 
 		$st = $this->db->prepare('select u.id, u.code, u.name
-			from ' . $schema . '.users u, ' . $schema . '.messages m
+			from ' . $schema . '.users u,
+				' . $schema . '.messages m
 			where u.status = 0
 				and m.id_user = u.id');
 
@@ -68,32 +69,24 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 		while ($row = $st->fetch())
 		{
-			$ids[] = $row['id'];
+			$user_ids[] = $row['id'];
 			$users .= '(id: ' . $row['id'] . ') ' . $row['code'] . ' ' . $row['name'] . ', ';
 		}
 
 		$users = trim($users, '\n\r\t ,;:');
 
-		if (count($ids))
+		if (count($user_ids))
 		{
 			$this->logger->info('Cleanup messages from users: ' . $users,
 				['schema' => $schema]);
 
 			echo 'Cleanup messages from users: ' . $users;
 
-			if (count($ids) == 1)
-			{
-				$this->db->delete($schema . '.messages',
-					['id_user' => $ids[0]]);
-			}
-			else if (count($ids) > 1)
-			{
-				$this->db->executeQuery('delete
-					from ' . $schema . '.messages
-					where id_user in (?)',
-					[$ids],
-					[Db::PARAM_INT_ARRAY]);
-			}
+			$this->db->executeQuery('delete
+				from ' . $schema . '.messages
+				where id_user in (?)',
+				[$user_ids],
+				[Db::PARAM_INT_ARRAY]);
 		}
 	}
 

@@ -771,7 +771,7 @@ class UsersListController extends AbstractController
                 $ary = $db->fetchAll('select count(m.id), m.id_user
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
-                    where msg_type = 1
+                    where m.is_offer = \'t\'
                         and m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);
@@ -787,7 +787,7 @@ class UsersListController extends AbstractController
                 $ary = $db->fetchAll('select count(m.id), m.id_user
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
-                    where msg_type = 0
+                    where m.is_want = \'t\'
                         and m.id_user = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
                     group by m.id_user', $sql_bind);

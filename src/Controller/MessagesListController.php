@@ -130,7 +130,7 @@ class MessagesListController extends AbstractController
             $update_msgs_ary  = [];
 
             $rows = $db->executeQuery('select id_user, id, validity,
-                    id_category, msg_type
+                    id_category
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
@@ -179,8 +179,8 @@ class MessagesListController extends AbstractController
             if ($bulk_submit_action === 'access' && !count($errors))
             {
                 $msg_update = [
-                    'access' => $bulk_field_value,
-                    'mdate' => gmdate('Y-m-d H:i:s'),
+                    'access'    => $bulk_field_value,
+                    'mdate'     => gmdate('Y-m-d H:i:s'),
                 ];
 
                 foreach ($update_msgs_ary as $id => $row)
@@ -354,7 +354,7 @@ class MessagesListController extends AbstractController
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
                     '%attr%'    => isset($selected_messages[$msg['id']]) ? ' checked' : '',
-                    '%label%'   => ucfirst($msg['label']['type']),
+                    '%label%'   => ucfirst($msg['label']['offer_want']),
                 ]);
             }
             else
@@ -610,7 +610,7 @@ class MessagesListController extends AbstractController
         ];
 
         $table_header_ary = [
-            'm.msg_type' => array_merge($asc_preset_ary, [
+            'm.is_offer' => array_merge($asc_preset_ary, [
                 'lbl' => 'V/A']),
             'm.subject' => array_merge($asc_preset_ary, [
                 'lbl' => 'Wat']),
@@ -773,12 +773,12 @@ class MessagesListController extends AbstractController
         {
             if (isset($filter['type']['want']))
             {
-                $where_sql[] = 'm.msg_type = 0';
+                $where_sql[] = 'm.is_want = \'t\'';
                 $params['f']['type']['want'] = 'on';
             }
             else
             {
-                $where_sql[] = 'm.msg_type = 1';
+                $where_sql[] = 'm.is_offer = \'t\'';
                 $params['f']['type']['offer'] = 'on';
             }
         }
@@ -875,7 +875,7 @@ class MessagesListController extends AbstractController
 
         while ($msg = $st->fetch())
         {
-            $msg['type'] = MessageTypeCnst::FROM_DB[$msg['msg_type']];
+            $msg['type'] = $msg['is_offer'] ? 'offer' : 'want';
             $msg['label'] = MessagesShowController::get_label($msg['type']);
 
             $messages[] = $msg;

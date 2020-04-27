@@ -29,7 +29,7 @@ class MessagesExtendController extends AbstractController
         if (!($su->is_owner($message['id_user']) || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
-                $message['label']['type_this'] . ' te verlengen.');
+                $message['label']['offer_want_this'] . ' te verlengen.');
         }
 
         $validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $days));
@@ -42,11 +42,11 @@ class MessagesExtendController extends AbstractController
 
         if (!$db->update($pp->schema() . '.messages', $m, ['id' => $id]))
         {
-            $alert_service->error('Fout: ' . $message['label']['type_the'] . ' is niet verlengd.');
+            $alert_service->error('Fout: ' . $message['label']['offer_want_the'] . ' is niet verlengd.');
             $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
         }
 
-        $alert_service->success(ucfirst($message['label']['type_the']) . ' is verlengd.');
+        $alert_service->success(ucfirst($message['label']['offer_want_the']) . ' is verlengd.');
         $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
 
         return new Response('');

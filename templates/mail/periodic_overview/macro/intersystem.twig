@@ -23,7 +23,7 @@
 	<ul>
 	{%- for msg in i.messages -%}
 		<li>
-		{{- ('periodic_overview.intersystem.' ~ msg.type)|trans({
+		{{- ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
 			'%msg%': msg.content
 		}) -}}
 		<br />
@@ -62,7 +62,7 @@
 
 {% for msg in i.messages %}
 
-{{ ('periodic_overview.intersystem.' ~ msg.type)|trans({
+{{ ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
 	'%msg%': msg.content
 }) }}
 
