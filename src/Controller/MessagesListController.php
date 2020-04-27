@@ -756,7 +756,7 @@ class MessagesListController extends AbstractController
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $where_sql[] = '(m.subject ilike ? or m."Description" ilike ?)';
+            $where_sql[] = '(m.subject ilike ? or m.content ilike ?)';
             $params_sql[] = '%' . $filter['q'] . '%';
             $params_sql[] = '%' . $filter['q'] . '%';
             $params['f']['q'] = $filter['q'];

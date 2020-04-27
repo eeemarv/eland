@@ -161,7 +161,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		// fetch messages
 
 			$rs = $this->db->prepare('select m.id, m.subject,
-					m."Description" as description,
+					m.content,
 					m.msg_type, m.id_user,
 					m.amount, m.units, m.image_files
 				from ' . $schema . '.messages m, ' .
@@ -182,7 +182,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$image_file_ary = array_values(json_decode($row['image_files'] ?? '[]', true));
 				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';
 
-				$row['description_plain_text'] = $this->html_to_markdown_converter->convert($row['description']);
+				$row['content_plain_text'] = $this->html_to_markdown_converter->convert($row['content']);
 				$row['type'] = $row['msg_type'] ? 'offer' : 'want';
 				$row['offer'] = $row['type'] == 'offer' ? true : false;
 				$row['want'] = $row['type'] == 'want' ? true : false;
@@ -208,7 +208,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$intersystem_msgs = [];
 
 				$rs = $this->db->prepare('select m.id, m.subject,
-						m."Description" as description,
+						m.content,
 						m.msg_type, m.id_user as user_id,
 						m.amount, m.units
 					from ' . $sch . '.messages m, ' .

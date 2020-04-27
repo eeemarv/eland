@@ -136,7 +136,7 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '</h3>';
 
-            $out .= nl2br($msg['Description'] ?? '');
+            $out .= nl2br($msg['content'] ?? '');
 
             $out .= '</div>';
             $out .= '</div>';

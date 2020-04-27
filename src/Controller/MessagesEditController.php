@@ -123,7 +123,7 @@ class MessagesEditController extends AbstractController
         $validity_days = $request->request->get('validity_days', '');
         $account_code = $request->request->get('account_code', '');
         $subject = $request->request->get('subject', '');
-        $description = $request->request->get('description', '');
+        $content = $request->request->get('content', '');
         $type = $request->request->get('type', '');
         $id_category = $request->request->get('id_category', '');
         $amount = $request->request->get('amount', '');
@@ -155,7 +155,7 @@ class MessagesEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $description = $html_purifier->purify($description);
+            $content = $html_purifier->purify($content);
 
             if ($error_form = $form_token_service->get_error())
             {
@@ -247,7 +247,7 @@ class MessagesEditController extends AbstractController
                 $errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
             }
 
-            if(strlen($description) > 2000)
+            if(strlen($content) > 2000)
             {
                 $errors[] = 'De omschrijving mag maximaal 2000 tekens lang zijn.';
             }
@@ -269,7 +269,7 @@ class MessagesEditController extends AbstractController
                 $post_message = [
                     'validity'          => $validity,
                     'subject'           => $subject,
-                    '"Description"'     => $description,
+                    'content'           => $content,
                     'msg_type'          => MessageTypeCnst::TO_DB[$type],
                     'id_user'           => $user_id,
                     'id_category'       => $id_category,
@@ -400,7 +400,7 @@ class MessagesEditController extends AbstractController
         {
             if ($edit_mode)
             {
-                $description = $message['Description'];
+                $content = $message['content'];
                 $subject = $message['subject'];
                 $amount = $message['amount'];
                 $units = $message['units'];
@@ -419,7 +419,7 @@ class MessagesEditController extends AbstractController
 
             if ($add_mode)
             {
-                $description = '';
+                $content = '';
                 $subject = '';
                 $amount = '';
                 $units = '';
@@ -522,11 +522,11 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="description" class="control-label">';
+        $out .= '<label for="content" class="control-label">';
         $out .= 'Omschrijving</label>';
-        $out .= '<textarea name="description" ';
-        $out .= 'class="form-control summernote" id="description" rows="4" maxlength="2000">';
-        $out .= self::format($description);
+        $out .= '<textarea name="content" ';
+        $out .= 'class="form-control summernote" id="content" rows="4" maxlength="2000">';
+        $out .= self::format($content);
         $out .= '</textarea>';
         $out .= '</div>';
 

@@ -113,7 +113,7 @@ class MessagesDelController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="panel-body">';
-        $out .= nl2br($message['Description']);
+        $out .= nl2br($message['content']);
         $out .= '</div>';
 
         $out .= '<div class="panel-heading">';

@@ -348,9 +348,9 @@ class MessagesShowController extends AbstractController
         $out .= '<div class="panel-body">';
         $out .= '<p>';
 
-        if ($message['Description'])
+        if ($message['content'])
         {
-            $out .= nl2br($message['Description']);
+            $out .= nl2br($message['content']);
         }
         else
         {
