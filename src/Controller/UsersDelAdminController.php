@@ -96,7 +96,6 @@ class UsersDelAdminController extends AbstractController
                     $db,
                     $logger,
                     $alert_service,
-                    $xdb_service,
                     $intersystems_service,
                     $thumbprint_accounts_service,
                     $user_cache_service,
@@ -160,7 +159,6 @@ class UsersDelAdminController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         AlertService $alert_service,
-        XdbService $xdb_service,
         IntersystemsService $intersystems_service,
         ThumbprintAccountsService $thumbprint_accounts_service,
         UserCacheService $user_cache_service,
@@ -197,75 +195,12 @@ class UsersDelAdminController extends AbstractController
                 ['id_user' => $id]);
         }
 
-        // update counts for each category
-
-        $offer_count = $want_count = [];
-
-        $rs = $db->prepare('select m.id_category, count(m.*)
-            from ' . $pp->schema() . '.messages m, ' .
-                $pp->schema() . '.users u
-            where  m.id_user = u.id
-                and u.status IN (1, 2, 3)
-                and msg_type = 1
-            group by m.id_category');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $offer_count[$row['id_category']] = $row['count'];
-        }
-
-        $rs = $db->prepare('select m.id_category, count(m.*)
-            from ' . $pp->schema() . '.messages m, ' .
-                $pp->schema() . '.users u
-            where m.id_user = u.id
-                and u.status IN (1, 2, 3)
-                and msg_type = 0
-            group by m.id_category');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $want_count[$row['id_category']] = $row['count'];
-        }
-
-        $all_cat = $db->fetchAll('select id,
-                stat_msgs_offers, stat_msgs_wanted
-            from ' . $pp->schema() . '.categories
-            where id_parent is not null');
-
-        foreach ($all_cat as $val)
-        {
-            $offers = $val['stat_msgs_offers'];
-            $wants = $val['stat_msgs_wanted'];
-            $cat_id = $val['id'];
-
-            $want_count[$cat_id] = $want_count[$cat_id] ?? 0;
-            $offer_count[$cat_id] = $offer_count[$cat_id] ?? 0;
-
-            if ($want_count[$cat_id] == $wants && $offer_count[$cat_id] == $offers)
-            {
-                continue;
-            }
-
-            $stats = [
-                'stat_msgs_offers'	=> $offer_count[$cat_id] ?? 0,
-                'stat_msgs_wanted'	=> $want_count[$cat_id] ?? 0,
-            ];
-
-            $db->update($pp->schema() . '.categories',
-                $stats,
-                ['id' => $cat_id]);
-        }
-
         //delete contacts
 
         $db->delete($pp->schema() . '.contact',
             ['id_user' => $id]);
 
-        //finally, the user
+        //the user
 
         $db->delete($pp->schema() . '.users',
             ['id' => $id]);

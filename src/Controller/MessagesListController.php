@@ -220,46 +220,9 @@ class MessagesListController extends AbstractController
                     'mdate'         => gmdate('Y-m-d H:i:s'),
                 ];
 
-                $stats_update = [
-                    $to_id_category => [
-                        'offer' => 0,
-                        'want'  => 0,
-                    ],
-                ];
-
                 foreach ($update_msgs_ary as $id => $row)
                 {
                     $db->update($pp->schema() . '.messages', $msg_update, ['id' => $id]);
-
-                    $type = MessageTypeCnst::FROM_DB[$row['msg_type']];
-                    $id_category = $row['id_category'];
-
-                    if ($id_category === $to_id_category)
-                    {
-                        continue;
-                    }
-
-                    if (!isset($stats_update[$id_category]))
-                    {
-                        $stats_update[$id_category] = [];
-                    }
-
-                    if (!isset($stats_update[$id_category][$type]))
-                    {
-                        $stats_update[$id_category][$type] = 0;
-                    }
-
-                    $stats_update[$id_category][$type]--;
-                    $stats_update[$to_id_category][$type]++;
-                }
-
-                foreach ($stats_update as $id_category => $type_count_ary)
-                {
-                    foreach ($type_count_ary as $type => $count)
-                    {
-                        MessagesEditController::adjust_category_stats($type,
-                            (int) $id_category, $count, $db, $pp->schema());
-                    }
                 }
 
                 if (count($selected_messages) > 1)
@@ -786,35 +749,6 @@ class MessagesListController extends AbstractController
             }
         }
 
-        if (isset($filter['cid'])
-            && $filter['cid'])
-        {
-            $cat_ary = [];
-
-            $st = $db->prepare('select id
-                from ' . $pp->schema() . '.categories
-                where id_parent = ?');
-            $st->bindValue(1, $filter['cid']);
-            $st->execute();
-
-            while ($row = $st->fetch())
-            {
-                $cat_ary[] = $row['id'];
-            }
-
-            if (count($cat_ary))
-            {
-                $where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
-            }
-            else
-            {
-                $where_sql[] = 'm.id_category = ?';
-                $params_sql[] = $filter['cid'];
-            }
-
-            $params['f']['cid'] = $filter['cid'];
-        }
-
         $filter_valid = isset($filter['valid'])
             && (isset($filter['valid']['yes']) xor isset($filter['valid']['no']));
 
@@ -887,14 +821,41 @@ class MessagesListController extends AbstractController
             $where_sql[] = 'm.access = \'guest\'';
         }
 
-        if (count($where_sql))
+        $where_sql[] = 'u.status in (1, 2)';
+
+        $no_cat_where_sql = $where_sql;
+        $no_cat_params_sql = $params_sql;
+
+        if (isset($filter['cid'])
+            && $filter['cid'])
         {
-            $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
+            $cat_ary = [];
+
+            $st = $db->prepare('select id
+                from ' . $pp->schema() . '.categories
+                where id_parent = ?');
+            $st->bindValue(1, $filter['cid']);
+            $st->execute();
+
+            while ($row = $st->fetch())
+            {
+                $cat_ary[] = $row['id'];
+            }
+
+            if (count($cat_ary))
+            {
+                $where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
+            }
+            else
+            {
+                $where_sql[] = 'm.id_category = ?';
+                $params_sql[] = $filter['cid'];
+            }
+
+            $params['f']['cid'] = $filter['cid'];
         }
-        else
-        {
-            $where_sql = '';
-        }
+
+        $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
 
         $query = 'select m.*, u.postcode, c.fullname
             from ' . $pp->schema() . '.messages m, ' .
@@ -903,11 +864,6 @@ class MessagesListController extends AbstractController
                 where m.id_user = u.id
                     and m.id_category = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
-
-        $row_count = $db->fetchColumn('select count(m.*)
-            from ' . $pp->schema() . '.messages m, ' .
-                $pp->schema() . '.users u
-            where m.id_user = u.id' . $where_sql, $params_sql);
 
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
         $query .= ' limit ' . $params['p']['limit'];
@@ -925,8 +881,39 @@ class MessagesListController extends AbstractController
             $messages[] = $msg;
         }
 
+        $no_cat_where_sql = ' and ' . implode(' and ', $no_cat_where_sql) . ' ';
+
+        $cat_count_ary = [];
+
+        $cat_count_query = 'select count(m.*), m.id_category
+            from ' . $pp->schema() . '.messages m, ' .
+                $pp->schema() . '.users u
+            where m.id_user = u.id
+                ' . $no_cat_where_sql . '
+            group by m.id_category';
+
+        $st = $db->executeQuery($cat_count_query, $no_cat_params_sql);
+
+        while($row = $st->fetch())
+        {
+            $cat_count_ary[$row['id_category']] = $row['count'];
+        }
+
+        if (isset($filter['cid'])
+            && $filter['cid'])
+        {
+            $row_count = $db->fetchColumn('select count(m.*)
+                from ' . $pp->schema() . '.messages m, ' .
+                    $pp->schema() . '.users u
+                where m.id_user = u.id' . $where_sql, $params_sql);
+        }
+        else
+        {
+            $row_count = array_sum($cat_count_ary);
+        }
+
         $pagination_render->init($vr->get('messages'), $pp->ary(),
-            (int) $row_count, $params);
+            $row_count, $params);
 
         $categories_filter_options = ['' => '-- alle categorieën --'];
         $categories_move_options = ['' => ''];
@@ -960,7 +947,8 @@ class MessagesListController extends AbstractController
         {
             $categories_filter_options[$row['id']] = $row['id_parent'] ? ' . . ' : '';
             $categories_filter_options[$row['id']] .= $row['name'];
-            $count_msgs = $row['stat_msgs_offers'] + $row['stat_msgs_wanted'];
+
+            $count_msgs = $cat_count_ary[$row['id']] ?? 0;
 
             if ($row['id_parent'] && $count_msgs)
             {
@@ -1204,7 +1192,7 @@ class MessagesListController extends AbstractController
             'categories'                => $categories,
             'cat_params'                => $cat_params,
             'categories_move_options'   => $categories_move_options,
-            'is_owner'                   => $is_owner,
+            'is_owner'                  => $is_owner,
             'out'                       => $out,
         ];
     }

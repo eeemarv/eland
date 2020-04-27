@@ -30,6 +30,7 @@ class CategoriesEditController extends AbstractController
     ):Response
     {
         $cats = [];
+        $errors = [];
 
         $rs = $db->prepare('select *
             from ' . $pp->schema() . '.categories
@@ -58,25 +59,33 @@ class CategoriesEditController extends AbstractController
             $cat['id_parent'] = (int) $request->request->get('id_parent', 0);
             $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
+            $message_count = $db->fetchColumn('select count(*)
+                from ' . $pp->schema . '.messsages
+                where id_category = ?', [$id]);
+
             if (!$cat['name'])
             {
-                $alert_service->error('Vul naam in!');
+                $errors[] = 'Vul naam in!';
             }
-            else if (($cat['stat_msgs_wanted'] + $cat['stat_msgs_offers']) && !$cat['leafnote'])
+
+            if ($message_count && !$cat['leafnote'])
             {
-                $alert_service->error('Hoofdcategoriën kunnen
-                    geen berichten bevatten.');
+                $errors[] = 'Hoofdcategoriën kunnen
+                    geen berichten bevatten.';
             }
-            else if ($cat['leafnote'] && $child_count_ary[$id])
+
+            if ($cat['leafnote'] && $child_count_ary[$id])
             {
-                $alert_service->error('Subcategoriën kunnen
-                    geen categoriën bevatten.');
+                $errors[] = 'Subcategoriën kunnen
+                    geen categoriën bevatten.';
             }
-            else if ($token_error = $form_token_service->get_error())
+
+            if ($token_error = $form_token_service->get_error())
             {
-                $alert_service->error($token_error);
+                $errors[] = $token_error;
             }
-            else
+
+            if (!count($errors))
             {
                 $prefix = '';
 
@@ -92,16 +101,18 @@ class CategoriesEditController extends AbstractController
 
                 if ($db->update($pp->schema() . '.categories', $cat, ['id' => $id]))
                 {
-                    $alert_service->success('Categorie aangepast.');
                     $db->executeUpdate('update ' . $pp->schema() . '.categories
                         set fullname = ? || \' - \' || name
                         where id_parent = ?', [$cat['name'], $id]);
 
+                    $alert_service->success('Categorie aangepast.');
                     $link_render->redirect('categories', $pp->ary(), []);
                 }
 
                 $alert_service->error('Categorie niet aangepast.');
             }
+
+            $alert_service->error($errors);
         }
 
         $parent_cats = [0 => '-- Hoofdcategorie --'];

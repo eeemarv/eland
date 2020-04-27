@@ -28,6 +28,37 @@ class CategoriesController extends AbstractController
             from ' . $pp->schema() . '.categories
             order by fullname');
 
+        $want_count_ary = [];
+        $offer_count_ary = [];
+
+        $stmt = $db->prepare('select c.id, count(m.*)
+            from ' . $pp->schema() . '.categories c,
+                ' . $pp->schema() . '.messages m
+            where m.id_category = c.id
+                and m.is_want = \'t\'
+            group by c.id');
+
+        $stmt->execute();
+
+        while($row = $stmt->fetch())
+        {
+            $want_count_ary[$row['id']] = $row['count'];
+        }
+
+        $stmt = $db->prepare('select c.id, count(m.*)
+            from ' . $pp->schema() . '.categories c,
+                ' . $pp->schema() . '.messages m
+            where m.id_category = c.id
+                and m.is_offer = \'t\'
+            group by c.id');
+
+        $stmt->execute();
+
+        while($row = $stmt->fetch())
+        {
+            $offer_count_ary[$row['id']] = $row['count'];
+        }
+
         $child_count_ary = [];
 
         foreach ($cats as $cat)
@@ -68,13 +99,16 @@ class CategoriesController extends AbstractController
 
         foreach($cats as $cat)
         {
-            $count_wanted = $cat['stat_msgs_wanted'];
-            $count_offers = $cat['stat_msgs_offers'];
-            $count = $count_wanted + $count_offers;
+            $id = $cat['id'];
 
-            if (isset($child_count_ary[$cat['id']]))
+            $want_count = $want_count_ary[$id] ?? 0;
+            $offer_count = $offer_count_ary[$id] ?? 0;
+
+            $dependency_count = $want_count + $offer_count;
+
+            if (isset($child_count_ary[$id]))
             {
-                $count += $child_count_ary[$cat['id']];
+                $dependency_count += $child_count_ary[$id];
             }
 
             $td = [];
@@ -97,7 +131,7 @@ class CategoriesController extends AbstractController
                 $td[] = $str;
             }
 
-            if ($count_wanted)
+            if ($want_count)
             {
                 $param_ary = array_merge_recursive($messages_param_ary, [
                     'f'	=> [
@@ -109,14 +143,14 @@ class CategoriesController extends AbstractController
                 ]);
 
                 $td[] = $link_render->link_no_attr($vr->get('messages'), $pp->ary(), $param_ary,
-                    (string) $count_wanted);
+                    (string) $want_count);
             }
             else
             {
                 $td[] = '&nbsp;';
             }
 
-            if ($count_offers)
+            if ($offer_count)
             {
                 $param_ary = array_merge_recursive($messages_param_ary, [
                     'f'	=> [
@@ -128,14 +162,14 @@ class CategoriesController extends AbstractController
                 ]);
 
                 $td[] = $link_render->link_no_attr($vr->get('messages'), $pp->ary(), $param_ary,
-                    (string) $count_offers);
+                    (string) $offer_count);
             }
             else
             {
                 $td[] = '&nbsp;';
             }
 
-            if (!$count)
+            if (!$dependency_count)
             {
                 $td[] = $link_render->link_fa('categories_del', $pp->ary(),
                     ['id' => $cat['id']], 'Verwijderen',

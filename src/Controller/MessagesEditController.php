@@ -293,14 +293,6 @@ class MessagesEditController extends AbstractController
 
                 $id = (int) $db->lastInsertId($pp->schema() . '.messages_id_seq');
 
-                self::adjust_category_stats(
-                    $type,
-                    (int) $id_category,
-                    1,
-                    $db,
-                    $pp->schema()
-                );
-
                 $images = array_values(json_decode($image_files, true) ?? []);
                 $new_image_files = [];
                 $update_image_files = false;
@@ -371,21 +363,8 @@ class MessagesEditController extends AbstractController
             {
                 $post_message['mdate'] = gmdate('Y-m-d H:i:s');
 
-                $db->beginTransaction();
-
                 $db->update($pp->schema() . '.messages', $post_message, ['id' => $id]);
 
-                if ($type !== $message['type']
-                    || $id_category !== $message['id_category'])
-                {
-                    self::adjust_category_stats($message['type'],
-                        $message['id_category'], -1, $db, $pp->schema());
-
-                    self::adjust_category_stats($type,
-                        (int) $id_category, 1, $db, $pp->schema());
-                }
-
-                $db->commit();
                 $alert_service->success('Vraag/aanbod aangepast');
                 $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
             }
@@ -705,28 +684,6 @@ class MessagesEditController extends AbstractController
     public static function format(string $value):string
     {
         return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-    }
-
-    public static function adjust_category_stats(
-        string $message_type,
-        int $id_category,
-        int $adj,
-        Db $db,
-        string $schema
-    ):void
-    {
-        if ($adj === 0)
-        {
-            return;
-        }
-
-        $adj_str = $adj < 0 ? '- ' . abs($adj) : '+ ' . $adj;
-
-        $column = MessageTypeCnst::TO_CAT_STAT_COLUMN[$message_type];
-
-        $db->executeUpdate('update ' . $schema . '.categories
-            set ' . $column . ' = ' . $column . ' ' . $adj_str . '
-            where id = ?', [$id_category]);
     }
 
     static public function get_radio(

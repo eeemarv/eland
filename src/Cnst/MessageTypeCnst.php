@@ -28,9 +28,4 @@ class MessageTypeCnst
         'offer'     => 'dit aanbod',
         'want'      => 'deze vraag',
     ];
-
-    const TO_CAT_STAT_COLUMN = [
-        'offer'     => 'stat_msgs_offers',
-        'want'      => 'stat_msgs_wanted',
-    ];
 }

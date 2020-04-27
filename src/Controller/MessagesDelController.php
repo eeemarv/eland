@@ -58,13 +58,6 @@ class MessagesDelController extends AbstractController
 
             if ($db->delete($pp->schema() . '.messages', ['id' => $id]))
             {
-                $column = 'stat_msgs_';
-                $column .= $message['msg_type'] ? 'offers' : 'wanted';
-
-                $db->executeUpdate('update ' . $pp->schema() . '.categories
-                    set ' . $column . ' = ' . $column . ' - 1
-                    where id = ?', [$message['id_category']]);
-
                 $alert_service->success(ucfirst($message['label']['type_this']) . ' is verwijderd.');
                 $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
