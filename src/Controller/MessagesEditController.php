@@ -288,8 +288,6 @@ class MessagesEditController extends AbstractController
 
             if ($add_mode && !count($errors))
             {
-                $post_message['cdate'] = gmdate('Y-m-d H:i:s');
-
                 $db->insert($pp->schema() . '.messages', $post_message);
 
                 $id = (int) $db->lastInsertId($pp->schema() . '.messages_id_seq');
@@ -362,8 +360,6 @@ class MessagesEditController extends AbstractController
             }
             else if ($edit_mode && !count($errors))
             {
-                $post_message['mdate'] = gmdate('Y-m-d H:i:s');
-
                 $db->update($pp->schema() . '.messages', $post_message, ['id' => $id]);
 
                 $alert_service->success('Vraag/aanbod aangepast');

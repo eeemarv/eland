@@ -36,7 +36,6 @@ class MessagesExtendController extends AbstractController
 
         $m = [
             'validity'		=> $validity,
-            'mdate'			=> gmdate('Y-m-d H:i:s'),
             'exp_user_warn'	=> 'f',
         ];
 

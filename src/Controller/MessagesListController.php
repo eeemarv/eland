@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Cnst\AccessCnst;
-use App\Cnst\MessageTypeCnst;
 use App\Cnst\BulkCnst;
 use App\Controller\MessagesShowController;
 use App\Render\AccountRender;
@@ -156,7 +154,6 @@ class MessagesListController extends AbstractController
 
                     $msg_update = [
                         'validity'		=> $validity,
-                        'mdate'			=> gmdate('Y-m-d H:i:s'),
                         'exp_user_warn'	=> 'f',
                     ];
 
@@ -180,7 +177,6 @@ class MessagesListController extends AbstractController
             {
                 $msg_update = [
                     'access'    => $bulk_field_value,
-                    'mdate'     => gmdate('Y-m-d H:i:s'),
                 ];
 
                 foreach ($update_msgs_ary as $id => $row)
@@ -217,7 +213,6 @@ class MessagesListController extends AbstractController
 
                 $msg_update = [
                     'id_category'   => $to_id_category,
-                    'mdate'         => gmdate('Y-m-d H:i:s'),
                 ];
 
                 foreach ($update_msgs_ary as $id => $row)
@@ -333,6 +328,7 @@ class MessagesListController extends AbstractController
                 $out .= $link_render->link_fa($vr->get('messages'), $pp->ary(),
                     $th_params, $data['lbl'], [], $data['fa']);
             }
+
             $out .= '</th>';
         }
 
@@ -662,7 +658,7 @@ class MessagesListController extends AbstractController
         $table_header_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        unset($table_header_ary['m.cdate']);
+        unset($table_header_ary['m.created_at']);
 
         return $table_header_ary;
     }
@@ -693,7 +689,7 @@ class MessagesListController extends AbstractController
 
         $params = [
             's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'm.cdate',
+                'orderby'	=> $sort['orderby'] ?? 'm.created_at',
                 'asc'		=> $sort['asc'] ?? 0,
             ],
             'p'	=> [

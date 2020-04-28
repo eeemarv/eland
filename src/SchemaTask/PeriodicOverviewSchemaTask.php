@@ -169,8 +169,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					$schema . '.users u
 				where m.id_user = u.id
 					and u.status IN (1, 2)
-					and m.cdate >= ?
-				order BY m.cdate DESC');
+					and m.created_at >= ?
+				order BY m.created_at DESC');
 
 			$rs->bindValue(1, $treshold_time);
 			$rs->execute();
@@ -214,8 +214,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					where m.id_user = u.id
 						and m.access = \'guest\'
 						and u.status in (1, 2)
-						and m.cdate >= ?
-					order by m.cdate DESC');
+						and m.created_at >= ?
+					order by m.created_at desc');
 
 				$rs->bindValue(1, $treshold_time);
 				$rs->execute();

@@ -409,7 +409,7 @@ class MessagesShowController extends AbstractController
 
         $out .= '<dt>Aangemaakt op</dt>';
         $out .= '<dd>';
-        $out .= $date_format_service->get($message['cdate'], 'day', $pp->schema());
+        $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Geldig tot</dt>';
