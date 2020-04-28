@@ -46,7 +46,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 			where m.exp_user_warn = \'f\'
 				and u.id = m.id_user
 				and u.status in (1, 2)
-				and m.validity < ?', [$now]);
+				and m.expires_at < ?', [$now]);
 
 		foreach ($warn_messages as $message)
 		{
@@ -79,7 +79,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 		{
 			$this->db->executeUpdate('update ' . $schema . '.messages
 				set exp_user_warn = \'t\'
-				where validity < ?', [$now]);
+				where expires_at < ?', [$now]);
 		}
 	}
 

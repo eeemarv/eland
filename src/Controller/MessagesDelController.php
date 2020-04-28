@@ -12,6 +12,7 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
+use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
@@ -35,6 +36,7 @@ class MessagesDelController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         ConfigService $config_service,
+        DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -90,7 +92,7 @@ class MessagesDelController extends AbstractController
 
         $out .= '<dt>Geldig tot</dt>';
         $out .= '<dd>';
-        $out .= $message['validity'];
+        $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
         if ($config_service->get_intersystem_en($pp->schema()) && $intersystems_service->get_count($pp->schema()))

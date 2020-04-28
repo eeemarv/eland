@@ -35,7 +35,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 		$st = $this->db->prepare('select id, subject
 			from ' . $schema . '.messages
-			where validity < ?');
+			where expires_at < ?');
 
 		$st->bindValue(1, $testdate);
 		$st->execute();
@@ -53,7 +53,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 				['schema' => $schema]);
 
 			$this->db->executeQuery('delete from ' . $schema . '.messages
-				where validity < ?', [$testdate]);
+				where expires_at < ?', [$testdate]);
 		}
 
 		$users = '';

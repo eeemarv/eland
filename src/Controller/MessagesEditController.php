@@ -172,8 +172,8 @@ class MessagesEditController extends AbstractController
                 $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
             }
 
-            $validity = time() + ((int) $validity_days * 86400);
-            $validity =  gmdate('Y-m-d H:i:s', $validity);
+            $expires_at_unix = time() + ((int) $validity_days * 86400);
+            $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
 
             if ($pp->is_admin())
             {
@@ -267,7 +267,7 @@ class MessagesEditController extends AbstractController
             if (!count($errors))
             {
                 $post_message = [
-                    'validity'          => $validity,
+                    'expires_at'        => $expires_at,
                     'subject'           => $subject,
                     'content'           => $content,
                     'is_offer'          => $offer_want === 'offer' ? 't' : 'f',
@@ -385,7 +385,7 @@ class MessagesEditController extends AbstractController
                 $access = $message['access'];
                 $image_files = $message['image_files'];
 
-                $validity_days = (int) round((strtotime($message['validity'] . ' UTC') - time()) / 86400);
+                $validity_days = (int) round((strtotime($message['expires_at'] . ' UTC') - time()) / 86400);
                 $validity_days = $validity_days < 1 ? 0 : $validity_days;
 
                 $user = $user_cache_service->get($message['id_user'], $pp->schema());

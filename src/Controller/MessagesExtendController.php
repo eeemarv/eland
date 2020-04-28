@@ -32,10 +32,10 @@ class MessagesExtendController extends AbstractController
                 $message['label']['offer_want_this'] . ' te verlengen.');
         }
 
-        $validity = gmdate('Y-m-d H:i:s', strtotime($message['validity']) + (86400 * $days));
+        $expires_at = gmdate('Y-m-d H:i:s', strtotime($message['expires_at']) + (86400 * $days));
 
         $m = [
-            'validity'		=> $validity,
+            'expires_at'	=> $expires_at,
             'exp_user_warn'	=> 'f',
         ];
 

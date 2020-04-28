@@ -127,7 +127,7 @@ class MessagesListController extends AbstractController
 
             $update_msgs_ary  = [];
 
-            $rows = $db->executeQuery('select id_user, id, validity,
+            $rows = $db->executeQuery('select id_user, id, expires_at,
                     id_category
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
@@ -149,11 +149,11 @@ class MessagesListController extends AbstractController
             {
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $validity = $row['validity'];
-                    $validity = gmdate('Y-m-d H:i:s', strtotime($validity . ' UTC') + (86400 * (int) $bulk_field_value));
+                    $expires_at = $row['expires_at'];
+                    $expires_at = gmdate('Y-m-d H:i:s', strtotime($expires_at . ' UTC') + (86400 * (int) $bulk_field_value));
 
                     $msg_update = [
-                        'validity'		=> $validity,
+                        'expires_at'		=> $expires_at,
                         'exp_user_warn'	=> 'f',
                     ];
 
@@ -340,7 +340,7 @@ class MessagesListController extends AbstractController
         foreach($messages as $msg)
         {
             $out .= '<tr';
-            $out .= strtotime($msg['validity']) < time() ? ' class="danger"' : '';
+            $out .= strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
             $out .= '>';
 
             $out .= '<td>';
@@ -388,7 +388,7 @@ class MessagesListController extends AbstractController
             }
 
             $out .= '<td>';
-            $out .= $date_format_service->get($msg['validity'], 'day', $pp->schema());
+            $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
             $out .= '</td>';
 
             if ($show_visibility_column)
@@ -637,7 +637,7 @@ class MessagesListController extends AbstractController
         }
 
         $table_header_ary += [
-            'm.validity' => array_merge($asc_preset_ary, [
+            'm.expires_at' => array_merge($asc_preset_ary, [
                 'lbl' 	=> 'Geldig tot',
                 'data_hide'	=> 'phone, tablet',
             ]),
@@ -752,12 +752,12 @@ class MessagesListController extends AbstractController
         {
             if (isset($filter['valid']['yes']))
             {
-                $where_sql[] = 'm.validity >= now()';
+                $where_sql[] = 'm.expires_at >= now()';
                 $params['f']['valid']['yes'] = 'on';
             }
             else
             {
-                $where_sql[] = 'm.validity < now()';
+                $where_sql[] = 'm.expires_at < now()';
                 $params['f']['valid']['no'] = 'on';
             }
         }
