@@ -24,7 +24,7 @@
 	{%- for msg in i.messages -%}
 		<li>
 		{{- ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
-			'%msg%': msg.content
+			'%msg%': msg.subject
 		}) -}}
 		<br />
 		{%- if i.eland_server -%}
@@ -63,7 +63,7 @@
 {% for msg in i.messages %}
 
 {{ ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
-	'%msg%': msg.content
+	'%msg%': msg.subject
 }) }}
 
 {% if i.eland_server %}
