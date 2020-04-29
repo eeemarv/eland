@@ -68,7 +68,7 @@ class ContactsEditAdminController extends AbstractController
 
         $content = self::form(
             $request,
-            $contact['id_user'],
+            $contact['user_id'],
             $id,
             true,
             $db,
@@ -116,7 +116,7 @@ class ContactsEditAdminController extends AbstractController
             $pp->schema()
         );
 
-        if ($user_id !== $contact['id_user'])
+        if ($user_id !== $contact['user_id'])
         {
             throw new BadRequestHttpException(
                 'Contact ' . $id . ' behoort niet tot gebruiker ' . $user_id);
@@ -181,13 +181,13 @@ class ContactsEditAdminController extends AbstractController
 
             $count_mail = $db->fetchColumn('select count(*)
                 from ' . $pp->schema() . '.contact
-                where id_user = ?
+                where user_id = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
 
             $mail_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.contact
-                where id_user = ?
+                where user_id = ?
                     and id_type_contact = ?',
                 [$user_id, $mail_type_id]);
 
@@ -209,7 +209,7 @@ class ContactsEditAdminController extends AbstractController
                         $pp->schema() . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
-                        and c.id_user = u.id
+                        and c.user_id = u.id
                         and u.status in (1, 2)
                         and u.id <> ?
                         and c.value = ?', [$user_id, $mailadr]);

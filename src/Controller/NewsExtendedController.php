@@ -197,7 +197,7 @@ class NewsExtendedController extends AbstractController
 
         $out .=  '<p><i class="fa fa-user"></i> ';
 
-        $out .=  $account_render->link($n['id_user'], $pp->ary());
+        $out .=  $account_render->link($n['user_id'], $pp->ary());
 
         if ($pp->is_admin() & $show_edit_btns)
         {

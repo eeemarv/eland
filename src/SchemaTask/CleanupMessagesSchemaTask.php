@@ -63,7 +63,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 			from ' . $schema . '.users u,
 				' . $schema . '.messages m
 			where u.status = 0
-				and m.id_user = u.id');
+				and m.user_id = u.id');
 
 		$st->execute();
 
@@ -84,7 +84,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 			$this->db->executeQuery('delete
 				from ' . $schema . '.messages
-				where id_user in (?)',
+				where user_id in (?)',
 				[$user_ids],
 				[Db::PARAM_INT_ARRAY]);
 		}

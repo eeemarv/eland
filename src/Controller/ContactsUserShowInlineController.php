@@ -33,7 +33,7 @@ class ContactsUserShowInlineController extends AbstractController
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
-                and c.id_user = ?', [$uid]);
+                and c.user_id = ?', [$uid]);
 
         $assets_service->add([
             'leaflet',

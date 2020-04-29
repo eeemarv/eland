@@ -34,9 +34,9 @@
 	<br />
 {%- endif -%}
 {{- 'periodic_overview.news.creator'|trans({
-	'%link_open%': context_url_open('users_show', mpp_ary(user_id, schema), {'id': n.id_user}),
+	'%link_open%': context_url_open('users_show', mpp_ary(user_id, schema), {'id': n.user_id}),
 	'%link_close%': '</a>',
-	'%account%': account(n.id_user, schema)
+	'%account%': account(n.user_id, schema)
 })|raw -}}
 </li>
 
@@ -77,7 +77,7 @@
 {{ 'periodic_overview.news.creator'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
-	'%account%': account(n.id_user, schema)
+	'%account%': account(n.user_id, schema)
 }) }}
 {% endfor %}
 {% else %}

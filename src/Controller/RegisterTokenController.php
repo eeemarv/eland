@@ -140,7 +140,7 @@ class RegisterTokenController extends AbstractController
             $data['email'] = strtolower($data['email']);
 
             $mail = [
-                'id_user'			=> $user_id,
+                'user_id'			=> $user_id,
                 'access'            => 'admin',
                 'value'				=> $data['email'],
                 'id_type_contact'	=> $tc['mail'],
@@ -153,7 +153,7 @@ class RegisterTokenController extends AbstractController
                 if ($data['gsm'])
                 {
                     $gsm = [
-                        'id_user'			=> $user_id,
+                        'user_id'			=> $user_id,
                         'access'            => 'admin',
                         'value'				=> $data['gsm'],
                         'id_type_contact'	=> $tc['gsm'],
@@ -165,7 +165,7 @@ class RegisterTokenController extends AbstractController
                 if ($data['tel'])
                 {
                     $tel = [
-                        'id_user'			=> $user_id,
+                        'user_id'			=> $user_id,
                         'access'            => 'admin',
                         'value'				=> $data['tel'],
                         'id_type_contact'	=> $tc['tel'],

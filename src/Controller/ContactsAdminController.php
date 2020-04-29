@@ -74,7 +74,7 @@ class ContactsAdminController extends AbstractController
 
             if ($fuid)
             {
-                $where_sql[] = 'c.id_user = ?';
+                $where_sql[] = 'c.user_id = ?';
                 $params_sql[] = $fuid;
                 $params['f']['code'] = $account_render->str($fuid, $pp->schema());
             }
@@ -150,7 +150,7 @@ class ContactsAdminController extends AbstractController
             || $params['s']['orderby'] === 'u.code')
         {
             $user_table_sql = ', ' . $pp->schema() . '.users u ';
-            $where_sql[] = 'u.id = c.id_user';
+            $where_sql[] = 'u.id = c.user_id';
         }
 
         if (count($where_sql))
@@ -475,7 +475,7 @@ class ContactsAdminController extends AbstractController
                 $td[] = '&nbsp;';
             }
 
-            $td[] = $account_render->link($c['id_user'], $pp->ary());
+            $td[] = $account_render->link($c['user_id'], $pp->ary());
 
             if (isset($c['comments']))
             {

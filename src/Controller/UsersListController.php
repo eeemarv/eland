@@ -219,7 +219,7 @@ class UsersListController extends AbstractController
 
                 $db->executeUpdate('update ' . $pp->schema() . '.contact
                     set access = ?
-                    where id_user in (?) and id_type_contact = ?',
+                    where user_id in (?) and id_type_contact = ?',
                         [$bulk_field_value, $user_ids, $id_type_contact],
                         [\PDO::PARAM_STR, Db::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
 
@@ -322,7 +322,7 @@ class UsersListController extends AbstractController
                         $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc
                     where u.id in (?)
-                        and u.id = c.id_user
+                        and u.id = c.user_id
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'',
                         [$user_ids], [Db::PARAM_INT_ARRAY]);
@@ -718,20 +718,20 @@ class UsersListController extends AbstractController
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
         {
             $c_ary = $db->fetchAll('select tc.abbrev,
-                    c.id_user, c.value, c.access
+                    c.user_id, c.value, c.access
                 from ' . $pp->schema() . '.contact c, ' .
                     $pp->schema() . '.type_contact tc, ' .
                     $pp->schema() . '.users u
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
-                    'and c.id_user = u.id
+                    'and c.user_id = u.id
                     and ' . $status_def_ary[$status]['sql'], $sql_bind);
 
             $contacts = [];
 
             foreach ($c_ary as $c)
             {
-                $contacts[$c['id_user']][$c['abbrev']][] = [
+                $contacts[$c['user_id']][$c['abbrev']][] = [
                     'value'         => $c['value'],
                     'access'        => $c['access'],
                 ];
@@ -746,7 +746,7 @@ class UsersListController extends AbstractController
                 $my_adr = $db->fetchColumn('select c.value
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
-                    where c.id_user = ?
+                    where c.user_id = ?
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'adr\'', [$su->id()]);
             }
@@ -768,48 +768,48 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['offers']))
             {
-                $ary = $db->fetchAll('select count(m.id), m.id_user
+                $ary = $db->fetchAll('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.is_offer = \'t\'
-                        and m.id_user = u.id
+                        and m.user_id = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.id_user', $sql_bind);
+                    group by m.user_id', $sql_bind);
 
                 foreach ($ary as $a)
                 {
-                    $msgs_count[$a['id_user']]['offers'] = $a['count'];
+                    $msgs_count[$a['user_id']]['offers'] = $a['count'];
                 }
             }
 
             if (isset($show_columns['m']['wants']))
             {
-                $ary = $db->fetchAll('select count(m.id), m.id_user
+                $ary = $db->fetchAll('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.is_want = \'t\'
-                        and m.id_user = u.id
+                        and m.user_id = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.id_user', $sql_bind);
+                    group by m.user_id', $sql_bind);
 
                 foreach ($ary as $a)
                 {
-                    $msgs_count[$a['id_user']]['wants'] = $a['count'];
+                    $msgs_count[$a['user_id']]['wants'] = $a['count'];
                 }
             }
 
             if (isset($show_columns['m']['total']))
             {
-                $ary = $db->fetchAll('select count(m.id), m.id_user
+                $ary = $db->fetchAll('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
-                    where m.id_user = u.id
+                    where m.user_id = u.id
                         and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.id_user', $sql_bind);
+                    group by m.user_id', $sql_bind);
 
                 foreach ($ary as $a)
                 {
-                    $msgs_count[$a['id_user']]['total'] = $a['count'];
+                    $msgs_count[$a['user_id']]['total'] = $a['count'];
                 }
             }
         }

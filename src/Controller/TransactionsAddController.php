@@ -638,11 +638,11 @@ class TransactionsAddController extends AbstractController
                     if ($mid)
                     {
                         $row = $db->fetchAssoc('select
-                                m.subject, m.amount, m.id_user,
+                                m.subject, m.amount, m.user_id,
                                 u.code, u.name
                             from ' . $tus . '.messages m,
                                 '. $tus . '.users u
-                            where u.id = m.id_user
+                            where u.id = m.user_id
                                 and u.status in (1, 2)
                                 and m.id = ?', [$mid]);
 
@@ -670,11 +670,11 @@ class TransactionsAddController extends AbstractController
             else if ($mid)
             {
                 $row = $db->fetchAssoc('select
-                        m.subject, m.amount, m.id_user,
+                        m.subject, m.amount, m.user_id,
                         u.code, u.name, u.status
                     from ' . $pp->schema() . '.messages m,
                         '. $pp->schema() . '.users u
-                    where u.id = m.id_user
+                    where u.id = m.user_id
                         and m.id = ?', [$mid]);
 
                 if ($row)
@@ -686,7 +686,7 @@ class TransactionsAddController extends AbstractController
                         $transaction['amount'] = $row['amount'];
                     }
 
-                    if ($su->id() === $row['id_user'])
+                    if ($su->id() === $row['user_id'])
                     {
                         if ($pp->is_admin())
                         {

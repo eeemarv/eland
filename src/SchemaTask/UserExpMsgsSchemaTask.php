@@ -44,13 +44,13 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 			from ' . $schema . '.messages m, ' .
 				$schema . '.users u
 			where m.exp_user_warn = \'f\'
-				and u.id = m.id_user
+				and u.id = m.user_id
 				and u.status in (1, 2)
 				and m.expires_at < ?', [$now]);
 
 		foreach ($warn_messages as $message)
 		{
-			$user = $this->user_cache_service->get($message['id_user'], $schema);
+			$user = $this->user_cache_service->get($message['user_id'], $schema);
 
 			if (!($user['status'] == 1 || $user['status'] == 2))
 			{
@@ -68,7 +68,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 			$mail_template .= $message['is_offer'] ? 'offer' : 'want';
 
 			$this->mail_queue->queue([
-				'to' 				=> $this->mail_addr_user_service->get_active((int) $message['id_user'], $schema),
+				'to' 				=> $this->mail_addr_user_service->get_active((int) $message['user_id'], $schema),
 				'schema' 			=> $schema,
 				'template' 			=> $mail_template,
 				'vars' 				=> $vars

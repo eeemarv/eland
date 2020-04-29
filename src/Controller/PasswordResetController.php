@@ -47,7 +47,7 @@ class PasswordResetController extends AbstractController
                     where c. value = ?
                         and tc.id = c.id_type_contact
                         and tc.abbrev = \'mail\'
-                        and c.id_user = u.id
+                        and c.user_id = u.id
                         and u.status in (1, 2)', [$email]);
 
                 if (count($user) < 2)

@@ -32,14 +32,14 @@ class StatusController extends AbstractController
                 $pp->schema() . '.users u
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'mail\'
-                and c.id_user = u.id
+                and c.user_id = u.id
                 and u.status in (1, 2)
             group by value
             having count(*) > 1');
 
         if (count($non_unique_mail))
         {
-            $st = $db->prepare('select id_user
+            $st = $db->prepare('select user_id
                 from ' . $pp->schema() . '.contact c
                 where c.value = ?');
 
@@ -50,7 +50,7 @@ class StatusController extends AbstractController
 
                 while ($row = $st->fetch())
                 {
-                    $non_unique_mail[$key]['users'][$row['id_user']] = true;
+                    $non_unique_mail[$key]['users'][$row['user_id']] = true;
                 }
             }
 
@@ -115,7 +115,7 @@ class StatusController extends AbstractController
 
         //
 
-        $unvalid_mail = $db->fetchAll('select c.id, c.value, c.id_user
+        $unvalid_mail = $db->fetchAll('select c.id, c.value, c.user_id
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
@@ -131,7 +131,7 @@ class StatusController extends AbstractController
                 and not exists (select c.id
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc
-                    where c.id_user = u.id
+                    where c.user_id = u.id
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\')');
 
@@ -161,7 +161,7 @@ class StatusController extends AbstractController
             where status in (1, 2)
                 and not exists (select 1
                     from ' . $pp->schema() . '.messages m
-                    where m.id_user = u.id)');
+                    where m.user_id = u.id)');
 
         if (count($no_msgs_users))
         {
@@ -340,7 +340,7 @@ class StatusController extends AbstractController
                         ['class' => 'btn btn-danger btn-xs']);
                     $out .= ' : ';
 
-                    $out .= $account_render->link($ary['id_user'], $pp->ary());
+                    $out .= $account_render->link($ary['user_id'], $pp->ary());
 
                     $out .= '</li>';
                 }

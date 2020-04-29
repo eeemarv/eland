@@ -97,7 +97,7 @@ class UsersPasswordAdminController extends AbstractController
                                 $pp->schema() . '.type_contact tc
                             where tc.id = c.id_type_contact
                                 and tc.abbrev = \'mail\'
-                                and c.id_user = ?', [$id]);
+                                and c.user_id = ?', [$id]);
 
                         if ($to)
                         {

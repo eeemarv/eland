@@ -105,7 +105,7 @@ class LoginController extends AbstractController
                         $pp->schema() . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
-                        and c.id_user = u.id
+                        and c.user_id = u.id
                         and u.status in (1, 2)
                         and lower(c.value) = ?', [$lowercase_login]);
 
@@ -117,7 +117,7 @@ class LoginController extends AbstractController
                             $pp->schema() . '.users u
                         where c.id_type_contact = tc.id
                             and tc.abbrev = \'mail\'
-                            and c.id_user = u.id
+                            and c.user_id = u.id
                             and u.status in (1, 2)
                             and lower(c.value) = ?', [$lowercase_login]);
                 }

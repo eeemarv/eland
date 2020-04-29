@@ -42,8 +42,8 @@ class MailAddrUserService
 				' . $schema . '.type_contact tc,
 				' . $schema . '.users u
 			where c.id_type_contact = tc.id
-				and c.id_user = ?
-				and c.id_user = u.id
+				and c.user_id = ?
+				and c.user_id = u.id
 				and tc.abbrev = \'mail\''
 				. $status_sql);
 

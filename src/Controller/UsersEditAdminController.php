@@ -204,7 +204,7 @@ class UsersEditAdminController extends AbstractController
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
                         and c.value = ?
-                        and c.id_user = u.id
+                        and c.user_id = u.id
                         and u.status in (1, 2)';
 
                 if ($is_edit)
@@ -534,7 +534,7 @@ class UsersEditAdminController extends AbstractController
                         from ' . $pp->schema() . '.type_contact tc, ' .
                             $pp->schema() . '.contact c
                         WHERE tc.id = c.id_type_contact
-                            AND c.id_user = ?');
+                            AND c.user_id = ?');
                     $rs->bindValue(1, $id);
 
                     $rs->execute();
@@ -554,7 +554,7 @@ class UsersEditAdminController extends AbstractController
                             if ($stored_contact)
                             {
                                 $db->delete($pp->schema() . '.contact',
-                                    ['id_user' => $id, 'id' => $contact_ary['id']]);
+                                    ['user_id' => $id, 'id' => $contact_ary['id']]);
                             }
                             continue;
                         }
@@ -582,7 +582,7 @@ class UsersEditAdminController extends AbstractController
                                 'id_type_contact'	=> $contact_types[$contact_ary['abbrev']],
                                 'value'				=> trim($contact_ary['value']),
                                 'access'		    => $contact_ary['access'],
-                                'id_user'			=> $id,
+                                'user_id'			=> $id,
                             ];
 
                             $db->insert($pp->schema() . '.contact', $insert);
@@ -596,7 +596,7 @@ class UsersEditAdminController extends AbstractController
 
                         $db->update($pp->schema() . '.contact',
                             $contact_update,
-                            ['id' => $contact_ary['id'], 'id_user' => $id]);
+                            ['id' => $contact_ary['id'], 'user_id' => $id]);
                     }
 
                     if ($status === '1' && !$is_activated)
@@ -755,7 +755,7 @@ class UsersEditAdminController extends AbstractController
                     from ' . $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.contact c
                     where tc.id = c.id_type_contact
-                        and c.id_user = ?');
+                        and c.user_id = ?');
 
                 $st->bindValue(1, $id);
                 $st->execute();

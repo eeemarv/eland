@@ -113,7 +113,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$schema . '.contact c, ' .
 				$schema . '.type_contact tc
 			where u.status in (1, 2)
-				and u.id = c.id_user
+				and u.id = c.user_id
 				and c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'');
 
@@ -145,7 +145,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					$schema . '.contact c, ' .
 					$schema . '.type_contact tc
 				where u.status in (1, 2)
-					and u.id = c.id_user
+					and u.id = c.user_id
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'');
 

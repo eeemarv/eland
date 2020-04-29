@@ -174,7 +174,7 @@ class UsersDelAdminController extends AbstractController
 
         $st = $db->prepare('select id, subject
             from ' . $pp->schema() . '.messages
-            where id_user = ?');
+            where user_id = ?');
 
         $st->bindValue(1, $id);
         $st->execute();
@@ -193,13 +193,13 @@ class UsersDelAdminController extends AbstractController
                 ['schema' => $pp->schema()]);
 
             $db->delete($pp->schema() . '.messages',
-                ['id_user' => $id]);
+                ['user_id' => $id]);
         }
 
         //delete contacts
 
         $db->delete($pp->schema() . '.contact',
-            ['id_user' => $id]);
+            ['user_id' => $id]);
 
         //the user
 

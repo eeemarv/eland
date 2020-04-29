@@ -49,13 +49,13 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 
 		$log_ary = [];
 
-		$st = $this->db->prepare('select c.value, c.id_user
+		$st = $this->db->prepare('select c.value, c.user_id
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc, ' .
 				$schema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'adr\'
-				and c.id_user = u.id
+				and c.user_id = u.id
 				and u.status in (1, 2)');
 
 		$st->execute();
@@ -64,7 +64,7 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 		{
 			$data = [
 				'adr'		=> trim($row['value']),
-				'uid'		=> $row['id_user'],
+				'uid'		=> $row['user_id'],
 				'schema'	=> $schema,
 			];
 
@@ -83,7 +83,7 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 
 			$this->geocode_queue->queue($data, 0);
 
-			$log = $this->account_str_render->get_with_id($row['id_user'], $schema);
+			$log = $this->account_str_render->get_with_id($row['user_id'], $schema);
 			$log .= ': ';
 			$log .= $data['adr'];
 

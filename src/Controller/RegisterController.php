@@ -68,7 +68,7 @@ class RegisterController extends AbstractController
             {
                 $alert_service->error('Geen geldig E-mail adres.');
             }
-            else if ($db->fetchColumn('select c.id_user
+            else if ($db->fetchColumn('select c.user_id
                 from ' . $pp->schema() . '.contact c, ' .
                     $pp->schema() . '.type_contact tc
                 where c. value = ?

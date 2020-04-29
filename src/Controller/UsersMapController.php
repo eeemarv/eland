@@ -63,7 +63,7 @@ class UsersMapController extends AbstractController
         $adr_ary = [];
 
         $rs = $db->prepare('select
-                c.id, c.id_user as user_id, c.value, c.access
+                c.id, c.user_id as user_id, c.value, c.access
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where tc.id = c.id_type_contact
@@ -83,7 +83,7 @@ class UsersMapController extends AbstractController
                 $my_adr = $db->fetchColumn('select c.value
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
-                    where c.id_user = ?
+                    where c.user_id = ?
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'adr\'', [$su->id()]);
             }

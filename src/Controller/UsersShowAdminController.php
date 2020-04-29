@@ -123,7 +123,7 @@ class UsersShowAdminController extends AbstractController
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
                     where c.access in (?)
-                        and c.id_user = ?
+                        and c.user_id = ?
                         and c.id_type_contact = tc.id',
                         [$item_access_service->get_visible_ary_for_role($user['role']), $su->id()],
                         [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
@@ -181,7 +181,7 @@ class UsersShowAdminController extends AbstractController
 
         $count_messages = $db->fetchColumn('select count(*)
             from ' . $pp->schema() . '.messages
-            where id_user = ?', [$id]);
+            where user_id = ?', [$id]);
 
         $count_transactions = $db->fetchColumn('select count(*)
             from ' . $pp->schema() . '.transactions

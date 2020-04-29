@@ -167,7 +167,7 @@ class ContactsAddAdminController extends AbstractController
                         $pp->schema() . '.users u
                     where c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'
-                        and c.id_user = u.id
+                        and c.user_id = u.id
                         and u.status in (1, 2)
                         and u.id <> ?
                         and c.value = ?', [$user_id, $mailadr]);
@@ -218,7 +218,7 @@ class ContactsAddAdminController extends AbstractController
                     'id_type_contact'		=> $id_type_contact,
                     'value'					=> $value,
                     'comments' 				=> $comments,
-                    'id_user'				=> $user_id,
+                    'user_id'				=> $user_id,
                     'access'                => $access,
                 ];
 

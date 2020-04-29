@@ -39,7 +39,7 @@ class DistanceService
 		{
 			$adr = $this->db->fetchColumn('select c.value
 				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
-				where c.id_user = ?
+				where c.user_id = ?
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'', [$s_id]);
 		}

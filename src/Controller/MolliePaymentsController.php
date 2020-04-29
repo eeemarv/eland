@@ -247,7 +247,7 @@ class MolliePaymentsController extends AbstractController
                 ' . $pp->schema() . '.mollie_payment_requests r,
                 ' . $pp->schema() . '.users u
             left join ' . $pp->schema() . '.contact c
-                on c.id_user = u.id
+                on c.user_id = u.id
                     and c.id_type_contact = (select t.id
                         from ' . $pp->schema() . '.type_contact t
                         where t.abbrev = \'mail\')
