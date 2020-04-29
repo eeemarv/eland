@@ -497,8 +497,8 @@ class UsersListController extends AbstractController
             $columns['u'] += [
                 'admincomment'	        => 'Admin commentaar',
                 'periodic_overview_en'	=> 'Periodieke Overzichts E-mail',
-                'cdate'			        => 'Gecreëerd',
-                'mdate'			        => 'Aangepast',
+                'created_at'	        => 'Gecreëerd',
+                'last_edit_at'	        => 'Aangepast',
                 'adate'			        => 'Geactiveerd',
                 'last_login'		    => 'Laatst ingelogd',
             ];
@@ -1156,8 +1156,8 @@ class UsersListController extends AbstractController
         ];
 
         $date_keys = [
-            'cdate'			=> true,
-            'mdate'			=> true,
+            'created_at'    => true,
+            'last_edit_at'	=> true,
             'adate'			=> true,
             'last_login'	=> true,
         ];

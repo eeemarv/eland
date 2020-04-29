@@ -442,12 +442,6 @@ class UsersEditAdminController extends AbstractController
                 if ($is_add)
                 {
                     $post_user['creator'] = $su->id();
-                    $post_user['cdate'] = gmdate('Y-m-d H:i:s');
-                }
-
-                if ($is_edit)
-                {
-                    $post_user['mdate'] = gmdate('Y-m-d H:i:s');
                 }
 
                 if (($is_add || ($is_edit && !$is_activated))

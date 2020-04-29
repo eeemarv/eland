@@ -539,14 +539,7 @@ class UsersShowAdminController extends AbstractController
             $out .= 'Tijdstip aanmaak';
             $out .= '</dt>';
 
-            if (isset($user['cdate']))
-            {
-                $out .= $this->get_dd($date_format_service->get($user['cdate'], 'min', $pp->schema()));
-            }
-            else
-            {
-                $out .= '<dd><i class="fa fa-times"></i></dd>';
-            }
+            $out .= $this->get_dd($date_format_service->get($user['created_at'], 'min', $pp->schema()));
 
             $out .= '<dt>';
             $out .= 'Tijdstip activering';

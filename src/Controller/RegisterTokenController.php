@@ -101,7 +101,6 @@ class RegisterTokenController extends AbstractController
             'role'	                => 'user',
             'periodic_overview_en'	=> 't',
             'hobbies'		        => '',
-            'cdate'			        => gmdate('Y-m-d H:i:s'),
         ];
 
         $preset_minlimit = $config_service->get('preset_minlimit', $pp->schema());
