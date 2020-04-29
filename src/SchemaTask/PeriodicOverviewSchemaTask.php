@@ -162,12 +162,12 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			$rs = $this->db->prepare('select m.id,
 					m.subject, m.content,
-					m.id_user,
+					m.user_id,
 					m.is_offer, m.is_want,
 					m.amount, m.units, m.image_files
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
-				where m.id_user = u.id
+				where m.user_id = u.id
 					and u.status IN (1, 2)
 					and m.created_at >= ?
 				order BY m.created_at DESC');
@@ -177,7 +177,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			while ($row = $rs->fetch())
 			{
-				$uid = $row['id_user'];
+				$uid = $row['user_id'];
 				$adr = isset($addr_access[$uid]) && in_array($addr_access[$uid], ['user', 'guest']) ? $addr[$uid] : '';
 
 				$image_file_ary = array_values(json_decode($row['image_files'] ?? '[]', true));
@@ -207,11 +207,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$rs = $this->db->prepare('select m.id, m.subject,
 						m.content,
 						m.is_offer, m.is_want,
-						m.id_user as user_id,
+						m.user_id as user_id,
 						m.amount, m.units
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
-					where m.id_user = u.id
+					where m.user_id = u.id
 						and m.access = \'guest\'
 						and u.status in (1, 2)
 						and m.created_at >= ?

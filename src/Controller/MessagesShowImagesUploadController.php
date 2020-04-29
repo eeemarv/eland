@@ -41,7 +41,7 @@ class MessagesShowImagesUploadController extends AbstractController
         {
             $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-            if (!$su->is_owner($message['id_user']) && !$pp->is_admin())
+            if (!$su->is_owner($message['user_id']) && !$pp->is_admin())
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
                     om een afbeelding op te laden voor

@@ -94,7 +94,7 @@ class MessagesExtendedController extends AbstractController
             $image_file = $image_files_ary ? $image_files_ary[0] : '';
 
             $sf_owner = $pp->is_user()
-                && $msg['id_user'] === $su->id();
+                && $msg['user_id'] === $su->id();
 
             $exp = strtotime($msg['expires_at']) < $time;
 
@@ -145,7 +145,7 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '<div class="panel-footer">';
             $out .= '<p><i class="fa fa-user"></i> ';
-            $out .= $account_render->link($msg['id_user'], $pp->ary());
+            $out .= $account_render->link($msg['user_id'], $pp->ary());
             $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
 
             if ($pp->is_admin() || $sf_owner)

@@ -45,7 +45,7 @@ class MessagesDelController extends AbstractController
     {
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-        if (!($su->is_owner($message['id_user']) || $pp->is_admin()))
+        if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
             throw new AccessDeniedHttpException(
                 'Je hebt onvoldoende rechten om dit bericht te verwijderen.');
@@ -82,7 +82,7 @@ class MessagesDelController extends AbstractController
 
         $out .= '<dt>Wie</dt>';
         $out .= '<dd>';
-        $out .= $account_render->link($message['id_user'], $pp->ary());
+        $out .= $account_render->link($message['user_id'], $pp->ary());
         $out .= '</dd>';
 
         $out .= '<dt>Categorie</dt>';

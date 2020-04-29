@@ -78,7 +78,7 @@ class MessagesShowController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
         }
 
-        $user = $user_cache_service->get($message['id_user'], $pp->schema());
+        $user = $user_cache_service->get($message['user_id'], $pp->schema());
 
         // process mail form
 
@@ -124,7 +124,7 @@ class MessagesShowController extends AbstractController
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
                     where c.access in (?)
-                        and c.id_user = ?
+                        and c.user_id = ?
                         and c.id_type_contact = tc.id',
                         [$item_access_service->get_visible_ary_for_role($user['role']), $su->id()],
                         [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
@@ -235,7 +235,7 @@ class MessagesShowController extends AbstractController
             'messages_show_images_slider.js',
         ]);
 
-        if ($pp->is_admin() || $su->is_owner($message['id_user']))
+        if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
             $assets_service->add([
                 'fileupload',
@@ -243,7 +243,7 @@ class MessagesShowController extends AbstractController
             ]);
         }
 
-        if ($pp->is_admin() || $su->is_owner($message['id_user']))
+        if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
             $btn_top_render->edit('messages_edit', $pp->ary(),
                 ['id' => $id],	ucfirst($message['label']['offer_want']) . ' aanpassen');
@@ -254,7 +254,7 @@ class MessagesShowController extends AbstractController
 
         if ($message['is_offer']
             && ($pp->is_admin()
-                || (!$su->is_owner($message['id_user'])
+                || (!$su->is_owner($message['user_id'])
                     && $user['status'] !== 7
                     && !($pp->is_guest() && $su->is_system_self()))))
         {
@@ -315,7 +315,7 @@ class MessagesShowController extends AbstractController
 
         $out .= '</div>';
 
-        if ($pp->is_admin() || $su->is_owner($message['id_user']))
+        if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
@@ -399,7 +399,7 @@ class MessagesShowController extends AbstractController
         $out .= '<dt>Van gebruiker: ';
         $out .= '</dt>';
         $out .= '<dd>';
-        $out .= $account_render->link($message['id_user'], $pp->ary());
+        $out .= $account_render->link($message['user_id'], $pp->ary());
         $out .= '</dd>';
 
         $out .= '<dt>Plaats</dt>';
@@ -417,7 +417,7 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        if ($pp->is_admin() || $su->is_owner($message['id_user']))
+        if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
             $out .= '<dt>Verlengen</dt>';
             $out .= '<dd>';
@@ -446,7 +446,7 @@ class MessagesShowController extends AbstractController
         $out .= '</div>';
 
         $out .= UsersShowAdminController::get_mail_form(
-            $message['id_user'],
+            $message['user_id'],
             $user_mail_content,
             $user_mail_cc,
             $account_render,

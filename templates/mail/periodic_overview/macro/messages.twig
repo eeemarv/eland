@@ -34,8 +34,8 @@
 {{- msg.content|raw -}}
 <br />
 {{- context_url_open('users_show', mpp_ary(user_id, schema),
-	{'id': msg.id_user})|raw -}}
-{{- account(msg.id_user, schema) -}}
+	{'id': msg.user_id})|raw -}}
+{{- account(msg.user_id, schema) -}}
 </a>
 
 {%- for mail in msg.mail -%}
@@ -87,7 +87,7 @@
 	{{- 'label.want'|trans -}}
 {%- endif -%}: {{ msg.subject }}
 {{ context_url('messages_show', mpp_ary(user_id, schema), {'id': msg.id}) }}
-{{ account(msg.id_user, schema) }}
+{{ account(msg.user_id, schema) }}
 
 {% endfor %}
 {% else %}

@@ -146,7 +146,7 @@ class MessagesEditController extends AbstractController
         {
             $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
-            if (!($pp->is_admin() || $su->is_owner($message['id_user'])))
+            if (!($pp->is_admin() || $su->is_owner($message['user_id'])))
             {
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
                     $message['label']['offer_want_this'] . ' aan te passen.');
@@ -272,7 +272,7 @@ class MessagesEditController extends AbstractController
                     'content'           => $content,
                     'is_offer'          => $offer_want === 'offer' ? 't' : 'f',
                     'is_want'           => $offer_want === 'want' ? 't' : 'f',
-                    'id_user'           => $user_id,
+                    'user_id'           => $user_id,
                     'category_id'       => $category_id,
                     'amount'            => $amount,
                     'units'             => $units,
@@ -388,7 +388,7 @@ class MessagesEditController extends AbstractController
                 $validity_days = (int) round((strtotime($message['expires_at'] . ' UTC') - time()) / 86400);
                 $validity_days = $validity_days < 1 ? 0 : $validity_days;
 
-                $user = $user_cache_service->get($message['id_user'], $pp->schema());
+                $user = $user_cache_service->get($message['user_id'], $pp->schema());
 
                 $account_code = $user['code'] . ' ' . $user['name'];
             }

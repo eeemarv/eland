@@ -127,7 +127,7 @@ class MessagesListController extends AbstractController
 
             $update_msgs_ary  = [];
 
-            $rows = $db->executeQuery('select id_user, id, expires_at,
+            $rows = $db->executeQuery('select user_id, id, expires_at,
                     category_id
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
@@ -136,7 +136,7 @@ class MessagesListController extends AbstractController
 
             foreach ($rows as $row)
             {
-                if (!$pp->is_admin() && !$su->is_owner($row['id_user']))
+                if (!$pp->is_admin() && !$su->is_owner($row['user_id']))
                 {
                     throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
                         $row['subject'] . ' ( ' . $row['id'] . ')');
@@ -370,7 +370,7 @@ class MessagesListController extends AbstractController
             if (!isset($params['f']['uid']))
             {
                 $out .= '<td>';
-                $out .= $account_render->link($msg['id_user'], $pp->ary());
+                $out .= $account_render->link($msg['user_id'], $pp->ary());
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -857,7 +857,7 @@ class MessagesListController extends AbstractController
             from ' . $pp->schema() . '.messages m, ' .
                 $pp->schema() . '.users u, ' .
                 $pp->schema() . '.categories c
-                where m.id_user = u.id
+                where m.user_id = u.id
                     and m.category_id = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
@@ -884,7 +884,7 @@ class MessagesListController extends AbstractController
         $cat_count_query = 'select count(m.*), m.category_id
             from ' . $pp->schema() . '.messages m, ' .
                 $pp->schema() . '.users u
-            where m.id_user = u.id
+            where m.user_id = u.id
                 ' . $no_cat_where_sql . '
             group by m.category_id';
 
@@ -901,7 +901,7 @@ class MessagesListController extends AbstractController
             $row_count = $db->fetchColumn('select count(m.*)
                 from ' . $pp->schema() . '.messages m, ' .
                     $pp->schema() . '.users u
-                where m.id_user = u.id' . $where_sql, $params_sql);
+                where m.user_id = u.id' . $where_sql, $params_sql);
         }
         else
         {
@@ -929,7 +929,7 @@ class MessagesListController extends AbstractController
                 from ' . $pp->schema() . '.categories c, ' .
                     $pp->schema() . '.messages m
                 where m.category_id = c.id
-                    and m.id_user = ?
+                    and m.user_id = ?
                 order by c.fullname', [$filter['uid']]);
         }
         else
