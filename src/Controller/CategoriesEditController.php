@@ -61,7 +61,7 @@ class CategoriesEditController extends AbstractController
 
             $message_count = $db->fetchColumn('select count(*)
                 from ' . $pp->schema . '.messsages
-                where id_category = ?', [$id]);
+                where category_id = ?', [$id]);
 
             if (!$cat['name'])
             {

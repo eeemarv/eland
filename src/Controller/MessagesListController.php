@@ -128,7 +128,7 @@ class MessagesListController extends AbstractController
             $update_msgs_ary  = [];
 
             $rows = $db->executeQuery('select id_user, id, expires_at,
-                    id_category
+                    category_id
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
@@ -198,21 +198,21 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'category' && !count($errors))
             {
-                $to_id_category = (int) $bulk_field_value;
+                $to_category_id = (int) $bulk_field_value;
 
-                $test_id_category = $db->fetchColumn('select id
+                $test_category_id = $db->fetchColumn('select id
                     from ' . $pp->schema() . '.categories
                     where id_parent <> 0
                         and leafnote = 1
-                        and id = ?', [$to_id_category]);
+                        and id = ?', [$to_category_id]);
 
-                if (!$test_id_category)
+                if (!$test_category_id)
                 {
-                    throw new BadRequestHttpException('Ongeldig categorie id ' . $to_id_category);
+                    throw new BadRequestHttpException('Ongeldig categorie id ' . $to_category_id);
                 }
 
                 $msg_update = [
-                    'id_category'   => $to_id_category,
+                    'category_id'   => $to_category_id,
                 ];
 
                 foreach ($update_msgs_ary as $id => $row)
@@ -382,8 +382,8 @@ class MessagesListController extends AbstractController
             {
                 $out .= '<td>';
                 $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    $cat_params[$msg['id_category']],
-                    $categories[$msg['id_category']]);
+                    $cat_params[$msg['category_id']],
+                    $categories[$msg['category_id']]);
                 $out .= '</td>';
             }
 
@@ -840,11 +840,11 @@ class MessagesListController extends AbstractController
 
             if (count($cat_ary))
             {
-                $where_sql[] = 'm.id_category in (' . implode(', ', $cat_ary) . ')';
+                $where_sql[] = 'm.category_id in (' . implode(', ', $cat_ary) . ')';
             }
             else
             {
-                $where_sql[] = 'm.id_category = ?';
+                $where_sql[] = 'm.category_id = ?';
                 $params_sql[] = $filter['cid'];
             }
 
@@ -858,7 +858,7 @@ class MessagesListController extends AbstractController
                 $pp->schema() . '.users u, ' .
                 $pp->schema() . '.categories c
                 where m.id_user = u.id
-                    and m.id_category = c.id' . $where_sql . '
+                    and m.category_id = c.id' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -881,18 +881,18 @@ class MessagesListController extends AbstractController
 
         $cat_count_ary = [];
 
-        $cat_count_query = 'select count(m.*), m.id_category
+        $cat_count_query = 'select count(m.*), m.category_id
             from ' . $pp->schema() . '.messages m, ' .
                 $pp->schema() . '.users u
             where m.id_user = u.id
                 ' . $no_cat_where_sql . '
-            group by m.id_category';
+            group by m.category_id';
 
         $st = $db->executeQuery($cat_count_query, $no_cat_params_sql);
 
         while($row = $st->fetch())
         {
-            $cat_count_ary[$row['id_category']] = $row['count'];
+            $cat_count_ary[$row['category_id']] = $row['count'];
         }
 
         if (isset($filter['cid'])
@@ -928,7 +928,7 @@ class MessagesListController extends AbstractController
             $st = $db->executeQuery('select c.*
                 from ' . $pp->schema() . '.categories c, ' .
                     $pp->schema() . '.messages m
-                where m.id_category = c.id
+                where m.category_id = c.id
                     and m.id_user = ?
                 order by c.fullname', [$filter['uid']]);
         }

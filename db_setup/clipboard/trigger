@@ -1,0 +1,152 @@
+TRIGGER
+-------
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+    DROP TRIGGER IF EXISTS inc_prolong_count ON messages;
+
+    DROP TRIGGER IF EXISTS set_last_edit_at ON messages;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON users;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON config;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON doc_maps;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON docs;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON forum_posts;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON forum_topics;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON news;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON static_content;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON transactions;
+    DROP TRIGGER IF EXISTS set_last_edit_at ON mollie_payments;
+
+    DROP TRIGGER IF EXISTS set_canceled_at ON mollie_payments;
+    DROP TRIGGER IF EXISTS set_payed_at ON mollie_payments;
+
+    DROP FUNCTION IF EXISTS trigger_set_last_edit_at();
+    DROP FUNCTION IF EXISTS trigger_set_canceled_at();
+    DROP FUNCTION IF EXISTS trigger_set_payed_at();
+    DROP FUNCTION IF EXISTS trigger_inc_prolong_count();
+
+     CREATE OR REPLACE FUNCTION set_payed_at()
+     RETURNS TRIGGER AS $$
+     BEGIN
+     NEW.payed_at := timezone('utc'::text, NOW());
+     RETURN NEW;
+     END;
+     $$ LANGUAGE plpgsql;
+
+     CREATE OR REPLACE FUNCTION set_canceled_at()
+     RETURNS TRIGGER AS $$
+     BEGIN
+     NEW.canceled_at := timezone('utc'::text, NOW());
+     NEW.is_canceled := 't'::bool;
+     RETURN NEW;
+     END;
+     $$ LANGUAGE plpgsql;
+
+     CREATE OR REPLACE FUNCTION set_last_edit_at()
+     RETURNS TRIGGER AS $$
+     BEGIN
+     NEW.last_edit_at := timezone('utc'::text, NOW());
+     NEW.edit_count := OLD.edit_count + 1;
+     RETURN NEW;
+     END;
+     $$ LANGUAGE plpgsql;
+
+     CREATE OR REPLACE FUNCTION inc_prolong_count()
+     RETURNS TRIGGER AS $$
+     BEGIN
+     NEW.prolong_count := OLD.prolong_count + 1;
+     RETURN NEW;
+     END;
+     $$ LANGUAGE plpgsql;
+
+     CREATE TRIGGER trig_inc_prolong_count
+     BEFORE UPDATE OF expires_at ON messages
+     FOR EACH ROW
+     EXECUTE PROCEDURE inc_prolong_count();
+
+     CREATE TRIGGER trig_set_payed_at
+     BEFORE UPDATE OF is_payed ON mollie_payments
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_payed_at();
+
+     CREATE TRIGGER trig_set_canceled_at
+     BEFORE UPDATE OF canceled_by ON mollie_payments
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_canceled_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON messages
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON users
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON config
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON doc_maps
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON docs
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON forum_posts
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON forum_topics
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON news
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON static_content
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON transactions
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+     CREATE TRIGGER trig_set_last_edit_at
+     BEFORE UPDATE ON mollie_payments
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_last_edit_at();
+
+END LOOP;
+
+END
+$do$

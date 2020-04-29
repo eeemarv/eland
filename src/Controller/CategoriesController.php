@@ -34,7 +34,7 @@ class CategoriesController extends AbstractController
         $stmt = $db->prepare('select c.id, count(m.*)
             from ' . $pp->schema() . '.categories c,
                 ' . $pp->schema() . '.messages m
-            where m.id_category = c.id
+            where m.category_id = c.id
                 and m.is_want = \'t\'
             group by c.id');
 
@@ -48,7 +48,7 @@ class CategoriesController extends AbstractController
         $stmt = $db->prepare('select c.id, count(m.*)
             from ' . $pp->schema() . '.categories c,
                 ' . $pp->schema() . '.messages m
-            where m.id_category = c.id
+            where m.category_id = c.id
                 and m.is_offer = \'t\'
             group by c.id');
 

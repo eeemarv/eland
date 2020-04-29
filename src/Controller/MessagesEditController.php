@@ -125,7 +125,7 @@ class MessagesEditController extends AbstractController
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $offer_want = $request->request->get('offer_want', '');
-        $id_category = $request->request->get('id_category', '');
+        $category_id = $request->request->get('category_id', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
 
@@ -226,13 +226,13 @@ class MessagesEditController extends AbstractController
                 $errors[] = $err;
             }
 
-            if (!$id_category)
+            if (!$category_id)
             {
                 $errors[] = 'Geieve een categorie te selecteren.';
             }
             else if(!$db->fetchColumn('select id
                 from ' . $pp->schema() . '.categories
-                where id = ?', [$id_category]))
+                where id = ?', [$category_id]))
             {
                 throw new BadRequestHttpException('Categorie bestaat niet!');
             }
@@ -273,7 +273,7 @@ class MessagesEditController extends AbstractController
                     'is_offer'          => $offer_want === 'offer' ? 't' : 'f',
                     'is_want'           => $offer_want === 'want' ? 't' : 'f',
                     'id_user'           => $user_id,
-                    'id_category'       => $id_category,
+                    'category_id'       => $category_id,
                     'amount'            => $amount,
                     'units'             => $units,
                     'access'            => $access,
@@ -380,7 +380,7 @@ class MessagesEditController extends AbstractController
                 $subject = $message['subject'];
                 $amount = $message['amount'];
                 $units = $message['units'];
-                $id_category = $message['id_category'];
+                $category_id = $message['category_id'];
                 $offer_want = $message['is_offer'] ? 'offer' : 'want';
                 $access = $message['access'];
                 $image_files = $message['image_files'];
@@ -399,7 +399,7 @@ class MessagesEditController extends AbstractController
                 $subject = '';
                 $amount = '';
                 $units = '';
-                $id_category = '';
+                $category_id = '';
                 $offer_want = '';
                 $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
                 $account_code = '';
@@ -512,14 +512,14 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="id_category" class="control-label">';
+        $out .= '<label for="category_id" class="control-label">';
         $out .= 'Categorie</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-clone"></i>';
         $out .= '</span>';
-        $out .= '<select name="id_category" id="id_category" class="form-control" required>';
-        $out .= $select_render->get_options($cat_list, (string) $id_category);
+        $out .= '<select name="category_id" id="category_id" class="form-control" required>';
+        $out .= $select_render->get_options($cat_list, (string) $category_id);
         $out .= "</select>";
         $out .= '</div>';
         $out .= '</div>';

@@ -490,7 +490,7 @@ class MessagesShowController extends AbstractController
             from ' . $pp_schema . '.messages m, ' .
                 $pp_schema . '.categories c
             where m.id = ?
-                and c.id = m.id_category', [$id]);
+                and c.id = m.category_id', [$id]);
 
         if (!$message)
         {
