@@ -1,0 +1,32 @@
+msg_content
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+   ALTER TABLE messages
+        ADD COLUMN IF NOT EXISTS is_offer bool,
+        ADD COLUMN IF NOT EXISTS is_want bool;
+    UPDATE messages SET is_offer = 't' where msg_type = 1;
+    UPDATE messages SET is_offer = 'f' where msg_type = 0;
+    UPDATE messages SET is_want = 't' where msg_type = 0;
+    UPDATE messages SET is_want = 'f' where msg_type = 1;
+END LOOP;
+
+END
+$do$
