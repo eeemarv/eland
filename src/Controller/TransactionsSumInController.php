@@ -67,7 +67,7 @@ class TransactionsSumInController extends AbstractController
             from ' . $pp->schema() . '.transactions t, ' .
                 $pp->schema() . '.users u
             where u.id = t.id_' . $inp . '
-                and t.cdate > ?';
+                and t.created_at > ?';
 
         if (count($sql_where))
         {

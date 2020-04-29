@@ -531,7 +531,6 @@ class TransactionsAddController extends AbstractController
                 else
                 {
                     $transaction['creator'] = $su->is_master() ? 0 : $su->id();
-                    $transaction['cdate'] = gmdate('Y-m-d H:i:s');
                     $transaction['real_to'] = $to_remote_user['code'] . ' ' . $to_remote_user['name'];
 
                     $db->beginTransaction();

@@ -100,7 +100,6 @@ class NewsAddController extends AbstractController
                 $news = [
                     'approved'      => $pp->is_admin() ? 't' : 'f',
                     'user_id'       => $su->is_master() ? 0 : $su->id(),
-                    'cdate'         => gmdate('Y-m-d H:i:s'),
                     'itemdate'	    => $itemdate_formatted,
                     'location'	    => $location,
                     'sticky'	    => $sticky ? 't' : 'f',

@@ -839,7 +839,7 @@ class UsersListController extends AbstractController
                 from ' . $pp->schema() . '.transactions t, ' .
                     $pp->schema() . '.users u
                 where t.id_from = u.id
-                    and t.cdate > ?' . $and . '
+                    and t.created_at > ?' . $and . '
                 group by t.id_to', $sql_bind);
 
             $trans_out_ary = $db->fetchAll('select sum(t.amount),
@@ -847,7 +847,7 @@ class UsersListController extends AbstractController
                 from ' . $pp->schema() . '.transactions t, ' .
                     $pp->schema() . '.users u
                 where t.id_to = u.id
-                    and t.cdate > ?' . $and . '
+                    and t.created_at > ?' . $and . '
                 group by t.id_from', $sql_bind);
 
             foreach ($trans_in_ary as $trans_in)

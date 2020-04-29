@@ -248,7 +248,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where n.approved = \'t\'
 					and n.access in (\'user\', \'guest\', \'anonymous\') ';
 
-			$query .= $block_options['news'] == 'recent' ? 'and n.cdate > ? ' : '';
+			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';
 			$query .= 'order by n.itemdate ';
 			$query .= $this->config_service->get('news_order_asc', $schema) === '1' ? 'asc' : 'desc';
 
@@ -300,7 +300,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			if ($block_options['leaving_users'] === 'recent')
 			{
-				$query .= ' and mdate > ?';
+				$query .= ' and last_edit_at > ?';
 			}
 
 			$rs = $this->db->prepare($query);
@@ -324,7 +324,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		{
 			$rs = $this->db->prepare('select t.*
 				from ' . $schema . '.transactions t
-				where t.cdate > ?');
+				where t.created_at > ?');
 
 			$rs->bindValue(1, $treshold_time);
 			$rs->execute();

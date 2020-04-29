@@ -46,8 +46,6 @@ class TransactionService
 
 	public function insert(array $transaction, string $schema):int
 	{
-		$transaction['cdate'] = gmdate('Y-m-d H:i:s');
-
 		$this->db->beginTransaction();
 
 		try

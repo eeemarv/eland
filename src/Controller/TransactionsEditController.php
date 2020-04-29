@@ -150,7 +150,7 @@ class TransactionsEditController extends AbstractController
 
         $out .= '<dt>Tijdstip</dt>';
         $out .= '<dd>';
-        $out .= $date_format_service->get($transaction['cdate'], 'min', $pp->schema());
+        $out .= $date_format_service->get($transaction['created_at'], 'min', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Transactie ID</dt>';

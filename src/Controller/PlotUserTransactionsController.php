@@ -75,7 +75,7 @@ class PlotUserTransactionsController extends AbstractController
         $end_date = gmdate('Y-m-d H:i:s', $end_unix);
 
         $query = 'select t.id, t.amount, t.id_from, t.id_to,
-                t.real_from, t.real_to, t.cdate, t.description,
+                t.real_from, t.real_to, t.created_at, t.description,
                 u.id as user_id, u.name, u.code,
                 u.role, u.status
             from ' . $pp->schema() . '.transactions t, ' .
@@ -83,16 +83,16 @@ class PlotUserTransactionsController extends AbstractController
             where (t.id_to = ? or t.id_from = ?)
                 and (u.id = t.id_to or u.id = t.id_from)
                 and u.id <> ?
-                and t.cdate >= ?
-                and t.cdate <= ?
-            order by t.cdate asc';
+                and t.created_at >= ?
+                and t.created_at <= ?
+            order by t.created_at asc';
 
         $fetched_transactions = $db->fetchAll($query,
             [$user_id, $user_id, $user_id, $begin_date, $end_date]);
 
         foreach ($fetched_transactions as $t)
         {
-            $time = strtotime($t['cdate'] . ' UTC');
+            $time = strtotime($t['created_at'] . ' UTC');
             $out = $t['id_from'] === $user_id;
             $mul = $out ? -1 : 1;
             $amount = ((int) $t['amount']) * $mul;

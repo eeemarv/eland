@@ -241,8 +241,6 @@ class MassTransactionController extends AbstractController
 
                 $db->beginTransaction();
 
-                $cdate = gmdate('Y-m-d H:i:s');
-
                 $alert_success = $log_many = '';
                 $total_amount = 0;
 
@@ -280,7 +278,6 @@ class MassTransactionController extends AbstractController
                             'id_from' 		=> $from_id,
                             'amount' 		=> $amo,
                             'description' 	=> $description,
-                            'cdate' 		=> $cdate,
                             'transid'		=> $transaction_service->generate_transid($su->id(), $pp->system()),
                             'creator'		=> $su->is_master() ? 0 : $su->id(),
                         ];

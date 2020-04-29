@@ -78,7 +78,6 @@ class UsersPasswordAdminController extends AbstractController
 
                 $update = [
                     'password'	=> $hashed_password,
-                    'mdate'		=> gmdate('Y-m-d H:i:s'),
                 ];
 
                 if ($db->update($pp->schema() . '.users',

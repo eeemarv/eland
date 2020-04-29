@@ -69,7 +69,7 @@ class TransactionsController extends AbstractController
 
         $params = [
             's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'cdate',
+                'orderby'	=> $sort['orderby'] ?? 'created_at',
                 'asc'		=> $sort['asc'] ?? 0,
             ],
             'p'	=> [
@@ -163,7 +163,7 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.cdate >= ?';
+                $where_sql[] = 't.created_at >= ?';
                 $params_sql[] = $fdate_sql;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
@@ -179,7 +179,7 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.cdate <= ?';
+                $where_sql[] = 't.created_at <= ?';
                 $params_sql[] = $tdate_sql;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }
@@ -257,7 +257,7 @@ class TransactionsController extends AbstractController
                 'lbl' => 'Omschrijving']),
             'amount' => array_merge($asc_preset_ary, [
                 'lbl' => $config_service->get('currency', $pp->schema())]),
-            'cdate'	=> array_merge($asc_preset_ary, [
+            'created_at'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Tijdstip',
                 'data_hide' => 'phone'])
         ];
@@ -652,7 +652,7 @@ class TransactionsController extends AbstractController
                 $out .= '</span></td>';
 
                 $out .= '<td>';
-                $out .= $date_format_service->get($t['cdate'], 'min', $pp->schema());
+                $out .= $date_format_service->get($t['created_at'], 'min', $pp->schema());
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -748,7 +748,7 @@ class TransactionsController extends AbstractController
                 $out .= '</td>';
 
                 $out .= '<td>';
-                $out .= $date_format_service->get($t['cdate'], 'min', $pp->schema());
+                $out .= $date_format_service->get($t['created_at'], 'min', $pp->schema());
                 $out .= '</td>';
 
                 $out .= '<td>';

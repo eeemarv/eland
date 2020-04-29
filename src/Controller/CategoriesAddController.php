@@ -56,7 +56,6 @@ class CategoriesAddController extends AbstractController
 
             if (!count($errors))
             {
-                $cat['cdate'] = gmdate('Y-m-d H:i:s');
                 $cat['id_creator'] = $su->is_master() ? 0 : $su->id();
                 $cat['fullname'] = '';
 
