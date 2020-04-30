@@ -12,6 +12,7 @@ use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 
 class MessagesShowImagesUploadController extends AbstractController
@@ -29,8 +30,7 @@ class MessagesShowImagesUploadController extends AbstractController
         $uploaded_files = $request->files->get('images', []);
         $insert_in_db = $request->attributes->get('form_token') ? false : true;
 
-        $return_ary = [];
-        $new_image_files = [];
+        $filename_ary = [];
 
         if (!count($uploaded_files))
         {
@@ -55,14 +55,6 @@ class MessagesShowImagesUploadController extends AbstractController
             $id++;
         }
 
-        if ($insert_in_db)
-        {
-            $image_files = $db->fetchColumn('select image_files
-                from ' . $pp->schema() . '.messages
-                where id = ?', [$id]);
-            $new_image_files = array_values(json_decode($image_files ?? '[]', true));
-        }
-
         $update_db = false;
 
         foreach ($uploaded_files as $uploaded_file)
@@ -73,7 +65,6 @@ class MessagesShowImagesUploadController extends AbstractController
             if ($insert_in_db)
             {
                 $update_db = true;
-                $new_image_files[] = $filename;
 
                 $logger->info('Image file ' .
                     $filename . ' uploaded and inserted in db.',
@@ -86,17 +77,19 @@ class MessagesShowImagesUploadController extends AbstractController
                     ['schema' => $pp->schema()]);
             }
 
-            $return_ary[] = $filename;
+            $filename_ary[] = $filename;
         }
 
         if ($update_db)
         {
-            $image_files = json_encode(array_values($new_image_files));
-            $db->update($pp->schema() . '.messages',
-                ['image_files' => $image_files],
-                ['id' => $id]);
+            $db->executeUpdate('update ' . $pp->schema() . '.messages
+                set image_files = image_files || ?
+                where id = ?',
+                [$filename_ary, $id],
+                [Types::JSON, \PDO::PARAM_INT]
+            );
         }
 
-        return $this->json($return_ary);
+        return $this->json($filename_ary);
     }
 }
