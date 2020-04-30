@@ -28,7 +28,7 @@ class CleanupNewsSchemaTask implements SchemaTaskInterface
 	{
 		$now = gmdate('Y-m-d H:i:s');
 
-		$news = $this->db->fetchAll('select id, headline
+		$news = $this->db->fetchAll('select id, subject
 			from ' . $schema . '.news
 			where itemdate < ?
 				and sticky = \'f\'', [$now]);
@@ -36,7 +36,7 @@ class CleanupNewsSchemaTask implements SchemaTaskInterface
 		foreach ($news as $n)
 		{
 			$this->db->delete($schema . '.news', ['id' => $n['id']]);
-			$this->logger->info('removed news item ' . $n['headline'],
+			$this->logger->info('removed news item ' . $n['subject'],
 				['schema' => $schema]);
 		}
 	}

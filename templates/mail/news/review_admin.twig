@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
     {{- 'news_review_admin.subject'|trans({
-        '%name%': news.headline
+        '%name%': news.subject
     })|raw -}}
 {%- endblock subject_line %}
 
@@ -15,7 +15,7 @@
 
 <p>
     {{- 'news_review_admin.message'|trans({
-        '%name%': news.headline
+        '%name%': news.subject
     }) -}}
 </p>
 
@@ -33,7 +33,7 @@
 {{ 'news_review_admin.title'|trans|underline }}
 
 {{ 'news_review_admin.message'|trans({
-    '%name%': news.headline
+    '%name%': news.subject
 }) }}
 
 {{ 'news_review_admin.action'|trans }}

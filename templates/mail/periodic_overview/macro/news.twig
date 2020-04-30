@@ -15,10 +15,10 @@
 <li>
 <h4>
 {{- context_url_open('news_show', mpp_ary(user_id, schema), {'id': n.id})|raw -}}
-{{- n.headline -}}
+{{- n.subject -}}
 </a>
 </h4>
-{{- n.newsitem|raw -}}<br />
+{{- n.content|raw -}}<br />
 {%- if n.location -%}
 	{{- 'label.location'|trans -}}:
 	&nbsp;<strong>
@@ -64,9 +64,9 @@
 {% if news %}
 {% for n in news %}
 
-{{ n.headline|underline('.') }}
+{{ n.subject|underline('.') }}
 
-{{ n.newsitem_plain_text }}
+{{ n.content_plain_text }}
 
 {% if n.location %}
 {{ 'label.location'|trans }}: {{ n.location }}

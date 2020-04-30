@@ -97,7 +97,7 @@ class NewsShowController extends AbstractController
         $btn_nav_render->nav_list($vr->get('news'), $pp->ary(),
             [], 'Lijst', 'calendar-o');
 
-        $heading_render->add('Nieuwsbericht: ' . $news_item['headline']);
+        $heading_render->add('Nieuwsbericht: ' . $news_item['subject']);
         $heading_render->fa('calendar-o');
 
         $out = NewsExtendedController::render_news_item(

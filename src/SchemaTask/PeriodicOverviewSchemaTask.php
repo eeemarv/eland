@@ -263,7 +263,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			while ($row = $rs->fetch())
 			{
-				$row['newsitem_plain_text'] = $this->html_to_markdown_converter->convert($row['newsitem']);
+				$row['content_plain_text'] = $this->html_to_markdown_converter->convert($row['content']);
 				$news[] = $row;
 			}
 		}

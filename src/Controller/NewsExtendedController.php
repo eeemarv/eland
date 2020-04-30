@@ -111,7 +111,7 @@ class NewsExtendedController extends AbstractController
             $out .=  '<h2 class="media-heading">';
 
             $out .=  $link_render->link_no_attr('news_show', $pp->ary(),
-                ['id' => $n['id']], $n['headline']);
+                ['id' => $n['id']], $n['subject']);
 
             $out .=  '</h2>';
         }
@@ -126,7 +126,7 @@ class NewsExtendedController extends AbstractController
         }
 
         $out .=  '<p>';
-        $out .=  nl2br($n['newsitem']);
+        $out .=  nl2br($n['content']);
         $out .=  '</p>';
 
         $out .=  '</div>';

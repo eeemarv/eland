@@ -56,7 +56,7 @@ class NewsDelController extends AbstractController
             from ' . $pp->schema() . '.news n
             where n.id = ?', [$id]);
 
-        $heading_render->add('Nieuwsbericht ' . $news['headline'] . ' verwijderen?');
+        $heading_render->add('Nieuwsbericht ' . $news['subject'] . ' verwijderen?');
         $heading_render->fa('calendar-o');
 
         $out = NewsExtendedController::render_news_item(

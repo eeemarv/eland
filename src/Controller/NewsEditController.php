@@ -40,13 +40,13 @@ class NewsEditController extends AbstractController
         $itemdate = trim($request->request->get('itemdate', ''));
         $location = trim($request->request->get('location', ''));
         $sticky = $request->request->has('sticky');
-        $newsitem = trim($request->request->get('newsitem', ''));
-        $headline = trim($request->request->get('headline', ''));
+        $content = trim($request->request->get('content', ''));
+        $subject = trim($request->request->get('subject', ''));
         $access = $request->request->get('access', '');
 
         if ($request->isMethod('POST'))
         {
-            $newsitem = $html_purifier->purify($newsitem);
+            $content = $html_purifier->purify($content);
 
             if (!$access)
             {
@@ -67,12 +67,12 @@ class NewsEditController extends AbstractController
                 $errors[] = 'Geef een agendadatum op.';
             }
 
-            if (!$headline === '')
+            if (!$subject === '')
             {
                 $errors[] = 'Titel is niet ingevuld';
             }
 
-            if (strlen($headline) > 200)
+            if (strlen($subject) > 200)
             {
                 $errors[] = 'De titel mag maximaal 200 tekens lang zijn.';
             }
@@ -90,8 +90,8 @@ class NewsEditController extends AbstractController
             if (!count($errors))
             {
                 $news = [
-                    'headline'  => $headline,
-                    'newsitem'  => $newsitem,
+                    'subject'  => $subject,
+                    'content'  => $content,
                     'location'  => $location,
                     'sticky'    => $sticky ? 't' : 'f',
                     'itemdate'  => $itemdate,
@@ -111,11 +111,11 @@ class NewsEditController extends AbstractController
                 from ' . $pp->schema() . '.news
                 where id = ?', [$id]);
 
-            $headline = $news['headline'];
+            $subject = $news['subject'];
             $itemdate = $news['itemdate'];
             $location = $news['location'];
             $sticky = $news['sticky'];
-            $newsitem = $news['newsitem'];
+            $content = $news['content'];
             $access = $news['access'];
         }
 
@@ -134,21 +134,21 @@ class NewsEditController extends AbstractController
         $out .= '<form method="post">';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="headline" class="control-label">';
+        $out .= '<label for="subject" class="control-label">';
         $out .= 'Titel</label>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="headline" name="headline" ';
+        $out .= 'id="subject" name="subject" ';
         $out .= 'value="';
-        $out .= $headline;
+        $out .= $subject;
         $out .= '" required maxlength="200">';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="newsitem" class="control-label">';
+        $out .= '<label for="content" class="control-label">';
         $out .= 'Bericht</label>';
-        $out .= '<textarea name="newsitem" id="newsitem" ';
+        $out .= '<textarea name="content" id="content" ';
         $out .= 'class="form-control summernote" rows="10" required>';
-        $out .= $newsitem ?? '';
+        $out .= $content ?? '';
         $out .= '</textarea>';
         $out .= '</div>';
 

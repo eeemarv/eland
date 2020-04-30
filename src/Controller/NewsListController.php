@@ -90,7 +90,7 @@ class NewsListController extends AbstractController
             $out .= '<td>';
 
             $out .= $link_render->link_no_attr('news_show', $pp->ary(),
-                ['id' => $n['id']], $n['headline']);
+                ['id' => $n['id']], $n['subject']);
 
             $out .= '</td>';
 
