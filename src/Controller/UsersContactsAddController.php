@@ -56,6 +56,7 @@ class UsersContactsAddController extends AbstractController
             $item_access_service,
             $typeahead_service,
             $pp,
+            $su,
             $heading_render
         );
 

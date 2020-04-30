@@ -439,9 +439,9 @@ class UsersEditAdminController extends AbstractController
                     'periodic_overview_en'  => $periodic_overview_en ? 1 : 0,
                 ];
 
-                if ($is_add)
+                if ($is_add && !$su->is_master())
                 {
-                    $post_user['creator'] = $su->id();
+                    $transaction['created_by'] = $su->id();
                 }
 
                 if (($is_add || ($is_edit && !$is_activated))

@@ -19,6 +19,7 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 
 class ContactsAddAdminController extends AbstractController
@@ -37,6 +38,7 @@ class ContactsAddAdminController extends AbstractController
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
+        SessionUserService $su,
         HeadingRender $heading_render
     ):Response
     {
@@ -56,6 +58,7 @@ class ContactsAddAdminController extends AbstractController
             $item_access_service,
             $typeahead_service,
             $pp,
+            $su,
             $heading_render
         );
 
@@ -81,6 +84,7 @@ class ContactsAddAdminController extends AbstractController
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
+        SessionUserService $su,
         HeadingRender $heading_render
     ):string
     {
@@ -221,6 +225,11 @@ class ContactsAddAdminController extends AbstractController
                     'user_id'				=> $user_id,
                     'access'                => $access,
                 ];
+
+                if (!$su->is_master())
+                {
+                    $insert_ary['created_by'] = $su->id();
+                }
 
                 if ($db->insert($pp->schema() . '.contact', $insert_ary))
                 {

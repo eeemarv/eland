@@ -32,8 +32,8 @@ LOOP
      ALTER TABLE users ADD COLUMN IF NOT EXISTS last_edit_at timestamp without time zone not null default timezone('utc'::text, now());
      ALTER TABLE users ADD COLUMN IF NOT EXISTS edit_count int not null default 0;
 
-     UPDATE users SET created_at = coalesce(cdate, adate, mdate);
-     UPDATE users SET last_edit_at = coalesce(mdate, adate, cdate);
+     UPDATE users SET created_at = coalesce(cdate, adate, mdate, '2005-05-18 12:00:00');
+     UPDATE users SET last_edit_at = coalesce(mdate, adate, cdate, '2005-05-18 12:00:00');
      UPDATE users SET edit_count = 1 where last_edit_at <> created_at;
 
      CREATE TRIGGER trig_set_last_edit_at
@@ -126,8 +126,8 @@ LOOP
      ALTER TABLE news ADD COLUMN IF NOT EXISTS last_edit_at timestamp without time zone not null default timezone('utc'::text, now());
      ALTER TABLE news ADD COLUMN IF NOT EXISTS edit_count int not null default 0;
 
-     UPDATE news SET created_at = cdate;
-     UPDATE news SET last_edit_at = cdate;
+     UPDATE news SET created_at = coalesce(cdate, itemdate);
+     UPDATE news SET last_edit_at = coalesce(cdate, itemdate);
 
      CREATE TRIGGER trig_set_last_edit_at
      BEFORE UPDATE ON news
@@ -223,6 +223,50 @@ LOOP
      BEFORE UPDATE ON contact
      FOR EACH ROW
      EXECUTE PROCEDURE set_last_edit_at();
+
+END LOOP;
+
+END
+$do$
+
+
+---- drop cdate and mdate
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+  ALTER TABLE users
+    DROP COLUMN IF EXISTS cdate,
+    DROP COLUMN IF EXISTS mdate;
+  ALTER TABLE transactions
+    DROP COLUMN IF EXISTS cdate,
+    DROP COLUMN IF EXISTS mdate;
+  ALTER TABLE news
+    DROP COLUMN IF EXISTS cdate,
+    DROP COLUMN IF EXISTS mdate;
+  ALTER TABLE categories
+    DROP COLUMN IF EXISTS cdate,
+    DROP COLUMN IF EXISTS mdate;
+  ALTER TABLE contact
+    DROP COLUMN IF EXISTS cdate,
+    DROP COLUMN IF EXISTS mdate;
 
 END LOOP;
 

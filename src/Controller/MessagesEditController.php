@@ -288,6 +288,11 @@ class MessagesEditController extends AbstractController
 
             if ($add_mode && !count($errors))
             {
+                if (!$su->is_master())
+                {
+                    $post_message['created_by'] = $su->id();
+                }
+
                 $db->insert($pp->schema() . '.messages', $post_message);
 
                 $id = (int) $db->lastInsertId($pp->schema() . '.messages_id_seq');

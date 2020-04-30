@@ -279,8 +279,12 @@ class MassTransactionController extends AbstractController
                             'amount' 		=> $amo,
                             'description' 	=> $description,
                             'transid'		=> $transaction_service->generate_transid($su->id(), $pp->system()),
-                            'creator'		=> $su->is_master() ? 0 : $su->id(),
                         ];
+
+                        if (!$su->is_master())
+                        {
+                            $transactions['created_by'] = $su->id();
+                        }
 
                         $db->insert($pp->schema() . '.transactions', $transaction);
                         $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');

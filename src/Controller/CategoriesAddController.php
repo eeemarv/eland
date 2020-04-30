@@ -56,7 +56,11 @@ class CategoriesAddController extends AbstractController
 
             if (!count($errors))
             {
-                $cat['id_creator'] = $su->is_master() ? 0 : $su->id();
+                if (!$su->is_master())
+                {
+                    $cat['created_by'] = $su->id();
+                }
+
                 $cat['fullname'] = '';
 
                 if ($cat['leafnote'])

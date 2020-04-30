@@ -1,0 +1,73 @@
+created_by
+----------
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+     ALTER TABLE users ADD COLUMN IF NOT EXISTS created_by int;
+     UPDATE users SET created_by = creator
+        where creator <> 0;
+
+     ALTER TABLE transactions ADD COLUMN IF NOT EXISTS created_by int;
+     UPDATE transactions SET created_by = creator
+        where creator <> 0;
+
+     ALTER TABLE categories ADD COLUMN IF NOT EXISTS created_by int;
+     UPDATE categories SET created_by = id_creator
+        where id_creator <> 0;
+
+     ALTER TABLE contact ADD COLUMN IF NOT EXISTS created_by int;
+     ALTER TABLE messages ADD COLUMN IF NOT EXISTS created_by int;
+
+END LOOP;
+
+END
+$do$
+
+
+---- DROP
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+     ALTER TABLE users DROP COLUMN IF EXISTS creator;
+     ALTER TABLE transacations DROP COLUMN IF EXISTS creator;
+     ALTER TABLE categories DROP COLUMN IF EXISTS id_creator;
+
+END LOOP;
+
+END
+$do$

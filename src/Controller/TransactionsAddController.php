@@ -77,7 +77,11 @@ class TransactionsAddController extends AbstractController
             [$code_to] = explode(' ', trim($request->request->get('code_to', '')));
 
             $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');
-            $transaction['creator'] = $su->is_master() ? 0 : $su->id();
+
+            if (!$su->is_master())
+            {
+                $transaction['created_by'] = $su->id();
+            }
 
             $group_id = trim($request->request->get('group_id', ''));
 
@@ -530,7 +534,11 @@ class TransactionsAddController extends AbstractController
                 }
                 else
                 {
-                    $transaction['creator'] = $su->is_master() ? 0 : $su->id();
+                    if (!$su->is_master())
+                    {
+                        $transaction['created_by'] = $su->id();
+                    }
+
                     $transaction['real_to'] = $to_remote_user['code'] . ' ' . $to_remote_user['name'];
 
                     $db->beginTransaction();
@@ -549,7 +557,6 @@ class TransactionsAddController extends AbstractController
                         $trans_org = $transaction;
                         $trans_org['id'] = $id;
 
-                        $transaction['creator'] = 0;
                         $transaction['amount'] = $remote_amount;
                         $transaction['id_from'] = $remote_interlets_account['id'];
                         $transaction['id_to'] = $to_remote_user['id'];
