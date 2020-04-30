@@ -831,3 +831,28 @@ ul#list_active li[data-block],
 ul#list_inactive li[data-block] {
   cursor: move;
 }
+
+
+::after, ::before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+element {
+  position: relative;
+  top: 0px;
+  width: 100%;
+}
+.note-popover .popover-content, .panel-heading.note-toolbar {
+  padding: 0 0 5px 5px;
+  margin: 0;
+}
+.panel-default > .panel-heading {
+  color: #333;
+  background-color: #f5f5f5;
+  border-color: #ddd;
+}
+
+.datepicker {
+  z-index: 510 !important;
+}
