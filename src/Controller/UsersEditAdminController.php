@@ -636,17 +636,11 @@ class UsersEditAdminController extends AbstractController
                     }
                 }
 
-                if (in_array($status, ['1', '2'])
-                    || ($is_edit && in_array($stored_user['status'], [1, 2])))
-                {
-                    $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                }
-
-                if ($status === '7'
-                    || ($is_edit && $stored_user['status'] == 7))
-                {
-                    $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                }
+                $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
+                $thumbprint_accounts_service->delete('inactive', $pp->ary(), $pp->schema());
+                $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
+                $thumbprint_accounts_service->delete('im', $pp->ary(), $pp->schema());
+                $thumbprint_accounts_service->delete('ip', $pp->ary(), $pp->schema());
 
                 $typeahead_service->delete_thumbprint('account_codes', $pp->ary(), []);
                 $typeahead_service->delete_thumbprint('usernames', $pp->ary(), []);

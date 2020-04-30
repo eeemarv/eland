@@ -64,7 +64,7 @@ LOOP
    EXECUTE 'SET LOCAL search_path = ' || f_schema;
 
      ALTER TABLE users DROP COLUMN IF EXISTS creator;
-     ALTER TABLE transacations DROP COLUMN IF EXISTS creator;
+     ALTER TABLE transactions DROP COLUMN IF EXISTS creator;
      ALTER TABLE categories DROP COLUMN IF EXISTS id_creator;
 
 END LOOP;
