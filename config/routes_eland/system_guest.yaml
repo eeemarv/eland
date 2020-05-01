@@ -63,6 +63,21 @@ news_list:
   path: /news
   methods: GET
 
+calendar_show:
+  controller: App\Controller\CalendarShowController
+  path: /calendar/{id<%assert.id%>}
+  methods: GET
+
+calendar_month:
+  controller: App\Controller\CalendarMonthController
+  path: /calendar/{year<%assert.year%>}/{month<%assert.month%>}
+  methods: GET
+
+calendar_list:
+  controller: App\Controller\CalendarListController
+  path: /calendar
+  methods: GET
+
 docs_map:
   controller: App\Controller\DocsMapController
   path: /docs/{id<%assert.id%>}

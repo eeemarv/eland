@@ -5,7 +5,11 @@ namespace App\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-class CleanupNewsSchemaTask implements SchemaTaskInterface
+/**
+ * SchemaTaskInderface implementation removed to disable cleaunup
+ */
+
+class CleanupNewsSchemaTask
 {
 	protected Db $db;
 	protected LoggerInterface $logger;
