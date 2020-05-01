@@ -43,7 +43,9 @@ class NewsDelController extends AbstractController
                 $link_render->redirect($vr->get('news'), $pp->ary(), []);
             }
 
-            if($db->delete($pp->schema() . '.news', ['id' => $id]))
+            if($db->delete($pp->schema() . '.news',
+
+            ['id' => $id]))
             {
                 $alert_service->success('Nieuwsbericht verwijderd.');
                 $link_render->redirect($vr->get('news'), $pp->ary(), []);

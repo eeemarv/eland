@@ -70,10 +70,6 @@ class NewsAddController extends AbstractController
                     $errors[] = 'Fout formaat in agendadatum.';
                 }
             }
-            else
-            {
-                $errors[] = 'Geef een agendadatum op.';
-            }
 
             if ($subject === '')
             {
@@ -95,18 +91,35 @@ class NewsAddController extends AbstractController
                 $errors[] = $token_error;
             }
 
+            if ($su->is_master())
+            {
+                $errors[] = 'Het master account kan geen berichten aanmaken.';
+            }
+
             if (!count($errors))
             {
                 $news = [
-                    'is_approved'   => $pp->is_admin() ? 't' : 'f',
-                    'user_id'       => $su->is_master() ? 0 : $su->id(),
-                    'event_at'	    => $event_at_formatted,
-                    'location'	    => $location,
-                    'is_sticky'	    => $is_sticky ? 't' : 'f',
+                    'user_id'       => $su->id(),
                     'content'	    => $content,
                     'subject'	    => $subject,
                     'access'        => $access,
                 ];
+
+                if ($location)
+                {
+                    $news['location'] = $location;
+                }
+
+                if ($event_at)
+                {
+                    $news['event_at'] = $event_at_formatted;
+                    $news['is_sticky'] = $is_sticky;
+                }
+
+                if ($su->is_admin())
+                {
+                    $news['is_approved'] = 't';
+                }
 
                 if ($db->insert($pp->schema() . '.news', $news))
                 {

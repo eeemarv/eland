@@ -22,7 +22,7 @@ class NewsApproveController extends AbstractController
     ):Response
     {
         $data = [
-            'is_approved'  => 't',
+            'is_approved'   => 't',
         ];
 
         if ($db->update($pp->schema() . '.news',

@@ -138,7 +138,7 @@ class NewsListController extends AbstractController
 
         if (!$pp->is_admin())
         {
-            $query .= 'and is_approved = \'t\' ';
+            $query .= ' and is_approved = \'t\' ';
         }
 
         $query .= 'order by event_at ';

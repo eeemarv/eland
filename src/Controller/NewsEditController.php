@@ -62,10 +62,6 @@ class NewsEditController extends AbstractController
                     $errors[] = 'Fout formaat in agendadatum.';
                 }
             }
-            else
-            {
-                $errors[] = 'Geef een agendadatum op.';
-            }
 
             if (!$subject === '')
             {
