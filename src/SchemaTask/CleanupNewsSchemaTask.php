@@ -31,7 +31,7 @@ class CleanupNewsSchemaTask implements SchemaTaskInterface
 		$news = $this->db->fetchAll('select id, subject
 			from ' . $schema . '.news
 			where event_at < ?
-				and sticky = \'f\'', [$now]);
+				and is_sticky = \'f\'', [$now]);
 
 		foreach ($news as $n)
 		{

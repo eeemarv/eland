@@ -148,7 +148,7 @@ class NewsExtendedController extends AbstractController
 
             $out .=  '<br><i>';
 
-            if ($n['sticky'])
+            if ($n['is_sticky'])
             {
                 $out .=  'Dit nieuwsbericht blijft behouden na deze datum.';
             }

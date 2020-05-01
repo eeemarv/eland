@@ -47,7 +47,7 @@ class NewsAddController extends AbstractController
 
         $event_at = trim($request->request->get('event_at', ''));
         $location = trim($request->request->get('location', ''));
-        $sticky = $request->request->has('sticky');
+        $is_sticky = $request->request->has('is_sticky');
         $content = trim($request->request->get('content', ''));
         $subject = trim($request->request->get('subject', ''));
         $access = $request->request->get('access', '');
@@ -102,7 +102,7 @@ class NewsAddController extends AbstractController
                     'user_id'       => $su->is_master() ? 0 : $su->id(),
                     'event_at'	    => $event_at_formatted,
                     'location'	    => $location,
-                    'sticky'	    => $sticky ? 't' : 'f',
+                    'is_sticky'	    => $is_sticky ? 't' : 'f',
                     'content'	    => $content,
                     'subject'	    => $subject,
                     'access'        => $access,
@@ -192,17 +192,16 @@ class NewsAddController extends AbstractController
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '" ';
-        $out .= 'required>';
+        $out .= '">';
         $out .= '</div>';
         $out .= '<p>Wanneer gaat dit door?</p>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="sticky" class="control-label">';
-        $out .= '<input type="checkbox" id="sticky" name="sticky" ';
+        $out .= '<label for="is_sticky" class="control-label">';
+        $out .= '<input type="checkbox" id="is_sticky" name="is_sticky" ';
         $out .= 'value="1"';
-        $out .=  $sticky ? ' checked="checked"' : '';
+        $out .=  $is_sticky ? ' checked="checked"' : '';
         $out .= '>';
         $out .= ' Behoud na datum</label>';
         $out .= '</div>';

@@ -39,7 +39,7 @@ class NewsEditController extends AbstractController
 
         $event_at = trim($request->request->get('event_at', ''));
         $location = trim($request->request->get('location', ''));
-        $sticky = $request->request->has('sticky');
+        $is_sticky = $request->request->has('is_sticky');
         $content = trim($request->request->get('content', ''));
         $subject = trim($request->request->get('subject', ''));
         $access = $request->request->get('access', '');
@@ -90,10 +90,10 @@ class NewsEditController extends AbstractController
             if (!count($errors))
             {
                 $news = [
-                    'subject'  => $subject,
-                    'content'  => $content,
+                    'subject'   => $subject,
+                    'content'   => $content,
                     'location'  => $location,
-                    'sticky'    => $sticky ? 't' : 'f',
+                    'is_sticky' => $is_sticky ? 't' : 'f',
                     'event_at'  => $event_at,
                     'access'    => $access,
                 ];
@@ -114,7 +114,7 @@ class NewsEditController extends AbstractController
             $subject = $news['subject'];
             $event_at = $news['event_at'];
             $location = $news['location'];
-            $sticky = $news['sticky'];
+            $is_sticky = $news['is_sticky'];
             $content = $news['content'];
             $access = $news['access'];
         }
@@ -173,17 +173,16 @@ class NewsEditController extends AbstractController
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '" ';
-        $out .= 'required>';
+        $out .= '">';
         $out .= '</div>';
         $out .= '<p>Wanneer gaat dit door?</p>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="sticky" class="control-label">';
-        $out .= '<input type="checkbox" id="sticky" name="sticky" ';
+        $out .= '<label for="is_sticky" class="control-label">';
+        $out .= '<input type="checkbox" id="is_sticky" name="is_sticky" ';
         $out .= 'value="1"';
-        $out .=  $sticky ? ' checked="checked"' : '';
+        $out .=  $is_sticky ? ' checked="checked"' : '';
         $out .= '>';
         $out .= ' Behoud na datum</label>';
         $out .= '</div>';
