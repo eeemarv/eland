@@ -16,9 +16,8 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class NewsEditController extends AbstractController
+class CalendarEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -37,15 +36,6 @@ class NewsEditController extends AbstractController
     ):Response
     {
         $errors = [];
-
-        $news = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.news
-            where id = ?', [$id]);
-
-        if (!$news)
-        {
-            throw new NotFoundHttpException('Nieuwsbericht niet gevonden.');
-        }
 
         $event_at = trim($request->request->get('event_at', ''));
         $location = trim($request->request->get('location', ''));
@@ -121,6 +111,10 @@ class NewsEditController extends AbstractController
         }
         else
         {
+            $news = $db->fetchAssoc('select *
+                from ' . $pp->schema() . '.news
+                where id = ?', [$id]);
+
             $subject = $news['subject'];
             $event_at = $news['event_at'];
             $location = $news['location'];

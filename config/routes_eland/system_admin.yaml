@@ -193,6 +193,21 @@ news_edit:
   path: /news/{id<%assert.id%>}/edit
   methods: GET|POST
 
+calendar_add:
+  controller: App\Controller\CalendarAddController
+  path: /calendar/add
+  methods: GET|POST
+
+calendar_del:
+  controller: App\Controller\CalendarDelController
+  path: /calendar/{id<%assert.id%>}/del
+  methods: GET|POST
+
+calendar_edit:
+  controller: App\Controller\CalendarEditController
+  path: /calendar/{id<%assert.id%>}/edit
+  methods: GET|POST
+
 docs_edit:
   controller: App\Controller\DocsEditController
   path: /docs/{id<%assert.id%>}/edit
