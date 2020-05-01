@@ -142,9 +142,9 @@ class NewsExtendedController extends AbstractController
         $out .=  '</dt>';
         $out .=  '<dd>';
 
-        if ($n['itemdate'])
+        if ($n['event_at'])
         {
-            $out .=  $date_format_service->get($n['itemdate'], 'day', $pp->schema());
+            $out .=  $date_format_service->get($n['event_at'], 'day', $pp->schema());
 
             $out .=  '<br><i>';
 

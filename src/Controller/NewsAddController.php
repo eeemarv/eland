@@ -45,7 +45,7 @@ class NewsAddController extends AbstractController
         $news = [];
         $errors = [];
 
-        $itemdate = trim($request->request->get('itemdate', ''));
+        $event_at = trim($request->request->get('event_at', ''));
         $location = trim($request->request->get('location', ''));
         $sticky = $request->request->has('sticky');
         $content = trim($request->request->get('content', ''));
@@ -61,11 +61,11 @@ class NewsAddController extends AbstractController
 
             $content = $html_purifier->purify($content);
 
-            if ($itemdate)
+            if ($event_at)
             {
-                $itemdate_formatted = $date_format_service->reverse($itemdate, $pp->schema());
+                $event_at_formatted = $date_format_service->reverse($event_at, $pp->schema());
 
-                if ($itemdate_formatted === '')
+                if ($event_at_formatted === '')
                 {
                     $errors[] = 'Fout formaat in agendadatum.';
                 }
@@ -100,7 +100,7 @@ class NewsAddController extends AbstractController
                 $news = [
                     'is_approved'   => $pp->is_admin() ? 't' : 'f',
                     'user_id'       => $su->is_master() ? 0 : $su->id(),
-                    'itemdate'	    => $itemdate_formatted,
+                    'event_at'	    => $event_at_formatted,
                     'location'	    => $location,
                     'sticky'	    => $sticky ? 't' : 'f',
                     'content'	    => $content,
@@ -146,10 +146,6 @@ class NewsAddController extends AbstractController
 
             $alert_service->error($errors);
         }
-        else
-        {
-            $itemdate = gmdate('Y-m-d');
-        }
 
         $assets_service->add([
             'datepicker',
@@ -176,13 +172,13 @@ class NewsAddController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="itemdate" class="control-label">';
+        $out .= '<label for="event_at" class="control-label">';
         $out .= 'Agenda datum</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-calendar"></i>';
         $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="itemdate" name="itemdate" ';
+        $out .= '<input type="text" class="form-control" id="event_at" name="event_at" ';
         $out .= 'data-provide="datepicker" ';
         $out .= 'data-date-format="';
         $out .= $date_format_service->datepicker_format($pp->schema());
@@ -192,7 +188,7 @@ class NewsAddController extends AbstractController
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($itemdate, 'day', $pp->schema());
+        $out .= $date_format_service->get($event_at, 'day', $pp->schema());
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());

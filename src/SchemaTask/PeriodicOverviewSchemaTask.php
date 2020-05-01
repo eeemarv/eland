@@ -249,8 +249,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					and n.access in (\'user\', \'guest\', \'anonymous\') ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';
-			$query .= 'order by n.itemdate ';
+			$query .= 'order by n.event_at ';
 			$query .= $this->config_service->get('news_order_asc', $schema) === '1' ? 'asc' : 'desc';
+			$query .= ' nulls last';
 
 			$rs = $this->db->prepare($query);
 

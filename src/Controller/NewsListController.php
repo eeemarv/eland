@@ -94,7 +94,7 @@ class NewsListController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= $date_format_service->get_td($n['itemdate'], 'day', $pp->schema());
+            $out .= $date_format_service->get_td($n['event_at'], 'day', $pp->schema());
 
             if ($pp->is_admin())
             {
@@ -141,7 +141,7 @@ class NewsListController extends AbstractController
             $query .= 'and is_approved = \'t\' ';
         }
 
-        $query .= 'order by itemdate ';
+        $query .= 'order by event_at ';
         $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
 
         $access_ary = $item_access_service->get_visible_ary_for_page();
