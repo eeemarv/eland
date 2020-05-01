@@ -84,7 +84,7 @@ class NewsListController extends AbstractController
         foreach ($news as $n)
         {
             $out .= '<tr';
-            $out .= $n['approved'] ? '' : ' class="inactive"';
+            $out .= $n['is_approved'] ? '' : ' class="inactive"';
             $out .= '>';
 
             $out .= '<td>';
@@ -99,7 +99,7 @@ class NewsListController extends AbstractController
             if ($pp->is_admin())
             {
                 $out .= '<td>';
-                $out .= $n['approved'] ? 'Ja' : 'Nee';
+                $out .= $n['is_approved'] ? 'Ja' : 'Nee';
                 $out .= '</td>';
             }
 
@@ -138,7 +138,7 @@ class NewsListController extends AbstractController
 
         if (!$pp->is_admin())
         {
-            $query .= 'and approved = \'t\' ';
+            $query .= 'and is_approved = \'t\' ';
         }
 
         $query .= 'order by itemdate ';

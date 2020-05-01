@@ -98,7 +98,7 @@ class NewsAddController extends AbstractController
             if (!count($errors))
             {
                 $news = [
-                    'approved'      => $pp->is_admin() ? 't' : 'f',
+                    'is_approved'   => $pp->is_admin() ? 't' : 'f',
                     'user_id'       => $su->is_master() ? 0 : $su->id(),
                     'itemdate'	    => $itemdate_formatted,
                     'location'	    => $location,

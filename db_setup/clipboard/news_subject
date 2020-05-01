@@ -1,0 +1,99 @@
+news_subject
+-------------
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+    DROP TRIGGER IF EXISTS trig_set_approved_at ON news;
+
+    ALTER TABLE news
+        DROP COLUMN IF EXISTS event_at,
+        DROP COLUMN IF EXISTS approved_at,
+        DROP COLUMN IF EXISTS is_sticky,
+        DROP COLUMN IF EXISTS is_approved;
+
+   ALTER TABLE news
+        ADD COLUMN IF NOT EXISTS event_at timestamp without time zone,
+        ADD COLUMN IF NOT EXISTS approved_at timestamp without time zone,
+        ADD COLUMN IF NOT EXISTS is_sticky bool not null default 'f'::bool,
+        ADD COLUMN IF NOT EXISTS is_approved bool not null default 'f'::bool,
+        ALTER COLUMN location TYPE text,
+        ALTER COLUMN access SET DEFAULT 'admin'::text,
+        ALTER COLUMN access SET NOT NULL;
+
+    UPDATE news SET event_at = itemdate;
+    UPDATE news SET is_approved = approved;
+    UPDATE news SET approved_at = created_at where is_approved = 't'::bool;
+    UPDATE news SET is_sticky = sticky where sticky IS NOT NULL;
+
+     CREATE OR REPLACE FUNCTION set_approved_at()
+     RETURNS TRIGGER AS $$
+     BEGIN
+        IF NEW.is_approved THEN
+            NEW.approved_at := timezone('utc'::text, NOW());
+        ELSE
+            NEW.approved_at := NULL;
+        END IF;
+     RETURN NEW;
+     END;
+     $$ LANGUAGE plpgsql;
+
+     CREATE TRIGGER trig_set_approved_at
+     BEFORE UPDATE OF is_approved ON news
+     FOR EACH ROW
+     EXECUTE PROCEDURE set_approved_at();
+
+END LOOP;
+
+END
+$do$
+
+
+
+-----
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+   ALTER TABLE news
+        DROP COLUMN IF EXISTS itemdate,
+        DROP COLUMN IF EXISTS approved,
+        DROP COLUMN IF EXISTS sticky;
+
+END LOOP;
+
+END
+$do$

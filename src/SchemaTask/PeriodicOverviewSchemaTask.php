@@ -245,7 +245,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		{
 			$query = 'select n.*
 				from ' . $schema . '.news n
-				where n.approved = \'t\'
+				where n.is_approved = \'t\'
 					and n.access in (\'user\', \'guest\', \'anonymous\') ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';

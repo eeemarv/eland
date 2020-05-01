@@ -100,7 +100,7 @@ class NewsExtendedController extends AbstractController
     {
         $out =  '<div class="panel panel-info printview">';
         $out .=  '<div class="panel-body';
-        $out .=  $n['approved'] ? '' : ' bg-inactive';
+        $out .=  $n['is_approved'] ? '' : ' bg-inactive';
         $out .=  '">';
 
         $out .=  '<div class="media">';
@@ -116,7 +116,7 @@ class NewsExtendedController extends AbstractController
             $out .=  '</h2>';
         }
 
-        if (!$n['approved'])
+        if (!$n['is_approved'])
         {
             $out .=  '<p class="text-warning">';
             $out .=  '<strong>';
@@ -203,7 +203,7 @@ class NewsExtendedController extends AbstractController
         {
             $out .=  '<span class="inline-buttons pull-right hidden-xs">';
 
-            if (!$n['approved'])
+            if (!$n['is_approved'])
             {
                 $out .=  $link_render->link_fa('news_approve', $pp->ary(),
                     ['id' => $n['id']], 'Goedkeuren en publiceren',
