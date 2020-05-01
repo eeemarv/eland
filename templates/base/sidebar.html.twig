@@ -55,16 +55,25 @@
 		</button>
 	</div>
 
-	{{- btn_top() -}}
-	{{- btn_nav() -}}
+	{%- block btn_top -%}
+		{{- btn_top() -}}
+	{%- endblock btn_top -%}
+
+	{%- block btn_nav -%}
+		{{- btn_nav() -}}
+	{%- endblock btn_nav -%}
 
 	</div>
 	</div>
 
-	{{- heading() -}}
-	{{- heading_sub() -}}
+	{%- block heading -%}
+		{{- heading() -}}
+		{{- heading_sub() -}}
+	{%- endblock heading -%}
 
-	{%- block content -%}{{- content|raw -}}{%- endblock -%}
+	{%- block content -%}
+		{{- content|raw -}}
+	{%- endblock content -%}
 
 	</div>
 	</div>
