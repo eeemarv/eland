@@ -178,6 +178,11 @@ transactions_edit:
   path: /transactions/{id<%assert.id%>}/edit
   methods: GET|POST
 
+news_add:
+  controller: App\Controller\NewsAddController
+  path: /news/add
+  methods: GET|POST
+
 news_del:
   controller: App\Controller\NewsDelController
   path: /news/{id<%assert.id%>}/del
@@ -187,11 +192,6 @@ news_edit:
   controller: App\Controller\NewsEditController
   path: /news/{id<%assert.id%>}/edit
   methods: GET|POST
-
-news_approve:
-  controller: App\Controller\NewsApproveController
-  path: /news/{id<%assert.id%>}/approve
-  methods: GET
 
 docs_edit:
   controller: App\Controller\DocsEditController

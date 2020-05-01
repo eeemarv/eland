@@ -99,9 +99,7 @@ class NewsExtendedController extends AbstractController
     ):string
     {
         $out =  '<div class="panel panel-info printview">';
-        $out .=  '<div class="panel-body';
-        $out .=  $n['is_approved'] ? '' : ' bg-inactive';
-        $out .=  '">';
+        $out .=  '<div class="panel-body">';
 
         $out .=  '<div class="media">';
         $out .=  '<div class="media-body">';
@@ -116,15 +114,6 @@ class NewsExtendedController extends AbstractController
             $out .=  '</h2>';
         }
 
-        if (!$n['is_approved'])
-        {
-            $out .=  '<p class="text-warning">';
-            $out .=  '<strong>';
-            $out .=  'Dit nieuwsbericht wacht op goedkeuring en publicatie door een admin';
-            $out .=  '</strong>';
-            $out .=  '</p>';
-        }
-
         $out .=  '<p>';
         $out .=  nl2br($n['content']);
         $out .=  '</p>';
@@ -137,13 +126,13 @@ class NewsExtendedController extends AbstractController
 
         $out .=  '<dl>';
 
-        $out .=  '<dt>';
-        $out .=  'Agendadatum';
-        $out .=  '</dt>';
-        $out .=  '<dd>';
-
         if ($n['event_at'])
         {
+            $out .=  '<dt>';
+            $out .=  'Agendadatum';
+            $out .=  '</dt>';
+            $out .=  '<dd>';
+
             $out .=  $date_format_service->get($n['event_at'], 'day', $pp->schema());
 
             $out .=  '<br><i>';
@@ -158,30 +147,19 @@ class NewsExtendedController extends AbstractController
             }
 
             $out .=  '</i>';
-
+            $out .=  '</dd>';
         }
-        else
-        {
-            $out .=  '<i class="fa fa-times></i>';
-        }
-
-        $out .=  '</dd>';
-
-        $out .=  '<dt>';
-        $out .=  'Locatie';
-        $out .=  '</dt>';
-        $out .=  '<dd>';
-
         if ($n['location'])
         {
-            $out .=  htmlspecialchars($n['location'], ENT_QUOTES);
-        }
-        else
-        {
-            $out .=  '<i class="fa fa-times"></i>';
-        }
+            $out .=  '<dt>';
+            $out .=  'Locatie';
+            $out .=  '</dt>';
+            $out .=  '<dd>';
 
-        $out .=  '</dd>';
+            $out .=  htmlspecialchars($n['location'], ENT_QUOTES);
+
+            $out .=  '</dd>';
+        }
 
         if ($show_access)
         {
@@ -199,16 +177,12 @@ class NewsExtendedController extends AbstractController
 
         $out .=  $account_render->link($n['user_id'], $pp->ary());
 
+        $out .= ' @';
+        $out .= $date_format_service->get($n['created_at'], 'day', $pp->schema());
+
         if ($pp->is_admin() & $show_edit_btns)
         {
             $out .=  '<span class="inline-buttons pull-right hidden-xs">';
-
-            if (!$n['is_approved'])
-            {
-                $out .=  $link_render->link_fa('news_approve', $pp->ary(),
-                    ['id' => $n['id']], 'Goedkeuren en publiceren',
-                    ['class' => 'btn btn-warning'], 'check');
-            }
 
             $out .=  $link_render->link_fa('news_edit', $pp->ary(),
                 ['id' => $n['id']], 'Aanpassen',

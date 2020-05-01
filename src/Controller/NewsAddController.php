@@ -6,7 +6,6 @@ use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -14,7 +13,6 @@ use App\Service\AssetsService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -34,8 +32,6 @@ class NewsAddController extends AbstractController
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        MailAddrSystemService $mail_addr_system_service,
-        MailQueue $mail_queue,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -116,10 +112,7 @@ class NewsAddController extends AbstractController
                     $news['is_sticky'] = $is_sticky;
                 }
 
-                if ($su->is_admin())
-                {
-                    $news['is_approved'] = 't';
-                }
+                $news['is_approved'] = 't';
 
                 if ($db->insert($pp->schema() . '.news', $news))
                 {
@@ -128,25 +121,6 @@ class NewsAddController extends AbstractController
                     $alert_service->success('Nieuwsbericht opgeslagen.');
 
                     $news['id'] = $id;
-
-                    if(!$pp->is_admin())
-                    {
-                        $vars = [
-                            'news'			=> $news,
-                            'user_id'       => $su->id(),
-                        ];
-
-                        $mail_queue->queue([
-                            'schema'	=> $pp->schema(),
-                            'to' 		=> $mail_addr_system_service->get_newsadmin($pp->schema()),
-                            'template'	=> 'news/review_admin',
-                            'vars'		=> $vars,
-                        ], 7000);
-
-                        $alert_service->success('Nieuwsbericht wacht op goedkeuring en publicatie door een beheerder');
-                        $link_render->redirect($vr->get('news'), $pp->ary(), []);
-
-                    }
 
                     $link_render->redirect('news_show', $pp->ary(),
                         ['id' => $id]);

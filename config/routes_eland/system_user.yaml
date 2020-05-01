@@ -88,11 +88,6 @@ transactions_add:
   path: /transactions/add
   methods: GET|POST
 
-news_add:
-  controller: App\Controller\NewsAddController
-  path: /news/add
-  methods: GET|POST
-
 forum_edit_post:
   controller: App\Controller\ForumEditPostController
   path: /forum/{id<%assert.id%>}/edit-post

@@ -90,9 +90,17 @@ class NewsEditController extends AbstractController
                     'content'   => $content,
                     'location'  => $location,
                     'is_sticky' => $is_sticky ? 't' : 'f',
-                    'event_at'  => $event_at,
                     'access'    => $access,
                 ];
+
+                if ($event_at)
+                {
+                    $news['event_at'] = $event_at;
+                }
+                else
+                {
+                    $news['event_at'] = null;
+                }
 
                 $db->update($pp->schema() . '.news', $news, ['id' => $id]);
                 $alert_service->success('Nieuwsbericht aangepast.');
@@ -165,7 +173,12 @@ class NewsEditController extends AbstractController
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($event_at, 'day', $pp->schema());
+
+        if ($event_at)
+        {
+            $out .= $date_format_service->get($event_at, 'day', $pp->schema());
+        }
+
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());

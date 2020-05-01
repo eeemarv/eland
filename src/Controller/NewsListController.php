@@ -74,7 +74,6 @@ class NewsListController extends AbstractController
         $out .= '<th>Titel</th>';
         $out .= '<th data-hide="phone" ';
         $out .= 'data-sort-initial="descending">Agendadatum</th>';
-        $out .= $pp->is_admin() ? '<th data-hide="phone">Goedgekeurd</th>' : '';
         $out .= $show_visibility ? '<th data-hide="phone, tablet">Zichtbaar</th>' : '';
         $out .= '</tr>';
         $out .= '</thead>';
@@ -83,9 +82,7 @@ class NewsListController extends AbstractController
 
         foreach ($news as $n)
         {
-            $out .= '<tr';
-            $out .= $n['is_approved'] ? '' : ' class="inactive"';
-            $out .= '>';
+            $out .= '<tr>';
 
             $out .= '<td>';
 
@@ -94,14 +91,18 @@ class NewsListController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= $date_format_service->get_td($n['event_at'], 'day', $pp->schema());
+            $out .= '<td>';
 
-            if ($pp->is_admin())
+            if ($n['event_at'])
             {
-                $out .= '<td>';
-                $out .= $n['is_approved'] ? 'Ja' : 'Nee';
-                $out .= '</td>';
+                $out .= $date_format_service->get($n['event_at'], 'day', $pp->schema());
             }
+            else
+            {
+                $out .= '&nbsp;';
+            }
+
+            $out .= '</td>';
 
             if ($show_visibility)
             {
@@ -136,10 +137,7 @@ class NewsListController extends AbstractController
         $query = 'select * from ' . $pp->schema() . '.news ';
         $query .= 'where access in (?) ';
 
-        if (!$pp->is_admin())
-        {
-            $query .= ' and is_approved = \'t\' ';
-        }
+        $query .= ' and is_approved = \'t\' ';
 
         $query .= 'order by event_at ';
         $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
@@ -164,7 +162,7 @@ class NewsListController extends AbstractController
         PageParamsService $pp
     ):void
     {
-        if($pp->is_user() || $pp->is_admin())
+        if($pp->is_admin())
         {
             $btn_top_render->add('news_add', $pp->ary(),
                 [], 'Nieuws toevoegen');
