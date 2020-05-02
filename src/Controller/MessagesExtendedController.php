@@ -98,7 +98,7 @@ class MessagesExtendedController extends AbstractController
 
             $exp = strtotime($msg['expires_at']) < $time;
 
-            $out .= '<div class="card printview">';
+            $out .= '<div class="card printview mb-3">';
             $out .= '<div class="card-body';
             $out .= $exp ? ' bg-danger-li' : '';
             $out .= '">';
@@ -107,8 +107,7 @@ class MessagesExtendedController extends AbstractController
 
             if ($image_file)
             {
-                $out .= '<div class="media-left">';
-                $out .= '<a href="';
+                $out .= '<a class="mr-3" href="';
 
                 $out .= $link_render->context_path('messages_show', $pp->ary(),
                     ['id' => $msg['id']]);
@@ -118,7 +117,6 @@ class MessagesExtendedController extends AbstractController
                 $out .= $env_s3_url . $image_file;
                 $out .= '" width="150">';
                 $out .= '</a>';
-                $out .= '</div>';
             }
 
             $out .= '<div class="media-body">';

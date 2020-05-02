@@ -82,7 +82,7 @@ $theme-colors: (
     "extern-li":    lighten($b-extern, 45)
 );
 
-$nav-tabs-border-color: #000;
+$nav-tabs-border-color: $b-gray-500; //#000;
 
 /*
 
