@@ -73,15 +73,17 @@ class ForumController extends AbstractController
         $heading_render->add('Forum');
         $heading_render->fa('comments-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
         $out .= '<div class="col-xs-12">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" name="q" value="';
         $out .= $q . '" ';
@@ -96,10 +98,11 @@ class ForumController extends AbstractController
 
         if (!count($forum_topics))
         {
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-default">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
 
             $menu_service->set('forum');
 
@@ -109,10 +112,9 @@ class ForumController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="panel panel-default printview">';
-
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-bordered table-striped table-hover footable csv"';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-bordered mb-0 ';
+        $out .= 'table-striped table-hover footable csv bg-default"';
         $out .= ' data-filter="#q" data-filter-minimum="1">';
         $out .= '<thead>';
 
@@ -151,7 +153,6 @@ class ForumController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div>';
         $out .= '</div>';
 
         $menu_service->set('forum');

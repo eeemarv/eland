@@ -454,8 +454,8 @@ class MessagesEditController extends AbstractController
 
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -466,8 +466,10 @@ class MessagesEditController extends AbstractController
             $out .= '<span class="label label-info">Admin</span> ';
             $out .= 'Gebruiker</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
             $out .= '<i class="fa fa-user"></i>';
+            $out .= '</span>';
             $out .= '</span>';
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="account_code" name="account_code" ';
@@ -520,8 +522,10 @@ class MessagesEditController extends AbstractController
         $out .= '<label for="category_id" class="control-label">';
         $out .= 'Categorie</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-clone"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select name="category_id" id="category_id" class="form-control" required>';
         $out .= $select_render->get_options($cat_list, (string) $category_id);
@@ -533,8 +537,10 @@ class MessagesEditController extends AbstractController
         $out .= '<label for="validity_days" class="control-label">';
         $out .= 'Geldigheid</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'dagen';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="validity_days" name="validity_days" min="1" ';
@@ -549,8 +555,10 @@ class MessagesEditController extends AbstractController
         $out .= 'Aantal';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= $config_service->get('currency', $pp->schema());
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" min="0" ';
@@ -564,8 +572,10 @@ class MessagesEditController extends AbstractController
         $out .= '<label for="units" class="control-label">';
         $out .= 'Per (uur, stuk, ...)</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<span class="fa fa-hourglass-half"></span>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="units" name="units" ';

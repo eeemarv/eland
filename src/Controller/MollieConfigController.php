@@ -81,8 +81,8 @@ class MollieConfigController extends AbstractController
         $heading_render->add('Mollie configuratie');
         $heading_render->fa('eur');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading"><p>';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body"><p>';
         $out .= 'Om betalingen met <a href="https://www.mollie.com/nl/">Mollie</a> te ontvangen moet ';
         $out .= 'moet je op de <a href="https://www.mollie.com/nl/">Mollie-website</a> een account aanmaken voor je organisatie.';
         $out .= 'Dit kan enkel voor organisaties met handelsregisternummer en zakelijk bankaccount. ';
@@ -94,8 +94,11 @@ class MollieConfigController extends AbstractController
         $out .= '<label for="apikey" class="control-label">';
         $out .= 'Mollie apikey</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-key"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-key"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" name="apikey" ';
         $out .= 'value="';
         $out .= $apikey ?? '';

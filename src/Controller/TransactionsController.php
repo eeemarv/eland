@@ -366,19 +366,21 @@ class TransactionsController extends AbstractController
 
         $assets_service->add(['datepicker']);
 
-        $out .= '<div class="panel panel-info';
+        $out .= '<div class="card bg-info-li mb-3';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 
-        $out .= '<div class="row">';
+        $out .= '<div class="row mb-2">';
 
         $out .= '<div class="col-sm-12">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" value="';
         $out .= $filter['q'] ?? '';
@@ -388,12 +390,16 @@ class TransactionsController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= '<div class="row">';
+        $out .= '<div class="row mb-2">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Van&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active']);
@@ -411,7 +417,6 @@ class TransactionsController extends AbstractController
         }
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="fcode_addon" ';
 
         $out .= 'data-typeahead="';
 
@@ -437,19 +442,22 @@ class TransactionsController extends AbstractController
         ];
 
         $out .= '<div class="col-sm-2">';
-        $out .= '<select class="form-control margin-bottom" name="f[andor]">';
+        $out .= '<select class="form-control" name="f[andor]">';
         $out .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
         $out .= '</select>';
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tcode_addon">Naar ';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Naar&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" ';
         $out .= 'data-typeahead-source="fcode" ';
         $out .= 'placeholder="Account Code" ';
-        $out .= 'aria-describedby="tcode_addon" ';
         $out .= 'name="f[tcode]" value="';
         $out .= $tcode ?? '';
         $out .= '">';
@@ -461,11 +469,14 @@ class TransactionsController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="fdate_addon" ';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Vanaf&nbsp;';
+        $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" ';
 
         $out .= 'id="fdate" name="f[fdate]" ';
         $out .= 'value="';
@@ -490,11 +501,14 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="tdate_addon" ';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Tot&nbsp;';
+        $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
+        $out .= '<input type="text" class="form-control" ';
 
         $out .= 'id="tdate" name="f[tdate]" ';
         $out .= 'value="';
@@ -572,10 +586,9 @@ class TransactionsController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="panel panel-primary printview">';
-        $out .= '<div class="table-responsive">';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover footable csv transactions" ';
+        $out .= 'table-hover footable csv transactions bg-default mb-0" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
         $out .= '<tr>';
@@ -625,7 +638,7 @@ class TransactionsController extends AbstractController
 
                 if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
                 {
-                    $out .= ' class="warning"';
+                    $out .= ' class="bg-warning-li"';
                 }
 
                 $out .= '>';
@@ -661,7 +674,7 @@ class TransactionsController extends AbstractController
                 {
                     if ($t['real_to'])
                     {
-                        $out .= '<span class="btn btn-default">';
+                        $out .= '<span class="btn btn-default border border-secondary">';
                         $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                         if (isset($t['inter_transaction']))
@@ -693,7 +706,7 @@ class TransactionsController extends AbstractController
                 {
                     if ($t['real_from'])
                     {
-                        $out .= '<span class="btn btn-default">';
+                        $out .= '<span class="btn btn-default border border-secondary">';
                         $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                         if (isset($t['inter_transaction']))
@@ -734,7 +747,7 @@ class TransactionsController extends AbstractController
 
                 if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
                 {
-                    $out .= ' class="warning"';
+                    $out .= ' class="bg-warning-li"';
                 }
 
                 $out .= '>';
@@ -755,7 +768,7 @@ class TransactionsController extends AbstractController
 
                 if ($t['real_from'])
                 {
-                    $out .= '<span class="btn btn-default">';
+                    $out .= '<span class="btn btn-default border border-secondary">';
                     $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                     if (isset($t['inter_transaction']))
@@ -789,7 +802,7 @@ class TransactionsController extends AbstractController
 
                 if ($t['real_to'])
                 {
-                    $out .= '<span class="btn btn-default">';
+                    $out .= '<span class="btn btn-default border border-secondary">';
                     $out .= '<i class="fa fa-share-alt"></i></span> ';
 
                     if (isset($t['inter_transaction']))
@@ -822,7 +835,8 @@ class TransactionsController extends AbstractController
             }
         }
 
-        $out .= '</table></div></div>';
+        $out .= '</table>';
+        $out .= '</div>';
 
         $out .= $pagination_render->get();
 

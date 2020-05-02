@@ -113,7 +113,7 @@ class MollieCheckoutAnonymousController extends AbstractController
         }
 
         $heading_render->fa('eur');
-        $out = '<div class="panel panel-';
+        $out = '<div class="card bg-';
 
         if ($mollie_payment['is_canceled'])
         {
@@ -132,7 +132,7 @@ class MollieCheckoutAnonymousController extends AbstractController
         }
 
         $out .= '">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
         {

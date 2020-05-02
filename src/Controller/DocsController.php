@@ -78,15 +78,17 @@ class DocsController extends AbstractController
         $heading_render->add('Documenten');
         $heading_render->fa('files-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
         $out .= '<div class="col-xs-12">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" name="q" value="';
         $out .= $q;
@@ -102,10 +104,10 @@ class DocsController extends AbstractController
 
         if (count($maps))
         {
-            $maps_table = '<div class="panel panel-default printview">';
-
-            $maps_table .= '<div class="table-responsive">';
-            $maps_table .= '<table class="table table-bordered table-striped table-hover footable"';
+            $maps_table = '<div class="table-responsive ';
+            $maps_table .= 'border border-dark rounded mb-3">';
+            $maps_table .= '<table class="table table-bordered mb-0 ';
+            $maps_table .= 'table-striped table-hover footable bg-default"';
             $maps_table .= ' data-filter="#q" data-filter-minimum="1">';
             $maps_table .= '<thead>';
 
@@ -152,7 +154,6 @@ class DocsController extends AbstractController
                 $out .= '</table>';
 
                 $out .= '</div>';
-                $out .= '</div>';
             }
         }
 
@@ -162,11 +163,9 @@ class DocsController extends AbstractController
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
 
-            $out  .= '<div class="panel panel-default printview">';
-
-            $out .= '<div class="table-responsive">';
+            $out .= '<div class="table-responsive border border-dark rounded mb-3">';
             $out .= '<table class="table table-bordered ';
-            $out .= 'table-striped table-hover footable csv" ';
+            $out .= 'table-striped table-hover footable csv bg-default mb-0" ';
             $out .= 'data-filter="#q" data-filter-minimum="1">';
             $out .= '<thead>';
 
@@ -227,14 +226,14 @@ class DocsController extends AbstractController
             $out .= '</table>';
 
             $out .= '</div>';
-            $out .= '</div>';
         }
         else if (!count($maps))
         {
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-default">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
         $menu_service->set('docs');

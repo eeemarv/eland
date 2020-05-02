@@ -72,7 +72,6 @@ class TransactionsEditController extends AbstractController
             $inter_transaction = false;
         }
 
-
         if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
         {
             $alert_service->error('De omschrijving van een transactie
@@ -139,8 +138,8 @@ class TransactionsEditController extends AbstractController
         $out .= 'bij vergissing.</li>';
         $out .= '</ul></i>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form  method="post" autocomplete="off">';
 
@@ -272,8 +271,10 @@ class TransactionsEditController extends AbstractController
         $out .= '<label for="description" class="control-label">';
         $out .= 'Nieuwe omschrijving</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-pencil"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="description" name="description" ';

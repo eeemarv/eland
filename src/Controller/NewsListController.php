@@ -64,10 +64,9 @@ class NewsListController extends AbstractController
             ]);
         }
 
-        $out = '<div class="panel panel-warning printview">';
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-striped ';
-        $out .= 'table-hover table-bordered footable csv">';
+        $out = '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-striped mb-0 ';
+        $out .= 'table-hover table-bordered footable csv bg-default">';
 
         $out .= '<thead>';
         $out .= '<tr>';
@@ -115,7 +114,8 @@ class NewsListController extends AbstractController
         }
 
         $out .= '</tbody>';
-        $out .= '</table></div></div>';
+        $out .= '</table>';
+        $out .= '</div>';
 
         $menu_service->set('news');
 
@@ -182,8 +182,8 @@ class NewsListController extends AbstractController
         MenuService $menu_service
     ):string
     {
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
         $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
         $out .= '</div></div>';
 

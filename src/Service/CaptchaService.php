@@ -49,8 +49,10 @@ class CaptchaService
 		$out .= 'Anti-spam verificatiecode';
 		$out .= '</label>';
 		$out .= '<div class="input-group">';
-		$out .= '<span class="input-group-addon">';
+		$out .= '<span class="input-group-prepend">';
+		$out .= '<span class="input-group-text">';
 		$out .= '<i class="fa fa-code"></i>';
+		$out .= '</span>';
 		$out .= '</span>';
 		$out .= '<input type="text" class="form-control" id="captcha" name="captcha" ';
 		$out .= 'value="" required';

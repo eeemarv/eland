@@ -98,10 +98,9 @@ class IntersystemsController extends AbstractController
 
         if (count($intersystems))
         {
-            $out .= '<div class="panel panel-primary printview">';
-
-            $out .= '<div class="table-responsive">';
-            $out .= '<table class="table table-bordered table-hover table-striped footable">';
+            $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+            $out .= '<table class="table table-bordered table-hover mb-0 ';
+            $out .= 'table-striped footable bg-default">';
             $out .= '<thead>';
             $out .= '<tr>';
             $out .= '<th data-sort-initial="true">Account</th>';
@@ -210,14 +209,15 @@ class IntersystemsController extends AbstractController
 
             $out .= '</tbody>';
             $out .= '</table>';
-            $out .= '</div></div>';
+            $out .= '</div>';
         }
         else
         {
-            $out .= '<div class="panel panel-primary">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-primary">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen interSysteem-verbindingen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
 /*
@@ -248,8 +248,8 @@ class IntersystemsController extends AbstractController
         LinkRender $link_render
     ):string
     {
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
         $out .= '</div>';
         $out .= '<ul>';
@@ -335,12 +335,12 @@ class IntersystemsController extends AbstractController
             }
         }
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
         $out .= '<h3>Systemen op deze eLAND server</h3>';
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered ';
-        $out .= 'table-hover table-striped footable">';
+        $out .= 'table-hover table-striped footable bg-default">';
         $out .= '<thead>';
         $out .= '<tr>';
         $out .= '<th data-sort-initial="true">Systeem Naam</th>';

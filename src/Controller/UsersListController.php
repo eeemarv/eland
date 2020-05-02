@@ -910,9 +910,9 @@ class UsersListController extends AbstractController
 
         $f_col = '';
 
-        $f_col .= '<div class="panel panel-info collapse" ';
+        $f_col .= '<div class="card bg-info-li collapse mb-3" ';
         $f_col .= 'id="columns_show">';
-        $f_col .= '<div class="panel-heading">';
+        $f_col .= '<div class="card-body">';
         $f_col .= '<h2>Weergave kolommen</h2>';
 
         $f_col .= '<div class="row">';
@@ -955,8 +955,10 @@ class UsersListController extends AbstractController
                 $f_col .= 'In periode';
                 $f_col .= '</label>';
                 $f_col .= '<div class="input-group">';
-                $f_col .= '<span class="input-group-addon">';
+                $f_col .= '<span class="input-group-prepend">';
+                $f_col .= '<span class="input-group-text">';
                 $f_col .= 'dagen';
+                $f_col .= '</span>';
                 $f_col .= '</span>';
                 $f_col .= '<input type="number" ';
                 $f_col .= 'id="p_activity_days" ';
@@ -989,8 +991,10 @@ class UsersListController extends AbstractController
                 $f_col .= 'Exclusief tegenpartij';
                 $f_col .= '</label>';
                 $f_col .= '<div class="input-group">';
-                $f_col .= '<span class="input-group-addon">';
+                $f_col .= '<span class="input-group-prepend">';
+                $f_col .= '<span class="input-group-text">';
                 $f_col .= '<i class="fa fa-user"></i>';
+                $f_col .= '</span>';
                 $f_col .= '</span>';
                 $f_col .= '<input type="text" ';
                 $f_col .= 'name="sh[p][a][code]" ';
@@ -1074,8 +1078,10 @@ class UsersListController extends AbstractController
                 if ($key === 'balance_date')
                 {
                     $f_col .= '<div class="input-group">';
-                    $f_col .= '<span class="input-group-addon">';
+                    $f_col .= '<span class="input-group-prepend">';
+                    $f_col .= '<span class="input-group-text">';
                     $f_col .= '<i class="fa fa-calendar"></i>';
+                    $f_col .= '</span>';
                     $f_col .= '</span>';
                     $f_col .= '<input type="text" ';
                     $f_col .= 'class="form-control" ';
@@ -1127,10 +1133,10 @@ class UsersListController extends AbstractController
             $vr
         );
 
-        $out .= '<div class="panel panel-success printview">';
-        $out .= '<div class="table-responsive">';
-
-        $out .= '<table class="table table-bordered table-striped table-hover footable csv" ';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-bordered ';
+        $out .= 'table-striped table-hover ';
+        $out .= 'footable csv bg-default mb-0" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';
@@ -1511,7 +1517,7 @@ class UsersListController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= '<div class="row"><div class="col-md-12">';
         $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
@@ -1524,28 +1530,34 @@ class UsersListController extends AbstractController
             $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerde gebruikers</h3>';
-            $out .= '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-info">';
+            $out .= '<div class="card-body">';
 
-            $out .= '<ul class="nav nav-tabs" role="tablist">';
+            $out .= '<ul class="nav nav-tabs">';
 
-            $out .= '<li class="active">';
-            $out .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
-            $out .= '<li class="dropdown">';
+            $out .= '<li class="nav-item">';
+            $out .= '<a href="#mail_tab" ';
+            $out .= 'class="nav-link active" ';
+            $out .= 'data-toggle="tab">';
+            $out .= 'Mail</a></li>';
+            $out .= '<li class="nav-item dropdown">';
 
-            $out .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
+            $out .= '<a class="nav-link dropdown-toggle" ';
+            $out .= 'data-toggle="dropdown" href="#" ';
+            $out .= 'role="button" aria-haspopup="true" aria-expanded="false">';
+            $out .= 'Veld aanpassen';
             $out .= '<span class="caret"></span></a>';
-            $out .= '<ul class="dropdown-menu">';
+            $out .= '<div class="dropdown-menu">';
 
             foreach (BulkCnst::USER_TABS as $k => $t)
             {
-                $out .= '<li>';
-                $out .= '<a href="#' . $k . '_tab" data-toggle="tab">';
+                $out .= '<a href="#' . $k . '_tab" ';
+                $out .= 'class="dropdown-item" data-toggle="tab">';
                 $out .= $t['lbl'];
-                $out .= '</a></li>';
+                $out .= '</a>';
             }
 
-            $out .= '</ul>';
+            $out .= '</div>';
             $out .= '</li>';
             $out .= '</ul>';
 
@@ -1713,19 +1725,20 @@ class UsersListController extends AbstractController
             'active'	=> [
                 'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
                 'sql'	=> 'u.status in (1, 2)',
+                'cl'    => 'bg-light',
                 'st'	=> [1, 2],
             ],
             'new'		=> [
                 'lbl'	=> 'Instappers',
                 'sql'	=> 'u.status = 1 and u.adate > ?',
                 'sql_bind'	=> gmdate('Y-m-d H:i:s', $new_user_treshold),
-                'cl'	=> 'success',
+                'cl'	=> 'bg-success-li',
                 'st'	=> 3,
             ],
             'leaving'	=> [
                 'lbl'	=> 'Uitstappers',
                 'sql'	=> 'u.status = 2',
-                'cl'	=> 'danger',
+                'cl'	=> 'bg-danger-li',
                 'st'	=> 2,
             ],
         ];
@@ -1736,30 +1749,31 @@ class UsersListController extends AbstractController
                 'inactive'	=> [
                     'lbl'	=> 'Inactief',
                     'sql'	=> 'u.status = 0',
-                    'cl'	=> 'inactive',
+                    'cl'	=> 'bg-secondary-li',
                     'st'	=> 0,
                 ],
                 'ip'		=> [
                     'lbl'	=> 'Info-pakket',
                     'sql'	=> 'u.status = 5',
-                    'cl'	=> 'warning',
+                    'cl'	=> 'bg-warning-li',
                     'st'	=> 5,
                 ],
                 'im'		=> [
                     'lbl'	=> 'Info-moment',
                     'sql'	=> 'u.status = 6',
-                    'cl'	=> 'info',
+                    'cl'	=> 'bg-info-li',
                     'st'	=> 6
                 ],
                 'extern'	=> [
                     'lbl'	=> 'Extern',
                     'sql'	=> 'u.status = 7',
-                    'cl'	=> 'extern',
+                    'cl'	=> 'bg-extern-li',
                     'st'	=> 7,
                 ],
                 'all'		=> [
                     'lbl'	=> 'Alle',
                     'sql'	=> '1 = 1',
+                    'cl'    => 'bg-light',
                 ],
             ];
         }
@@ -1788,16 +1802,16 @@ class UsersListController extends AbstractController
 
         $out .= $before;
 
-        $out .= '<br>';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info-li mb-3">';
+        $out .= '<div class="card-body">';
 
         $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
+        $out .= '<div class="col">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="q" name="q" value="' . $q . '" ';
@@ -1823,18 +1837,17 @@ class UsersListController extends AbstractController
         {
             $nav_params['status'] = $k;
 
-            $out .= '<li';
-            $out .= $params['status'] === $k ? ' class="active"' : '';
-            $out .= '>';
+            $out .= '<li class="nav-item">';
 
-            $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
+            $class = 'nav-link ' . $tab['cl'];
+            $class .= $params['status'] === $k ? ' active' : '';
 
             $out .= $link_render->link(
                 $vr->get('users'),
                 $pp->ary(),
                 $nav_params,
                 $tab['lbl'],
-                $class_ary
+                ['class' => $class]
             );
 
             $out .= '</li>';

@@ -119,8 +119,8 @@ class UsersDelAdminController extends AbstractController
         $out .= $account_render->link($id, $pp->ary());
         $out .= ' worden verwijderd.</font></p>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post"">';
 

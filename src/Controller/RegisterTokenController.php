@@ -43,13 +43,10 @@ class RegisterTokenController extends AbstractController
         {
             $alert_service->error('Geen geldig token.');
 
-            $out = '<div class="panel panel-danger">';
-            $out .= '<div class="panel-heading">';
+            $out = '<div class="card bg-danger">';
+            $out .= '<div class="card-body">';
 
             $out .= '<h2>Registratie niet gelukt</h2>';
-
-            $out .= '</div>';
-            $out .= '<div class="panel-body">';
 
             $out .= $link_render->link('register', $pp->ary(),
                 [], 'Opnieuw proberen', ['class' => 'btn btn-default']);

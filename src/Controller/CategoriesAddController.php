@@ -105,8 +105,8 @@ class CategoriesAddController extends AbstractController
         $heading_render->add('Categorie toevoegen');
         $heading_render->fa('clone');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form  method="post">';
 
@@ -114,8 +114,11 @@ class CategoriesAddController extends AbstractController
         $out .= '<label for="name" class="control-label">';
         $out .= 'Naam</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-clone"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-clone"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" ';
         $out .= 'value="';

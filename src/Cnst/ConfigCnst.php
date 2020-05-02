@@ -176,7 +176,7 @@ class ConfigCnst
             'type'		=> 'number',
             'addon_fa'	=> 'clock-o',
             'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdbanken.
-                Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat de Systemen
+                Zij is vereist voor eLAND interSysteem-verbindingen zodat de Systemen
                 een gemeenschappelijke tijdbasis hebben.',
             'default'	=> '1',
         ],
@@ -571,9 +571,9 @@ class ConfigCnst
                 ],
 
                 'li_4'	=> [
-                    'inline'	=> '%input(interlets_en)% Gebruik eLAS/eLAND
+                    'inline'	=> '%input(interlets_en)% Gebruik eLAND
                         interSysteem. Deze instelling is enkel geldig wanneer
-                        hierboven "Tijdbank" geselecteerd is. eLAS/eLAND
+                        hierboven "Tijdbank" geselecteerd is. eLAND
                         interSysteem is enkel mogelijk met
                         munten met gemeenschappelijke tijdbasis.',
                 ],

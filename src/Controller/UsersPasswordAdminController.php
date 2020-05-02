@@ -151,8 +151,8 @@ class UsersPasswordAdminController extends AbstractController
 
         $heading_render->fa('key');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -160,17 +160,20 @@ class UsersPasswordAdminController extends AbstractController
         $out .= '<label for="password" class="control-label">';
         $out .= 'Paswoord</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-key"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-key"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="password" name="password" ';
         $out .= 'value="';
         $out .= $password;
         $out .= '" required>';
-        $out .= '<span class="input-group-btn">';
+        $out .= '<div class="input-group-append">';
         $out .= '<button class="btn btn-default" type="button" ';
         $out .= 'data-generate-password>Genereer</button>';
-        $out .= '</span>';
+        $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
 

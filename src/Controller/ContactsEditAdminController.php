@@ -307,8 +307,8 @@ class ContactsEditAdminController extends AbstractController
             $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
         }
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -338,10 +338,12 @@ class ContactsEditAdminController extends AbstractController
         $out .= '<label for="value" class="control-label">';
         $out .= 'Waarde</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="value_addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-';
         $out .= self::FORMAT[$abbrev]['fa'] ?? 'circle-o';
         $out .= '"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
         $out .= 'value="';
@@ -360,8 +362,10 @@ class ContactsEditAdminController extends AbstractController
         $out .= '<label for="comments" class="control-label">';
         $out .= 'Commentaar</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-comment-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="comments" name="comments" ';
         $out .= 'value="';

@@ -20,18 +20,11 @@ use Psr\Log\LoggerInterface;
 class ContactFormAdminController extends AbstractController
 {
     public function __invoke(
-        Request $request,
-        LoggerInterface $logger,
-        AlertService $alert_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         ConfigService $config_service,
         CaptchaService $captcha_service,
-        DataTokenService $data_token_service,
-        LinkRender $link_render,
         HeadingRender $heading_render,
-        PageParamsService $pp,
-        MailQueue $mail_queue
+        PageParamsService $pp
     ):Response
     {
         $heading_render->add('Contact');
@@ -41,8 +34,8 @@ class ContactFormAdminController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p><i>Formulier niet actief ';
         $out .= 'in admin modus.</i></p>';
@@ -54,8 +47,10 @@ class ContactFormAdminController extends AbstractController
         $out .= 'Je E-mail Adres';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-envelope-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
         $out .= 'value="" required disabled>';

@@ -332,7 +332,7 @@ class MessagesShowController extends AbstractController
             $out .= 'data-max-file-size="999000" ';
             $out .= 'multiple></span>';
 
-            $out .= '<p class="text-warning">';
+            $out .= '<p>';
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
@@ -354,8 +354,8 @@ class MessagesShowController extends AbstractController
 
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default printview">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p><b>Omschrijving</b></p>';
         $out .= '</div>';
@@ -374,8 +374,8 @@ class MessagesShowController extends AbstractController
         $out .= '</p>';
         $out .= '</div></div>';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default printview">';
+        $out .= '<div class="card-body">';
 
         $out .= '<dl>';
         $out .= '<dt>';

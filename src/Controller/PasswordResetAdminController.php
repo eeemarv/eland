@@ -33,8 +33,8 @@ class PasswordResetAdminController extends AbstractController
         $heading_render->add('Paswoord vergeten');
         $heading_render->fa('key');
 
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -44,8 +44,10 @@ class PasswordResetAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="email" class="control-label">Je E-mail adres</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-envelope-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
         $out .= 'value="" required disabled>';

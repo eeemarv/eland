@@ -62,8 +62,8 @@ class IntersystemsDelController extends AbstractController
         $heading_render->add('InterSysteem verwijderen: ' . $group['groupname']);
         $heading_render->fa('share-alt');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p class="text-danger">Ben je zeker dat dit interSysteem ';
         $out .= 'moet verwijderd worden?</p>';

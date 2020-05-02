@@ -20,13 +20,19 @@ class AssetsAddSubscriber implements EventSubscriberInterface
 
     public function onKernelController(ControllerEvent $event)
     {
+
+/*
         $this->assets_service->add([
-            'jquery', 'bootstrap', 'fontawesome',
-            'footable', 'base.css', 'base.js',
+//            'jquery', 'bootstrap',
+//            'fontawesome',
+//            'footable',
+//            'base.css',
+//            'touchswipe',
+//            'base.js',
         ]);
 
         $this->assets_service->add_print_css(['print.css']);
-
+*/
     }
 
     public static function getSubscribedEvents():array

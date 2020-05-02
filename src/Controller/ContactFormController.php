@@ -148,8 +148,8 @@ class ContactFormController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -158,8 +158,10 @@ class ContactFormController extends AbstractController
         $out .= 'Je E-mail Adres';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-envelope-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
         $out .= 'value="';
@@ -169,8 +171,8 @@ class ContactFormController extends AbstractController
         $out .= '>';
         $out .= '</div>';
         $out .= '<p>';
-        $out .= 'Er wordt een validatielink die je moet ';
-        $out .= 'aanklikken naar je E-mailbox verstuurd.';
+        $out .= 'Er wordt een aan te klikken validatielink ';
+        $out .= 'naar je E-mailbox verstuurd.';
         $out .= '</p>';
         $out .= '</div>';
 

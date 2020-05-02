@@ -68,10 +68,11 @@ class ContactsUserShowInlineController extends AbstractController
 
         if (count($contacts))
         {
-            $out .= '<div class="panel panel-danger">';
-            $out .= '<div class="table-responsive">';
+            $out .= '<div class="table-responsive ';
+            $out .= 'border border-dark rounded mb-3">';
             $out .= '<table class="table table-hover ';
-            $out .= 'table-striped table-bordered footable" ';
+            $out .= 'table-striped table-bordered ';
+            $out .= 'footable bg-default mb-0" ';
             $out .= 'data-sort="false">';
 
             $out .= '<thead>';
@@ -235,8 +236,9 @@ class ContactsUserShowInlineController extends AbstractController
             $out .= '.</p>';
         }
 
-        $out .= '</div></div>';
-        $out .= '</div></div>';
+        $out .= '</div>';
+        $out .= '</div>';
+        $out .= '</div>';
 
         return new Response($out);
     }

@@ -143,8 +143,8 @@ class NewsAddController extends AbstractController
         $heading_render->add('Nieuwsbericht toevoegen');
         $heading_render->fa('calendar-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -162,8 +162,10 @@ class NewsAddController extends AbstractController
         $out .= '<label for="event_at" class="control-label">';
         $out .= 'Agenda datum</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-calendar"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="event_at" name="event_at" ';
         $out .= 'data-provide="datepicker" ';
@@ -197,8 +199,10 @@ class NewsAddController extends AbstractController
         $out .= '<label for="location" class="control-label">';
         $out .= 'Locatie</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-map-marker"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="location" name="location" ';

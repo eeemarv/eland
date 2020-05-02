@@ -97,16 +97,18 @@ class PasswordResetTokenController extends AbstractController
             'generate_password.js',
         ]);
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post" role="form">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="password">Nieuw paswoord</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-key"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="password" name="password" ';
         $out .= 'value="';

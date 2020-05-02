@@ -99,8 +99,8 @@ class DocsDelController extends AbstractController
 
         $heading_render->add('Document verwijderen?');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<form method="post">';
 
         $out .= '<p>';

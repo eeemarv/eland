@@ -183,8 +183,8 @@ class IntersystemsEditController extends AbstractController
     {
         $heading_render->fa('share-alt');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -193,8 +193,11 @@ class IntersystemsEditController extends AbstractController
         $out .= 'Systeem Naam';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-share-alt"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-share-alt"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="groupname" name="groupname" ';
         $out .= 'value="';
@@ -207,8 +210,11 @@ class IntersystemsEditController extends AbstractController
         $out .= '<label for="apimethod" class="control-label">';
         $out .= 'API methode</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'API</span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'API';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<select class="form-control" id="apimethod" name="apimethod" >';
 
         $out .= $select_render->get_options([
@@ -228,8 +234,11 @@ class IntersystemsEditController extends AbstractController
         $out .= '<label for="localletscode" class="control-label">';
         $out .= 'Lokale Account Code</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-user"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="localletscode" name="localletscode" ';
         $out .= 'value="';
         $out .= $group['localletscode'];
@@ -246,8 +255,11 @@ class IntersystemsEditController extends AbstractController
         $out .= 'Remote Account Code';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-user"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="myremoteletscode" name="myremoteletscode" ';
         $out .= 'value="';
@@ -265,8 +277,11 @@ class IntersystemsEditController extends AbstractController
         $out .= 'URL ';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-link"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-link"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="url" class="form-control" id="url" name="url" ';
         $out .= 'value="';
         $out .= $group['url'];

@@ -95,8 +95,8 @@ class DocsMapEditController extends AbstractController
         $heading_render->add_raw($link_render->link_no_attr('docs_map', $pp->ary(),
             ['id' => $id], $name));
 
-        $out = '<div class="panel panel-info" id="add">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info" id="add">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -104,8 +104,11 @@ class DocsMapEditController extends AbstractController
         $out .= '<label for="name" class="control-label">';
         $out .= 'Map naam</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-folder-o"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-folder-o"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" ';
         $out .= 'data-typeahead="';

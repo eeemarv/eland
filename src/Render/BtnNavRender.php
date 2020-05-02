@@ -43,15 +43,15 @@ class BtnNavRender
 
 		if ($this->local_admin)
 		{
-			$local_admin = '<div class="btn-group pull-right" role="group">';
+			$local_admin = '<div class="btn-group" role="group">';
 			$local_admin .= '<button type="button" class="btn btn-info btn-lg dropdown-toggle" ';
 			$local_admin .= 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
 			$local_admin .= '<i class="fa fa-cog" title="Admin functies"></i>&nbsp;';
 			$local_admin .= '<span class="caret"></span>';
 			$local_admin .= '</button>';
-			$local_admin .= '<ul class="dropdown-menu dropleft">';
+			$local_admin .= '<div class="dropdown-menu dropdown-menu-right">';
 			$local_admin .= implode('', $this->local_admin);
-			$local_admin .= '</ul>';
+			$local_admin .= '</div>';
 			$local_admin .= '</div>';
 
 			$this->out['admin'][] = $local_admin;
@@ -93,7 +93,7 @@ class BtnNavRender
 		if (count($params) < 1)
 		{
 			return $this->tag_render->get('button', [
-					'class' 	=> 'btn btn-default btn-lg',
+					'class' 	=> 'btn btn-default btn-lg border border-secondary',
 					'title'		=> $title,
 					'disabled'	=> 'disabled',
 				],
@@ -116,7 +116,7 @@ class BtnNavRender
 	{
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default btn-lg' . ($active ? ' active' : ''),
+				'class'	=> 'btn btn-default btn-lg border border-secondary' . ($active ? ' active' : ''),
 				'title'	=> $title,
 			],
 			$fa);
@@ -132,7 +132,7 @@ class BtnNavRender
 	{
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default btn-lg',
+				'class'	=> 'btn btn-default btn-lg border border-secondary',
 				'title'	=> $title,
 			],
 			$fa);
@@ -178,7 +178,7 @@ class BtnNavRender
 		$this->assets_service->add(['csv.js']);
 
 		$this->out['admin'][] = $this->tag_render->get('a', [
-				'class'	=> 'csv btn btn-info btn-lg',
+				'class'	=> 'csv btn btn-info btn-lg text-light',
 				'title'	=> 'Download CSV',
 			],
 			$this->tag_render->fa('file')
@@ -211,29 +211,20 @@ class BtnNavRender
 				continue;
 			}
 
-			$item = '<li';
+			$class = 'dropdown-item';
+			$class .= $menu === $menu_key ? ' active' : '';
 
-			if ($menu === $menu_key)
-			{
-				$item .= ' class="active"';
-			}
-
-			$item .= '>';
-
-			$item .= $this->link_render->link_fa(
+			$this->local_admin[] = $this->link_render->link_fa(
 				$ary['route'], $params_context, $ary['params'] ?? [],
-				$ary['label'], [], $ary['fa']);
-
-			$item .= '</li>';
-
-			$this->local_admin[] = $item;
+				$ary['label'], ['class' => $class],
+				$ary['fa']);
 		}
 	}
 
 	public function columns_show():void
 	{
 		$this->out['columns_show'] = $this->tag_render->get('button', [
-				'class'			=> 'btn btn-default btn-lg',
+				'class'			=> 'btn btn-default btn-lg border border-secondary',
 				'title'			=> 'Weergave kolommen',
 				'data-toggle'	=> 'collapse',
 				'data-target'	=> '#columns_show',

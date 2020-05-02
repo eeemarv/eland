@@ -41,8 +41,8 @@ class InitController extends AbstractController
             $alert_service->success('Done: ' . self::ROUTES_LABELS[$done]);
         }
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<h1>Init</h1>';
 
         $out .= '</div>';

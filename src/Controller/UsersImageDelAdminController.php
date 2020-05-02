@@ -84,8 +84,8 @@ class UsersImageDelAdminController extends AbstractController
 
         $out .= '<form method="post">';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(), ['id' => $id]);
 

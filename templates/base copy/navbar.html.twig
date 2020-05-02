@@ -1,0 +1,20 @@
+{%- extends 'base/skeleton.html.twig' -%}
+
+{%- block navbar -%}
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-inverse bg-inverse{%- block navbar_class %} bg-secondary{%- endblock -%}">
+
+        {%- block navbar_toggle_left -%}{%- endblock -%}
+        {%- block navbar_toggle_menu -%}{%- endblock -%}
+
+        <a href="{%- block url_index -%}#{%- endblock -%}" class="pull-left hidden-xs">
+            <div class="logo">
+            </div>
+        </a>
+        <a href="{{- block('url_index') -}}" class="navbar-brand">
+            {{- block('title') -}}
+        </a>
+
+        {%- block navbar_menu -%}{%- endblock -%}
+
+    </nav>
+{%- endblock navbar -%}

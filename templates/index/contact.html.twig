@@ -4,8 +4,7 @@
 {%- block title -%}eLAND Contact{%- endblock -%}
 {%- block navbar -%}{%- endblock -%}
 
-{%- block page_container -%}
-
+{%- block jumbotron -%}
 	<div class="jumbotron">
 		<div class="container eland-jumbo">
 
@@ -18,14 +17,18 @@
 		</div>
 	</div>
 
+{%- endblock jumbotron -%}
+
+{%- block page_container -%}
+
 	<div class="container">
 
 		{{- a.alert() -}}
 
 		{%- if form_ok -%}
 
-			<div class="panel panel-success">
-			<div class="panel-heading">
+			<div class="card bg-success">
+			<div class="card-body">
 			<h2>Uw bericht is verstuurd.</h2>
 			<p>Er wordt spoedig contact met u opgenomen.</p>
 			<a href="{{- path('index') -}}"  class="btn btn-default btn-lg">
@@ -36,16 +39,18 @@
 			<br><br><br>
 		{%- else -%}
 
-			<div class="panel panel-info">
-			<div class="panel-heading">
+			<div class="card bg-info">
+			<div class="card-body">
 
 			<form method="post">
 
 				<div class="form-group">
 					<label for="mail" class="control-label">Je E-mail adres</label>
 					<div class="input-group">
-						<span class="input-group-addon">
-							<i class="fa fa-envelope-o"></i>
+						<span class="input-group-prepend">
+							<span class="input-group-text">
+								<i class="fa fa-envelope-o"></i>
+							</span>
 						</span>
 						<input type="email" class="form-control" id="mail" name="mail" value="{{- mail -}}" required>
 					</div>

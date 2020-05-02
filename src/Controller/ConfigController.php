@@ -338,13 +338,18 @@ class ConfigController extends AbstractController
 
         foreach (ConfigCnst::TAB_PANES as $tab_id => $tab_pane_data)
         {
-            $out .= '<li role="presentation"';
-            $out .= $tab_id === $tab ? ' class="active"' : '';
-            $out .= '>';
-            $out .= $link_render->link_no_attr('config',
+            $out .= '<li role="presentation" ';
+            $out .= 'class="nav-item">';
+
+            $class = 'nav-link';
+            $class .= $tab_id === $tab ? ' active' : '';
+
+            $out .= $link_render->link('config',
                 $pp->ary(),
                 ['tab' => $tab_id],
-                $tab_pane_data['lbl']);
+                $tab_pane_data['lbl'],
+                ['class' => $class]
+            );
             $out .= '</li>';
         }
 
@@ -352,8 +357,8 @@ class ConfigController extends AbstractController
 
         $out .= '<form method="post">';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading"><h4>';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body"><h4>';
         $out .= $pane['lbl_pane'] ?? $pane['lbl'];
         $out .= '</h4>';
 
@@ -529,8 +534,8 @@ class ConfigController extends AbstractController
                 $out .= '<div class="row">';
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
+                $out .= '<div class="card bg-default">';
+                $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_active']))
                 {
@@ -555,8 +560,8 @@ class ConfigController extends AbstractController
                 $out .= '</div>'; // col
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
+                $out .= '<div class="card bg-default">';
+                $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_inactive']))
                 {
@@ -612,7 +617,8 @@ class ConfigController extends AbstractController
                 if (isset($input['addon']) || isset($input['addon_fa']))
                 {
                     $out .= '<div class="input-group">';
-                    $out .= '<span class="input-group-addon">';
+                    $out .= '<span class="input-group-prepend">';
+                    $out .= '<span class="input-group-text">';
 
                     if (isset($input['addon']))
                     {
@@ -626,6 +632,7 @@ class ConfigController extends AbstractController
                         $out .= '"></i>';
                     }
 
+                    $out .= '</span>';
                     $out .= '</span>';
                 }
 
@@ -726,7 +733,7 @@ class ConfigController extends AbstractController
 
         $out .= '</ul>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<input type="hidden" name="tab" value="' . $tab . '">';
 
@@ -949,14 +956,10 @@ class ConfigController extends AbstractController
         $out .= 'data-max-file-size="999000">';
         $out .= '</span>';
 
-        $out .= '<p class="text-warning">';
+        $out .= '<p>';
         $out .= 'Toegestane formaten: png en gif. ';
         $out .= 'Je kan ook een afbeelding hierheen verslepen. ';
-        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat. ';
-        $out .= 'De afbeelding neemt de hele hoogte van de navigatie-balk in. ';
-        $out .= 'Voeg eventueel vooraf boven en/of onder een doorzichtige strook ';
-        $out .= 'toe met een foto-bewerking programma ';
-        $out .= '(bvb. <a href="https://gimp.org">GIMP</a>") om te positioneren';
+        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat.';
         $out .= '</p>';
 
         $out .= $link_render->link_fa('logo_del', $pp->ary(),

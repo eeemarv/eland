@@ -43,8 +43,8 @@ class RegisterAdminController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default">';
+        $out .= '<div class="card-body">';
 
         $out .= '<p><i>Formulier niet actief ';
         $out .= 'in admin modus.</i></p>';
@@ -54,8 +54,10 @@ class RegisterAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="first_name" class="control-label">Voornaam*</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="first_name" name="first_name" ';
         $out .= 'value="" required disabled>';
@@ -65,8 +67,10 @@ class RegisterAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="last_name" class="control-label">Achternaam*</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="last_name" name="last_name" ';
         $out .= 'value="" required disabled>';
@@ -76,8 +80,10 @@ class RegisterAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="email" class="control-label">E-mail*</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-envelope-o"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="email" class="form-control" id="email" name="email" ';
         $out .= 'value="" required disabled>';
@@ -87,8 +93,10 @@ class RegisterAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="postcode" class="control-label">Postcode*</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-map-marker"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="postcode" name="postcode" ';
         $out .= 'value="" required disabled>';
@@ -98,8 +106,10 @@ class RegisterAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="gsm" class="control-label">Gsm</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-mobile"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="gsm" name="gsm" ';
         $out .= 'value="" disabled>';
@@ -109,8 +119,10 @@ class RegisterAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="tel" class="control-label">Telefoon</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-phone"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="tel" name="tel" ';
         $out .= 'value="" disabled>';

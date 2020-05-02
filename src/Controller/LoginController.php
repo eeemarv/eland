@@ -273,8 +273,8 @@ class LoginController extends AbstractController
         $heading_render->add('Login');
         $heading_render->fa('sign-in');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card alert-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -282,8 +282,10 @@ class LoginController extends AbstractController
         $out .= '<label for="login">';
         $out .= 'Login</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="login" name="login" ';
         $out .= 'value="';
@@ -298,8 +300,10 @@ class LoginController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="password">Paswoord</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-key"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="password" class="form-control" ';
         $out .= 'id="password" name="password" ';

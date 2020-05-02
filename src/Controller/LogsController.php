@@ -181,20 +181,22 @@ class LogsController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('history');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="q_addon">';
-        $out .= '<i class="fa fa-search"></i></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="q_addon" ';
         $out .= 'name="f[q]" id="q" placeholder="Zoek Event" ';
         $out .= 'value="';
         $out .= $filter['q'] ?? '';
@@ -203,12 +205,14 @@ class LogsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="type_addon">';
-        $out .= 'Type</span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Type';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="type_addon" ';
         $out .= 'data-typeahead="';
 
         $out .= $typeahead_service->ini($pp->ary())
@@ -224,12 +228,14 @@ class LogsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
         $out .= $typeahead_service->ini($pp->ary())
@@ -290,10 +296,10 @@ class LogsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="panel panel-default printview">';
-
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-hover table-bordered table-striped footable csv" ';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-hover ';
+        $out .= 'table-bordered table-striped ';
+        $out .= 'footable csv bg-default mb-0" ';
         $out .= 'data-sort="false">';
         $out .= '<thead>';
         $out .= '<tr>';
@@ -377,7 +383,7 @@ class LogsController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= $pagination_render->get();
 

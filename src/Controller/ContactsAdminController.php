@@ -246,20 +246,22 @@ class ContactsAdminController extends AbstractController
         $heading_render->btn_filter();
         $heading_render->fa('map-marker');
 
-        $out = '<div id="filter" class="panel panel-info';
+        $out = '<div id="filter" class="card bg-info';
         $out .= $panel_collapse ? ' collapse' : '';
         $out .= '">';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" value="';
         $out .= $filter['q'] ?? '';
@@ -268,9 +270,11 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'Type';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
         $out .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
@@ -290,9 +294,11 @@ class ContactsAdminController extends AbstractController
         }
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'Zichtbaar';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" id="access" name="f[access]">';
         $out .= $select_render->get_options($access_options, $filter['access'] ?? 'all');
@@ -316,10 +322,12 @@ class ContactsAdminController extends AbstractController
         ];
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= 'Status ';
         $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" ';
         $out .= 'id="ustatus" name="f[ustatus]">';
@@ -331,11 +339,14 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Van&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
         $out .= $typeahead_service->ini($pp->ary())
@@ -414,10 +425,11 @@ class ContactsAdminController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="panel panel-danger">';
-        $out .= '<div class="table-responsive">';
+        $out .= '<div class="table-responsive ';
+        $out .= 'border border-dark rounded mb-3">';
         $out .= '<table class="table table-hover ';
-        $out .= 'table-striped table-bordered footable csv" ';
+        $out .= 'table-striped table-bordered ';
+        $out .= 'footable csv bg-default mb-0" ';
         $out .= 'data-sort="false">';
 
         $out .= '<thead>';
@@ -503,7 +515,7 @@ class ContactsAdminController extends AbstractController
 
         $out .= '</table>';
 
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= $pagination_render->get();
 

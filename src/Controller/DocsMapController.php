@@ -111,15 +111,17 @@ class DocsMapController extends AbstractController
         $heading_render->add($name . '"');
         $heading_render->fa('files-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
         $out .= '<div class="col-xs-12">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" name="q" value="';
         $out .= $q;
@@ -139,11 +141,9 @@ class DocsMapController extends AbstractController
                     && $config_service->get_intersystem_en($pp->schema()))
                 || $pp->is_admin();
 
-            $out .= '<div class="panel panel-default printview">';
-
-            $out .= '<div class="table-responsive">';
-            $out .= '<table class="table table-bordered ';
-            $out .= 'table-striped table-hover footable csv" ';
+            $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+            $out .= '<table class="table table-bordered mb-0 ';
+            $out .= 'table-striped table-hover footable csv bg-default" ';
             $out .= 'data-filter="#q" data-filter-minimum="1">';
             $out .= '<thead>';
 
@@ -204,14 +204,14 @@ class DocsMapController extends AbstractController
             $out .= '</table>';
 
             $out .= '</div>';
-            $out .= '</div>';
         }
         else
         {
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-default">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
-            $out .= '</div></div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
         $menu_service->set('docs');

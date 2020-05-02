@@ -442,7 +442,7 @@ class UsersShowAdminController extends AbstractController
             $out .= 'data-image-crop="true" ';
             $out .= 'data-image-max-height="400"></span>';
 
-            $out .= '<p class="text-warning">';
+            $out .= '<p>';
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
             $out .= 'Je kan ook een foto hierheen verslepen.</p>';
 
@@ -468,8 +468,8 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-default printview">';
+        $out .= '<div class="card-body">';
         $out .= '<dl>';
 
         $fullname_access = $user['fullname_access'] ?: 'admin';
@@ -681,13 +681,13 @@ class UsersShowAdminController extends AbstractController
         $out .= '<div class="row">';
         $out .= '<div class="col-md-12">';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body">';
+        $out .= '<div class="card card-default">';
+        $out .= '<div class="card-body">';
 
         $account_str = $account_render->str($id, $pp->schema());
 
         $attr_link_messages = $attr_link_transactions = [
-            'class'     => 'btn btn-default btn-lg btn-block',
+            'class'     => 'btn btn-default btn-lg btn-block border border-secondary',
             'disabled'  => 'disabled',
         ];
 
@@ -779,8 +779,8 @@ class UsersShowAdminController extends AbstractController
         $out .= 'Stuur een bericht naar ';
         $out .=  $account_render->link($user_id, $pp->ary());
         $out .= '</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info mb-3">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post"">';
 

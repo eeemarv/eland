@@ -234,8 +234,8 @@ class MolliePaymentsAddController extends AbstractController
         $heading_render->add('Mollie Betaalverzoeken aanmaken');
         $heading_render->fa('eur');
 
-        $out = '<div class="panel panel-warning">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-warning">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form class="form" id="fill_in_aid">';
 
@@ -243,10 +243,12 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<label for="fixed" class="control-label">';
         $out .= 'Bedrag (Invul-hulp)</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-eur"></i>';
         $out .= '</span>';
-        $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
+        $out .= '</span>';
+        $out .= '<input type="number" class="form-control" id="fixed" ';
         $out .= 'min="0" value="" step="0.01">';
         $out .= '</div>';
         $out .= '<p>Hiermee vul je dit bedrag in voor alle accounts hieronder. ';
@@ -276,15 +278,17 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
         $out .= '<div class="col-xs-12">';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="q" name="q" value="';
@@ -322,10 +326,10 @@ class MolliePaymentsAddController extends AbstractController
 
         $out .= '<form method="post" autocomplete="off">';
 
-        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="card bg-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover footable panel-body csv" ';
+        $out .= 'table-hover footable panel-body csv bg-default" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';
@@ -374,8 +378,10 @@ class MolliePaymentsAddController extends AbstractController
             $td[] = $account_render->link((int) $user_id, $pp->ary());
 
             $td_inp = '<div class="input-group">';
-            $td_inp .= '<span class="input-group-addon">';
+            $td_inp .= '<span class="input-group-prepend">';
+            $td_inp .= '<span class="input-group-text">';
             $td_inp .= '<i class="fa fa-eur"></i>';
+            $td_inp .= '</span>';
             $td_inp .= '</span>';
             $td_inp .= '<input type="number" name="amount[' . $user_id . ']" ';
             $td_inp .= 'class="form-control" step="0.01" ';
@@ -440,14 +446,16 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="total" class="control-label">Totaal';
         $out .= '</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-eur"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="total" readonly step="0.01">';
         $out .= '</div>';
@@ -460,8 +468,11 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<label for="description" class="control-label">';
         $out .= 'Omschrijving</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-pencil"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-pencil"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="description" ';
         $out .= 'name="description" ';
         $out .= 'value="';

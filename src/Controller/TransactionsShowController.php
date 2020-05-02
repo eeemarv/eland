@@ -109,10 +109,10 @@ class TransactionsShowController extends AbstractController
 
         $intersystem_trans = ($real_from || $real_to) && $config_service->get_intersystem_en($pp->schema());
 
-        $out = '<div class="panel panel-';
+        $out = '<div class="card bg-';
         $out .= $intersystem_trans ? 'warning' : 'default';
         $out .= ' printview">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<dl>';
 

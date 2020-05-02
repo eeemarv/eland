@@ -98,7 +98,7 @@ class MessagesExtendedController extends AbstractController
 
             $exp = strtotime($msg['expires_at']) < $time;
 
-            $out .= '<div class="panel panel-info printview">';
+            $out .= '<div class="card bg-info printview">';
             $out .= '<div class="panel-body';
             $out .= $exp ? ' bg-danger' : '';
             $out .= '">';

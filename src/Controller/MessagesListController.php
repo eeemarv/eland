@@ -289,11 +289,9 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="panel panel-info printview">';
-
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-striped ';
-        $out .= 'table-bordered table-hover footable csv" ';
+        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<table class="table table-striped mb-0 ';
+        $out .= 'table-bordered table-hover footable csv bg-default" ';
         $out .= 'id="msgs" data-sort="false">';
 
         $out .= '<thead>';
@@ -405,7 +403,6 @@ class MessagesListController extends AbstractController
         $out .= '</table>';
 
         $out .= '</div>';
-        $out .= '</div>';
 
         $out .= $pagination_render->get();
 
@@ -426,8 +423,8 @@ class MessagesListController extends AbstractController
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
-            $out .= '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-info">';
+            $out .= '<div class="card-body">';
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
 
@@ -1021,17 +1018,19 @@ class MessagesListController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info-li mb-3">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="q" value="';
         $out .= $filter['q'] ?? '';
@@ -1040,9 +1039,11 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5 col-xs-10">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-clone"></i>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<select class="form-control" id="cid" name="f[cid]">';
 
@@ -1068,7 +1069,7 @@ class MessagesListController extends AbstractController
         $out .= $filter_panel_open ? '' : ' class="collapse"';
         $out .= '>';
 
-        $out .= '<div class="row">';
+        $out .= '<div class="row mt-2">';
 
         $offerwant_options = [
             'want'		=> 'Vraag',
@@ -1076,7 +1077,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
 
@@ -1092,7 +1093,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
 
@@ -1109,7 +1110,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group">';
 
         $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
 
@@ -1121,12 +1122,15 @@ class MessagesListController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-10">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Van&nbsp;';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="fcode_addon" ';
         $out .= 'data-typeahead="';
 
         $out .= $typeahead_service->ini($pp->ary())

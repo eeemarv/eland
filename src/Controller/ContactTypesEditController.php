@@ -11,7 +11,6 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contact_types;
 use Doctrine\DBAL\Connection as Db;
 
 class ContactTypesEditController extends AbstractController
@@ -82,15 +81,18 @@ class ContactTypesEditController extends AbstractController
         $heading_render->add('Contact type aanpassen');
         $heading_render->fa('circle-o-notch');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
         $out .= '<form method="post">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="name" class="control-label">Naam</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="name_addon">';
-        $out .= '<span class="fa fa-circle-o-notch"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-circle-o-notch"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="name" ';
         $out .= 'name="name" maxlength="20" ';
         $out .= 'value="';

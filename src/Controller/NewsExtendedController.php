@@ -98,8 +98,8 @@ class NewsExtendedController extends AbstractController
         ItemAccessService $item_access_service
     ):string
     {
-        $out =  '<div class="panel panel-info printview">';
-        $out .=  '<div class="panel-body">';
+        $out =  '<div class="card bg-info printview">';
+        $out .=  '<div class="panel-body>';
 
         $out .=  '<div class="media">';
         $out .=  '<div class="media-body">';

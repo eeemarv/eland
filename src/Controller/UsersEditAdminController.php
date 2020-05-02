@@ -789,8 +789,8 @@ class UsersEditAdminController extends AbstractController
 
         $heading_render->fa('user');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
@@ -801,8 +801,11 @@ class UsersEditAdminController extends AbstractController
             $out .= 'Account Code';
             $out .= '</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
+            $out .= '<span class="fa fa-user"></span>';
+            $out .= '</span>';
+            $out .= '</span>';
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="code" name="code" ';
             $out .= 'value="';
@@ -838,8 +841,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '<label for="name" class="control-label">';
             $out .= 'Gebruikersnaam</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
+            $out .= '<span class="fa fa-user"></span>';
+            $out .= '</span>';
+            $out .= '</span>';
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="name" name="name" ';
             $out .= 'value="';
@@ -875,8 +881,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '<label for="fullname" class="control-label">';
             $out .= 'Volledige Naam</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-user"></span></span>';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
+            $out .= '<span class="fa fa-user"></span>';
+            $out .= '</span>';
+            $out .= '</span>';
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="fullname" name="fullname" ';
             $out .= 'value="';
@@ -901,8 +910,11 @@ class UsersEditAdminController extends AbstractController
         $out .= '<label for="postcode" class="control-label">';
         $out .= 'Postcode</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-map-marker"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-map-marker"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="postcode" name="postcode" ';
         $out .= 'value="';
@@ -923,8 +935,11 @@ class UsersEditAdminController extends AbstractController
         $out .= '<label for="birthday" class="control-label">';
         $out .= 'Geboortedatum</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-calendar"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-calendar"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="birthday" name="birthday" ';
         $out .= 'value="';
@@ -967,8 +982,11 @@ class UsersEditAdminController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="comments" class="control-label">Commentaar</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-comment-o"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-comment-o"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="comments" name="comments" ';
         $out .= 'value="';
@@ -983,8 +1001,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '<label for="role" class="control-label">';
             $out .= 'Rechten / Rol</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-hand-paper-o"></span></span>';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
+            $out .= '<span class="fa fa-hand-paper-o"></span>';
+            $out .= '</span>';
+            $out .= '</span>';
             $out .= '<select id="role" name="role" ';
             $out .= 'class="form-control">';
             $out .= $select_render->get_options(RoleCnst::LABEL_ARY, $role);
@@ -996,8 +1017,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '<label for="status" class="control-label">';
             $out .= 'Status</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-star-o"></span></span>';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
+            $out .= '<span class="fa fa-star-o"></span>';
+            $out .= '</span>';
+            $out .= '</span>';
             $out .= '<select id="status" name="status" class="form-control">';
             $out .= $select_render->get_options(StatusCnst::LABEL_ARY, $status);
             $out .= '</select>';
@@ -1012,8 +1036,11 @@ class UsersEditAdminController extends AbstractController
                 $out .= '<label for="password" class="control-label">';
                 $out .= 'Paswoord</label>';
                 $out .= '<div class="input-group">';
-                $out .= '<span class="input-group-addon">';
-                $out .= '<span class="fa fa-key"></span></span>';
+                $out .= '<span class="input-group-prepend">';
+                $out .= '<span class="input-group-text">';
+                $out .= '<span class="fa fa-key"></span>';
+                $out .= '</span>';
+                $out .= '</span>';
                 $out .= '<input type="text" class="form-control" ';
                 $out .= 'id="password" name="password" ';
                 $out .= 'value="" required>';
@@ -1080,9 +1107,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '<label for="minlimit" class="control-label">';
             $out .= 'Minimum Account Limiet</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
             $out .= '<span class="fa fa-arrow-down"></span> ';
             $out .= $config_service->get('currency', $pp->schema());
+            $out .= '</span>';
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="minlimit" name="minlimit" ';
@@ -1136,9 +1165,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '<label for="maxlimit" class="control-label">';
             $out .= 'Maximum Account Limiet</label>';
             $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
             $out .= '<span class="fa fa-arrow-up"></span> ';
             $out .= $config_service->get('currency', $pp->schema());
+            $out .= '</span>';
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="maxlimit" name="maxlimit" ';
@@ -1217,10 +1248,12 @@ class UsersEditAdminController extends AbstractController
                 $out .= ContactInputCnst::FORMAT_ARY[$c_abbrev]['lbl'] ?? $c_abbrev;
                 $out .= '</label>';
                 $out .= '<div class="input-group">';
-                $out .= '<span class="input-group-addon">';
+                $out .= '<span class="input-group-prepend">';
+                $out .= '<span class="input-group-text">';
                 $out .= '<i class="fa fa-';
                 $out .= ContactInputCnst::FORMAT_ARY[$c_abbrev]['fa'] ?? 'question-mark';
                 $out .= '"></i>';
+                $out .= '</span>';
                 $out .= '</span>';
                 $out .= '<input class="form-control" id="';
                 $out .= $c_name;

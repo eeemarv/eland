@@ -232,8 +232,8 @@ class ForumTopicController extends AbstractController
         {
             $out .= '<h3>Reactie toevoegen</h3>';
 
-            $out .= '<div class="panel panel-info" id="add">';
-            $out .= '<div class="panel-heading">';
+            $out .= '<div class="card bg-info">';
+            $out .= '<div class="card-body">';
 
             $out .= '<form method="post">';
             $out .= '<div class="form-group">';

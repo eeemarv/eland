@@ -45,11 +45,10 @@ class ContactTypesController extends AbstractController
         $heading_render->add('Contact types');
         $heading_render->fa('circle-o-notch');
 
-        $out = '<div class="panel panel-default printview">';
-
-        $out .= '<div class="table-responsive">';
+        $out .= '<div class="table-responsive ';
+        $out .= 'border border-dark rounded mb-3">';
         $out .= '<table class="table table-striped table-hover ';
-        $out .= 'table-bordered footable" data-sort="false">';
+        $out .= 'table-bordered footable bg-default mb-0" data-sort="false">';
         $out .= '<tr>';
         $out .= '<thead>';
         $out .= '<th>Naam</th>';
@@ -132,7 +131,7 @@ class ContactTypesController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= '<p>Kunnen niet verwijderd worden: ';
         $out .= 'contact types waarvan contacten ';

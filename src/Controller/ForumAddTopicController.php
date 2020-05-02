@@ -111,8 +111,8 @@ class ForumAddTopicController extends AbstractController
         $heading_render->add('Nieuw forum onderwerp');
         $heading_render->fa('comments-o');
 
-        $out = '<div class="panel panel-info" id="add">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card bg-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
 
