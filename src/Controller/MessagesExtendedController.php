@@ -98,9 +98,9 @@ class MessagesExtendedController extends AbstractController
 
             $exp = strtotime($msg['expires_at']) < $time;
 
-            $out .= '<div class="card bg-info printview">';
-            $out .= '<div class="panel-body';
-            $out .= $exp ? ' bg-danger' : '';
+            $out .= '<div class="card printview">';
+            $out .= '<div class="card-body';
+            $out .= $exp ? ' bg-danger-li' : '';
             $out .= '">';
 
             $out .= '<div class="media">';
@@ -143,7 +143,7 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '</div>';
 
-            $out .= '<div class="panel-footer">';
+            $out .= '<div class="card-footer">';
             $out .= '<p><i class="fa fa-user"></i> ';
             $out .= $account_render->link($msg['user_id'], $pp->ary());
             $out .= $msg['postcode'] ? ', postcode: ' . $msg['postcode'] : '';
