@@ -355,10 +355,12 @@ class ConfigController extends AbstractController
 
         $out .= '</ul>';
 
+        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
+
         $out .= '<form method="post">';
 
-        $out .= '<div class="card bg-info">';
-        $out .= '<div class="card-body"><h4>';
+        $out .= '<h4>';
         $out .= $pane['lbl_pane'] ?? $pane['lbl'];
         $out .= '</h4>';
 
@@ -402,7 +404,7 @@ class ConfigController extends AbstractController
                 continue;
             }
 
-            $out .= '<li class="list-group-item bg-info">';
+            $out .= '<li class="list-group-item fcard fcard-info">';
 
             if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
             {
@@ -534,7 +536,7 @@ class ConfigController extends AbstractController
                 $out .= '<div class="row">';
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="card bg-default">';
+                $out .= '<div class="card fcard fcard-default">';
                 $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_active']))
@@ -545,7 +547,7 @@ class ConfigController extends AbstractController
                 }
 
                 $out .= '</div>';
-                $out .= '<div class="panel-body">';
+                $out .= '<div class="card-body">';
                 $out .= '<ul id="list_active" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
@@ -560,7 +562,7 @@ class ConfigController extends AbstractController
                 $out .= '</div>'; // col
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="card bg-default">';
+                $out .= '<div class="card fcard fcard-default">';
                 $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_inactive']))
@@ -571,7 +573,7 @@ class ConfigController extends AbstractController
                 }
 
                 $out .= '</div>';
-                $out .= '<div class="panel-body">';
+                $out .= '<div class="card-body">';
                 $out .= '<ul id="list_inactive" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
@@ -745,11 +747,10 @@ class ConfigController extends AbstractController
 
         $out .= $form_token_service->get_hidden_input();
 
-        $out .= '</div>';
-
-        $out .= '</div>';
-
         $out .= '</form>';
+
+        $out .= '</div>';
+        $out .= '</div>';
 
         $out .= '</div>';
 
@@ -902,7 +903,7 @@ class ConfigController extends AbstractController
     {
         $logo = $config_service->get('logo', $pp->schema());
 
-        $out = '<div class="panel-body bg-info">';
+        $out = '<div class="card-body">';
         $out .= '<div class="col-md-6">';
 
         $out .= '<div class="text-center ';

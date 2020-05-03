@@ -73,7 +73,7 @@ class NewsDelController extends AbstractController
             $item_access_service
         );
 
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<p class="text-danger"><strong>';

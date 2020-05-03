@@ -33,7 +33,7 @@ class PasswordResetAdminController extends AbstractController
         $heading_render->add('Paswoord vergeten');
         $heading_render->fa('key');
 
-        $out = '<div class="card bg-default">';
+        $out = '<div class="card fcard fcard-default">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

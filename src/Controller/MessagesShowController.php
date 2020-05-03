@@ -178,9 +178,11 @@ class MessagesShowController extends AbstractController
             $alert_service->error($errors);
         }
 
+        $image_files = array_values(json_decode($message['image_files'] ?? '[]', true));
+
         $data_images = [
             'base_url'      => $env_s3_url,
-            'files'         => array_values(json_decode($message['image_files'] ?? '[]', true)),
+            'files'         => $image_files,
         ];
 
         $sql_where = [];
@@ -296,27 +298,76 @@ class MessagesShowController extends AbstractController
 
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body">';
+        $out .= '<div class="card card-default">';
+        $out .= '<div class="card-body">';
+
+        /*
 
         $out .= '<div id="no_images" ';
-        $out .= 'class="text-center center-body">';
+        $out .= 'class="text-center center-body';
+        $out .= count($image_files) ? '' : ' hidden';
+        $out .= '">';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
         $out .= $message['label']['offer_want_this'] . '</p>';
         $out .= '</div>';
+        */
 
         $out .= '<div id="images_con" ';
+        $out .= 'class="carousel slide no-t-swipe" ';
+        $out .= 'data-ride="carousel" ';
+        $out .= 'data-touch="true" ';
         $out .= 'data-images="';
         $out .= htmlspecialchars(json_encode($data_images));
         $out .= '">';
+        $out .= '<div class="carousel-inner">';
+
+        $crsl_ind = '';
+        $crsl_items = '';
+
+        foreach($image_files as $key => $image_file)
+        {
+            $crsl_ind .= '<li data-target="#images_con" ';
+            $crsl_ind .= 'data-slide-to="';
+            $crsl_ind .= $key;
+            $crsl_ind .= '"';
+            $crsl_ind .= $key === 0 ? ' class="active"' : '';
+            $crsl_ind .= '></li>';
+
+            $crsl_items .= '<div class="carousel-item';
+            $crsl_items .= $key === 0 ? ' active' : '';
+            $crsl_items .= '">';
+            $crsl_items .= '<img src="';
+            $crsl_items .= $env_s3_url . $image_file;
+            $crsl_items .= '" class="d-block w-100 h-100" ';
+            $crsl_items .= 'style="height:400px;">';
+            $crsl_items .= '</div>';
+        }
+
+        $out .= '<ol class="carousel-indicators">';
+        $out .= $crsl_ind;
+        $out .= '</ol>';
+
+        $out .= $crsl_items;
+
+        $out .= '<a class="carousel-control-prev" href="#images_con" role="button" data-slide="prev">';
+        $out .= '<span class="carousel-control-prev-icon" aria-hidden="true"></span>';
+        $out .= '<span class="sr-only">Previous</span>';
+        $out .= '</a>';
+
+        $out .= '<a class="carousel-control-next" href="#images_con" role="button" data-slide="next">';
+        $out .= '<span class="carousel-control-next-icon" aria-hidden="true"></span>';
+        $out .= '<span class="sr-only">Next</span>';
+        $out .= '</a>';
+
+        $out .= '</div>';
         $out .= '</div>';
 
         $out .= '</div>';
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
-            $out .= '<div class="panel-footer">';
+            $out .= '<div class="card-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
             $out .= '<input id="fileupload" type="file" name="images[]" ';
@@ -358,7 +409,7 @@ class MessagesShowController extends AbstractController
 
         $out .= '<p><b>Omschrijving</b></p>';
         $out .= '</div>';
-        $out .= '<div class="panel-body">';
+        $out .= '<div class="card-body">';
         $out .= '<p>';
 
         if ($message['content'])

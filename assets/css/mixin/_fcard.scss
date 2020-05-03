@@ -1,0 +1,13 @@
+@mixin fcard-variant($background, $border, $color) {
+    color: $color;
+    @include gradient-bg($background);
+    border-color: $border;
+
+    hr {
+      border-top-color: darken($border, 20%);
+    }
+
+    a {
+      color: darken($color, 40%);
+    }
+  }

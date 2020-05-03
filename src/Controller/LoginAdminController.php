@@ -46,7 +46,7 @@ class LoginAdminController extends AbstractController
         $heading_render->add('Login');
         $heading_render->fa('sign-in');
 
-        $out = '<div class="card bg-default">';
+        $out = '<div class="card fcard fcard-default">';
         $out .= '<div class="card-body">';
 
         $out .= '<p><i>Formulier niet actief ';

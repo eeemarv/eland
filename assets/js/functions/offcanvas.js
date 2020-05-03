@@ -14,7 +14,8 @@ module.exports = function() {
 			$row_offcanvas.removeClass('active');
 		},
 		treshold: 30,
-		preventDefaultEvents: false
+		preventDefaultEvents: false,
+		excludedElements: ".no-t-swipe"
 	});
 
 	$('div.content-container-overlay').click(function(ev){

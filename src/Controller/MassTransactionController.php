@@ -102,7 +102,6 @@ class MassTransactionController extends AbstractController
         TransactionService $transaction_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         AssetsService $assets_service
     ):Response
     {
@@ -452,8 +451,9 @@ class MassTransactionController extends AbstractController
         $heading_render->add('Massa transactie');
         $heading_render->fa('exchange');
 
-        $out = '<div class="card bg-warning">';
+        $out = '<div class="card fcard fcard-warning">';
         $out .= '<div class="card-body">';
+
         $out .= '<button class="btn btn-default btn-lg" ';
         $out .= 'title="Toon invul-hulp" data-toggle="collapse" ';
         $out .= 'data-target="#help" type="button">';
@@ -720,7 +720,7 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
@@ -759,6 +759,9 @@ class MassTransactionController extends AbstractController
 
         $out .= '</ul>';
 
+        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
+
         $out .= '<form method="post" autocomplete="off">';
 
         $out .= '<input type="hidden" value="" id="combined-filter">';
@@ -767,9 +770,6 @@ class MassTransactionController extends AbstractController
         $out .= '" name="hsh" id="hsh">';
         $out .= '<input type="hidden" value="" ';
         $out .= 'name="selected_users" id="selected_users">';
-
-        $out .= '<div class="card bg-info">';
-        $out .= '<div class="card-body">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="from_code" class="control-label">';
@@ -809,7 +809,7 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover panel-body footable bg-default" ';
+        $out .= 'table-hover card-body footable bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
         $out .= 'data-minlimit="';
         $out .= $system_minlimit;
@@ -988,11 +988,11 @@ class MassTransactionController extends AbstractController
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
 
         $out .= '</form>';
+
+        $out .= '</div>';
+        $out .= '</div>';
 
         $menu_service->set('mass_transaction');
 

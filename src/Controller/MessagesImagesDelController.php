@@ -126,10 +126,10 @@ class MessagesImagesDelController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= '<form method="post">';
-
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
+
+        $out .= '<form method="post">';
 
         $out .= '<h3>Alle afbeeldingen verwijderen voor ';
         $out .= $message['label']['offer_want_this'];

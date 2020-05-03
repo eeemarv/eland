@@ -154,7 +154,7 @@ class ContactsDelAdminController extends AbstractController
             $heading_render->add('Contact verwijderen?');
         }
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<dl>';

@@ -220,7 +220,7 @@ class ContactsUserShowInlineController extends AbstractController
                     'tiles_url' => $env_map_tiles_url,
                 ]);
 
-                $out .= '<div class="panel-footer">';
+                $out .= '<div class="card-footer">';
                 $out .= '<div class="user_map" id="map" data-map="';
                 $out .= htmlspecialchars($data_map);
                 $out .= '"></div>';
@@ -229,8 +229,8 @@ class ContactsUserShowInlineController extends AbstractController
         }
         else
         {
-            $out .= '<div class="panel panel-danger">';
-            $out .= '<div class="panel-body">';
+            $out .= '<div class="card card-danger">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er is geen contactinfo voor ';
             $out .= $account_render->str($uid, $pp->schema());
             $out .= '.</p>';

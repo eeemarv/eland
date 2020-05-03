@@ -43,7 +43,7 @@ class RegisterAdminController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="card bg-default">';
+        $out .= '<div class="card fcard fcard-default">';
         $out .= '<div class="card-body">';
 
         $out .= '<p><i>Formulier niet actief ';

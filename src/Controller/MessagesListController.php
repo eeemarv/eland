@@ -423,7 +423,7 @@ class MessagesListController extends AbstractController
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
-            $out .= '<div class="card bg-info">';
+            $out .= '<div class="card fcard fcard-info">';
             $out .= '<div class="card-body">';
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
@@ -541,8 +541,8 @@ class MessagesListController extends AbstractController
     {
         $out = $pagination_render->get();
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body">';
+        $out .= '<div class="card card-default">';
+        $out .= '<div class="card-body">';
         $out .= '<p>Er zijn geen resultaten.</p>';
         $out .= '</div></div>';
 
@@ -1018,7 +1018,7 @@ class MessagesListController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="card bg-info-li mb-3">';
+        $out = '<div class="card fcard fcard-info mb-3">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';

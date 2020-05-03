@@ -366,7 +366,7 @@ class TransactionsController extends AbstractController
 
         $assets_service->add(['datepicker']);
 
-        $out .= '<div class="card bg-info-li mb-3';
+        $out .= '<div class="card fcard fcard-info mb-3';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
         $out .= '<div class="card-body">';
@@ -572,8 +572,8 @@ class TransactionsController extends AbstractController
         if (!count($transactions))
         {
             $out .= '<br>';
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-body">';
+            $out .= '<div class="card card-default">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn geen resultaten.</p>';
             $out .= '</div></div>';
             $out .= $pagination_render->get();

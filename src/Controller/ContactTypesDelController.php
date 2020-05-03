@@ -71,8 +71,9 @@ class ContactTypesDelController extends AbstractController
         $heading_render->add('Contact type verwijderen: ' . $ct['name']);
         $heading_render->fa('circle-o-notch');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
+
         $out .= '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
         $out .= '<form method="post">';
 

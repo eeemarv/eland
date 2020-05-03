@@ -15,7 +15,6 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
@@ -90,7 +89,7 @@ class UsersTilesController extends AbstractController
         $out .= '</span>';
         $out .= '</p>';
 
-        $out .= '<div class="row tiles">';
+        $out .= '<div class="row user-tiles js-user-tiles">';
 
         foreach ($users as $u)
         {
@@ -106,7 +105,7 @@ class UsersTilesController extends AbstractController
             $url = $link_render->context_path($vr->get('users_show'), $pp->ary(),
                 ['id' => $u['id'], 'link' => $status]);
 
-            $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
+            $out .= '<div class="col-xs-4 col-md-3 col-lg-2 user-tile js-user-tile">';
             $out .= '<div';
 
             if (isset(StatusCnst::CLASS_ARY[$row_stat]))

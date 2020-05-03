@@ -139,10 +139,11 @@ class ExportController extends AbstractController
         $heading_render->add('Export');
         $heading_render->fa('download');
 
+        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
+
         $out = '<form>';
 
-        $out .= '<div class="card bg-info">';
-        $out .= '<div class="card-body">';
         $out .= '<h3>Database download (SQL)';
         $out .= '</h3>';
         $out .= '</div>';
@@ -193,8 +194,8 @@ class ExportController extends AbstractController
             $out .= '" class="btn btn-default btn-lg">&nbsp;';
         }
 
-        $out .= '</div></div>';
         $out .= '</form>';
+        $out .= '</div></div>';
 
         $menu_service->set('export');
 

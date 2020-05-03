@@ -64,7 +64,7 @@ class CalendarListController extends AbstractController
             ]);
         }
 
-        $out = '<div class="panel panel-warning printview">';
+        $out = '<div class="card card-warning printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped ';
         $out .= 'table-hover table-bordered footable csv">';
@@ -183,8 +183,8 @@ class CalendarListController extends AbstractController
         MenuService $menu_service
     ):string
     {
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card card-default">';
+        $out .= '<div class="card-heading">';
         $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
         $out .= '</div></div>';
 

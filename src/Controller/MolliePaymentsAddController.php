@@ -234,7 +234,7 @@ class MolliePaymentsAddController extends AbstractController
         $heading_render->add('Mollie Betaalverzoeken aanmaken');
         $heading_render->fa('eur');
 
-        $out = '<div class="card bg-warning">';
+        $out = '<div class="card fcard fcard-warning">';
         $out .= '<div class="card-body">';
 
         $out .= '<form class="form" id="fill_in_aid">';
@@ -278,12 +278,12 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
+        $out .= '<div class="col">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
@@ -326,10 +326,10 @@ class MolliePaymentsAddController extends AbstractController
 
         $out .= '<form method="post" autocomplete="off">';
 
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card fcard fcard-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover footable panel-body csv bg-default" ';
+        $out .= 'table-hover footable card-body csv bg-default" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';

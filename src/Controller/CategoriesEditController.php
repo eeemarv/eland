@@ -135,7 +135,7 @@ class CategoriesEditController extends AbstractController
         $heading_render->add($cat['name']);
         $heading_render->fa('clone');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

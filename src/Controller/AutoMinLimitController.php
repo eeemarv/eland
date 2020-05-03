@@ -68,7 +68,7 @@ class AutoMinLimitController extends AbstractController
         $heading_render->add('Automatische minimum limiet');
         $heading_render->fa('arrows-v');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<p>';

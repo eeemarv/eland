@@ -376,8 +376,8 @@ class UsersShowAdminController extends AbstractController
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body text-center ';
+        $out .= '<div class="card card-default">';
+        $out .= '<div class="card-body text-center ';
         $out .= 'center-block" id="img_user">';
 
         $show_img = $user['image_file'] ? true : false;
@@ -419,7 +419,7 @@ class UsersShowAdminController extends AbstractController
                 $btn_del_attr['style'] = 'display:none;';
             }
 
-            $out .= '<div class="panel-footer">';
+            $out .= '<div class="card-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
             $out .= '<input id="fileupload" type="file" name="image" ';
@@ -779,7 +779,8 @@ class UsersShowAdminController extends AbstractController
         $out .= 'Stuur een bericht naar ';
         $out .=  $account_render->link($user_id, $pp->ary());
         $out .= '</h3>';
-        $out .= '<div class="card bg-info mb-3">';
+
+        $out .= '<div class="card fcard fcard-info mb-3">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post"">';

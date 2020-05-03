@@ -97,7 +97,7 @@ class PasswordResetTokenController extends AbstractController
             'generate_password.js',
         ]);
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post" role="form">';

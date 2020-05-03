@@ -286,7 +286,7 @@ class ContactsAddAdminController extends AbstractController
             $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
         }
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

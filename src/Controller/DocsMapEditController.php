@@ -95,7 +95,7 @@ class DocsMapEditController extends AbstractController
         $heading_render->add_raw($link_render->link_no_attr('docs_map', $pp->ary(),
             ['id' => $id], $name));
 
-        $out = '<div class="card bg-info" id="add">';
+        $out = '<div class="card fcard fcard-info" id="add">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

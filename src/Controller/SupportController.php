@@ -146,7 +146,7 @@ class SupportController extends AbstractController
         $heading_render->add('Help / Probleem melden');
         $heading_render->fa('ambulance');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

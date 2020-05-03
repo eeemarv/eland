@@ -52,11 +52,11 @@ class CategoriesDelController extends AbstractController
         $heading_render->add($fullname);
         $heading_render->fa('clone');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
-        $out .= "<p><font color='#F56DB5'><strong>Ben je zeker dat deze categorie";
-        $out .= " moet verwijderd worden?</strong></font></p>";
+        $out .= '<p class="text-danger"><strong>Ben je zeker dat deze categorie';
+        $out .= ' moet verwijderd worden?</strong></p>';
         $out .= '<form method="post">';
 
         $out .= $link_render->btn_cancel('categories', $pp->ary(), []);

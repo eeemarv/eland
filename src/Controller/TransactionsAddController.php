@@ -790,7 +790,7 @@ class TransactionsAddController extends AbstractController
         $heading_render->add('Nieuwe transactie');
         $heading_render->fa('exchange');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form  method="post" autocomplete="off">';

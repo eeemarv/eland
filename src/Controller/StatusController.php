@@ -175,7 +175,7 @@ class StatusController extends AbstractController
 
         if ($status_msgs)
         {
-            $out .= '<div class="panel panel-danger">';
+            $out .= '<div class="card card-danger">';
 
             $out .= '<ul class="list-group">';
 
@@ -460,7 +460,7 @@ class StatusController extends AbstractController
         else
         {
             $out .= '<div class="card bg-info">';
-            $out .= '<div class="panel-body">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Geen bijzonderheden</p>';
             $out .= '</div>';
             $out .= '</div>';

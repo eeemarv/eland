@@ -1,10 +1,10 @@
 $(document).ready(function() {
 
-	var $grid = $('.tiles');
+	var $grid = $('.js-user-tiles');
 
 	$grid.isotope({
 
-		itemSelector: '.tile',
+		itemSelector: '.js-user-tile',
 		filter: function(){
 			var str = $(this).find('.caption').text().toLowerCase();
 			return (str.indexOf($('#q').val().toLowerCase()) > -1) ? true : false;
@@ -76,7 +76,7 @@ $(document).ready(function() {
 
 	function calcTotal(){
 		var total = 0;
-		$('div.tiles > div.tile:visible').each(function() {
+		$('div.js-user-tiles > div.js-user-tile:visible').each(function() {
 			total++;
 		});
 		$('span#total').text(total);

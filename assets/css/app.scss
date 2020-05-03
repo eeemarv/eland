@@ -57,6 +57,8 @@
 @import "~footable/css/footable.core.css";
 
 // self
+@import "mixin/fcard";
+@import "fcard";
 @import "typeahead";
 @import "offcanvas";
 @import "misc";
@@ -65,5 +67,8 @@
 @import "jssor";
 @import "jqplot";
 @import "print";
+@import "carousel";
+@import "user_tiles";
+
 
 // @import "base.scss";

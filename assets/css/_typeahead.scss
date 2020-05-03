@@ -25,6 +25,7 @@
    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
    background-clip: padding-box;
  }
+
  span.twitter-typeahead .tt-suggestion,
  span.twitter-typeahead .typeahead-not {
    display: block;
@@ -59,6 +60,7 @@
    line-height: 1.3333333;
    border-radius: 6px;
  }
+
  .input-group.input-group-sm span.twitter-typeahead .form-control {
    height: 30px;
    padding: 5px 10px;
@@ -66,42 +68,52 @@
    line-height: 1.5;
    border-radius: 3px;
  }
+
  span.twitter-typeahead {
    width: 100%;
  }
+
  .input-group span.twitter-typeahead {
    display: block !important;
    height: 34px;
  }
+
  .input-group span.twitter-typeahead .tt-menu,
  .input-group span.twitter-typeahead .tt-dropdown-menu {
    top: 32px !important;
  }
+
  .input-group span.twitter-typeahead:not(:first-child):not(:last-child) .form-control {
    border-radius: 0;
  }
+
  .input-group span.twitter-typeahead:first-child .form-control {
    border-top-left-radius: 4px;
    border-bottom-left-radius: 4px;
    border-top-right-radius: 0;
    border-bottom-right-radius: 0;
  }
+
  .input-group span.twitter-typeahead:last-child .form-control {
    border-top-left-radius: 0;
    border-bottom-left-radius: 0;
    border-top-right-radius: 4px;
    border-bottom-right-radius: 4px;
  }
+
  .input-group.input-group-sm span.twitter-typeahead {
    height: 30px;
  }
+
  .input-group.input-group-sm span.twitter-typeahead .tt-menu,
  .input-group.input-group-sm span.twitter-typeahead .tt-dropdown-menu {
    top: 30px !important;
  }
+
  .input-group.input-group-lg span.twitter-typeahead {
    height: 46px;
  }
+
  .input-group.input-group-lg span.twitter-typeahead .tt-menu,
  .input-group.input-group-lg span.twitter-typeahead .tt-dropdown-menu {
    top: 46px !important;
@@ -118,15 +130,16 @@
  {
      background-color: #f2dede;
  }
+
  p.warning.tt-suggestion, .bg-warning
  {
      background-color: #fcf8e3;
  }
+
  p.info.tt-suggestion, .bg-info
  {
      background-color: #d9edf7;
  }
-
 
 
  .navbar-nav > li > a.bg-info:hover,
@@ -140,6 +153,7 @@
  {
      background-color: #ddd;
  }
+
  p.extern.tt-suggestion, .bg-extern
  {
    background-color: #ffdbfc;

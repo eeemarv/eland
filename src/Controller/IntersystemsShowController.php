@@ -67,7 +67,7 @@ class IntersystemsShowController extends AbstractController
         $heading_render->add($group['groupname']);
         $heading_render->fa('share-alt');
 
-        $out = '<div class="panel panel-default printview">';
+        $out = '<div class="card card-default printview">';
         $out .= '<div class="card-body">';
 
         $out .= '<dl class="dl-horizontal">';

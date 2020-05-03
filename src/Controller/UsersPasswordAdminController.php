@@ -151,7 +151,7 @@ class UsersPasswordAdminController extends AbstractController
 
         $heading_render->fa('key');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

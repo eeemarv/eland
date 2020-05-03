@@ -1,0 +1,16 @@
+.fcard {
+    border: $card-border-width solid transparent;
+
+    label {
+        font-weight: font-weight-bold;
+    }
+    code {
+        background-color: $b-white;
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .fcard-#{$color} {
+        @include alert-variant(theme-color-level($color, $alert-bg-level), theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
+    }
+}

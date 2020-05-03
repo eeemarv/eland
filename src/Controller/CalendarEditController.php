@@ -132,8 +132,8 @@ class CalendarEditController extends AbstractController
         $heading_render->add('Nieuwsbericht aanpassen');
         $heading_render->fa('calendar-o');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-heading">';
 
         $out .= '<form method="post">';
 

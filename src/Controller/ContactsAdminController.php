@@ -246,7 +246,7 @@ class ContactsAdminController extends AbstractController
         $heading_render->btn_filter();
         $heading_render->fa('map-marker');
 
-        $out = '<div id="filter" class="card bg-info';
+        $out = '<div id="filter" class="card fcard fcard-info';
         $out .= $panel_collapse ? ' collapse' : '';
         $out .= '">';
 
@@ -410,8 +410,8 @@ class ContactsAdminController extends AbstractController
         if (!count($contacts))
         {
             $out .= '<br>';
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-body">';
+            $out .= '<div class="card card-default">';
+            $out .= '<div class="card-body">';
             $out .= '<p>Er zijn geen resultaten.</p>';
             $out .= '</div></div>';
 

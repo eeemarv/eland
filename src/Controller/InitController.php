@@ -46,7 +46,7 @@ class InitController extends AbstractController
         $out .= '<h1>Init</h1>';
 
         $out .= '</div>';
-        $out .= '<div class="panel-body">';
+        $out .= '<div class="card-body">';
         $out .= '<div class="list-group">';
 
         foreach (self::ROUTES_LABELS as $route => $lbl)

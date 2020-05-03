@@ -75,7 +75,7 @@ class MessagesDelController extends AbstractController
         $heading_render->add(' verwijderen?');
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<dl>';

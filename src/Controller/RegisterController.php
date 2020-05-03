@@ -121,7 +121,7 @@ class RegisterController extends AbstractController
 
         $out = $top_text ?: '';
 
-        $out .= '<div class="card bg-info">';
+        $out .= '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';

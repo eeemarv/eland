@@ -99,7 +99,7 @@ class NewsExtendedController extends AbstractController
     ):string
     {
         $out =  '<div class="card bg-info printview">';
-        $out .=  '<div class="panel-body>';
+        $out .=  '<div class="card-body>';
 
         $out .=  '<div class="media">';
         $out .=  '<div class="media-body">';
@@ -122,7 +122,7 @@ class NewsExtendedController extends AbstractController
         $out .=  '</div>';
         $out .=  '</div>';
 
-        $out .=  '<div class="panel-footer">';
+        $out .=  '<div class="card-footer">';
 
         $out .=  '<dl>';
 

@@ -82,7 +82,9 @@ $theme-colors: (
     "extern-li":    lighten($b-extern, 45)
 );
 
-$nav-tabs-border-color: $b-gray-500; //#000;
+$label-margin-bottom: .2rem !default;
+
+$nav-tabs-border-color: $b-gray-300; //#000;
 
 /*
 
@@ -106,7 +108,6 @@ $border-radius-sm:            .4rem;
 $yiq-contrasted-threshold:  200;
 
 $font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
-
 
 $navbar-padding-y: 0;
 $nav-link-padding-y: .8rem;

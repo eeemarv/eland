@@ -179,13 +179,13 @@ class ForumTopicController extends AbstractController
 
             $post_id = $post['id'];
 
-            $out .= '<div class="panel panel-default printview">';
+            $out .= '<div class="card card-default printview">';
 
-            $out .= '<div class="panel-body">';
+            $out .= '<div class="card-body">';
             $out .= $post['content'];
             $out .= '</div>';
 
-            $out .= '<div class="panel-footer">';
+            $out .= '<div class="card-footer">';
             $out .= '<p>';
             $out .= $account_render->link((int) $post['user_id'], $pp->ary());
             $out .= ' @';
@@ -232,7 +232,7 @@ class ForumTopicController extends AbstractController
         {
             $out .= '<h3>Reactie toevoegen</h3>';
 
-            $out .= '<div class="card bg-info">';
+            $out .= '<div class="card fcard fcard-info">';
             $out .= '<div class="card-body">';
 
             $out .= '<form method="post">';

@@ -121,7 +121,7 @@ class MollieCheckoutController extends AbstractController
 
         $heading_render->fa('eur');
 
-        $out = '<div class="panel panel-';
+        $out = '<div class="card fcard fcard-';
 
         if ($mollie_payment['is_canceled'])
         {

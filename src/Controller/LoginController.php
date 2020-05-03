@@ -273,7 +273,7 @@ class LoginController extends AbstractController
         $heading_render->add('Login');
         $heading_render->fa('sign-in');
 
-        $out = '<div class="card alert-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="post">';
