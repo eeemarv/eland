@@ -92,7 +92,21 @@ class BulkCnst
         ],
     ];
 
-    const TPL_CHECKBOX_ITEM = '<label for="sel[%id%]">&nbsp;&nbsp;<input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>&nbsp;&nbsp;%label%</label>';
+/*
+    const TPL_CHECKBOX_ITEM = <<<'TPL'
+    <label for="sel[%id%]">&nbsp;&nbsp;
+    <input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>
+    &nbsp;&nbsp;%label%
+    </label>';
+    TPL;
+*/
+
+    const TPL_CHECKBOX_ITEM = <<<'TPL'
+    <div class="custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" id="sel[%id%]" name="sel[%id%]" value="1"%attr%>
+    <label class="custom-control-label" for="sel[%id%]">%label%</label>
+    </div>
+    TPL;
 
     const TPL_INPUT =  <<<'TPL'
     <div class="form-group">
@@ -109,11 +123,20 @@ class BulkCnst
     </div>
     TPL;
 
+/*
     const TPL_CHECKBOX = <<<'TPL'
     <div class="form-group">
     <label for="%name%" class="control-label">
     <input type="checkbox" id="%name%" name="%name%"%attr%>
     &nbsp;%label%</label></div>
+    TPL;
+*/
+
+    const TPL_CHECKBOX = <<<'TPL'
+    <div class="custom-control custom-checkbox form-group">
+    <input type="checkbox" class="custom-control-input" id="%name%" name="%name%"%attr%>
+    <label class="custom-control-label" for="%name%">%label%</label>
+    </div>
     TPL;
 
     const TPL_SELECT = <<<'TPL'

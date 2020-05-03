@@ -69,22 +69,29 @@ $theme-colors: (
     "info":       $info,
     "warning":    $warning,
     "danger":     $danger,
-    "default":    #fff,
+    "default":    $b-white,
+    "inactive":   $b-gray-300,
 /*
     "light":      $light,
     "dark":       $dark,
 */
+
     "secondary-li": lighten($secondary, 40),
     "success-li":   lighten($success, 35),
     "info-li":      lighten($info, 30),
     "warning-li":   lighten($warning, 32),
     "danger-li":    lighten($danger, 35),
     "extern-li":    lighten($b-extern, 45)
+
 );
 
 $label-margin-bottom: .2rem !default;
 
 $nav-tabs-border-color: $b-gray-300; //#000;
+
+$card-border-color: rgba($b-black, .18) !default;  // was .125
+
+$input-border-color: $b-gray-500 !default; // was 400
 
 /*
 

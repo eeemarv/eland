@@ -98,15 +98,13 @@ class NewsExtendedController extends AbstractController
         ItemAccessService $item_access_service
     ):string
     {
-        $out =  '<div class="card bg-info printview">';
-        $out .=  '<div class="card-body>';
+        $out =  '<div class="card printview mb-3">';
+        $out .=  '<div class="card-body">';
 
-        $out .=  '<div class="media">';
-        $out .=  '<div class="media-body">';
 
         if ($show_heading)
         {
-            $out .=  '<h2 class="media-heading">';
+            $out .=  '<h2 class="card-title">';
 
             $out .=  $link_render->link_no_attr('news_show', $pp->ary(),
                 ['id' => $n['id']], $n['subject']);
@@ -114,12 +112,8 @@ class NewsExtendedController extends AbstractController
             $out .=  '</h2>';
         }
 
-        $out .=  '<p>';
         $out .=  nl2br($n['content']);
-        $out .=  '</p>';
 
-        $out .=  '</div>';
-        $out .=  '</div>';
         $out .=  '</div>';
 
         $out .=  '<div class="card-footer">';

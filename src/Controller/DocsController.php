@@ -107,8 +107,8 @@ class DocsController extends AbstractController
             $maps_table = '<div class="table-responsive ';
             $maps_table .= 'border border-dark rounded mb-3">';
             $maps_table .= '<table class="table table-bordered mb-0 ';
-            $maps_table .= 'table-striped table-hover footable bg-default"';
-            $maps_table .= ' data-filter="#q" data-filter-minimum="1">';
+            $maps_table .= 'table-striped table-hover footable" ';
+            $maps_table .= 'data-filter="#q" data-filter-minimum="1">';
             $maps_table .= '<thead>';
 
             $maps_table .= '<tr>';
@@ -140,7 +140,7 @@ class DocsController extends AbstractController
                         ['class' => 'btn btn-primary'], 'pencil');
                 }
 
-                $maps_table_rows .= '<tr class="info"><td>';
+                $maps_table_rows .= '<tr class="table-info"><td>';
                 $maps_table_rows .= implode('</td><td>', $td);
                 $maps_table_rows .= '</td></tr>';
             }

@@ -73,12 +73,12 @@ class ForumController extends AbstractController
         $heading_render->add('Forum');
         $heading_render->fa('comments-o');
 
-        $out = '<div class="card fcard fcard-info">';
+        $out = '<div class="card fcard fcard-info mb-3">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
+        $out .= '<div class="col">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
