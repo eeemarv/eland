@@ -45,13 +45,11 @@ class MenuCnst
             'fa'            => 'ambulance',
             'label'         => 'Probleem melden',
         ],
-/*
         'home'      => [
             'access'    => 'anonymous',
             'fa'        => 'home',
             'label'     => 'Home',
         ],
-*/
         'login'     => [
             'access'    => 'anonymous',
             'fa'        => 'sign-in',
@@ -129,7 +127,6 @@ class MenuCnst
         'divider_1' => [
             'divider'   => true,
         ],
-/*
         'edit_mode' => [
             'fa'            => 'pencil',
             'label'         => 'Edit modus',
@@ -141,7 +138,6 @@ class MenuCnst
         'divider_2' => [
             'divider'   => true,
         ],
-*/
         'config'			=> [
             'fa'        => 'gears',
             'label'     => 'Instellingen',
