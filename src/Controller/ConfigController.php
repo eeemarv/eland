@@ -112,6 +112,11 @@ class ConfigController extends AbstractController
 
             foreach ($config as $input_name => $loaded_value)
             {
+                if (!isset(ConfigCnst::INPUTS[$input_name]))
+                {
+                    continue;
+                }
+
                 $posted_value = trim($request->request->get($input_name, ''));
                 $input_data = ConfigCnst::INPUTS[$input_name];
 
@@ -387,6 +392,11 @@ class ConfigController extends AbstractController
             }
             else
             {
+                if (!isset(ConfigCnst::INPUTS[$pane_input_name]))
+                {
+                    continue;
+                }
+
                 $input = ConfigCnst::INPUTS[$pane_input_name];
                 $input_name = $pane_input_name;
             }
