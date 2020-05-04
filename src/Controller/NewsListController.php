@@ -137,8 +137,6 @@ class NewsListController extends AbstractController
         $query = 'select * from ' . $pp->schema() . '.news ';
         $query .= 'where access in (?) ';
 
-        $query .= ' and is_approved = \'t\' ';
-
         $query .= 'order by event_at ';
         $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
 

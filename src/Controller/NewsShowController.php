@@ -80,12 +80,6 @@ class NewsShowController extends AbstractController
 
             $btn_top_render->del('news_del', $pp->ary(),
                 ['id' => $id], 'Nieuwsbericht verwijderen');
-
-            if (!$news_item['is_approved'])
-            {
-                $btn_top_render->approve('news_approve', $pp->ary(),
-                    ['id' => $id], 'Nieuwsbericht goedkeuren en publiceren');
-            }
         }
 
         $prev_ary = $prev ? ['id' => $prev] : [];

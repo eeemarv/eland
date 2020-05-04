@@ -135,18 +135,6 @@ class NewsExtendedController extends AbstractController
 
             $out .=  $date_format_service->get($n['event_at'], 'day', $pp->schema());
 
-            $out .=  '<br><i>';
-
-            if ($n['is_sticky'])
-            {
-                $out .=  'Dit nieuwsbericht blijft behouden na deze datum.';
-            }
-            else
-            {
-                $out .=  'Dit nieuwsbericht wordt automatisch gewist na deze datum.';
-            }
-
-            $out .=  '</i>';
             $out .=  '</dd>';
         }
         if ($n['location'])
