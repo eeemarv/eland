@@ -93,7 +93,7 @@ class BtnNavRender
 		if (count($params) < 1)
 		{
 			return $this->tag_render->get('button', [
-					'class' 	=> 'btn btn-default btn-lg border border-secondary',
+					'class' 	=> 'btn btn-default btn-lg border border-secondary-li',
 					'title'		=> $title,
 					'disabled'	=> 'disabled',
 				],
@@ -116,7 +116,7 @@ class BtnNavRender
 	{
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default btn-lg border border-secondary' . ($active ? ' active' : ''),
+				'class'	=> 'btn btn-default btn-lg border border-secondary-li' . ($active ? ' active' : ''),
 				'title'	=> $title,
 			],
 			$fa);
@@ -132,7 +132,7 @@ class BtnNavRender
 	{
 		return $this->link_render->link_fa_only($route, $params_context,
 			$params, [
-				'class'	=> 'btn btn-default btn-lg border border-secondary',
+				'class'	=> 'btn btn-default btn-lg border border-secondary-li',
 				'title'	=> $title,
 			],
 			$fa);

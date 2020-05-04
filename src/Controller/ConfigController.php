@@ -428,7 +428,7 @@ class ConfigController extends AbstractController
             if (isset($input['inline']))
             {
                 $replace_inline_ary = [];
-                $id_for_label = '';
+                $checkbox_id = '';
 
                 $inline_input_names = $this->get_tag_ary('input', $input['inline']);
 
@@ -436,22 +436,26 @@ class ConfigController extends AbstractController
                 {
                     $inline_input_data = ConfigCnst::INPUTS[$inline_input_name];
 
-                    $str = '<input type="';
+                    $str = '';
+
+                    if ($inline_input_data['type'] == 'checkbox')
+                    {
+                        $str .= '<div class="custom-control custom-checkbox">';
+                    }
+
+                    $str .= '<input type="';
                     $str .= $inline_input_data['type'] ?? 'text';
                     $str .= '" name="';
                     $str .= $inline_input_name;
                     $str .= '"';
 
-                    if (!$id_for_label)
-                    {
-                        $id_for_label = 'inline_id_' . $inline_input_name;
-                        $str .= ' id="' . $id_for_label . '"';
-                    }
-
                     if ($inline_input_data['type'] == 'checkbox')
                     {
+                        $checkbox_id = 'inline_id_' . $inline_input_name;
+                        $str .= ' id="' . $checkbox_id . '"';
                         $str .= ' value="1"';
-                        $str .= $config[$inline_input_name] ? ' checked="checked"' : '';
+                        $str .= ' class="custom-control-input" ';
+                        $str .= $config[$inline_input_name] ? ' checked ' : '';
                     }
                     else
                     {
@@ -477,6 +481,13 @@ class ConfigController extends AbstractController
 
                     $str .= '>';
 
+                    if ($inline_input_data['type'] == 'checkbox')
+                    {
+                        $str .= '<label ';
+                        $str .= 'for="' . $checkbox_id . '" ';
+                        $str .= 'class="custom-control-label">';
+                    }
+
                     $search_inline = ConfigCnst::TAG['input']['open'];
                     $search_inline .= $inline_input_name;
                     $search_inline .= ConfigCnst::TAG['input']['close'];
@@ -486,18 +497,12 @@ class ConfigController extends AbstractController
 
                 $out .= '<p>';
 
-                if ($id_for_label)
-                {
-                    $out .= '<label for="';
-                    $out .= $id_for_label;
-                    $out .= '">';
-                }
-
                 $out .= strtr($input['inline'], $replace_inline_ary);
 
-                if ($id_for_label)
+                if ($checkbox_id)
                 {
                     $out .= '</label>';
+                    $out .= '</div>';
                 }
 
                 $out .= '</p>';

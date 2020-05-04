@@ -43,6 +43,7 @@
 @mixin lbl-outline-variant($color, $color-hover: color-yiq($color), $active-background: $color, $active-border: $color) {
   color: $color;
   border-color: $color;
+  background-color: $color-hover;
 
   &.disabled,
   &:disabled {
@@ -57,6 +58,7 @@
   }
 }
 
+
 @each $color, $value in $theme-colors {
   .lbl-outline-#{$color} {
     @include lbl-outline-variant($value);
@@ -65,4 +67,8 @@
 
 .lbl-lg {
   @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, $btn-border-radius-lg);
+}
+
+.lbl-sm {
+  @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-line-height-sm, $btn-border-radius-sm);
 }

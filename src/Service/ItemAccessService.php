@@ -67,16 +67,6 @@ class ItemAccessService
 		return $this->get_visible_ary_for_role($this->pp->role());
 	}
 
-	public function is_visible_xdb(string $access_xdb):bool
-	{
-		if (!isset(AccessCnst::FROM_XDB[$access_xdb]))
-		{
-			return false;
-		}
-
-		return $this->is_visible(AccessCnst::FROM_XDB[$access_xdb]);
-	}
-
 	public function get_visible_ary():array
 	{
 		$ary = AccessCnst::ARY;
@@ -99,37 +89,21 @@ class ItemAccessService
 		return $ary;
 	}
 
-	public function get_visible_ary_xdb():array
-	{
-		$ary = [];
-
-		foreach ($this->get_visible_ary() as $role)
-		{
-			$ary[] = AccessCnst::TO_XDB[$role];
-		}
-
-		return $ary;
-	}
-
 	public function get_label(
-		string $access
+		string $access, bool $is_btn = false
 	):string
 	{
 		$access = $access === 'guest'
 			&& !$this->config_service->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
 
-		$out = '<span class="btn btn-';
+		$out = '<span class="';
+		$out .= $is_btn ? 'btn btn-' : 'lbl lbl-';
 		$out .= AccessCnst::LABEL[$access]['class'];
 		$out .= '">';
 		$out .= AccessCnst::LABEL[$access]['lbl'];
 		$out .= '</span>';
 
 		return $out;
-	}
-
-	public function get_label_xdb(string $access_xdb):string
-	{
-		return $this->get_label(AccessCnst::FROM_XDB[$access_xdb]);
 	}
 
 	public function get_radio_buttons(
@@ -182,14 +156,19 @@ class ItemAccessService
 
 		foreach ($ary as $key)
 		{
-			$out .= '<label class="radio-inline">';
-			$out .= '<input type="radio" name="' . $name . '"';
-			$out .= $key === $selected ? ' checked="checked"' : '';
-			$out .= ' value="' . $key . '" ';
-			$out .= 'id="' . $name . '" ';
+			$id = $name . '_' . $key;
+
+			$out .= '<div class="custom-control custom-radio custom-control-inline">';
+			$out .= '<input type="radio" name="' . $name . '" ';
+			$out .= 'class="custom-control-input" ';
+			$out .= $key === $selected ? 'checked="checked" ' : '';
+			$out .= 'value="' . $key . '" ';
+			$out .= 'id="' . $id . '" ';
 			$out .= 'required> ';
-			$out .= $this->get_label($key);
+			$out .= '<label class="custom-control-label" for="' . $id . '">';
+			$out .= $this->get_label($key, true);
 			$out .= '</label>';
+			$out .= '</div>';
 		}
 
 		$out .= '</div>';

@@ -11,7 +11,7 @@ class AccessCnst
         ],
         'user'		=> [
             'lbl'   => 'leden',
-            'class' => 'default'
+            'class' => 'default border border-secondary-li'
         ],
         'guest'	    => [
             'lbl'   => 'interSysteem',

@@ -569,7 +569,7 @@ class MessagesListController extends AbstractController
             $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
             $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
             $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
+            $out .= '<span class="btn btn-default border border-secondary-li">';
             $out .= $label;
             $out .= '</span>';
             $out .= '</label>';
@@ -1056,7 +1056,8 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-2 col-xs-2">';
-        $out .= '<button class="btn btn-default btn-block" title="Meer filters" ';
+        $out .= '<button class="btn btn-default btn-block ';
+        $out .= 'border border-secondary-li" title="Meer filters" ';
         $out .= 'type="button" ';
         $out .= 'data-toggle="collapse" data-target="#filters">';
         $out .= '<i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> ';

@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Controller\MessagesShowController;
-use App\Cnst\MessageTypeCnst;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -463,7 +462,7 @@ class MessagesEditController extends AbstractController
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="account_code" class="control-label">';
-            $out .= '<span class="label label-info">Admin</span> ';
+            $out .= '<span class="lbl lbl-info lbl-sm">Admin</span> ';
             $out .= 'Gebruiker</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-prepend">';
@@ -714,16 +713,25 @@ class MessagesEditController extends AbstractController
 
         foreach ($radio_ary as $value => $label)
         {
-            $out .= '<label class="radio-inline">';
-            $out .= '<input type="radio" name="' . $name . '" ';
+            $id = $name . '_' . $value;
+
+            $out .= '<div class="custom-control custom-radio ';
+            $out .= 'custom-control-inline">';
+            $out .= '<input type="radio" ';
+            $out .= 'class="custom-control-input" ';
+            $out .= 'name="' . $name . '" ';
+            $out .= 'id="' . $id . '" ';
             $out .= 'value="' . $value . '"';
             $out .= (string) $value === $selected ? ' checked' : '';
             $out .= $required ? ' required' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
+            $out .= '>';
+            $out .= '<label class="custom-control-label" ';
+            $out .= 'for="' . $id . '">';
+            $out .= '<span class="btn btn-default border border-secondary-li">';
             $out .= $label;
             $out .= '</span>';
             $out .= '</label>';
+            $out .= '</div>';
         }
 
         return $out;

@@ -3,6 +3,7 @@
 {
 	position: absolute;
 }
+
 .jssorb01 div, .jssorb01 div:hover, .jssorb01 .av
 {
 	position: absolute;
@@ -15,6 +16,7 @@
 	cursor: pointer;
 	border: #000 1px solid;
 }
+
 .jssorb01 div { background-color: gray; }
 .jssorb01 div:hover, .jssorb01 .av:hover { background-color: #d3d3d3; }
 .jssorb01 .av { background-color: #fff; }
@@ -32,6 +34,7 @@
 	background: url('/img/a03.png') no-repeat;
 	overflow: hidden;
 }
+
 .jssora02l { background-position: -3px -33px; }
 .jssora02r { background-position: -63px -33px; }
 .jssora02l:hover { background-position: -123px -33px; }

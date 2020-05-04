@@ -162,15 +162,15 @@ class BulkCnst
     <div class="card bg-light mb-3" id="bulk_actions">
     <div class="card-body">
     <input type="button"
-    class="btn btn-default btn-lg border border-dark"
+    class="btn btn-default btn-lg border border-secondary-li"
     data-table-sel="invert"
     value="Selectie omkeren">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg border border-dark"
+    class="btn btn-default btn-lg border border-secondary-li"
     data-table-sel="all"
     value="Selecteer alle">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg border border-dark"
+    class="btn btn-default btn-lg border border-secondary-li"
     data-table-sel="none"
     value="De-selecteer alle">
     </div>
