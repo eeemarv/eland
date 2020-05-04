@@ -43,7 +43,6 @@ class CalendarAddController extends AbstractController
 
         $event_at = trim($request->request->get('event_at', ''));
         $location = trim($request->request->get('location', ''));
-        $is_sticky = $request->request->has('is_sticky');
         $content = trim($request->request->get('content', ''));
         $subject = trim($request->request->get('subject', ''));
         $access = $request->request->get('access', '');
@@ -109,10 +108,7 @@ class CalendarAddController extends AbstractController
                 if ($event_at)
                 {
                     $news['event_at'] = $event_at_formatted;
-                    $news['is_sticky'] = $is_sticky;
                 }
-
-                $news['is_approved'] = 't';
 
                 if ($db->insert($pp->schema() . '.news', $news))
                 {
@@ -182,15 +178,6 @@ class CalendarAddController extends AbstractController
         $out .= '">';
         $out .= '</div>';
         $out .= '<p>Wanneer gaat dit door?</p>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="is_sticky" class="control-label">';
-        $out .= '<input type="checkbox" id="is_sticky" name="is_sticky" ';
-        $out .= 'value="1"';
-        $out .=  $is_sticky ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Behoud na datum</label>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
