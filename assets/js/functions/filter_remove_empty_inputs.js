@@ -1,4 +1,4 @@
-module.exports = function() {
+export default function() {
 	$('form[method="get"]').submit(function(){
 		$(this).find(':input').each(function() {
 			var inp = $(this);

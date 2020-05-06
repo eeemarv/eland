@@ -1,0 +1,15 @@
+{%- extends('base/navbar.html.twig') -%}
+
+
+
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('datepicker') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('footable') -}}
+	{{- encore_entry_script_tags('datepicker') -}}
+{%- endblock js -%}
