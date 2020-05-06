@@ -702,7 +702,7 @@ class MolliePaymentsController extends AbstractController
             $out .= 'name="' . $name . '"';
             $out .= isset($filter['status'][$key]) ? ' checked' : '';
             $out .= '>&nbsp;';
-            $out .= '<span class="label label-' . $render['class'] . '">';
+            $out .= '<span class="badge badge-' . $render['class'] . '">';
             $out .= $render['label'];
             $out .= '</span>';
             $out .= '</label>';
@@ -892,7 +892,7 @@ class MolliePaymentsController extends AbstractController
             $td[] = $account_str;
             $td[] = strtr($payment['amount'], '.', ',');
 
-            $status_label = '<span class="label label-';
+            $status_label = '<span class="badge badge-';
 
             if ($payment['is_canceled'])
             {

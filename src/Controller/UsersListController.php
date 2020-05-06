@@ -1133,7 +1133,7 @@ class UsersListController extends AbstractController
             $vr
         );
 
-        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-bordered ';
         $out .= 'table-striped table-hover ';
         $out .= 'footable csv bg-default mb-0" ';

@@ -2,7 +2,7 @@
     border: $card-border-width solid transparent;
 
     label {
-        font-weight: font-weight-bold;
+        font-weight: $font-weight-bold;
     }
     code {
         background-color: $b-white;
@@ -22,7 +22,7 @@
     }
 
     a {
-        color: darken($color, 40%);
+        color: darken($color, 5%);
     }
 }
 

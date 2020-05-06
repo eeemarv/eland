@@ -224,7 +224,7 @@ class BtnNavRender
 	public function columns_show():void
 	{
 		$this->out['columns_show'] = $this->tag_render->get('button', [
-				'class'			=> 'btn btn-default btn-lg border border-secondary',
+				'class'			=> 'btn btn-default btn-lg border border-secondary-li',
 				'title'			=> 'Weergave kolommen',
 				'data-toggle'	=> 'collapse',
 				'data-target'	=> '#columns_show',

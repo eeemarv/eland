@@ -234,7 +234,7 @@ class MolliePaymentsAddController extends AbstractController
         $heading_render->add('Mollie Betaalverzoeken aanmaken');
         $heading_render->fa('eur');
 
-        $out = '<div class="card fcard fcard-warning">';
+        $out = '<div class="card fcard fcard-warning mb-2">';
         $out .= '<div class="card-body">';
 
         $out .= '<form class="form" id="fill_in_aid">';
@@ -260,17 +260,17 @@ class MolliePaymentsAddController extends AbstractController
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'omit_new',
-            '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
+            '%label%'   => 'Sla <span class="lbl lbl-success-li border border-secondary-li">instappers</span> over.',
             '%attr%'    => '',
         ]);
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'omit_leaving',
-            '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
+            '%label%'   => 'Sla <span class="lbl lbl-danger-li border border secondary-li">uitstappers</span> over.',
             '%attr%'    => '',
         ]);
 
-        $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
+        $out .= '<button class="btn btn-default btn-lg border border-secondary-li" id="fill-in">';
         $out .= 'Vul in</button>';
 
         $out .= '</form>';
@@ -415,7 +415,7 @@ class MolliePaymentsAddController extends AbstractController
                 $payment_str .= ' @';
                 $payment_str .= $date_format_service->get($user['last_created_at'], 'day', $pp->schema());
                 $payment_str .= '" ';
-                $payment_str .= 'class="label label-';
+                $payment_str .= 'class="badge badge-';
 
                 if ($user['is_canceled'])
                 {

@@ -586,7 +586,7 @@ class TransactionsController extends AbstractController
             ]);
         }
 
-        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover footable csv transactions bg-default mb-0" ';
         $out .= 'data-sort="false">';

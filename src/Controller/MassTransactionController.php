@@ -451,10 +451,10 @@ class MassTransactionController extends AbstractController
         $heading_render->add('Massa transactie');
         $heading_render->fa('exchange');
 
-        $out = '<div class="card fcard fcard-warning">';
+        $out = '<div class="card fcard fcard-warning mb-2">';
         $out .= '<div class="card-body">';
 
-        $out .= '<button class="btn btn-default btn-lg" ';
+        $out .= '<button class="btn btn-default btn-lg border border-secondary-li" ';
         $out .= 'title="Toon invul-hulp" data-toggle="collapse" ';
         $out .= 'data-target="#help" type="button">';
         $out .= '<i class="fa fa-question"></i>';
@@ -669,7 +669,7 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="form-group">';
         $out .= '<label for="respect_minlimit" class="control-label">';
-        $out .= '<input type="checkbox" id="respect_minlimit" checked="checked">';
+        $out .= '<input type="checkbox" id="respect_minlimit" checked>';
         $out .= ' Respecteer minimum limieten</label>';
         $out .= '</div>';
 
@@ -720,12 +720,12 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card fcard fcard-info mb-2">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
+        $out .= '<div class="col">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
@@ -744,7 +744,7 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<ul class="nav nav-tabs" id="nav-tabs">';
+        $out .= '<ul class="nav nav-tabs mb-2" id="nav-tabs">';
 
         foreach (self::STATUS_RENDER as $k => $s)
         {
@@ -948,11 +948,13 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="form-group">';
         $out .= '<label for="description" class="control-label">';
-        $out .= 'Omschrijving</label>';
+        $out .= 'Omschrijving';
+        $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<span class="fa fa-pencil"></span>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="description" ';
         $out .= 'name="description" ';
@@ -962,23 +964,17 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="mail_en" class="control-label">';
-        $out .= '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
-        $out .= $mail_en ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Verstuur notificatie mails</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'mail_en',
+            '%label%'   => 'Verstuur notificatie emails',
+            '%attr%'    => $mail_en ? ' checked' : '',
+        ]);
 
-        $out .= '<div class="form-group">';
-        $out .= '<label>';
-        $out .= '<input type="checkbox" name="verify" ';
-        $out .= 'value="1" required> ';
-        $out .= 'Ik heb nagekeken dat de juiste ';
-        $out .= 'bedragen en de juiste "Van" of "Aan" ';
-        $out .= 'Account Code ingevuld zijn.';
-        $out .= '</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'verify',
+            '%label%'   => 'Ik heb nagekeken dat de juiste bedragen
+                en de juiste "Van" of "Aan" Account Code ingevuld zijn.',
+        ]);
 
         $out .= $link_render->btn_cancel('transactions', $pp->ary(), []);
 

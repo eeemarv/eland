@@ -179,7 +179,7 @@ class ForumTopicController extends AbstractController
 
             $post_id = $post['id'];
 
-            $out .= '<div class="card card-default printview">';
+            $out .= '<div class="card card-default printview mb-3">';
 
             $out .= '<div class="card-body">';
             $out .= $post['content'];

@@ -123,15 +123,6 @@ class BulkCnst
     </div>
     TPL;
 
-/*
-    const TPL_CHECKBOX = <<<'TPL'
-    <div class="form-group">
-    <label for="%name%" class="control-label">
-    <input type="checkbox" id="%name%" name="%name%"%attr%>
-    &nbsp;%label%</label></div>
-    TPL;
-*/
-
     const TPL_CHECKBOX = <<<'TPL'
     <div class="custom-control custom-checkbox form-group">
     <input type="checkbox" class="custom-control-input" id="%name%" name="%name%"%attr%>
