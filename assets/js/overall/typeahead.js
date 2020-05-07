@@ -215,8 +215,8 @@ export default function(Bloodhound){
 		if (args){
 			$(this).typeahead.apply($(this), args);
 		} else {
-			$select = $('form select').filter('#' + $(this).data('typeahead-source'));
-			$source = $select.find('option:selected');
+			var $select = $('form select').filter('#' + $(this).data('typeahead-source'));
+			var $source = $select.find('option:selected');
 
 			if ($source){
 

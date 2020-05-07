@@ -10,7 +10,6 @@ use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +30,6 @@ class TransactionsController extends AbstractController
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
@@ -363,8 +361,6 @@ class TransactionsController extends AbstractController
         $out = '';
 
         $heading_render->btn_filter();
-
-        $assets_service->add(['datepicker']);
 
         $out .= '<div class="card fcard fcard-info mb-3';
         $out .= $filtered ? '' : ' collapse';

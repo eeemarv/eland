@@ -3,9 +3,9 @@ const $ = require('jquery');
 import 'bootstrap';
 import 'jquery-touchswipe/jquery.touchSwipe.min.js';
 
-import offcanvas from './functions/offcanvas';
-import filter_remove_empty_inputs from './functions/filter_remove_empty_inputs';
-import csv from './functions/csv';
+import offcanvas from './overall/offcanvas';
+import filter_remove_empty_inputs from './overall/filter_remove_empty_inputs';
+import csv from './overall/csv';
 
 $(document).ready(function() {
     offcanvas();

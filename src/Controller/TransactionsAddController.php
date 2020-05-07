@@ -6,7 +6,6 @@ use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
@@ -34,7 +33,6 @@ class TransactionsAddController extends AbstractController
         LoggerInterface $logger,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
@@ -730,10 +728,6 @@ class TransactionsAddController extends AbstractController
             }
         }
 
-        $assets_service->add([
-            'transaction_add.js',
-        ]);
-
         $systems = [];
 
         $systems[] = [
@@ -1099,7 +1093,7 @@ class TransactionsAddController extends AbstractController
 
         $menu_service->set('transactions');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('transactions/add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

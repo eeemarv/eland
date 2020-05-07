@@ -27,6 +27,7 @@ Encore
     .addEntry('footable', './assets/js/footable.js')
     .addEntry('datepicker', './assets/js/datepicker.js')
     .addEntry('typeahead', './assets/js/typeahead.js')
+    .addEntry('transactions_add', './assets/js/transactions_add.js')
 
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
