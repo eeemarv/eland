@@ -253,7 +253,7 @@ class ForumTopicController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('forum/topic.html.twig', [
+        return $this->render('forum/forum_topic.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

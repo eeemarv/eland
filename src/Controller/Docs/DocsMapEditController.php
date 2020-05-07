@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Docs;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -105,7 +105,7 @@ class DocsMapEditController extends AbstractController
         $out .= 'Map naam</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text form-control">';
         $out .= '<span class="fa fa-folder-o"></span>';
         $out .= '</span>';
         $out .= '</span>';
@@ -152,7 +152,7 @@ class DocsMapEditController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_map_edit.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

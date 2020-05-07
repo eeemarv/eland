@@ -110,7 +110,7 @@ class ForumDelTopicController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('forum/del_topic.html.twig', [
+        return $this->render('forum/forum_del_topic.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

@@ -106,7 +106,7 @@ class ForumController extends AbstractController
 
             $menu_service->set('forum');
 
-            return $this->render('forum/list.html.twig', [
+            return $this->render('forum/forum_list.html.twig', [
                 'content'   => $out,
                 'schema'    => $pp->schema(),
             ]);
@@ -158,7 +158,7 @@ class ForumController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('forum/forum_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

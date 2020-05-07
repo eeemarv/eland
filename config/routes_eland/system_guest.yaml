@@ -79,12 +79,12 @@ calendar_list:
   methods: GET
 
 docs_map:
-  controller: App\Controller\DocsMapController
+  controller: App\Controller\Docs\DocsMapController
   path: /docs/{id<%assert.id%>}
   methods: GET
 
 docs:
-  controller: App\Controller\DocsController
+  controller: App\Controller\Docs\DocsController
   path: /docs
   methods: GET
 

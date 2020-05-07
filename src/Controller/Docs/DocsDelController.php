@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Docs;
 
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -13,7 +13,6 @@ use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -133,7 +132,7 @@ class DocsDelController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_del.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

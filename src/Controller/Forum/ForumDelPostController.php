@@ -118,7 +118,7 @@ class ForumDelPostController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('forum/del_post.html.twig', [
+        return $this->render('forum/forum_del_post.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

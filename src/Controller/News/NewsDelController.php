@@ -93,7 +93,7 @@ class NewsDelController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('news/del.html.twig', [
+        return $this->render('news/news_del.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

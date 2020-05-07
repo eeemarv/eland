@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Docs;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -238,7 +238,7 @@ class DocsController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

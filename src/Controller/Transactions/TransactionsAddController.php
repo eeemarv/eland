@@ -1093,7 +1093,7 @@ class TransactionsAddController extends AbstractController
 
         $menu_service->set('transactions');
 
-        return $this->render('transactions/add.html.twig', [
+        return $this->render('transactions/transactions_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

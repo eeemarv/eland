@@ -152,7 +152,7 @@ class ForumEditPostController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('forum/edit_post.html.twig', [
+        return $this->render('forum/forum_edit_post.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

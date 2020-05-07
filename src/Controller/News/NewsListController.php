@@ -58,7 +58,7 @@ class NewsListController extends AbstractController
         {
             $content = self::no_news($menu_service, $pp);
 
-            return $this->render('news/list.html.twig', [
+            return $this->render('news/news_list.html.twig', [
                 'content'   => $content,
                 'schema'    => $pp->schema(),
             ]);
@@ -119,7 +119,7 @@ class NewsListController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('news/list.html.twig', [
+        return $this->render('news/news_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

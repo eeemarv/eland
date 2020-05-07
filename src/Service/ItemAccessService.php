@@ -2,22 +2,18 @@
 
 namespace App\Service;
 
-use App\Service\AssetsService;
 use App\Cnst\AccessCnst;
 
 class ItemAccessService
 {
-	protected AssetsService $assets_service;
 	protected ConfigService $config_service;
 	protected PageParamsService $pp;
 
 	public function __construct(
-		AssetsService $assets_service,
 		PageParamsService $pp,
 		ConfigService $config_service
 	)
 	{
-		$this->assets_service = $assets_service;
 		$this->pp = $pp;
 		$this->config_service = $config_service;
 	}
@@ -146,8 +142,6 @@ class ItemAccessService
 
 		if ($cache_id)
 		{
-			$this->assets_service->add(['access_input_cache.js']);
-
 			$out .= ' data-access-cache-id="';
 			$out .= $this->pp->schema() . '_' . $cache_id . '"';
 		}

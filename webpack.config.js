@@ -30,7 +30,7 @@ Encore
     .addEntry('summernote', './assets/js/summernote.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('summernote_forum_post', './assets/js/summernote_forum_post.js')
-
+    .addEntry('item_access_input_cache', './assets/js/item_access_input_cache.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

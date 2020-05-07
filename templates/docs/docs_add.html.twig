@@ -2,11 +2,10 @@
 
 {%- block css -%}
     {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
-	{{- encore_entry_script_tags('summernote') -}}
-	{{- encore_entry_script_tags('summernote_forum_post') -}}
+	{{- encore_entry_script_tags('item_access_input_cache') -}}
+	{{- encore_entry_script_tags('typeahead') -}}
 {%- endblock js -%}

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Docs;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -163,8 +163,8 @@ class DocsAddController extends AbstractController
         $out .= '<i class="fa fa-file-o"></i>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="file" class="form-control" id="file" name="file" ';
-        $out .= 'required>';
+        $out .= '<input type="file" class="form-control" ';
+        $out .= 'id="file" name="file" required>';
         $out .= '</div>';
         $out .= '</div>';
 
@@ -189,7 +189,7 @@ class DocsAddController extends AbstractController
         $out .= 'Map</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text form-control">';
         $out .= '<i class="fa fa-folder-o"></i>';
         $out .= '</span>';
         $out .= '</span>';
@@ -230,7 +230,7 @@ class DocsAddController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
