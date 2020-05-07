@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Calendar;
 
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -58,7 +58,7 @@ class CalendarListController extends AbstractController
         {
             $content = self::no_news($menu_service, $pp);
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('calendar/calendar_list.html.twig', [
                 'content'   => $content,
                 'schema'    => $pp->schema(),
             ]);
@@ -119,7 +119,7 @@ class CalendarListController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('calendar/calendar_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

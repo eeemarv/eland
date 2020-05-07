@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Calendar;
 
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
@@ -93,7 +93,7 @@ class CalendarDelController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('calendar/calendar_del.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

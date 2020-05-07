@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Calendar;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -57,7 +57,7 @@ class CalendarMonthController extends AbstractController
         {
             $content = NewsListController::no_news($menu_service, $pp);
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('caleandar/calendar_month.html.twig', [
                 'content'   => $content,
                 'schema'    => $pp->schema(),
             ]);
@@ -82,7 +82,7 @@ class CalendarMonthController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('calendar/calendar_month.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
