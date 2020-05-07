@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Forum;
 
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ForumDelPostController extends AbstractController
+class ForumDelTopicController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -29,51 +29,31 @@ class ForumDelPostController extends AbstractController
         FormTokenService $form_token_service,
         ConfigService $config_service,
         AlertService $alert_service,
+        ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su,
-        ItemAccessService $item_access_service,
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
-        $forum_post = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.forum_posts
-            where id = ?', [$id]);
+        $forum_topic = ForumTopicController::get_forum_topic($id, $db, $pp, $item_access_service);
 
-        if (!isset($forum_post) || !$forum_post)
-        {
-            throw new NotFoundHttpException('Forum post niet gevonden.');
-        }
-
-        $s_post_owner = $su->id() === $forum_post['user_id']
+        $s_topic_owner = $forum_topic['user_id'] === $su->id()
             && $su->is_system_self() && !$pp->is_guest();
 
-        if (!($pp->is_admin() || $s_post_owner))
+        if (!($s_topic_owner || $su->is_admin()))
         {
-            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om deze reactie te verwijderen.');
-        }
-
-        $forum_topic = ForumTopicController::get_forum_topic($forum_post['topic_id'], $db, $pp, $item_access_service);
-
-        $first_post_id = $db->fetchColumn('select id
-            from ' . $pp->schema() . '.forum_posts
-            where topic_id = ?
-            order by created_at asc
-            limit 1', [$forum_topic['id']]);
-
-        if ($first_post_id === $id)
-        {
-            throw new AccessDeniedHttpException('Verkeerde route om eerste post aan te verwijderen');
+            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om dit topic te verwijderen.');
         }
 
         if ($request->isMethod('POST'))
         {
-            $errors = [];
-
             if ($error_token = $form_token_service->get_error())
             {
                 $errors[] = $error_token;
@@ -81,16 +61,28 @@ class ForumDelPostController extends AbstractController
 
             if (!count($errors))
             {
-                $db->delete($pp->schema() . '.forum_posts', ['id' => $id]);
+                $db->delete($pp->schema() . '.forum_topics', ['id' => $id]);
+                $db->delete($pp->schema() . '.forum_posts', ['topic_id' => $id]);
 
-                $alert_service->success('De forum reactie is verwijderd.');
-
-                $link_render->redirect('forum_topic', $pp->ary(),
-                    ['id' => $forum_post['topic_id']]);
+                $alert_service->success('Het forum onderwerp is verwijderd.');
+                $link_render->redirect('forum', $pp->ary(), []);
             }
+
+            $alert_service->error($errors);
         }
 
-        $heading_render->add('Reactie verwijderen?');
+        $forum_post_content = $db->fetchColumn('select content
+            from ' . $pp->schema() . '.forum_posts
+            where topic_id = ?
+            order by created_at asc
+            limit 1', [$id]);
+
+        $heading_render->add('Forum onderwerp ');
+        $heading_render->add_raw($link_render->link_no_attr('forum_topic', $pp->ary(),
+            ['id' => $id], $forum_topic['subject']));
+        $heading_render->add(' verwijderen?');
+
+        $heading_render->add_sub_raw('<p class="text-danger">Alle reacties worden verwijderd.</p>');
 
         $heading_render->fa('comments-o');
 
@@ -98,13 +90,13 @@ class ForumDelPostController extends AbstractController
         $out .= '<div class="card-body">';
 
         $out .= '<p>';
-        $out .= $forum_post['content'];
+        $out .= $forum_post_content;
         $out .= '</p>';
 
         $out .= '<form method="post">';
 
         $out .= $link_render->btn_cancel('forum_topic', $pp->ary(),
-            ['id' => $forum_post['topic_id']]);
+            ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" ';
@@ -118,7 +110,7 @@ class ForumDelPostController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('forum/del_topic.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

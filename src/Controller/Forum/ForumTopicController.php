@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Forum;
 
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
@@ -9,7 +9,6 @@ use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -32,7 +31,6 @@ class ForumTopicController extends AbstractController
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
@@ -155,8 +153,6 @@ class ForumTopicController extends AbstractController
         $btn_nav_render->nav_list('forum', $pp->ary(),
             [], 'Forum onderwerpen', 'comments');
 
-        $assets_service->add(['summernote', 'summernote_forum_post.js']);
-
         $heading_render->add($forum_topic['subject']);
         $heading_render->fa('comments-o');
 
@@ -238,7 +234,7 @@ class ForumTopicController extends AbstractController
             $out .= '<form method="post">';
             $out .= '<div class="form-group">';
             $out .= '<textarea name="content" ';
-            $out .= 'class="form-control summernote" ';
+            $out .= 'class="form-control" data-summernote ';
             $out .= 'id="content" rows="4" required>';
             $out .= $content;
             $out .= '</textarea>';
@@ -257,7 +253,7 @@ class ForumTopicController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('forum/topic.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

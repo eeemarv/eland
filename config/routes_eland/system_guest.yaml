@@ -89,12 +89,12 @@ docs:
   methods: GET
 
 forum_topic:
-  controller: App\Controller\ForumTopicController
+  controller: App\Controller\Forum\ForumTopicController
   path: /forum/{id<%assert.id%>}
   methods: GET|POST
 
 forum:
-  controller: App\Controller\ForumController
+  controller: App\Controller\Forum\ForumController
   path: /forum
   methods: GET
 

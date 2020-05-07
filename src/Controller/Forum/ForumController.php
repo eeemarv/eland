@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Forum;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -106,7 +106,7 @@ class ForumController extends AbstractController
 
             $menu_service->set('forum');
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('forum/list.html.twig', [
                 'content'   => $out,
                 'schema'    => $pp->schema(),
             ]);

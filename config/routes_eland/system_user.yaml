@@ -89,27 +89,27 @@ transactions_add:
   methods: GET|POST
 
 forum_edit_post:
-  controller: App\Controller\ForumEditPostController
+  controller: App\Controller\Forum\ForumEditPostController
   path: /forum/{id<%assert.id%>}/edit-post
   methods: GET|POST
 
 forum_del_post:
-  controller: App\Controller\ForumDelPostController
+  controller: App\Controller\Forum\ForumDelPostController
   path: /forum/{id<%assert.id%>}/del-post
   methods: GET|POST
 
 forum_edit_topic:
-  controller: App\Controller\ForumEditTopicController
+  controller: App\Controller\Forum\ForumEditTopicController
   path: /forum/{id<%assert.id%>}/edit-topic
   methods: GET|POST
 
 forum_del_topic:
-  controller: App\Controller\ForumDelTopicController
+  controller: App\Controller\Forum\ForumDelTopicController
   path: /forum/{id<%assert.id%>}/del-topic
   methods: GET|POST
 
 forum_add_topic:
-  controller: App\Controller\ForumAddTopicController
+  controller: App\Controller\Forum\ForumAddTopicController
   path: /forum/add-topic
   methods: GET|POST
 

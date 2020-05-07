@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Forum;
 
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +10,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -29,7 +28,6 @@ class ForumAddTopicController extends AbstractController
         LinkRender $link_render,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
-        AssetsService $assets_service,
         ItemAccessService $item_access_service,
         SessionUserService $su,
         PageParamsService $pp,
@@ -106,8 +104,6 @@ class ForumAddTopicController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $assets_service->add(['summernote', 'summernote_forum_post.js']);
-
         $heading_render->add('Nieuw forum onderwerp');
         $heading_render->fa('comments-o');
 
@@ -127,7 +123,7 @@ class ForumAddTopicController extends AbstractController
 
         $out .= '<div class="form-group">';
         $out .= '<textarea name="content" ';
-        $out .= 'class="form-control summernote" ';
+        $out .= 'class="form-control" data-summernote ';
         $out .= 'id="content" rows="4" required>';
         $out .= $content;
         $out .= '</textarea>';
@@ -150,7 +146,7 @@ class ForumAddTopicController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('forum/add_topic.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
