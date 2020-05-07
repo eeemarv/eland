@@ -178,8 +178,9 @@ class BtnNavRender
 		$this->assets_service->add(['csv.js']);
 
 		$this->out['admin'][] = $this->tag_render->get('a', [
-				'class'	=> 'csv btn btn-info btn-lg text-light',
-				'title'	=> 'Download CSV',
+				'class'		=> 'btn btn-info btn-lg text-light',
+				'data-csv'	=> '',
+				'title'		=> 'Download CSV',
 			],
 			$this->tag_render->fa('file')
 		);

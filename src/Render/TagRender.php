@@ -15,6 +15,12 @@ class TagRender
 
 		foreach ($attr as $name => $val)
 		{
+			if ($val === '')
+			{
+				$out .= ' ' . $name;
+				continue;
+			}
+
 			$out .= ' ' . $name . '="' . $val . '"';
 		}
 

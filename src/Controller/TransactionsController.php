@@ -373,10 +373,10 @@ class TransactionsController extends AbstractController
 
         $out .= '<form method="get" class="form-horizontal">';
 
-        $out .= '<div class="row mb-2">';
+        $out .= '<div class="row">';
 
-        $out .= '<div class="col-sm-12">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="col">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
@@ -390,10 +390,10 @@ class TransactionsController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= '<div class="row mb-2">';
+        $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Van&nbsp;';
@@ -442,13 +442,13 @@ class TransactionsController extends AbstractController
         ];
 
         $out .= '<div class="col-sm-2">';
-        $out .= '<select class="form-control" name="f[andor]">';
+        $out .= '<select class="form-control mb-2" name="f[andor]">';
         $out .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
         $out .= '</select>';
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Naar&nbsp;';
@@ -469,7 +469,7 @@ class TransactionsController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Vanaf&nbsp;';
@@ -501,7 +501,7 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Tot&nbsp;';
@@ -533,7 +533,7 @@ class TransactionsController extends AbstractController
 
         $out .= '<div class="col-sm-2">';
         $out .= '<input type="submit" value="Toon" ';
-        $out .= 'class="btn btn-default btn-block">';
+        $out .= 'class="btn btn-default btn-block border border-secondary-li mb-2">';
         $out .= '</div>';
 
         $out .= '</div>';

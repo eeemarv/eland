@@ -5,10 +5,12 @@ import 'jquery-touchswipe/jquery.touchSwipe.min.js';
 
 import offcanvas from './functions/offcanvas';
 import filter_remove_empty_inputs from './functions/filter_remove_empty_inputs';
+import csv from './functions/csv';
 
 $(document).ready(function() {
     offcanvas();
     filter_remove_empty_inputs();
+    csv();
 });
 
 import '../css/app.scss';

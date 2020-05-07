@@ -26,6 +26,7 @@ Encore
     .addEntry('app', './assets/js/app.js')
     .addEntry('footable', './assets/js/footable.js')
     .addEntry('datepicker', './assets/js/datepicker.js')
+    .addEntry('typeahead', './assets/js/typeahead.js')
 
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.

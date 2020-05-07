@@ -1,11 +1,12 @@
-/*typeahead
- * adapted from
- * https://github.com/bassjobsen/typeahead.js-bootstrap-css/blob/master/typeaheadjs.css
- */
+
+
+span.twitter-typeahead {
+  flex: 1 1 0%;
+}
 
  span.twitter-typeahead .tt-menu,
  span.twitter-typeahead .tt-dropdown-menu {
-   position: absolute;
+//   position: absolute;
    top: 100%;
    left: 0;
    z-index: 1000;
