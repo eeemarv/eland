@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\News;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -55,7 +55,7 @@ class NewsExtendedController extends AbstractController
         {
             $content = NewsListController::no_news($menu_service, $pp);
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('news/extended.html.twig', [
                 'content'   => $content,
                 'schema'    => $pp->schema(),
             ]);
@@ -80,7 +80,7 @@ class NewsExtendedController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/extended.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

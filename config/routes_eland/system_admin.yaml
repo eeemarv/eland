@@ -179,17 +179,17 @@ transactions_edit:
   methods: GET|POST
 
 news_add:
-  controller: App\Controller\NewsAddController
+  controller: App\Controller\News\NewsAddController
   path: /news/add
   methods: GET|POST
 
 news_del:
-  controller: App\Controller\NewsDelController
+  controller: App\Controller\News\NewsDelController
   path: /news/{id<%assert.id%>}/del
   methods: GET|POST
 
 news_edit:
-  controller: App\Controller\NewsEditController
+  controller: App\Controller\News\NewsEditController
   path: /news/{id<%assert.id%>}/edit
   methods: GET|POST
 

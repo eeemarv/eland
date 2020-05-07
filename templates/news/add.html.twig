@@ -1,0 +1,14 @@
+{%- extends('base/navbar.html.twig') -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('datepicker') -}}
+    {{- encore_entry_link_tags('summernote') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('datepicker') -}}
+	{{- encore_entry_script_tags('summernote') -}}
+	{{- encore_entry_script_tags('summernote_forum_post') -}}
+{%- endblock js -%}

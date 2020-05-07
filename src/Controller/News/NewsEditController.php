@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\News;
 
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,37 +9,41 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
-use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class NewsAddController extends AbstractController
+class NewsEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        int $id,
         Db $db,
-        DateFormatService $date_format_service,
-        HeadingRender $heading_render,
-        MenuService $menu_service,
         AlertService $alert_service,
-        AssetsService $assets_service,
+        DateFormatService $date_format_service,
         FormTokenService $form_token_service,
+        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        MenuService $menu_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
         HtmlPurifier $html_purifier
     ):Response
     {
-        $news = [];
         $errors = [];
+
+        $news = $db->fetchAssoc('select *
+            from ' . $pp->schema() . '.news
+            where id = ?', [$id]);
+
+        if (!$news)
+        {
+            throw new NotFoundHttpException('Nieuwsbericht niet gevonden.');
+        }
 
         $event_at = trim($request->request->get('event_at', ''));
         $location = trim($request->request->get('location', ''));
@@ -49,24 +53,24 @@ class NewsAddController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
+            $content = $html_purifier->purify($content);
+
             if (!$access)
             {
                 $errors[] = 'Vul een zichtbaarheid in.';
             }
 
-            $content = $html_purifier->purify($content);
-
             if ($event_at)
             {
-                $event_at_formatted = $date_format_service->reverse($event_at, $pp->schema());
+                $event_at = $date_format_service->reverse($event_at, $pp->schema());
 
-                if ($event_at_formatted === '')
+                if ($event_at === '')
                 {
                     $errors[] = 'Fout formaat in agendadatum.';
                 }
             }
 
-            if ($subject === '')
+            if (!$subject === '')
             {
                 $errors[] = 'Titel is niet ingevuld';
             }
@@ -86,57 +90,41 @@ class NewsAddController extends AbstractController
                 $errors[] = $token_error;
             }
 
-            if ($su->is_master())
-            {
-                $errors[] = 'Het master account kan geen berichten aanmaken.';
-            }
-
             if (!count($errors))
             {
                 $news = [
-                    'user_id'       => $su->id(),
-                    'content'	    => $content,
-                    'subject'	    => $subject,
-                    'access'        => $access,
+                    'subject'   => $subject,
+                    'content'   => $content,
+                    'location'  => $location,
+                    'access'    => $access,
                 ];
-
-                if ($location)
-                {
-                    $news['location'] = $location;
-                }
 
                 if ($event_at)
                 {
-                    $news['event_at'] = $event_at_formatted;
-                }
-
-                if ($db->insert($pp->schema() . '.news', $news))
-                {
-                    $id = $db->lastInsertId($pp->schema() . '.news_id_seq');
-
-                    $alert_service->success('Nieuwsbericht opgeslagen.');
-
-                    $news['id'] = $id;
-
-                    $link_render->redirect('news_show', $pp->ary(),
-                        ['id' => $id]);
+                    $news['event_at'] = $event_at;
                 }
                 else
                 {
-                    $errors[] = 'Nieuwsbericht niet opgeslagen.';
+                    $news['event_at'] = null;
                 }
+
+                $db->update($pp->schema() . '.news', $news, ['id' => $id]);
+                $alert_service->success('Nieuwsbericht aangepast.');
+                $link_render->redirect('news_show', $pp->ary(), ['id' => $id]);
             }
 
             $alert_service->error($errors);
         }
+        else
+        {
+            $subject = $news['subject'];
+            $event_at = $news['event_at'];
+            $location = $news['location'];
+            $content = $news['content'];
+            $access = $news['access'];
+        }
 
-        $assets_service->add([
-            'datepicker',
-            'summernote',
-            'summernote_forum_post.js',
-        ]);
-
-        $heading_render->add('Nieuwsbericht toevoegen');
+        $heading_render->add('Nieuwsbericht aanpassen');
         $heading_render->fa('calendar-o');
 
         $out = '<div class="card fcard fcard-info">';
@@ -152,6 +140,15 @@ class NewsAddController extends AbstractController
         $out .= 'value="';
         $out .= $subject;
         $out .= '" required maxlength="200">';
+        $out .= '</div>';
+
+        $out .= '<div class="form-group">';
+        $out .= '<label for="content" class="control-label">';
+        $out .= 'Bericht</label>';
+        $out .= '<textarea name="content" id="content" data-summernote ';
+        $out .= 'class="form-control" rows="10" required>';
+        $out .= $content ?? '';
+        $out .= '</textarea>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
@@ -173,7 +170,12 @@ class NewsAddController extends AbstractController
         $out .= 'data-date-autoclose="true" ';
         $out .= 'data-date-orientation="bottom" ';
         $out .= 'value="';
-        $out .= $date_format_service->get($event_at, 'day', $pp->schema());
+
+        if ($event_at)
+        {
+            $out .= $date_format_service->get($event_at, 'day', $pp->schema());
+        }
+
         $out .= '" ';
         $out .= 'placeholder="';
         $out .= $date_format_service->datepicker_placeholder($pp->schema());
@@ -194,27 +196,19 @@ class NewsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="location" name="location" ';
         $out .= 'value="';
-        $out .= $location;
+        $out .= $location ?? '';
         $out .= '" maxlength="128">';
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="content" class="control-label">';
-        $out .= 'Bericht</label>';
-        $out .= '<textarea name="content" id="content" ';
-        $out .= 'class="form-control summernote" rows="10" required>';
-        $out .= $content;
-        $out .= '</textarea>';
-        $out .= '</div>';
-
         $out .= $item_access_service->get_radio_buttons('access', $access, 'news', $pp->is_user());
 
-        $out .= $link_render->btn_cancel($vr->get('news'), $pp->ary(), []);
+        $out .= $link_render->btn_cancel('news_show', $pp->ary(),
+            ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-lg btn-success">';
+        $out .= 'value="Opslaan" class="btn btn-primary btn-lg">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
@@ -224,7 +218,7 @@ class NewsAddController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/edit.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\News;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -108,7 +108,7 @@ class NewsShowController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/show.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

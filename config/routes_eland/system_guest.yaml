@@ -49,17 +49,17 @@ transactions:
   methods: GET
 
 news_show:
-  controller: App\Controller\NewsShowController
+  controller: App\Controller\News\NewsShowController
   path: /news/{id<%assert.id%>}
   methods: GET
 
 news_extended:
-  controller: App\Controller\NewsExtendedController
+  controller: App\Controller\News\NewsExtendedController
   path: /news/extended
   methods: GET
 
 news_list:
-  controller: App\Controller\NewsListController
+  controller: App\Controller\News\NewsListController
   path: /news
   methods: GET
 
