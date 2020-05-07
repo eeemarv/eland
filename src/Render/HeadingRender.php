@@ -24,7 +24,7 @@ class HeadingRender
 	{
 		$out = isset($this->fa) ? '<i class="fa fa-' . $this->fa . '"></i>&nbsp;' : '';
 		$out .= $this->str;
-		$out .= $this->filtered ? '&nbsp;<small>Gefilterd</small>' : '';
+		$out .= $this->filtered ? '&nbsp;<small class="text-secondary">Gefilterd</small>' : '';
 		$out .= $this->btn_filter ? implode('', self::BTN_FILTER) : '';
 
 		return $out;

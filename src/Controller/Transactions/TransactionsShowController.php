@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -109,7 +109,7 @@ class TransactionsShowController extends AbstractController
 
         $intersystem_trans = ($real_from || $real_to) && $config_service->get_intersystem_en($pp->schema());
 
-        $out = '<div class="card bg-';
+        $out = '<div class="card fcard fcard-';
         $out .= $intersystem_trans ? 'warning' : 'default';
         $out .= ' printview">';
         $out .= '<div class="card-body">';
@@ -244,7 +244,7 @@ class TransactionsShowController extends AbstractController
         if ($intersystem_trans)
         {
             $out .= '<div class="row">';
-            $out .= '<div class="col-md-12">';
+            $out .= '<div class="col">';
             $out .= '<h2>';
             $out .= 'Dit is een interSysteem transactie ';
             $out .= $real_from ? 'vanuit' : 'naar';
@@ -265,9 +265,9 @@ class TransactionsShowController extends AbstractController
 
             $out .= '<div class="row">';
 
-            $out .= '<div class="col-md-6">';
-            $out .= '<div class="thumbnail">';
-            $out .= '<img src="';
+            $out .= '<div class="col-md-4">';
+            $out .= '<div class="card">';
+            $out .= '<img class="card-img-top fcard-warning" src="';
 
             if ($real_from)
             {
@@ -280,7 +280,7 @@ class TransactionsShowController extends AbstractController
 
             $out .= '">';
             $out .= '</div>';
-            $out .= '<div class="caption">';
+            $out .= '<div class="card-bocy">';
             $out .= '<ul>';
             $out .= '<li>';
             $out .= '<strong>Acc-1</strong> ';
@@ -370,9 +370,9 @@ class TransactionsShowController extends AbstractController
             $out .= '</div>';
             $out .= '</div>';
 
-            $out .= '<div class="col-md-6">';
-            $out .= '<div class="thumbnail">';
-            $out .= '<img src="';
+            $out .= '<div class="col-md-4">';
+            $out .= '<div class="card">';
+            $out .= '<img class="card-img-top fcard-warning" src="';
 
             if ($real_from)
             {
@@ -385,7 +385,7 @@ class TransactionsShowController extends AbstractController
 
             $out .= '">';
             $out .= '</div>';
-            $out .= '<div class="caption bg-warning">';
+            $out .= '<div class="card-body">';
             $out .= '<ul>';
             $out .= '<li>';
             $out .= '<strong>iAcc-2</strong> ';
@@ -485,7 +485,7 @@ class TransactionsShowController extends AbstractController
 
         $menu_service->set('transactions');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('transactions/show.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

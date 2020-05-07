@@ -174,7 +174,7 @@ users_list_admin:
   methods: GET|POST
 
 transactions_edit:
-  controller: App\Controller\TransactionsEditController
+  controller: App\Controller\Transactions\TransactionsEditController
   path: /transactions/{id<%assert.id%>}/edit
   methods: GET|POST
 

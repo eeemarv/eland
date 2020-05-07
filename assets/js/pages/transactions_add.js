@@ -67,7 +67,7 @@ export default function(){
 				$amount_container.addClass('col-sm-6');
 			}
 
-			$remote_amount_container.find('span.input-group-addon').eq(0).text(currency);
+			$remote_amount_container.find('span[data-remote-currency-name]').eq(0).text(currency);
 
 			$remote_amount_container.show();
 

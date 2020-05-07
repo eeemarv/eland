@@ -39,12 +39,12 @@ users_list:
   methods: GET|POST
 
 transactions_show:
-  controller: App\Controller\TransactionsShowController
+  controller: App\Controller\Transactions\TransactionsShowController
   path: /transactions/{id<%assert.id%>}
   methods: GET
 
 transactions:
-  controller: App\Controller\TransactionsController
+  controller: App\Controller\Transactions\TransactionsController
   path: /transactions
   methods: GET
 

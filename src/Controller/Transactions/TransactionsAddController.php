@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
@@ -18,7 +18,6 @@ use App\Service\SystemsService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use Predis\Client as Predis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -797,7 +796,7 @@ class TransactionsAddController extends AbstractController
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text form-control">';
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '</span>';
@@ -928,7 +927,7 @@ class TransactionsAddController extends AbstractController
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text form-control">';
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
         $out .= '</span>';
@@ -1041,7 +1040,8 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text" ';
+        $out .= 'data-remote-currency-name>';
         $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';

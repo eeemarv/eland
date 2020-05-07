@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
@@ -301,7 +301,7 @@ class TransactionsEditController extends AbstractController
 
         $menu_service->set('transactions');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('transactions/edit.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

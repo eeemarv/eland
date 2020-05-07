@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -391,7 +391,7 @@ class TransactionsController extends AbstractController
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text form-control">';
         $out .= 'Van&nbsp;';
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';
@@ -446,7 +446,7 @@ class TransactionsController extends AbstractController
         $out .= '<div class="col-sm-5">';
         $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
+        $out .= '<span class="input-group-text form-control">';
         $out .= 'Naar&nbsp;';
         $out .= '<i class="fa fa-user"></i>';
         $out .= '</span>';

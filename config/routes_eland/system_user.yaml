@@ -84,7 +84,7 @@ users_edit:
   methods: GET|POST
 
 transactions_add:
-  controller: App\Controller\TransactionsAddController
+  controller: App\Controller\Transactions\TransactionsAddController
   path: /transactions/add
   methods: GET|POST
 
