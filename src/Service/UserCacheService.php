@@ -52,28 +52,7 @@ class UserCacheService
 		return $this->get($id, $schema)['role'];
 	}
 
-	/**
-	 * TEMP FIX
-	 */
-
 	public function get(int $id, string $schema):array
-	{
-		$user = $this->temp_get($id, $schema);
-		$user['code'] ??= $user['letscode'];
-		$user['role'] ??= $user['accountrole'];
-
-		if ($user['role'] === 'interlets')
-		{
-			$user['role'] = 'guest';
-		}
-
-		$user['periodic_overview_en'] ??= $user['cron_saldo'];
-		$user['balance'] ??= $user['saldo'];
-
-		return $user;
-	}
-
-	public function temp_get(int $id, string $schema):array
 	{
 		if (!$id)
 		{
