@@ -98,9 +98,9 @@ class IntersystemsController extends AbstractController
 
         if (count($intersystems))
         {
-            $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+            $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
             $out .= '<table class="table table-bordered table-hover mb-0 ';
-            $out .= 'table-striped footable bg-default">';
+            $out .= 'table-striped bg-default" data-footable>';
             $out .= '<thead>';
             $out .= '<tr>';
             $out .= '<th data-sort-initial="true">Account</th>';
@@ -340,7 +340,7 @@ class IntersystemsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered ';
-        $out .= 'table-hover table-striped footable bg-default">';
+        $out .= 'table-hover table-striped bg-default" data-footable>';
         $out .= '<thead>';
         $out .= '<tr>';
         $out .= '<th data-sort-initial="true">Systeem Naam</th>';

@@ -817,10 +817,9 @@ class MolliePaymentsController extends AbstractController
         $out .= $pagination_render->get();
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'border border-secondary-li ';
-        $out .= 'table-hover card-body footable bg-default" ';
+        $out .= 'table-hover card-body bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
-        $out .= 'data-sort="false" data-csv>';
+        $out .= 'data-sort="false" data-footable data-csv>';
         $out .= '<thead>';
 
         $out .= '<tr>';

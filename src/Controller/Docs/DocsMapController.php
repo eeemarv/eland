@@ -144,9 +144,9 @@ class DocsMapController extends AbstractController
             $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
 
             $out .= '<table class="table table-bordered mb-0 ';
-            $out .= 'table-striped table-hover footable bg-default" ';
+            $out .= 'table-striped table-hover bg-default" ';
             $out .= 'data-filter="#q" data-filter-minimum="1" ';
-            $out .= 'data-csv>';
+            $out .= 'data-footable data-csv>';
             $out .= '<thead>';
 
             $out .= '<tr>';

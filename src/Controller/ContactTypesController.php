@@ -46,9 +46,10 @@ class ContactTypesController extends AbstractController
         $heading_render->fa('circle-o-notch');
 
         $out .= '<div class="table-responsive ';
-        $out .= 'border border-dark rounded mb-3">';
+        $out .= 'border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped table-hover ';
-        $out .= 'table-bordered footable bg-default mb-0" data-sort="false">';
+        $out .= 'table-bordered bg-default mb-0" ';
+        $out .= 'data-sort="false" data-footable>';
         $out .= '<tr>';
         $out .= '<thead>';
         $out .= '<th>Naam</th>';

@@ -75,8 +75,8 @@ class CategoriesController extends AbstractController
 
         $out = '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped table-hover ';
-        $out .= 'table-bordered footable bg-default mb-0" ';
-        $out .= 'data-sort="false">';
+        $out .= 'table-bordered bg-default mb-0" ';
+        $out .= 'data-sort="false" data-footable>';
         $out .= '<tr>';
         $out .= '<thead>';
         $out .= '<th>Categorie</th>';

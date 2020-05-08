@@ -69,11 +69,11 @@ class ContactsUserShowInlineController extends AbstractController
         if (count($contacts))
         {
             $out .= '<div class="table-responsive ';
-            $out .= 'border border-dark rounded mb-3">';
+            $out .= 'border border-secondary-li rounded mb-3">';
             $out .= '<table class="table table-hover ';
             $out .= 'table-striped table-bordered ';
-            $out .= 'footable bg-default mb-0" ';
-            $out .= 'data-sort="false">';
+            $out .= 'bg-default mb-0" ';
+            $out .= 'data-sort="false" data-footable>';
 
             $out .= '<thead>';
             $out .= '<tr>';

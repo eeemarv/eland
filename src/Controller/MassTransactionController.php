@@ -809,15 +809,15 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover card-body footable bg-default" ';
+        $out .= 'table-hover card-body bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
         $out .= 'data-minlimit="';
         $out .= $system_minlimit;
         $out .= '" ';
         $out .= 'data-maxlimit="';
         $out .= $system_maxlimit;
-        $out .= '"';
-        $out .= '>';
+        $out .= '" ';
+        $out .= 'data-footable>';
         $out .= '<thead>';
 
         $out .= '<tr>';

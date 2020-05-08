@@ -329,15 +329,15 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<div class="card fcard fcard-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'border border-secondary-li ';
-        $out .= 'table-hover footable card-body bg-default" ';
+        $out .= 'table-hover card-body bg-default" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';
         $out .= 'volgens de selectiecriteria" ';
         $out .= 'data-sorting="true" ';
         $out .= 'data-filter-placeholder="Zoeken" ';
-        $out .= 'data-filter-position="left" data-csv>';
+        $out .= 'data-filter-position="left" ';
+        $out .= 'data-footable data-csv>';
 
         $out .= '<thead>';
 

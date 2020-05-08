@@ -3,5 +3,5 @@ import 'footable/js/footable.sort.js';
 import 'footable/js/footable.filter.js';
 
 $(document).ready(function() {
-    $('.footable').footable();
+    $('table[data-footable]').footable();
 });

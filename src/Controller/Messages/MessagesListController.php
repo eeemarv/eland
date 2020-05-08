@@ -291,8 +291,8 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped mb-0 ';
-        $out .= 'table-bordered table-hover footable bg-default" ';
-        $out .= 'data-sort="false" data-csv>';
+        $out .= 'table-bordered table-hover bg-default" ';
+        $out .= 'data-sort="false" data-footable data-csv>';
 
         $out .= '<thead>';
         $out .= '<tr>';

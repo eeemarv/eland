@@ -107,8 +107,9 @@ class DocsController extends AbstractController
             $maps_table = '<div class="table-responsive bg-default ';
             $maps_table .= 'border border-secondary-li rounded mb-3">';
             $maps_table .= '<table class="table table-bordered mb-0 ';
-            $maps_table .= 'table-striped table-hover footable" ';
-            $maps_table .= 'data-filter="#q" data-filter-minimum="1">';
+            $maps_table .= 'table-striped table-hover" ';
+            $maps_table .= 'data-filter="#q" data-filter-minimum="1" ';
+            $maps_table .= 'data-footable>';
             $maps_table .= '<thead>';
 
             $maps_table .= '<tr>';
@@ -165,10 +166,10 @@ class DocsController extends AbstractController
 
             $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
             $out .= '<table class="table table-bordered ';
-            $out .= 'table-striped table-hover footable bg-default ';
+            $out .= 'table-striped table-hover bg-default ';
             $out .= ' mb-0" ';
             $out .= 'data-filter="#q" data-filter-minimum="1" ';
-            $out .= 'data-csv>';
+            $out .= 'data-footable data-csv>';
             $out .= '<thead>';
 
             $out .= '<tr>';

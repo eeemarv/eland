@@ -300,8 +300,8 @@ class LogsController extends AbstractController
         $out .= 'border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-hover ';
         $out .= 'table-bordered table-striped ';
-        $out .= 'footable bg-default mb-0" ';
-        $out .= 'data-sort="false" data-csv>';
+        $out .= 'bg-default mb-0" ';
+        $out .= 'data-sort="false" data-footable data-csv>';
         $out .= '<thead>';
         $out .= '<tr>';
 
