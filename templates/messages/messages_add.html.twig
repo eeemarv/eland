@@ -2,14 +2,16 @@
 
 {%- block css -%}
     {{- parent() -}}
-    {{- encore_entry_link_tags('datepicker') -}}
     {{- encore_entry_link_tags('summernote') -}}
+    {{- encore_entry_link_tags('fileupload') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
 	{{- encore_entry_script_tags('item_access_input_cache') -}}
-	{{- encore_entry_script_tags('datepicker') -}}
+	{{- encore_entry_script_tags('typeahead') -}}
 	{{- encore_entry_script_tags('summernote') -}}
 	{{- encore_entry_script_tags('summernote_forum_post') -}}
+	{{- encore_entry_script_tags('fileupload') -}}
+	{{- encore_entry_script_tags('messages_edit_images_upload') -}}
 {%- endblock js -%}

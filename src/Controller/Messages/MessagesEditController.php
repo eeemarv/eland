@@ -466,7 +466,7 @@ class MessagesEditController extends AbstractController
             $out .= 'Gebruiker</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-prepend">';
-            $out .= '<span class="input-group-text">';
+            $out .= '<span class="input-group-text form-control">';
             $out .= '<i class="fa fa-user"></i>';
             $out .= '</span>';
             $out .= '</span>';
@@ -588,18 +588,20 @@ class MessagesEditController extends AbstractController
         $out .= '<div class="form-group">';
         $out .= '<label for="fileupload" class="control-label">';
         $out .= 'Afbeeldingen</label>';
-        $out .= '<div class="row sortable">';
+        $out .= '<div class="row" data-sortable>';
 
-        $out .= '<div class="col-sm-3 col-md-2 thumbnail-col hidden" ';
-        $out .= 'id="thumbnail_model" ';
+        $out .= '<div class="col-sm-3 col-md-2 mb-2" ';
+        $out .= 'data-thumbnail-model ';
         $out .= 'data-s3-url="';
         $out .= $env_s3_url;
-        $out .= '">';
-        $out .= '<div class="thumbnail">';
-        $out .= '<img src="" alt="afbeelding">';
-        $out .= '<div class="caption">';
+        $out .= '" hidden>';
+        $out .= '<div class="card">';
+        $out .= '<img class="card-img-top" ';
+        $out .= 'src="" alt="afbeelding">';
+        $out .= '<div class="card-body">';
 
-        $out .= '<p><span class="btn btn-danger img-delete" role="button">';
+        $out .= '<p><span class="btn btn-danger" ';
+        $out .= 'title="Verwijderen" role="button" data-btn-img-delete>';
         $out .= '<i class="fa fa-times"></i></span></p>';
         $out .= '</div>';
         $out .= '</div>';
@@ -609,15 +611,16 @@ class MessagesEditController extends AbstractController
 
         foreach ($images as $img)
         {
-            $out .= '<div class="col-sm-3 col-md-2 thumbnail-col" ';
+            $out .= '<div class="col-sm-3 col-md-2 mb-2" ';
             $out .= 'data-file="' . $img . '">';
-            $out .= '<div class="thumbnail">';
-            $out .= '<img src="';
+            $out .= '<div class="card">';
+            $out .= '<img class="card-img-top" src="';
             $out .= $env_s3_url . $img;
             $out .= '" alt="afbeelding">';
-            $out .= '<div class="caption">';
+            $out .= '<div class="card-body">';
 
-            $out .= '<p><span class="btn btn-danger img-delete" role="button">';
+            $out .= '<p><span class="btn btn-danger" ';
+            $out .= 'title="Verwijderen" role="button" data-btn-img-delete>';
             $out .= '<i class="fa fa-times"></i></span></p>';
             $out .= '</div>';
             $out .= '</div>';
@@ -640,9 +643,9 @@ class MessagesEditController extends AbstractController
             $upload_img_route = 'messages_add_images_upload';
         }
 
-        $out .= '<span class="btn btn-default border border-secondary-li fileinput-button">';
-        $out .= '<i class="fa fa-plus" id="img_plus"></i> Opladen';
-        $out .= '<input id="fileupload" type="file" name="images[]" ';
+        $out .= '<label class="btn btn-default border border-secondary-li">';
+        $out .= '<i class="fa fa-plus"></i> Opladen';
+        $out .= '<input type="file" name="images[]" ';
         $out .= 'data-url="';
 
         $out .= $link_render->context_path($upload_img_route, $pp->ary(),
@@ -652,7 +655,8 @@ class MessagesEditController extends AbstractController
         $out .= 'data-data-type="json" data-auto-upload="true" ';
         $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
         $out .= 'data-max-file-size="999000" ';
-        $out .= 'multiple></span>&nbsp;';
+        $out .= 'multiple ';
+        $out .= 'data-fileupload hidden></label>&nbsp;';
 
         $out .= '<p>Toegestane formaten: jpg/jpeg, png, gif. ';
         $out .= 'Je kan ook afbeeldingen hierheen ';

@@ -28,10 +28,12 @@ Encore
     .addEntry('datepicker', './assets/js/datepicker.js')
     .addEntry('typeahead', './assets/js/typeahead.js')
     .addEntry('summernote', './assets/js/summernote.js')
+    .addEntry('fileupload', './assets/js/fileupload.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('summernote_forum_post', './assets/js/summernote_forum_post.js')
     .addEntry('item_access_input_cache', './assets/js/item_access_input_cache.js')
     .addEntry('table_select', './assets/js/table_select.js')
+    .addEntry('messages_edit_images_upload', './assets/js/messages_edit_images_upload.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -77,4 +79,18 @@ Encore
     //.addEntry('admin', './assets/js/admin.js')
 ;
 
-module.exports = Encore.getWebpackConfig();
+// module.exports = Encore.getWebpackConfig();
+
+var config = Encore.getWebpackConfig();
+
+config.resolve.alias = {
+    'load-image': 'blueimp-load-image/js/load-image.js',
+    'load-image-meta': 'blueimp-load-image/js/load-image-meta.js',
+    'load-image-exif': 'blueimp-load-image/js/load-image-exif.js',
+    'load-image-orientation': 'blueimp-load-image/js/load-image-orientation.js',
+    'load-image-scale': 'blueimp-load-image/js/load-image-scale.js',
+    'canvas-to-blob': 'blueimp-canvas-to-blob/js/canvas-to-blob.js',
+    'jquery-ui/widget': 'blueimp-file-upload/js/vendor/jquery.ui.widget.js'
+ }
+
+module.exports = config;

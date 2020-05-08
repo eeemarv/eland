@@ -1,4 +1,4 @@
-$(document).ready(function () {
+export default function () {
 	var $form = $('form');
 	var $img_add_btn = $form.find('#img_plus');
 	var $model = $form.find('#thumbnail_model');
@@ -25,7 +25,7 @@ $(document).ready(function () {
 		rewrite_image_files_input();
 	});
 
-    $('input[data-fileupload]').bind('fileuploadprocessfail', function (e, data) {
+    $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
 		var error = (data.files[data.index].error == 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
 		alert(error);
 		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
@@ -67,4 +67,4 @@ $(document).ready(function () {
 
      }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
-});
+};
