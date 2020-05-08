@@ -60,7 +60,7 @@ class CategoriesEditController extends AbstractController
             $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
             $message_count = $db->fetchColumn('select count(*)
-                from ' . $pp->schema . '.messsages
+                from ' . $pp->schema() . '.messsages
                 where category_id = ?', [$id]);
 
             if (!$cat['name'])
