@@ -278,7 +278,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card fcard fcard-info mb-2">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
@@ -310,14 +310,13 @@ class MolliePaymentsAddController extends AbstractController
         {
             $nav_params['status'] = $k;
 
-            $out .= '<li';
-            $out .= $params['status'] === $k ? ' class="active"' : '';
-            $out .= '>';
+            $out .= '<li class="nav-item">';
 
-            $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
+            $class = 'nav-link ' . $tab['cl'];
+            $class .= $params['status'] === $k ? ' active' : '';
 
             $out .= $link_render->link('mollie_payments_add', $pp->ary(),
-                $nav_params, $tab['lbl'], $class_ary);
+                $nav_params, $tab['lbl'], ['class' => $class]);
 
             $out .= '</li>';
         }

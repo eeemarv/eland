@@ -18,7 +18,6 @@ use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -38,7 +37,6 @@ class MessagesListController extends AbstractController
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
@@ -239,7 +237,6 @@ class MessagesListController extends AbstractController
             $request,
             $db,
             $account_render,
-            $assets_service,
             $btn_top_render,
             $config_service,
             $heading_render,
@@ -272,8 +269,6 @@ class MessagesListController extends AbstractController
             $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             $btn_nav_render->csv();
         }
-
-        $assets_service->add(['table_sel.js']);
 
         $show_visibility_column = !$pp->is_guest() && $intersystems_service->get_count($pp->schema());
 
@@ -426,19 +421,23 @@ class MessagesListController extends AbstractController
             $out .= '<div class="card fcard fcard-info">';
             $out .= '<div class="card-body">';
 
-            $out .= '<ul class="nav nav-tabs" role="tablist">';
+            $out .= '<ul class="nav nav-tabs mb-2" role="tablist">';
 
-            $out .= '<li class="active"><a href="#extend_tab" ';
+            $out .= '<li class="nav-item">';
+            $out .= '<a href="#extend_tab" ';
+            $out .= 'class="nav-link active" ';
             $out .= 'data-toggle="tab">Verlengen</a></li>';
 
             if ($config_service->get_intersystem_en($pp->schema()))
             {
-                $out .= '<li>';
-                $out .= '<a href="#access_tab" data-toggle="tab">';
+                $out .= '<li class="nav-item">';
+                $out .= '<a class="nav-link" ';
+                $out .= 'href="#access_tab" data-toggle="tab">';
                 $out .= 'Zichtbaarheid</a><li>';
             }
 
-            $out .= '<li><a href="#category_tab" ';
+            $out .= '<li class="nav-item">';
+            $out .= '<a class="nav-link" href="#category_tab" ';
             $out .= 'data-toggle="tab">Categorie</a></li>';
 
             $out .= '</ul>';
@@ -504,6 +503,7 @@ class MessagesListController extends AbstractController
                 '%label%'   => 'Categorie',
                 '%attr%'    => ' required',
                 '%fa%'      => 'clone',
+                '%explain%' => '',
             ]);
 
             $out .= strtr(BulkCnst::TPL_CHECKBOX, [
@@ -667,7 +667,6 @@ class MessagesListController extends AbstractController
         Request $request,
         Db $db,
         AccountRender $account_render,
-        AssetsService $assets_service,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         HeadingRender $heading_render,
@@ -949,8 +948,6 @@ class MessagesListController extends AbstractController
                 }
             }
         }
-
-        $assets_service->add(['messages_filter.js']);
 
         $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
             || $filter_type

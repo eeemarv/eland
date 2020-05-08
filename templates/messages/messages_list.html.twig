@@ -6,5 +6,7 @@
 
 {%- block js -%}
     {{- parent() -}}
+	{{- encore_entry_script_tags('footable') -}}
+	{{- encore_entry_script_tags('typeahead') -}}
 	{{- encore_entry_script_tags('table_select') -}}
 {%- endblock js -%}

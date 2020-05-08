@@ -1535,7 +1535,7 @@ class UsersListController extends AbstractController
             $out .= '<div class="card fcard fcard-info">';
             $out .= '<div class="card-body">';
 
-            $out .= '<ul class="nav nav-tabs">';
+            $out .= '<ul class="nav nav-tabs mb-2">';
 
             $out .= '<li class="nav-item">';
             $out .= '<a href="#mail_tab" ';
