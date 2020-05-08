@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Categories;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,12 +13,12 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 
-class CategoriesAddController extends AbstractController
+class CategoriesEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        int $id,
         Db $db,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -26,12 +26,32 @@ class CategoriesAddController extends AbstractController
         LinkRender $link_render,
         HeadingRender $heading_render,
         PageParamsService $pp,
-        SessionUserService $su,
         SelectRender $select_render
     ):Response
     {
-        $cat = [];
+        $cats = [];
         $errors = [];
+
+        $rs = $db->prepare('select *
+            from ' . $pp->schema() . '.categories
+            order by fullname');
+
+        $rs->execute();
+
+        while ($row = $rs->fetch())
+        {
+            $cats[$row['id']] = $row;
+        }
+
+        $child_count_ary = [];
+
+        foreach ($cats as $cat)
+        {
+            $child_count_ary[$cat['id_parent']] ??= 0;
+            $child_count_ary[$cat['id_parent']]++;
+        }
+
+        $cat = $cats[$id];
 
         if ($request->isMethod('POST'))
         {
@@ -39,14 +59,25 @@ class CategoriesAddController extends AbstractController
             $cat['id_parent'] = (int) $request->request->get('id_parent', 0);
             $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
-            if (trim($cat['name']) === '')
+            $message_count = $db->fetchColumn('select count(*)
+                from ' . $pp->schema() . '.messsages
+                where category_id = ?', [$id]);
+
+            if (!$cat['name'])
             {
                 $errors[] = 'Vul naam in!';
             }
 
-            if (strlen($cat['name']) > 40)
+            if ($message_count && !$cat['leafnote'])
             {
-                $errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
+                $errors[] = 'Hoofdcategoriën kunnen
+                    geen berichten bevatten.';
+            }
+
+            if ($cat['leafnote'] && $child_count_ary[$id])
+            {
+                $errors[] = 'Subcategoriën kunnen
+                    geen categoriën bevatten.';
             }
 
             if ($token_error = $form_token_service->get_error())
@@ -56,42 +87,40 @@ class CategoriesAddController extends AbstractController
 
             if (!count($errors))
             {
-                if (!$su->is_master())
-                {
-                    $cat['created_by'] = $su->id();
-                }
+                $prefix = '';
 
-                $cat['fullname'] = '';
-
-                if ($cat['leafnote'])
+                if ($cat['id_parent'])
                 {
-                    $cat['fullname'] .= $db->fetchColumn('select name
+                    $prefix .= $db->fetchColumn('select name
                         from ' . $pp->schema() . '.categories
-                        where id = ?', [(int) $cat['id_parent']]);
-                    $cat['fullname'] .= ' - ';
+                        where id = ?', [$cat['id_parent']]) . ' - ';
                 }
 
-                $cat['fullname'] .= $cat['name'];
+                $cat['fullname'] = $prefix . $cat['name'];
+                unset($cat['id']);
 
-                if ($db->insert($pp->schema() . '.categories', $cat))
+                if ($db->update($pp->schema() . '.categories', $cat, ['id' => $id]))
                 {
-                    $alert_service->success('Categorie toegevoegd.');
+                    $db->executeUpdate('update ' . $pp->schema() . '.categories
+                        set fullname = ? || \' - \' || name
+                        where id_parent = ?', [$cat['name'], $id]);
+
+                    $alert_service->success('Categorie aangepast.');
                     $link_render->redirect('categories', $pp->ary(), []);
                 }
 
-                $alert_service->error('Categorie niet toegevoegd.');
+                $alert_service->error('Categorie niet aangepast.');
             }
-            else
-            {
-                $alert_service->error($errors);
-            }
+
+            $alert_service->error($errors);
         }
 
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $db->prepare('select id, name
-            from ' . $pp->schema() . '.categories
-            where leafnote = 0 order by name');
+            from ' . $pp->schema . '.categories
+            where leafnote = 0
+            order by name');
 
         $rs->execute();
 
@@ -102,13 +131,14 @@ class CategoriesAddController extends AbstractController
 
         $id_parent = $cat['id_parent'] ?? 0;
 
-        $heading_render->add('Categorie toevoegen');
+        $heading_render->add('Categorie aanpassen : ');
+        $heading_render->add($cat['name']);
         $heading_render->fa('clone');
 
         $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
-        $out .= '<form  method="post">';
+        $out .= '<form method="post">';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="name" class="control-label">';
@@ -122,23 +152,24 @@ class CategoriesAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" ';
         $out .= 'value="';
-        $out .= $cat['name'] ?? '';
-        $out .= '" required maxlength="40">';
+        $out .= $cat["name"] ?? '';
+        $out .= '" required>';
         $out .= '</div>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="id_parent" class="control-label">';
         $out .= 'Hoofdcategorie of deelcategorie van</label>';
-        $out .= '<select name="id_parent" id="id_parent" class="form-control">';
-        $out .= $select_render->get_options($parent_cats, (string) ($id_parent ?? 0));
+        $out .= '<select class="form-control" id="id_parent" name="id_parent">';
+        $out .= $select_render->get_options($parent_cats, (string) $id_parent);
         $out .= '</select>';
         $out .= '</div>';
 
         $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
+
         $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" value="Toevoegen" ';
-        $out .= 'class="btn btn-success btn-lg">';
+        $out .= '<input type="submit" value="Opslaan" ';
+        $out .= 'name="zend" class="btn btn-primary btn-lg">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';
@@ -148,7 +179,7 @@ class CategoriesAddController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_edit.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

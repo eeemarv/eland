@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Categories;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,7 +73,7 @@ class CategoriesController extends AbstractController
         $heading_render->add('Categorieën');
         $heading_render->fa('clone');
 
-        $out = '<div class="table-responsive border border-dark rounded mb-3">';
+        $out = '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped table-hover ';
         $out .= 'table-bordered footable bg-default mb-0" ';
         $out .= 'data-sort="false">';
@@ -194,7 +194,7 @@ class CategoriesController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

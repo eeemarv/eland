@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Categories;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,7 +72,7 @@ class CategoriesDelController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_del.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
