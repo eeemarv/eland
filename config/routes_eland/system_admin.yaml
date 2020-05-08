@@ -84,27 +84,27 @@ config:
   methods: GET|POST
 
 intersystems_edit:
-  controller: App\Controller\IntersystemsEditController
+  controller: App\Controller\Intersystems\IntersystemsEditController
   path: /intersystems/{id<%assert.id%>}/edit
   methods: GET|POST
 
 intersystems_del:
-  controller: App\Controller\IntersystemsDelController
+  controller: App\Controller\Intersystems\IntersystemsDelController
   path: /intersystems/{id<%assert.id%>}/del
   methods: GET|POST
 
 intersystems_add:
-  controller: App\Controller\IntersystemsAddController
+  controller: App\Controller\Intersystems\IntersystemsAddController
   path: /intersystems/add
   methods: GET|POST
 
 intersystems_show:
-  controller: App\Controller\IntersystemsShowController
+  controller: App\Controller\Intersystems\IntersystemsShowController
   path: /intersystems/{id<%assert.id%>}
   methods: GET
 
 intersystems:
-  controller: App\Controller\IntersystemsController
+  controller: App\Controller\Intersystems\IntersystemsController
   path: /intersystems
   methods: GET
 
