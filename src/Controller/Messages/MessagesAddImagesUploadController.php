@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
@@ -13,11 +12,10 @@ use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
-class MessagesEditImagesUploadController extends AbstractController
+class MessagesAddImagesUploadController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        int $id,
         string $form_token,
         Db $db,
         FormTokenService $form_token_service,
@@ -25,22 +23,21 @@ class MessagesEditImagesUploadController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         ImageUploadService $image_upload_service,
-        MessagesShowImagesUploadController $upload_controller
+        MessagesEditImagesUploadController $edit_upload_controller,
+        MessagesShowImagesUploadController $show_upload_controller
     ):Response
     {
-        if ($error = $form_token_service->get_ajax_error($form_token))
-        {
-            throw new BadRequestHttpException('Form token fout: ' . $error);
-        }
-
-        return $upload_controller(
+        return $edit_upload_controller(
             $request,
-            $id,
+            0,
+            $form_token,
             $db,
+            $form_token_service,
             $logger,
             $pp,
             $su,
-            $image_upload_service
+            $image_upload_service,
+            $show_upload_controller
         );
     }
 }

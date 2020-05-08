@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\BulkCnst;
-use App\Controller\MessagesShowController;
+use App\Controller\Messages\MessagesShowController;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -281,7 +281,7 @@ class MessagesListController extends AbstractController
         {
             $out .= self::no_messages($pagination_render, $menu_service);
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('messages/messages_list.html.twig', [
                 'content'   => $out,
                 'schema'    => $pp->schema(),
             ]);
@@ -528,7 +528,7 @@ class MessagesListController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
@@ -564,15 +564,18 @@ class MessagesListController extends AbstractController
         foreach ($checkbox_ary as $key => $label)
         {
             $id = 'f_' . $filter_id . '_' . $key;
-            $out .= '<label class="checkbox-inline" for="' . $id . '">';
+            $out .= '<div class="custom-control custom-checkbox custom-control-inline">';
             $out .= '<input type="checkbox" id="' . $id . '" ';
+            $out .= 'class="custom-control-input" ';
             $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
             $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
             $out .= '>&nbsp;';
+            $out .= '<label class="custom-control-label" for="' . $id . '">';
             $out .= '<span class="btn btn-default border border-secondary-li">';
             $out .= $label;
             $out .= '</span>';
             $out .= '</label>';
+            $out .= '</div>';
         }
 
         return $out;
@@ -695,7 +698,7 @@ class MessagesListController extends AbstractController
             ],
         ];
 
-        $params_sql = $where_sql = $ustatus_sql = [];
+        $params_sql = $where_sql = [];
 
         if (isset($filter['uid'])
             && $filter['uid']
@@ -773,39 +776,6 @@ class MessagesListController extends AbstractController
             {
                 $where_sql[] = 'm.is_offer = \'t\'';
                 $params['f']['type']['offer'] = 'on';
-            }
-        }
-
-        $filter_ustatus = isset($filter['ustatus']) &&
-            !(isset($filter['ustatus']['new'])
-                && isset($filter['ustatus']['leaving'])
-                && isset($filter['ustatus']['active']));
-
-        if ($filter_ustatus)
-        {
-            if (isset($filter['ustatus']['new']))
-            {
-                $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
-                $params['f']['ustatus']['new'] = 'on';
-            }
-
-            if (isset($filter['ustatus']['leaving']))
-            {
-                $ustatus_sql[] = 'u.status = 2';
-                $params['f']['ustatus']['leaving'] = 'on';
-            }
-
-            if (isset($filter['ustatus']['active']))
-            {
-                $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
-                $params['f']['ustatus']['active'] = 'on';
-            }
-
-            if (count($ustatus_sql))
-            {
-                $where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
             }
         }
 
@@ -984,8 +954,7 @@ class MessagesListController extends AbstractController
 
         $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
             || $filter_type
-            || $filter_valid
-            || $filter_ustatus;
+            || $filter_valid;
 
         $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
@@ -1018,15 +987,15 @@ class MessagesListController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('newspaper-o');
 
-        $out = '<div class="card fcard fcard-info mb-3">';
-        $out .= '<div class="card-body">';
+        $out = '<div class="card fcard fcard-info mb-2">';
+        $out .= '<div class="card-body pb-1">';
 
         $out .= '<form method="get" class="form-horizontal">';
 
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-search"></i>';
@@ -1038,8 +1007,8 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-5 col-xs-10">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<i class="fa fa-clone"></i>';
@@ -1055,7 +1024,7 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-2 col-xs-2">';
+        $out .= '<div class="col-sm-2 mb-2">';
         $out .= '<button class="btn btn-default btn-block ';
         $out .= 'border border-secondary-li" title="Meer filters" ';
         $out .= 'type="button" ';
@@ -1070,50 +1039,30 @@ class MessagesListController extends AbstractController
         $out .= $filter_panel_open ? '' : ' class="collapse"';
         $out .= '>';
 
-        $out .= '<div class="row mt-2">';
+        $out .= '<div class="row">';
 
         $offerwant_options = [
             'want'		=> 'Vraag',
             'offer'		=> 'Aanbod',
         ];
 
-        $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="col-sm-6">';
+        $out .= '<div class="input-group mb-2">';
 
         $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '</div>';
-        $out .= '<div class="row">';
-
         $valid_options = [
             'yes'		=> 'Geldig',
             'no'		=> 'Vervallen',
         ];
 
-        $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="col-sm-6">';
+        $out .= '<div class="input-group mb-2">';
 
         $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-        $out .= '<div class="row">';
-
-        $user_status_options = [
-            'active'	=> 'Niet in- of uitstappers',
-            'new'		=> 'Instappers',
-            'leaving'	=> 'Uitstappers',
-        ];
-
-        $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group">';
-
-        $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
@@ -1123,7 +1072,7 @@ class MessagesListController extends AbstractController
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-10">';
-        $out .= '<div class="input-group">';
+        $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= 'Van&nbsp;';
@@ -1149,9 +1098,10 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-2">';
+        $out .= '<div class="col-sm-2 mb-2">';
         $out .= '<input type="submit" id="filter_submit" ';
-        $out .= 'value="Toon" class="btn btn-default btn-block" ';
+        $out .= 'value="Toon" ';
+        $out .= 'class="btn btn-default btn-block border border-secondary-li" ';
         $out .= 'name="f[s]">';
         $out .= '</div>';
 

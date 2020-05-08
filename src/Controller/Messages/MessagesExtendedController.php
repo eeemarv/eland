@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\MessagesListController;
+use App\Controller\Messages\MessagesListController;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -172,7 +172,7 @@ class MessagesExtendedController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_extended.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

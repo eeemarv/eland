@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
-use App\Controller\MessagesShowController;
+use App\Controller\Messages\MessagesShowController;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -82,7 +82,7 @@ class MessagesEditController extends AbstractController
             $env_s3_url
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_edit.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);
@@ -512,7 +512,8 @@ class MessagesEditController extends AbstractController
         $out .= '<label for="content" class="control-label">';
         $out .= 'Omschrijving</label>';
         $out .= '<textarea name="content" ';
-        $out .= 'class="form-control summernote" id="content" rows="4" maxlength="2000">';
+        $out .= 'class="form-control" id="content" ';
+        $out .= 'data-summernote rows="4" maxlength="2000">';
         $out .= self::format($content);
         $out .= '</textarea>';
         $out .= '</div>';
@@ -639,7 +640,7 @@ class MessagesEditController extends AbstractController
             $upload_img_route = 'messages_add_images_upload';
         }
 
-        $out .= '<span class="btn btn-default fileinput-button">';
+        $out .= '<span class="btn btn-default border border-secondary-li fileinput-button">';
         $out .= '<i class="fa fa-plus" id="img_plus"></i> Opladen';
         $out .= '<input id="fileupload" type="file" name="images[]" ';
         $out .= 'data-url="';

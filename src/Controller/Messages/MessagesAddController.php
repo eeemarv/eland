@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -77,7 +77,7 @@ class MessagesAddController extends AbstractController
             $env_s3_url
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_add.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

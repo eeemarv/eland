@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +29,8 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
+use App\Controller\ContactsUserShowInlineController;
+use App\Controller\UsersShowAdminController;
 
 class MessagesShowController extends AbstractController
 {
@@ -510,7 +512,7 @@ class MessagesShowController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_show.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

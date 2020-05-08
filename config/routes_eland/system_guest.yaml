@@ -4,17 +4,17 @@ logout:
   methods: GET
 
 messages_show:
-  controller: App\Controller\MessagesShowController
+  controller: App\Controller\Messages\MessagesShowController
   path: /messages/{id<%assert.id%>}
   methods: GET|POST
 
 messages_extended:
-  controller: App\Controller\MessagesExtendedController
+  controller: App\Controller\Messages\MessagesExtendedController
   path: /messages/extended
   methods: GET
 
 messages_list:
-  controller: App\Controller\MessagesListController
+  controller: App\Controller\Messages\MessagesListController
   path: /messages
   methods: GET|POST
 
