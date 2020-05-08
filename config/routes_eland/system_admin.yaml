@@ -285,7 +285,7 @@ contact_admin:
 
 register_admin:
   path: /register
-  controller: App\Controller\RegisterAdminController
+  controller: App\Controller\Register\RegisterAdminController
   methods: GET
 
 password_reset_admin:

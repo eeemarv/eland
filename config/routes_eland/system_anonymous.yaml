@@ -15,12 +15,12 @@ contact_token:
 
 register:
   path: /register
-  controller: App\Controller\RegisterController
+  controller: App\Controller\Register\RegisterController
   methods: GET|POST
 
 register_token:
   path: /register/{token<%assert.token%>}
-  controller: App\Controller\RegisterTokenController
+  controller: App\Controller\Register\RegisterTokenController
   methods: GET
 
 password_reset:
