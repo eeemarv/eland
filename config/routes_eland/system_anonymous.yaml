@@ -25,12 +25,12 @@ register_token:
 
 password_reset:
   path: /password-reset
-  controller: App\Controller\PasswordResetController
+  controller: App\Controller\PasswordReset\PasswordResetController
   methods: GET|POST
 
 password_reset_token:
   path: /password-reset/{token<%assert.token%>}
-  controller: App\Controller\PasswordResetTokenController
+  controller: App\Controller\PasswordReset\PasswordResetTokenController
   methods: GET|POST
 
 mollie_webhook:

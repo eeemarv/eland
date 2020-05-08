@@ -290,7 +290,7 @@ register_admin:
 
 password_reset_admin:
   path: /password-reset
-  controller: App\Controller\PasswordResetAdminController
+  controller: App\Controller\PasswordReset\PasswordResetAdminController
   methods: GET
 
 home_admin:
