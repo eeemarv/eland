@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\ContactTypes;
 
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
@@ -45,7 +45,7 @@ class ContactTypesController extends AbstractController
         $heading_render->add('Contact types');
         $heading_render->fa('circle-o-notch');
 
-        $out .= '<div class="table-responsive ';
+        $out = '<div class="table-responsive ';
         $out .= 'border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped table-hover ';
         $out .= 'table-bordered bg-default mb-0" ';

@@ -24,22 +24,22 @@ categories:
   methods: GET
 
 contact_types_del:
-  controller: App\Controller\ContactTypesDelController
+  controller: App\Controller\ContactTypes\ContactTypesDelController
   path: /contact-types/{id<%assert.id%>}/del
   methods: GET|POST
 
 contact_types_edit:
-  controller: App\Controller\ContactTypesEditController
+  controller: App\Controller\ContactTypes\ContactTypesEditController
   path: /contact-types/{id<%assert.id%>}/edit
   methods: GET|POST
 
 contact_types_add:
-  controller: App\Controller\ContactTypesAddController
+  controller: App\Controller\ContactTypes\ContactTypesAddController
   path: /contact-types/add
   methods: GET|POST
 
 contact_types:
-  controller: App\Controller\ContactTypesController
+  controller: App\Controller\ContactTypes\ContactTypesController
   path: /contact-types
   methods: GET
 
