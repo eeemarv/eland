@@ -300,15 +300,15 @@ home_admin:
 
 mollie_config:
   path: /mollie/config
-  controller: App\Controller\MollieConfigController
+  controller: App\Controller\Mollie\MollieConfigController
   methods: GET|POST
 
 mollie_payments_add:
   path: /mollie/payments/add/{status<%assert.account_status%>?active}
-  controller: App\Controller\MolliePaymentsAddController
+  controller: App\Controller\Mollie\MolliePaymentsAddController
   methods: GET|POST
 
 mollie_payments:
   path: /mollie/payments
-  controller: App\Controller\MolliePaymentsController
+  controller: App\Controller\Mollie\MolliePaymentsController
   methods: GET|POST

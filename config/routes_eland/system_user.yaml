@@ -135,5 +135,5 @@ typeahead_postcodes:
 
 mollie_checkout:
   path: /mollie/checkout/{id<%assert.id%>}
-  controller: App\Controller\MollieCheckoutController
+  controller: App\Controller\Mollie\MollieCheckoutController
   methods: GET|POST

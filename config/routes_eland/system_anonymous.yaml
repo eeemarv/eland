@@ -35,12 +35,12 @@ password_reset_token:
 
 mollie_webhook:
   path: /mollie/webhook
-  controller: App\Controller\MollieWebhookController
+  controller: App\Controller\Mollie\MollieWebhookController
   methods: POST
 
 mollie_checkout_anonymous:
   path: /mollie/checkout/{token<%assert.big_token%>}
-  controller: App\Controller\MollieCheckoutAnonymousController
+  controller: App\Controller\Mollie\MollieCheckoutAnonymousController
   methods: GET|POST
 
 system_admin:
