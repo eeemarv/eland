@@ -142,9 +142,11 @@ class DocsMapController extends AbstractController
                 || $pp->is_admin();
 
             $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
+
             $out .= '<table class="table table-bordered mb-0 ';
-            $out .= 'table-striped table-hover footable csv bg-default" ';
-            $out .= 'data-filter="#q" data-filter-minimum="1">';
+            $out .= 'table-striped table-hover footable bg-default" ';
+            $out .= 'data-filter="#q" data-filter-minimum="1" ';
+            $out .= 'data-csv>';
             $out .= '<thead>';
 
             $out .= '<tr>';

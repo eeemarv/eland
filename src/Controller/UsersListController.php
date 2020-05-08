@@ -1136,22 +1136,23 @@ class UsersListController extends AbstractController
         $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-bordered ';
         $out .= 'table-striped table-hover ';
-        $out .= 'footable csv bg-default mb-0" ';
+        $out .= 'border border-secondary-li ';
+        $out .= 'footable bg-default mb-0" ';
         $out .= 'data-filtering="true" data-filter-delay="0" ';
         $out .= 'data-filter="#q" data-filter-min="1" data-cascade="true" ';
         $out .= 'data-empty="Er zijn geen gebruikers ';
         $out .= 'volgens de selectiecriteria" ';
         $out .= 'data-sorting="true" ';
         $out .= 'data-filter-placeholder="Zoeken" ';
-        $out .= 'data-filter-position="left"';
+        $out .= 'data-filter-position="left" ';
 
         if (count($ref_geo))
         {
-            $out .= ' data-lat="' . $ref_geo['lat'] . '" ';
-            $out .= 'data-lng="' . $ref_geo['lng'] . '"';
+            $out .= 'data-lat="' . $ref_geo['lat'] . '" ';
+            $out .= 'data-lng="' . $ref_geo['lng'] . '" ';
         }
 
-        $out .= '>';
+        $out .= 'data-csv>';
         $out .= '<thead>';
 
         $out .= '<tr>';

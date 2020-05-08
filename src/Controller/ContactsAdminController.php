@@ -426,11 +426,11 @@ class ContactsAdminController extends AbstractController
         }
 
         $out .= '<div class="table-responsive ';
-        $out .= 'border border-dark rounded mb-3">';
+        $out .= 'border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-hover ';
         $out .= 'table-striped table-bordered ';
-        $out .= 'footable csv bg-default mb-0" ';
-        $out .= 'data-sort="false">';
+        $out .= 'footable bg-default mb-0" ';
+        $out .= 'data-sort="false" data-csv>';
 
         $out .= '<thead>';
         $out .= '<tr>';

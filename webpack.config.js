@@ -31,6 +31,7 @@ Encore
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('summernote_forum_post', './assets/js/summernote_forum_post.js')
     .addEntry('item_access_input_cache', './assets/js/item_access_input_cache.js')
+    .addEntry('table_select', './assets/js/table_select.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

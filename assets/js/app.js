@@ -4,11 +4,13 @@ import 'bootstrap';
 import 'jquery-touchswipe/jquery.touchSwipe.min.js';
 
 import offcanvas from './overall/offcanvas';
+import filter_auto_submit from './overall/filter_auto_submit';
 import filter_remove_empty_inputs from './overall/filter_remove_empty_inputs';
 import csv from './overall/csv';
 
 $(document).ready(function() {
     offcanvas();
+    filter_auto_submit();
     filter_remove_empty_inputs();
     csv();
 });

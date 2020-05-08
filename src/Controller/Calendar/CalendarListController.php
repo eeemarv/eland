@@ -67,7 +67,9 @@ class CalendarListController extends AbstractController
         $out = '<div class="card card-warning printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped ';
-        $out .= 'table-hover table-bordered footable csv">';
+        $out .= 'border border-secondary-li ';
+        $out .= 'table-hover table-bordered footable" ';
+        $out .= 'data-csv>';
 
         $out .= '<thead>';
         $out .= '<tr>';

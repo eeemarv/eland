@@ -36,6 +36,6 @@ export default function() {
 	}
 
 	$('a[data-csv]').click(function (event) {
-		exportTableToCSV.apply(this, [$('table.csv'), 'export.csv']);
+		exportTableToCSV.apply(this, [$('table[data-csv]'), 'export.csv']);
 	});
 };

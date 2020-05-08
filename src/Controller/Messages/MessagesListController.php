@@ -289,10 +289,10 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="table-responsive border border-dark rounded mb-3">';
+        $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped mb-0 ';
-        $out .= 'table-bordered table-hover footable csv bg-default" ';
-        $out .= 'id="msgs" data-sort="false">';
+        $out .= 'table-bordered table-hover footable bg-default" ';
+        $out .= 'data-sort="false" data-csv>';
 
         $out .= '<thead>';
         $out .= '<tr>';
@@ -1014,7 +1014,7 @@ class MessagesListController extends AbstractController
         $out .= '<i class="fa fa-clone"></i>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<select class="form-control" id="cid" name="f[cid]">';
+        $out .= '<select class="form-control" name="f[cid]" data-auto-submit>';
 
         $cid = (string) ($filter['cid'] ?? '');
 
@@ -1099,7 +1099,7 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-2 mb-2">';
-        $out .= '<input type="submit" id="filter_submit" ';
+        $out .= '<input type="submit" ';
         $out .= 'value="Toon" ';
         $out .= 'class="btn btn-default btn-block border border-secondary-li" ';
         $out .= 'name="f[s]">';
