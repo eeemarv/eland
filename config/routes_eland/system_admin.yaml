@@ -280,7 +280,7 @@ login_admin:
 
 contact_admin:
   path: /contact
-  controller: App\Controller\ContactFormAdminController
+  controller: App\Controller\ContactForm\ContactFormAdminController
   methods: GET
 
 register_admin:

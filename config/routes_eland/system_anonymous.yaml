@@ -5,12 +5,12 @@ login:
 
 contact:
   path: /contact
-  controller: App\Controller\ContactFormController
+  controller: App\Controller\ContactForm\ContactFormController
   methods: GET|POST
 
 contact_token:
   path: /contact/{token<%assert.token%>}
-  controller: App\Controller\ContactFormTokenController
+  controller: App\Controller\ContactForm\ContactFormTokenController
   methods: GET
 
 register:
