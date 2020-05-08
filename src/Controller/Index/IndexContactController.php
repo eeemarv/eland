@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Index;
 
 use App\Render\LinkRender;
 use App\Service\CaptchaService;
@@ -98,7 +98,7 @@ class IndexContactController extends AbstractController
             }
         }
 
-        return $this->render('index/contact.html.twig', [
+        return $this->render('index/index_contact.html.twig', [
             'form_ok'       => $form_ok !== '',
             'mail'          => $mail,
             'message'       => $message,

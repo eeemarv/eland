@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Index;
 
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,10 +14,6 @@ class IndexController extends AbstractController
         SystemsService $systems_service
     ):Response
     {
-
-        error_log('SCRIPT_NAME: ' . $request->getScriptName());
-        error_log('HOST: ' . $request->getHost());
-
         $schemas = $systems_service->get_schemas();
 
         asort($schemas);
