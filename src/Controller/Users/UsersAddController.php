@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Users;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\UsersEditAdminController;
-use Doctrine\DBAL\Connection as Db;
+use App\Controller\Users\UsersEditAdminController;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -31,9 +30,10 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
-class UsersEditController extends AbstractController
+class UsersAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -67,8 +67,8 @@ class UsersEditController extends AbstractController
     {
         $content = UsersEditAdminController::form(
             $request,
-            $su->id(),
-            true,
+            0,
+            false,
             $db,
             $encoder_factory,
             $account_render,

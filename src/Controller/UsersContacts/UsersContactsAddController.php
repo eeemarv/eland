@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\UsersContacts;
 
+use App\Controller\Contacts\ContactsAddAdminController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Queue\GeocodeQueue;
 use App\Render\AccountRender;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
@@ -12,44 +14,51 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
+use App\Service\TypeaheadService;
 
-class UsersContactsDelController extends AbstractController
+class UsersContactsAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        int $contact_id,
         Db $db,
         AlertService $alert_service,
-        UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
-        ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
+        ConfigService $config_service,
+        LinkRender $link_render,
         AccountRender $account_render,
+        AssetsService $assets_service,
+        GeocodeQueue $geocode_queue,
+        ItemAccessService $item_access_service,
+        TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su,
-        LinkRender $link_render
+        HeadingRender $heading_render
     ):Response
     {
-        $content = ContactsDelAdminController::form(
+        $content = ContactsAddAdminController::form(
             $request,
             $su->id(),
-            $contact_id,
             false,
             $db,
             $alert_service,
-            $user_cache_service,
             $form_token_service,
             $menu_service,
-            $item_access_service,
-            $heading_render,
+            $config_service,
+            $link_render,
             $account_render,
+            $assets_service,
+            $geocode_queue,
+            $item_access_service,
+            $typeahead_service,
             $pp,
-            $link_render
+            $su,
+            $heading_render
         );
 
         return $this->render('base/navbar.html.twig', [

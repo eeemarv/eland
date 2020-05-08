@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\UsersContacts;
 
+use App\Controller\Contacts\ContactsEditAdminController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,12 +17,12 @@ use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 
-class UsersContactsEditController extends AbstractController
+class UsersContactsEditAdminController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        int $user_id,
         int $contact_id,
         Db $db,
         FormTokenService $form_token_service,
@@ -33,13 +34,12 @@ class UsersContactsEditController extends AbstractController
         HeadingRender $heading_render,
         AccountRender $account_render,
         PageParamsService $pp,
-        SessionUserService $su,
         GeocodeQueue $geocode_queue
     ):Response
     {
         $content = ContactsEditAdminController::form(
             $request,
-            $su->id(),
+            $user_id,
             $contact_id,
             false,
             $db,

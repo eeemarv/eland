@@ -29,8 +29,8 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Controller\ContactsUserShowInlineController;
-use App\Controller\UsersShowAdminController;
+use App\Controller\Contacts\ContactsUserShowInlineController;
+use App\Controller\Users\UsersShowAdminController;
 
 class MessagesShowController extends AbstractController
 {

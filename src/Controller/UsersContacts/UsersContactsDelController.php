@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\UsersContacts;
 
+use App\Controller\Contacts\ContactsDelAdminController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,13 +15,13 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 
-class UsersContactsDelAdminController extends AbstractController
+class UsersContactsDelController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        int $user_id,
         int $contact_id,
         Db $db,
         AlertService $alert_service,
@@ -31,12 +32,13 @@ class UsersContactsDelAdminController extends AbstractController
         HeadingRender $heading_render,
         AccountRender $account_render,
         PageParamsService $pp,
+        SessionUserService $su,
         LinkRender $link_render
     ):Response
     {
         $content = ContactsDelAdminController::form(
             $request,
-            $user_id,
+            $su->id(),
             $contact_id,
             false,
             $db,

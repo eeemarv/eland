@@ -19,22 +19,22 @@ messages_list:
   methods: GET|POST
 
 users_show:
-  controller: App\Controller\UsersShowController
+  controller: App\Controller\Users\UsersShowController
   path: /users/{id<%assert.id%>}/{status<%assert.account_status.active%>?active}
   methods: GET|POST
 
 users_map:
-  controller: App\Controller\UsersMapController
+  controller: App\Controller\Users\UsersMapController
   path: /users/map/{status<%assert.account_status.active%>?active}
   methods: GET
 
 users_tiles:
-  controller: App\Controller\UsersTilesController
+  controller: App\Controller\Users\UsersTilesController
   path: /users/tiles/{status<%assert.account_status.active%>?active}
   methods: GET
 
 users_list:
-  controller: App\Controller\UsersListController
+  controller: App\Controller\Users\UsersListController
   path: /users/{status<%assert.account_status.active%>?active}
   methods: GET|POST
 

@@ -1,15 +1,15 @@
 users_contacts_edit:
-  controller: App\Controller\UsersContactsEditController
+  controller: App\Controller\UsersContacts\UsersContactsEditController
   path: /users/contacts/{contact_id<%assert.id%>}/edit
   methods: GET|POST
 
 users_contacts_del:
-  controller: App\Controller\UsersContactsDelController
+  controller: App\Controller\UsersContacts\UsersContactsDelController
   path: /users/contacts/{contact_id<%assert.id%>}/del
   methods: GET|POST
 
 users_contacts_add:
-  controller: App\Controller\UsersContactsAddController
+  controller: App\Controller\UsersContacts\UsersContactsAddController
   path: /users/contacts/add
   methods: GET|POST
 
@@ -64,22 +64,22 @@ messages_add:
   methods: GET|POST
 
 users_image_del:
-  controller: App\Controller\UsersImageDelController
+  controller: App\Controller\UsersImage\UsersImageDelController
   path: /users/image/del
   methods: GET|POST
 
 users_image_upload:
-  controller: App\Controller\UsersImageUploadController
+  controller: App\Controller\UsersImage\UsersImageUploadController
   path: /users/image/upload
   methods: POST
 
 users_password:
-  controller: App\Controller\UsersPasswordController
+  controller: App\Controller\Users\UsersPasswordController
   path: /users/password
   methods: GET|POST
 
 users_edit:
-  controller: App\Controller\UsersEditController
+  controller: App\Controller\Users\UsersEditController
   path: /users/edit
   methods: GET|POST
 

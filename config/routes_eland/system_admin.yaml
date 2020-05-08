@@ -44,37 +44,37 @@ contact_types:
   methods: GET
 
 contacts_del_admin:
-  controller: App\Controller\ContactsDelAdminController
+  controller: App\Controller\Contacts\ContactsDelAdminController
   path: /contacts/{id<%assert.id%>}/del
   methods: GET|POST
 
 contacts_edit_admin:
-  controller: App\Controller\ContactsEditAdminController
+  controller: App\Controller\Contacts\ContactsEditAdminController
   path: /contacts/{id<%assert.id%>}/edit
   methods: GET|POST
 
 contacts_add_admin:
-  controller: App\Controller\ContactsAddAdminController
+  controller: App\Controller\Contacts\ContactsAddAdminController
   path: /contacts/add
   methods: GET|POST
 
 contacts:
-  controller: App\Controller\ContactsAdminController
+  controller: App\Controller\Contacts\ContactsAdminController
   path: /contacts
   methods: GET
 
 users_contacts_edit_admin:
-  controller: App\Controller\UsersContactsEditAdminController
+  controller: App\Controller\UsersContacts\UsersContactsEditAdminController
   path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/edit
   methods: GET|POST
 
 users_contacts_del_admin:
-  controller: App\Controller\UsersContactsDelAdminController
+  controller: App\Controller\UsersContacts\UsersContactsDelAdminController
   path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/del
   methods: GET|POST
 
 users_contacts_add_admin:
-  controller: App\Controller\UsersContactsAddAdminController
+  controller: App\Controller\UsersContacts\UsersContactsAddAdminController
   path: /users/{user_id<%assert.id%>}/contacts/add
   methods: GET|POST
 
@@ -129,47 +129,47 @@ logs:
   methods: GET
 
 users_image_del_admin:
-  controller: App\Controller\UsersImageDelAdminController
+  controller: App\Controller\UsersImage\UsersImageDelAdminController
   path: /users/{id<%assert.id%>}/image/del
   methods: GET|POST
 
 users_image_upload_admin:
-  controller: App\Controller\UsersImageUploadAdminController
+  controller: App\Controller\UsersImage\UsersImageUploadAdminController
   path: /users/{id<%assert.id%>}/image/upload
   methods: POST
 
 users_password_admin:
-  controller: App\Controller\UsersPasswordAdminController
+  controller: App\Controller\Users\UsersPasswordAdminController
   path: /users/{id<%assert.id%>}/password
   methods: GET|POST
 
 users_show_admin:
-  controller: App\Controller\UsersShowAdminController
+  controller: App\Controller\Users\UsersShowAdminController
   path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
   methods: GET|POST
 
 users_del_admin:
-  controller: App\Controller\UsersDelAdminController
+  controller: App\Controller\Users\UsersDelAdminController
   path: /users/{id<%assert.id%>}/del
   methods: GET|POST
 
 users_edit_admin:
-  controller: App\Controller\UsersEditAdminController
+  controller: App\Controller\Users\UsersEditAdminController
   path: /users/{id<%assert.id%>}/edit
   methods: GET|POST
 
 users_add:
-  controller: App\Controller\UsersAddController
+  controller: App\Controller\Users\UsersAddController
   path: /users/add
   methods: GET|POST
 
 users_tiles_admin:
-  controller: App\Controller\UsersTilesAdminController
+  controller: App\Controller\Users\UsersTilesAdminController
   path: /users/tiles/{status<%assert.account_status%>?active}
   methods: GET
 
 users_list_admin:
-  controller: App\Controller\UsersListAdminController
+  controller: App\Controller\Users\UsersListAdminController
   path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
 
