@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Init;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -41,7 +41,7 @@ class InitController extends AbstractController
             $alert_service->success('Done: ' . self::ROUTES_LABELS[$done]);
         }
 
-        $out = '<div class="card bg-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
         $out .= '<h1>Init</h1>';
 
