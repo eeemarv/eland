@@ -99,7 +99,7 @@ forum:
   methods: GET
 
 typeahead_accounts:
-  controller: App\Controller\TypeaheadAccountsController
+  controller: App\Controller\Typeahead\TypeaheadAccountsController
   path: /typeahead-accounts/{status<%assert.account_status.primary%>}
   methods: GET
 

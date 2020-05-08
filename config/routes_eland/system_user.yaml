@@ -114,22 +114,22 @@ forum_add_topic:
   methods: GET|POST
 
 typeahead_account_codes:
-  controller: App\Controller\TypeaheadAccountCodesController
+  controller: App\Controller\Typeahead\TypeaheadAccountCodesController
   path: /typeahead-account-codes
   methods: GET
 
 typeahead_usernames:
-  controller: App\Controller\TypeaheadUsernamesController
+  controller: App\Controller\Typeahead\TypeaheadUsernamesController
   path: /typeahead-usernames
   methods: GET
 
 typeahead_eland_intersystem_accounts:
-  controller: App\Controller\TypeaheadElandIntersystemAccountsController
+  controller: App\Controller\Typeahead\TypeaheadElandIntersystemAccountsController
   path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}
   methods: GET
 
 typeahead_postcodes:
-  controller: App\Controller\TypeaheadPostcodesController
+  controller: App\Controller\Typeahead\TypeaheadPostcodesController
   path: /typeahead-postcodes
   methods: GET
 

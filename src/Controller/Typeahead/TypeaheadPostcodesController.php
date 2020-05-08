@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Typeahead;
 
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 
-class TypeaheadAccountCodesController extends AbstractController
+class TypeaheadPostcodesController extends AbstractController
 {
     public function __invoke(
         Db $db,
@@ -16,28 +16,28 @@ class TypeaheadAccountCodesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $account_codes = [];
+        $postcodes = [];
 
-        $st = $db->prepare('select code
+        $st = $db->prepare('select distinct postcode
             from ' . $pp->schema() . '.users
-            order by code asc');
+            order by postcode asc');
 
         $st->execute();
 
         while ($row = $st->fetch())
         {
-            if (empty($row['code']))
+            if (empty($row['postcode']))
             {
                 continue;
             }
 
-            $account_codes[] = $row['code'];
+            $postcodes[] = $row['postcode'];
         }
 
-        $crc = (string) crc32(json_encode($account_codes));
+        $crc = (string) crc32(json_encode($postcodes));
 
-        $typeahead_service->set_thumbprint('account_codes', $pp->ary(), [], $crc);
+        $typeahead_service->set_thumbprint('postcodes', $pp->ary(), [], $crc);
 
-        return $this->json($account_codes);
+        return $this->json($postcodes);
     }
 }

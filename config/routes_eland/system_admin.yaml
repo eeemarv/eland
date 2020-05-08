@@ -229,12 +229,12 @@ docs_map_edit:
   methods: GET|POST
 
 typeahead_doc_map_names:
-  controller: App\Controller\TypeaheadDocMapNamesController
+  controller: App\Controller\Typeahead\TypeaheadDocMapNamesController
   path: /typeahead-doc-map-names
   methods: GET
 
 typeahead_log_types:
-  controller: App\Controller\TypeaheadLogTypesController
+  controller: App\Controller\Typeahead\TypeaheadLogTypesController
   path: /typeahead-log-types
   methods: GET
 
