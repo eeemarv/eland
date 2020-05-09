@@ -283,7 +283,7 @@ class MassTransactionController extends AbstractController
 
                         if (!$su->is_master())
                         {
-                            $transactions['created_by'] = $su->id();
+                            $transaction['created_by'] = $su->id();
                         }
 
                         $db->insert($pp->schema() . '.transactions', $transaction);
@@ -315,7 +315,7 @@ class MassTransactionController extends AbstractController
 
                 foreach($transactions as $t)
                 {
-                    $autominlimit_service->process($t['id_from'], $t['id_to'], (int) $t['amount']);
+                    $autominlimit_service->process((int) $t['id_from'], (int) $t['id_to'], (int) $t['amount']);
                 }
 
                 if ($to_one)
