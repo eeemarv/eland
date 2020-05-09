@@ -19,7 +19,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

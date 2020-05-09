@@ -31,7 +31,6 @@ Encore
     .addEntry('fileupload', './assets/js/fileupload.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('summernote_forum_post', './assets/js/summernote_forum_post.js')
-    .addEntry('messages_edit_images_upload', './assets/js/messages_edit_images_upload.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -87,6 +86,8 @@ config.resolve.alias = {
     'load-image-exif': 'blueimp-load-image/js/load-image-exif.js',
     'load-image-orientation': 'blueimp-load-image/js/load-image-orientation.js',
     'load-image-scale': 'blueimp-load-image/js/load-image-scale.js',
+    'load-image-fetch': 'blueimp-load-image/js/load-image-fetch',
+    'load-image-iptc': 'blueimp-load-image/js/load-image-iptc',
     'canvas-to-blob': 'blueimp-canvas-to-blob/js/canvas-to-blob.js',
     'jquery-ui/widget': 'blueimp-file-upload/js/vendor/jquery.ui.widget.js'
  }
