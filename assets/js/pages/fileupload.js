@@ -27,12 +27,12 @@ export default function () {
 		$files_input.val(JSON.stringify(image_files));
 	}
 
-    if (typeof Sortable === "function"){
-        Sortable.create($sortable.get(0), {
-            onEnd: function(evt){
+    if ($.fn.sortable){
+		$sortable.sortable({
+            onEnd: function(e){
                 rewrite_image_files_input();
             }
-        });
+		});
     }
 
 	$container.find('[data-fileupload-btn-delete]').click(function() {

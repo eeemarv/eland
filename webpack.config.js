@@ -28,6 +28,7 @@ Encore
     .addEntry('datepicker', './assets/js/datepicker.js')
     .addEntry('typeahead', './assets/js/typeahead.js')
     .addEntry('summernote', './assets/js/summernote.js')
+    .addEntry('sortable', './assets/js/sortable.js')
     .addEntry('fileupload', './assets/js/fileupload.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('summernote_forum_post', './assets/js/summernote_forum_post.js')
