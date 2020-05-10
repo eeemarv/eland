@@ -434,14 +434,6 @@ class MessagesEditController extends AbstractController
             $cat_list[$row['id']] = $row['fullname'];
         }
 
-        $assets_service->add([
-            'fileupload',
-            'sortable',
-            'summernote',
-            'summernote_forum_post.js',
-            'messages_edit_images_upload.js',
-        ]);
-
         if ($add_mode)
         {
             $heading_render->add('Nieuw Vraag of Aanbod toevoegen');

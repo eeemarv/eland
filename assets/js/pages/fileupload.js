@@ -68,7 +68,7 @@ export default function () {
 
         $.each(data.result, function (index, file) {
 
-            if (file) {
+            if ($model.length && file) {
 
                 var $model_clone = $model.clone();
 
@@ -86,6 +86,8 @@ export default function () {
                 $model.parent().append($model_clone);
 
 				rewrite_image_files_input();
+			} else if (false){
+
             } else {
 				alert('Fout bij het opladen van de afbeelding.');
 			}
