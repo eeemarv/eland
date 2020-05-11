@@ -25,7 +25,7 @@
     "gitbook-cli": "^2.3.2",
     "isotope-layout": "^3.0.6",
     "jqplot": "^1.0.9",
-    "jquery": "^3.4.1",
+    "jquery": "3.4.1",
     "jquery-sortablejs": "^1.0.1",
     "jquery-touchswipe": "^1.6.19",
     "jquery-ui": "^1.12.1",

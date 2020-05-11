@@ -62,13 +62,14 @@ export default function(){
 				['para', ['ul', 'ol', 'paragraph']],
 				['insert', ['hr', 'link']]
 			],
-			fontSizes: ['10', '11', '12', '14', '18', '24'],
+			fontSizes: ['12', '14', '16', '18', '24']
 		};
 
 		if ($self.data('summernote-codemirror'))
 		{
 			options.toolbar.push(['misc', ['fullscreen', 'codeview']]);
 			options.codemirror = {
+				CodeMirrorConstructor: CodeMirror,
 				theme: 'monokai',
 				lineNumbers: true,
 				indentWithTabs: false,
@@ -110,6 +111,12 @@ export default function(){
 					}).fail(function(){
 						alert('Afbeelding opladen mislukt.');
 					});
+			};
+		} else {
+			options.callbacks = {
+				onImageUpload: function(data){
+					data.pop();
+				}
 			};
 		}
 

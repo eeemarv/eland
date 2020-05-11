@@ -133,7 +133,6 @@ class CalendarAddController extends AbstractController
         $assets_service->add([
             'datepicker',
             'summernote',
-            'summernote_forum_post.js',
         ]);
 
         $heading_render->add('Nieuwsbericht toevoegen');

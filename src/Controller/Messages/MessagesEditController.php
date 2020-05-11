@@ -504,7 +504,7 @@ class MessagesEditController extends AbstractController
         $out .= '<label for="content" class="control-label">';
         $out .= 'Omschrijving</label>';
         $out .= '<textarea name="content" ';
-        $out .= 'class="form-control" id="content" ';
+        $out .= 'class="form-control summernote" id="content" ';
         $out .= 'data-summernote rows="4" maxlength="2000">';
         $out .= self::format($content);
         $out .= '</textarea>';
