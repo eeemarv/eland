@@ -6,16 +6,16 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Translation\TranslatorInterface;
 use App\Form\Extension\EtokenManagerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EtokenValidationSubscriber implements EventSubscriberInterface
 {
-    private $etokenManager;
-    private $translator;
+    protected $etokenManager;
+    protected $translator;
 
-    public function __construct( 
-        EtokenManagerInterface $etokenManager, 
+    public function __construct(
+        EtokenManagerInterface $etokenManager,
         TranslatorInterface $translator = null
     )
     {
@@ -34,7 +34,7 @@ class EtokenValidationSubscriber implements EventSubscriberInterface
     {
         $form = $event->getForm();
 
-        if ($form->isRoot() && $form->getConfig()->getOption('compound')) 
+        if ($form->isRoot() && $form->getConfig()->getOption('compound'))
         {
             $data = $event->getData();
 
@@ -42,7 +42,7 @@ class EtokenValidationSubscriber implements EventSubscriberInterface
 
             if ($errorMessage)
             {
-                if (null !== $this->translator) 
+                if (null !== $this->translator)
                 {
                     $errorMessage = $this->translator->trans($errorMessage);
                 }
@@ -50,7 +50,7 @@ class EtokenValidationSubscriber implements EventSubscriberInterface
                 $form->addError(new FormError($errorMessage));
             }
 
-            if (is_array($data)) 
+            if (is_array($data))
             {
                 unset($data['_etoken']);
                 $event->setData($data);

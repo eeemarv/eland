@@ -14,7 +14,7 @@ use App\Form\Typeahead\TypeaheadTypeAttr;
 
 class AccessType extends AbstractType
 {
-    private $typeaheadTypeAttr;
+    protected $typeaheadTypeAttr;
 
     public function __construct(TypeaheadTypeAttr $typeaheadTypeAttr)
     {
@@ -24,7 +24,7 @@ class AccessType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['typeahead_attr'] = $this->typeaheadTypeAttr->get($options);
-    }    
+    }
 
     public function configureOptions(OptionsResolver $resolver)
     {

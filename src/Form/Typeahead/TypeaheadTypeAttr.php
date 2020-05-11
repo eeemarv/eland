@@ -2,29 +2,26 @@
 
 namespace App\Form\Typeahead;
 
-use App\Service\Thumbprint;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Render\LinkRender;
+use App\Service\PageParamsService;
+use App\Service\TypeaheadService;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 
 class TypeaheadTypeAttr
 {
-    private $thumbprint;
-    private $requestStack;
-    private $schema;
-    private $access;
+    protected TypeaheadService $typeahead_service;
+    protected LinkRender $link_render;
+    protected PageParamsService $pp;
 
     public function __construct(
-        Thumbprint $thumbprint, 
-        RequestStack $requestStack, 
-        UrlGeneratorInterface $urlGenerator
+        TypeaheadService $typeahead_service,
+        LinkRender $link_render ,
+        PageParamsService $pp
     )
     {
-        $this->thumbprint = $thumbprint;
-        $request = $requestStack->getCurrentRequest();   
-        $this->schema = $request->attributes->get('schema');
-        $this->access = $request->attributes->get('access'); 
-        $this->urlGenerator = $urlGenerator;
+        $this->typeahead_service = $typeahead_service;
+        $this->link_render = $link_render;
+        $this->pp = $pp;
     }
 
     public function get(array $options):array
@@ -35,27 +32,27 @@ class TypeaheadTypeAttr
         {
             if (isset($options['source_id']))
             {
-                throw new InvalidArgumentException(sprintf(
-                    'options "source_route" and "source_id" can 
-                    not be both set in %s', __CLASS__));
+                throw new InvalidArgumentException(
+                    'options "source_route" and "source_id" can
+                    not be both set in %s'.  __CLASS__);
             }
 
             if (isset($options['source']))
             {
-                throw new InvalidArgumentException(sprintf(
-                    'options "source_route" and "source" can 
-                    not be both set in %s', __CLASS__));
+                throw new InvalidArgumentException(
+                    'options "source_route" and "source" can
+                    not be both set in %s' . __CLASS__);
             }
-            
+
             $source = ['route' => $options['source_route']];
 
             if (isset($options['source_params']))
             {
                 if (!is_array($options['source_params']))
                 {
-                    throw new InvalidArgumentException(sprintf(
+                    throw new InvalidArgumentException(
                         'option "source_params" must be an
-                        array in %s', __CLASS__));
+                        array in ' .  __CLASS__);
                 }
 
                 $source['params'] = $options['source_params'];
@@ -64,7 +61,7 @@ class TypeaheadTypeAttr
             $options['source'] = [$source];
         }
 
-        if (isset($options['source_id'])) 
+        if (isset($options['source_id']))
         {
             $attr['data-typeahead-source-id'] = $options['source_id'];
         }
@@ -72,18 +69,18 @@ class TypeaheadTypeAttr
         {
             if (isset($options['data_path']))
             {
-                throw new InvalidArgumentException(sprintf(
-                    'options "data_path" and "data_source" can 
-                    not be both set in %s', __CLASS__));
+                throw new InvalidArgumentException(
+                    'options "data_path" and "data_source" can
+                    not be both set in ' . __CLASS__);
             }
 
             $source = $options['source'];
 
             if (!is_array($source))
             {
-                throw new InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(
                     'option "source" must be an
-                    array in %s', __CLASS__));
+                    array in ' . __CLASS__);
             }
 
             $dataTypeahead = [];
@@ -91,14 +88,14 @@ class TypeaheadTypeAttr
                 'schema'    => $this->schema,
                 'access'    => $this->access,
             ];
-            
+
             foreach ($source as $s)
             {
                 if (!isset($s['route']))
                 {
-                    throw new InvalidArgumentException(sprintf(
-                        'a "route" key is missing from option "source" 
-                        in %s', __CLASS__));
+                    throw new InvalidArgumentException(
+                        'a "route" key is missing from option "source"
+                        in ' . __CLASS__);
                 }
 
                 $params = isset($s['params']) && is_array($s['params']) ? $s['params'] : [];
@@ -112,13 +109,13 @@ class TypeaheadTypeAttr
                 ];
             }
 
-            $attr['data-typeahead'] = json_encode($dataTypeahead);            
+            $attr['data-typeahead'] = json_encode($dataTypeahead);
         }
         else
         {
-            throw new InvalidArgumentException(sprintf(
-                'either "data-source" of "source" option needs 
-                to be set for the typeahead type in %s', __CLASS__));
+            throw new InvalidArgumentException(
+                'either "data-source" of "source" option needs
+                to be set for the typeahead type in ' .  __CLASS__);
         }
 
         if (isset($options['process']))
@@ -127,5 +124,5 @@ class TypeaheadTypeAttr
         }
 
         return $attr;
-    }    
+    }
 }

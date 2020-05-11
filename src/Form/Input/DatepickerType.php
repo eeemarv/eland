@@ -14,8 +14,8 @@ use App\Form\DataTransformer\DatepickerTransformer;
 
 class DatepickerType extends AbstractType
 {
-    private $transformer;
-    
+    protected $transformer;
+
     public function __construct(DatepickerTransformer $transformer)
     {
         $this->transformer = $transformer;
@@ -28,7 +28,7 @@ class DatepickerType extends AbstractType
 /*
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('abbrev', TextType::class, [			
+        $builder->add('abbrev', TextType::class, [
             'constraints' 	=> [
                 new Assert\NotBlank(),
                 new Assert\Length(['max' => 10, 'min' => 1]),
@@ -45,7 +45,7 @@ class DatepickerType extends AbstractType
                 ],
             ])
 
-            ->add('name', TextType::class, [			
+            ->add('name', TextType::class, [
             'constraints' 	=> [
                 new Assert\NotBlank(),
                 new Assert\Length(['max' => 20, 'min' => 1]),
@@ -53,7 +53,7 @@ class DatepickerType extends AbstractType
                 'attr'	=> [
                     'maxlength'	=> 20,
                 ],
-            ])    
+            ])
 
             ->add('submit', SubmitType::class);
     }
@@ -62,17 +62,17 @@ class DatepickerType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         /*
-        if (isset($options['fa'])) 
+        if (isset($options['fa']))
         {
             $view->vars['fa'] = $options['fa'];
         }
 
-        if (isset($options['addon_label'])) 
+        if (isset($options['addon_label']))
         {
             $view->vars['addon_label'] = $options['addon_label'];
         }
         */
-    }    
+    }
 
     public function configureOptions(OptionsResolver $resolver)
     {

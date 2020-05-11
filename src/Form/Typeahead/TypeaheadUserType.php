@@ -14,8 +14,8 @@ use App\Form\DataTransformer\TypeaheadUserTransformer;
 
 class TypeaheadUserType extends AbstractType
 {
-    private $transformer;
-    
+    protected $transformer;
+
     public function __construct(TypeaheadUserTransformer $transformer)
     {
         $this->transformer = $transformer;

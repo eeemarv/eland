@@ -2,68 +2,28 @@
 
 namespace App\Twig;
 
-use App\Service\DateFormatCache;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class DateFormatExtension extends AbstractExtension
 {
-	private $dateFormatCache;
-	private $format = [];
-
-	public function __construct(
-		DateFormatCache $dateFormatCache
-	)
+	public function getFilters():array
 	{
-		$this->dateFormatCache = $dateFormatCache;	
+		return [
+			new TwigFilter('date_format', [DateFormatRuntime::class, 'get']),
+			new TwigFilter('sec_format', [DateFormatRuntime::class, 'get_sec']),
+			new TwigFilter('min_format', [DateFormatRuntime::class, 'get_min']),
+			new TwigFilter('day_format', [DateFormatRuntime::class, 'get_day']),
+			new TwigFilter('date_format_from_unix', [DateFormatRuntime::class, 'get_from_unix']),
+		];
 	}
 
-    public function getFilters()
-    {
-        return [
-			new TwigFilter('date_format', [$this, 'get'], [
-				'needs_context'		=> true,
-			]),         
-        ];
-    }	
-
-	public function get(array $context, string $ts, string $precision):string
+	public function getFunctions():array
 	{
-		$time = strtotime($ts . ' UTC');
-
-		if (!isset($this->format[$precision]))
-		{
-			if (isset($context['app']))
-			{
-				$request = $context['app']->getRequest();
-				$locale = $request->getLocale();
-				$schema = $request->attributes->get('schema');
-			}
-			else
-			{
-				$locale = $context['_locale'];
-				$schema = $context['schema'];
-			}
-
-			$this->format[$precision] = $this->dateFormatCache
-				->get($precision, $locale, $schema);
-		}
-
-		return strftime($this->format[$precision], $time);
-	}
-
-	public function getFormat(array $context, string $precision):string 
-	{
-		if (!isset($this->format[$precision]))
-		{
-			$request = $context['app']->getRequest();
-			$locale = $request->getLocale();
-			$schema = $request->attributes->get('schema');
-
-			$this->format[$precision] = $this->dateFormatCache
-				->get($precision, $locale, $schema);
-		}
-
-		return $this->format[$precision];
+		return [
+			new TwigFunction('datepicker_format', [DateFormatRuntime::class, 'datepicker_format']),
+			new TwigFunction('datepicker_placeholder', [DateFormatRuntime::class, 'datepicker_placeholder']),
+		];
 	}
 }

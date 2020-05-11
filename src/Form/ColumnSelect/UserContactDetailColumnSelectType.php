@@ -6,27 +6,32 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\HttpFoundation\RequestStack;
-use App\Repository\TypeContactRepository;
+use App\Service\PageParamsService;
+use Doctrine\DBAL\Connection as Db;
 
 class UserContactDetailColumnSelectType extends AbstractType
 {
-    private $typeContactRepository;
-    private $schema;
+    protected Db $db;
+    protected PageParamsService $pp;
 
-    public function __construct(TypeContactRepository $typeContactRepository, RequestStack $requestStack)
+    public function __construct(
+        Db $db,
+        PageParamsService $pp
+    )
     {
-        $this->typeContactRepository = $typeContactRepository;
-        $request = $requestStack->getCurrentRequest();
-        $this->schema = $request->attributes->get('schema');
+        $this->db = $db;
+        $this->pp = $pp;
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $typeContactAry = $this->typeContactRepository->getAllAbbrev($this->schema);
+        $ary = $this->db->fetchAll('select abbrev
+            from ' . $pp->schema() . '.type_contact
+            order by id');
 
-        foreach ($typeContactAry as $id => $abbrev)
+        foreach ($ary as  $item)
         {
-            $builder->add($abbrev, CheckboxType::class, [
+            $builder->add($item['abbrev'], CheckboxType::class, [
                 'required'      => false,
             ]);
         }

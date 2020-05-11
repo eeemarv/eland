@@ -14,7 +14,7 @@ use App\Form\Input\TextAddonType;
 use App\Form\Input\PasswordAddonType;
 
 class LoginType extends AbstractType
-{	
+{
 
     public function __construct(
     )
@@ -23,10 +23,10 @@ class LoginType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('login', TextAddonType::class, [			
+        $builder->add('login', TextAddonType::class, [
                 'constraints' 	=> [
                     new Assert\NotBlank(),
-                    new Assert\Length(['max' => 100, 'min' => 10]),
+                    new Assert\Length(['max' => 100, 'min' => 2]),
                 ],
                 'attr'	=> [
                     'maxlength'	=> 100,

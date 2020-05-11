@@ -12,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Form\Input\EmailAddonType;
 
 class ContactType extends AbstractType
-{	
+{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('email', EmailAddonType::class, [

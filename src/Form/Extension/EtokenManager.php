@@ -8,11 +8,11 @@ use Predis\Client as Redis;
 
 class EtokenManager implements EtokenManagerInterface
 {
-    private $ttl = 14400;
-    private $bytes = 15;
-    private $prefix = 'etoken_';
-    private $redis;
-    private $value;
+    protected $ttl = 14400;
+    protected $bytes = 15;
+    protected $prefix = 'etoken_';
+    protected $redis;
+    protected $value;
 
     public function __construct(Redis $redis)
     {
@@ -47,7 +47,7 @@ class EtokenManager implements EtokenManagerInterface
         if ($count === 2)
         {
             return '';
-        }       
+        }
 
         return 'form.etoken.double';
     }

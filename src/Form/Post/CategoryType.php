@@ -9,18 +9,18 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CategoryType extends AbstractType
-{	
-    private $db;
-    private $translator;
-    private $schema;
+{
+    protected $db;
+    protected $translator;
+    protected $schema;
 
     public function __construct(Db $db,
-         TranslatorInterface $translator, 
+         TranslatorInterface $translator,
          RequestStack $requestStack
     )
     {
@@ -49,9 +49,9 @@ class CategoryType extends AbstractType
 
         if ($options['sub_selectable'])
         {
-            $rs = $this->db->prepare('select id, name 
-                from ' . $this->schema . '.categories 
-                where leafnote = 0 
+            $rs = $this->db->prepare('select id, name
+                from ' . $this->schema . '.categories
+                where leafnote = 0
                 order by name asc');
 
             $rs->execute();
@@ -62,7 +62,7 @@ class CategoryType extends AbstractType
             }
         }
 
-        $builder->add('name', TextType::class, [			
+        $builder->add('name', TextType::class, [
             'constraints' 	=> [
                 new Assert\NotBlank(),
                 new Assert\Length(['max' => 40, 'min' => 1]),

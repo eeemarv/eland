@@ -10,21 +10,19 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\Util\ServerParams;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
-
 use App\Form\Extension\EtokenManagerInterface;
 use App\Form\Extension\EtokenValidationSubscriber;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormTypeEtokenExtension extends AbstractTypeExtension
 {
-    private $etokenManager;
-    private $translator;
+    protected $etokenManager;
+    protected $translator;
 
     public function __construct(
         EtokenManagerInterface $etokenManager,
-        TranslatorInterface $translator = null
+        TranslatorInterface $translator
     )
     {
         $this->etokenManager = $etokenManager;

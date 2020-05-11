@@ -13,24 +13,24 @@ class BaseUserColumnSelectType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $ary = [
-            'letscode',
+            'code',
             'name',
             'fullname',
             'postcode',
-            'accountrole',
+            'role',
             'saldo',
             'minlimit',
             'maxlimit',
             'comments',
             'admincomment',
             'hobbies',
-            'cdate',
-            'mdate',            
+            'created_at',
+            'last_edit_at',
             'adate',
             'lastlogin',
-            'saldomail',
+            'periodic_overview_en',
         ];
-        
+
         foreach ($ary as $field)
         {
             $builder->add($field, CheckboxType::class, [

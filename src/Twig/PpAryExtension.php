@@ -5,12 +5,12 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-class ConfigExtension extends AbstractExtension
+class PpAryExtension extends AbstractExtension
 {
 	public function getFunctions():array
-    {
-        return [
-			new TwigFunction('config', [ConfigRuntime::class, 'get']),
-        ];
-    }
+	{
+		return [
+			new TwigFunction('pp_ary', [PpAryRuntime::class, 'get']),
+		];
+	}
 }
