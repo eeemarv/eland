@@ -3,29 +3,28 @@
 namespace App\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Form\Extension\EtokenManagerInterface;
-use App\Form\Extension\EtokenValidationSubscriber;
+use App\Form\Extension\FormTokenManagerInterface;
+use App\Form\Extension\FormTokenValidationSubscriber;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class FormTypeEtokenExtension extends AbstractTypeExtension
+class FormTypeFormTokenExtension extends AbstractTypeExtension
 {
-    protected $etokenManager;
+    protected $formTokenManager;
     protected $translator;
 
     public function __construct(
-        EtokenManagerInterface $etokenManager,
+        FormTokenManagerInterface $form_token_manager,
         TranslatorInterface $translator
     )
     {
-        $this->etokenManager = $etokenManager;
+        $this->form_token_manager = $form_token_manager;
         $this->translator = $translator;
     }
 
@@ -34,13 +33,13 @@ class FormTypeEtokenExtension extends AbstractTypeExtension
         array $options
     )
     {
-        if (!$options['etoken_enabled'])
+        if (!$options[FormTokenManagerInterface::FORM_OPTION])
         {
             return;
         }
 
-        $builder->addEventSubscriber(new EtokenValidationSubscriber(
-            $this->etokenManager,
+        $builder->addEventSubscriber(new FormTokenValidationSubscriber(
+            $this->form_token_manager,
             $this->translator
         ));
     }
@@ -51,29 +50,28 @@ class FormTypeEtokenExtension extends AbstractTypeExtension
         array $options
     )
     {
-        if ($options['etoken_enabled'] && !$view->parent && $options['compound'])
+        if ($options[FormTokenManagerInterface::FORM_OPTION] && !$view->parent && $options['compound'])
         {
             $factory = $form->getConfig()->getFormFactory();
 
-            $value = (string) $this->etokenManager->get();
+            $value = (string) $this->form_token_manager->get();
 
-            $etokenForm = $factory->createNamed(
-                '_etoken',
-                'Symfony\Component\Form\Extension\Core\Type\HiddenType',
-                $value,
-                [
+            $form_token_form = $factory->createNamed(
+                FormTokenManagerInterface::NAME,
+                HiddenType::class,
+                $value, [
                     'mapped' => false,
                 ]
             );
 
-            $view->children['_etoken'] = $etokenForm->createView($view);
+            $view->children[FormTokenManagerInterface::NAME] = $form_token_form->createView($view);
         }
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'etoken_enabled' => true,
+            FormTokenManagerInterface::FORM_OPTION => true,
         ]);
     }
 
@@ -85,7 +83,7 @@ class FormTypeEtokenExtension extends AbstractTypeExtension
     public function getDefaultOptions(array $options)
     {
         return [
-            'etoken_enabled'        => true,
+            FormTokenManagerInterface::FORM_OPTION => true,
         ];
     }
 }
