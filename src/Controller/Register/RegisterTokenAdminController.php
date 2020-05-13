@@ -37,7 +37,7 @@ class RegisterTokenAdminController extends AbstractController
 
         $menu_service->set('register');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('register/register_token_admin.html.twig', [
             'content'   => $registration_success_text ?: '',
             'schema'    => $pp->schema(),
         ]);

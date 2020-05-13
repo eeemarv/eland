@@ -145,7 +145,7 @@ class RegisterAdminController extends AbstractController
 
         $menu_service->set('register');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('register/register_admin.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

@@ -232,7 +232,7 @@ class RegisterController extends AbstractController
 
         $menu_service->set('register');
 
-        return $this->render('base/sidebar.html.twig', [
+        return $this->render('register/register.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
