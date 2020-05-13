@@ -84,7 +84,7 @@ class ContactsEditAdminController extends AbstractController
             $geocode_queue
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_edit_admin.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

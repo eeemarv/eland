@@ -62,7 +62,7 @@ class ContactsAddAdminController extends AbstractController
             $heading_render
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_add_admin.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

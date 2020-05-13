@@ -419,7 +419,7 @@ class ContactsAdminController extends AbstractController
 
             $menu_service->set('contacts');
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('contacts/contacts_admin.html.twig', [
                 'content'   => $out,
                 'schema'    => $pp->schema(),
             ]);
@@ -521,7 +521,7 @@ class ContactsAdminController extends AbstractController
 
         $menu_service->set('contacts');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_admin.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

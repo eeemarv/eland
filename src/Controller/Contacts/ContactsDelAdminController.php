@@ -3,7 +3,6 @@
 namespace App\Controller\Contacts;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Controller\ContactsEditController;
 use App\Render\AccountRender;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +53,7 @@ class ContactsDelAdminController extends AbstractController
             $link_render
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_del_admin.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);
@@ -210,10 +209,5 @@ class ContactsDelAdminController extends AbstractController
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
         return $out;
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
     }
 }

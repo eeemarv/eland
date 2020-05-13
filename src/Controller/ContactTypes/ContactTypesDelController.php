@@ -90,7 +90,7 @@ class ContactTypesDelController extends AbstractController
 
         $menu_service->set('contact_types');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_types/contact_types_del.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

@@ -55,6 +55,7 @@ class InitController extends AbstractController
             $out .= $link_render->link($route, $pp->ary(),
                 [], $lbl, ['class' => 'list-group-item' . $class_done]);
         }
+
         $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';

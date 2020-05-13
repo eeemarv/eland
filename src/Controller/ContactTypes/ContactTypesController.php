@@ -140,7 +140,7 @@ class ContactTypesController extends AbstractController
 
         $menu_service->set('contact_types');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_types/contact_types.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
