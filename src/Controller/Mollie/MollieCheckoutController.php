@@ -183,7 +183,7 @@ class MollieCheckoutController extends AbstractController
 
         $menu_service->set('mollie_payments');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('mollie/mollie_checkout.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

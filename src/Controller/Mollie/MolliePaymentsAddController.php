@@ -515,7 +515,7 @@ class MolliePaymentsAddController extends AbstractController
 
         $menu_service->set('mollie_payments');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('mollie/mollie_payments_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
