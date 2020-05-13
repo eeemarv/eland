@@ -62,7 +62,7 @@ class InitController extends AbstractController
 
         $menu_service->set('init');
 
-        return $this->render('base/sidebar.html.twig', [
+        return $this->render('init/init.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
