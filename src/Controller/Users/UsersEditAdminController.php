@@ -101,7 +101,7 @@ class UsersEditAdminController extends AbstractController
             $menu_service
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_edit.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

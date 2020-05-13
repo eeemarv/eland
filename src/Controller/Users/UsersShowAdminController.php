@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Controller\UsersListController;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
@@ -723,7 +722,7 @@ class UsersShowAdminController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_show.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

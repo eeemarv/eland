@@ -2,20 +2,13 @@
 
 namespace App\Controller\ContactForm;
 
-use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\HeadingRender;
-use App\Render\LinkRender;
 use App\Service\CaptchaService;
 use App\Service\ConfigService;
-use App\Service\DataTokenService;
 use App\Service\PageParamsService;
-use Psr\Log\LoggerInterface;
 
 class ContactFormAdminController extends AbstractController
 {
@@ -94,7 +87,7 @@ class ContactFormAdminController extends AbstractController
 
         $menu_service->set('contact');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_form/contact_form_admin.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

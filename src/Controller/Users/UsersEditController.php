@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\UsersEditAdminController;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
@@ -97,7 +96,7 @@ class UsersEditController extends AbstractController
             $menu_service
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_edit.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

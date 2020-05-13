@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\Users\UsersEditAdminController;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -97,7 +96,7 @@ class UsersAddController extends AbstractController
             $menu_service
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_add.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

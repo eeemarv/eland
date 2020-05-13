@@ -207,7 +207,7 @@ class UsersPasswordAdminController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_password.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
