@@ -233,7 +233,7 @@ class IntersystemsController extends AbstractController
 
         $menu_service->set('intersystems');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

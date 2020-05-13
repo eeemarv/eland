@@ -84,7 +84,7 @@ class IntersystemsDelController extends AbstractController
 
         $menu_service->set('intersystems');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems_del.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

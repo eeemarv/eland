@@ -117,7 +117,7 @@ class IntersystemsEditController extends AbstractController
             $menu_service
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems_edit.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);
