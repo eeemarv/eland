@@ -1,26 +1,25 @@
 const $ = require('jquery');
-// global.$ = global.jQuery = $;
 
-require('bootstrap');
+import 'bootstrap';
+import 'jquery-touchswipe/jquery.touchSwipe.min.js';
 
-require('jquery-touchswipe/jquery.touchSwipe.min.js');
-
-require('footable/js/footable.js');
-require('footable/js/footable.sort.js');
-require('footable/js/footable.filter.js');
-
-// import './base.js';
-
-var offcanvas = require('./functions/offcanvas');
-var filter_remove_empty_inputs = require('./functions/filter_remove_empty_inputs');
-var footable = require('./functions/footable');
+import offcanvas from './overall/offcanvas';
+import filter_auto_submit from './overall/filter_auto_submit';
+import filter_remove_empty_inputs from './overall/filter_remove_empty_inputs';
+import csv from './overall/csv';
+import item_access_input_cache from './overall/item_access_input_cache';
+import table_select from './overall/table_select';
 
 $(document).ready(function() {
     offcanvas();
+    filter_auto_submit();
     filter_remove_empty_inputs();
+    csv();
+    item_access_input_cache();
+    table_select();
 });
 
-require('../css/app.scss');
+import '../css/app.scss';
 
 const imagesContext = require.context('../images', true, /\.(png|jpg|jpeg|gif|ico|svg|webp)$/);
 imagesContext.keys().forEach(imagesContext);

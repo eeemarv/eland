@@ -214,7 +214,7 @@ class LinkRender
 	):string
 	{
 		return $this->link($route, $params_context, $params,
-			'Annuleren', ['class'	=> 'btn btn-default btn-lg border border-secondary'],
+			'Annuleren', ['class'	=> 'btn btn-default btn-lg border border-secondary-li'],
 			'undo');
 	}
 }

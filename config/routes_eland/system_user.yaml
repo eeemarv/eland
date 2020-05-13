@@ -1,15 +1,15 @@
 users_contacts_edit:
-  controller: App\Controller\UsersContactsEditController
+  controller: App\Controller\UsersContacts\UsersContactsEditController
   path: /users/contacts/{contact_id<%assert.id%>}/edit
   methods: GET|POST
 
 users_contacts_del:
-  controller: App\Controller\UsersContactsDelController
+  controller: App\Controller\UsersContacts\UsersContactsDelController
   path: /users/contacts/{contact_id<%assert.id%>}/del
   methods: GET|POST
 
 users_contacts_add:
-  controller: App\Controller\UsersContactsAddController
+  controller: App\Controller\UsersContacts\UsersContactsAddController
   path: /users/contacts/add
   methods: GET|POST
 
@@ -19,121 +19,121 @@ support:
   methods: GET|POST
 
 messages_images_instant_del:
-  controller: App\Controller\MessagesImagesInstantDelController
+  controller: App\Controller\Messages\MessagesImagesInstantDelController
   path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.message_image_ext%>}/del/{form_token<%assert.token%>}
   methods: POST
 
 messages_images_del:
-  controller: App\Controller\MessagesImagesDelController
+  controller: App\Controller\Messages\MessagesImagesDelController
   path: /messages/{id<%assert.id%>}/images/del
   methods: GET|POST
 
 messages_edit_images_upload:
-  controller: App\Controller\MessagesEditImagesUploadController
+  controller: App\Controller\Messages\MessagesEditImagesUploadController
   path: /messages/{id<%assert.id%>}/images/upload/{form_token<%assert.token%>}
   methods: POST
 
 messages_add_images_upload:
-  controller: App\Controller\MessagesAddImagesUploadController
+  controller: App\Controller\Messages\MessagesAddImagesUploadController
   path: /messages/images/upload/{form_token<%assert.token%>}
   methods: POST
 
 messages_images_upload:
-  controller: App\Controller\MessagesShowImagesUploadController
+  controller: App\Controller\Messages\MessagesShowImagesUploadController
   path: /messages/{id<%assert.id%>}/images/upload
   methods: POST
 
 messages_extend:
-  controller: App\Controller\MessagesExtendController
+  controller: App\Controller\Messages\MessagesExtendController
   path: /messages/{id<%assert.id%>}/extend/{days<%assert.id%>}
   methods: GET
 
 messages_del:
-  controller: App\Controller\MessagesDelController
+  controller: App\Controller\Messages\MessagesDelController
   path: /messages/{id<%assert.id%>}/del
   methods: GET|POST
 
 messages_edit:
-  controller: App\Controller\MessagesEditController
+  controller: App\Controller\Messages\MessagesEditController
   path: /messages/{id<%assert.id%>}/edit
   methods: GET|POST
 
 messages_add:
-  controller: App\Controller\MessagesAddController
+  controller: App\Controller\Messages\MessagesAddController
   path: /messages/add
   methods: GET|POST
 
 users_image_del:
-  controller: App\Controller\UsersImageDelController
+  controller: App\Controller\UsersImage\UsersImageDelController
   path: /users/image/del
   methods: GET|POST
 
 users_image_upload:
-  controller: App\Controller\UsersImageUploadController
+  controller: App\Controller\UsersImage\UsersImageUploadController
   path: /users/image/upload
   methods: POST
 
 users_password:
-  controller: App\Controller\UsersPasswordController
+  controller: App\Controller\Users\UsersPasswordController
   path: /users/password
   methods: GET|POST
 
 users_edit:
-  controller: App\Controller\UsersEditController
+  controller: App\Controller\Users\UsersEditController
   path: /users/edit
   methods: GET|POST
 
 transactions_add:
-  controller: App\Controller\TransactionsAddController
+  controller: App\Controller\Transactions\TransactionsAddController
   path: /transactions/add
   methods: GET|POST
 
 forum_edit_post:
-  controller: App\Controller\ForumEditPostController
+  controller: App\Controller\Forum\ForumEditPostController
   path: /forum/{id<%assert.id%>}/edit-post
   methods: GET|POST
 
 forum_del_post:
-  controller: App\Controller\ForumDelPostController
+  controller: App\Controller\Forum\ForumDelPostController
   path: /forum/{id<%assert.id%>}/del-post
   methods: GET|POST
 
 forum_edit_topic:
-  controller: App\Controller\ForumEditTopicController
+  controller: App\Controller\Forum\ForumEditTopicController
   path: /forum/{id<%assert.id%>}/edit-topic
   methods: GET|POST
 
 forum_del_topic:
-  controller: App\Controller\ForumDelTopicController
+  controller: App\Controller\Forum\ForumDelTopicController
   path: /forum/{id<%assert.id%>}/del-topic
   methods: GET|POST
 
 forum_add_topic:
-  controller: App\Controller\ForumAddTopicController
+  controller: App\Controller\Forum\ForumAddTopicController
   path: /forum/add-topic
   methods: GET|POST
 
 typeahead_account_codes:
-  controller: App\Controller\TypeaheadAccountCodesController
+  controller: App\Controller\Typeahead\TypeaheadAccountCodesController
   path: /typeahead-account-codes
   methods: GET
 
 typeahead_usernames:
-  controller: App\Controller\TypeaheadUsernamesController
+  controller: App\Controller\Typeahead\TypeaheadUsernamesController
   path: /typeahead-usernames
   methods: GET
 
 typeahead_eland_intersystem_accounts:
-  controller: App\Controller\TypeaheadElandIntersystemAccountsController
+  controller: App\Controller\Typeahead\TypeaheadElandIntersystemAccountsController
   path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}
   methods: GET
 
 typeahead_postcodes:
-  controller: App\Controller\TypeaheadPostcodesController
+  controller: App\Controller\Typeahead\TypeaheadPostcodesController
   path: /typeahead-postcodes
   methods: GET
 
 mollie_checkout:
   path: /mollie/checkout/{id<%assert.id%>}
-  controller: App\Controller\MollieCheckoutController
+  controller: App\Controller\Mollie\MollieCheckoutController
   methods: GET|POST

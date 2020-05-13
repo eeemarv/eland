@@ -1,65 +1,65 @@
 logout:
-  controller: App\Controller\LogoutController
+  controller: App\Controller\Auth\LogoutController
   path: /logout
   methods: GET
 
 messages_show:
-  controller: App\Controller\MessagesShowController
+  controller: App\Controller\Messages\MessagesShowController
   path: /messages/{id<%assert.id%>}
   methods: GET|POST
 
 messages_extended:
-  controller: App\Controller\MessagesExtendedController
+  controller: App\Controller\Messages\MessagesExtendedController
   path: /messages/extended
   methods: GET
 
 messages_list:
-  controller: App\Controller\MessagesListController
+  controller: App\Controller\Messages\MessagesListController
   path: /messages
   methods: GET|POST
 
 users_show:
-  controller: App\Controller\UsersShowController
+  controller: App\Controller\Users\UsersShowController
   path: /users/{id<%assert.id%>}/{status<%assert.account_status.active%>?active}
   methods: GET|POST
 
 users_map:
-  controller: App\Controller\UsersMapController
+  controller: App\Controller\Users\UsersMapController
   path: /users/map/{status<%assert.account_status.active%>?active}
   methods: GET
 
 users_tiles:
-  controller: App\Controller\UsersTilesController
+  controller: App\Controller\Users\UsersTilesController
   path: /users/tiles/{status<%assert.account_status.active%>?active}
   methods: GET
 
 users_list:
-  controller: App\Controller\UsersListController
+  controller: App\Controller\Users\UsersListController
   path: /users/{status<%assert.account_status.active%>?active}
   methods: GET|POST
 
 transactions_show:
-  controller: App\Controller\TransactionsShowController
+  controller: App\Controller\Transactions\TransactionsShowController
   path: /transactions/{id<%assert.id%>}
   methods: GET
 
 transactions:
-  controller: App\Controller\TransactionsController
+  controller: App\Controller\Transactions\TransactionsController
   path: /transactions
   methods: GET
 
 news_show:
-  controller: App\Controller\NewsShowController
+  controller: App\Controller\News\NewsShowController
   path: /news/{id<%assert.id%>}
   methods: GET
 
 news_extended:
-  controller: App\Controller\NewsExtendedController
+  controller: App\Controller\News\NewsExtendedController
   path: /news/extended
   methods: GET
 
 news_list:
-  controller: App\Controller\NewsListController
+  controller: App\Controller\News\NewsListController
   path: /news
   methods: GET
 
@@ -79,27 +79,27 @@ calendar_list:
   methods: GET
 
 docs_map:
-  controller: App\Controller\DocsMapController
+  controller: App\Controller\Docs\DocsMapController
   path: /docs/{id<%assert.id%>}
   methods: GET
 
 docs:
-  controller: App\Controller\DocsController
+  controller: App\Controller\Docs\DocsController
   path: /docs
   methods: GET
 
 forum_topic:
-  controller: App\Controller\ForumTopicController
+  controller: App\Controller\Forum\ForumTopicController
   path: /forum/{id<%assert.id%>}
   methods: GET|POST
 
 forum:
-  controller: App\Controller\ForumController
+  controller: App\Controller\Forum\ForumController
   path: /forum
   methods: GET
 
 typeahead_accounts:
-  controller: App\Controller\TypeaheadAccountsController
+  controller: App\Controller\Typeahead\TypeaheadAccountsController
   path: /typeahead-accounts/{status<%assert.account_status.primary%>}
   methods: GET
 

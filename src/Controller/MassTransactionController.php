@@ -19,7 +19,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -284,7 +283,7 @@ class MassTransactionController extends AbstractController
 
                         if (!$su->is_master())
                         {
-                            $transactions['created_by'] = $su->id();
+                            $transaction['created_by'] = $su->id();
                         }
 
                         $db->insert($pp->schema() . '.transactions', $transaction);
@@ -316,7 +315,7 @@ class MassTransactionController extends AbstractController
 
                 foreach($transactions as $t)
                 {
-                    $autominlimit_service->process($t['id_from'], $t['id_to'], (int) $t['amount']);
+                    $autominlimit_service->process((int) $t['id_from'], (int) $t['id_to'], (int) $t['amount']);
                 }
 
                 if ($to_one)
@@ -451,10 +450,10 @@ class MassTransactionController extends AbstractController
         $heading_render->add('Massa transactie');
         $heading_render->fa('exchange');
 
-        $out = '<div class="card fcard fcard-warning">';
+        $out = '<div class="card fcard fcard-warning mb-2">';
         $out .= '<div class="card-body">';
 
-        $out .= '<button class="btn btn-default btn-lg" ';
+        $out .= '<button class="btn btn-default btn-lg border border-secondary-li" ';
         $out .= 'title="Toon invul-hulp" data-toggle="collapse" ';
         $out .= 'data-target="#help" type="button">';
         $out .= '<i class="fa fa-question"></i>';
@@ -669,7 +668,7 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="form-group">';
         $out .= '<label for="respect_minlimit" class="control-label">';
-        $out .= '<input type="checkbox" id="respect_minlimit" checked="checked">';
+        $out .= '<input type="checkbox" id="respect_minlimit" checked>';
         $out .= ' Respecteer minimum limieten</label>';
         $out .= '</div>';
 
@@ -720,12 +719,12 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card fcard fcard-info mb-2">';
         $out .= '<div class="card-body">';
 
         $out .= '<form method="get">';
         $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
+        $out .= '<div class="col">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
@@ -744,7 +743,7 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<ul class="nav nav-tabs" id="nav-tabs">';
+        $out .= '<ul class="nav nav-tabs mb-2" id="nav-tabs">';
 
         foreach (self::STATUS_RENDER as $k => $s)
         {
@@ -809,15 +808,15 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '<table class="table table-bordered table-striped ';
-        $out .= 'table-hover card-body footable bg-default" ';
+        $out .= 'table-hover card-body bg-default" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
         $out .= 'data-minlimit="';
         $out .= $system_minlimit;
         $out .= '" ';
         $out .= 'data-maxlimit="';
         $out .= $system_maxlimit;
-        $out .= '"';
-        $out .= '>';
+        $out .= '" ';
+        $out .= 'data-footable>';
         $out .= '<thead>';
 
         $out .= '<tr>';
@@ -948,11 +947,13 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="form-group">';
         $out .= '<label for="description" class="control-label">';
-        $out .= 'Omschrijving</label>';
+        $out .= 'Omschrijving';
+        $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= '<span class="fa fa-pencil"></span>';
+        $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="description" ';
         $out .= 'name="description" ';
@@ -962,23 +963,17 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="mail_en" class="control-label">';
-        $out .= '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
-        $out .= $mail_en ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Verstuur notificatie mails</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'mail_en',
+            '%label%'   => 'Verstuur notificatie emails',
+            '%attr%'    => $mail_en ? ' checked' : '',
+        ]);
 
-        $out .= '<div class="form-group">';
-        $out .= '<label>';
-        $out .= '<input type="checkbox" name="verify" ';
-        $out .= 'value="1" required> ';
-        $out .= 'Ik heb nagekeken dat de juiste ';
-        $out .= 'bedragen en de juiste "Van" of "Aan" ';
-        $out .= 'Account Code ingevuld zijn.';
-        $out .= '</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'verify',
+            '%label%'   => 'Ik heb nagekeken dat de juiste bedragen
+                en de juiste "Van" of "Aan" Account Code ingevuld zijn.',
+        ]);
 
         $out .= $link_render->btn_cancel('transactions', $pp->ary(), []);
 

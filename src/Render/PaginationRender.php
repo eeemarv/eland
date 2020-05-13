@@ -117,7 +117,8 @@ class PaginationRender
 		$this->out .= '">';
 
 		$this->out .= 'Per pagina: ';
-		$this->out .= '<select name="p[limit]" onchange="this.form.submit();">';
+		$this->out .= '<select name="p[limit]" ';
+		$this->out .= 'onchange="this.form.submit();">';
 		$this->out .= $this->select_render->get_options($this->limit_options, (string) $this->limit);
 		$this->out .= '</select>';
 

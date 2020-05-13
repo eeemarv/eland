@@ -24,8 +24,13 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/js/app.js')
-    //.addEntry('page1', './assets/js/page1.js')
-    //.addEntry('page2', './assets/js/page2.js')
+    .addEntry('footable', './assets/js/footable.js')
+    .addEntry('datepicker', './assets/js/datepicker.js')
+    .addEntry('typeahead', './assets/js/typeahead.js')
+    .addEntry('summernote', './assets/js/summernote.js')
+    .addEntry('sortable', './assets/js/sortable.js')
+    .addEntry('fileupload', './assets/js/fileupload.js')
+    .addEntry('transactions_add', './assets/js/transactions_add.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -65,10 +70,20 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     .autoProvidejQuery()
-
-    // uncomment if you use API Platform Admin (composer req api-admin)
-    //.enableReactPreset()
-    //.addEntry('admin', './assets/js/admin.js')
 ;
 
-module.exports = Encore.getWebpackConfig();
+var config = Encore.getWebpackConfig();
+
+config.resolve.alias = {
+    'load-image': 'blueimp-load-image/js/load-image.js',
+    'load-image-meta': 'blueimp-load-image/js/load-image-meta.js',
+    'load-image-exif': 'blueimp-load-image/js/load-image-exif.js',
+    'load-image-orientation': 'blueimp-load-image/js/load-image-orientation.js',
+    'load-image-scale': 'blueimp-load-image/js/load-image-scale.js',
+    'load-image-fetch': 'blueimp-load-image/js/load-image-fetch',
+    'load-image-iptc': 'blueimp-load-image/js/load-image-iptc',
+    'canvas-to-blob': 'blueimp-canvas-to-blob/js/canvas-to-blob.js',
+    'jquery-ui/widget': 'blueimp-file-upload/js/vendor/jquery.ui.widget.js'
+ }
+
+module.exports = config;

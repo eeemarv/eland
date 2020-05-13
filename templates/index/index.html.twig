@@ -1,12 +1,15 @@
 {%- extends 'base/base.html.twig' -%}
 
-{%- block title -%}eLAND{%- endblock -%}
+{%- block title -%}
+	eLAND
+{%- endblock -%}
+
 {%- block navbar -%}{%- endblock -%}
 
 {%- block jumbotron -%}
 
 	<div class="row">
-		<div class="col-md-12">
+		<div class="col">
 			<div class="jumbotron eland-index">
 				<div class="container">
 
@@ -29,8 +32,8 @@
 
 			{%- for system, schema in schemas -%}
 				{%- if not (loop.index0 % systems_per_col) -%}
-				<div class="col-md-4">
-					<div class="card bg-info">
+				<div class="col-md-4 mb-3">
+					<div class="card">
 						<ul class="list-group">
 				{%- endif -%}
 							<li class="list-group-item">

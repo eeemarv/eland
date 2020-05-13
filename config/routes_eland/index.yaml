@@ -1,19 +1,12 @@
-legacy_register:
-  path: /register.php
-  controller: App\Controller\LegacyController::register
-
 theme:
   path: /theme
   controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
   defaults:
-    template: static/theme.html.twig
-
-
-
+    template: theme/theme.html.twig
 
 index_contact:
   path: /contact
-  controller: App\Controller\IndexContactController
+  controller: App\Controller\Index\IndexContactController
   methods: GET|POST
 
 monitor:
@@ -27,5 +20,5 @@ system:
 
 index:
   path: /
-  controller: App\Controller\IndexController
+  controller: App\Controller\Index\IndexController
   methods: GET

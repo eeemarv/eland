@@ -7,8 +7,6 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-// @import "costum_remove";
-
 // bootstrap
 // @import "~bootstrap/scss/functions";
 // @import "~bootstrap/scss/variables";
@@ -40,25 +38,19 @@
 @import "~bootstrap/scss/list-group";
 @import "~bootstrap/scss/close";
 // @import "~bootstrap/scss/toasts";
-// @import "~bootstrap/scss/modal";
-// @import "~bootstrap/scss/tooltip";
+@import "~bootstrap/scss/modal";
+@import "~bootstrap/scss/tooltip";
 // @import "~bootstrap/scss/popover";
 @import "~bootstrap/scss/carousel";
 // @import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/utilities";
 @import "~bootstrap/scss/print";
 
-//
-
 @import "~font-awesome/scss/font-awesome";
 
-
-//
-@import "~footable/css/footable.core.css";
-
 // self
-@import "mixin/fcard";
 @import "fcard";
+@import "lbl";
 @import "typeahead";
 @import "offcanvas";
 @import "misc";

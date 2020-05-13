@@ -192,7 +192,7 @@ class ConfigCnst
             'add_btn_text' 	=> 'Extra E-mail Adres',
             'default'	=> '',
         ],
-
+/*
         'newsadmin'	=> [
             'lbl'	=> 'Nieuws beheerder',
             'explain_top'	=> 'Krjgt E-mail wanneer een nieuwsbericht,
@@ -205,7 +205,7 @@ class ConfigCnst
             'add_btn_text'	=> 'Extra E-mail Adres',
             'default'	=> '',
         ],
-
+*/
         'support'	=> [
             'lbl'	=> 'Support / Helpdesk',
             'explain_top'	=> 'Krjgt E-mail berichten

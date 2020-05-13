@@ -92,7 +92,21 @@ class BulkCnst
         ],
     ];
 
-    const TPL_CHECKBOX_ITEM = '<label for="sel[%id%]">&nbsp;&nbsp;<input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>&nbsp;&nbsp;%label%</label>';
+/*
+    const TPL_CHECKBOX_ITEM = <<<'TPL'
+    <label for="sel[%id%]">&nbsp;&nbsp;
+    <input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>
+    &nbsp;&nbsp;%label%
+    </label>';
+    TPL;
+*/
+
+    const TPL_CHECKBOX_ITEM = <<<'TPL'
+    <div class="custom-control custom-checkbox">
+    <input type="checkbox" class="custom-control-input" id="sel[%id%]" name="sel[%id%]" value="1"%attr%>
+    <label class="custom-control-label" for="sel[%id%]">%label%</label>
+    </div>
+    TPL;
 
     const TPL_INPUT =  <<<'TPL'
     <div class="form-group">
@@ -110,10 +124,10 @@ class BulkCnst
     TPL;
 
     const TPL_CHECKBOX = <<<'TPL'
-    <div class="form-group">
-    <label for="%name%" class="control-label">
-    <input type="checkbox" id="%name%" name="%name%"%attr%>
-    &nbsp;%label%</label></div>
+    <div class="custom-control custom-checkbox form-group">
+    <input type="checkbox" class="custom-control-input" id="%name%" name="%name%"%attr%>
+    <label class="custom-control-label" for="%name%">%label%</label>
+    </div>
     TPL;
 
     const TPL_SELECT = <<<'TPL'
@@ -139,15 +153,15 @@ class BulkCnst
     <div class="card bg-light mb-3" id="bulk_actions">
     <div class="card-body">
     <input type="button"
-    class="btn btn-default btn-lg border border-dark"
+    class="btn btn-default btn-lg border border-secondary-li"
     data-table-sel="invert"
     value="Selectie omkeren">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg border border-dark"
+    class="btn btn-default btn-lg border border-secondary-li"
     data-table-sel="all"
     value="Selecteer alle">&nbsp;
     <input type="button"
-    class="btn btn-default btn-lg border border-dark"
+    class="btn btn-default btn-lg border border-secondary-li"
     data-table-sel="none"
     value="De-selecteer alle">
     </div>

@@ -2,15 +2,32 @@
     border: $card-border-width solid transparent;
 
     label {
-        font-weight: font-weight-bold;
+        font-weight: $font-weight-bold;
     }
     code {
         background-color: $b-white;
     }
 }
 
+@mixin fcard-variant($background, $border, $color) {
+
+    color: lighten($color, 10%);
+
+    @include gradient-bg(darken($background, 3%));
+
+    border-color: $border;
+
+    hr {
+        border-top-color: darken($border, 20%);
+    }
+
+    a {
+        color: darken($color, 5%);
+    }
+}
+
 @each $color, $value in $theme-colors {
     .fcard-#{$color} {
-        @include alert-variant(theme-color-level($color, $alert-bg-level), theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
+        @include fcard-variant(theme-color-level($color, $alert-bg-level), theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
     }
 }

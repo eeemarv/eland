@@ -12,7 +12,7 @@ class HeadingRender
 
 	const BTN_FILTER = [
 		'<div class="pull-right">',
-		'&nbsp;<button class="btn btn-default hidden-xs border border-secondary" ',
+		'&nbsp;<button class="btn btn-default hidden-xs border border-secondary-li" ',
 		'title="Filters" ',
 		'data-toggle="collapse" data-target="#filter">',
 		'<i class="fa fa-caret-down"></i>&nbsp;',
@@ -24,7 +24,7 @@ class HeadingRender
 	{
 		$out = isset($this->fa) ? '<i class="fa fa-' . $this->fa . '"></i>&nbsp;' : '';
 		$out .= $this->str;
-		$out .= $this->filtered ? '&nbsp;<small>Gefilterd</small>' : '';
+		$out .= $this->filtered ? '&nbsp;<small class="text-secondary">Gefilterd</small>' : '';
 		$out .= $this->btn_filter ? implode('', self::BTN_FILTER) : '';
 
 		return $out;
