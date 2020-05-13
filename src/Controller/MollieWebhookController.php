@@ -66,7 +66,7 @@ class MollieWebhookController extends AbstractController
             ], 8500);
         }
 
-        $db->update($pp->schema . '.mollie_payments',[
+        $db->update($pp->schema() . '.mollie_payments',[
             'mollie_status'     => $payment->status,
             'is_paid'           => $payment->isPaid(),
         ], ['token' => $token]);
