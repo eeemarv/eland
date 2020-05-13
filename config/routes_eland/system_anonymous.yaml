@@ -1,6 +1,6 @@
 login:
   path: /login
-  controller: App\Controller\LoginController
+  controller: App\Controller\Auth\LoginController
   methods: GET|POST
 
 contact:

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Auth;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -328,7 +328,7 @@ class LoginController extends AbstractController
 
         $menu_service->set('login');
 
-        return $this->render('base/sidebar.html.twig', [
+        return $this->render('auth/login.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

@@ -275,7 +275,7 @@ static_content:
 
 login_admin:
   path: /login
-  controller: App\Controller\LoginAdminController
+  controller: App\Controller\Auth\LoginAdminController
   methods: GET
 
 contact_admin:

@@ -1,45 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Auth;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Security\User;
-use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
-use App\Service\UserCacheService;
-use App\Service\VarRouteService;
-use App\Service\XdbService;
-use Doctrine\DBAL\Connection as Db;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class LoginAdminController extends AbstractController
 {
     public function __invoke(
-        Request $request,
-        Db $db,
-        EncoderFactoryInterface $encoder_factory,
-        XdbService $xdb_service,
-        AlertService $alert_service,
-        LoggerInterface $logger,
         MenuService $menu_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
-        ConfigService $config_service,
-        AccountRender $account_render,
-        UserCacheService $user_cache_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        string $env_master_password
+        PageParamsService $pp
     ):Response
     {
 
@@ -100,7 +76,7 @@ class LoginAdminController extends AbstractController
 
         $menu_service->set('login');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('auth/login_admin.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

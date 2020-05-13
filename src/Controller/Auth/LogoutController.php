@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Auth;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
