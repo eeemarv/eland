@@ -1,0 +1,113 @@
+
+btn:
+  add: Toevoegen
+  approve: Goedkeuren
+  cancel: Annuleren
+  delete: Verwijderen
+  edit: Aanpassen
+  filter: Filter
+  generate: Genereer
+  password_reset: Reset Paswoord
+  register: Inschrijven
+  send: Verzenden
+  show: Toon
+  show_columns: Toon Kolommen
+
+form:
+  error:
+    form_token:
+      expired: >-
+        De maximale duurtijd van het formulier
+        is overschreden.
+        Gelieve het opnieuw te proberen.
+      double: >-
+        Een dubbele invoer van het formulier werd voorkomen.
+
+label:
+  accept: Akkoord
+  access: Toegang
+  access_explain: Wie kan dit zien?
+  account_code: Account Code
+  activated: Geactiveerd
+  activity: Activiteit
+  admin_comment: Admin Commentaar
+  amount: Bedrag
+  approved: Goedgekeurd
+  balance: Saldo
+  balance_on_date: Saldo op Datum
+  balance_sum: "Totaal Saldo: %balance_sum%"
+  code: Code
+  columns: Kolommen
+  comment: Commentaar
+  contact_details: Contacten
+  content: Inhoud
+  created: Gecreëerd
+  description: Omschrijving
+  date: Datum
+  email: E-mail
+  event_date: Agendadatum
+  event_date_explain: Wanneer gaat dit door?
+  exclude_counterparties: Exclusief tegenpartijen
+  first_name: Voornaam
+  from: Van
+  from_date: Vanaf
+  full_name: Volledige Naam
+  hobbies_interests: Hobbies/interesses
+  in: In
+  keep_after_date: Behoud na Datum
+  last_login: Laatste Login
+  last_name: Achternaam
+  link: Link
+  location: Plaats
+  location_explain: Waar?
+  login: Login
+  map: Map
+  max: Max
+  maximum_limit: Maximum Limiet
+  menu: Menu
+  message: Bericht
+  min: Min
+  minimum_limit: Minimum Limiet
+  modified: Aangepast
+  mobile: GSM
+  name: Naam
+  offers: Aanbod
+  offers_and_wants: Vraag en Aanbod
+  out: Uit
+  parsed_address: Ontleed Adres
+  password: Paswoord
+  period_days: Periode in Dagen
+  periodic_mail: Periodieke Overzichts E-mail
+  postcode: Postcode
+  role: Rol
+  save_password: Bewaar Paswoord
+  split_by_char: Split door Teken
+  subject: Onderwerp
+  system_name: Naam van het Systeem
+  telephone: Telefoon
+  time: Tijdstip
+  title: Titel
+  to: Naar
+  total: Totaal
+  to_date: Tot
+  transactions: Transacties
+  transaction_id: Transactie Id
+  username: Gebruikersnaam
+  wants: Vraag
+  your_account: Je Account
+  your_email: Je E-Mail adres
+  your_message: Je Bericht
+
+login:
+  title: Login
+  login: Login
+  login_explain: E-mail, Account Code of Gebruikersnaam
+  btn: Inloggen
+  password_reset_link: >-
+    %link_open%Klik hier als je je paswoord vergeten bent.%link_close%
+
+calendar:
+  title: Kalender
+  menu: Kalender
+calendar_add:
+  title: Nieuw kalender item

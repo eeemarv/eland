@@ -1,39 +1,43 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Console;
 
-use App\Service\CacheService;
+use App\Queue\MailQueue;
 use App\Service\MonitorProcessService;
+use App\Service\QueueService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessCleanupCacheCommand extends Command
+class ProcessMailConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:cleanup_cache';
+    protected static $defaultName = 'process:mail';
 
     protected $monitor_process_service;
-    protected $cache_service;
+    protected $mail_queue;
+    protected $queue_service;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,
-        CacheService $cache_service
+        MailQueue $mail_queue,
+        QueueService $queue_service
     )
     {
         parent::__construct();
 
         $this->monitor_process_service = $monitor_process_service;
-        $this->cache_service = $cache_service;
+        $this->mail_queue = $mail_queue;
+        $this->queue_service = $queue_service;
     }
 
     protected function configure()
     {
-        $this->setDescription('Process to cleanup the db cache periodically');
+        $this->setDescription('Send emails from queue');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->monitor_process_service->boot('cleanup_cache');
+        $this->monitor_process_service->boot('mail');
 
         while (true)
         {
@@ -42,7 +46,13 @@ class ProcessCleanupCacheCommand extends Command
                 continue;
             }
 
-            $this->cache_service->cleanup();
+            $record = $this->queue_service->get(['mail']);
+
+            if (count($record))
+            {
+                $this->mail_queue->process($record['data']);
+            }
+
             $this->monitor_process_service->periodic_log();
         }
 

@@ -39,7 +39,7 @@ class FormTokenManager implements FormTokenManagerInterface
 
     public function get_error_message(string $value):string
     {
-        $key = $this->prefix . $value;
+        $key = FormTokenManagerInterface::STORE_PREFIX . $value;
         $count = $this->predis->incr($key);
 
         if ($count === 1)

@@ -1,5 +1,41 @@
 {%- extends 'base/sidebar.html.twig' -%}
 
+{%- block heading -%}
+    <h1>
+    <i class="fa fa-sign-in"></i>
+    Login
+    </h1>
+{%- endblock heading -%}
+
+{%- block content -%}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.login, {
+        'label': 'login.login',
+        'explain': 'login.login_explain',
+        'addon_fa': 'user'
+    }) -}}
+
+    {{- form_row(form.password, {
+        'label': 'label.password',
+        'explain_raw': 'login.password_reset_link'|trans({
+            '%link_open%': l.link_open('password_reset'),
+            '%link_close%': l.link_close()
+        })|raw,
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'login.btn',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

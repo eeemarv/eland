@@ -1,0 +1,36 @@
+{%- macro flash() -%}
+	{%- if app.request.hasPreviousSession -%}
+		{%- if app.session.flashbag.peekAll()|length > 0 -%}
+			<div id="flash">
+			{%- for type, flashMessages in app.session.flashbag.all() -%}
+				{%- for idx, msg in flashMessages -%}
+					{%- if type == 'error' -%}
+						{%- set type = 'danger' -%}
+					{%- endif -%}
+					<div class="row">
+						<div class="col-12">
+							<div class="alert alert-{{- type }} alert-dismissible" role="alert">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">
+									<span class="fa fa-times"></span>
+								</span>
+							</button>
+							{%- if msg is iterable -%}
+								{%- for m in msg -%}
+									{{- m|raw -}}
+									{%- if not loop.last -%}
+										<br>
+									{%- endif -%}
+								{%- endfor -%}
+							{%- else -%}
+								{{- msg|raw -}}
+							{%- endif -%}
+							</div>
+						</div>
+					</div>
+				{%- endfor -%}
+			{%- endfor -%}
+			</div>
+		{%- endif -%}
+	{%- endif -%}
+{%- endmacro -%}

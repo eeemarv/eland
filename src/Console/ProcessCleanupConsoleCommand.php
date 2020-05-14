@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Console;
 
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessCleanupCommand extends Command
+class ProcessCleanupConsoleCommand extends Command
 {
     protected static $defaultName = 'process:cleanup';
 

@@ -1,39 +1,39 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Console;
 
+use App\Service\CacheService;
 use App\Service\MonitorProcessService;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessCleanupLogsCommand extends Command
+class ProcessCleanupCacheConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:cleanup_logs';
+    protected static $defaultName = 'process:cleanup_cache';
 
     protected $monitor_process_service;
-    protected $db;
+    protected $cache_service;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,
-        Db $db
+        CacheService $cache_service
     )
     {
         parent::__construct();
 
         $this->monitor_process_service = $monitor_process_service;
-        $this->db = $db;
+        $this->cache_service = $cache_service;
     }
 
     protected function configure()
     {
-        $this->setDescription('Process to cleanup old log entries from db.');
+        $this->setDescription('Process to cleanup the db cache periodically');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->monitor_process_service->boot('cleanup_logs');
+        $this->monitor_process_service->boot('cleanup_cache');
 
         while (true)
         {
@@ -42,13 +42,7 @@ class ProcessCleanupLogsCommand extends Command
                 continue;
             }
 
-            // $chema is not used, logs from all schemas are cleaned up.
-
-            $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
-
-            $this->db->executeQuery('delete from xdb.logs
-                where ts < ?', [$treshold]);
-
+            $this->cache_service->cleanup();
             $this->monitor_process_service->periodic_log();
         }
 

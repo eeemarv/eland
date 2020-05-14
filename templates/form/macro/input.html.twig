@@ -1,0 +1,62 @@
+{%- macro group_start(label, id) -%}
+    <div class="form-group">
+    <label for="{{- id -}}" class="col-sm-2 control-label">{{- label|trans -}}</label>
+    <div class="col-sm-10 controls">
+{%- endmacro group_start -%}
+
+{%- macro group_end() -%}
+    </div>
+    </div>
+{%- endmacro group_end -%}
+
+{%- macro password_reset(value) -%}
+    {%- import _self as i -%}
+    {{- i.group_start('Paswoord', 'password') -}}
+    <div class="input-group">
+        <input type="text" class="form-control" id="password" name="password" value="{{- value -}}" required>
+        <span class="input-group-btn">
+        <button class="btn btn-default" type="button" id="generate">
+            Genereer
+        </button>
+        </span>
+    </div>
+    {{- i.group_end() -}}
+{%- endmacro password_reset -%}
+
+{%- macro text(name, value, label) -%}
+    {%- import _self as i -%}
+    {{- i.group_start(label, name) -}}
+    {{- i.inp('text', name, value) -}}
+    {{- i.group_end() -}}
+{%- endmacro text -%}
+
+{%- macro inp(type, name, value) -%}
+    <input type="{{- type -}}" class="form-control" id="{{- name -}}" name="{{- name -}}"
+    value="{{- value -}}" required>
+{%- endmacro inp -%}
+
+{%- macro password(name, value, label) -%}
+    {%- import _self as i -%}
+    {{- i.group_start(label, name) -}}
+    <input type="password" class="form-control" id="{{- name -}}" name="{{- name -}}"
+    value="{{- value -}}" required>
+    {{- i.group_end() -}}
+{%- endmacro password -%}
+
+{%- macro email(name, value, label) -%}
+    {%- import _self as i -%}
+    {{- i.group_start(label, name) -}}
+    <input type="email" class="form-control" id="{{- name -}}" name="{{- name -}}"
+    value="{{- value -}}" required>
+    {{- i.group_end() -}}
+{%- endmacro email -%}
+
+{%- macro summernote(name, value, placeholder) -%}
+    <div class="form-group">
+        <div class="col-sm-12">
+            <textarea name="description" class="form-control summernote" rows="4" placeholder="{{- placeholder|default('') -}}">
+                {{- value -}}
+            </textarea>
+        </div>
+    </div>
+{%- endmacro summernote -%}

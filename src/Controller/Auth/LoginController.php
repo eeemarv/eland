@@ -2,6 +2,8 @@
 
 namespace App\Controller\Auth;
 
+use App\Command\Auth\LoginCommand;
+use App\Form\Post\LoginType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,9 +56,27 @@ class LoginController extends AbstractController
             $location = '';
         }
 
+        $login_command = new LoginCommand();
+
+        if ($request->isMethod('GET')
+            && $request->query->has('login'))
+        {
+            $login_command->login = $request->query->get('login');
+        }
+
+        $form = $this->createForm(LoginType::class, $login_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+
+
+        }
+
+
         $login = trim($request->request->get('login', ''));
 
-        if ($request->isMethod('POST'))
+        if (false && $request->isMethod('POST'))
         {
             $lowercase_login = strtolower($login);
             $password = trim($request->request->get('password'));
@@ -330,6 +350,7 @@ class LoginController extends AbstractController
 
         return $this->render('auth/login.html.twig', [
             'content'   => $out,
+            'form'      => $form->createView(),
             'schema'    => $pp->schema(),
         ]);
     }

@@ -1,0 +1,9 @@
+<div class="card fcard fcard-info">
+	<div class="card-body">
+		{{- form_start(form, {'attr': {'novalidate': 'novalidate'}}) -}}
+		{{- form_errors(form) -}}
+        {%- block form_content -%}
+        {%- endblock form_content -%}
+        {{- form_end(form) -}}
+    </div>
+</div>

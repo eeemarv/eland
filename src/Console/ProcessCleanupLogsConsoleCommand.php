@@ -1,43 +1,39 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Console;
 
-use App\Queue\MailQueue;
 use App\Service\MonitorProcessService;
-use App\Service\QueueService;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessMailCommand extends Command
+class ProcessCleanupLogsConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:mail';
+    protected static $defaultName = 'process:cleanup_logs';
 
     protected $monitor_process_service;
-    protected $mail_queue;
-    protected $queue_service;
+    protected $db;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,
-        MailQueue $mail_queue,
-        QueueService $queue_service
+        Db $db
     )
     {
         parent::__construct();
 
         $this->monitor_process_service = $monitor_process_service;
-        $this->mail_queue = $mail_queue;
-        $this->queue_service = $queue_service;
+        $this->db = $db;
     }
 
     protected function configure()
     {
-        $this->setDescription('Send emails from queue');
+        $this->setDescription('Process to cleanup old log entries from db.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->monitor_process_service->boot('mail');
+        $this->monitor_process_service->boot('cleanup_logs');
 
         while (true)
         {
@@ -46,12 +42,12 @@ class ProcessMailCommand extends Command
                 continue;
             }
 
-            $record = $this->queue_service->get(['mail']);
+            // $chema is not used, logs from all schemas are cleaned up.
 
-            if (count($record))
-            {
-                $this->mail_queue->process($record['data']);
-            }
+            $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
+
+            $this->db->executeQuery('delete from xdb.logs
+                where ts < ?', [$treshold]);
 
             $this->monitor_process_service->periodic_log();
         }

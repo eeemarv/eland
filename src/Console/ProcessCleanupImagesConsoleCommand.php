@@ -1,43 +1,39 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Console;
 
-use App\Queue\GeocodeQueue;
 use App\Service\MonitorProcessService;
-use App\Service\QueueService;
+use App\Task\CleanupImagesTask;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessGeocodeCommand extends Command
+class ProcessCleanupImagesConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:geocode';
+    protected static $defaultName = 'process:cleanup_images';
 
     protected $monitor_process_service;
-    protected $geocode_queue;
-    protected $queue_service;
+    protected $cleanup_images_task;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,
-        GeocodeQueue $geocode_queue,
-        QueueService $queue_service
+        CleanupImagesTask $cleanup_images_task
     )
     {
         parent::__construct();
 
         $this->monitor_process_service = $monitor_process_service;
-        $this->geocode_queue = $geocode_queue;
-        $this->queue_service = $queue_service;
+        $this->cleanup_images_task = $cleanup_images_task;
     }
 
     protected function configure()
     {
-        $this->setDescription('Process to retrieve geographic coordinates from geocoding API');
+        $this->setDescription('Process to cleanup old image files.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->monitor_process_service->boot('geocode');
+        $this->monitor_process_service->boot('cleanup_images');
 
         while (true)
         {
@@ -46,13 +42,7 @@ class ProcessGeocodeCommand extends Command
                 continue;
             }
 
-            $record = $this->queue_service->get(['geocode']);
-
-            if (count($record))
-            {
-                $this->geocode_queue->process($record['data']);
-            }
-
+            $this->cleanup_images_task->process();
             $this->monitor_process_service->periodic_log();
         }
 

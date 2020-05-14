@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Console;
 
 use App\SchemaTask\PeriodicOverviewSchemaTask;
 use Symfony\Component\Console\Command\Command;
@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
-class TestPeriodicOverviewCommand extends Command
+class TestPeriodicOverviewConsoleCommand extends Command
 {
     protected static $defaultName = 'test:periodic_overview';
 

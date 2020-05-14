@@ -1,0 +1,200 @@
+{% extends 'bootstrap_4_layout.html.twig' %}
+
+{% block form_row -%}
+    <div class="form-group{% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}">
+        {{- form_label(form) -}}
+        {%- if sub_label is defined -%}
+            &nbsp;&nbsp;
+            <span>
+                {{- sub_label|trans -}}
+            </span>
+        {%- endif -%}
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+        {%- if explain is defined -%}
+            <span>
+                {{- explain|trans -}}
+            </span>
+        {%- endif -%}
+        {%- if explain_raw is defined -%}
+            <span>
+                {{- explain_raw|raw -}}
+            </span>
+        {%- endif -%}
+    </div>
+{%- endblock form_row %}
+
+{#
+{%- block form_widget_simple -%}
+    {% if type is not defined or type not in ['file', 'hidden'] %}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-control-lg')|trim}) -%}
+    {% endif %}
+    {{- parent() -}}
+{%- endblock form_widget_simple -%}
+#}
+
+{%- block button_widget -%}
+    {%- set attr = attr|merge({class: (attr.class|default('btn-default') ~ ' btn btn-lg')|trim}) -%}
+    {%- if label is not same as(false) and label is empty -%}
+        {%- if label_format is not empty -%}
+            {%- set label = label_format|replace({
+                '%name%': name,
+                '%id%': id,
+            }) -%}
+        {%- else -%}
+            {%- set label = name|humanize -%}
+        {%- endif -%}
+    {%- endif -%}
+    <button type="{{- type|default('button') -}}" {{ block('button_attributes') -}}>
+    {%- if span_attr is defined -%}
+        {%- if fa is defined -%}
+            <i class="fa fa-{{- fa -}}"></i>
+            <span{%- for key, val in span_attr %} {{ key -}}="{{- val -}}"{%- endfor -%}>&nbsp;
+        {%- else -%}
+            <span{%- for key, val in span_attr %} {{ key -}}="{{- val -}}"{%- endfor -%}>
+        {%- endif -%}
+        {{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
+        </span>
+    {%- else -%}
+        {%- if fa is defined -%}<i class="fa fa-{{- fa -}}"></i>&nbsp;{%- endif -%}
+        {{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
+    {%- endif -%}
+    </button>
+{%- endblock button_widget -%}
+
+{% block choice_widget_collapsed -%}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' input-lg')|trim}) -%}
+    {{- parent() -}}
+{%- endblock %}
+
+{% block addon_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('form_widget_simple') -}}
+    </div>
+{%- endblock addon_widget %}
+
+{% block addon -%}
+    <span class="input-group-prepend{%- if addon_class is defined %} {{ addon_class -}}{%- endif %}">
+        <span class="input-group-text">
+            {%- if addon_label is defined -%}
+                {{- addon_label|trans -}}
+            {%- endif -%}
+            {%- if addon_fa is defined -%}
+                {%- if addon_label is defined -%}&nbsp;{%- endif -%}
+                <i class="fa fa-{{- addon_fa -}}"></i>
+            {%- endif -%}
+        </span>
+    </span>
+{%- endblock addon %}
+
+{% block addon_button -%}
+  <span class="input-group-btn">
+	<button class="btn btn-lg{%- if addon_btn_class is defined %} {{ addon_btn_class -}}{%- endif %}" type="button"
+    {%- if addon_btn_attr is defined -%}{%- for key, a in addon_btn_attr %} {{ key -}}="{{- a -}}"{%- endfor -%}{%- endif -%}>
+    {%- if addon_btn_label is defined -%}{{- addon_btn_label|trans -}}{%- endif -%}
+    {%- if addon_btn_fa is defined -%}{%- if addon_btn_label is defined -%}&nbsp;{%- endif -%}
+        <i class="fa fa-{{- addon_btn_fa -}}"></i>
+    {%- endif -%}
+    </button>
+  </span>
+{%- endblock addon_button %}
+
+{% block addon_button_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('form_widget_simple') -}}
+        {{- block('addon_button') -}}
+    </div>
+{%- endblock addon_button_widget %}
+
+{% block typeahead_widget -%}
+    {%- set attr = attr|merge(typeahead_attr) -%}
+    {{- block('addon_widget') -}}
+{%- endblock typeahead_widget %}
+
+{% block typeahead_user_widget -%}
+    {{- block('typeahead_widget') -}}
+{%- endblock typeahead_user_widget -%}
+
+{% block datepicker_widget -%}
+    {%- set attr = attr|merge({
+        'data-provide': 'datepicker',
+        'data-date-format': datepicker_format(),
+        'data-date-language': app.request.locale,
+        'data-date-today-highlight': 'true',
+        'data-date-autoclose': 'true',
+        'data-date-immediate-updates': 'true',
+        'data-date-orientation': 'bottom',
+        'placeholder': datepicker_placeholder(),
+    }) -%}
+    {%- set addon_fa = 'calendar' -%}
+    {{- block('addon_widget') -}}
+{%- endblock datepicker_widget %}
+
+{% block checkbox_radio_label %}
+    {%- import 'macro/badge.html.twig' as ba -%}
+    {% if widget is defined %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if parent_label_class is defined %}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ parent_label_class)|trim}) %}
+        {% endif %}
+        {% if label is not same as(false) and label is empty %}
+            {%- if label_format is not empty -%}
+                {% set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) %}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {% endif %}
+
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+            {{- widget|raw -}}
+            {%- if 'badge_choice' in form.parent.vars.block_prefixes %} {{ ba.badge(label) -}}
+            {%- else -%} {{ label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)) -}}
+            {%- endif -%}
+        </label>
+    {% endif %}
+{% endblock checkbox_radio_label %}
+
+{% block choice_widget_expanded -%}
+    <div {{ block('widget_container_attributes') }}>
+        {%- for child in form %}
+            {{- form_widget(child, {
+                parent_label_class: label_attr.class|default(''),
+                translation_domain: choice_translation_domain,
+            }) -}}
+        {%- endfor -%}
+    </div>
+{%- endblock choice_widget_expanded %}
+
+{%- block form_label -%}
+    {% if label is not same as(false) -%}
+        {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' control-label')|trim}) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {%- endif -%}
+        {% if label is empty -%}
+            {%- if label_format is not empty -%}
+                {% set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) %}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {%- endif -%}
+        <{{- element|default('label') -}}
+        {%- if label_attr -%}{%- with { attr: label_attr } -%}{{- block('attributes') -}}{%- endwith -%}
+        {%- endif -%}>{{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
+        {%- if required -%}*{%- endif -%}
+        </{{- element|default('label') -}}>
+    {%- endif -%}
+{%- endblock form_label -%}
