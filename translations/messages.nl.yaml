@@ -101,7 +101,7 @@ label:
 login:
   title: Login
   login: Login
-  login_explain: E-mail, Account Code of Gebruikersnaam
+  login_explain: E-mail, Gebruikersnaam of Account Code
   btn: Inloggen
   password_reset_link: >-
     %link_open%Klik hier als je je paswoord vergeten bent.%link_close%

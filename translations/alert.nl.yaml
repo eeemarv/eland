@@ -1,0 +1,18 @@
+
+
+login:
+  warning:
+    maintenance: >-
+      De website is niet beschikbaar
+      wegens onderhoudswerken.
+      Enkel admins kunnen inloggen.
+  success:
+    master: Ok. Ingelogd als master.
+    user: Je bent ingelogd.
+  error:
+    intersystem_guest: >-
+      Het account is een interSysteem-gast
+      account, maar interSysteem functionaliteit
+      is niet ingeschakeld in dit systeem.
+    maintenance: >-
+      De website is in onderhoud. Probeer het later opnieuw.

@@ -39,10 +39,9 @@ class DatepickerTransformer implements DataTransformerInterface
 
         if ($parsed === false)
         {
-            throw new TransformationFailedException(sprintf(
-                'User input "%s" could not be parsed to a date',
-                $input_date
-            ));
+            throw new TransformationFailedException(
+                'User input ' . $inputDate . ' could not be parsed to a date'
+            );
         }
 
         $year = $parsed['tm_year'] + 1900;

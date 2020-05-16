@@ -1,0 +1,26 @@
+
+
+login:
+  login:
+    email_not_unique: >-
+      Je kan dit E-mail adres niet gebruiken
+      om in te loggen want het is niet
+      uniek aanwezig in dit Systeem. Gebruik
+      je Account Code of Gebruikersnaam.
+    name_not_unique: >-
+      Je kan deze gebruikersnaam niet gebruiken
+      om in te loggen want deze is niet
+      uniek aanwezig in dit Systeem. Gebruik
+      je E-mail adres of Account Code.
+    code_not_unique: >-
+      Je kan deze Account Code niet gebruiken
+      om in te loggen want deze is niet
+      uniek aanwezig in dit Systeem. Gebruik
+      je E-mail adres of gebruikersnaam.
+    unknown: >-
+      Onbekend gebruikersaccount.
+    not_active: >-
+      Dit Gebruikersaccount is niet actief.
+  password:
+    not_correct: >-
+      Het paswoord is niet correct.

@@ -16,7 +16,8 @@
     {{- form_row(form.login, {
         'label': 'login.login',
         'explain': 'login.login_explain',
-        'addon_fa': 'user'
+        'addon_fa': 'user',
+        'attr': {'minlength': 2, 'maxlength': 60}
     }) -}}
 
     {{- form_row(form.password, {
@@ -25,6 +26,7 @@
             '%link_open%': l.link_open('password_reset'),
             '%link_close%': l.link_close()
         })|raw,
+        'attr': {'minlength': 5, 'maxlength': 60}
     }) -}}
 
     {{- form_widget(form.submit,{
