@@ -6,16 +6,22 @@ use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Filter\UserFilter;
 use App\Filter\FilterQuery;
+use App\Service\UserCacheService;
 use App\Util\Sort;
 use App\Util\Pagination;
 
 class UserRepository
 {
 	protected Db $db;
+	protected UserCacheService $user_cache_service;
 
-	public function __construct(Db $db)
+	public function __construct(
+		Db $db,
+		UserCacheService $user_cache_service
+	)
 	{
 		$this->db = $db;
+		$this->user_cache_service = $user_cache_service;
 	}
 
 	public function count_active_by_email(
@@ -131,7 +137,10 @@ class UserRepository
 
 	public function set_password(int $id, string $password, string $schema):void
 	{
-		$this->db->update($schema . '.users', ['password' => $password], ['id' => $id]);
+		$this->db->update($schema . '.users',
+			['password' => $password],
+			['id' => $id]);
+		$this->user_cache_service->clear($id, $schema);
 	}
 
 	public function getFiltered(string $schema, FilterQuery $filterQuery, Sort $sort, Pagination $pagination):array

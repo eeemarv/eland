@@ -7,6 +7,8 @@ btn:
   edit: Aanpassen
   filter: Filter
   generate: Genereer
+  generate_password_explain: >-
+    Genereer automatisch een paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
   send: Verzenden
@@ -61,6 +63,7 @@ label:
   modified: Aangepast
   mobile: GSM
   name: Naam
+  new_password: Nieuw paswoord
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
   out: Uit
@@ -103,6 +106,13 @@ password_reset_request:
     staat in het Systeem. Een link om je paswoord te
     resetten wordt naar je E-mailbox gestuurd.
   btn: Zend paswoord reset link
+
+password_reset_set:
+  title: Nieuw paswoord ingeven
+  password_explain: >-
+    Tip: Gebruik voor de veiligheid nooit
+    hetzelfde paswoord in verschillende toepassingen.
+  btn: Bewaar paswoord
 
 calendar:
   title: Kalender

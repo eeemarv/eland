@@ -27,3 +27,12 @@ password_reset_request:
       Een link om je paswoord te resetten werd
       naar je E-mailbox verzonden. Deze link
       blijft 24 uur geldig.
+
+password_reset_set:
+  error:
+    not_valid_anymore: >-
+      Het reset-token is niet meer geldig.
+      Zend eventueel opnieuw een paswoord reset link
+      naar je E-mail box.
+  success: >-
+    Nieuw paswoord opgeslagen.

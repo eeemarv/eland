@@ -43,8 +43,6 @@ services:
             $env_mollie_test_api_key: '%env(MOLLIE_TEST_API_KEY)%'
             $env_google_geo_api_key: '%env(GOOGLE_GEO_API_KEY)%'
             $env_geo_block: '%env(GEO_BLOCK)%'
-            $env_app_host: '%env(APP_HOST)%'
-            $env_app_scheme: '%env(APP_SCHEME)%'
             $env_app_init_enabled: '%env(APP_INIT_ENABLED)%'
             $env_app_system_redirects: '%env(base64:APP_SYSTEM_REDIRECTS)%'
             $env_database_url: '%env(DATABASE_URL)%'

@@ -48,7 +48,6 @@ class PasswordResetRequestController extends AbstractController
 
             $token = $data_token_service->store([
                 'user_id'	=> $user_id,
-                'email'		=> $email,
             ], 'password_reset', $pp->schema(), 86400);
 
             $mail_queue->queue([

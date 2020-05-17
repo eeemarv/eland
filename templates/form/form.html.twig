@@ -76,7 +76,7 @@
 
 {% block addon -%}
     <span class="input-group-prepend{%- if addon_class is defined %} {{ addon_class -}}{%- endif %}">
-        <span class="input-group-text">
+        <span class="input-group-text form-control">
             {%- if addon_label is defined -%}
                 {{- addon_label|trans -}}
             {%- endif -%}
@@ -89,8 +89,9 @@
 {%- endblock addon %}
 
 {% block addon_button -%}
-  <span class="input-group-btn">
-	<button class="btn btn-lg{%- if addon_btn_class is defined %} {{ addon_btn_class -}}{%- endif %}" type="button"
+  <span class="input-group-append">
+	<button class="btn{%- if addon_btn_class is defined %} {{ addon_btn_class -}}{%- endif %}" type="button"
+    {%- if addon_btn_title is defined -%} title="{{- addon_btn_title|trans -}}"{%- endif -%}
     {%- if addon_btn_attr is defined -%}{%- for key, a in addon_btn_attr %} {{ key -}}="{{- a -}}"{%- endfor -%}{%- endif -%}>
     {%- if addon_btn_label is defined -%}{{- addon_btn_label|trans -}}{%- endif -%}
     {%- if addon_btn_fa is defined -%}{%- if addon_btn_label is defined -%}&nbsp;{%- endif -%}

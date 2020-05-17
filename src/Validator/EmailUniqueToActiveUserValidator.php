@@ -1,16 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator\PasswordReset;
+namespace App\Validator;
 
-
-use App\Command\PasswordReset\PasswordResetRequestCommand;
 use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 
-class PasswordResetRequestValidator extends ConstraintValidator
+class EmailUniqueToActiveUserValidator extends ConstraintValidator
 {
     protected UserRepository $user_repository;
     protected PageParamsService $pp;
@@ -24,34 +22,32 @@ class PasswordResetRequestValidator extends ConstraintValidator
         $this->pp = $pp;
     }
 
-    public function validate($password_reset_request_command, Constraint $constraint)
+    public function validate($email, Constraint $constraint)
     {
-        if (!$constraint instanceof PasswordResetRequest)
+        if (!$constraint instanceof EmailUniqueToActiveUser)
         {
-            throw new UnexpectedTypeException($constraint, PasswordResetRequest::class);
+            throw new UnexpectedTypeException($constraint, EmailUniqueToActiveUser::class);
         }
 
-        if (!$password_reset_request_command instanceof PasswordResetRequestCommand)
+        if (!is_string($email))
         {
-            throw new UnexpectedTypeException($password_reset_request_command, PasswordResetRequestCommand::class);
+            throw new UnexpectedTypeException($email, 'string');
         }
 
-        $email_lowercase = strtolower($password_reset_request_command->email);
+        $email_lowercase = strtolower($email);
 
         $count_by_email = $this->user_repository->count_active_by_email($email_lowercase, $this->pp->schema());
 
         if ($count_by_email > 1)
         {
-            $this->context->buildViolation('password_reset_request.email.not_unique')
-                ->atPath('email')
+            $this->context->buildViolation('email_unique_to_active_user.not_unique')
                 ->addViolation();
             return;
         }
 
         if ($count_by_email === 0)
         {
-            $this->context->buildViolation('password_reset_request.email.not_known')
-                ->atPath('email')
+            $this->context->buildViolation('email_unique_to_active_user.not_known')
                 ->addViolation();
             return;
         }

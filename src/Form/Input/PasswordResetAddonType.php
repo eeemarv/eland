@@ -4,7 +4,6 @@ namespace App\Form\Input;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
@@ -17,8 +16,8 @@ class PasswordResetAddonType extends AbstractType
 
         $keys = [
             'addon_fa', 'addon_label', 'addon_class',
-            'addon_btn_fa', 'addon_btn_label', 'addon_btn_class',
-            'addon_btn_attr',
+            'addon_btn_fa', 'addon_btn_label', 'addon_btn_title',
+            'addon_btn_class', 'addon_btn_attr',
         ];
 
         foreach ($keys as $key)
@@ -39,10 +38,14 @@ class PasswordResetAddonType extends AbstractType
             'addon_class'       => null,
             'addon_btn_fa'      => null,
             'addon_btn_label'   => 'btn.generate',
-            'addon_btn_class'   => 'btn-default',
+            'addon_btn_title'   => 'btn.generate_password_explain',
+            'addon_btn_class'   => 'btn-default border border-secondary-li',
             'addon_btn_attr'    => [
-                'id'    => 'generate',
+                'data-generate-password'    => '',
             ],
+            'attr'              => [
+                'data-generate-password-target'     => '',
+            ]
         ]);
     }
 

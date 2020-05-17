@@ -32,9 +32,11 @@ login:
     not_correct: >-
       Het paswoord is niet correct.
 
-password_reset_request:
-  email:
-    not_unique: >-
-      Het E-mail adres is niet uniek in dit Systeem.
-    not_known: >-
-      Het E-mail adres is niet bekend in dit Systeem.
+email_unique_to_active_user:
+  not_unique: >-
+    Het E-mail adres is niet uniek in dit Systeem.
+  not_known: >-
+    Het E-mail adres is niet bekend in dit Systeem.
+
+password_strength:
+  Het paswoord is niet sterk genoeg.

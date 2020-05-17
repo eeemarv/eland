@@ -2,7 +2,7 @@
 
 namespace App\Command\PasswordReset;
 
-use App\Validator\PasswordReset\PasswordResetRequest;
+use App\Validator\EmailUniqueToActiveUser;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -15,8 +15,7 @@ class PasswordResetRequestCommand
     {
         $metadata->addPropertyConstraint('email', new NotBlank());
         $metadata->addPropertyConstraint('email', new Email());
-        $metadata->addConstraint(new PasswordResetRequest(['groups' => ['PasswordResetRequest']]));
-
-        $metadata->setGroupSequence(['PasswordResetRequestCommand', 'PasswordResetRequest']);
+        $metadata->addPropertyConstraint('email', new EmailUniqueToActiveUser(['groups' => ['Unique']]));
+        $metadata->setGroupSequence(['PasswordResetRequestCommand', 'Unique']);
     }
 }
