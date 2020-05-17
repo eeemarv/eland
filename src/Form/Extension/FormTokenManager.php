@@ -45,7 +45,7 @@ class FormTokenManager implements FormTokenManagerInterface
         if ($count === 1)
         {
             $this->predis->del($key);
-            return 'form.error.form_token.expired';
+            return 'form.form_token.expired';
         }
 
         if ($count === 2)
@@ -53,6 +53,6 @@ class FormTokenManager implements FormTokenManagerInterface
             return '';
         }
 
-        return 'form.error.form_token.double';
+        return 'form.form_token.double';
     }
 }

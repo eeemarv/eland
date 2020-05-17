@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Validator\Auth;
 
 use Symfony\Component\Validator\Constraint;
 
@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class Login extends Constraint
 {
-    public function getTargets()
+    public function getTargets():string
     {
         return self::CLASS_CONSTRAINT;
     }

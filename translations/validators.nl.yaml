@@ -1,4 +1,11 @@
-
+form:
+  form_token:
+    expired: >-
+      De maximale duurtijd van het formulier
+      is overschreden.
+      Gelieve het opnieuw te proberen.
+    double: >-
+      Een dubbele invoer van het formulier werd voorkomen.
 
 login:
   login:
@@ -17,10 +24,17 @@ login:
       om in te loggen want deze is niet
       uniek aanwezig in dit Systeem. Gebruik
       je E-mail adres of gebruikersnaam.
-    unknown: >-
+    not_known: >-
       Onbekend gebruikersaccount.
     not_active: >-
       Dit Gebruikersaccount is niet actief.
   password:
     not_correct: >-
       Het paswoord is niet correct.
+
+password_reset_request:
+  email:
+    not_unique: >-
+      Het E-mail adres is niet uniek in dit Systeem.
+    not_known: >-
+      Het E-mail adres is niet bekend in dit Systeem.

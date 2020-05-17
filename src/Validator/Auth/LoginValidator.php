@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Validator\Auth;
 
 use App\Command\Auth\LoginCommand;
 use App\Repository\UserRepository;
@@ -111,7 +111,7 @@ class LoginValidator extends ConstraintValidator
 
         if (!isset($login_command->id) || !$login_command->id)
         {
-            $this->context->buildViolation('login.login.unknown')
+            $this->context->buildViolation('login.login.not_known')
                 ->atPath('login')
                 ->addViolation();
             return;

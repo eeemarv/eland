@@ -3,7 +3,7 @@
 namespace App\Controller\Auth;
 
 use App\Command\Auth\LoginCommand;
-use App\Form\Post\LoginType;
+use App\Form\Post\Auth\LoginType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

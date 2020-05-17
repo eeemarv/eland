@@ -16,3 +16,14 @@ login:
       is niet ingeschakeld in dit systeem.
     maintenance: >-
       De website is in onderhoud. Probeer het later opnieuw.
+
+logout:
+  success: >-
+    Je bent uitgelogd.
+
+password_reset_request:
+  success:
+    email_sent: >-
+      Een link om je paswoord te resetten werd
+      naar je E-mailbox verzonden. Deze link
+      blijft 24 uur geldig.

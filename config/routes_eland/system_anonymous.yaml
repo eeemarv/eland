@@ -23,9 +23,9 @@ register_token:
   controller: App\Controller\Register\RegisterTokenController
   methods: GET
 
-password_reset:
+password_reset_request:
   path: /password-reset
-  controller: App\Controller\PasswordReset\PasswordResetController
+  controller: App\Controller\PasswordReset\PasswordResetRequestController
   methods: GET|POST
 
 password_reset_token:

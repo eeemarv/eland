@@ -1,24 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post;
+namespace App\Form\Post\PasswordReset;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use App\Form\Input\EmailAddonType;
 
-class RequestPasswordResetType extends AbstractType
-{	
+class PasswordResetRequestType extends AbstractType
+{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailAddonType::class, [
-                'constraints' => new Assert\Email(),
-            ])
-
+            ->add('email', EmailAddonType::class)
             ->add('submit', SubmitType::class);
     }
 

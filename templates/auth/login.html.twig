@@ -1,9 +1,14 @@
 {%- extends 'base/sidebar.html.twig' -%}
 
+{%- block heading_fa -%}sign-in{%- endblock -%}
+{%- block heading_title -%}
+    {{- 'login.title'|trans -}}
+{%- endblock -%}
+
 {%- block heading -%}
     <h1>
     <i class="fa fa-sign-in"></i>
-    Login
+    {{ 'login.title'|trans -}}
     </h1>
 {%- endblock heading -%}
 
@@ -22,8 +27,8 @@
 
     {{- form_row(form.password, {
         'label': 'label.password',
-        'explain_raw': 'login.password_reset_link'|trans({
-            '%link_open%': l.link_open('password_reset'),
+        'explain_raw': 'login.password_reset_request_link'|trans({
+            '%link_open%': l.link_open('password_reset_request'),
             '%link_close%': l.link_close()
         })|raw,
         'attr': {'minlength': 5, 'maxlength': 60}

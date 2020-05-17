@@ -13,16 +13,6 @@ btn:
   show: Toon
   show_columns: Toon Kolommen
 
-form:
-  error:
-    form_token:
-      expired: >-
-        De maximale duurtijd van het formulier
-        is overschreden.
-        Gelieve het opnieuw te proberen.
-      double: >-
-        Een dubbele invoer van het formulier werd voorkomen.
-
 label:
   accept: Akkoord
   access: Toegang
@@ -103,8 +93,16 @@ login:
   login: Login
   login_explain: E-mail, Gebruikersnaam of Account Code
   btn: Inloggen
-  password_reset_link: >-
+  password_reset_request_link: >-
     %link_open%Klik hier als je je paswoord vergeten bent.%link_close%
+
+password_reset_request:
+  title: Paswoord vergeten
+  email_explain: >-
+    Vul hier het E-mail adres in waarmee je geregistreerd
+    staat in het Systeem. Een link om je paswoord te
+    resetten wordt naar je E-mailbox gestuurd.
+  btn: Zend paswoord reset link
 
 calendar:
   title: Kalender

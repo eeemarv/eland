@@ -9,26 +9,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
-class PasswordResetType extends AbstractType
+class PasswordResetAddonType extends AbstractType
 {
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         parent::buildView($view, $form, $options);
 
         $keys = [
-            'addon_fa', 'addon_label', 'addon_class', 
+            'addon_fa', 'addon_label', 'addon_class',
             'addon_btn_fa', 'addon_btn_label', 'addon_btn_class',
             'addon_btn_attr',
         ];
 
         foreach ($keys as $key)
         {
-            if (isset($options[$key])) 
+            if (isset($options[$key]))
             {
                 $view->vars[$key] = $options[$key];
             }
-        }   
-    }    
+        }
+    }
 
     public function configureOptions(OptionsResolver $resolver)
     {

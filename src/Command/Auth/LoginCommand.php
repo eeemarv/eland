@@ -2,7 +2,7 @@
 
 namespace App\Command\Auth;
 
-use App\Validator\Login;
+use App\Validator\Auth\Login;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
