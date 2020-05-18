@@ -1,5 +1,53 @@
 {%- extends('base/sidebar.html.twig') -%}
 
+{%- block heading_fa -%}comment-o{%- endblock -%}
+{%- block heading_title -%}
+    {{- 'contact_form.title'|trans -}}
+{%- endblock -%}
+
+{%- block heading -%}
+    <h1>
+    <i class="fa fa-comment-o"></i>
+    {{ 'contact_form.title'|trans -}}
+    </h1>
+{%- endblock heading -%}
+
+{%- block content -%}
+
+{{- config('contact_form_top_text', schema)|raw -}}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.email, {
+        'label': 'label.your_email',
+        'explain': 'explain.email_validation_link'
+    }) -}}
+
+    {{- form_row(form.message, {
+        'label': 'label.your_message',
+        'attr': {'rows': 5}
+    }) -}}
+
+    {{- form_row(form.captcha, {
+        'label': 'label.captcha',
+        'explain': 'explain.captcha',
+        'addon_fa': 'code'
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.send',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{{- config('contact_form_bottom_text', schema)|raw -}}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

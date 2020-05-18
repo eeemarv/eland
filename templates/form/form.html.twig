@@ -62,10 +62,10 @@
     </button>
 {%- endblock button_widget -%}
 
-{% block choice_widget_collapsed -%}
+{%- block choice_widget_collapsed -%}
     {%- set attr = attr|merge({class: (attr.class|default('') ~ ' input-lg')|trim}) -%}
     {{- parent() -}}
-{%- endblock %}
+{%- endblock choice_widget_collapsed -%}
 
 {% block addon_widget -%}
     <div class="input-group">
@@ -201,3 +201,26 @@
         </{{- element|default('label') -}}>
     {%- endif -%}
 {%- endblock form_label -%}
+
+{#
+{%- block captcha_widget -%}
+{% spaceless %}
+    {%- set addon_fa = 'code' -%}
+    {{- block('addon_widget') -}}
+    <span>{{- 'explain.captcha'|trans -}}</span>
+    <br>
+    <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
+{% endspaceless %}
+{%- endblock captcha_widget -%}
+#}
+
+{%- block captcha_row -%}
+    <div class="form-group">
+    {{- block('form_label') -}}
+    {{- block('addon_widget') -}}
+    {{- block('form_errors') -}}
+    <span>{{- explain|trans -}}</span>
+    <br>
+    <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
+    </div>
+{%- endblock captcha_row -%}

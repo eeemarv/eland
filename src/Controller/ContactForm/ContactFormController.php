@@ -2,6 +2,8 @@
 
 namespace App\Controller\ContactForm;
 
+use App\Command\ContactForm\ContactFormCommand;
+use App\Form\Post\ContactForm\ContactFormType;
 use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +36,37 @@ class ContactFormController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
+        $contact_form_command = new ContactFormCommand();
+
+        $form = $this->createForm(ContactFormType::class, $contact_form_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $contact_form_command = $form->getData();
+            $email = $contact_form_command->email;
+            $message = $contact_form_command->message;
+            $email_lowercase = strtolower($email);
+
+
+
+
+
+
+        }
+
+        $menu_service->set('contact');
+
+        return $this->render('contact_form/contact_form.html.twig', [
+            'form'      => $form->createView(),
+            'schema'    => $pp->schema(),
+        ]);
+
+
+
+
+
+
         $errors = [];
 
         if (!$config_service->get('contact_form_en', $pp->schema()))
@@ -44,38 +77,16 @@ class ContactFormController extends AbstractController
 
         if($request->isMethod('POST'))
         {
-            if (!$captcha_service->validate())
-            {
-                $errors[] = 'De anti-spam verifiactiecode is niet juist ingevuld.';
-            }
 
-            $email = strtolower($request->request->get('email'));
-            $message = $request->request->get('message');
 
-            if (empty($email) || !$email)
-            {
-                $errors[] = 'Vul je E-mail adres in';
-            }
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-            {
-                $errors[] = 'Geen geldig E-mail adres';
-            }
 
-            if (empty($message) || strip_tags($message) == '' || !$message)
-            {
-                $errors[] = 'Geef een bericht in.';
-            }
 
             if (!trim($config_service->get('support', $pp->schema())))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
             }
 
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
 
             if(!count($errors))
             {
@@ -116,11 +127,7 @@ class ContactFormController extends AbstractController
                 $alert_service->error($errors);
             }
         }
-        else
-        {
-            $message = '';
-            $email = '';
-        }
+
 
         $form_disabled = false;
 

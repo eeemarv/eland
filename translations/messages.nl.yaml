@@ -20,6 +20,11 @@ explain:
   new_password_safety: >-
     Tip: Gebruik voor de veiligheid nooit
     hetzelfde paswoord in verschillende toepassingen.
+  email_validation_link: >-
+    Er wordt een aan te klikken validatielink
+    naar je E-mailbox verstuurd.
+  captcha: >-
+    Geef de code in die hieronder getoond wordt.
 
 label:
   accept: Akkoord
@@ -34,6 +39,7 @@ label:
   balance: Saldo
   balance_on_date: Saldo op Datum
   balance_sum: "Totaal Saldo: %balance_sum%"
+  captcha: Anti-spam verificatiecode
   code: Code
   columns: Kolommen
   comment: Commentaar
@@ -97,6 +103,9 @@ label:
   your_account: Je Account
   your_email: Je E-Mail adres
   your_message: Je Bericht
+
+contact_form:
+  title: Contact
 
 login:
   title: Login

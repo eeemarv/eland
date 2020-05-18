@@ -22,7 +22,6 @@
 		"ezyang/htmlpurifier": "^4.8",
 		"fabpot/goutte": "^3",
 		"geocoder-php/google-maps-provider": "^4.1",
-		"gregwar/captcha": "^1.1",
 		"imagine/imagine": "^0.6",
 		"league/html-to-markdown": "^4.4",
 		"mollie/mollie-api-php": "^2",
