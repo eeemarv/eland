@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
-class UsersPasswordAdminController extends AbstractController
+class UsersPasswordSetAdminController extends AbstractController
 {
     public function __invoke(
         Request $request,

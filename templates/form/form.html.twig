@@ -133,6 +133,7 @@
     {{- block('addon_widget') -}}
 {%- endblock datepicker_widget %}
 
+{#
 {% block checkbox_radio_label %}
     {%- import 'macro/badge.html.twig' as ba -%}
     {% if widget is defined %}
@@ -161,6 +162,7 @@
         </label>
     {% endif %}
 {% endblock checkbox_radio_label %}
+#}
 
 {% block choice_widget_expanded -%}
     <div {{ block('widget_container_attributes') }}>

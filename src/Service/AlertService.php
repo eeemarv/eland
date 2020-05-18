@@ -70,7 +70,7 @@ class AlertService
 		$this->add('error', $message, $log_en);
 	}
 
-	function success($message, bool $log_en = true):void
+	public function success($message, bool $log_en = true):void
 	{
 		$this->add('success', $message, $log_en);
 	}

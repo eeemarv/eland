@@ -284,12 +284,12 @@ class UsersShowAdminController extends AbstractController
 
             if ($pp->is_admin())
             {
-                $btn_top_render->edit_pw('users_password_admin', $pp->ary(),
+                $btn_top_render->edit_pw('users_password_set_admin', $pp->ary(),
                 ['id' => $id], 'Paswoord aanpassen');
             }
             else if ($su->is_owner($id))
             {
-                $btn_top_render->edit_pw('users_password', $pp->ary(),
+                $btn_top_render->edit_pw('users_password_set', $pp->ary(),
                     [], 'Paswoord aanpassen');
             }
         }

@@ -35,4 +35,12 @@ password_reset_set:
       Zend eventueel opnieuw een paswoord reset link
       naar je E-mail box.
   success: >-
-    Nieuw paswoord opgeslagen.
+    Het paswoord van je gebruikersaccount is aangepast.
+
+users_password_set:
+  success:
+    password_set_with_notify: >-
+      Het paswoord van je gebruikersaccount is aangepast
+      en een notificatie E-mail is naar je mailbox verzonden.
+    password_set: >-
+      Het paswoord van je gebruikersaccount is aangepast.

@@ -13,7 +13,6 @@ use App\Service\DataTokenService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\PasswordStrengthService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +33,6 @@ class PasswordResetSetController extends AbstractController
         MenuService $menu_service,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        PasswordStrengthService $password_strength_service,
         PageParamsService $pp
     ):Response
     {
@@ -79,68 +77,6 @@ class PasswordResetSetController extends AbstractController
             $data = $data_token_service->del($token, 'password_reset', $pp->schema());
             $link_render->redirect('login', $pp->ary(), []);
         }
-
-
-/*
-
-
-
-        if ($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $alert_service->error($error_token);
-            }
-            else if (!($password_strength_service->get($password) < 50))
-            {
-
-            }
-            else
-            {
-                $alert_service->error('Het paswoord is te zwak.');
-            }
-        }
-
-
-        $heading_render->add('Nieuw paswoord ingeven.');
-        $heading_render->fa('key');
-
-        $assets_service->add([
-            'generate_password.js',
-        ]);
-
-        $out = '<div class="card fcard fcard-info">';
-        $out .= '<div class="card-body">';
-
-        $out .= '<form method="post" role="form">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="password">Nieuw paswoord</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
-        $out .= '<i class="fa fa-key"></i>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="password" name="password" ';
-        $out .= 'value="';
-        $out .= $password;
-        $out .= '" required>';
-        $out .= '<span class="input-group-btn">';
-        $out .= '<button class="btn btn-default" type="button" ';
-        $out .= 'data-generate-password>Genereer</button>';
-        $out .= '</span>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<input type="submit" class="btn btn-primary btn-lg" value="Bewaar paswoord" name="zend">';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-*/
 
         $menu_service->set('login');
 

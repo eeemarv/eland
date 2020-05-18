@@ -138,8 +138,8 @@ users_image_upload_admin:
   path: /users/{id<%assert.id%>}/image/upload
   methods: POST
 
-users_password_admin:
-  controller: App\Controller\Users\UsersPasswordAdminController
+users_password_set_admin:
+  controller: App\Controller\Users\UsersPasswordSetAdminController
   path: /users/{id<%assert.id%>}/password
   methods: GET|POST
 

@@ -23,7 +23,6 @@ class LoginCommand
         $metadata->addPropertyConstraint('login', new Length(['min' => 2, 'max' => 100]));
         $metadata->addPropertyConstraint('password', new Length(['min' => 5, 'max' => 100]));
         $metadata->addConstraint(new Login(['groups' => ['Login']]));
-
         $metadata->setGroupSequence(['LoginCommand', 'Login']);
     }
 }

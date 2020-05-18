@@ -11,9 +11,15 @@ btn:
     Genereer automatisch een paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
+  save_password: Bewaar paswoord
   send: Verzenden
   show: Toon
   show_columns: Toon Kolommen
+
+explain:
+  new_password_safety: >-
+    Tip: Gebruik voor de veiligheid nooit
+    hetzelfde paswoord in verschillende toepassingen.
 
 label:
   accept: Akkoord
@@ -74,6 +80,7 @@ label:
   postcode: Postcode
   role: Rol
   save_password: Bewaar Paswoord
+  send_notification_email: Stuur een notificatie E-mail
   split_by_char: Split door Teken
   subject: Onderwerp
   system_name: Naam van het Systeem
@@ -109,10 +116,9 @@ password_reset_request:
 
 password_reset_set:
   title: Nieuw paswoord ingeven
-  password_explain: >-
-    Tip: Gebruik voor de veiligheid nooit
-    hetzelfde paswoord in verschillende toepassingen.
-  btn: Bewaar paswoord
+
+users_password_set:
+  title: Nieuw paswoord ingeven
 
 calendar:
   title: Kalender

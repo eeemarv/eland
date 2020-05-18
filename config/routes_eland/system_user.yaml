@@ -73,8 +73,8 @@ users_image_upload:
   path: /users/image/upload
   methods: POST
 
-users_password:
-  controller: App\Controller\Users\UsersPasswordController
+users_password_set:
+  controller: App\Controller\Users\UsersPasswordSetController
   path: /users/password
   methods: GET|POST
 
