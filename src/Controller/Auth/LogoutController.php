@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LogoutController extends AbstractController
 {
@@ -22,7 +21,6 @@ class LogoutController extends AbstractController
         SessionInterface $session,
         LoggerInterface $logger,
         AlertService $alert_service,
-        TranslatorInterface $translator,
         PageParamsService $pp,
         SessionUserService $su,
         LinkRender $link_render
@@ -43,7 +41,7 @@ class LogoutController extends AbstractController
         $logger->info('user logged out',
             ['schema' => $pp->schema()]);
 
-        $alert_service->success($translator->trans('logout.success', [], 'alert'));
+        $alert_service->success('logout.success');
 
         $link_render->redirect('login', ['system' => $pp->system()], []);
 

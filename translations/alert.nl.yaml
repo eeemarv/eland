@@ -41,6 +41,15 @@ users_password_set:
   success:
     password_set_with_notify: >-
       Het paswoord van je gebruikersaccount is aangepast
-      en een notificatie E-mail is naar je mailbox verzonden.
+      en een notificatie E-mail werd naar je mailbox verzonden.
     password_set: >-
       Het paswoord van je gebruikersaccount is aangepast.
+
+users_password_set_admin:
+  success:
+    password_set_with_notify: >-
+      Een nieuw paswoord werd ingesteld en een notificatie
+      E-mail werd verzonden naar de gebruiker.
+    password_set: >-
+      Een nieuw paswoord werd ingesteld voor de gebruiker maar
+      er werd geen notificatie E-mail verzonden.

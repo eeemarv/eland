@@ -72,7 +72,7 @@ class LoginController extends AbstractController
             {
                 $su->set_master_login($pp->schema());
 
-                $alert_service->success($translator->trans('login.success.master', [], 'alert'));
+                $alert_service->success('login.success.master');
 
                 if ($location)
                 {
@@ -118,7 +118,7 @@ class LoginController extends AbstractController
                     ' logged in, agent: ' . $agent, $log_ary);
 
                 $login_repository->insert($login_command->id, $request, $pp->schema());
-                $alert_service->success($translator->trans('login.success.user', [], 'alert'));
+                $alert_service->success('login.success.user');
 
                 if ($location)
                 {
@@ -129,12 +129,12 @@ class LoginController extends AbstractController
                 $link_render->redirect($vr->get('default'), $su->ary(), []);
             }
 
-            $alert_service->error($errors);
+            $alert_service->error_raw_ary($errors);
         }
 
         if($maintenance_enabled)
         {
-            $alert_service->warning($translator->trans('login.warning.maintenance', [], 'alert'));
+            $alert_service->warning('login.warning.maintenance');
         }
 
         $menu_service->set('login');

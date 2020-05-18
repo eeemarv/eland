@@ -15,7 +15,6 @@ use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PasswordResetRequestController extends AbstractController
 {
@@ -23,7 +22,6 @@ class PasswordResetRequestController extends AbstractController
         Request $request,
         UserRepository $user_repository,
         UserCacheService $user_cache_service,
-        TranslatorInterface $translator,
         AlertService $alert_service,
         DataTokenService $data_token_service,
         MailQueue $mail_queue,
@@ -60,7 +58,7 @@ class PasswordResetRequestController extends AbstractController
                 ],
             ], 10000);
 
-            $alert_service->success($translator->trans('password_reset_request.success.email_sent', [], 'alert'));
+            $alert_service->success('password_reset_request.success.email_sent');
             $link_render->redirect('login', $pp->ary(), []);
         }
 

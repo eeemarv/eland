@@ -26,7 +26,6 @@ class UsersPasswordSetController extends AbstractController
         Request $request,
         EncoderFactoryInterface $encoder_factory,
         UserRepository $user_repository,
-        TranslatorInterface $translator,
         AlertService $alert_service,
         LinkRender $link_render,
         MailAddrSystemService $mail_addr_system_service,
@@ -78,11 +77,11 @@ class UsersPasswordSetController extends AbstractController
                     'vars'		=> $vars,
                 ], 8000);
 
-                $alert_service->success($translator->trans('users_password_set.success.password_set_with_notify', [], 'alert'));
+                $alert_service->success('users_password_set.success.password_set_with_notify');
             }
             else
             {
-                $alert_service->success($translator->trans('users_password_set.success.password_set', [], 'alert'));
+                $alert_service->success('users_password_set.success.password_set');
             }
 
             $link_render->redirect('users_show', $pp->ary(), ['id' => $su->id()]);

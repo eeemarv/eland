@@ -17,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PasswordResetSetController extends AbstractController
 {
@@ -25,7 +24,6 @@ class PasswordResetSetController extends AbstractController
         Request $request,
         EncoderFactoryInterface $encoder_factory,
         UserRepository $user_repository,
-        TranslatorInterface $translator,
         string $token,
         DataTokenService $data_token_service,
         AlertService $alert_service,
@@ -41,7 +39,7 @@ class PasswordResetSetController extends AbstractController
 
         if (!$data)
         {
-            $alert_service->error($translator->trans('password_reset_set.error.not_valid_anymore', [], 'alert'));
+            $alert_service->error('password_reset_set.error.not_valid_anymore');
             $link_render->redirect('password_reset_request', $pp->ary(), []);
         }
 
@@ -62,7 +60,7 @@ class PasswordResetSetController extends AbstractController
 
             $user_repository->set_password($user_id, $hashed_password, $pp->schema());
 
-            $alert_service->success($translator->trans('password_reset_set.success', [], 'alert'));
+            $alert_service->success('password_reset_set.success');
 
             $mail_queue->queue([
                 'schema'	=> $pp->schema(),

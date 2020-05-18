@@ -120,6 +120,9 @@ password_reset_set:
 users_password_set:
   title: Nieuw paswoord ingeven
 
+users_password_set_admin:
+  title: Nieuw paswoord ingeven voor %user%
+
 calendar:
   title: Kalender
   menu: Kalender
