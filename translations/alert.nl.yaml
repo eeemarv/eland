@@ -1,4 +1,20 @@
 
+contact_form:
+  success: >-
+    Open je E-mailbox en klik
+    de link aan die we je zonden om je
+    bericht te bevestigen.
+
+email:
+  warning:
+    disabled: >-
+      De E-mail functies zijn uitgeschakeld
+      door de beheerder. Je kan dit formulier
+      niet gebruiken.
+    no_support_address: >-
+      Er is geen support E-mail adres
+      ingesteld door de beheerder.
+      Je kan dit formulier niet gebruiken.
 
 login:
   warning:
