@@ -78,11 +78,13 @@ label:
   new_password: Nieuw paswoord
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
+  optional: Optioneel
   out: Uit
   parsed_address: Ontleed Adres
   password: Paswoord
   period_days: Periode in Dagen
   periodic_mail: Periodieke Overzichts E-mail
+  phone: Telefoon
   postcode: Postcode
   role: Rol
   save_password: Bewaar Paswoord
@@ -90,7 +92,6 @@ label:
   split_by_char: Split door Teken
   subject: Onderwerp
   system_name: Naam van het Systeem
-  telephone: Telefoon
   time: Tijdstip
   title: Titel
   to: Naar
@@ -125,6 +126,9 @@ password_reset_request:
 
 password_reset_set:
   title: Nieuw paswoord ingeven
+
+register:
+  title: Inschrijven
 
 users_password_set:
   title: Nieuw paswoord ingeven

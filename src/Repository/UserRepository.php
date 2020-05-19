@@ -24,6 +24,21 @@ class UserRepository
 		$this->user_cache_service = $user_cache_service;
 	}
 
+	public function count_email(
+		string $email,
+		string $schema
+	):int
+	{
+		$email_lowercase = strtolower($email);
+
+		return $this->db->fetchColumn('select count(c.*)
+			from ' . $schema . '.contact c, ' .
+				$schema . '.type_contact tc
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and lower(c.value) = ?', [$email_lowercase]);
+	}
+
 	public function count_active_by_email(
 		string $email,
 		string $schema

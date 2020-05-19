@@ -202,18 +202,6 @@
     {%- endif -%}
 {%- endblock form_label -%}
 
-{#
-{%- block captcha_widget -%}
-{% spaceless %}
-    {%- set addon_fa = 'code' -%}
-    {{- block('addon_widget') -}}
-    <span>{{- 'explain.captcha'|trans -}}</span>
-    <br>
-    <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
-{% endspaceless %}
-{%- endblock captcha_widget -%}
-#}
-
 {%- block captcha_row -%}
     <div class="form-group">
     {{- block('form_label') -}}

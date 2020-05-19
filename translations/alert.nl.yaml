@@ -61,6 +61,13 @@ password_reset_set:
   success: >-
     Het paswoord van je gebruikersaccount is aangepast.
 
+register:
+  success:
+    link_sent: >-
+      Open je E-mailbox en klik op de
+      bevestigingslink in de E-mail die we naar je gestuurd
+      hebben om je inschrijving te voltooien.
+
 users_password_set:
   success:
     password_set_with_notify: >-

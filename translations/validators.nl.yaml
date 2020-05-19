@@ -38,5 +38,10 @@ email_unique_to_active_user:
   not_known: >-
     Het E-mail adres is niet bekend in dit Systeem.
 
+email_not_registered_yet:
+  already_registered: >-
+    Er bestaat reeds een inschrijving met
+    dit E-mail adres.
+
 password_strength:
   Het paswoord is niet sterk genoeg.
