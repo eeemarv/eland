@@ -27,7 +27,7 @@
 
     {{- form_row(form.message, {
         'label': 'label.your_message',
-        'attr': {'rows': 5}
+        'attr': {'rows': 5, 'minlength': 10, 'maxlength': 5000}
     }) -}}
 
     {{- form_row(form.captcha, {

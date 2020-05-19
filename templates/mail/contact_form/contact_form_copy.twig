@@ -2,14 +2,14 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-    {{- 'contact_copy.subject'|trans({
+    {{- 'contact_form_copy.subject'|trans({
         '%system_name%': config('systemname', schema)
     }) -}}
 {%- endblock -%}
 
 {% block html_content -%}
     <p>
-        {{- 'contact_copy.explain'|trans({
+        {{- 'contact_form_copy.explain'|trans({
             '%system_name%': config('systemname', schema)
         }) -}}
     </p>
@@ -23,7 +23,7 @@
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'contact_copy.explain'|trans({
+{{ 'contact_form_copy.explain'|trans({
     '%system_name%': config('systemname', schema)
 }) }}
 - - - - - -

@@ -2,16 +2,16 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject_line -%}
-    {{- 'contact_confirm.subject'|trans({
+    {{- 'contact_form_confirm.subject'|trans({
         '%system_name%': config('systemname', schema)}) -}}
 {%- endblock subject_line %}
 
 {%- block html_content -%}
 
 <p>
-    {{- 'contact_confirm.html_msg'|trans({
+    {{- 'contact_form_confirm.html_msg'|trans({
         '%link_open%': context_url_open(
-            'contact_token', mpp_anon_ary(schema), {'token': token}),
+            'contact_form_confirm', mpp_anon_ary(schema), {'token': token}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -21,10 +21,10 @@
 </p>
 
 <p>
-    {{- 'contact_confirm.explain'|trans({
+    {{- 'contact_form_confirm.explain'|trans({
         '%system_name%': config('systemname', schema),
         '%link_open%': context_url_open(
-            'contact', mpp_anon_ary(schema), {}),
+            'contact_form', mpp_anon_ary(schema), {}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -33,19 +33,19 @@
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'contact_confirm.text_msg'|trans }}
+{{ 'contact_form_confirm.text_msg'|trans }}
 
-{{ context_url('contact_token', mpp_anon_ary(schema), {'token': token}) }}
+{{ context_url('contact_form_confirm', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'expiration.1_day'|trans }}
 
-{{ 'contact_confirm.explain'|trans({
+{{ 'contact_form_confirm.explain'|trans({
     '%system_name%': config('systemname', schema),
     '%link_open%': '',
     '%link_close%': ''
 }) }}
 
-{{ context_url('contact', mpp_anon_ary(schema), {}) }}
+{{ context_url('contact_form', mpp_anon_ary(schema), {}) }}
 
 {% endautoescape %}
 {% endblock text_content %}

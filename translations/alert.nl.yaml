@@ -5,6 +5,14 @@ contact_form:
     de link aan die we je zonden om je
     bericht te bevestigen.
 
+contact_form_confirm:
+  error:
+    token_not_valid: >-
+      Het token is niet geldig ofwel verlopen. Probeer het opnieuw.
+  success:
+    message_sent: >-
+      Je bericht werd succesvol verzonden.
+
 email:
   warning:
     disabled: >-

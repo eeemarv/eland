@@ -17,6 +17,6 @@ class ContactFormCommand
         $metadata->addPropertyConstraint('email', new NotBlank());
         $metadata->addPropertyConstraint('email', new Email());
         $metadata->addPropertyConstraint('message', new NotBlank());
-        $metadata->addPropertyConstraint('message', new Length(['min' => 20, 'max' => 5000]));
+        $metadata->addPropertyConstraint('message', new Length(['min' => 10, 'max' => 5000]));
     }
 }

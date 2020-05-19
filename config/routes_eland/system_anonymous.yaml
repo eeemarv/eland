@@ -3,14 +3,14 @@ login:
   controller: App\Controller\Auth\LoginController
   methods: GET|POST
 
-contact:
+contact_form:
   path: /contact
   controller: App\Controller\ContactForm\ContactFormController
   methods: GET|POST
 
-contact_token:
+contact_form_confirm:
   path: /contact/{token<%assert.token%>}
-  controller: App\Controller\ContactForm\ContactFormTokenController
+  controller: App\Controller\ContactForm\ContactFormConfirmController
   methods: GET
 
 register:

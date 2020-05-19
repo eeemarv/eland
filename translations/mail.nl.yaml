@@ -110,7 +110,7 @@ account_activation_admin:
     de gebruiker omdat geen E-mail adres werd ingesteld
     voor dit account.
 
-contact_confirm:
+contact_form_confirm:
   subject: >-
     Bevestig je bericht aan %system_name%
   html_msg: >-
@@ -124,13 +124,13 @@ contact_confirm:
     zelf een bericht hebt verstuurd
     via %link_open%het contactformulier
     van %system_name%%link_close%.
-contact_copy:
+contact_form_copy:
   subject: >-
     Kopie van je bericht aan %system_name%
   explain: >-
     Het bericht hieronder heb je verzonden aan %system_name%
     via het contactformulier
-contact_support:
+contact_form_support:
   subject: Bericht van het contactformulier
   explain: >-
     Dit bericht werd ingegeven in het

@@ -65,19 +65,19 @@ class ContactFormController extends AbstractController
             $email = $contact_form_command->email;
             $message = $contact_form_command->message;
 
-            $contact = [
+            $contact_form = [
                 'message' 	=> $message,
                 'email'		=> $email,
                 'agent'		=> $request->headers->get('User-Agent'),
                 'ip'		=> $request->getClientIp(),
             ];
 
-            $token = $data_token_service->store($contact,
-                'contact', $pp->schema(), 86400);
+            $token = $data_token_service->store($contact_form,
+                'contact_form', $pp->schema(), 86400);
 
             $logger->info('Contact form filled in with address ' .
                 $email . ' ' .
-                json_encode($contact),
+                json_encode($contact_form),
                 ['schema' => $pp->schema()]);
 
             $mail_queue->queue([
@@ -85,17 +85,17 @@ class ContactFormController extends AbstractController
                 'to' 		=> [
                     $email => $email
                 ],
-                'template'	=> 'contact/confirm',
+                'template'	=> 'contact_form/contact_form_confirm_request',
                 'vars'		=> [
                     'token' 	=> $token,
                 ],
             ], 10000);
 
             $alert_service->success('contact_form.success');
-            $link_render->redirect('contact', $pp->ary(), []);
+            $link_render->redirect('contact_form', $pp->ary(), []);
         }
 
-        $menu_service->set('contact');
+        $menu_service->set('contact_form');
 
         return $this->render('contact_form/contact_form.html.twig', [
             'form'      => $form->createView(),

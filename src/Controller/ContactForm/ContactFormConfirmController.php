@@ -11,8 +11,9 @@ use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ContactFormTokenController extends AbstractController
+class ContactFormConfirmController extends AbstractController
 {
     public function __invoke(
         string $token,
@@ -27,16 +28,15 @@ class ContactFormTokenController extends AbstractController
     {
         if (!$config_service->get('contact_form_en', $pp->schema()))
         {
-            $alert_service->warning('De contactpagina is niet ingeschakeld.');
-            $link_render->redirect('login', $pp->ary(), []);
+            throw new NotFoundHttpException('Contact page not found.');
         }
 
-        $data = $data_token_service->retrieve($token, 'contact', $pp->schema());
+        $data = $data_token_service->retrieve($token, 'contact_form', $pp->schema());
 
         if (!$data)
         {
-            $alert_service->error('Ongeldig of verlopen token.');
-            $link_render->redirect('contact', $pp->ary(), []);
+            $alert_service->error('contact_form_confirm.error.token_not_valid');
+            $link_render->redirect('contact_form', $pp->ary(), []);
         }
 
         $vars = [
@@ -48,23 +48,23 @@ class ContactFormTokenController extends AbstractController
 
         $mail_queue->queue([
             'schema'	=> $pp->schema(),
-            'template'	=> 'contact/copy',
+            'template'	=> 'contact_form/contact_form_copy',
             'vars'		=> $vars,
             'to'		=> [$data['email'] => $data['email']],
         ], 9000);
 
         $mail_queue->queue([
             'schema'	=> $pp->schema(),
-            'template'	=> 'contact/support',
+            'template'	=> 'contact_form/contact_form_support',
             'vars'		=> $vars,
             'to'		=> $mail_addr_system_service->get_support($pp->schema()),
             'reply_to'	=> [$data['email']],
         ], 8000);
 
-        $data_token_service->del($token, 'contact', $pp->schema());
+        $data_token_service->del($token, 'contact_form', $pp->schema());
 
-        $alert_service->success('Je bericht werd succesvol verzonden.');
-        $link_render->redirect('contact', $pp->ary(), []);
+        $alert_service->success('contact_form_confirm.success.message_sent');
+        $link_render->redirect('contact_form', $pp->ary(), []);
 
         return new Response();
     }
