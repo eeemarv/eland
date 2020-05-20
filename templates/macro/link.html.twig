@@ -1,12 +1,10 @@
-{%- macro link(route, params) -%}
+{%- macro pp_path(route, params) -%}
     {{- path(route, pp_ary()|merge(params|default({}))) -}}
-{%- endmacro link -%}
+{%- endmacro pp_path -%}
 
-{%- macro link_open(route, params) -%}
+{%- macro pp_link(route, params, trans_key) -%}
     {%- import _self as l -%}
-    <a href="{{- l.link(route, params) -}}">
-{%- endmacro link_open -%}
-
-{%- macro link_close() -%}
+    <a href="{{- l.pp_path(route, params) -}}">
+    {{- trans_key|trans -}}
     </a>
-{%- endmacro link_close -%}
+{%- endmacro pp_link -%}

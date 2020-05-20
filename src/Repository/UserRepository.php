@@ -82,6 +82,18 @@ class UserRepository
 		return $id;
 	}
 
+	public function count_by_name(
+		string $name,
+		string $schema
+	):int
+	{
+		$name_lowercase = strtolower($name);
+
+		return $this->db->fetchColumn('select count(u.*)
+                from ' . $schema . '.users u
+                where lower(u.name) = ?', [$name_lowercase]);
+	}
+
 	public function count_active_by_name(string $name, string $schema):int
 	{
 		$name_lowercase = strtolower($name);
@@ -157,6 +169,69 @@ class UserRepository
 			['id' => $id]);
 		$this->user_cache_service->clear($id, $schema);
 	}
+
+	public function register(array $user, string $schema):int
+	{
+		$this->db->beginTransaction();
+
+		$mobile = $user['mobile'];
+		$phone = $user['phone'];
+		$email = $user['email'];
+
+		unset($user['mobile'], $user['phone'], $user['email']);
+
+        $this->db->insert($schema . '.users', $user);
+        $user_id = (int) $this->db->lastInsertId($schema . '.users_id_seq');
+
+        $tc = [];
+		$rs = $this->db->prepare('select abbrev, id
+            from ' . $schema . '.type_contact');
+		$rs->execute();
+
+		while($row = $rs->fetch())
+		{
+			$tc[$row['abbrev']] = $row['id'];
+		}
+
+		$mail = [
+			'user_id'			=> $user_id,
+			'access'            => 'admin',
+			'value'				=> strtolower($email),
+			'id_type_contact'	=> $tc['mail'],
+		];
+
+        $this->db->insert($schema . '.contact', $mail);
+
+        if (isset($mobile) && $mobile)
+		{
+			$gsm = [
+				'user_id'			=> $user_id,
+				'access'            => 'admin',
+				'value'				=> $mobile,
+				'id_type_contact'	=> $tc['gsm'],
+			];
+
+			$this->db->insert($schema . '.contact', $gsm);
+		}
+
+		if (isset($phone) && $phone)
+		{
+			$tel = [
+				'user_id'			=> $user_id,
+				'access'            => 'admin',
+				'value'				=> $phone,
+				'id_type_contact'	=> $tc['tel'],
+			];
+
+			$this->db->insert($schema . '.contact', $tel);
+		}
+
+		$this->db->commit();
+
+		return $user_id;
+	}
+
+	/********************* */
 
 	public function getFiltered(string $schema, FilterQuery $filterQuery, Sort $sort, Pagination $pagination):array
 	{

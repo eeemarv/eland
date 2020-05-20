@@ -1,0 +1,72 @@
+{%- macro btn(route, params, class_extra, label, title, fa) -%}
+    <a href="{{- path(route, params) -}}" class="btn btn-lg btn-{{- class_extra -}}" title="{{- title|trans -}}">
+        <i class="fa fa-{{- fa -}}"></i>
+        <span class="d-none d-lg-inline">
+            &nbsp;{{- label|trans -}}
+        </span>
+    </a>
+{%- endmacro btn -%}
+
+{%- macro del(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'danger',
+        label|default('btn.delete'),
+        title|default('btn.delete'),
+        'times') -}}
+{%- endmacro del -%}
+
+{%- macro add(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'success',
+        label|default('btn.add'),
+        title|default('btn.add'),
+        'plus') -}}
+{%- endmacro add -%}
+
+{%- macro edit(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'primary',
+        label|default('btn.edit'),
+        title|default('btn.edit'),
+        'pencil') -}}
+{%- endmacro edit -%}
+
+{%- macro add_trans(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'warning',
+        label|default('btn.transaction'),
+        title|default('btn.add_transaction'),
+        'exchange') -}}
+{%- endmacro add_trans -%}
+
+{%- macro edit_password(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'info',
+        label|default('label.password'),
+        title|default('btn.edit_password'),
+        'key') -}}
+{%- endmacro add_trans -%}
+
+{%- macro edit_password(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'info',
+        label|default('label.password'),
+        title|default('btn.edit_password'),
+        'key') -}}
+{%- endmacro edit_password -%}
+
+{%- macro config(route, params, label, title) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'info',
+        label|default('label.config'),
+        title|default('btn.edit_config'),
+        'cog') -}}
+{%- endmacro config -%}
+
+{%- macro bulk(route, params, label, title, fa) -%}
+    {%- import _self as b -%}
+    {{- b.btn(route, params, 'info',
+        label|default('label.bulk'),
+        title|default('btn.bulk_edit'),
+        fa) -}}
+{%- endmacro bulk -%}

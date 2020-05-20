@@ -27,10 +27,7 @@
 
     {{- form_row(form.password, {
         'label': 'label.password',
-        'explain_raw': 'login.password_reset_request_link'|trans({
-            '%link_open%': l.link_open('password_reset_request'),
-            '%link_close%': l.link_close()
-        })|raw,
+        'explain_raw': l.pp_link('password_reset_request', {}, 'login.password_reset_request_link'),
         'attr': {'minlength': 5, 'maxlength': 60}
     }) -}}
 

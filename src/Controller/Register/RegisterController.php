@@ -69,8 +69,8 @@ class RegisterController extends AbstractController
                 'first_name'	=> $first_name,
                 'last_name'		=> $last_name,
                 'postcode'		=> $postcode,
-                'tel'			=> $phone,
-                'gsm'			=> $mobile,
+                'phone'			=> $phone,
+                'mobile'		=> $mobile,
             ];
 
             $logger->info('Registration request for ' .
@@ -83,7 +83,7 @@ class RegisterController extends AbstractController
                 'schema'	=> $pp->schema(),
                 'to' 		=> [$email => $first_name . ' ' . $last_name],
                 'vars'		=> ['token' => $token],
-                'template'	=> 'register/confirm',
+                'template'	=> 'register/register_confirm',
             ], 10000);
 
             $alert_service->success('register.success.link_sent');

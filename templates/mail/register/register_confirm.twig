@@ -11,7 +11,7 @@
 
 <p>
     {{- 'register_confirm.html_msg'|trans({
-        '%link_open%': context_url_open('register_token', mpp_anon_ary(schema), {'token': token}),
+        '%link_open%': context_url_open('register_confirm', mpp_anon_ary(schema), {'token': token}),
         '%link_close%': '</a>'
     })|raw -}}
 </p>
@@ -34,7 +34,7 @@
 
 {{ 'register_confirm.text_msg'|trans }}
 
-{{ context_url('register_token', mpp_anon_ary(schema), {'token': token}) }}
+{{ context_url('register_confirm', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'expiration.1_week'|trans }}
 

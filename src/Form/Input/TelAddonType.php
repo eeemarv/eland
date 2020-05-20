@@ -13,7 +13,7 @@ class TelAddonType extends TextAddonType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         parent::buildView($view, $form, $options);
-//        $view->vars['type'] = 'tel';
+        $view->vars['type'] = 'tel';
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -1,0 +1,23 @@
+{%- extends 'base/sidebar.html.twig' -%}
+
+{%- block content -%}
+
+<div class="card fcard fcard-success">
+    <div class="card-body">
+        <h2>
+            {{- 'register_confirm_success.title'|trans -}}
+        </h2>
+
+        {{- config('registration_success_text', schema) -}}
+    </div>
+</div>
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

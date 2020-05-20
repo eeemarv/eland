@@ -20,10 +20,6 @@
     hr {
         border-top-color: darken($border, 20%);
     }
-
-    a {
-        color: darken($color, 5%);
-    }
 }
 
 @each $color, $value in $theme-colors {

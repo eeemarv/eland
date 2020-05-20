@@ -15,6 +15,7 @@ btn:
   send: Verzenden
   show: Toon
   show_columns: Toon Kolommen
+  try_again: Opnieuw proberen
 
 explain:
   new_password_safety: >-
@@ -114,7 +115,7 @@ login:
   login_explain: E-mail, Gebruikersnaam of Account Code
   btn: Inloggen
   password_reset_request_link: >-
-    %link_open%Klik hier als je je paswoord vergeten bent.%link_close%
+    Klik hier als je je paswoord vergeten bent.
 
 password_reset_request:
   title: Paswoord vergeten
@@ -129,6 +130,12 @@ password_reset_set:
 
 register:
   title: Inschrijven
+
+register_confirm_fail:
+  title: Inschrijving niet geslaagd.
+
+register_confirm_success:
+  title: Inschrijving geslaagd.
 
 users_password_set:
   title: Nieuw paswoord ingeven

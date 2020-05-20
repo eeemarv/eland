@@ -18,9 +18,9 @@ register:
   controller: App\Controller\Register\RegisterController
   methods: GET|POST
 
-register_token:
+register_confirm:
   path: /register/{token<%assert.token%>}
-  controller: App\Controller\Register\RegisterTokenController
+  controller: App\Controller\Register\RegisterConfirmController
   methods: GET
 
 password_reset_request:
