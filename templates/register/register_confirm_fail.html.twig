@@ -1,21 +1,21 @@
 {%- extends 'base/sidebar.html.twig' -%}
-{%- import 'macro/btn_link.html.twig' as bl -%}
+
 
 {%- block content -%}
+    {%- embed 'embed/card.html.twig' -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- block card_type -%}danger{%- endblock -%}
+        {%- block body -%}
+            <h2>
+                {{- 'register_confirm_fail.title'|trans -}}
+            </h2>
+            <p>
+                {{- 'error.token_not_valid'|trans({}, 'alert') -}}
+            </p>
 
-<div class="card fcard fcard-danger">
-    <div class="card-body">
-        <h2>
-            {{- 'register_confirm_fail.title'|trans -}}
-        </h2>
-        <p>
-            {{- 'error.token_not_valid'|trans({}, 'alert') -}}
-        </p>
-
-        {{- bl.info('register', {}, 'btn.try_again') -}}
-
-    </div>
-</div>
+            {{- bl.info('register', {}, 'btn.try_again') -}}
+        {%- endblock body -%}
+    {%- endembed -%}
 
 {%- endblock content -%}
 

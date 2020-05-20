@@ -2,15 +2,17 @@
 
 {%- block content -%}
 
-<div class="card fcard fcard-success">
-    <div class="card-body">
-        <h2>
-            {{- 'register_confirm_success.title'|trans -}}
-        </h2>
+    {%- embed 'embed/card.html.twig' -%}
+        {%- block card_type -%}success{%- endblock -%}
+        {%- block body -%}
 
-        {{- config('registration_success_text', schema) -}}
-    </div>
-</div>
+            <h2>
+                {{- 'register_confirm_success.title'|trans -}}
+            </h2>
+
+            {{- config('registration_success_text', schema) -}}
+        {%- endblock body -%}
+    {%- endembed -%}
 
 {%- endblock content -%}
 
