@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
 use App\Render\HeadingRender;
-use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 
@@ -15,7 +14,6 @@ class ContactFormAdminController extends AbstractController
     public function __invoke(
         MenuService $menu_service,
         ConfigService $config_service,
-        CaptchaService $captcha_service,
         HeadingRender $heading_render,
         PageParamsService $pp
     ):Response
@@ -61,7 +59,7 @@ class ContactFormAdminController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= $captcha_service->get_form_field(true);
+        // captcha
 
         $out .= '<input type="submit" name="zend" disabled ';
         $out .= 'value="Verzenden" class="btn btn-info btn-lg">';

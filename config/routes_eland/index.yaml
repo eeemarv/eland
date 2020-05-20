@@ -4,9 +4,9 @@ theme:
   defaults:
     template: theme/theme.html.twig
 
-index_contact:
+index_contact_form:
   path: /contact
-  controller: App\Controller\Index\IndexContactController
+  controller: App\Controller\Index\IndexContactFormController
   methods: GET|POST
 
 monitor:

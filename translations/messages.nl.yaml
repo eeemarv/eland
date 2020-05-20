@@ -109,6 +109,38 @@ label:
 contact_form:
   title: Contact
 
+index_contact_form:
+  title: eLAND Contact
+  email_explain: >-
+    Privacy: Je E-mail adres wordt voor geen
+    ander doel gebruikt dan om je terug te
+    kunnen contacteren.
+  hosting_explain: >-
+    Hosting van gemeenschapsmuntsystemen op deze
+    eLAND server wordt gratis en vrijblijvend aangeboden
+    waarbij uw data steeds uw data blijft. Vertrek uit
+    het systeem en alle data opvragen is op elk moment
+    mogelijk. Gebruik dit contactformulier bij interesse.
+  mail:
+    subject:
+      eLAND Contact Formulier
+  success:
+    title: >-
+      Uw bericht is verstuurd.
+    explain: >-
+      Er wordt spoedig contact met u opgenomen.
+
+index:
+  title: eLAND index
+  sub_title: Server gemeenschapsmunten
+  hosting_explain: >-
+    Hosting van gemeenschapsmuntsystemen op deze
+    eLAND server wordt gratis en vrijblijvend aangeboden
+    waarbij uw data steeds uw data blijft. Vertrek uit
+    het systeem en alle data opvragen is op elk moment
+    mogelijk. Gebruik %the_contact_form% bij interesse.
+  the_contact_form: het contactformulier
+
 login:
   title: Login
   login: Login

@@ -8,3 +8,9 @@
     {{- trans_key|trans -}}
     </a>
 {%- endmacro pp_link -%}
+
+{%- macro link(route, params, trans_key) -%}
+    <a href="{{- path(route, params) -}}">
+    {{- trans_key|trans -}}
+    </a>
+{%- endmacro link -%}
