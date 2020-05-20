@@ -140,6 +140,8 @@ index:
     het systeem en alle data opvragen is op elk moment
     mogelijk. Gebruik %the_contact_form% bij interesse.
   the_contact_form: het contactformulier
+  eland_link: >-
+    %eland_link% web app voor gemeenschapsmunten
 
 login:
   title: Login

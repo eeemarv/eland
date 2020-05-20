@@ -1,22 +1,21 @@
 {%- extends 'base/base.html.twig' -%}
 
 {%- block title -%}
-	eLAND
+	{{- 'index.title'|trans -}}
 {%- endblock -%}
 
 {%- block navbar -%}{%- endblock -%}
 
 {%- block jumbotron -%}
 
-	<div class="row">
-		<div class="col">
-			<div class="jumbotron eland-index">
-				<div class="container">
-
-				<h1>eLAND Index</h1>
-				<p>Server gemeenschapsmunten</p>
-				</div>
-			</div>
+	<div class="jumbotron eland-index">
+		<div class="container">
+			<h1>
+				{{- block('title') -}}
+			</h1>
+			<p>
+				{{- 'index.sub_title'|trans -}}
+			</p>
 		</div>
 	</div>
 
@@ -66,11 +65,10 @@
 {%- block index_link -%}
 	<p>
 		<a href="{{- path('index_contact_form') -}}">
-			Contactformulier
+			{{- 'index_contact_form.title'|trans -}}
 		</a>
 	</p>
 {%- endblock index_link -%}
-
 
 {%- block css -%}
     {{- parent() -}}

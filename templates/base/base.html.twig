@@ -93,9 +93,13 @@
 {%- block extra_footer -%}{%- endblock -%}
 
 <footer class="footer">
-	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	<p>
+		{{- 'index.eland_link'|trans({
+			'%eland_link%': '<a href="https://eland.letsa.net">eLAND</a>'
+		})|raw -}}
+	</p>
 	{%- block index_link -%}
-		<p><a href="{{- path('index') -}}">Index</a></p>
+		<p><a href="{{- path('index') -}}">{{- 'index.title'|trans -}}</a></p>
 	{%- endblock index_link -%}
 </footer>
 
