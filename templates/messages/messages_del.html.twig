@@ -1,5 +1,56 @@
 {%- extends 'base/navbar.html.twig' -%}
 
+
+{%- block heading_fa -%}newspaper-o{%- endblock -%}
+{%- block heading_title -%}
+    {{- 'register.title'|trans -}}
+{%- endblock -%}
+
+{%- block heading -%}
+    <h1>
+    <i class="fa fa-newspaper-o"></i>&nbsp;
+    {%- if message.is_offer -%}
+        {{ 'messages_del.title.offer'|trans -}}
+    {%- else -%}
+        {{ 'messages_del.title.want'|trans -}}
+    {%- endif -%}
+    </h1>
+{%- endblock heading -%}
+
+{%- block content -%}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/account.html.twig' as ac -%}
+    {%- block form_content -%}
+
+    <h2>
+        {%- if message.is_offer %}
+            {{- 'label.offer'|trans -}}
+        {%- else -%}
+            {{- 'label.want'|trans -}}
+        {%- endif -%}:&nbsp;
+        {{- message.subject -}}
+    </h2>
+
+    {{- message.content|raw -}}
+
+    <p>
+        {{- ac.account_link(message.user_id, schema) -}}
+    </p>
+
+    {{- bl.cancel('messages_show', {'id': message.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

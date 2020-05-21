@@ -1,11 +1,7 @@
 /_book/
-/node_modules/
-/.env_m
 /.dist
 /cache/
 /.env*
-
-/public/build/
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -15,11 +11,6 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
-###> symfony/web-server-bundle ###
-/.web-server-pid
-###< symfony/web-server-bundle ###
-
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/

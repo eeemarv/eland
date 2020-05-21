@@ -25,6 +25,7 @@
 		"gregwar/captcha-bundle": "^2.1",
 		"imagine/imagine": "^0.6",
 		"league/html-to-markdown": "^4.4",
+		"minishlink/web-push-bundle": "^5.0",
 		"mollie/mollie-api-php": "^2",
 		"monolog/monolog": "^1",
 		"php-http/guzzle6-adapter": "^1.1",
@@ -65,8 +66,7 @@
 	},
 
     "require-dev": {
-		"symfony/maker-bundle": "^1.13",
-		"symfony/web-server-bundle": "4.4.*"
+		"symfony/maker-bundle": "^1.13"
 	},
 
     "config": {

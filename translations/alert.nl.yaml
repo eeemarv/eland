@@ -48,6 +48,14 @@ logout:
   success: >-
     Je bent uitgelogd.
 
+messages_del:
+  error: Het bericht is niet verwijderd.
+  success:
+    offer: >-
+      Het aanbod "%message_subject%" is verwijderd.
+    want: >-
+      De vraag "%message_subject%" is verwijderd.
+
 password_reset_request:
   success:
     email_sent: >-

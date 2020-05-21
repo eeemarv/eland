@@ -63,6 +63,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "fgrosse/phpasn1": {
+        "version": "v2.1.1"
+    },
     "gregwar/captcha": {
         "version": "v1.1.8"
     },
@@ -75,6 +78,12 @@
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.1"
     },
+    "minishlink/web-push": {
+        "version": "v5.2.4"
+    },
+    "minishlink/web-push-bundle": {
+        "version": "v5.0.0"
+    },
     "nikic/php-parser": {
         "version": "v4.2.4"
     },
@@ -83,6 +92,9 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.3"
+    },
+    "paragonie/sodium_compat": {
+        "version": "v1.13.0"
     },
     "php": {
         "version": "7.4"
@@ -110,6 +122,9 @@
         "files": [
             "config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "spomky-labs/base64url": {
+        "version": "v2.0.1"
     },
     "symfony/cache": {
         "version": "v4.3.4"
@@ -363,15 +378,6 @@
             "config/routes/dev/web_profiler.yaml"
         ]
     },
-    "symfony/web-server-bundle": {
-        "version": "3.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "3.3",
-            "ref": "dae9b39fd6717970be7601101ce5aa960bf53d9a"
-        }
-    },
     "symfony/webpack-encore-bundle": {
         "version": "1.6",
         "recipe": {
@@ -408,6 +414,33 @@
     },
     "twig/extra-bundle": {
         "version": "v3.0.0"
+    },
+    "web-token/jwt-core": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-key-mgmt": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-signature": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-signature-algorithm-ecdsa": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-signature-algorithm-eddsa": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-signature-algorithm-hmac": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-signature-algorithm-none": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-signature-algorithm-rsa": {
+        "version": "v1.3.10"
+    },
+    "web-token/jwt-util-ecc": {
+        "version": "v1.3.10"
     },
     "webimpress/safe-writer": {
         "version": "2.0.0"

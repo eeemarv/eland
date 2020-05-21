@@ -77,6 +77,7 @@ label:
   mobile: GSM
   name: Naam
   new_password: Nieuw paswoord
+  offer: Aanbod
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
   optional: Optioneel
@@ -101,6 +102,7 @@ label:
   transactions: Transacties
   transaction_id: Transactie Id
   username: Gebruikersnaam
+  want: Vraag
   wants: Vraag
   your_account: Je Account
   your_email: Je E-Mail adres
@@ -150,6 +152,11 @@ login:
   btn: Inloggen
   password_reset_request_link: >-
     Klik hier als je je paswoord vergeten bent.
+
+messages_del:
+  title:
+    want: Vraag verwijderen?
+    offer: Aanbod verwijderen?
 
 password_reset_request:
   title: Paswoord vergeten

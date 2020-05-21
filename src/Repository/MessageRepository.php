@@ -5,18 +5,13 @@ namespace App\Repository;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class AdRepository
+class MessageRepository
 {
 	protected $db;
 
 	public function __construct(Db $db)
 	{
 		$this->db = $db;
-	}
-
-	public function getAll(string $schema):array
-	{
-
 	}
 
 	public function get(int $id, string $schema):array
@@ -27,9 +22,15 @@ class AdRepository
 
 		if (!$data)
 		{
-			throw new NotFoundHttpException('Ad ' . $id . ' does not exist in %s');
+			throw new NotFoundHttpException('Message ' . $id . ' not found.');
         }
 
 		return $data;
+	}
+
+	public function del(int $id, string $schema):bool
+	{
+		return $this->db->delete($schema . '.messages',
+			['id' => $id]) ? true : false;
 	}
 }
