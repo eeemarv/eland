@@ -218,6 +218,16 @@ register_confirm_fail:
 register_confirm_success:
   title: Inschrijving geslaagd.
 
+users_del:
+  title: Gebruiker verwijderen?
+  verify_label: >-
+    Ik ben wis en waarachtig zeker dat
+    ik deze gebruiker wil verwijderen.
+  warning: >-
+    Alle Gegevens, Vraag en aanbod,
+    Contacten en Afbeeldingen van %name%
+    worden verwijderd.
+
 users_password_set:
   title: Nieuw paswoord ingeven
 

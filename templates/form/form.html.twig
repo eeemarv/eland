@@ -24,14 +24,12 @@
     </div>
 {%- endblock form_row %}
 
-{#
-{%- block form_widget_simple -%}
-    {% if type is not defined or type not in ['file', 'hidden'] %}
-        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-control-lg')|trim}) -%}
-    {% endif %}
-    {{- parent() -}}
-{%- endblock form_widget_simple -%}
-#}
+{% block checkbox_row -%}
+    <div class="form-group{% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}">
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock checkbox_row %}
 
 {%- block button_widget -%}
     {%- set attr = attr|merge({class: (attr.class|default('btn-default') ~ ' btn btn-lg')|trim}) -%}

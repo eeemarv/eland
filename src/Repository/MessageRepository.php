@@ -48,4 +48,16 @@ class MessageRepository
 		return $this->db->delete($schema . '.messages',
 			['id' => $id]) ? true : false;
 	}
+
+	public function get_count_for_user_id(int $user_id, string $schema):int
+	{
+        return $this->db->fetchColumn('select count(*)
+            from ' . $schema . '.messages
+            where user_id = ?', [$user_id]);
+	}
+
+	public function del_for_user_id(int $user_id, string $schema):void
+	{
+		$this->db->delete($schema . '.messages', ['user_id' => $user_id]);
+	}
 }

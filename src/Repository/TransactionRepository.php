@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use Doctrine\DBAL\Connection as db;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Util\Pagination;
 use App\Util\Sort;
@@ -11,11 +11,18 @@ use App\Filter\FilterQuery;
 
 class TransactionRepository
 {
-	protected $db;
+	protected Db $db;
 
-	public function __construct(db $db)
+	public function __construct(Db $db)
 	{
 		$this->db = $db;
+	}
+
+	public function get_count_for_user_id(int $user_id, string $schema):int
+	{
+        return $this->db->fetchColumn('select count(*)
+            from ' . $schema . '.transactions
+            where id_to = ? or id_from = ?', [$user_id, $user_id]);
 	}
 
 	public function getAll(Pagination $pagination, string $schema):array

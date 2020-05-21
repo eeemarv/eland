@@ -24,7 +24,7 @@ class StatusCnst
         7 => 'bg-extern-li',
     ];
 
-    const THUMBPINT_ARY = [
+    const THUMBPRINT_ARY = [
        0 => 'inactive',
        1 => 'active',
        2 => 'active',

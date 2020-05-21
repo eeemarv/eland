@@ -231,6 +231,20 @@ class UserRepository
 		return $user_id;
 	}
 
+	public function del(int $id, string $schema):bool
+	{
+        $this->db->delete($schema . '.contact',
+            ['user_id' => $id]);
+        $success = $this->db->delete($schema . '.users',
+            ['id' => $id]) ? true : false;
+		if ($success)
+		{
+        	$this->user_cache_service->clear($id, $schema);
+		}
+
+		return $success;
+	}
+
 	/********************* */
 
 	public function getFiltered(string $schema, FilterQuery $filterQuery, Sort $sort, Pagination $pagination):array

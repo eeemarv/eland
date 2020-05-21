@@ -114,6 +114,12 @@ register:
       bevestigingslink in de E-mail die we naar je gestuurd
       hebben om je inschrijving te voltooien.
 
+users_del:
+  error: >-
+    Gebruikersaccount "%user%" is niet verwijderd.
+  success: >-
+    Gebruikersaccount "%user%" is verwijderd.
+
 users_password_set:
   success:
     password_set_with_notify: >-
