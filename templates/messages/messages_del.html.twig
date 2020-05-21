@@ -3,7 +3,11 @@
 
 {%- block heading_fa -%}newspaper-o{%- endblock -%}
 {%- block heading_title -%}
-    {{- 'register.title'|trans -}}
+    {%- if message.is_offer -%}
+        {{ 'messages_del.title.offer'|trans -}}
+    {%- else -%}
+        {{ 'messages_del.title.want'|trans -}}
+    {%- endif -%}
 {%- endblock -%}
 
 {%- block heading -%}

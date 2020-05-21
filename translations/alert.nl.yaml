@@ -56,6 +56,11 @@ messages_del:
     want: >-
       De vraag "%message_subject%" is verwijderd.
 
+news_del:
+  error: Het nieuwsbericht is niet verwijderd.
+  success: >-
+    Het nieuwsbericht "%news_subject%" is verwijderd.
+
 password_reset_request:
   success:
     email_sent: >-

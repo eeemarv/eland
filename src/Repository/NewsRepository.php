@@ -7,42 +7,31 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsRepository
 {
-	protected $db;
+	protected Db $db;
 
 	public function __construct(Db $db)
 	{
 		$this->db = $db;
 	}
 
-	public function getAll(string $schema)
-	{
-
-	}
-
 	public function get(int $id, string $schema):array
 	{
-		$data = $this->db->fetchAssoc('select *
+		$news = $this->db->fetchAssoc('select *
 			from ' . $schema . '.news
 			where id = ?', [$id]);
 
-		if (!$data)
+		if (!$news)
 		{
-			throw new NotFoundHttpException(sprintf(
-				'News %d does not exist in %s',
-				$id, __CLASS__));
+			throw new NotFoundHttpException('News with id %d not found');
 		}
 
-		$row = $this->xdb->get('news_access', $id, $schema);
+		return $news;
+	}
 
-		if (!count($row))
-		{
-			$row['data']['access'] = 'interlets';
-			$this->xdb->set('news_access', $id, $schema, ['access' => 'interlets']);
-		}
-
-		$data['access'] = $row['data']['access'];
-
-		return $data;
+	public function del(int $id, string $schema):bool
+	{
+		return $this->db->delete($schema . '.news',
+			['id' => $id]) ? true : false;
 	}
 
 	public function insert(string $schema, array $data):int

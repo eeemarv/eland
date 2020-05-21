@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageRepository
 {
-	protected $db;
+	protected Db $db;
 
 	public function __construct(Db $db)
 	{

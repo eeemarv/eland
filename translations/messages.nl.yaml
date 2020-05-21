@@ -158,6 +158,9 @@ messages_del:
     want: Vraag verwijderen?
     offer: Aanbod verwijderen?
 
+news_del:
+  title: Nieuwsbericht verwijderen?
+
 password_reset_request:
   title: Paswoord vergeten
   email_explain: >-

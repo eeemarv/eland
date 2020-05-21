@@ -1,5 +1,46 @@
 {%- extends 'base/navbar.html.twig' -%}
 
+{%- block heading_fa -%}calendar-o{%- endblock -%}
+{%- block heading_title -%}
+    {{- 'news_del.title'|trans -}}
+{%- endblock -%}
+
+{%- block heading -%}
+    <h1>
+    <i class="fa fa-calendar-o"></i>&nbsp;
+        {{ 'news_del.title'|trans -}}
+    </h1>
+{%- endblock heading -%}
+
+{%- block content -%}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/account.html.twig' as ac -%}
+    {%- block form_content -%}
+
+    <h2>
+        {{- news.subject -}}
+    </h2>
+
+    {{- news.content|raw -}}
+
+    <p>
+        {{- ac.account_link(news.user_id, schema) -}}
+    </p>
+
+    {{- bl.cancel('news_show', {'id': news.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}
