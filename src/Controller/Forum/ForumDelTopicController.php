@@ -2,16 +2,16 @@
 
 namespace App\Controller\Forum;
 
-use App\Render\HeadingRender;
+use App\Command\Forum\ForumDelTopicCommand;
+use App\Form\Post\DelType;
+use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
-use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,18 +23,68 @@ class ForumDelTopicController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
+        ForumRepository $forum_repository,
         LinkRender $link_render,
-        HeadingRender $heading_render,
-        FormTokenService $form_token_service,
+        AccountRender $account_render,
         ConfigService $config_service,
         AlertService $alert_service,
-        ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get('forum_en', $pp->schema()))
+        {
+            throw new NotFoundHttpException('The forum module is not enabled in this system.');
+        }
+
+        $forum_topic = $forum_repository->get_visible_topic_for_page($id, $pp->schema());
+
+        if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))
+        {
+            throw new AccessDeniedHttpException('No rights for this action.');
+        }
+
+        $first_post = $forum_repository->get_first_post($id, $pp->schema());
+        $post_count = $forum_repository->get_post_count($id, $pp->schema());
+
+        $forum_del_topic_command = new ForumDelTopicCommand();
+
+        $form = $this->createForm(DelType::class,
+                $forum_del_topic_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            if ($forum_repository->del_topic($id, $pp->schema()))
+            {
+                $alert_trans_ary = [
+                    '%topic_subject%'   => $forum_topic['subject'],
+                    '%user%'            => $account_render->str($forum_topic['user_id'], $pp->schema()),
+                ];
+
+                $alert_trans_key = 'forum_del_topic.success.';
+                $alert_trans_key .= $su->is_owner($forum_topic['user_id']) ? 'personal' : 'admin';
+
+                $alert_service->success($alert_trans_key, $alert_trans_ary);
+                $link_render->redirect('forum', $pp->ary(), []);
+            }
+
+            $alert_service->error('forum_del_topic.error');
+        }
+
+        $menu_service->set('forum');
+
+        return $this->render('forum/forum_del_topic.html.twig', [
+            'form'          => $form->createView(),
+            'first_post'    => $first_post,
+            'post_count'    => $post_count,
+            'forum_topic'   => $forum_topic,
+            'schema'        => $pp->schema(),
+        ]);
+
+/*
         $errors = [];
 
         if (!$config_service->get('forum_en', $pp->schema()))
@@ -114,5 +164,7 @@ class ForumDelTopicController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
+
+    */
     }
 }

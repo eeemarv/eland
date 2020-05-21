@@ -36,6 +36,15 @@ forum_del_post:
     personal: >-
       Je reactie is verwijderd uit forum topic "%topic_subject%"
 
+forum_del_topic:
+  error: >-
+    Forum topic "%topic_subject%" is niet verwijderd.
+  success:
+    admin: >-
+      Forum topic "%topic_subject%" van "%user%" is verwijderd.
+    personal: >-
+      Je forum topic "%topic_subject%" is verwijderd.
+
 login:
   warning:
     maintenance: >-

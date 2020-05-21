@@ -43,11 +43,11 @@ class ForumRepository
 		return $topic;
 	}
 
-	public function get_post(int $id, string $schema):array
+	public function get_post(int $post_id, string $schema):array
 	{
         $post = $this->db->fetchAssoc('select *
             from ' . $schema . '.forum_posts
-            where id = ?', [$id]);
+            where id = ?', [$post_id]);
 
         if (!isset($post) || !$post)
         {
@@ -66,19 +66,36 @@ class ForumRepository
             limit 1', [$topic_id]);
 	}
 
-	public function del_post(int $id, string $schema):bool
+	public function get_first_post(int $topic_id, string $schema):array
 	{
-		return $this->db->delete($schema . '.forum_posts',
-			['id' => $id]) ? true : false;
+        return $this->db->fetchAssoc('select *
+            from ' . $schema . '.forum_posts
+            where topic_id = ?
+            order by created_at asc
+            limit 1', [$topic_id]);
 	}
 
-	public function del_topic(int $id, string $schema):bool
+	public function get_post_count(int $topic_id, string $schema):int
 	{
-		/*
-		return $this->db->delete($schema . '.forum_topics',
-			['id' => $id]) ? true : false;
-		*/
+        return $this->db->fetchColumn('select count(*)
+            from ' . $schema . '.forum_posts
+            where topic_id = ?', [$topic_id]);
 	}
+
+	public function del_post(int $post_id, string $schema):bool
+	{
+		return $this->db->delete($schema . '.forum_posts',
+			['id' => $post_id]) ? true : false;
+	}
+
+	public function del_topic(int $topic_id, string $schema):bool
+	{
+		$this->db->delete($schema . '.forum_posts',
+			['topic_id' => $topic_id]);
+		return $this->db->delete($schema . '.forum_topics',
+			['id' => $topic_id]) ? true : false;
+	}
+
 
 
 

@@ -119,6 +119,20 @@ forum_del_post:
     personal: >-
       Je reactie verwijderen uit forum topic "%topic_subject%"?
 
+forum_del_topic:
+  title:
+    admin: >-
+      Forum topic "%topic_subject%" van "%user%" verwijderen?
+    personal: >-
+      Je forum topic "%topic_subject%" verwijderen?
+  posts_warning:
+    0: >-
+      Er zijn geen reacties die verwijderd zullen worden.
+    1: >-
+      Eén reactie zal verwijderd worden.
+    2: >-
+      %count% reacties zullen verwijderd worden.
+
 contact_form:
   title: Contact
 
