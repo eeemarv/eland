@@ -1,5 +1,54 @@
 {%- extends 'base/navbar.html.twig' -%}
 
+{%- block heading_fa -%}files-o{%- endblock -%}
+{%- block heading_title -%}
+    {{ 'docs_del.title'|trans({
+        '%name%': doc.name
+    }) -}}
+{%- endblock -%}
+
+{%- block heading -%}
+    <h1>
+    <i class="fa fa-files-o"></i>&nbsp;
+    {{ 'docs_del.title'|trans({
+        '%name%': doc.name
+    }) -}}
+    </h1>
+{%- endblock heading -%}
+
+{%- block content -%}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
+    {%- block form_content -%}
+
+    <h2>
+        <a href="{{- s3_url(doc.filename) -}}">
+            {{- doc.name -}}
+        </a>
+    </h2>
+
+    <p>
+        {{- oi.object_info(doc.user_id, doc.created_at, null, schema) -}}
+    </p>
+
+    {%- if doc.map_id is defined and doc.map_id -%}
+        {{- bl.cancel('docs_map', {'id': doc.map_id}) -}}
+    {%- else -%}
+        {{- bl.cancel('docs', {}) -}}
+    {%- endif -%}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

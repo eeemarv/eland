@@ -2,34 +2,59 @@
 
 namespace App\Repository;
 
-use App\Service\Xdb;
-use App\Service\XdbAccess;
-use App\Service\Pagination;
+use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocRepository
 {
-	protected $xdb;
-	protected $xdbAccess;
+	protected Db $db;
 
-	public function __construct(Xdb $xdb, XdbAccess $xdbAccess)
+	public function __construct(
+		Db $db
+	)
 	{
-		$this->xdb = $xdb;
-		$this->xdbAccess = $xdbAccess;
+		$this->db = $db;
 	}
 
-	public function get(string $id, string $schema):array
+	public function get(int $id, string $schema):array
 	{
-		$data = $this->xdb->get('docs', $id, $schema);
+		$doc = $this->db->fetchAssoc('select *
+			from ' . $schema . '.docs
+			where id = ?', [$id]);
 
-		if (!$data)
+		if (!$doc)
 		{
-			throw new NotFoundHttpException(sprintf('Document %s does not exist in %s',
-				$id, __CLASS__));
+			throw new NotFoundHttpException('Document ' . $id . ' not found.');
 		}
 
-		return $data;
+		return $doc;
 	}
+
+	public function get_count_for_map_id(
+		int $map_id,
+		string $schema
+	):int
+	{
+		return $this->db->fetchColumn('select count(*)
+			from ' . $schema . '.docs
+			where map_id = ?', [$map_id]);
+	}
+
+	public function del(int $id, string $schema):bool
+	{
+		return $this->db->delete($schema . '.docs',
+			['id' => $id]) ? true : false;
+	}
+
+	public function del_map(int $map_id, string $schema):bool
+	{
+		return $this->db->delete($schema . '.doc_maps',
+			['id' => $map_id]) ? true : false;
+	}
+
+
+
+	/*********** */
 
 	public function mapNameExists(string $mapName, string $schema, string $exceptId = ''):bool
 	{

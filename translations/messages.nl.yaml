@@ -112,6 +112,10 @@ object_info:
   edit_count: >-
     , Aangepast: %edit_count%
 
+docs_del:
+  title: >-
+    Document verwijderen?
+
 forum_del_post:
   title:
     admin: >-

@@ -16,6 +16,12 @@ contact_form_confirm:
     message_sent: >-
       Je bericht werd succesvol verzonden.
 
+docs_del:
+  error: >-
+    Document "%name%" is niet verwijderd.
+  success: >-
+    Document "%name%'' is verwijderd.
+
 email:
   warning:
     disabled: >-
