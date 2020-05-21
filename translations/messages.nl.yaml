@@ -108,6 +108,17 @@ label:
   your_email: Je E-Mail adres
   your_message: Je Bericht
 
+object_info:
+  edit_count: >-
+    , Aangepast: %edit_count%
+
+forum_del_post:
+  title:
+    admin: >-
+      Reactie van "%user%" verwijderen uit forum topic "%topic_subject%"?
+    personal: >-
+      Je reactie verwijderen uit forum topic "%topic_subject%"?
+
 contact_form:
   title: Contact
 
@@ -128,9 +139,9 @@ index_contact_form:
       eLAND Contact Formulier
   success:
     title: >-
-      Uw bericht is verstuurd.
+      Je bericht is verstuurd.
     explain: >-
-      Er wordt spoedig contact met u opgenomen.
+      Er wordt spoedig contact met je opgenomen.
 
 index:
   title: eLAND index
@@ -155,8 +166,16 @@ login:
 
 messages_del:
   title:
-    want: Vraag verwijderen?
-    offer: Aanbod verwijderen?
+    want:
+      admin: >-
+        Vraag van "%user%" verwijderen?
+      personal: >-
+        Je vraag verwijderen?
+    offer:
+      admin: >-
+        Aanbod van "%user%" verwijderen?
+      personal: >-
+        Je aanbod verwijderen?
 
 news_del:
   title: Nieuwsbericht verwijderen?

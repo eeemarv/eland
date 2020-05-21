@@ -16,7 +16,7 @@
 
 {%- embed 'form/embed.html.twig' -%}
     {%- import 'macro/btn_link.html.twig' as bl -%}
-    {%- import 'macro/account.html.twig' as ac -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
     {%- block form_content -%}
 
     <h2>
@@ -26,7 +26,7 @@
     {{- news.content|raw -}}
 
     <p>
-        {{- ac.account_link(news.user_id, schema) -}}
+        {{- oi.object_info(news.user_id, news.created_at, null, schema) -}}
     </p>
 
     {{- bl.cancel('news_show', {'id': news.id}) -}}

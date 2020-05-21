@@ -27,7 +27,7 @@ class NewsDelController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        $news = $news_repository->get($id, $pp->schema());
+        $news = $news_repository->get_visible_for_page($id, $pp->schema());
 
         $news_del_command = new NewsDelCommand();
 

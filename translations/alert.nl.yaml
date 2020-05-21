@@ -27,6 +27,15 @@ email:
       ingesteld door de beheerder.
       Je kan dit formulier niet gebruiken.
 
+forum_del_post:
+  error: >-
+    De forum reactie is niet verwijderd.
+  success:
+    admin: >-
+      De reactie van "%user%" is verwijderd uit forum topic "%topic_subject%"
+    personal: >-
+      Je reactie is verwijderd uit forum topic "%topic_subject%"
+
 login:
   warning:
     maintenance: >-
@@ -51,10 +60,16 @@ logout:
 messages_del:
   error: Het bericht is niet verwijderd.
   success:
-    offer: >-
-      Het aanbod "%message_subject%" is verwijderd.
-    want: >-
-      De vraag "%message_subject%" is verwijderd.
+    offer:
+      admin: >-
+        Het aanbod "%message_subject%" van "%user%" is verwijderd.
+      personal: >-
+        Je aanbod "%message_subject%" is verwijderd.
+    want:
+      admin: >-
+        De vraag "%message_subject%" van "%user%" is verwijderd.
+      personal: >-
+        Je vraag "%message_subject%" is verwijderd.
 
 news_del:
   error: Het nieuwsbericht is niet verwijderd.

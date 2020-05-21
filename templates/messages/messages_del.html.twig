@@ -4,9 +4,21 @@
 {%- block heading_fa -%}newspaper-o{%- endblock -%}
 {%- block heading_title -%}
     {%- if message.is_offer -%}
-        {{ 'messages_del.title.offer'|trans -}}
+        {%- if s_is_owner(message.user_id) -%}
+            {{ 'messages_del.title.offer.personal'|trans -}}
+        {%- else -%}
+            {{ 'messages_del.title.offer.admin'|trans({
+                '%user%': account(message.user_id, schema)
+            }) -}}
+        {%- endif -%}
     {%- else -%}
-        {{ 'messages_del.title.want'|trans -}}
+        {%- if s_is_owner(message.user_id) -%}
+            {{ 'messages_del.title.want.personal'|trans -}}
+        {%- else -%}
+            {{ 'messages_del.title.want.admin'|trans({
+                '%user%': account(message.user_id, schema)
+            }) -}}
+        {%- endif -%}
     {%- endif -%}
 {%- endblock -%}
 
@@ -14,9 +26,21 @@
     <h1>
     <i class="fa fa-newspaper-o"></i>&nbsp;
     {%- if message.is_offer -%}
-        {{ 'messages_del.title.offer'|trans -}}
+        {%- if s_is_owner(message.user_id) -%}
+            {{ 'messages_del.title.offer.personal'|trans -}}
+        {%- else -%}
+            {{ 'messages_del.title.offer.admin'|trans({
+                '%user%': account(message.user_id, schema)
+            }) -}}
+        {%- endif -%}
     {%- else -%}
-        {{ 'messages_del.title.want'|trans -}}
+        {%- if s_is_owner(message.user_id) -%}
+            {{ 'messages_del.title.want.personal'|trans -}}
+        {%- else -%}
+            {{ 'messages_del.title.want.admin'|trans({
+                '%user%': account(message.user_id, schema)
+            }) -}}
+        {%- endif -%}
     {%- endif -%}
     </h1>
 {%- endblock heading -%}
@@ -25,7 +49,8 @@
 
 {%- embed 'form/embed.html.twig' -%}
     {%- import 'macro/btn_link.html.twig' as bl -%}
-    {%- import 'macro/account.html.twig' as ac -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
+
     {%- block form_content -%}
 
     <h2>
@@ -40,7 +65,7 @@
     {{- message.content|raw -}}
 
     <p>
-        {{- ac.account_link(message.user_id, schema) -}}
+        {{- oi.object_info(message.user_id, message.created_at, null, schema) -}}
     </p>
 
     {{- bl.cancel('messages_show', {'id': message.id}) -}}

@@ -2,23 +2,38 @@
 
 namespace App\Repository;
 
+use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsRepository
 {
 	protected Db $db;
+	protected ItemAccessService $item_access_service;
 
-	public function __construct(Db $db)
+	public function __construct(
+		Db $db,
+		ItemAccessService $item_access_service
+	)
 	{
 		$this->db = $db;
+		$this->item_access_service = $item_access_service;
 	}
 
-	public function get(int $id, string $schema):array
+	public function get_visible_for_page(int $id, string $schema):array
 	{
-		$news = $this->db->fetchAssoc('select *
-			from ' . $schema . '.news
-			where id = ?', [$id]);
+        $stmt = $this->db->executeQuery('select *
+            from ' . $schema . '.news
+            where id = ?
+                and access in (?)', [
+                $id,
+                $this->item_access_service->get_visible_ary_for_page()
+            ], [
+                \PDO::PARAM_INT,
+                Db::PARAM_STR_ARRAY,
+            ]);
+
+        $news = $stmt->fetch();
 
 		if (!$news)
 		{
@@ -33,6 +48,8 @@ class NewsRepository
 		return $this->db->delete($schema . '.news',
 			['id' => $id]) ? true : false;
 	}
+
+	/******  */
 
 	public function insert(string $schema, array $data):int
 	{
