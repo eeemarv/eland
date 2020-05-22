@@ -112,9 +112,18 @@ object_info:
   edit_count: >-
     , Aangepast: %edit_count%
 
+contact_form:
+  title: Contact
+
+docs:
+  title: Documenten
+
 docs_del:
   title: >-
     Document verwijderen?
+
+forum:
+  title: Forum
 
 forum_del_post:
   title:
@@ -136,9 +145,6 @@ forum_del_topic:
       Eén reactie zal verwijderd worden.
     2: >-
       %count% reacties zullen verwijderd worden.
-
-contact_form:
-  title: Contact
 
 index_contact_form:
   title: eLAND Contact
@@ -182,6 +188,9 @@ login:
   password_reset_request_link: >-
     Klik hier als je je paswoord vergeten bent.
 
+messages:
+  title: Vraag en aanbod
+
 messages_del:
   title:
     want:
@@ -194,6 +203,9 @@ messages_del:
         Aanbod van "%user%" verwijderen?
       personal: >-
         Je aanbod verwijderen?
+
+news:
+  title: Nieuws
 
 news_del:
   title: Nieuwsbericht verwijderen?
@@ -217,6 +229,15 @@ register_confirm_fail:
 
 register_confirm_success:
   title: Inschrijving geslaagd.
+
+support:
+  title: Support
+
+transactions:
+  title: Transacties
+
+users:
+  title: Gebruikers
 
 users_del:
   title: Gebruiker verwijderen?

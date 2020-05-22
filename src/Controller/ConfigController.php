@@ -66,7 +66,7 @@ class ConfigController extends AbstractController
 
         $explain_replace_ary = [
             '%path_register%'	=> $link_render->path('register', ['system' => $pp->system()]),
-            '%path_contact%'	=> $link_render->path('contact', ['system' => $pp->system()]),
+            '%path_contact%'	=> $link_render->path('contact_form', ['system' => $pp->system()]),
         ];
 
         $addon_replace_ary = [
@@ -771,7 +771,7 @@ class ConfigController extends AbstractController
 
         $menu_service->set('config');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('config/config.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

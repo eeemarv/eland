@@ -197,7 +197,7 @@ class SupportController extends AbstractController
 
         $menu_service->set('support');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('support/support.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

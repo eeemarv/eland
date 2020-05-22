@@ -199,7 +199,7 @@ class ExportController extends AbstractController
 
         $menu_service->set('export');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('export/export.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
