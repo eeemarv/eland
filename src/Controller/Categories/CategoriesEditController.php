@@ -118,7 +118,7 @@ class CategoriesEditController extends AbstractController
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $db->prepare('select id, name
-            from ' . $pp->schema . '.categories
+            from ' . $pp->schema() . '.categories
             where leafnote = 0
             order by name');
 
