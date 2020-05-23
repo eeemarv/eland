@@ -1,17 +1,5 @@
 {%- extends 'auth/login_base.html.twig' -%}
 
-{%- block heading_fa -%}sign-in{%- endblock -%}
-{%- block heading_title -%}
-    {{- 'login.title'|trans -}}
-{%- endblock -%}
-
-{%- block heading -%}
-    <h1>
-    <i class="fa fa-sign-in"></i>
-    {{ 'login.title'|trans -}}
-    </h1>
-{%- endblock heading -%}
-
 {%- block content -%}
 
 {%- embed 'form/embed.html.twig' -%}

@@ -1,6 +1,5 @@
 {%- extends 'messages/messages_base.html.twig' -%}
 
-{%- block heading_fa -%}newspaper-o{%- endblock -%}
 {%- block heading_title -%}
     {%- if message.is_offer -%}
         {%- if s_is_owner(message.user_id) -%}
@@ -19,30 +18,7 @@
             }) -}}
         {%- endif -%}
     {%- endif -%}
-{%- endblock -%}
-
-{%- block heading -%}
-    <h1>
-    <i class="fa fa-newspaper-o"></i>&nbsp;
-    {%- if message.is_offer -%}
-        {%- if s_is_owner(message.user_id) -%}
-            {{ 'messages_del.title.offer.personal'|trans -}}
-        {%- else -%}
-            {{ 'messages_del.title.offer.admin'|trans({
-                '%user%': account(message.user_id, schema)
-            }) -}}
-        {%- endif -%}
-    {%- else -%}
-        {%- if s_is_owner(message.user_id) -%}
-            {{ 'messages_del.title.want.personal'|trans -}}
-        {%- else -%}
-            {{ 'messages_del.title.want.admin'|trans({
-                '%user%': account(message.user_id, schema)
-            }) -}}
-        {%- endif -%}
-    {%- endif -%}
-    </h1>
-{%- endblock heading -%}
+{%- endblock heading_title -%}
 
 {%- block content -%}
 

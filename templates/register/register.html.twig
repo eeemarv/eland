@@ -1,17 +1,5 @@
 {%- extends 'register/register_base.html.twig' -%}
 
-{%- block heading_fa -%}check-square-o{%- endblock -%}
-{%- block heading_title -%}
-    {{- 'register.title'|trans -}}
-{%- endblock -%}
-
-{%- block heading -%}
-    <h1>
-    <i class="fa fa-check-square-o"></i>
-    {{ 'register.title'|trans -}}
-    </h1>
-{%- endblock heading -%}
-
 {%- block content -%}
 
 {{- config('registration_top_text', schema)|raw -}}

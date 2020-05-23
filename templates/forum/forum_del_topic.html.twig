@@ -1,6 +1,5 @@
 {%- extends 'forum/forum_base.html.twig' -%}
 
-{%- block heading_fa -%}comments-o{%- endblock -%}
 {%- block heading_title -%}
     {%- if s_is_owner(forum_topic.user_id) -%}
         {{ 'forum_del_topic.title.personal'|trans({
@@ -13,22 +12,6 @@
         }) -}}
     {%- endif -%}
 {%- endblock -%}
-
-{%- block heading -%}
-    <h1>
-    <i class="fa fa-comments-o"></i>&nbsp;
-    {%- if s_is_owner(forum_topic.user_id) -%}
-        {{ 'forum_del_topic.title.personal'|trans({
-            '%topic_subject%': forum_topic.subject
-        }) -}}
-    {%- else -%}
-        {{ 'forum_del_topic.title.admin'|trans({
-            '%user%': account(forum_topic.user_id, schema),
-            '%topic_subject%': forum_topic.subject
-        }) -}}
-    {%- endif -%}
-    </h1>
-{%- endblock heading -%}
 
 {%- block content -%}
 

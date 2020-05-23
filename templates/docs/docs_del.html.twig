@@ -7,15 +7,6 @@
     }) -}}
 {%- endblock -%}
 
-{%- block heading -%}
-    <h1>
-    <i class="fa fa-files-o"></i>&nbsp;
-    {{ 'docs_del.title'|trans({
-        '%name%': doc.name
-    }) -}}
-    </h1>
-{%- endblock heading -%}
-
 {%- block content -%}
 
 {%- embed 'form/embed.html.twig' -%}

@@ -5,16 +5,7 @@
     {{ 'users_del.title'|trans({
         '%name%': account(user.id, schema)
     }) -}}
-{%- endblock -%}
-
-{%- block heading -%}
-    <h1>
-    <i class="fa fa-user"></i>&nbsp;
-    {{ 'users_del.title'|trans({
-        '%name%': account(user.id, schema)
-    }) -}}
-    </h1>
-{%- endblock heading -%}
+{%- endblock heading_title -%}
 
 {%- block content -%}
 
