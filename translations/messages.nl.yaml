@@ -76,6 +76,10 @@ label:
   modified: Aangepast
   mobile: GSM
   name: Naam
+  no_email_no_cc: >-
+    Een kopie van je bericht naar jezelf sturen
+    is niet mogelijk want er is geen E-mail
+    adres ingesteld voor je gebruikersaccount.
   new_password: Nieuw paswoord
   offer: Aanbod
   offers: Aanbod
@@ -90,6 +94,7 @@ label:
   postcode: Postcode
   role: Rol
   save_password: Bewaar Paswoord
+  send_cc: Stuur een kopie van je bericht naar jezelf
   send_notification_email: Stuur een notificatie E-mail
   split_by_char: Split door Teken
   subject: Onderwerp
@@ -338,6 +343,9 @@ register_confirm_success:
 
 support:
   title: Support
+  explain: >-
+    Stuur een bericht naar de
+    administratie van %system_name%.
 
 transactions:
   title: Transacties

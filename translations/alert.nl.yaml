@@ -32,6 +32,8 @@ email:
       Er is geen support E-mail adres
       ingesteld door de beheerder.
       Je kan dit formulier niet gebruiken.
+    master_not_allowed: >-
+      Het master account kan berichten verzenden.
 
 forum_del_post:
   error: >-
@@ -113,6 +115,10 @@ register:
       Open je E-mailbox en klik op de
       bevestigingslink in de E-mail die we naar je gestuurd
       hebben om je inschrijving te voltooien.
+
+support:
+  success: >-
+    De Support E-mail is verzonden.
 
 users_del:
   error: >-

@@ -14,7 +14,7 @@ users_contacts_add:
   methods: GET|POST
 
 support:
-  controller: App\Controller\SupportController
+  controller: App\Controller\Support\SupportController
   path: /support
   methods: GET|POST
 
