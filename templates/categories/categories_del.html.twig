@@ -1,5 +1,12 @@
 {%- extends 'categories/categories_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'categories_del.title'|trans({
+        '%name%': category.name
+    }) -}}
+{%- endblock heading_title -%}
+
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

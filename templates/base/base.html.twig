@@ -78,7 +78,13 @@
 	'home': {'fa': 'home'},
 	'login': {'fa': 'sign-in', 'access': 'anonymous'},
 	'contact_form': {'fa': 'comment-o', 'config': 'contact_form_en', 'access': 'anonymous'},
-	'register': {'fa': 'check-square-o', 'config': 'registration_en', 'access': 'anonymous'},
+	'register': {'fa': 'check-square-o', 'config': 'registration_en', 'access': 'anonymous'}
+} -%}
+
+{%- set admin_menu_def = {
+	'config': {'fa': 'cogs'},
+	'export': {'fa': 'download'},
+	'logs': {'fa': 'history'}
 } -%}
 
 <div class="container-fluid">

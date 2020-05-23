@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
-use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
@@ -20,8 +19,7 @@ class CategoriesController extends AbstractController
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
         PageParamsService $pp,
-        VarRouteService $vr,
-        HeadingRender $heading_render
+        VarRouteService $vr
     ):Response
     {
         $cats = $db->fetchAll('select *
@@ -69,9 +67,6 @@ class CategoriesController extends AbstractController
 
         $btn_top_render->add('categories_add',
             $pp->ary(), [], 'Categorie toevoegen');
-
-        $heading_render->add('Categorieën');
-        $heading_render->fa('clone');
 
         $out = '<div class="table-responsive border border-secondary-li rounded mb-3">';
         $out .= '<table class="table table-striped table-hover ';

@@ -1,5 +1,14 @@
 {%- extends 'messages/messages_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'messages_show.title.'
+        ~ (message.is_offer ? 'offer' : 'want') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%subject%': message.subject
+    }) -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('fileupload') -}}

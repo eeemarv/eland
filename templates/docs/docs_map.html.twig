@@ -1,5 +1,11 @@
 {%- extends 'docs/docs_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'docs_map.title'|trans({
+        '%name%': map.name
+    }) -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

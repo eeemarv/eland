@@ -1,5 +1,9 @@
 {%- extends 'news/news_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'news_add.title'|trans -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('datepicker') -}}

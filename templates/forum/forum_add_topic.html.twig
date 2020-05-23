@@ -1,5 +1,9 @@
 {%- extends 'forum/forum_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'forum_add_topic.title'|trans -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('summernote') -}}

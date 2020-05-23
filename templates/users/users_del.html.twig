@@ -1,8 +1,7 @@
-{%- extends 'users/users_base.html.twig' -%}
+{%- extends 'users/users_single_base.html.twig' -%}
 
-{%- block heading_fa -%}user{%- endblock -%}
 {%- block heading_title -%}
-    {{ 'users_del.title'|trans({
+    {{- 'users_del.title'|trans({
         '%name%': account(user.id, schema)
     }) -}}
 {%- endblock heading_title -%}

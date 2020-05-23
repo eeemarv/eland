@@ -1,5 +1,9 @@
 {%- extends 'docs/docs_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'docs_add.title'|trans -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

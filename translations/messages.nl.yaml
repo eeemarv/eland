@@ -112,18 +112,72 @@ object_info:
   edit_count: >-
     , Aangepast: %edit_count%
 
+calendar:
+  title: >-
+    Kalender
+calendar_add:
+  title: Kalender evenement toevoegen
+
+calendar_del:
+  title: >-
+    Kalender evenement "%subject%" verwijderen?
+
+calendar_edit:
+  title: >-
+    Kalender evenement "%subject%" aanpassen
+
+calendar_list:
+  title: Kalender evenementen
+
+calendar_month:
+  title: >-
+    %month% %year%
+
+categories:
+  title: Categorieën in vraag en aanbod
+
+categories_add:
+  title: Categorie toevoegen
+
+categories_edit:
+  title: Categorie "%name%" aanpassen
+
+categories_del:
+  title: >-
+    Categorie "%name%" verwijderen?
+
 contact_form:
   title: Contact
 
 docs:
   title: Documenten
 
+docs_add:
+  title: >-
+    Document opladen
+
 docs_del:
   title: >-
     Document verwijderen?
 
+docs_edit:
+  title: >-
+    Document "%name%" aanpassen
+
+docs_map:
+  title: >-
+    Documenten map "%name%"
+
+docs_map_edit:
+  title: >-
+    Map "%name%" aanpassen
+
 forum:
   title: Forum
+
+forum_add_topic:
+  title: >-
+    Forum topic toevoegen
 
 forum_del_post:
   title:
@@ -145,6 +199,24 @@ forum_del_topic:
       Eén reactie zal verwijderd worden.
     2: >-
       %count% reacties zullen verwijderd worden.
+
+forum_edit_post:
+  title:
+    personal: >-
+      Je reactie in forum topic "%topic_subject%" aanpassen.
+    admin: >-
+      Reactie van "%user%" in forum topic "%topic_subject" aanpassen.
+
+forum_edit_topic:
+  title:
+    personal: >-
+      Je forum topic "%topic_subject%" aanpassen.
+    admin: >-
+      Forum topic "%topic_subject" van "%user%" aanpassen.
+
+forum_topic:
+  title: >-
+    %topic_subject%
 
 index_contact_form:
   title: eLAND Contact
@@ -191,24 +263,58 @@ login:
 messages:
   title: Vraag en aanbod
 
+messages_add:
+  title: >-
+    Vraag of aanbod toevoegen
+
 messages_del:
   title:
-    want:
-      admin: >-
-        Vraag van "%user%" verwijderen?
-      personal: >-
-        Je vraag verwijderen?
     offer:
       admin: >-
         Aanbod van "%user%" verwijderen?
       personal: >-
         Je aanbod verwijderen?
+    want:
+      admin: >-
+        Vraag van "%user%" verwijderen?
+      personal: >-
+        Je vraag verwijderen?
+
+messages_edit:
+  title:
+    offer:
+      admin: >-
+        Aanbod "%subject%" van "%user%" aanpassen
+      personal: >-
+        Je aanbod "%subject%" aanpassen
+    want:
+      admin: >-
+        Vraag "%subject%" van "%user%" aanpassen
+      personal: >-
+        Je vraag "%subject%" aanpassen
+
+messages_show:
+  title:
+    offer: >-
+      Aanbod: %subject%
+    want: >-
+      Vraag: %subject%
 
 news:
   title: Nieuws
 
+news_add:
+  title: Nieuwsbericht toevoegen
+
+news_edit:
+  title: Nieuwsbericht "%subject%" aanpassen
+
 news_del:
   title: Nieuwsbericht verwijderen?
+
+news_show:
+  title: >-
+    %subject%
 
 password_reset_request:
   title: Paswoord vergeten
@@ -236,8 +342,36 @@ support:
 transactions:
   title: Transacties
 
+transactions_add:
+  title: Nieuwe Transactie
+
+transactions_edit:
+  title: >-
+    Omschrijving transactie aanpassen
+  explain:
+    admins_only: >-
+      Enkel Admins kunnen de omschrijving
+      van een transactie aanpassen.
+    only_when_necessary: >-
+      Pas de omschrijving van een transactie
+      enkel aan wanneer het echt noodzakelijk is!
+      Dit om verwarring te vermijden.
+    never_undo: >-
+      Transacties kunnen nooit ongedaan
+      gemaakt worden. Doe een tegenboeking
+      bij vergissing.
+
 users:
   title: Gebruikers
+
+users_add:
+  title: Gebruiker toevoegen
+
+users_edit_admin:
+  title: Gebruiker "%name%" aanpassen
+
+users_edit_personal:
+  title: Je profiel aanpassen
 
 users_del:
   title: Gebruiker verwijderen?
@@ -253,10 +387,4 @@ users_password_set:
   title: Nieuw paswoord ingeven
 
 users_password_set_admin:
-  title: Nieuw paswoord ingeven voor %user%
-
-calendar:
-  title: Kalender
-  menu: Kalender
-calendar_add:
-  title: Nieuw kalender item
+  title: Nieuw paswoord ingeven voor "%user%"

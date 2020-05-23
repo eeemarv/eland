@@ -1,5 +1,12 @@
 {%- extends 'calendar/calendar_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'calendar_month.title'|trans({
+		'%month%': calendar.month,
+		'%year%': calendar.year
+    }) -}}
+{%- endblock heading_title -%}
+
 {%- block heading -%}
 	<h1>
 		Kalender

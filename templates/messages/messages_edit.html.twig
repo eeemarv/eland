@@ -1,5 +1,16 @@
 {%- extends 'messages/messages_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'messages_edit.title.'
+        ~ (message.is_offer ? 'offer.' : 'want.')
+        ~ (s_is_owner(message.user_id) ? 'personal' : 'admin') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%subject%': message.subject,
+        '%user%': account(message.user_id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('summernote') -}}

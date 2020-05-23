@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\PageParamsService;
@@ -24,7 +23,6 @@ class CategoriesAddController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         PageParamsService $pp,
         SessionUserService $su,
         SelectRender $select_render
@@ -101,9 +99,6 @@ class CategoriesAddController extends AbstractController
         }
 
         $id_parent = $cat['id_parent'] ?? 0;
-
-        $heading_render->add('Categorie toevoegen');
-        $heading_render->fa('clone');
 
         $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';

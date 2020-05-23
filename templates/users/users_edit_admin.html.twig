@@ -1,4 +1,10 @@
-{%- extends 'users/users_base.html.twig' -%}
+{%- extends 'users/users_single_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_edit_admin.title'|trans({
+        '%name%': account(user.id, schema)
+    }) -}}
+{%- endblock heading_title -%}
 
 {%- block css -%}
     {{- parent() -}}

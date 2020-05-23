@@ -1,4 +1,8 @@
-{%- extends 'users/users_base.html.twig' -%}
+{%- extends 'users/users_single_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_add.title'|trans -}}
+{%- endblock heading_title -%}
 
 {%- block css -%}
     {{- parent() -}}
