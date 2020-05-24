@@ -210,3 +210,10 @@
     <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
     </div>
 {%- endblock captcha_row -%}
+
+{% block summernote_widget -%}
+    {%- set attr = attr|merge({
+        'data-summernote': ''
+    }) -%}
+    {{- block('textarea_widget') -}}
+{%- endblock summernote_widget %}

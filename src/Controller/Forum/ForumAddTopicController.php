@@ -2,6 +2,8 @@
 
 namespace App\Controller\Forum;
 
+use App\Command\Forum\ForumAddTopicCommand;
+use App\Form\Post\Forum\ForumAddTopicType;
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,13 +37,38 @@ class ForumAddTopicController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
-        $errors = [];
-
         if (!$config_service->get('forum_en', $pp->schema()))
         {
             throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
         }
 
+        $forum_add_topic_command = new ForumAddTopicCommand();
+
+        $form = $this->createForm(ForumAddTopicType::class,
+                $forum_add_topic_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $forum_add_topic_command = $form->getData();
+            $subject = $forum_add_topic_command->subject;
+            $content = $forum_add_topic_command->content;
+
+            $contact_form = [
+                'message' 	=> $message,
+                'email'		=> $email,
+                'agent'		=> $request->headers->get('User-Agent'),
+                'ip'		=> $request->getClientIp(),
+            ];
+
+        }
+
+
+
+
+        ////
+/*
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $access = $request->request->get('access', '');
@@ -143,11 +170,12 @@ class ForumAddTopicController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
+        */
 
         $menu_service->set('forum');
 
         return $this->render('forum/forum_add_topic.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
             'schema'    => $pp->schema(),
         ]);
     }

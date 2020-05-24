@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormInterface;
 
 use App\Form\Input\TextAddonType;
 use App\Form\Typeahead\TypeaheadTypeAttr;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AccessType extends AbstractType
 {

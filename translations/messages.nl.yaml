@@ -94,7 +94,7 @@ label:
   postcode: Postcode
   role: Rol
   save_password: Bewaar Paswoord
-  send_cc: Stuur een kopie van je bericht naar jezelf
+  send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
   split_by_char: Split door Teken
   subject: Onderwerp
@@ -182,21 +182,21 @@ forum:
 
 forum_add_topic:
   title: >-
-    Forum topic toevoegen
+    Forum onderwerp toevoegen
 
 forum_del_post:
   title:
     admin: >-
-      Reactie van "%user%" verwijderen uit forum topic "%topic_subject%"?
+      Reactie van "%user%" verwijderen uit forum onderwerp "%topic_subject%"?
     personal: >-
-      Je reactie verwijderen uit forum topic "%topic_subject%"?
+      Je reactie verwijderen uit forum onderwerp "%topic_subject%"?
 
 forum_del_topic:
   title:
     admin: >-
-      Forum topic "%topic_subject%" van "%user%" verwijderen?
+      Forum onderwerp "%topic_subject%" van "%user%" verwijderen?
     personal: >-
-      Je forum topic "%topic_subject%" verwijderen?
+      Je forum onderwerp "%topic_subject%" verwijderen?
   posts_warning:
     0: >-
       Er zijn geen reacties die verwijderd zullen worden.
@@ -208,16 +208,16 @@ forum_del_topic:
 forum_edit_post:
   title:
     personal: >-
-      Je reactie in forum topic "%topic_subject%" aanpassen.
+      Je reactie in forum onderwerp "%topic_subject%" aanpassen.
     admin: >-
-      Reactie van "%user%" in forum topic "%topic_subject" aanpassen.
+      Reactie van "%user%" in forum onderwerp "%topic_subject" aanpassen.
 
 forum_edit_topic:
   title:
     personal: >-
-      Je forum topic "%topic_subject%" aanpassen.
+      Je forum onderwerp "%topic_subject%" aanpassen.
     admin: >-
-      Forum topic "%topic_subject" van "%user%" aanpassen.
+      Forum onderwerp "%topic_subject" van "%user%" aanpassen.
 
 forum_topic:
   title: >-

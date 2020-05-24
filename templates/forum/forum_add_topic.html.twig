@@ -4,6 +4,38 @@
     {{- 'forum_add_topic.title'|trans -}}
 {%- endblock heading_title -%}
 
+{%- block content -%}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.subject, {
+        'label': false,
+        'attr': {
+            'placeholder': 'label.subject'
+        }
+    }) -}}
+
+    {{- form_row(form.content, {
+        'label': false,
+        'attr': {
+            'rows': 5,
+            'minlength': 10,
+            'maxlength': 5000
+        }
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.send',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('summernote') -}}
