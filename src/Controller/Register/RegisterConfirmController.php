@@ -11,15 +11,12 @@ use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegisterConfirmController extends AbstractController
 {
     public function __invoke(
         string $token,
-        Db $db,
         UserRepository $user_repository,
         TranslatorInterface $translator,
         ConfigService $config_service,
@@ -30,11 +27,6 @@ class RegisterConfirmController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('registration_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Registration form not enabled.');
-        }
-
         $data = $data_token_service->retrieve($token, 'register', $pp->schema());
 
         if (!$data)

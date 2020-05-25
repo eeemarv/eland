@@ -2,12 +2,15 @@
 
 namespace App\Controller\Forum;
 
+use App\Command\Forum\ForumAddPostCommand;
+use App\Form\Post\Forum\ForumAddPostType;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -29,6 +32,7 @@ class ForumTopicController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ForumRepository $forum_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         BtnNavRender $btn_nav_render,
@@ -41,18 +45,10 @@ class ForumTopicController extends AbstractController
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
-        MenuService $menu_service,
-        HtmlPurifier $html_purifier
+        MenuService $menu_service
     ):Response
     {
-        $errors = [];
-
         $content = $request->request->get('content', '');
-
-        if (!$config_service->get('forum_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
-        }
 
         $show_access = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
@@ -60,49 +56,38 @@ class ForumTopicController extends AbstractController
 
         $forum_topic = self::get_forum_topic($id, $db, $pp, $item_access_service);
 
+        $forum_topic = $forum_repository->get_topic($id, $pp->schema());
+
+        if (!$item_access_service->is_visible($forum_topic['access']))
+        {
+            throw new AccessDeniedHttpException('Access denied for forum topic.');
+        }
+
+        $forum_posts = $forum_repository->get_topic_posts($id, $pp->schema());
+
         $s_topic_owner = $forum_topic['user_id'] === $su->id()
             && $su->is_system_self() && !$pp->is_guest();
 
-        $forum_posts = $db->fetchAll('select *
-            from ' . $pp->schema() . '.forum_posts
-            where topic_id = ?
-            order by created_at asc', [$id]);
+        $forum_add_post_command = new ForumAddPostCommand();
 
-        if ($request->isMethod('POST'))
+        $form = $this->createForm(ForumAddPostType::class,
+                $forum_add_post_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid()
+            && ($pp->is_user() || $pp->is_admin()))
         {
-            if (!($pp->is_user() || $pp->is_admin()))
-            {
-                throw new AccessDeniedHttpException('Actie niet toegelaten.');
-            }
+            $forum_add_post_command = $form->getData();
+            $content = $forum_add_post_command->content;
 
-            $content = $html_purifier->purify($content);
+            $forum_repository->insert_post($content,
+                $su->id(), $id, $pp->schema());
 
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (strlen($content) < 2)
-            {
-                $errors[] = 'De inhoud van je bericht is te kort.';
-            }
-
-            if (!count($errors))
-            {
-                $forum_post = [
-                    'content'   => $content,
-                    'topic_id'  => $id,
-                    'user_id'   => $su->id(),
-                ];
-
-                $db->insert($pp->schema() . '.forum_posts', $forum_post);
-
-                $alert_service->success('Reactie toegevoegd.');
-                $link_render->redirect('forum_topic', $pp->ary(),
-                    ['id' => $id]);
-            }
-
-            $alert_service->error($errors);
+            $alert_service->success('forum_topic.add_post.success',
+                ['%topic_subject%' => $forum_topic['subject']]);
+            $link_render->redirect('forum_topic', $pp->ary(),
+                ['id' => $id]);
         }
 
         $stmt_prev = $db->executeQuery('select id
@@ -254,8 +239,11 @@ class ForumTopicController extends AbstractController
         $menu_service->set('forum');
 
         return $this->render('forum/forum_topic.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+            'forum_topic'   => $forum_topic,
+            'forum_posts'   => $forum_posts,
+            'form'          => $form,
+            'content'       => $out,
+            'schema'        => $pp->schema(),
         ]);
     }
 

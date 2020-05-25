@@ -31,11 +31,6 @@ class ContactFormController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get('contact_form_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Contact page not found.');
-        }
-
         $form_disabled = false;
 
         if (!$config_service->get('mailenabled', $pp->schema()))

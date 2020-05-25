@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
@@ -17,7 +16,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumEditTopicController extends AbstractController
 {
@@ -26,7 +24,6 @@ class ForumEditTopicController extends AbstractController
         int $id,
         Db $db,
         AlertService $alert_service,
-        ConfigService $config_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
@@ -42,11 +39,6 @@ class ForumEditTopicController extends AbstractController
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $access = $request->request->get('access', '');
-
-        if (!$config_service->get('forum_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
-        }
 
         $forum_topic = ForumTopicController::get_forum_topic($id, $db, $pp, $item_access_service);
 

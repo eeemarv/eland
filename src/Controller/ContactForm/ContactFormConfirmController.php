@@ -7,17 +7,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ContactFormConfirmController extends AbstractController
 {
     public function __invoke(
         string $token,
-        ConfigService $config_service,
         LinkRender $link_render,
         AlertService $alert_service,
         DataTokenService $data_token_service,
@@ -26,11 +23,6 @@ class ContactFormConfirmController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get('contact_form_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Contact page not found.');
-        }
-
         $data = $data_token_service->retrieve($token, 'contact_form', $pp->schema());
 
         if (!$data)

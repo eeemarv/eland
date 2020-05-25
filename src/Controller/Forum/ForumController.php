@@ -16,7 +16,6 @@ use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumController extends AbstractController
 {
@@ -35,11 +34,6 @@ class ForumController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
-        }
-
         // to do: filter after page loaded
         $q = $request->query->get('q', '');
 

@@ -28,6 +28,11 @@ class HtmlPurifyTransformer implements DataTransformerInterface
 
     public function reverseTransform($content)
     {
+        if (null === $content)
+        {
+            return '';
+        }
+
         return $this->html_purifier->purify($content);
     }
 }

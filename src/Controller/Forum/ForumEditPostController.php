@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
@@ -26,7 +25,6 @@ class ForumEditPostController extends AbstractController
         int $id,
         Db $db,
         AlertService $alert_service,
-        ConfigService $config_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
@@ -40,11 +38,6 @@ class ForumEditPostController extends AbstractController
         $errors = [];
 
         $content = $request->request->get('content', '');
-
-        if (!$config_service->get('forum_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
-        }
 
         $forum_post = $db->fetchAssoc('select *
             from ' . $pp->schema() . '.forum_posts

@@ -8,7 +8,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -16,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumDelTopicController extends AbstractController
 {
@@ -26,18 +24,12 @@ class ForumDelTopicController extends AbstractController
         ForumRepository $forum_repository,
         LinkRender $link_render,
         AccountRender $account_render,
-        ConfigService $config_service,
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('The forum module is not enabled in this system.');
-        }
-
         $forum_topic = $forum_repository->get_visible_topic_for_page($id, $pp->schema());
 
         if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))

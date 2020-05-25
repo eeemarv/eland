@@ -3,17 +3,13 @@
 namespace App\Form\Post\Forum;
 
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Input\AccessType;
 use App\Form\Input\Summernote\SummernoteType;
-use App\Service\ItemAccessService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-
-class ForumAddTopicType extends AbstractType
+class ForumAddPostType extends AbstractType
 {
     protected AccessFieldSubscriber $access_field_subscriber;
 
@@ -27,9 +23,7 @@ class ForumAddTopicType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('subject', TextType::class)
             ->add('content', SummernoteType::class)
-//            ->add('access', AccessType::class)
             ->add('submit', SubmitType::class);
 
         $builder->addEventSubscriber($this->access_field_subscriber);

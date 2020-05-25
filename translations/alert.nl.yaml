@@ -35,6 +35,10 @@ email:
     master_not_allowed: >-
       Het master account kan berichten verzenden.
 
+forum_add_topic:
+  success: >-
+    Forum onderwerp toegevoegd.
+
 forum_del_post:
   error: >-
     De forum reactie is niet verwijderd.
@@ -52,6 +56,12 @@ forum_del_topic:
       Forum topic "%topic_subject%" van "%user%" is verwijderd.
     personal: >-
       Je forum topic "%topic_subject%" is verwijderd.
+
+forum_topic:
+  add_post:
+    success: >-
+      Reactie toegevoegd aan forum topic "%topic_subject%".
+
 
 login:
   warning:

@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RegisterController extends AbstractController
 {
@@ -31,11 +30,6 @@ class RegisterController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        if (!$config_service->get('registration_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Registration form not enabled.');
-        }
-
         $form_disabled = false;
 
         if (!$config_service->get('mailenabled', $pp->schema()))
