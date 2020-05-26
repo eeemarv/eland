@@ -44,7 +44,7 @@
 {%- macro btn_link_fa(route, params, class, label, fa) -%}
     {%- import 'macro/link.html.twig' as l %}
     <a href="{{- l.pp_path(route, params) -}}" class="{{- class -}}">
-        <i class="fa fa-pencil"></i>&nbsp;
+        <i class="fa fa-{{- fa -}}"></i>&nbsp;
         <span class="d-none d-lg-inline">
             {{- label|trans -}}
         </span>

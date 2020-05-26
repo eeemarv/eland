@@ -18,7 +18,7 @@ class BtnTopRender
 
 	public function get():string
 	{
-		return implode('', $this->out);
+		return implode('&nbsp;', $this->out);
 	}
 
 	public function has_content():bool

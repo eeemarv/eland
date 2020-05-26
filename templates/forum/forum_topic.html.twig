@@ -1,10 +1,72 @@
 {%- extends 'forum/forum_base.html.twig' -%}
+{%- import 'macro/access.html.twig' as access -%}
 
 {%- block heading_title -%}
     {{- 'forum_topic.title'|trans({
         '%topic_subject%': forum_topic.subject,
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block content -%}
+
+{%- if show_access -%}
+    {{- access.p_lbl(forum_topic.access) -}}
+{%- endif -%}
+
+{%- for p in forum_posts -%}
+    {%- embed 'embed/post.html.twig' -%}
+        {%- import 'macro/object_info.html.twig' as io -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- block post_content -%}
+            {{- p.content|raw -}}
+        {%- endblock post_content -%}
+        {%- block post_info -%}
+            {{- io.post_info(p, schema) -}}
+        {%- endblock post_info -%}
+        {%- block post_buttons -%}
+            {%- if pp_role('admin') or s_is_owner(p.user_id) -%}
+                <span class="pull-right">
+                {%- if loop.first -%}
+                    {{- bl.edit('forum_edit_topic', {'id': forum_topic.id}) -}}
+                    {{- bl.del('forum_del_topic', {'id': forum_topic.id}) -}}
+                {% else -%}
+                    {{- bl.edit('forum_edit_post', {'id': p.id}) -}}
+                    {{- bl.del('forum_del_post', {'id': p.id}) -}}
+                {%- endif -%}
+                </span>
+            {%- endif -%}
+        {%- endblock post_buttons -%}
+    {%- endembed -%}
+{%- endfor -%}
+
+{%- if pp_role('user') or pp_role('admin') -%}
+    <h3>
+        {{- 'forum_topic.add_post'|trans -}}
+    </h3>
+
+    {%- embed 'form/embed.html.twig' -%}
+        {%- import 'macro/link.html.twig' as l -%}
+        {%- block form_content -%}
+
+        {{- form_row(form.content, {
+            'label': false,
+            'attr': {
+                'rows': 5,
+                'minlength': 10,
+                'maxlength': 5000
+            }
+        }) -}}
+
+        {{- form_widget(form.submit,{
+            'label': 'btn.send',
+            'attr': {'class': 'btn-info'}
+        }) -}}
+
+        {%- endblock form_content -%}
+    {%- endembed -%}
+{%- endif -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

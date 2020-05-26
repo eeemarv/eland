@@ -1,3 +1,15 @@
+access:
+  admin: Admin
+  admin_explain: Enkel zichtbaar voor administratie.
+  guest: InterSysteem
+  guest_explain: Zichtbaar voor leden en leden van gekoppelde interSystemen.
+  public: Publiek
+  public_explain: Zichtbaar op het publieke internet.
+  user: Leden
+  user_explain: Zichtbaar voor leden.
+  visible: Zichtbaar
+  visible_for: Zichtbaar voor
+  visible_for_access: Zichtbaar voor %access%
 
 btn:
   add: Toevoegen
@@ -222,6 +234,8 @@ forum_edit_topic:
 forum_topic:
   title: >-
     %topic_subject%
+  add_post: >-
+    Reactie toevoegen
 
 index_contact_form:
   title: eLAND Contact

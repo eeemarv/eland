@@ -1,3 +1,8 @@
+{%- macro post_info(post, schema) -%}
+    {%- import _self as oi -%}
+    {{- oi.object_info(post.user_id, post.created_at, post.edit_count, schema) -}}
+{%- endmacro post_info -%}
+
 {%- macro object_info(user_id, created_at, edit_count, schema) -%}
     {%- import _self as oi -%}
     {{- oi.user_link(user_id, schema) -}}&nbsp;
