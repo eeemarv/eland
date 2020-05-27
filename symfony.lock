@@ -63,6 +63,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "doctrine/sql-formatter": {
+        "version": "1.0.1"
+    },
     "fgrosse/phpasn1": {
         "version": "v2.1.1"
     },
@@ -71,9 +74,6 @@
     },
     "gregwar/captcha-bundle": {
         "version": "v2.1.3"
-    },
-    "jdorn/sql-formatter": {
-        "version": "v1.2.17"
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.1"

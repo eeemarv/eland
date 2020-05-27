@@ -1,8 +1,8 @@
 import 'footable/css/footable.core.css';
 
-import 'footable/js/footable.js';
-import 'footable/js/footable.sort.js';
-import 'footable/js/footable.filter.js';
+import 'footable/js/footable';
+import 'footable/js/footable.sort';
+import 'footable/js/footable.filter';
 
 $(document).ready(function() {
     $('table[data-footable]').footable();
