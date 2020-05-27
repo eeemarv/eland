@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ForumAddPostType extends AbstractType
+class ForumPostType extends AbstractType
 {
     protected AccessFieldSubscriber $access_field_subscriber;
 
@@ -25,8 +25,6 @@ class ForumAddPostType extends AbstractType
         $builder
             ->add('content', SummernoteType::class)
             ->add('submit', SubmitType::class);
-
-        $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
     public function configureOptions(OptionsResolver $resolver)

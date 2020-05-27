@@ -10,6 +10,33 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- block content -%}
+
+{%- embed 'form/embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.content, {
+        'label': false,
+        'attr': {
+            'rows': 5,
+            'minlength': 10,
+            'maxlength': 5000
+        }
+    }) -}}
+
+    {{- bl.cancel('forum_topic', {'id': forum_topic.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('summernote') -}}

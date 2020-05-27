@@ -3,7 +3,7 @@
 namespace App\Controller\Forum;
 
 use App\Command\Forum\ForumAddPostCommand;
-use App\Form\Post\Forum\ForumAddPostType;
+use App\Form\Post\Forum\ForumPostType;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
@@ -14,19 +14,16 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumTopicController extends AbstractController
 {
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
         ForumRepository $forum_repository,
         AlertService $alert_service,
         BtnNavRender $btn_nav_render,
@@ -39,8 +36,6 @@ class ForumTopicController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $content = $request->request->get('content', '');
-
         $show_access = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
@@ -54,12 +49,9 @@ class ForumTopicController extends AbstractController
 
         $forum_posts = $forum_repository->get_topic_posts($id, $pp->schema());
 
-        $s_topic_owner = $forum_topic['user_id'] === $su->id()
-            && $su->is_system_self() && !$pp->is_guest();
-
         $forum_add_post_command = new ForumAddPostCommand();
 
-        $form = $this->createForm(ForumAddPostType::class,
+        $form = $this->createForm(ForumPostType::class,
                 $forum_add_post_command)
             ->handleRequest($request);
 
@@ -79,37 +71,7 @@ class ForumTopicController extends AbstractController
                 ['id' => $id]);
         }
 
-        $stmt_prev = $db->executeQuery('select id
-            from ' . $pp->schema() . '.forum_topics
-            where last_edit_at > ?
-                and access in (?)
-            order by last_edit_at asc
-            limit 1', [
-                $forum_topic['last_edit_at'],
-                $item_access_service->get_visible_ary_for_page()
-            ], [
-                \PDO::PARAM_STR,
-                Db::PARAM_STR_ARRAY,
-            ]);
-
-        $prev = $stmt_prev->fetchColumn();
-
-        $stmt_next = $db->executeQuery('select id
-            from ' . $pp->schema() . '.forum_topics
-            where last_edit_at < ?
-                and access in (?)
-            order by last_edit_at desc
-            limit 1', [
-                $forum_topic['last_edit_at'],
-                $item_access_service->get_visible_ary_for_page()
-            ], [
-                \PDO::PARAM_STR,
-                Db::PARAM_STR_ARRAY,
-            ]);
-
-        $next = $stmt_next->fetchColumn();
-
-        if ($pp->is_admin() || $s_topic_owner)
+        if ($pp->is_admin() || $su->is_owner($forum_topic['user_id']))
         {
             $btn_top_render->edit('forum_edit_topic', $pp->ary(),
                 ['id' => $id], 'Onderwerp aanpassen');
@@ -117,6 +79,9 @@ class ForumTopicController extends AbstractController
             $btn_top_render->del('forum_del_topic', $pp->ary(),
                 ['id' => $id], 'Onderwerp verwijderen');
         }
+
+        $prev = $forum_repository->get_prev_visible_topic_id_for_page($id, $pp->schema());
+        $next = $forum_repository->get_next_visible_topic_id_for_page($id, $pp->schema());
 
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];

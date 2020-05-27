@@ -1,0 +1,52 @@
+{%- macro thead(columns, col_format, route, all_params, sort) -%}
+    {%- for c in columns -%}
+        <th{%- if col_format[c].hide is defined %} data-hide="{{- col_format[c].hide -}}"{%- endif -%}>
+        {%- if sort.columns[c] is defined -%}
+            {%- set order = sort.col == c ? (sort.order == 'asc' ? 'desc' : 'asc') : sort.columns[c] -%}
+            <a href="{{- path(route, all_params|merge({'s':{'col': c, 'order': order}, 'p':{'start': null, 'limit': all_params.p.limit ?? null}})) -}}">
+        {%- endif -%}
+        {{- col_format[c]['lbl']|trans({'%var%': col_format[c].lbl_var|default('')}) -}}
+        {%- if sort.columns[c] is defined %} <i class="fa fa-sort{%- if c == sort.col -%}-{{- sort.order -}}{%- endif -%}">
+        </a>
+        {%- endif -%}
+        </th>
+    {%- endfor -%}
+{%- endmacro thead %}
+
+{%- macro tbody(rows, columns, col_format, acc_sch) -%}
+    {%- import 'macro/badge.html.twig' as ba -%}
+    {%- set schema = acc_sch['schema'] -%}
+    <tbody>
+    {%- for row in rows -%}
+    <tr{%- if row.class is defined %} class="{{- row.class -}}"{%- endif -%}>
+    {%- for c in columns -%}
+        <td>
+        {%- if loop.first and forms.sel is defined -%}
+            {{- form_widget(forms.sel.form[row[forms.sel.id]], {'label': false,
+                'parent_label_class': 'checkbox-inline'}) -}}
+        {%- endif -%}
+        {%- if col_format[c].route is defined -%}
+        <a href="{{ path(col_format[c].route, {(col_format[c].route_key): row[col_format[c].route_col_id]}|merge(acc_sch)) }}">
+        {{- row[c] ?? '&nbsp;' -}}
+        </a>
+        {%- elseif col_format[c].render is defined -%}
+            {%- if col_format[c].render == 'date' -%}
+                {{- ((row[c]) ?? '')|date_format(col_format[c].date_precision ?? 'min') -}}
+            {%- elseif col_format[c].render == 'user' -%}
+                {{- (row[c])|user_format(schema)|raw -}}
+            {%- elseif col_format[c].render == 'badge' -%}
+                {{- ba.badge(row[c]) -}}
+            {%- elseif col_format[c].render == 'yes_no' -%}
+                {%- if row[c] -%}{{- 'bool.yes'|trans -}}{%- else -%}{{- 'bool.no'|trans -}}{%- endif -%}
+            {%- elseif col_format[c].render == 'input' -%}
+                {{- form_widget(row[c]) -}}
+            {%- endif -%}
+        {%- else -%}
+        {{- row[c] ?? '&nbsp;' -}}
+        {%- endif -%}
+        </td>
+    {%- endfor -%}
+    </tr>
+    {%- endfor -%}
+    </tbody>
+{%- endmacro tbody %}

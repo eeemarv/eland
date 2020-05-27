@@ -57,6 +57,13 @@ forum_del_topic:
     personal: >-
       Je forum topic "%topic_subject%" is verwijderd.
 
+forum_edit_post:
+  success:
+    personal: >-
+      Je reactie in forum topic "%topic_subject%" is aangepast.
+    admin: >-
+      De reactie van "%user%" in forum topic "%topic_subject%" is aangepast.
+
 forum_topic:
   add_post:
     success: >-

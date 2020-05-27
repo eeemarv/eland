@@ -43,6 +43,46 @@ class ForumRepository
 		return $topic;
 	}
 
+	public function get_next_visible_topic_id_for_page(int $ref_topic_id, string $schema):int
+	{
+        $stmt_next = $this->db->executeQuery('select t1.id
+			from ' . $schema . '.forum_topics t1,
+				' . $schema . '.forum_topics t2
+			where t1.last_edit_at < t2.last_edit_at
+				and t2.id = ?
+				and t1.access in (?)
+            order by t1.last_edit_at desc
+            limit 1', [
+                $ref_topic_id,
+                $this->item_access_service->get_visible_ary_for_page()
+            ], [
+                \PDO::PARAM_INT,
+                Db::PARAM_STR_ARRAY,
+            ]);
+
+        return $stmt_next->fetchColumn() ?: 0;
+	}
+
+	public function get_prev_visible_topic_id_for_page(int $ref_topic_id, string $schema):int
+	{
+        $stmt_prev = $this->db->executeQuery('select t1.id
+			from ' . $schema . '.forum_topics t1,
+				' . $schema . '.forum_topics t2
+			where t1.last_edit_at > t2.last_edit_at
+				and t2.id = ?
+				and t1.access in (?)
+            order by t1.last_edit_at asc
+            limit 1', [
+                $ref_topic_id,
+                $this->item_access_service->get_visible_ary_for_page()
+            ], [
+                \PDO::PARAM_INT,
+                Db::PARAM_STR_ARRAY,
+            ]);
+
+		return $stmt_prev->fetchColumn() ?: 0;
+	}
+
 	public function get_topic(int $topic_id, string $schema):array
 	{
         $forum_topic = $this->db->fetchAssoc('select *
@@ -161,4 +201,14 @@ class ForumRepository
 		]) ? true : false;
 	}
 
+	public function update_post(
+		string $content,
+		int $post_id,
+		string $schema
+	):bool
+	{
+		return $this->db->update($schema . '.forum_posts', [
+			'content'		=> $content,
+		], ['id' => $post_id]) ? true : false;
+	}
 }
