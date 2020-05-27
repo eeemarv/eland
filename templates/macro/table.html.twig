@@ -13,40 +13,72 @@
     {%- endfor -%}
 {%- endmacro thead %}
 
-{%- macro tbody(rows, columns, col_format, acc_sch) -%}
-    {%- import 'macro/badge.html.twig' as ba -%}
-    {%- set schema = acc_sch['schema'] -%}
-    <tbody>
+{%- macro tbody(rows, columns, col_format, schema) -%}
+    {%- import 'macro/access.html.twig' as access -%}
     {%- for row in rows -%}
     <tr{%- if row.class is defined %} class="{{- row.class -}}"{%- endif -%}>
     {%- for c in columns -%}
         <td>
-        {%- if loop.first and forms.sel is defined -%}
-            {{- form_widget(forms.sel.form[row[forms.sel.id]], {'label': false,
-                'parent_label_class': 'checkbox-inline'}) -}}
-        {%- endif -%}
         {%- if col_format[c].route is defined -%}
-        <a href="{{ path(col_format[c].route, {(col_format[c].route_key): row[col_format[c].route_col_id]}|merge(acc_sch)) }}">
-        {{- row[c] ?? '&nbsp;' -}}
-        </a>
+            <a href="{{ path(col_format[c].route.name, pp_ary()|merge({'id': row.id})) }}">
+            {{- row[c] ?? '&nbsp;' -}}
+            </a>
         {%- elseif col_format[c].render is defined -%}
-            {%- if col_format[c].render == 'date' -%}
-                {{- ((row[c]) ?? '')|date_format(col_format[c].date_precision ?? 'min') -}}
+            {%- if col_format[c].render.type == 'date_format' -%}
+                {{- ((row[c]) ?? '')|date_format(col_format[c].render.precision) -}}
             {%- elseif col_format[c].render == 'user' -%}
-                {{- (row[c])|user_format(schema)|raw -}}
-            {%- elseif col_format[c].render == 'badge' -%}
-                {{- ba.badge(row[c]) -}}
+                {{- account(row.user_id, schema)|raw -}}
+            {%- elseif col_format[c].render == 'access' -%}
+                {{- access.lbl(row[c]) -}}
             {%- elseif col_format[c].render == 'yes_no' -%}
                 {%- if row[c] -%}{{- 'bool.yes'|trans -}}{%- else -%}{{- 'bool.no'|trans -}}{%- endif -%}
             {%- elseif col_format[c].render == 'input' -%}
                 {{- form_widget(row[c]) -}}
             {%- endif -%}
         {%- else -%}
-        {{- row[c] ?? '&nbsp;' -}}
+            {{- row[c] ?? '&nbsp;' -}}
         {%- endif -%}
         </td>
     {%- endfor -%}
     </tr>
     {%- endfor -%}
-    </tbody>
 {%- endmacro tbody %}
+
+{%- macro th(trans_key, attr) -%}
+    <th{%- for k, v in attr|default({}) %} {{ k }}="{{ v }}"{%- endfor -%}>
+        {{- trans_key|trans -}}
+    </th>
+{%- endmacro th -%}
+
+{%- macro td(v) -%}
+    <td>{{- v -}}</td>
+{%- endmacro td -%}
+
+{%- macro td_pp_link(route, params, label) -%}
+    <td>
+        <a href="{{- path(route, pp_ary()|merge(params)) -}}">
+            {{- label -}}
+        </a>
+    </td>
+{%- endmacro td_pp_link -%}
+
+{%- macro td_account_pp_link(user_id, schema) -%}
+    <td>
+        <a href="{{- path('users_show' ~ (pp_role('admin') ? '_admin' : '') , pp_ary()|merge({'id': user_id})) -}}">
+            {{- account(user_id, schema) -}}
+        </a>
+    </td>
+{%- endmacro td_account_pp_link -%}
+
+{%- macro td_date_format(date, precision, schema) -%}
+    <td>
+        {{- date|date_format(precision, schema) -}}
+    </td>
+{%- endmacro td_date_format -%}
+
+{%- macro td_access(access) -%}
+    {%- import 'macro/access.html.twig' as a -%}
+    <td>
+        {{- a.lbl(access) -}}
+    </td>
+{%- endmacro td_access -%}

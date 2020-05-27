@@ -104,10 +104,12 @@ label:
   periodic_mail: Periodieke Overzichts E-mail
   phone: Telefoon
   postcode: Postcode
+  replies: Reacties
   role: Rol
   save_password: Bewaar Paswoord
   send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
+  search: Zoeken
   split_by_char: Split door Teken
   subject: Onderwerp
   system_name: Naam van het Systeem
@@ -118,6 +120,7 @@ label:
   to_date: Tot
   transactions: Transacties
   transaction_id: Transactie Id
+  user: Gebruiker
   username: Gebruikersnaam
   want: Vraag
   wants: Vraag
@@ -191,6 +194,8 @@ docs_map_edit:
 
 forum:
   title: Forum
+  no_topics: >-
+    Er zijn nog geen topics in het forum.
 
 forum_add_topic:
   title: >-

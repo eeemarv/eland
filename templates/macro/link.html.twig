@@ -9,6 +9,12 @@
     </a>
 {%- endmacro pp_link -%}
 
+{%- macro pp_link_account(user_id, schema) -%}
+    <a href="{{- path(('users_show' ~ (pp_is_admin() ? '_admin')), pp_ary()|merge({'id': user_id})) -}}">
+    {{- account(user_id, schema) -}}
+    </a>
+{%- endmacro pp_link -%}
+
 {%- macro link(route, params, trans_key) -%}
     <a href="{{- path(route, params) -}}">
     {{- trans_key|trans -}}

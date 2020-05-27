@@ -7,7 +7,7 @@
 {%- block content -%}
 
 {%- embed 'form/embed.html.twig' -%}
-    {%- import 'macro/link.html.twig' as l -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
     {%- block form_content -%}
 
     {{- form_row(form.subject, {
@@ -26,9 +26,11 @@
         }
     }) -}}
 
+    {{- bl.cancel('forum') -}}
+
     {{- form_widget(form.submit,{
-        'label': 'btn.send',
-        'attr': {'class': 'btn-info'}
+        'label': 'btn.add',
+        'attr': {'class': 'btn-success'}
     }) -}}
 
     {%- endblock form_content -%}

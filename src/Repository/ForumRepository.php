@@ -97,6 +97,21 @@ class ForumRepository
 		return $forum_topic;
 	}
 
+	public function get_visible_topics_with_reply_count(string $schema):array
+	{
+        // to do: order by last post edit desc
+        $stmt = $this->db->executeQuery('select t.*, count(p.*) - 1 as reply_count
+            from ' . $schema . '.forum_topics t
+            inner join ' . $schema . '.forum_posts p on p.topic_id = t.id
+            where t.access in (?)
+            group by t.id
+            order by t.last_edit_at desc',
+            [$this->item_access_service->get_visible_ary_for_page()],
+            [Db::PARAM_STR_ARRAY]);
+
+        return $stmt->fetchAll();
+	}
+
 	public function get_topic_posts(int $topic_id, string $schema):array
 	{
         return $this->db->fetchAll('select *

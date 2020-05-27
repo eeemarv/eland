@@ -9,7 +9,7 @@
         <i class="fa fa-search"></i>
        </span>
       </span>
-      <input type="text" class="form-control" id="q" name="q" value="{%- block value -%}{%- endblock -%}" placeholder="{{- 'label.search'|trans -}}">
+      <input type="text" class="form-control" id="q" name="q" value="{%- block value -%}{{- app.request.query.get('q') -}}{%- endblock -%}" placeholder="{{- 'label.search'|trans -}}" data-search>
      </div>
     </div>
    </div>
