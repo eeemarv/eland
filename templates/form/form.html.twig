@@ -1,9 +1,9 @@
 {% extends 'bootstrap_4_layout.html.twig' %}
 
 {% block form_help -%}
-    {#- use <p></p> instead of <small></small> -#}
+    {#- use <p></p> instead of <small></small> and removed class -#}
     {%- if help is not empty -%}
-        {%- set help_attr = help_attr|merge({class: (help_attr.class|default('') ~ ' form-text text-muted')|trim}) -%}
+        {#- {%- set help_attr = help_attr|merge({class: (help_attr.class|default('') ~ ' form-text text-muted')|trim}) -%} -#}
         <p id="{{ id }}_help"{% with { attr: help_attr } %}{{ block('attributes') }}{% endwith %}>
             {%- if translation_domain is same as(false) -%}
                 {%- if help_html is same as(false) -%}
