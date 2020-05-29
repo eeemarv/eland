@@ -3,7 +3,7 @@
 namespace App\Controller\Forum;
 
 use App\Command\Forum\ForumAddTopicCommand;
-use App\Form\Post\Forum\ForumAddTopicType;
+use App\Form\Post\Forum\ForumTopicType;
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +33,7 @@ class ForumAddTopicController extends AbstractController
     {
         $forum_add_topic_command = new ForumAddTopicCommand();
 
-        $form = $this->createForm(ForumAddTopicType::class,
+        $form = $this->createForm(ForumTopicType::class,
                 $forum_add_topic_command)
             ->handleRequest($request);
 

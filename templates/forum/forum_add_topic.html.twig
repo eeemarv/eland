@@ -26,6 +26,12 @@
         }
     }) -}}
 
+    {%- if form.access is defined -%}
+        {{- form_row(form.access, {
+            'label': 'access.visible_for'
+        }) -}}
+    {%- endif -%}
+
     {{- bl.cancel('forum') -}}
 
     {{- form_widget(form.submit,{
