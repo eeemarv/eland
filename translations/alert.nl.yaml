@@ -44,31 +44,37 @@ forum_del_post:
     De forum reactie is niet verwijderd.
   success:
     admin: >-
-      De reactie van "%user%" is verwijderd uit forum topic "%topic_subject%"
+      De reactie van "%user%" is verwijderd uit forum onderwerp "%topic_subject%"
     personal: >-
-      Je reactie is verwijderd uit forum topic "%topic_subject%"
+      Je reactie is verwijderd uit forum onderwerp "%topic_subject%"
 
 forum_del_topic:
   error: >-
-    Forum topic "%topic_subject%" is niet verwijderd.
+    Forum onderwerp "%topic_subject%" is niet verwijderd.
   success:
     admin: >-
-      Forum topic "%topic_subject%" van "%user%" is verwijderd.
+      Forum onderwerp "%topic_subject%" van "%user%" is verwijderd.
     personal: >-
-      Je forum topic "%topic_subject%" is verwijderd.
+      Je forum onderwerp "%topic_subject%" is verwijderd.
 
 forum_edit_post:
   success:
     personal: >-
-      Je reactie in forum topic "%topic_subject%" is aangepast.
+      Je reactie in forum onderwerp "%topic_subject%" is aangepast.
     admin: >-
-      De reactie van "%user%" in forum topic "%topic_subject%" is aangepast.
+      De reactie van "%user%" in forum onderwerp "%topic_subject%" is aangepast.
+
+forum_edit_topic:
+  success:
+    personal: >-
+      Je forum onderwerp is aangepast.
+    admin: >-
+      Forum onderwerp van gebruiker "%user%" is aangepast.
 
 forum_topic:
   add_post:
     success: >-
-      Reactie toegevoegd aan forum topic "%topic_subject%".
-
+      Reactie toegevoegd aan forum onderwerp "%topic_subject%".
 
 login:
   warning:

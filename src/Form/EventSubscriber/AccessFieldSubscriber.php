@@ -9,6 +9,7 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
@@ -96,6 +97,11 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
         if (isset($data->access))
         {
+            if (!in_array($data->access, $this->access_options))
+            {
+                throw new UnexpectedTypeException('Unexpected type in ' . __CLASS__, 'access');
+            }
+
             return;
         }
 

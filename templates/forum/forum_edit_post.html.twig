@@ -1,4 +1,5 @@
-{%- extends 'forum/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'forum_edit_post.title.'
@@ -10,39 +11,13 @@
     }) -}}
 {%- endblock heading_title -%}
 
-{%- block content -%}
-
-{%- embed 'form/embed.html.twig' -%}
-    {%- import 'macro/btn_link.html.twig' as bl -%}
-    {%- block form_content -%}
-
-    {{- form_row(form.content, {
-        'label': false,
-        'attr': {
-            'rows': 5,
-            'minlength': 10,
-            'maxlength': 5000
-        }
-    }) -}}
-
+{%- set form_cancel_btn -%}
     {{- bl.cancel('forum_topic', {'id': forum_topic.id}) -}}
+{%- endset -%}
 
+{%- set form_submit_btn -%}
     {{- form_widget(form.submit,{
-        'label': 'btn.edit',
-        'attr': {'class': 'btn-primary'}
-    }) -}}
-
-    {%- endblock form_content -%}
-{%- endembed -%}
-
-{%- endblock content -%}
-
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('summernote') -}}
-{%- endblock js -%}
+            'label': 'btn.edit',
+            'attr': {'class': 'btn-primary'}
+        }) -}}
+{%- endset -%}

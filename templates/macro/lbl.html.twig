@@ -47,7 +47,7 @@
             'label': 'label.stuff'
         }
     } -%}
-    <span class="{{- type }} {{ type -}}-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"+{%- endif -%}>
+    <span class="{{- type }} {{ type -}}-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
         {{- render[id].label|trans -}}
     </span>
 {%- endmacro span -%}

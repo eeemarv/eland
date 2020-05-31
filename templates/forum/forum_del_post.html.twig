@@ -1,4 +1,4 @@
-{%- extends 'forum/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_base.html.twig' -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'forum_del_post.title.'
@@ -12,7 +12,7 @@
 
 {%- block content -%}
 
-{%- embed 'form/embed.html.twig' -%}
+{%- embed 'form/form_embed.html.twig' -%}
     {%- import 'macro/btn_link.html.twig' as bl -%}
     {%- import 'macro/object_info.html.twig' as oi -%}
     {%- block form_content -%}

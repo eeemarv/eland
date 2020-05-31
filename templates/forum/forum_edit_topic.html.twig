@@ -1,4 +1,5 @@
-{%- extends 'forum/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'forum_edit_topic.title.'
@@ -10,12 +11,13 @@
     }) -}}
 {%- endblock heading_title -%}
 
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-{%- endblock css -%}
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('forum_topic', {'id': forum_topic.id}) -}}
+{%- endset -%}
 
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('summernote') -}}
-{%- endblock js -%}
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}

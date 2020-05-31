@@ -1,56 +1,17 @@
-{%- extends 'forum/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
 
 {%- block heading_title -%}
     {{- 'forum_add_topic.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block content -%}
-
-{%- embed 'form/embed.html.twig' -%}
-    {%- import 'macro/btn_link.html.twig' as bl -%}
-    {%- block form_content -%}
-
-    {{- form_row(form.subject, {
-        'label': false,
-        'attr': {
-            'placeholder': 'label.subject'
-        }
-    }) -}}
-
-    {{- form_row(form.content, {
-        'label': false,
-        'attr': {
-            'rows': 5,
-            'minlength': 10,
-            'maxlength': 5000
-        }
-    }) -}}
-
-    {%- if form.access is defined -%}
-        {{- form_row(form.access, {
-            'label': 'access.visible_for',
-            'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
-        }) -}}
-    {%- endif -%}
-
+{%- set form_cancel_btn -%}
     {{- bl.cancel('forum') -}}
+{%- endset -%}
 
+{%- set form_submit_btn -%}
     {{- form_widget(form.submit,{
         'label': 'btn.add',
         'attr': {'class': 'btn-success'}
     }) -}}
-
-    {%- endblock form_content -%}
-{%- endembed -%}
-
-{%- endblock content -%}
-
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('summernote') -}}
-{%- endblock js -%}
+{%- endset -%}

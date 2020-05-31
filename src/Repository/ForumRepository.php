@@ -226,4 +226,17 @@ class ForumRepository
 			'content'		=> $content,
 		], ['id' => $post_id]) ? true : false;
 	}
+
+	public function update_topic(
+		string $subject,
+		string $access,
+		int $topic_id,
+		string $schema
+	):bool
+	{
+		return $this->db->update($schema . '.forum_topics', [
+			'subject'       => $subject,
+			'access'        => $access,
+		], ['id' => $topic_id]) ? true : false;
+	}
 }

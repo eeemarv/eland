@@ -1,0 +1,15 @@
+<div class="card fcard fcard-info">
+	<div class="card-body">
+		{{- form_start(form, {'attr': {'novalidate': 'novalidate'}}) -}}
+		{{- form_errors(form) -}}
+        {%- block form_content -%}
+            {%- block form_a -%}{%- endblock -%}
+            {%- block form_b -%}{%- endblock -%}
+            {%- block form_c -%}{%- endblock -%}
+            {%- block form_access -%}{%- endblock -%}
+            {%- block form_cancel_btn -%}{{- form_cancel_btn|default('') -}}{%- endblock -%}
+            {%- block form_submit_btn -%}{{- form_submit_btn -}}{%- endblock -%}
+        {%- endblock form_content -%}
+        {{- form_end(form) -}}
+    </div>
+</div>

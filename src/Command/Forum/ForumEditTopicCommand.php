@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ForumAddTopicCommand
+class ForumEditTopicCommand
 {
     public $subject;
     public $content;
