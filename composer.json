@@ -16,7 +16,7 @@
 		"ext-mbstring": "*",
 		"ext-redis": "*",
 		"aws/aws-sdk-php": "^3",
-		"bramus/monolog-colored-line-formatter": "2.0.*",
+		"bramus/monolog-colored-line-formatter": "^2",
 		"doctrine/annotations": "^1.10",
 		"doctrine/dbal": "^2.5",
 		"ezyang/htmlpurifier": "^4.8",
@@ -40,7 +40,7 @@
 		"symfony/contracts": "^1.1",
 		"symfony/debug-pack": "^1.0",
 		"symfony/dotenv": "^5",
-		"symfony/expression-language": "5.0.*",
+		"symfony/expression-language": "^5",
 		"symfony/finder": "^5",
 		"symfony/flex": "^1.3.1",
 		"symfony/form": "^5",
@@ -59,9 +59,9 @@
 		"symfony/twig-bundle": "^5",
 		"symfony/twig-pack": "^1.0",
 		"symfony/validator": "^5",
-		"symfony/var-dumper": "^5.0",
+		"symfony/var-dumper": "^5",
 		"symfony/webpack-encore-bundle": "^1.7",
-		"symfony/yaml": "5.0.*",
+		"symfony/yaml": "^5",
 		"twig/twig": "^3"
 	},
 
@@ -119,7 +119,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "5.0.*"
+            "require": "^5"
         }
     }
 }

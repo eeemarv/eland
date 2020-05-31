@@ -126,6 +126,9 @@
     "spomky-labs/base64url": {
         "version": "v2.0.1"
     },
+    "symfony/amqp-messenger": {
+        "version": "v5.1.0"
+    },
     "symfony/cache": {
         "version": "v4.3.4"
     },
@@ -166,8 +169,14 @@
     "symfony/dependency-injection": {
         "version": "v4.3.4"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.1.2"
+    },
     "symfony/doctrine-bridge": {
         "version": "v4.3.5"
+    },
+    "symfony/doctrine-messenger": {
+        "version": "v5.1.0"
     },
     "symfony/dotenv": {
         "version": "v4.3.4"
@@ -268,8 +277,14 @@
     "symfony/orm-pack": {
         "version": "v1.0.6"
     },
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.17.0"
+    },
     "symfony/polyfill-intl-idn": {
         "version": "v1.12.0"
+    },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.17.0"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.12.0"
@@ -280,11 +295,20 @@
     "symfony/polyfill-php73": {
         "version": "v1.12.0"
     },
+    "symfony/polyfill-php80": {
+        "version": "v1.17.0"
+    },
     "symfony/profiler-pack": {
         "version": "v1.0.4"
     },
+    "symfony/property-info": {
+        "version": "v5.1.0"
+    },
     "symfony/proxy-manager-bridge": {
         "version": "v4.3.5"
+    },
+    "symfony/redis-messenger": {
+        "version": "v5.1.0"
     },
     "symfony/routing": {
         "version": "4.2",
@@ -330,6 +354,9 @@
     },
     "symfony/stopwatch": {
         "version": "v4.3.5"
+    },
+    "symfony/string": {
+        "version": "v5.1.0"
     },
     "symfony/translation": {
         "version": "3.3",
