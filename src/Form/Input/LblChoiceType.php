@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-class AccessType extends AbstractType
+class LblChoiceType extends AbstractType
 {
     public function __construct()
     {
@@ -36,6 +36,6 @@ class AccessType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'access';
+        return 'lbl_choice';
     }
 }

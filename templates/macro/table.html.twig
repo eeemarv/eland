@@ -14,7 +14,7 @@
 {%- endmacro thead %}
 
 {%- macro tbody(rows, columns, col_format, schema) -%}
-    {%- import 'macro/access.html.twig' as access -%}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
     {%- for row in rows -%}
     <tr{%- if row.class is defined %} class="{{- row.class -}}"{%- endif -%}>
     {%- for c in columns -%}
@@ -29,7 +29,7 @@
             {%- elseif col_format[c].render == 'user' -%}
                 {{- account(row.user_id, schema)|raw -}}
             {%- elseif col_format[c].render == 'access' -%}
-                {{- access.lbl(row[c]) -}}
+                {{- lbl.lbl(row[c]) -}}
             {%- elseif col_format[c].render == 'yes_no' -%}
                 {%- if row[c] -%}{{- 'bool.yes'|trans -}}{%- else -%}{{- 'bool.no'|trans -}}{%- endif -%}
             {%- elseif col_format[c].render == 'input' -%}
@@ -77,8 +77,8 @@
 {%- endmacro td_date_format -%}
 
 {%- macro td_access(access) -%}
-    {%- import 'macro/access.html.twig' as a -%}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
     <td>
-        {{- a.lbl(access) -}}
+        {{- lbl.lbl(access) -}}
     </td>
 {%- endmacro td_access -%}

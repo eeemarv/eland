@@ -1,5 +1,5 @@
 {%- extends 'forum/forum_base.html.twig' -%}
-{%- import 'macro/access.html.twig' as access -%}
+{%- import 'macro/lbl.html.twig' as lbl -%}
 
 {%- block heading_title -%}
     {{- 'forum_topic.title'|trans({
@@ -10,7 +10,7 @@
 {%- block content -%}
 
 {%- if show_access -%}
-    {{- access.p_lbl(forum_topic.access) -}}
+    {{- lbl.p_access(forum_topic.access) -}}
 {%- endif -%}
 
 {%- for p in forum_posts -%}

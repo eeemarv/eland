@@ -1,0 +1,72 @@
+{%- macro lbl(id) -%}
+    {%- import _self as s -%}
+    {{- s.span(id, 'lbl') -}}
+{%- endmacro lbl -%}
+
+{%- macro btn(id) -%}
+    {%- import _self as s -%}
+    {{- s.span(id, 'btn') -}}
+{%- endmacro btn -%}
+
+{%- macro span(id, type) -%}
+    {%- set render = {
+        'anonymous': {
+            'class': 'danger',
+            'title' : 'access.anonymous_explain',
+            'label': 'access.anonymous'
+        },
+        'guest': {
+            'class': 'warning',
+            'title': 'access.guest_explain',
+            'label': 'access.guest'
+        },
+        'user': {
+            'class': 'default border border-secondary-li',
+            'title': 'access.user_explain',
+            'label': 'access.user'
+        },
+        'admin': {
+            'class': 'info',
+            'title': 'access.admin_explain',
+            'label': 'access.admin',
+        },
+        'offer': {
+            'class': 'primary-li',
+            'label': 'label.offer',
+        },
+        'want': {
+            'class': 'secondary-li',
+            'label': 'label.want'
+        },
+        'service': {
+            'class': 'default border border-secondary-li',
+            'label': 'label.service'
+        },
+        'stuff': {
+            'class': 'default border border-secondary-li',
+            'label': 'label.stuff'
+        }
+    } -%}
+    <span class="{{- type }} {{ type -}}-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"+{%- endif -%}>
+        {{- render[id].label|trans -}}
+    </span>
+{%- endmacro span -%}
+
+{%- macro p_access(access) -%}
+    {%- import _self as s -%}
+    <p>
+        {{- 'access.visible_for_access'|trans({
+            '%access%': s.lbl(access)
+        })|raw -}}
+    </p>
+{%- endmacro p_access -%}
+
+{%- macro dt_access(id) -%}
+    {%- import _self as s -%}
+    <dt>
+        {{- 'access.visible_for'|trans -}}
+    </dt>
+    <dd>
+        {{- s.lbl(access) -}}
+    </dd>
+{%- endmacro dt_access -%}

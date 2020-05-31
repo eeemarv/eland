@@ -28,7 +28,8 @@
 
     {%- if form.access is defined -%}
         {{- form_row(form.access, {
-            'label': 'access.visible_for'
+            'label': 'access.visible_for',
+            'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
         }) -}}
     {%- endif -%}
 

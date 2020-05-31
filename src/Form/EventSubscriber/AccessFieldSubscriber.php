@@ -3,7 +3,7 @@
 namespace App\Form\EventSubscriber;
 
 use App\Cnst\AccessCnst;
-use App\Form\Input\AccessType;
+use App\Form\Input\LblChoiceType;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -73,16 +73,21 @@ class AccessFieldSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $choices = [];
+        $options = [
+            'choices'   => $this->access_options,
+        ];
 
-        foreach($this->access_options as $option)
+        if (isset($data->access))
         {
-            $choices['access.' . $option] = $option;
+            if ($data->access === 'guest'
+                && !$this->config_service->get_intersystem_en($this->pp->schema())
+            )
+            {
+                $options['data'] = 'user';
+            }
         }
 
-        $form->add('access', AccessType::class, [
-            'choices'   => $choices,
-        ]);
+        $form->add('access', LblChoiceType::class, $options);
     }
 
     public function pre_submit(FormEvent $event)
