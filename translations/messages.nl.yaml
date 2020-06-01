@@ -411,7 +411,6 @@ users_del:
     worden verwijderd.
 
 users_password_set:
-  title: Nieuw paswoord ingeven
-
-users_password_set_admin:
-  title: Nieuw paswoord ingeven voor "%user%"
+  title:
+    personal: Nieuw paswoord ingeven voor je gebruikersaccount
+    admin: Nieuw paswoord ingeven voor "%user%"

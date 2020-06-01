@@ -78,34 +78,11 @@
     {%- endif -%}
 {%- endblock checkbox_radio_label %}
 
-{%- block button_widget -%}
-    {%- set attr = attr|merge({class: (attr.class|default('btn-default') ~ ' btn btn-lg')|trim}) -%}
-    {%- if label is not same as(false) and label is empty -%}
-        {%- if label_format is not empty -%}
-            {%- set label = label_format|replace({
-                '%name%': name,
-                '%id%': id,
-            }) -%}
-        {%- else -%}
-            {%- set label = name|humanize -%}
-        {%- endif -%}
-    {%- endif -%}
-    <button type="{{- type|default('button') -}}" {{ block('button_attributes') -}}>
-    {%- if span_attr is defined -%}
-        {%- if fa is defined -%}
-            <i class="fa fa-{{- fa -}}"></i>
-            <span{%- for key, val in span_attr %} {{ key -}}="{{- val -}}"{%- endfor -%}>&nbsp;
-        {%- else -%}
-            <span{%- for key, val in span_attr %} {{ key -}}="{{- val -}}"{%- endfor -%}>
-        {%- endif -%}
-        {{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
-        </span>
-    {%- else -%}
-        {%- if fa is defined -%}<i class="fa fa-{{- fa -}}"></i>&nbsp;{%- endif -%}
-        {{- translation_domain is same as(false) ? label : label|trans({}, translation_domain) -}}
-    {%- endif -%}
-    </button>
-{%- endblock button_widget -%}
+{% block button_widget -%}
+    {#- add btn-lg -#}
+    {%- set attr = attr|merge({class: (attr.class|default('btn-secondary-outline') ~ ' btn btn-lg')|trim}) -%}
+    {{- parent() -}}
+{%- endblock button_widget %}
 
 {% block addon_widget -%}
     <div class="input-group">

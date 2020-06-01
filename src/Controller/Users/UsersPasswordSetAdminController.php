@@ -5,6 +5,7 @@ namespace App\Controller\Users;
 use App\Command\Users\UsersPasswordSetAdminCommand;
 use App\Form\Post\Users\UsersPasswordSetType;
 use App\Queue\MailQueue;
+use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\UserRepository;
 use App\Security\User;
@@ -28,6 +29,7 @@ class UsersPasswordSetAdminController extends AbstractController
         int $id,
         AlertService $alert_service,
         LinkRender $link_render,
+        AccountRender $account_render,
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
@@ -36,7 +38,6 @@ class UsersPasswordSetAdminController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $is_self = $su->id() === $id;
         $mail_addr = $mail_addr_user_service->get_active($id, $pp->schema());
 
         $users_password_set_admin_command = new UsersPasswordSetAdminCommand();
@@ -63,8 +64,7 @@ class UsersPasswordSetAdminController extends AbstractController
 
             $user_repository->set_password($id, $hashed_password, $pp->schema());
 
-            $alert_key = 'users_password_set';
-            $alert_key .= $is_self ? '' : '_admin';
+            $success_trans_key = 'users_password_set.success.';
 
             if ($notify && count($mail_addr))
             {
@@ -81,22 +81,25 @@ class UsersPasswordSetAdminController extends AbstractController
                     'vars'		=> $vars,
                 ], 8000);
 
-                $alert_service->success($alert_key . '.success.password_set_with_notify');
+                $success_trans_key .= 'with_notify.';
             }
             else
             {
-                $alert_service->success($alert_key . '.success.password_set');
+                $success_trans_key .= 'without_notify.';
             }
+
+            $success_trans_key .= $su->is_owner($id) ? 'personal' : 'admin';
+
+            $alert_service->success($success_trans_key, [
+                '%user%'    => $account_render->get_str($id, $pp->schema()),
+            ]);
 
             $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
         }
 
         $menu_service->set('users');
 
-        $tpl = 'users/users_password_set';
-        $tpl .= $is_self ? '' : '_admin';
-
-        return $this->render($tpl . '.html.twig', [
+        return $this->render('users/users_password_set.html.twig', [
             'form'              => $form->createView(),
             'user_id'           => $id,
             'notify_enabled'    => $notify_enabled,

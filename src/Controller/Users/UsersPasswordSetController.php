@@ -18,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UsersPasswordSetController extends AbstractController
 {
@@ -77,11 +76,11 @@ class UsersPasswordSetController extends AbstractController
                     'vars'		=> $vars,
                 ], 8000);
 
-                $alert_service->success('users_password_set.success.password_set_with_notify');
+                $alert_service->success('users_password_set.success.with_notify.personal');
             }
             else
             {
-                $alert_service->success('users_password_set.success.password_set');
+                $alert_service->success('users_password_set.success.without_notify.personal');
             }
 
             $link_render->redirect('users_show', $pp->ary(), ['id' => $su->id()]);
@@ -92,6 +91,7 @@ class UsersPasswordSetController extends AbstractController
         return $this->render('users/users_password_set.html.twig', [
             'form'              => $form->createView(),
             'notify_enabled'    => $notify_enabled,
+            'user_id'           => $su->id(),
             'schema'            => $pp->schema(),
         ]);
     }
