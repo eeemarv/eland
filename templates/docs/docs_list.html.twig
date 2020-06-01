@@ -1,4 +1,80 @@
-{%- extends 'docs/docs_base.html.twig' -%}
+{%- extends 'docs/base/docs_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- embed 'embed/search_box.html.twig' -%}
+{%- endembed -%}
+
+{%- embed 'embed/table.html.twig' -%}
+    {%- import 'macro/table.html.twig' as t -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+
+    {%- block thead -%}
+        {{- t.th('label.map', {'data-sort-initial': 'true'}) -}}
+        {%- if pp_role('admin') -%}
+            {{- t.th('btn.edit', {'data-sort-ignnore': 'true'}) -}}
+        {%- endif -%}
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for map in doc_maps -%}
+            <tr class="table-primary">
+                {{- t.td_pp_link('docs_map', {'id': map.id}, map.name ~ ' (' ~ map.doc_count ~ ')') -}}
+                {%- if pp_role('admin') -%}
+                    <td>
+                        {{- bl.edit('docs_map_edit', {'id': map.id}) -}}
+                    </td>
+                {%- endif -%}
+            </tr>
+        {%- else -%}
+            <tr>
+                <td colspan="{{- pp_role('admin') ? '2' : '1' -}}">
+                    {{- 'docs.no_maps'|trans -}}
+                </td>
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}
+
+{%- if docs -%}
+    {%- embed 'embed/table.html.twig' -%}
+        {%- import 'macro/table.html.twig' as t -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- import 'macro/link.html.twig' as l -%}
+
+        {%- block thead -%}
+            {{- t.th('label.name', {'data-sort-initial': 'true'}) -}}
+            {{- t.th('label.time', {'data-hide': 'pnone, tablet'}) -}}
+            {%- if show_access -%}
+                {{- t.th('access.visible_for', {'data-hide': 'phone, tablet'}) -}}
+            {%- endif -%}
+            {%- if pp_role('admin') -%}
+                {{- t.th('label.actions',
+                    {'data-hide': 'phone, tablet', 'data-sort-ignore': 'true'}) -}}
+            {%- endif -%}
+        {%- endblock thead -%}
+        {%- block tbody -%}
+            {%- for doc in docs -%}
+                <tr>
+                    <td>
+                       {{- l.s3_link(doc.filename, doc.name) -}}
+                    </td>
+                    {{- t.td_date_format(doc.created_at, 'min', schema) -}}
+                    {%- if show_access -%}
+                        {{- t.td_access(doc.access) -}}
+                    {%- endif -%}
+                    {%- if pp_role('admin') -%}
+                        <td>
+                            {{- bl.edit('docs_edit', {'id': doc.id}) -}}
+                            {{- bl.del('docs_del', {'id': doc.id}) -}}
+                        </td>
+                    {%- endif -%}
+                </tr>
+            {%- endfor -%}
+        {%- endblock tbody -%}
+    {%- endembed -%}
+{%- endif -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

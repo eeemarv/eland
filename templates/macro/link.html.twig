@@ -20,3 +20,9 @@
     {{- trans_key|trans -}}
     </a>
 {%- endmacro link -%}
+
+{%- macro s3_link(file, label) -%}
+    <a href="{{- s3_url(file) -}}" target="_self">
+        {{- label -}}
+    </a>
+{%- endmacro s3_link -%}

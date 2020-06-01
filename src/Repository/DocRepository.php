@@ -2,18 +2,22 @@
 
 namespace App\Repository;
 
+use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocRepository
 {
 	protected Db $db;
+	protected ItemAccessService $item_access_service;
 
 	public function __construct(
-		Db $db
+		Db $db,
+		ItemAccessService $item_access_service
 	)
 	{
 		$this->db = $db;
+		$this->item_access_service = $item_access_service;
 	}
 
 	public function get(int $id, string $schema):array
@@ -52,107 +56,31 @@ class DocRepository
 			['id' => $map_id]) ? true : false;
 	}
 
-
-
-	/*********** */
-
-	public function mapNameExists(string $mapName, string $schema, string $exceptId = ''):bool
+	public function get_visible_maps(string $schema):array
 	{
-		$param = ['agg_schema' => $schema,
-			'agg_type' => 'doc',
-			'data->>\'map_name\'' => $mapName
-		];
+        $stmt = $this->db->executeQuery('select dm.name, dm.id, count(d.*) as doc_count
+            from ' . $schema . '.doc_maps dm, ' . $schema . '.docs d
+			where d.access in (?)
+				and d.map_id = dm.id
+			group by dm.name, dm.id
+			order by dm.name asc',
+            [$this->item_access_service->get_visible_ary_for_page()],
+            [Db::PARAM_STR_ARRAY]);
 
-		if ($exceptId !== '')
-		{
-			$param['eland_id'] = ['<>' => $exceptId];
-		}
-
-		return $this->xdb->countFiltered($param) > 0;
+        return $stmt->fetchAll();
 	}
 
-	public function getMapName(string $id, string $schema):string
+	public function get_visible_unmapped_docs($schema):array
 	{
-		$row = $this->xdb->get('doc', $id, $schema);
+		$stmt = $this->db->executeQuery('select coalesce(d.name, d.original_filename) as name,
+				id, filename, access, created_at
+            from ' . $schema . '.docs d
+			where d.access in (?)
+				and map_id is null
+			order by name asc',
+            [$this->item_access_service->get_visible_ary_for_page()],
+            [Db::PARAM_STR_ARRAY]);
 
-		if (!isset($row['data']['map_name']))
-		{
-			throw new NotFoundHttpException(sprintf('Could not find map %s', $id));
-		}
-
-		return $row['data']['map_name'];
-	}
-
-	public function getAllMaps(string $schema, string $access):array
-	{
-		$param = ['agg_type' => 'doc',
-			'agg_schema' => $schema,
-			'data->>\'map_name\'' => ['<>' => '']];
-
-		$allMaps = $this->xdb->getFilteredData($param, 'order by data->>\'map_name\' asc');
-
-		if ($access === 'a')
-		{
-			return $allMaps;
-		}
-
-		$maps = [];
-
-		$accessAry = $this->xdbAccess->get($access);
-
-		foreach ($allMaps as $aggId => $map)
-		{
-			if ($this->xdb->getFilteredCount([
-				'agg_schema' => $schema,
-				'data->>\'map_id\'' => $map['id'],
-				'data->>\'access\'' => $accessAry]) > 0)
-			{
-				$maps[$aggId] = $map;
-			}
-		}
-
-		return $maps;
-	}
-
-	public function getAll(string $schema, string $access, string $mapId = ''):array
-	{
-		$param = ['agg_type' => 'doc',
-			'access' => $this->xdbAccess->get($access),
-			'agg_schema' => $schema,
-		];
-
-		if ($mapId === '')
-		{
-			$param['data->>\'map_name\''] = ['is null'];
-		}
-		else
-		{
-			$param['data->>\'map_id\''] = $mapId;
-		}
-
-		return $this->xdb->getFilteredData($param, 'order by event_time asc');
-	}
-
-	public function upsertMap(string $mapName, string $schema):string
-	{
-		$rows = $this->xdb->getFiltered(['agg_type' => 'doc',
-			'agg_schema' => $schema,
-			'data->>\'map_name\'' => $mapName], 'limit 1');
-
-		if (count($rows))
-		{
-			$map = reset($rows)['data'];
-			$mapId = reset($rows)['eland_id'];
-		}
-		else
-		{
-			$map = ['map_name' => $map_name];
-
-			$mapId = substr(sha1(microtime() . $app['this_group']->get_schema() . $mapName), 0, 24);
-
-			$this->xdb->set('doc', $mapId, $schema, $map);
-		}
-
-		return $mapId;
+        return $stmt->fetchAll();
 	}
 }

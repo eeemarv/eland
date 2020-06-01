@@ -3,69 +3,30 @@
 namespace App\Controller\Docs;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\LinkRender;
+use App\Repository\DocRepository;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
 
 class DocsController extends AbstractController
 {
     public function __invoke(
-        Request $request,
-        Db $db,
+        DocRepository $doc_repository,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
-        DateFormatService $date_format_service,
-        HeadingRender $heading_render,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp,
-        MenuService $menu_service,
-        string $env_s3_url
+        MenuService $menu_service
     ):Response
     {
-        $q = $request->query->get('q', '');
+        // to do: filter after page load
+        // $q = $request->query->get('q', '');
 
-        $maps = $docs = [];
-
-        $stmt = $db->executeQuery('select id, name
-            from ' . $pp->schema() . '.doc_maps
-            order by name asc');
-
-        while ($row = $stmt->fetch())
-        {
-            $maps[$row['id']] = [
-                'name'          => $row['name'],
-                'doc_count'     => 0,
-            ];
-        }
-
-        $stmt = $db->executeQuery('select *
-            from ' . $pp->schema() . '.docs
-            where access in (?)
-            order by name, original_filename asc',
-            [$item_access_service->get_visible_ary_for_page()],
-            [Db::PARAM_STR_ARRAY]);
-
-        while ($row = $stmt->fetch())
-        {
-            if (isset($row['map_id']))
-            {
-                $maps[$row['map_id']]['doc_count']++;
-                continue;
-            }
-
-            $docs[] = $row;
-        }
+        $doc_maps = $doc_repository->get_visible_maps($pp->schema());
+        $docs = $doc_repository->get_visible_unmapped_docs($pp->schema());
 
         if ($pp->is_admin())
         {
@@ -75,175 +36,17 @@ class DocsController extends AbstractController
             $btn_nav_render->csv();
         }
 
-        $heading_render->add('Documenten');
-        $heading_render->fa('files-o');
-
-        $out = '<div class="card fcard fcard-info mb-3">';
-        $out .= '<div class="card-body">';
-
-        $out .= '<form method="get">';
-        $out .= '<div class="row">';
-        $out .= '<div class="col">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" name="q" value="';
-        $out .= $q;
-        $out .= '" ';
-        $out .= 'placeholder="Zoeken">';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        if (count($maps))
-        {
-            $maps_table = '<div class="table-responsive bg-default ';
-            $maps_table .= 'border border-secondary-li rounded mb-3">';
-            $maps_table .= '<table class="table table-bordered mb-0 ';
-            $maps_table .= 'table-striped table-hover" ';
-            $maps_table .= 'data-filter="#q" data-filter-minimum="1" ';
-            $maps_table .= 'data-footable>';
-            $maps_table .= '<thead>';
-
-            $maps_table .= '<tr>';
-            $maps_table .= '<th data-sort-initial="true">Map</th>';
-            $maps_table .= $pp->is_admin() ? '<th data-sort-ignore="true">Aanpassen</th>' : '';
-            $maps_table .= '</tr>';
-
-            $maps_table .= '</thead>';
-            $maps_table .= '<tbody>';
-
-            $maps_table_rows = '';
-
-            foreach($maps as $map_id => $map)
-            {
-                if (!$map['doc_count'])
-                {
-                    continue;
-                }
-
-                $td = [];
-
-                $td[] = $link_render->link_no_attr('docs_map', $pp->ary(),
-                    ['id' => $map_id], $map['name'] . ' (' . $map['doc_count'] . ')');
-
-                if ($pp->is_admin())
-                {
-                    $td[] = $link_render->link_fa('docs_map_edit', $pp->ary(),
-                        ['id' => $map_id], 'Aanpassen',
-                        ['class' => 'btn btn-primary'], 'pencil');
-                }
-
-                $maps_table_rows .= '<tr class="table-info"><td>';
-                $maps_table_rows .= implode('</td><td>', $td);
-                $maps_table_rows .= '</td></tr>';
-            }
-
-            if ($maps_table_rows !== '')
-            {
-                $out .= $maps_table;
-                $out .= $maps_table_rows;
-
-                $out .= '</tbody>';
-                $out .= '</table>';
-
-                $out .= '</div>';
-            }
-        }
-
-        if (count($docs))
-        {
-            $show_access = ($pp->is_user()
-                    && $config_service->get_intersystem_en($pp->schema()))
-                || $pp->is_admin();
-
-            $out .= '<div class="table-responsive border border-secondary-li rounded mb-3">';
-            $out .= '<table class="table table-bordered ';
-            $out .= 'table-striped table-hover bg-default ';
-            $out .= ' mb-0" ';
-            $out .= 'data-filter="#q" data-filter-minimum="1" ';
-            $out .= 'data-footable data-csv>';
-            $out .= '<thead>';
-
-            $out .= '<tr>';
-            $out .= '<th data-sort-initial="true">';
-            $out .= 'Naam</th>';
-            $out .= '<th data-hide="phone, tablet">';
-            $out .= 'Tijdstip</th>';
-
-            if ($show_access)
-            {
-                $out .= '<th data-hide="phone, tablet">';
-                $out .= 'Zichtbaarheid</th>';
-            }
-
-            $out .= $pp->is_admin() ? '<th data-hide="phone, tablet" data-sort-ignore="true">Acties</th>' : '';
-            $out .= '</tr>';
-
-            $out .= '</thead>';
-            $out .= '<tbody>';
-
-            foreach($docs as $doc)
-            {
-                $td = [];
-
-                $td_c = '<a href="';
-                $td_c .= $env_s3_url . $doc['filename'];
-                $td_c .= '" target="_self">';
-                $td_c .= htmlspecialchars($doc['name'] ?? $doc['original_filename'], ENT_QUOTES);
-                $td_c .= '</a>';
-                $td[] = $td_c;
-
-                $td[] = $date_format_service->get($doc['created_at'], 'min', $pp->schema());
-
-                if ($show_access)
-                {
-                    $td[] = $item_access_service->get_label($doc['access']);
-                }
-
-                if ($pp->is_admin())
-                {
-                    $td_c = $link_render->link_fa('docs_edit', $pp->ary(),
-                        ['id' => $doc['id']], 'Aanpassen',
-                        ['class' => 'btn btn-primary'], 'pencil');
-                    $td_c .= '&nbsp;';
-                    $td_c .= $link_render->link_fa('docs_del', $pp->ary(),
-                        ['id' => $doc['id']], 'Verwijderen',
-                        ['class' => 'btn btn-danger'], 'times');
-                    $td[] = $td_c;
-                }
-
-                $out .= '<tr><td>';
-                $out .= implode('</td><td>', $td);
-                $out .= '</td></tr>';
-            }
-
-            $out .= '</tbody>';
-            $out .= '</table>';
-
-            $out .= '</div>';
-        }
-        else if (!count($maps))
-        {
-            $out .= '<div class="card bg-default">';
-            $out .= '<div class="card-body">';
-            $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
-            $out .= '</div>';
-            $out .= '</div>';
-        }
+        $show_access = ($pp->is_user()
+                && $config_service->get_intersystem_en($pp->schema()))
+            || $pp->is_admin();
 
         $menu_service->set('docs');
 
         return $this->render('docs/docs_list.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+            'doc_maps'      => $doc_maps,
+            'docs'          => $docs,
+            'show_access'   => $show_access,
+            'schema'        => $pp->schema(),
         ]);
     }
 }
