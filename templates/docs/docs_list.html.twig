@@ -17,7 +17,7 @@
     {%- endblock thead -%}
     {%- block tbody -%}
         {%- for map in doc_maps -%}
-            <tr class="table-primary">
+            <tr class="table-info">
                 {{- t.td_pp_link('docs_map', {'id': map.id}, map.name ~ ' (' ~ map.doc_count ~ ')') -}}
                 {%- if pp_role('admin') -%}
                     <td>

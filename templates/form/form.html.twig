@@ -126,6 +126,20 @@
     </div>
 {%- endblock addon_button_widget %}
 
+{%- block unique_addon_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('form_widget_simple') -}}
+    </div>
+    <small class="form-text" data-unique-filter-results-help hidden>
+        {{- 'unique_filter.existing_items'|trans -}}&nbsp;
+    <span data-unique-filter-results></span>
+    </small>
+    <span class="invalid-feedback form-text" data-unique-filter-error-message hidden>
+        {{- (item_not_unique_trans_key|default('unique_filter.item_not_unique'))|trans -}}
+    </span>
+{%- endblock unique_addon_widget -%}
+
 {% block typeahead_widget -%}
     {%- set attr = attr|merge(typeahead_attr) -%}
     {{- block('addon_widget') -}}

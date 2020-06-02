@@ -15,11 +15,11 @@ export default function(Bloodhound){
 			return;
 		}
 
-		var show_new_en = false;
+		var show_new_user_days = false;
 		var treshold = 0;
 
 		if (data.hasOwnProperty('newuserdays')){
-			show_new_en = true;
+			show_new_user_days = true;
 			treshold = now - (data.newuserdays * 86400);
 		}
 
@@ -27,22 +27,14 @@ export default function(Bloodhound){
 
 			var rec = data.fetch[i];
 
-			if (data.hasOwnProperty('render')){
+			if (data.hasOwnProperty('check_uniqueness')){
 
-				if (!data.render.hasOwnProperty('check')){
-					continue;
-				}
+				var initial_lower_case_val = $(this).val().toLowerCase();
 
 				var $input_container = $(this).parent().parent();
-				var $exists_msg = $input_container.find('span.exists_msg');
-				var $exists_query_results = $input_container.find('span.exists_query_results');
-				var $query_results = $exists_query_results.find('span.query_results');
-
-				if (data.render.hasOwnProperty('omit')){
-					var exists_omit = data.render.omit.toLowerCase();
-				} else {
-					exists_omit = '';
-				}
+				var $exists_msg = $input_container.find('[data-unique-filter-error-message]');
+				var $exists_query_results = $input_container.find('[data-unique-filter-results-help]');
+				var $query_results = $exists_query_results.find('[data-unique-filter-results]');
 
 				var exists_engine = new Bloodhound({
 					prefetch: {
@@ -60,38 +52,42 @@ export default function(Bloodhound){
 				var $this_input = $(this);
 
 				function render_exists(){
+					const max_items = 10;
 					var lower_case_val = $this_input.val().toLowerCase();
 
 					exists_engine.search(lower_case_val, function(results_ary){
 
 						results_ary = $.grep(results_ary, function (item){
-							return item.toLowerCase() !== exists_omit;
+							return item.toLowerCase() !== initial_lower_case_val;
 						});
 
 						if (results_ary.length){
 
 							if (lower_case_val === results_ary[0].toLowerCase()) {
-								$exists_msg.removeClass('hidden');
+								$exists_msg.removeAttr('hidden');
 								$exists_msg.show();
-								$input_container.addClass('has-error');
+								$this_input.addClass('is-invalid');
+								$exists_query_results.addClass('text-danger');
 							} else {
 								$exists_msg.hide();
-								$input_container.removeClass('has-error');
+								$this_input.removeClass('is-invalid');
+								$exists_query_results.removeClass('text-danger');
 							}
 
-							$exists_query_results.removeClass('hidden');
+							$exists_query_results.removeAttr('hidden');
 							$exists_query_results.show();
 
 							$query_results.text(results_ary
-								.slice(0, data.render.check)
+								.slice(0, max_items)
 								.join(', ') +
-								(results_ary.length > data.render.check ?
+								(results_ary.length > max_items ?
 									', ...' : '')
 							);
 						} else {
 							$exists_query_results.hide();
 							$exists_msg.hide();
-							$input_container.removeClass('has-error');
+							$this_input.removeClass('is-invalid');
+							$exists_query_results.removeClass('text-danger');
 						}
 					});
 				}
@@ -109,7 +105,7 @@ export default function(Bloodhound){
 				var filter = function(users){
 					return $.map(users, function(user){
 
-						var cl = show_new_en && (user.a && (user.a > treshold)) ? ' class="success"' : '';
+						var cl = show_new_user_days && (user.a && (user.a > treshold)) ? ' class="success"' : '';
 
 						switch (user.s){
 							case 0:

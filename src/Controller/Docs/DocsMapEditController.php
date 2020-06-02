@@ -2,6 +2,8 @@
 
 namespace App\Controller\Docs;
 
+use App\Command\Docs\DocsMapEditCommand;
+use App\Form\Post\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,6 +12,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\DocRepository;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
@@ -21,6 +24,7 @@ class DocsMapEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        DocRepository $doc_repository,
         AlertService $alert_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
@@ -30,18 +34,34 @@ class DocsMapEditController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
-        $errors = [];
-
         $name = trim($request->request->get('name', ''));
 
-        $map = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.doc_maps
-            where id = ?', [$id]);
+        $map = $doc_repository->get_map($id, $pp->schema());
 
-        if (!$map)
+        $docs_map_edit_command = new DocsMapEditCommand();
+
+        $docs_map_edit_command->name = $map['name'];
+
+        $form = $this->createForm(DocsMapType::class,
+                $docs_map_edit_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
-            throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
+            $docs_map_edit_command = $form->getData();
+            $name = $docs_map_edit_command->name;
+
+            $doc_repository->update_map_name($name, $id, $pp->schema());
+
+            $alert_service->success('docs_map_edit.success');
+
+            $link_render->redirect('docs_map', $pp->ary(),
+                ['id' => $id]);
         }
+
+
+        /*
 
         if ($request->isMethod('POST'))
         {
@@ -149,11 +169,14 @@ class DocsMapEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
+        */
 
         $menu_service->set('docs');
 
         return $this->render('docs/docs_map_edit.html.twig', [
-            'content'   => $out,
+//            'content'   => $out,
+            'form'      => $form->createView(),
+            'map'       => $map,
             'schema'    => $pp->schema(),
         ]);
     }

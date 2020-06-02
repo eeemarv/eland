@@ -23,17 +23,13 @@ class TypeaheadType extends AbstractType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['typeahead_attr'] = $this->typeaheadTypeAttr->get($options);
+        //$view->vars['typeahead_attr'] = $this->typeaheadTypeAttr->get($options);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'source_id'         => null,
-            'source_route'      => null,
-            'source_params'     => null,
-            'source'            => null,
-            'process'           => null,
+            'typeahead_attr'    => null,
         ]);
     }
 

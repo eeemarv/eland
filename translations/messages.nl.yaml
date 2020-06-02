@@ -44,6 +44,8 @@ label:
   access: Toegang
   access_explain: Wie kan dit zien?
   account_code: Account Code
+  action: Actie
+  actions: Acties
   activated: Geactiveerd
   activity: Activiteit
   admin_comment: Admin Commentaar
@@ -132,6 +134,12 @@ object_info:
   edit_count: >-
     , Aangepast: %edit_count%
 
+unique_filter:
+  item_not_unique: >-
+    Dit item bestaat reeds!
+  existing_items: >-
+    Reeds bestaand:
+
 calendar:
   title: >-
     Kalender
@@ -192,6 +200,8 @@ docs_map:
 docs_map_edit:
   title: >-
     Map "%name%" aanpassen
+  not_unique: >-
+    Deze map bestaat reeds!
 
 forum:
   title: Forum

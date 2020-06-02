@@ -96,6 +96,7 @@ class TypeaheadService
 			$this->assets_included = true;
 		}
 
+		return json_encode($out);
 		return htmlspecialchars(json_encode($out));
 	}
 

@@ -125,7 +125,11 @@
 		})|raw -}}
 	</p>
 	{%- block index_link -%}
-		<p><a href="{{- path('index') -}}">{{- 'index.title'|trans -}}</a></p>
+		<p>
+			<a href="{{- path('index') -}}">
+				{{- 'index.title'|trans -}}
+			</a>
+		</p>
 	{%- endblock index_link -%}
 </footer>
 

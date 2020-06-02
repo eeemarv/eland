@@ -34,6 +34,33 @@ class DocRepository
 		return $doc;
 	}
 
+	public function get_map(int $map_id, string $schema):array
+	{
+		$map =  $this->db->fetchAssoc('select *
+			from ' . $schema . '.doc_maps
+			where id = ?', [$map_id]);
+
+		if (!$map)
+		{
+			throw new NotFoundHttpException('Document map ' . $map_id . ' not found.');
+		}
+
+		return $map;
+	}
+
+	public function update_map_name(
+		string $name,
+		int $map_id,
+		string $schema
+	):bool
+	{
+		return $this->db->update($schema . '.doc_maps', [
+			'name' => $name,
+		], [
+			'id' => $map_id,
+		]) ? true : false;
+	}
+
 	public function get_count_for_map_id(
 		int $map_id,
 		string $schema
