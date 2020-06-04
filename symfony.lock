@@ -257,9 +257,6 @@
             "config/packages/messenger.yaml"
         ]
     },
-    "symfony/mime": {
-        "version": "v4.3.4"
-    },
     "symfony/monolog-bundle": {
         "version": "3.3",
         "recipe": {
