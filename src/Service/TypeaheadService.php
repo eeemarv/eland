@@ -89,8 +89,11 @@ class TypeaheadService
 
 	public function clear(string $group):void
 	{
-		$key = $this->get_key();
-		$hall = $this->predis->hgetall($key);
+		$data_key = $this->get_data_key();
+		$this->predis->del($data_key);
+
+		$thumbprint_key = $this->get_thumbprint_key();
+		$hall = $this->predis->hgetall($thumbprint_key);
 		$fields_to_delete = [];
 
 		foreach($hall as $field => $group_thumbprint)
@@ -202,18 +205,17 @@ class TypeaheadService
 			return;
 		}
 
-		$schema = $this->get_schema($remote_schema);
-		$data_key = $this->get_data_key($new_thumbprint, $schema);
-		$this->predis->setex($data_key, self::TTL_DATA, $json);
-		$old_data_key = $this->get_data_key($current_thumbprint, $schema);
-		$this->predis->del($old_data_key);
+		$data_key = $this->get_data_key($remote_schema);
+		$this->predis->hset($data_key, $new_thumbprint, $json);
+		$this->predis->expire($data_key, self::TTL_DATA);
+		$this->predis->hdel($data_key, $current_thumbprint);
 
 		$typeahead_route = $this->get_current_typeahead_route();
 
-		$field = $this->get_thumbprint_field($typeahead_route, $key_param);
-		$key = $this->get_thumbprint_key($remote_schema);
+		$thumbprint_key = $this->get_thumbprint_key($remote_schema);
+		$thumbprint_field = $this->get_thumbprint_field($typeahead_route, $key_param);
 
-		$this->predis->hset($key, $field, $group . '_' . $new_thumbprint);
-		$this->predis->expire($key, self::TTL_THUMBPRINT);
+		$this->predis->hset($thumbprint_key, $thumbprint_field, $group . '_' . $new_thumbprint);
+		$this->predis->expire($thumbprint_key, self::TTL_THUMBPRINT);
 	}
 }
