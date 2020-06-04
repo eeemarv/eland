@@ -4,292 +4,216 @@ namespace App\Service;
 
 use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Service\SystemsService;
-use App\Service\AssetsService;
 
 class TypeaheadService
 {
-	const TTL = 5184000; // 60 days
+	const ROUTE_PREFIX = 'typeahead_';
+	const STORE_THUMBPRINT_PREFIX = 'typeahead_thumbprint_';
+	const STORE_DATA_PREFIX = 'typeahead_data_';
+	const TTL_THUMBPRINT = 5184000; // 60 days
+	const TTL_DATA = 5184000; // 60 days
+	const GROUP_USERS = 'users';
+	const GROUP_ACCOUNTS = 'accounts';
+	const GROUP_LOG_TYPES = 'log_types';
+	const GROUP_DOC_MAP_NAMES = 'doc_map_names';
 
 	protected Predis $predis;
+	protected RequestStack $request_stack;
 	protected LoggerInterface $logger;
 	protected UrlGeneratorInterface $url_generator;
-	protected SystemsService $systems_service;
-	protected AssetsService $assets_service;
+	protected PageParamsService $pp;
 
 	protected array $build_ary;
-	protected bool $assets_included = false;
 
 	public function __construct(
 		Predis $predis,
+		RequestStack $request_stack,
 		LoggerInterface $logger,
 		UrlGeneratorInterface $url_generator,
-		SystemsService $systems_service,
-		AssetsService $assets_service
+		PageParamsService $pp
 	)
 	{
 		$this->predis = $predis;
+		$this->request_stack = $request_stack;
 		$this->logger = $logger;
 		$this->url_generator = $url_generator;
-		$this->systems_service = $systems_service;
-		$this->assets_service = $assets_service;
+		$this->pp = $pp;
 	}
 
-	public function ini(array $pp_ary):self
+	public function ini():self
 	{
-		$this->build_ary = ['pp_ary' => $pp_ary];
+		$this->fetch_ary = [];
 		return $this;
 	}
 
 	public function add(string $route, array $params):self
 	{
-		if (!isset($this->build_ary))
+		if (!isset($this->fetch_ary))
 		{
 			return $this;
 		}
 
-		$this->build_ary['paths'] ??= [];
-
-		$this->build_ary['paths'][] = [
-			'route'		=> $route,
-			'params'	=> $params,
-		];
-
+		$path = $this->get_path($route, $params);
+		$this->fetch_ary[] = $path;
 		return $this;
 	}
 
 	public function str(array $process_ary = []):string
 	{
-		if (!isset($this->build_ary)
-			|| !isset($this->build_ary['pp_ary'])
-			|| !isset($this->build_ary['paths']))
-		{
-			return '';
-		}
-
-		$pp_ary = $this->build_ary['pp_ary'];
-		$paths = $this->build_ary['paths'];
-
-		$out = array_merge($process_ary, [
-			'fetch' => [],
-		]);
-
-		foreach($paths as $p)
-		{
-			$path = $this->get_path($p['route'], $pp_ary, $p['params']);
-			$cache_key = $this->get_thumbprint_key($p['route'], $pp_ary, $p['params']);
-			$thumbprint = $this->get_thumbprint_by_key($cache_key, $pp_ary);
-
-			$out['fetch'][] = [
-				'thumbprint'	=> $thumbprint,
-				'cacheKey'		=> $cache_key,
-				'path'			=> $path,
-			];
-		}
-
-		unset($this->build_ary);
-
-		if (!$this->assets_included)
-		{
-			$this->assets_service->add(['typeahead', 'typeahead.js']);
-			$this->assets_included = true;
-		}
-
-		return json_encode($out);
-		return htmlspecialchars(json_encode($out));
+		$return_ary = array_merge(['fetch' => $this->fetch_ary], $process_ary);
+		unset($fetch_ary);
+		return json_encode($return_ary);
 	}
 
-	protected function get_path(
-		string $typeahead_route,
-		array $params_context,
-		array $params
+	protected function get_thumbprint(
+		string $field,
+		?string $remote_schema = null
 	):string
 	{
-		return $this->url_generator->generate(
-			'typeahead_' . $typeahead_route,
-			array_merge($params_context, $params),
-			UrlGeneratorInterface::ABSOLUTE_PATH);
-	}
+		$key = $this->get_key($remote_schema);
+		$group_thumbprint = $this->predis->hget($key, $field);
 
-	protected function get_thumbprint_key(
-		string $typeahead_route,
-		array $params_context,
-		array $params):string
-	{
-		$key_pp_ary = [
-			'system'		=> $params_context['system'],
-			'role_short'	=> 'a',
-		];
-
-		$key_path = $this->get_path($typeahead_route, $key_pp_ary, $params);
-
-		$key = strtr($key_path, [
-			'/a/'			=> '_',
-			'/'				=> '_',
-			'-'				=> '_',
-		]);
-
-		return ltrim($key, '_');
-	}
-
-	protected function get_thumbprint_by_key(
-		string $key,
-		array $params_context
-	):string
-	{
-		$thumbprint = $this->predis->get($key);
-
-		if (!$thumbprint)
+		if (!$group_thumbprint)
 		{
-			$thumbprint = 'renew-' . crc32(microtime());
+			$hash_rnd = hash('crc32b', random_bytes(4));
+			$thumbprint = substr_replace($hash_rnd, '00', 0, 2);
 
-			$this->logger->debug('typeahead thumbprint ' .
-				$thumbprint . ' for ' . $key,
-				$this->get_log_params($params_context)
-			);
+			$this->logger->debug('typeahead thumbprint reset ' .
+				$thumbprint . ' for ' . $key, ['schema' => $this->pp->schema()]);
 		}
 
 		return $thumbprint;
 	}
 
-	protected function get_thumbprint(
-		string $typeahead_route,
-		array $params_context,
-		array $params
+	public function clear(string $group):void
+	{
+		$key = $this->get_key();
+		$hall = $this->predis->hgetall($key);
+		$fields_to_delete = [];
+
+		foreach($hall as $field => $group_thumbprint)
+		{
+			if (strpos($group_thumbprint, $group) === 0)
+			{
+				$fields_to_delete[] = $field;
+			}
+		}
+
+		if (!count($fields_to_delete))
+		{
+			return;
+		}
+
+		$this->predis->hdel($key, $fields_to_delete);
+	}
+
+	public function get_schema(
+		?string $remote_schema = null
 	):string
 	{
-		$key = $this->get_thumbprint_key($typeahead_route, $params_context, $params);
-
-		return $this->get_thumbprint_by_key($key, $params_context);
+		return $remote_schema ?? $this->pp->schema();
 	}
 
-	protected function delete_thumbprint_by_key(
-		string $key,
-		array $params_context
-	):void
+	public function get_thumbprint_key(
+		?string $remote_schema = null
+	):string
 	{
-		$this->predis->del($key);
-
-		$this->logger->debug('typeahead delete thumbprint for '
-			. $key, $this->get_log_params($params_context));
+		$key = self::STORE_THUMBPRINT_PREFIX;
+		$key .= $remote_schema ?? $this->pp->schema();
+		return $key;
 	}
 
-	public function delete_thumbprint(
+	public function get_data_key(
+		?string $remote_schema = null
+	):string
+	{
+		$key = self::STORE_DATA_PREFIX;
+		$key .= $remote_schema ?? $this->pp->schema();
+		return $key;
+	}
+
+	public function get_current_typeahead_route():string
+	{
+		$request = $this->request_stack->getCurrentRequest();
+		$route = $request->attributes->get('_route');
+		return str_replace(self::ROUTE_PREFIX, '', $route);
+	}
+
+	public function get_thumbprint_field(
 		string $typeahead_route,
-		array $params_context,
-		array $params
-	):void
+		?string $key_param = null
+	):string
 	{
-		$key = $this->get_thumbprint_key($typeahead_route, $params_context, $params);
-
-		$this->delete_thumbprint_by_key($key, $params_context);
+		$key = $typeahead_route;
+		$key .= isset($key_param) ? '_' . $key_param : '';
+		return $key;
 	}
 
-	public function delete_thumbprint_by_schema(
-		string $typeahead_route,
-		string $schema,
-		array $params
-	):void
+	public function get_key_param(array $params):?string
 	{
-		$system = $this->systems_service->get_system($schema);
-
-		if (!$system)
+		if (!count($params))
 		{
+			return null;
+		}
+
+		ksort($params);
+
+		return implode('_', $params);
+	}
+
+	public function get_path(string $typeahead_route, array $params):string
+	{
+		$key_param = $this->get_key_param($params);
+		$remote_schema = $params['remote_schema'] ?? null;
+		$key = $this->get_key($remote_schema);
+		$thumbprint = $this->get_thumbprint($key);
+
+		return $this->url_generator->generate(
+			$typeahead_route,
+			array_merge($this->pp->ary(), $params, ['thumbprint' => $thumbprint]),
+			UrlGeneratorInterface::ABSOLUTE_PATH);
+	}
+
+	public function get_data(
+		string $thumbprint,
+		?string $remote_schema = null
+	):?string
+	{
+		$data_key = $this->get_data_key($thumbprint, $remote_schema);
+		return $this->predis->get($data_key);
+	}
+
+	public function calc_thumbprint(
+		string $group,
+		string $current_thumbprint,
+		array $data,
+		?string $key_param = null,
+		?string $remote_schema = null
+	):void
+	{
+		$json = json_encode($data);
+		$new_thumbprint = hash('crc32b', $json);
+
+		if ($new_thumbprint === $current_thumbprint)
+		{
+			error_log('current thumbprint still valid ' . $new_thumbprint);
 			return;
 		}
 
-		$params_context = [
-			'_locale'		=> 'nl',
-			'system'		=> $system,
-			'role_short'	=> 'a',
-		];
+		$schema = $this->get_schema($remote_schema);
+		$data_key = $this->get_data_key($new_thumbprint, $schema);
+		$this->predis->setex($data_key, self::TTL_DATA, $json);
+		$old_data_key = $this->get_data_key($current_thumbprint, $schema);
+		$this->predis->del($old_data_key);
 
-		$this->delete_thumbprint($typeahead_route, $params_context, $params);
-	}
+		$typeahead_route = $this->get_current_typeahead_route();
 
-	protected function get_log_params(array $params_context):array
-	{
-		if (isset($params_context['system']))
-		{
-			$schema = $this->systems_service->get_schema($params_context['system']);
+		$field = $this->get_thumbprint_field($typeahead_route, $key_param);
+		$key = $this->get_thumbprint_key($remote_schema);
 
-			if ($schema)
-			{
-				return ['schema' => $schema];
-			}
-		}
-
-		return [];
-	}
-
-	protected function set_thumbprint_by_key(
-		string $key,
-		string $schema,
-		string $new_thumbprint
-	):void
-	{
-		if ($new_thumbprint !== $this->predis->get($key))
-		{
-			$this->predis->set($key, $new_thumbprint);
-
-			$log_params = [];
-
-			if ($schema && $this->systems_service->get_systems($schema))
-			{
-				$log_params['schema'] = $schema;
-			}
-
-			$this->logger->debug('typeahead: new thumbprint ' .
-				$new_thumbprint .
-				' for ' . $key,
-				$log_params
-			);
-		}
-
-		$this->predis->expire($key, self::TTL);
-	}
-
-	public function set_thumbprint(
-		string $typeahead_route,
-		array $params_context,
-		array $params,
-		string $new_thumbprint
-	):void
-	{
-		$key = $this->get_thumbprint_key($typeahead_route, $params_context, $params);
-
-		$schema = '';
-
-		if (isset($params_context['system']))
-		{
-			$schema = $this->systems_service->get_schema($params_context['system']);
-		}
-
-		$this->set_thumbprint_by_key($key, $schema, $new_thumbprint);
-	}
-
-	public function set_thumbprint_by_schema(
-		string $typeahead_route,
-		string $schema,
-		array $params,
-		string $new_thumbprint
-	):void
-	{
-		$system = $this->systems_service->get_system($schema);
-
-		if (!$system)
-		{
-			return;
-		}
-
-		$params_context = [
-			'_locale'		=> 'en',
-			'system'		=> $system,
-			'role_short'	=> 'a',
-		];
-
-		$key = $this->get_thumbprint_key($typeahead_route, $params_context, $params);
-		$this->set_thumbprint_by_key($key, $schema, $new_thumbprint);
+		$this->predis->hset($key, $field, $group . '_' . $new_thumbprint);
+		$this->predis->expire($key, self::TTL_THUMBPRINT);
 	}
 }

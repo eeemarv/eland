@@ -9,10 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
-class TypeaheadElandIntersystemAccountsController extends AbstractController
+class TypeaheadIntersystemAccountsController extends AbstractController
 {
     public function __invoke(
+        Request $request,
+        string $thumbprint,
         string $remote_schema,
         Db $db,
         LoggerInterface $logger,
@@ -25,7 +28,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
 
         if (!isset($eland_intersystems[$remote_schema]))
         {
-            $logger->debug('typeahead/eland_intersystem_accounts: ' .
+            $logger->debug('typeahead/intersystem_accounts: ' .
                 $remote_schema . ' not valid',
                 ['schema' => $pp->schema()]);
 
@@ -60,8 +63,10 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
 
         $crc = (string) crc32(json_encode($accounts));
 
+        $typeahead_service->calc_thumbprint('accounts', $thumbprint, $accounts, null, $remote_shema);
+
         $typeahead_service->set_thumbprint(
-            'eland_intersystem_accounts', $pp->ary(), $params, $crc);
+            'intersystem_accounts', $pp->ary(), $params, $crc);
 
         return $this->json($accounts);
     }

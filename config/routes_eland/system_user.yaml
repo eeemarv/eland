@@ -161,28 +161,28 @@ forum_add_topic:
 
 typeahead_account_codes:
   controller: App\Controller\Typeahead\TypeaheadAccountCodesController
-  path: /typeahead-account-codes
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/account-codes
   methods: GET
   defaults:
     module: accounts
 
 typeahead_usernames:
   controller: App\Controller\Typeahead\TypeaheadUsernamesController
-  path: /typeahead-usernames
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/usernames
   methods: GET
   defaults:
     module: users
 
-typeahead_eland_intersystem_accounts:
-  controller: App\Controller\Typeahead\TypeaheadElandIntersystemAccountsController
-  path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}
+typeahead_intersystem_accounts:
+  controller: App\Controller\Typeahead\TypeaheadIntersystemAccountsController
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/intersystem-accounts/{remote_schema<%assert.schema%>}
   methods: GET
   defaults:
     module: intersystems
 
 typeahead_postcodes:
   controller: App\Controller\Typeahead\TypeaheadPostcodesController
-  path: /typeahead-postcodes
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/postcodes
   methods: GET
   defaults:
     module: users

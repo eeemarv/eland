@@ -140,7 +140,7 @@ forum:
 
 typeahead_accounts:
   controller: App\Controller\Typeahead\TypeaheadAccountsController
-  path: /typeahead-accounts/{status<%assert.account_status.primary%>}
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/accounts/{status<%assert.account_status.primary%>}
   methods: GET
   defaults:
     module: accounts

@@ -7,10 +7,13 @@ use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpFoundation\Request;
 
 class TypeaheadPostcodesController extends AbstractController
 {
     public function __invoke(
+        Request $request,
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp

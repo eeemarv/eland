@@ -855,7 +855,7 @@ class TransactionsAddController extends AbstractController
                 {
                     $remote_schema = $sys['remote_schema'];
 
-                    $typeahead_service->add('eland_intersystem_accounts', [
+                    $typeahead_service->add('intersystem_accounts', [
                         'remote_schema'	=> $remote_schema,
                     ]);
 

@@ -32,9 +32,9 @@ export default function(Bloodhound){
 				var initial_lower_case_val = $(this).val().toLowerCase();
 
 				var $input_container = $(this).parent().parent();
-				var $exists_msg = $input_container.find('[data-unique-filter-error-message]');
-				var $exists_query_results = $input_container.find('[data-unique-filter-results-help]');
-				var $query_results = $exists_query_results.find('[data-unique-filter-results]');
+				var $unique_filter_error_message = $input_container.find('[data-unique-filter-error-message]');
+				var $unique_filter_results_help = $input_container.find('[data-unique-filter-results-help]');
+				var $unique_filter_results = $unique_filter_results_help.find('[data-unique-filter-results]');
 
 				var exists_engine = new Bloodhound({
 					prefetch: {
@@ -51,7 +51,7 @@ export default function(Bloodhound){
 
 				var $this_input = $(this);
 
-				function render_exists(){
+				function show_uniqueness(){
 					const max_items = 10;
 					var lower_case_val = $this_input.val().toLowerCase();
 
@@ -64,37 +64,37 @@ export default function(Bloodhound){
 						if (results_ary.length){
 
 							if (lower_case_val === results_ary[0].toLowerCase()) {
-								$exists_msg.removeAttr('hidden');
-								$exists_msg.show();
+								$unique_filter_error_message.removeAttr('hidden');
+								$unique_filter_error_message.show();
 								$this_input.addClass('is-invalid');
-								$exists_query_results.addClass('text-danger');
+								$unique_filter_results_help.addClass('text-danger');
 							} else {
-								$exists_msg.hide();
+								$unique_filter_error_message.hide();
 								$this_input.removeClass('is-invalid');
-								$exists_query_results.removeClass('text-danger');
+								$unique_filter_results_help.removeClass('text-danger');
 							}
 
-							$exists_query_results.removeAttr('hidden');
-							$exists_query_results.show();
+							$unique_filter_results_help.removeAttr('hidden');
+							$unique_filter_results_help.show();
 
-							$query_results.text(results_ary
+							$unique_filter_results.text(results_ary
 								.slice(0, max_items)
 								.join(', ') +
 								(results_ary.length > max_items ?
 									', ...' : '')
 							);
 						} else {
-							$exists_query_results.hide();
-							$exists_msg.hide();
+							$unique_filter_results_help.hide();
+							$unique_filter_error_message.hide();
 							$this_input.removeClass('is-invalid');
-							$exists_query_results.removeClass('text-danger');
+							$unique_filter_results_help.removeClass('text-danger');
 						}
 					});
 				}
 
-				$this_input.keyup(render_exists);
+				$this_input.keyup(show_uniqueness);
 
-				window.setTimeout(render_exists, 800);
+				window.setTimeout(show_uniqueness, 800);
 
 				continue;
 			}

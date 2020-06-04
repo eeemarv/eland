@@ -22,7 +22,7 @@ class IndexController extends AbstractController
             'schemas'       => $schemas,
         ]);
 
-        $response->setEtag((string) crc32($response->getContent()));
+        $response->setEtag(hash('crc32b', $response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
 

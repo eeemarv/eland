@@ -322,14 +322,14 @@ docs_map_edit:
 
 typeahead_doc_map_names:
   controller: App\Controller\Typeahead\TypeaheadDocMapNamesController
-  path: /typeahead-doc-map-names
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/doc-map-names
   methods: GET
   defaults:
     module: docs
 
 typeahead_log_types:
   controller: App\Controller\Typeahead\TypeaheadLogTypesController
-  path: /typeahead-log-types
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/log-types
   methods: GET
   defaults:
     module: logs

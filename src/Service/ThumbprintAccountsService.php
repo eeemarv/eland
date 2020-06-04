@@ -32,7 +32,7 @@ class ThumbprintAccountsService
 
         foreach ($this->intersystems_service->get_eland($pp_schema) as $remote_schema => $h)
         {
-            $this->typeahead_service->delete_thumbprint('eland_intersystem_accounts',
+            $this->typeahead_service->delete_thumbprint('intersystem_accounts',
                 $pp_ary, [
                 'remote_schema'	=> $remote_schema,
             ]);

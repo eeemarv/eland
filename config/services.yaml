@@ -3,6 +3,7 @@ parameters:
     router.request_context.scheme: '%env(APP_SCHEME)%'
     app.default_locale: nl
     app.locales: en|nl
+    assert_thumbprint: '[a-f0-9]{8}'
     assert.token: '[a-z0-9-]{12}'
     assert.big_token: '[a-z0-9-]{20}'
     assert.system: '[a-z][a-z0-9]*'
