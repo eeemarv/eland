@@ -27,10 +27,10 @@ class DocsMapType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $data_typeahead = $this->typeahead_service->ini($this->pp->ary())
-            ->add('doc_map_names', [], 0)
+            ->add('doc_map_names', [])
             ->str([
                 'check_uniqueness'  => true,
-                'initial_value'     => '',
+                'initial_value'     => $options['initial_value'],
             ]);
 
         $builder
@@ -45,6 +45,7 @@ class DocsMapType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'initial_value' => '',
         ]);
     }
 }

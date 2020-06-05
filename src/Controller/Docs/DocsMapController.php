@@ -10,6 +10,7 @@ use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
@@ -23,6 +24,7 @@ class DocsMapController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        DocRepository $doc_repository,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
@@ -35,18 +37,12 @@ class DocsMapController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $q = $request->query->get('q', '');
+        // to do: filter after page loaded
+        // $q = $request->query->get('q', '');
+
+        $doc_map = $doc_repository->get_map($id, $pp->schema());
 
         $docs = [];
-
-        $name = $db->fetchColumn('select name
-            from ' . $pp->schema() . '.doc_maps
-            where id = ?', [$id]);
-
-        if (!$name)
-        {
-            throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
-        }
 
         $stmt = $db->executeQuery('select *
             from ' . $pp->schema() . '.docs
@@ -220,6 +216,7 @@ class DocsMapController extends AbstractController
 
         return $this->render('docs/docs_map.html.twig', [
             'content'   => $out,
+            'doc_map'   => $doc_map,
             'schema'    => $pp->schema(),
         ]);
     }

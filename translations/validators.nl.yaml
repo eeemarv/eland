@@ -1,3 +1,6 @@
+doc_map:
+  not_unique: Deze map naam bestaat reeds
+
 form:
   form_token:
     expired: >-

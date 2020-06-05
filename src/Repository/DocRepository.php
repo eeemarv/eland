@@ -48,6 +48,18 @@ class DocRepository
 		return $map;
 	}
 
+	public function is_unique_map_name_except_id(
+		string $name, int $map_id, string $schema
+	):bool
+	{
+		$lowercase_name = trim(strtolower($name));
+
+		return $this->db->fetchColumn('select id
+			from ' . $schema . '.doc_maps
+			where id <> ? and lower(name) = ?',
+			[$map_id, $lowercase_name]) ? false : true;
+	}
+
 	public function update_map_name(
 		string $name,
 		int $map_id,
