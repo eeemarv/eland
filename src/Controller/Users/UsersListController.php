@@ -970,7 +970,7 @@ class UsersListController extends AbstractController
                 $f_col .= '</div>';
                 $f_col .= '</div>';
 
-                $typeahead_service->ini($pp->ary())
+                $typeahead_service->ini()
                     ->add('accounts', ['status' => 'active']);
 
                 if (!$pp->is_guest())

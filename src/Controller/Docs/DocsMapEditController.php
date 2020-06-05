@@ -53,6 +53,7 @@ class DocsMapEditController extends AbstractController
             $name = $docs_map_edit_command->name;
 
             $doc_repository->update_map_name($name, $id, $pp->schema());
+            $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);
 
             $alert_service->success('docs_map_edit.success');
 
@@ -99,8 +100,7 @@ class DocsMapEditController extends AbstractController
 
                 $alert_service->success('Map naam aangepast.');
 
-                $typeahead_service->delete_thumbprint('doc_map_names',
-                    $pp->ary(), []);
+                $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);
 
                 $link_render->redirect('docs_map', $pp->ary(),
                     ['id' => $id]);
@@ -133,13 +133,10 @@ class DocsMapEditController extends AbstractController
         $out .= 'id="name" name="name" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini()
             ->add('doc_map_names', [])
             ->str([
-                'render'    => [
-                    'check' => 10,
-                    'omit'  => $name,
-                ],
+                'render_unique'    => true,
             ]);
 
         $out .= '" ';

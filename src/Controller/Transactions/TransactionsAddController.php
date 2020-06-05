@@ -834,7 +834,7 @@ class TransactionsAddController extends AbstractController
                 $out .= $sys['id'];
                 $out .= '" ';
 
-                $typeahead_service->ini($pp->ary());
+                $typeahead_service->ini();
 
                 if ($sys['id'] == 'self')
                 {
@@ -942,7 +942,7 @@ class TransactionsAddController extends AbstractController
         {
             $out .= 'data-typeahead="';
 
-            $typeahead_service->ini($pp->ary())
+            $typeahead_service->ini()
                 ->add('accounts', ['status' => 'active']);
 
             if ($pp->is_admin())

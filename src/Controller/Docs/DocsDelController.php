@@ -4,23 +4,17 @@ namespace App\Controller\Docs;
 
 use App\Command\Docs\DocsDelCommand;
 use App\Form\Post\DelType;
-use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\DocRepository;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
-use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
-use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsDelController extends AbstractController
 {
@@ -71,10 +65,7 @@ class DocsDelController extends AbstractController
                 if (isset($doc_count) && $doc_count < 2)
                 {
                     $doc_repository->del_map($doc['map_id'], $pp->schema());
-
-                    $typeahead_service->delete_thumbprint('doc_map_names',
-                        $pp->ary(), []);
-
+                    $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);
                     unset($doc['map_id']);
                 }
 

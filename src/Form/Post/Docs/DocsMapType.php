@@ -2,9 +2,7 @@
 
 namespace App\Form\Post\Docs;
 
-use App\Form\Input\TextAddonType;
 use App\Form\Input\UniqueTextAddonType;
-use App\Form\Typeahead\TypeaheadType;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Component\Form\AbstractType;
@@ -29,9 +27,10 @@ class DocsMapType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $data_typeahead = $this->typeahead_service->ini($this->pp->ary())
-            ->add('doc_map_names', [])
+            ->add('doc_map_names', [], 0)
             ->str([
-                'check_uniqueness'    => true,
+                'check_uniqueness'  => true,
+                'initial_value'     => '',
             ]);
 
         $builder

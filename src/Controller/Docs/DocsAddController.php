@@ -116,8 +116,7 @@ class DocsAddController extends AbstractController
 
                         $map_id = (int) $db->lastInsertId($pp->schema() . '.doc_maps_id_seq');
 
-                        $typeahead_service->delete_thumbprint('doc_map_names',
-                            $pp->ary(), []);
+                        $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);
                     }
 
                     $doc['map_id'] = $map_id;
@@ -198,7 +197,7 @@ class DocsAddController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini()
             ->add('doc_map_names', [])
             ->str();
 

@@ -668,7 +668,7 @@ class MolliePaymentsController extends AbstractController
 
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini()
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'extern'])
             ->add('accounts', ['status' => 'inactive'])

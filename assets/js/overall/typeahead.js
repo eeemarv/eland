@@ -24,12 +24,15 @@ export default function(Bloodhound){
 		}
 
 		for(var i = 0; i < data.fetch.length; i++){
-
 			var rec = data.fetch[i];
 
 			if (data.hasOwnProperty('check_uniqueness')){
 
-				var initial_lower_case_val = $(this).val().toLowerCase();
+				if (data.hasOwnProperty('initial_value')){
+					var initial_sanitized_val = data.initial_value.toLowerCase().trim();
+				} else {
+					initial_sanitized_val = '';
+				}
 
 				var $input_container = $(this).parent().parent();
 				var $unique_filter_error_message = $input_container.find('[data-unique-filter-error-message]');
@@ -39,9 +42,9 @@ export default function(Bloodhound){
 				var exists_engine = new Bloodhound({
 					prefetch: {
 						url: rec.path,
-						cache: true,
-						cacheKey: rec.cacheKey,
-						ttl: 172800000, // 2 days
+						cache: rec.ttl_client !== 0,
+						cacheKey: rec.cache_key,
+						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},
@@ -53,17 +56,17 @@ export default function(Bloodhound){
 
 				function show_uniqueness(){
 					const max_items = 10;
-					var lower_case_val = $this_input.val().toLowerCase();
+					var sanitized_val = $this_input.val().toLowerCase().trim();
 
-					exists_engine.search(lower_case_val, function(results_ary){
+					exists_engine.search(sanitized_val, function(results_ary){
 
 						results_ary = $.grep(results_ary, function (item){
-							return item.toLowerCase() !== initial_lower_case_val;
+							return item.toLowerCase().trim() !== initial_sanitized_val;
 						});
 
 						if (results_ary.length){
 
-							if (lower_case_val === results_ary[0].toLowerCase()) {
+							if (sanitized_val === results_ary[0].toLowerCase().trim()) {
 								$unique_filter_error_message.removeAttr('hidden');
 								$unique_filter_error_message.show();
 								$this_input.addClass('is-invalid');
@@ -93,9 +96,7 @@ export default function(Bloodhound){
 				}
 
 				$this_input.keyup(show_uniqueness);
-
 				window.setTimeout(show_uniqueness, 800);
-
 				continue;
 			}
 
@@ -169,9 +170,9 @@ export default function(Bloodhound){
 			datasets.push({data: new Bloodhound({
 					prefetch: {
 						url: rec.path,
-						cache: true,
-						cacheKey: rec.cacheKey,
-						ttl: 172800000,	// 2 days
+						cache: rec.ttl_client !== 0,
+						cacheKey: rec.cache_key,
+						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},

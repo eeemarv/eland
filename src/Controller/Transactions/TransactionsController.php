@@ -397,7 +397,7 @@ class TransactionsController extends AbstractController
         $out .= '</span>';
         $out .= '</span>';
 
-        $typeahead_service->ini($pp->ary())
+        $typeahead_service->ini()
             ->add('accounts', ['status' => 'active']);
 
         if (!$pp->is_guest())

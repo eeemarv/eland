@@ -304,7 +304,7 @@ class ContactsAddAdminController extends AbstractController
             $out .= '<input type="text" class="form-control" id="account_code" name="account_code" ';
 
             $out .= 'data-typeahead="';
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini()
                 ->add('accounts', ['status' => 'active'])
                 ->add('accounts', ['status' => 'inactive'])
                 ->add('accounts', ['status' => 'ip'])

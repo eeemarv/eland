@@ -9,12 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class TypeaheadIntersystemAccountsController extends AbstractController
 {
     public function __invoke(
-        Request $request,
         string $thumbprint,
         string $remote_schema,
         Db $db,
@@ -33,6 +31,17 @@ class TypeaheadIntersystemAccountsController extends AbstractController
                 ['schema' => $pp->schema()]);
 
             return $this->json([], 404);
+        }
+
+        $params = [
+            'remote_schema' => $remote_schema,
+        ];
+
+        $cached = $typeahead_service->get_cached_data($thumbprint, $params);
+
+        if (isset($cached) && $cached)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
         $fetched_users = $db->fetchAll(
@@ -57,16 +66,9 @@ class TypeaheadIntersystemAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $params = [
-            'remote_schema' => $remote_schema,
-        ];
-
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->calc_thumbprint('accounts', $thumbprint, $accounts, null, $remote_shema);
-
         $typeahead_service->set_thumbprint(
-            'intersystem_accounts', $pp->ary(), $params, $crc);
+            TypeaheadService::GROUP_ACCOUNTS,
+            $thumbprint, $accounts, $params);
 
         return $this->json($accounts);
     }

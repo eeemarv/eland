@@ -3,19 +3,14 @@
 namespace App\Controller\Typeahead;
 
 use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpFoundation\Request;
 
 class TypeaheadLogTypesController extends AbstractController
 {
     public function __invoke(
-        Request $request,
-        string $thumbprint,
         Db $db,
-        TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
@@ -34,10 +29,6 @@ class TypeaheadLogTypesController extends AbstractController
         {
             $log_types[] = $row['type'];
         }
-
-        $crc = (string) crc32(json_encode($log_types));
-
-        $typeahead_service->set_thumbprint('log_types', $pp->ary(), [], $crc);
 
         return $this->json($log_types);
     }
