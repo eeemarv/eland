@@ -215,4 +215,9 @@ class DocRepository
 	{
 		return $this->db->insert($schema . '.docs', $doc_ary) ? true : false;
 	}
+
+	public function update_doc(array $update_ary, int $doc_id, string $schema):bool
+	{
+		return $this->db->update($schema . '.docs', $update_ary, ['id' => $doc_id]) ? true : false;
+	}
 }

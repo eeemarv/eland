@@ -28,6 +28,10 @@ docs_del:
   success: >-
     Document "%name%'' is verwijderd.
 
+docs_edit:
+  success: >-
+    Document aangepast.
+
 email:
   warning:
     disabled: >-

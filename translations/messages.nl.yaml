@@ -68,6 +68,7 @@ label:
   event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
   file: Bestand
+  file_location: Bestandslocatie
   first_name: Voornaam
   from: Van
   from_date: Vanaf
@@ -101,6 +102,7 @@ label:
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
   optional: Optioneel
+  original_filename: Orginele bestandsnaam
   out: Uit
   parsed_address: Ontleed Adres
   password: Paswoord

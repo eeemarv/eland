@@ -17,7 +17,6 @@ use App\Service\S3Service;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
-use Doctrine\DBAL\Connection as Db;
 
 class DocsAddController extends AbstractController
 {

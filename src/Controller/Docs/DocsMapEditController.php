@@ -29,15 +29,15 @@ class DocsMapEditController extends AbstractController
     {
         $name = trim($request->request->get('name', ''));
 
-        $map = $doc_repository->get_map($id, $pp->schema());
+        $doc_map = $doc_repository->get_map($id, $pp->schema());
 
         $docs_map_edit_command = new DocsMapEditCommand();
-        $docs_map_edit_command->name = $map['name'];
+        $docs_map_edit_command->name = $doc_map['name'];
         $docs_map_edit_command->id = $id;
 
         $form = $this->createForm(DocsMapType::class,
                 $docs_map_edit_command, [
-                    'initial_value' => $map['name'],
+                    'initial_value' => $doc_map['name'],
                 ])
             ->handleRequest($request);
 
@@ -60,7 +60,7 @@ class DocsMapEditController extends AbstractController
 
         return $this->render('docs/docs_map_edit.html.twig', [
             'form'      => $form->createView(),
-            'map'       => $map,
+            'doc_map'   => $doc_map,
             'schema'    => $pp->schema(),
         ]);
     }
