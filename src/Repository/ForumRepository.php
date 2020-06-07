@@ -2,48 +2,25 @@
 
 namespace App\Repository;
 
-use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumRepository
 {
 	protected Db $db;
-	protected ItemAccessService $item_access_service;
 
 	public function __construct(
-		Db $db,
-		ItemAccessService $item_access_service
+		Db $db
 	)
 	{
 		$this->db = $db;
-		$this->item_access_service = $item_access_service;
 	}
 
-	public function get_visible_topic_for_page(int $id, string $schema):array
-	{
-        $stmt = $this->db->executeQuery('select *
-            from ' . $schema . '.forum_topics
-            where id = ?
-                and access in (?)', [
-                $id,
-                $this->item_access_service->get_visible_ary_for_page()
-            ], [
-                \PDO::PARAM_INT,
-                Db::PARAM_STR_ARRAY,
-            ]);
-
-        $topic = $stmt->fetch();
-
-        if (!isset($topic) || !$topic)
-        {
-            throw new NotFoundHttpException('Forum topic not found.');
-		}
-
-		return $topic;
-	}
-
-	public function get_next_visible_topic_id_for_page(int $ref_topic_id, string $schema):int
+	public function get_next_topic_id(
+		int $ref_topic_id,
+		array $visible_ary,
+		string $schema
+	):int
 	{
         $stmt_next = $this->db->executeQuery('select t1.id
 			from ' . $schema . '.forum_topics t1,
@@ -54,7 +31,7 @@ class ForumRepository
             order by t1.last_edit_at desc
             limit 1', [
                 $ref_topic_id,
-                $this->item_access_service->get_visible_ary_for_page()
+                $visible_ary
             ], [
                 \PDO::PARAM_INT,
                 Db::PARAM_STR_ARRAY,
@@ -63,7 +40,11 @@ class ForumRepository
         return $stmt_next->fetchColumn() ?: 0;
 	}
 
-	public function get_prev_visible_topic_id_for_page(int $ref_topic_id, string $schema):int
+	public function get_prev_topic_id(
+		int $ref_topic_id,
+		array $visible_ary,
+		string $schema
+	):int
 	{
         $stmt_prev = $this->db->executeQuery('select t1.id
 			from ' . $schema . '.forum_topics t1,
@@ -74,7 +55,7 @@ class ForumRepository
             order by t1.last_edit_at asc
             limit 1', [
                 $ref_topic_id,
-                $this->item_access_service->get_visible_ary_for_page()
+                $visible_ary
             ], [
                 \PDO::PARAM_INT,
                 Db::PARAM_STR_ARRAY,
@@ -97,7 +78,7 @@ class ForumRepository
 		return $forum_topic;
 	}
 
-	public function get_visible_topics_with_reply_count(string $schema):array
+	public function get_topics_with_reply_count(array $visible_ary, string $schema):array
 	{
         // to do: order by last post edit desc
         $stmt = $this->db->executeQuery('select t.*, count(p.*) - 1 as reply_count
@@ -106,7 +87,7 @@ class ForumRepository
             where t.access in (?)
             group by t.id
             order by t.last_edit_at desc',
-            [$this->item_access_service->get_visible_ary_for_page()],
+            [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
         return $stmt->fetchAll();

@@ -2,22 +2,18 @@
 
 namespace App\Repository;
 
-use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocRepository
 {
 	protected Db $db;
-	protected ItemAccessService $item_access_service;
 
 	public function __construct(
-		Db $db,
-		ItemAccessService $item_access_service
+		Db $db
 	)
 	{
 		$this->db = $db;
-		$this->item_access_service = $item_access_service;
 	}
 
 	public function get(int $id, string $schema):array
@@ -95,7 +91,7 @@ class DocRepository
 			['id' => $map_id]) ? true : false;
 	}
 
-	public function get_visible_maps(string $schema):array
+	public function get_maps(array $visible_ary, string $schema):array
 	{
         $stmt = $this->db->executeQuery('select dm.name, dm.id, count(d.*) as doc_count
             from ' . $schema . '.doc_maps dm, ' . $schema . '.docs d
@@ -103,13 +99,13 @@ class DocRepository
 				and d.map_id = dm.id
 			group by dm.name, dm.id
 			order by dm.name asc',
-            [$this->item_access_service->get_visible_ary_for_page()],
+            [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
         return $stmt->fetchAll();
 	}
 
-	public function get_visible_unmapped_docs($schema):array
+	public function get_unmapped_docs(array $visible_ary, string $schema):array
 	{
 		$stmt = $this->db->executeQuery('select coalesce(d.name, d.original_filename) as name,
 				id, filename, access, created_at
@@ -117,9 +113,73 @@ class DocRepository
 			where d.access in (?)
 				and map_id is null
 			order by name asc',
-            [$this->item_access_service->get_visible_ary_for_page()],
+            [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
         return $stmt->fetchAll();
+	}
+
+	public function get_prev_map_id(
+		string $ref_map_name,
+		array $visible_ary,
+		string $schema
+	):int
+	{
+		$stmt_prev = $this->db->executeQuery('select m.id
+			from ' . $schema . '.doc_maps m
+			inner join ' . $schema . '.docs d
+				on d.map_id = m.id
+			where d.access in (?)
+				and m.name < ?
+			order by m.name desc
+			limit 1',
+		[$visible_ary, $ref_map_name],
+		[Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
+
+		return $stmt_prev->fetchColumn() ?: 0;
+	}
+
+	public function get_next_map_id(
+		string $ref_map_name,
+		array $visible_ary,
+		string $schema
+	):int
+	{
+		$stmt_next = $this->db->executeQuery('select m.id
+			from ' . $schema . '.doc_maps m
+			inner join ' . $schema . '.docs d
+				on d.map_id = m.id
+			where d.access in (?)
+				and m.name > ?
+			order by m.name asc
+			limit 1',
+		[$visible_ary, $ref_map_name],
+		[Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
+
+		return $stmt_next->fetchColumn() ?: 0;
+	}
+
+	public function get_docs_for_map_id(
+		int $map_id,
+		array $visible_ary,
+		string $schema
+	):array
+	{
+		$docs = [];
+
+		$stmt = $this->db->executeQuery('select *
+			from ' . $schema . '.docs
+			where access in (?)
+				and map_id = ?
+			order by name, original_filename asc',
+			[$visible_ary, $map_id],
+			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+
+		while ($row = $stmt->fetch())
+		{
+			$docs[] = $row;
+		}
+
+		return $docs;
 	}
 }

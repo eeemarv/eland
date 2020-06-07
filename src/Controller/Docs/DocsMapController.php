@@ -15,15 +15,12 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class DocsMapController extends AbstractController
 {
     public function __invoke(
-        Request $request,
         int $id,
-        Db $db,
         DocRepository $doc_repository,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
@@ -37,51 +34,23 @@ class DocsMapController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+
         // to do: filter after page loaded
         // $q = $request->query->get('q', '');
 
         $doc_map = $doc_repository->get_map($id, $pp->schema());
+        $map_name = $doc_map['name'];
 
-        $docs = [];
+        $docs = $doc_repository->get_docs_for_map_id($id, $visible_ary, $pp->schema());
 
-        $stmt = $db->executeQuery('select *
-            from ' . $pp->schema() . '.docs
-            where access in (?)
-                and map_id = ?
-            order by name, original_filename asc',
-            [$item_access_service->get_visible_ary_for_page(), $id],
-            [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
-
-        while ($row = $stmt->fetch())
+        if (!count($docs))
         {
-            $docs[] = $row;
+            throw new AccessDeniedHttpException('Access denied for map ' . $id);
         }
 
-        $stmt_prev = $db->executeQuery('select m.id
-            from ' . $pp->schema() . '.doc_maps m
-            inner join ' . $pp->schema() . '.docs d
-                on d.map_id = m.id
-            where d.access in (?)
-                and m.name < ?
-            order by m.name desc
-            limit 1',
-        [$item_access_service->get_visible_ary_for_page(), $name],
-        [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
-
-        $prev = $stmt_prev->fetchColumn();
-
-        $stmt_next = $db->executeQuery('select m.id
-            from ' . $pp->schema() . '.doc_maps m
-            inner join ' . $pp->schema() . '.docs d
-                on d.map_id = m.id
-            where d.access in (?)
-                and m.name > ?
-            order by m.name asc
-            limit 1',
-        [$item_access_service->get_visible_ary_for_page(), $name],
-        [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
-
-        $next = $stmt_next->fetchColumn();
+        $prev = $doc_repository->get_prev_map_id($map_name, $visible_ary, $pp->schema());
+        $next = $doc_repository->get_next_map_id($map_name, $visible_ary, $pp->schema());
 
         if ($pp->is_admin())
         {
@@ -104,7 +73,7 @@ class DocsMapController extends AbstractController
             [], 'Overzicht', 'files-o');
 
         $heading_render->add('Documenten map "');
-        $heading_render->add($name . '"');
+        $heading_render->add($map_name . '"');
         $heading_render->fa('files-o');
 
         $out = '<div class="card fcard fcard-info mb-3">';
@@ -217,6 +186,7 @@ class DocsMapController extends AbstractController
         return $this->render('docs/docs_map.html.twig', [
             'content'   => $out,
             'doc_map'   => $doc_map,
+            'docs'      => $docs,
             'schema'    => $pp->schema(),
         ]);
     }

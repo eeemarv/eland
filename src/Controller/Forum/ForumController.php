@@ -6,28 +6,30 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Repository\ForumRepository;
 use App\Service\ConfigService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ForumController extends AbstractController
 {
     public function __invoke(
-        Request $request,
         ForumRepository $forum_repository,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
+        ItemAccessService $item_access_service,
         PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+
         // to do: filter after page loaded
         // $q = $request->query->get('q', '');
 
-        $forum_topics = $forum_repository->get_visible_topics_with_reply_count($pp->schema());
+        $forum_topics = $forum_repository->get_topics_with_reply_count($visible_ary, $pp->schema());
 
         if ($pp->is_admin() || $pp->is_user())
         {

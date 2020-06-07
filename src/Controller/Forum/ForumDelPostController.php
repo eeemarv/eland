@@ -8,6 +8,7 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -26,13 +27,18 @@ class ForumDelPostController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         PageParamsService $pp,
+        ItemAccessService $item_access_service,
         SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
-
         $forum_post = $forum_repository->get_post($id, $pp->schema());
-        $forum_topic = $forum_repository->get_visible_topic_for_page($forum_post['topic_id'], $pp->schema());
+        $forum_topic = $forum_repository->get_topic($forum_post['topic_id'], $pp->schema());
+
+        if (!$item_access_service->is_visible($forum_topic['access']))
+        {
+            throw new AccessDeniedHttpException('Access denied for forum topic ' . $id . '.');
+        }
 
         if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
         {

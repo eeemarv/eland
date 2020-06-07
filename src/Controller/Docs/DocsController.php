@@ -9,6 +9,7 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
+use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 
 class DocsController extends AbstractController
@@ -18,15 +19,17 @@ class DocsController extends AbstractController
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
+        ItemAccessService $item_access_service,
         PageParamsService $pp,
         MenuService $menu_service
     ):Response
     {
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
         // to do: filter after page load
         // $q = $request->query->get('q', '');
 
-        $doc_maps = $doc_repository->get_visible_maps($pp->schema());
-        $docs = $doc_repository->get_visible_unmapped_docs($pp->schema());
+        $doc_maps = $doc_repository->get_maps($visible_ary, $pp->schema());
+        $docs = $doc_repository->get_unmapped_docs($visible_ary, $pp->schema());
 
         if ($pp->is_admin())
         {

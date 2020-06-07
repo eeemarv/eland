@@ -36,6 +36,8 @@ class ForumTopicController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+
         $show_access = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
@@ -80,8 +82,8 @@ class ForumTopicController extends AbstractController
                 ['id' => $id], 'Onderwerp verwijderen');
         }
 
-        $prev = $forum_repository->get_prev_visible_topic_id_for_page($id, $pp->schema());
-        $next = $forum_repository->get_next_visible_topic_id_for_page($id, $pp->schema());
+        $prev = $forum_repository->get_prev_topic_id($id, $visible_ary, $pp->schema());
+        $next = $forum_repository->get_next_topic_id($id, $visible_ary, $pp->schema());
 
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];

@@ -9,29 +9,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\DocRepository;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
-use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsMapEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
         DocRepository $doc_repository,
         AlertService $alert_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
-        PageParamsService $pp,
-        HeadingRender $heading_render
+        PageParamsService $pp
     ):Response
     {
         $name = trim($request->request->get('name', ''));
