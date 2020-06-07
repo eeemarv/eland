@@ -2,6 +2,7 @@ const $ = require('jquery');
 
 import 'bootstrap';
 import 'jquery-touchswipe/jquery.touchSwipe.min.js';
+import bs_custom_file_input from 'bs-custom-file-input';
 
 import offcanvas from './overall/offcanvas';
 import filter_auto_submit from './overall/filter_auto_submit';
@@ -17,6 +18,7 @@ $(document).ready(function() {
     csv();
 //    item_access_input_cache();
     table_select();
+    bs_custom_file_input.init();
 });
 
 import '../css/app.scss';

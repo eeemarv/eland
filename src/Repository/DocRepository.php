@@ -184,4 +184,35 @@ class DocRepository
 
 		return $docs;
 	}
+
+	public function get_map_id_by_name(
+		string $map_name,
+		string $schema
+	):int
+	{
+		$map_id = $this->db->fetchColumn('select id
+			from ' . $schema . '.doc_maps
+			where lower(name) = ?', [strtolower($map_name)]);
+
+		return $map_id ?: 0;
+	}
+
+	public function insert_map(
+		string $map_name,
+		int $user_id,
+		string $schema
+	):int
+	{
+		$this->db->insert($schema . '.doc_maps', [
+			'name'      => $map_name,
+			'user_id'   => $user_id,
+		]);
+
+		return (int) $this->db->lastInsertId($schema . '.doc_maps_id_seq');
+	}
+
+	public function insert_doc(array $doc_ary, string $schema):bool
+	{
+		return $this->db->insert($schema . '.docs', $doc_ary) ? true : false;
+	}
 }

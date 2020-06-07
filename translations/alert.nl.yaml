@@ -16,6 +16,12 @@ contact_form_confirm:
     message_sent: >-
       Je bericht werd succesvol verzonden.
 
+docs_add:
+  error: >-
+    Opladen document mislukt.
+  success:
+    Het bestand is opgeladen.
+
 docs_del:
   error: >-
     Document "%name%" is niet verwijderd.

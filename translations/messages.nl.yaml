@@ -67,6 +67,7 @@ label:
   event_date: Agendadatum
   event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
+  file: Bestand
   first_name: Voornaam
   from: Van
   from_date: Vanaf
@@ -81,6 +82,7 @@ label:
   location_explain: Waar?
   login: Login
   map: Map
+  map_name: Map
   max: Max
   maximum_limit: Maximum Limiet
   menu: Menu
@@ -184,6 +186,9 @@ docs:
 docs_add:
   title: >-
     Document opladen
+  map_name:
+    help: >-
+      Optioneel. Creëer een nieuwe map of selecteer een bestaande.
 
 docs_del:
   title: >-

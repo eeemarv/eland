@@ -27,7 +27,6 @@ class ForumTopicType extends AbstractType
         $builder
             ->add('subject', TextType::class)
             ->add('content', SummernoteType::class)
-//            ->add('access', AccessType::class)
             ->add('submit', SubmitType::class);
 
         $this->access_field_subscriber->set_object_access_options(['admin', 'user', 'guest']);
