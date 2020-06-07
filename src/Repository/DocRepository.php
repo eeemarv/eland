@@ -107,10 +107,10 @@ class DocRepository
 
 	public function get_unmapped_docs(array $visible_ary, string $schema):array
 	{
-		$stmt = $this->db->executeQuery('select coalesce(d.name, d.original_filename) as name,
+		$stmt = $this->db->executeQuery('select coalesce(name, original_filename) as name,
 				id, filename, access, created_at
             from ' . $schema . '.docs d
-			where d.access in (?)
+			where access in (?)
 				and map_id is null
 			order by name asc',
             [$visible_ary],
@@ -167,7 +167,9 @@ class DocRepository
 	{
 		$docs = [];
 
-		$stmt = $this->db->executeQuery('select *
+		$stmt = $this->db->executeQuery('select
+				coalesce(name, original_filename) as name,
+				id, filename, access, created_at
 			from ' . $schema . '.docs
 			where access in (?)
 				and map_id = ?

@@ -2,9 +2,16 @@
 
 {%- block heading_title -%}
     {{- 'docs_map.title'|trans({
-        '%name%': map.name
+        '%name%': doc_map.name
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block content -%}
+    {%- embed 'embed/search_box.html.twig' -%}
+    {%- endembed -%}
+    {%- embed 'docs/embed/docs_list.html.twig' -%}
+    {%- endembed -%}
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}
