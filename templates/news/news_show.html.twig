@@ -2,9 +2,15 @@
 
 {%- block heading_title -%}
     {{- 'news_show.title'|trans({
-        '%subject%': news.subject
+        '%subject%': news_item.subject
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block content -%}
+
+    {%- include 'news/include/news_item.html.twig' with {'item': news_item} -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}
