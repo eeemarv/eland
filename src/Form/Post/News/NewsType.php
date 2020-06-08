@@ -3,6 +3,7 @@
 namespace App\Form\Post\News;
 
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Input\Datepicker\DatepickerType;
 use App\Form\Input\Summernote\SummernoteType;
 use App\Form\Input\TextAddonType;
 use Symfony\Component\Form\AbstractType;
@@ -28,7 +29,7 @@ class NewsType extends AbstractType
         $builder
             ->add('subject', TextType::class)
             ->add('location', TextAddonType::class)
-            ->add('event_at', TextAddonType::class)
+            ->add('event_at', DatepickerType::class)
             ->add('content', SummernoteType::class)
             ->add('submit', SubmitType::class);
 

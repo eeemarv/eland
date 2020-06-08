@@ -7,26 +7,37 @@
 {%- block form -%}
     {%- embed 'form/form_embed.html.twig' -%}
         {%- block form_a -%}
-            {%- if form.subject is defined -%}
-                {{- form_row(form.subject, {
-                    'label': false,
-                    'attr': {
-                        'placeholder': 'label.subject'
-                    }
-                }) -}}
-            {%- endif -%}
+            {{- form_row(form.subject, {
+                'label': 'label.subject'
+            }) -}}
         {%- endblock form_a -%}
 
         {%- block form_b -%}
+            {{- form_row(form.event_at, {
+                'label': 'label.event_date',
+                'addon_fa': 'calendar',
+                'required': false
+            }) -}}
+        {%- endblock form_b -%}
+
+        {%- block form_c -%}
+            {{- form_row(form.location, {
+                'label': 'label.location',
+                'addon_fa': 'map-marker',
+                'required': false
+            }) -}}
+        {%- endblock form_c -%}
+
+        {%- block form_d -%}
             {{- form_row(form.content, {
                 'label': false,
                 'attr': {
                     'rows': 5,
                     'minlength': 10,
-                    'maxlength': 5000
+                    'maxlength': 100000
                 }
             }) -}}
-        {%- endblock form_b -%}
+        {%- endblock form_d -%}
 
         {%- block form_access -%}
             {%- if form.access is defined -%}
@@ -45,10 +56,12 @@
 
 {%- block css -%}
     {{- parent() -}}
+    {{- encore_entry_link_tags('datepicker') -}}
     {{- encore_entry_link_tags('summernote') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
+	{{- encore_entry_script_tags('datepicker') -}}
 	{{- encore_entry_script_tags('summernote') -}}
 {%- endblock js -%}

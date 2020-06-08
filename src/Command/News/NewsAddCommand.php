@@ -17,6 +17,8 @@ class NewsAddCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('subject', new NotBlank());
+        $metadata->addPropertyConstraint('subject', new Length(['max' => 200]));
+        $metadata->addPropertyConstraint('location', new Length(['max' => 128]));
         $metadata->addPropertyConstraint('content', new NotBlank());
         $metadata->addPropertyConstraint('content', new Length(['min' => 10, 'max' => 100000]));
         $metadata->addPropertyConstraint('access', new NotBlank());

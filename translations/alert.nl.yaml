@@ -121,6 +121,10 @@ messages_del:
       personal: >-
         Je vraag "%message_subject%" is verwijderd.
 
+news_add:
+  success: >-
+    Nieuwsbericht teogevoegd.
+
 news_del:
   error: Het nieuwsbericht is niet verwijderd.
   success: >-

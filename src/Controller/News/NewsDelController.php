@@ -7,6 +7,7 @@ use App\Form\Post\DelType;
 use App\Render\LinkRender;
 use App\Repository\NewsRepository;
 use App\Service\AlertService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
@@ -27,7 +28,7 @@ class NewsDelController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        $news = $news_repository->get_visible_for_page($id, $pp->schema());
+        $news = $news_repository->get($id, $pp->schema());
 
         $news_del_command = new NewsDelCommand();
 

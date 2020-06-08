@@ -98,4 +98,10 @@ class NewsRepository
 		];
 	}
 
+	public function insert(array $news_item, string $schema):int
+	{
+		$this->db->insert($schema . '.news', $news_item);
+		return (int) $this->db->lastInsertId($schema . '.news_id_seq');
+	}
+
 }
