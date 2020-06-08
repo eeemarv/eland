@@ -2,7 +2,7 @@
 
 {%- block content -%}
 
-{%- for n in news -%}
+{%- for n in news_items -%}
     {%- embed 'embed/post.html.twig' -%}
         {%- import 'macro/object_info.html.twig' as io -%}
         {%- import 'macro/btn_link.html.twig' as bl -%}
@@ -50,6 +50,8 @@
             {%- endif -%}
         {%- endblock post_buttons -%}
     {%- endembed -%}
+{%- else -%}
+    {%- include 'news/include/no_items.html.twig' -%}
 {%- endfor -%}
 
 {%- endblock -%}

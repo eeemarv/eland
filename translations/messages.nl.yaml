@@ -344,6 +344,8 @@ messages_show:
 
 news:
   title: Nieuws
+  no_items: >-
+    Er zijn momenteel geen nieuwsberichten.
 
 news_add:
   title: Nieuwsbericht toevoegen

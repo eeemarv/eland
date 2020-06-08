@@ -2,38 +2,25 @@
 
 namespace App\Repository;
 
-use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsRepository
 {
 	protected Db $db;
-	protected ItemAccessService $item_access_service;
 
 	public function __construct(
-		Db $db,
-		ItemAccessService $item_access_service
+		Db $db
 	)
 	{
 		$this->db = $db;
-		$this->item_access_service = $item_access_service;
 	}
 
-	public function get_visible_for_page(int $id, string $schema):array
+	public function get(int $id, string $schema):array
 	{
-        $stmt = $this->db->executeQuery('select *
+        $news = $this->db->fetchAssoc('select *
             from ' . $schema . '.news
-            where id = ?
-                and access in (?)', [
-                $id,
-                $this->item_access_service->get_visible_ary_for_page()
-            ], [
-                \PDO::PARAM_INT,
-                Db::PARAM_STR_ARRAY,
-            ]);
-
-        $news = $stmt->fetch();
+            where id = ?', [$id]);
 
 		if (!$news)
 		{
@@ -49,72 +36,22 @@ class NewsRepository
 			['id' => $id]) ? true : false;
 	}
 
-	/******  */
-
-	public function insert(string $schema, array $data):int
+	public function get_all(
+		bool $event_at_asc_en,
+		array $visible_ary,
+		string $schema
+	):array
 	{
-		$data['cdate'] = gmdate('Y-m-d H:i:s');
-		$data['id_user'] = 1;//($s_master) ? 0 : $s_id;
-		$data['approved'] = $data['approved'] ? 't' : 'f';
-		$data['sticky'] = $data['sticky'] ? 't' : 'f';
-		$data['published'] = 't';
+		$order = $event_at_asc_en ? 'asc' : 'desc';
 
-		$access = $data['access'];
-		unset($data['access']);
+		$stmt = $this->db->executeQuery('select *
+			from ' . $schema . '.news
+			where access in (?)
+			order by event_at ' . $order . ' ,created_at desc',
+			[$visible_ary],
+			[Db::PARAM_STR_ARRAY]);
 
-		$this->db->insert($schema . '.news', $data);
-		$id = $this->db->lastInsertId($schema . '.news_id_seq');
-
-		$this->xdb->set('news_access', $id, $schema, ['access' => $access]);
-
-		return $id;
+		return $stmt->fetchAll();
 	}
 
-	public function update(int $id, string $schema, array $data)
-	{
-		$data['sticky'] = $data['sticky'] ? 't' : 'f';
-		$data['approved'] = $data['approved'] ? 't' : 'f';
-		$data['published'] = 't';
-		$access = $data['access'];
-		unset($data['access']);
-
-		$this->db->update($schema . '.news', $data, ['id' => $id]);
-		$this->xdb->set('news_access', $id, $schema, ['access' => $access]);
-	}
-
-	public function approve(int $id, string $schema)
-	{
-		$this->db->update($schema . '.news', ['approved' => 't'], ['id' => $id]);
-	}
-
-	public function delete(int $id, string $schema)
-	{
-		$this->db->delete($schema . '.news', ['id' => $id]);
-		$this->xdb->del('news_access', $id, $schema);
-	}
-
-	public function getNext(int $id, string $schema, string $access)
-	{
-		$rows = $this->xdb->getFiltered([
-			'agg_schema' 	=> $schema,
-			'agg_type' 		=> 'news_access',
-			'eland_id' 		=> ['>' => $id],
-			'access' 		=> $this->xdbAccess->get($access),
-		],
-		'order by eland_id asc limit 1');
-
-		return count($rows) ? reset($rows)['eland_id'] : null;
-	}
-
-	public function getPrev(int $id, string $schema, string $access)
-	{
-		$rows = $this->xdb->getFiltered([
-			'agg_schema' => $schema,
-			'agg_type' => 'news_access',
-			'eland_id' => ['<' => $id],
-			'access' => $this->xdbAccess->get($access),
-		], 'order by eland_id desc limit 1');
-
-		return count($rows) ? reset($rows)['eland_id'] : null;
-	}
 }

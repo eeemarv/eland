@@ -72,7 +72,11 @@
 
 {%- macro td_date_format(date, precision, schema) -%}
     <td>
-        {{- date|date_format(precision, schema) -}}
+        {%- if date -%}
+            {{- date|date_format(precision, schema) -}}
+        {%- else -%}
+            &nbsp;
+        {%- endif -%}
     </td>
 {%- endmacro td_date_format -%}
 
