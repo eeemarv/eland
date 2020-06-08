@@ -24,7 +24,7 @@ class NewsRepository
 
 		if (!$news)
 		{
-			throw new NotFoundHttpException('News with id %d not found');
+			throw new NotFoundHttpException('News with id ' . $id . ' not found');
 		}
 
 		return $news;
@@ -102,6 +102,12 @@ class NewsRepository
 	{
 		$this->db->insert($schema . '.news', $news_item);
 		return (int) $this->db->lastInsertId($schema . '.news_id_seq');
+	}
+
+	public function update(array $news_item, int $id, string $schema):bool
+	{
+		return $this->db->update($schema . '.news', $news_item,
+			['id' => $id]) ? true : false;
 	}
 
 }

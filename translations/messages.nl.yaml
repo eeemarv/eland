@@ -1,3 +1,6 @@
+var: >
+  %var%
+
 access:
   admin: Admin
   admin_explain: Enkel zichtbaar voor administratie.

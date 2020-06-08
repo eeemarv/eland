@@ -54,7 +54,8 @@ forum_del_post:
     De forum reactie is niet verwijderd.
   success:
     admin: >-
-      De reactie van "%user%" is verwijderd uit forum onderwerp "%topic_subject%"
+      De reactie van "%user%" is verwijderd uit
+      forum onderwerp "%topic_subject%"
     personal: >-
       Je reactie is verwijderd uit forum onderwerp "%topic_subject%"
 
@@ -70,9 +71,11 @@ forum_del_topic:
 forum_edit_post:
   success:
     personal: >-
-      Je reactie in forum onderwerp "%topic_subject%" is aangepast.
+      Je reactie in forum onderwerp
+      "%topic_subject%" is aangepast.
     admin: >-
-      De reactie van "%user%" in forum onderwerp "%topic_subject%" is aangepast.
+      De reactie van "%user%" in forum onderwerp
+      "%topic_subject%" is aangepast.
 
 forum_edit_topic:
   success:
@@ -129,6 +132,10 @@ news_del:
   error: Het nieuwsbericht is niet verwijderd.
   success: >-
     Het nieuwsbericht "%news_subject%" is verwijderd.
+
+news_edit:
+  success: >-
+    Nieuwsbericht aangepast.
 
 password_reset_request:
   success:

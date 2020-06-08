@@ -7,7 +7,6 @@ use App\Form\Post\DelType;
 use App\Render\LinkRender;
 use App\Repository\NewsRepository;
 use App\Service\AlertService;
-use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
