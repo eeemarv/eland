@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class DocsEditCommand
 {
-    public $location;
+    public $file_location;
     public $original_filename;
     public $name;
     public $map_name;

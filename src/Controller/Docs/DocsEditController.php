@@ -34,7 +34,7 @@ class DocsEditController extends AbstractController
 
         $doc = $doc_repository->get($id, $pp->schema());
 
-        $docs_edit_command->location = $env_s3_url . $doc['filename'];
+        $docs_edit_command->file_location = $env_s3_url . $doc['filename'];
         $docs_edit_command->original_filename = $doc['original_filename'];
         $docs_edit_command->name = $doc['name'];
         $docs_edit_command->access = $doc['access'];

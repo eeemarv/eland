@@ -2,6 +2,13 @@
     {{- path(route, pp_ary()|merge(params|default({}))) -}}
 {%- endmacro pp_path -%}
 
+{%- macro pp_link_label(route, params, label) -%}
+    {%- import _self as l -%}
+    <a href="{{- l.pp_path(route, params) -}}">
+    {{- label -}}
+    </a>
+{%- endmacro pp_link_label -%}
+
 {%- macro pp_link(route, params, trans_key) -%}
     {%- import _self as l -%}
     <a href="{{- l.pp_path(route, params) -}}">

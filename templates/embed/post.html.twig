@@ -1,12 +1,18 @@
 
 <div class="card card-default printview mb-2">
     <div class="card-body">
+        {%- block post_content_prepend -%}{%- endblock -%}
         {%- block post_content -%}{%- endblock -%}
+        {%- block post_content_append -%}{%- endblock -%}
     </div>
     <div class="card-footer">
-        <p>
-            {%- block post_info -%}{%- endblock -%}
-            {%- block post_buttons -%}{%- endblock -%}
-        </p>
+        {%- block post_footer_prepend -%}{%- endblock -%}
+        {%- block post_footer -%}
+            <p>
+                {%- block post_info -%}{%- endblock -%}
+                {%- block post_buttons -%}{%- endblock -%}
+            </p>
+        {%- endblock post_footer -%}
+        {%- block post_footer_append -%}{%- endblock -%}
     </div>
 </div>

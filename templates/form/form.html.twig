@@ -140,6 +140,7 @@
     </span>
 {%- endblock unique_addon_widget -%}
 
+{#
 {% block typeahead_widget -%}
     {%- set attr = attr|merge(typeahead_attr) -%}
     {{- block('addon_widget') -}}
@@ -148,6 +149,7 @@
 {% block typeahead_user_widget -%}
     {{- block('typeahead_widget') -}}
 {%- endblock typeahead_user_widget -%}
+#}
 
 {% block datepicker_widget -%}
     {%- set attr = attr|merge({

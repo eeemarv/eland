@@ -1,4 +1,58 @@
-{%- extends 'news/news_base.html.twig' -%}
+{%- extends 'news/base/news_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- for n in news -%}
+    {%- embed 'embed/post.html.twig' -%}
+        {%- import 'macro/object_info.html.twig' as io -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- import 'macro/link.html.twig' as lnk -%}
+        {%- import 'macro/lbl.html.twig' as lbl -%}
+        {%- block post_content_prepend -%}
+            <h2 class="card-title">
+                {{- lnk.pp_link_label('news_show', {'id': n.id}, n.subject) -}}
+            </h2>
+        {%- endblock post_content_prepend -%}
+        {%- block post_content -%}
+            {{- n.content|raw -}}
+        {%- endblock post_content -%}
+        {%- block post_footer_prepend -%}
+            <dl>
+            {%- if n.event_at -%}
+                <dt>{{- 'label.event_date'|trans -}}</dt>
+                <dd>
+                    {{- n.event_at|date_format('day', schema) -}}
+                </dd>
+            {%- endif -%}
+            {%- if n.location -%}
+                <dt>{{- 'label.location'|trans -}}</dt>
+                <dd>
+                    {{- n.location -}}
+                </dd>
+            {%- endif -%}
+            {%- if show_access -%}
+                <dt>{{- 'access.visible_for'|trans -}}</dt>
+                <dd>
+                    {{- lbl.lbl(n.access) -}}
+                </dd>
+            {%- endif -%}
+            </dl>
+        {%- endblock post_footer_prepend -%}
+        {%- block post_info -%}
+            {{- io.post_info(n, schema) -}}
+        {%- endblock post_info -%}
+        {%- block post_buttons -%}
+            {%- if pp_role('admin') -%}
+                <span class="pull-right">
+                    {{- bl.edit('news_edit', {'id': n.id}) -}}
+                    {{- bl.del('news_del', {'id': n.id}) -}}
+                </span>
+            {%- endif -%}
+        {%- endblock post_buttons -%}
+    {%- endembed -%}
+{%- endfor -%}
+
+{%- endblock -%}
 
 {%- block css -%}
     {{- parent() -}}
