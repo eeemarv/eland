@@ -46,6 +46,7 @@
 		"symfony/form": "^5",
 		"symfony/framework-bundle": "^5",
 		"symfony/messenger": "^5",
+		"symfony/mime": "^5",
 		"symfony/monolog-bridge": "^5",
 		"symfony/monolog-bundle": "^3",
 		"symfony/orm-pack": "^1.0",
