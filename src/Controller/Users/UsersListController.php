@@ -591,40 +591,6 @@ class UsersListController extends AbstractController
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
 
-        /**
-         *  TEMP FIX
-         */
-
-        $temp_fix_ary = [
-            'letscode'      => 'code',
-            'accountrole'   => 'role',
-            'saldo'         => 'balance',
-            'saldo_date'    => 'balance_date',
-            'cron_saldo'    => 'periodic_overview_en',
-        ];
-
-        $temp_fix_update = false;
-
-        foreach($temp_fix_ary as $org => $replace)
-        {
-            if (isset($show_columns['u'][$org]))
-            {
-                $show_columns['u'][$replace] = 1;
-                $temp_fix_update = true;
-            }
-
-            unset($show_columns['u'][$org]);
-        }
-
-        if ($temp_fix_update)
-        {
-            $session->set($session_users_columns_key, $show_columns);
-        }
-
-        /**
-         *  END TEMP FIX
-         */
-
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
         $activity_days = $show_columns['p']['a']['days'] ?? 365;
         $activity_days = $activity_days < 1 ? 365 : $activity_days;
