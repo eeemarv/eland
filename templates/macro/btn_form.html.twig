@@ -1,0 +1,29 @@
+{% macro add(form_submit, label) -%}
+    {{- form_widget(form_submit, {'label': label|default('btn.add'),
+        'attr': {'class': 'btn btn-success btn-lg'}}) -}}&nbsp;
+{%- endmacro add %}
+
+{% macro send(form_submit, label) -%}
+    {{- form_widget(form_submit, {'label': label|default('btn.send'),
+        'attr': {'class': 'btn btn-info btn-lg'}}) -}}&nbsp;
+{%- endmacro info %}
+
+{% macro edit(form_submit, label) -%}
+    {{- form_widget(form_submit, {'label': label|default('btn.edit'),
+        'attr': {'class': 'btn btn-info btn-lg'}}) -}}&nbsp;
+{%- endmacro edit %}
+
+{% macro del(form_submit, label) -%}
+    {{- form_widget(form_submit, {'label': label|default('btn.delete'),
+        'attr': {'class': 'btn btn-danger btn-lg'}}) -}}&nbsp;
+{%- endmacro del %}
+
+{% macro show(form_submit, label) -%}
+    {{- form_widget(form_submit, {'label': label|default('btn.show'),
+        'attr': {'class': 'btn btn-primary btn-block'}}) -}}
+{%- endmacro show %}
+
+{% macro default(form_submit, label) -%}
+    {{- form_widget(form_submit, {'label': label,
+        'attr': {'class': 'btn btn-primary btn-lg'}}) -}}&nbsp;
+{%- endmacro default %}

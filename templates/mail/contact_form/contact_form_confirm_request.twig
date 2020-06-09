@@ -1,0 +1,51 @@
+{%- extends 'mail/base/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject_line -%}
+    {{- 'contact_form_confirm.subject'|trans({
+        '%system_name%': config('systemname', schema)}) -}}
+{%- endblock subject_line %}
+
+{%- block html_content -%}
+
+<p>
+    {{- 'contact_form_confirm.html_msg'|trans({
+        '%link_open%': context_url_open(
+            'contact_form_confirm', mpp_anon_ary(schema), {'token': token}),
+        '%link_close%': '</a>'
+    })|raw -}}
+</p>
+
+<p>
+    {{- 'expiration.1_day'|trans -}}
+</p>
+
+<p>
+    {{- 'contact_form_confirm.explain'|trans({
+        '%system_name%': config('systemname', schema),
+        '%link_open%': context_url_open(
+            'contact_form', mpp_anon_ary(schema), {}),
+        '%link_close%': '</a>'
+    })|raw -}}
+</p>
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'contact_form_confirm.text_msg'|trans }}
+
+{{ context_url('contact_form_confirm', mpp_anon_ary(schema), {'token': token}) }}
+
+{{ 'expiration.1_day'|trans }}
+
+{{ 'contact_form_confirm.explain'|trans({
+    '%system_name%': config('systemname', schema),
+    '%link_open%': '',
+    '%link_close%': ''
+}) }}
+
+{{ context_url('contact_form', mpp_anon_ary(schema), {}) }}
+
+{% endautoescape %}
+{% endblock text_content %}

@@ -28,7 +28,6 @@ use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -61,7 +60,6 @@ class UsersListController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         SelectRender $select_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -280,11 +278,8 @@ class UsersListController extends AbstractController
                     $user_cache_service->clear($user_id, $pp->schema());
                 }
 
-                if ($bulk_field == 'status')
-                {
-                    $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                    $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                }
+                $typeahead_service->clear(TypeaheadService::GROUP_ACCOUNTS);
+                $typeahead_service->clear(TypeaheadService::GROUP_USERS);
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
                     ' to ' . $store_value .
@@ -595,40 +590,6 @@ class UsersListController extends AbstractController
 
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
-
-        /**
-         *  TEMP FIX
-         */
-
-        $temp_fix_ary = [
-            'letscode'      => 'code',
-            'accountrole'   => 'role',
-            'saldo'         => 'balance',
-            'saldo_date'    => 'balance_date',
-            'cron_saldo'    => 'periodic_overview_en',
-        ];
-
-        $temp_fix_update = false;
-
-        foreach($temp_fix_ary as $org => $replace)
-        {
-            if (isset($show_columns['u'][$org]))
-            {
-                $show_columns['u'][$replace] = 1;
-                $temp_fix_update = true;
-            }
-
-            unset($show_columns['u'][$org]);
-        }
-
-        if ($temp_fix_update)
-        {
-            $session->set($session_users_columns_key, $show_columns);
-        }
-
-        /**
-         *  END TEMP FIX
-         */
 
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
         $activity_days = $show_columns['p']['a']['days'] ?? 365;
@@ -970,7 +931,7 @@ class UsersListController extends AbstractController
                 $f_col .= '</div>';
                 $f_col .= '</div>';
 
-                $typeahead_service->ini($pp->ary())
+                $typeahead_service->ini()
                     ->add('accounts', ['status' => 'active']);
 
                 if (!$pp->is_guest())

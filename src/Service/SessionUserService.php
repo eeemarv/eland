@@ -175,12 +175,7 @@ class SessionUserService
 
 	public function is_owner(int $item_owner_id):bool
 	{
-		if (!$item_owner_id)
-		{
-			return false;
-		}
-
-		if (!$this->id)
+		if (!$this->is_system_self)
 		{
 			return false;
 		}
@@ -190,7 +185,12 @@ class SessionUserService
 			return false;
 		}
 
-		if (!$this->is_system_self)
+		if (!$item_owner_id)
+		{
+			return false;
+		}
+
+		if (!$this->id)
 		{
 			return false;
 		}

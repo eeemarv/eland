@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
 
@@ -23,8 +22,7 @@ class CategoriesDelController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        HeadingRender $heading_render
+        PageParamsService $pp
     ):Response
     {
         if($request->isMethod('POST'))
@@ -44,13 +42,9 @@ class CategoriesDelController extends AbstractController
             $alert_service->error('Categorie niet verwijderd.');
         }
 
-        $fullname = $db->fetchColumn('select fullname
+        $category = $db->fetchAssoc('select *
             from ' . $pp->schema() . '.categories
             where id = ?', [$id]);
-
-        $heading_render->add('Categorie verwijderen : ');
-        $heading_render->add($fullname);
-        $heading_render->fa('clone');
 
         $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
@@ -74,6 +68,7 @@ class CategoriesDelController extends AbstractController
 
         return $this->render('categories/categories_del.html.twig', [
             'content'   => $out,
+            'category'  => $category,
             'schema'    => $pp->schema(),
         ]);
     }

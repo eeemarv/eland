@@ -15,41 +15,36 @@ export default function(Bloodhound){
 			return;
 		}
 
-		var show_new_en = false;
+		var show_new_user_days = false;
 		var treshold = 0;
 
 		if (data.hasOwnProperty('newuserdays')){
-			show_new_en = true;
+			show_new_user_days = true;
 			treshold = now - (data.newuserdays * 86400);
 		}
 
 		for(var i = 0; i < data.fetch.length; i++){
-
 			var rec = data.fetch[i];
 
-			if (data.hasOwnProperty('render')){
+			if (data.hasOwnProperty('check_uniqueness')){
 
-				if (!data.render.hasOwnProperty('check')){
-					continue;
+				if (data.hasOwnProperty('initial_value')){
+					var initial_sanitized_val = data.initial_value.toLowerCase().trim();
+				} else {
+					initial_sanitized_val = '';
 				}
 
 				var $input_container = $(this).parent().parent();
-				var $exists_msg = $input_container.find('span.exists_msg');
-				var $exists_query_results = $input_container.find('span.exists_query_results');
-				var $query_results = $exists_query_results.find('span.query_results');
-
-				if (data.render.hasOwnProperty('omit')){
-					var exists_omit = data.render.omit.toLowerCase();
-				} else {
-					exists_omit = '';
-				}
+				var $unique_filter_error_message = $input_container.find('[data-unique-filter-error-message]');
+				var $unique_filter_results_help = $input_container.find('[data-unique-filter-results-help]');
+				var $unique_filter_results = $unique_filter_results_help.find('[data-unique-filter-results]');
 
 				var exists_engine = new Bloodhound({
 					prefetch: {
 						url: rec.path,
-						cache: true,
-						cacheKey: rec.cacheKey,
-						ttl: 172800000, // 2 days
+						cache: rec.ttl_client !== 0,
+						cacheKey: rec.cache_key,
+						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},
@@ -59,47 +54,49 @@ export default function(Bloodhound){
 
 				var $this_input = $(this);
 
-				function render_exists(){
-					var lower_case_val = $this_input.val().toLowerCase();
+				function show_uniqueness(){
+					const max_items = 10;
+					var sanitized_val = $this_input.val().toLowerCase().trim();
 
-					exists_engine.search(lower_case_val, function(results_ary){
+					exists_engine.search(sanitized_val, function(results_ary){
 
 						results_ary = $.grep(results_ary, function (item){
-							return item.toLowerCase() !== exists_omit;
+							return item.toLowerCase().trim() !== initial_sanitized_val;
 						});
 
 						if (results_ary.length){
 
-							if (lower_case_val === results_ary[0].toLowerCase()) {
-								$exists_msg.removeClass('hidden');
-								$exists_msg.show();
-								$input_container.addClass('has-error');
+							if (sanitized_val === results_ary[0].toLowerCase().trim()) {
+								$unique_filter_error_message.removeAttr('hidden');
+								$unique_filter_error_message.show();
+								$this_input.addClass('is-invalid');
+								$unique_filter_results_help.addClass('text-danger');
 							} else {
-								$exists_msg.hide();
-								$input_container.removeClass('has-error');
+								$unique_filter_error_message.hide();
+								$this_input.removeClass('is-invalid');
+								$unique_filter_results_help.removeClass('text-danger');
 							}
 
-							$exists_query_results.removeClass('hidden');
-							$exists_query_results.show();
+							$unique_filter_results_help.removeAttr('hidden');
+							$unique_filter_results_help.show();
 
-							$query_results.text(results_ary
-								.slice(0, data.render.check)
+							$unique_filter_results.text(results_ary
+								.slice(0, max_items)
 								.join(', ') +
-								(results_ary.length > data.render.check ?
+								(results_ary.length > max_items ?
 									', ...' : '')
 							);
 						} else {
-							$exists_query_results.hide();
-							$exists_msg.hide();
-							$input_container.removeClass('has-error');
+							$unique_filter_results_help.hide();
+							$unique_filter_error_message.hide();
+							$this_input.removeClass('is-invalid');
+							$unique_filter_results_help.removeClass('text-danger');
 						}
 					});
 				}
 
-				$this_input.keyup(render_exists);
-
-				window.setTimeout(render_exists, 800);
-
+				$this_input.keyup(show_uniqueness);
+				window.setTimeout(show_uniqueness, 800);
 				continue;
 			}
 
@@ -109,7 +106,7 @@ export default function(Bloodhound){
 				var filter = function(users){
 					return $.map(users, function(user){
 
-						var cl = show_new_en && (user.a && (user.a > treshold)) ? ' class="success"' : '';
+						var cl = show_new_user_days && (user.a && (user.a > treshold)) ? ' class="success"' : '';
 
 						switch (user.s){
 							case 0:
@@ -173,9 +170,9 @@ export default function(Bloodhound){
 			datasets.push({data: new Bloodhound({
 					prefetch: {
 						url: rec.path,
-						cache: true,
-						cacheKey: rec.cacheKey,
-						ttl: 172800000,	// 2 days
+						cache: rec.ttl_client !== 0,
+						cacheKey: rec.cache_key,
+						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},

@@ -2,20 +2,22 @@
 
 namespace App\Form\DataTransformer;
 
+use App\Service\DateFormatService;
+use App\Service\PageParamsService;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\TransformationFailedException;
-use Symfony\Component\HttpFoundation\RequestStack;
-use App\Twig\DateFormatExtension;
 
 class DatepickerTransformer implements DataTransformerInterface
 {
-    private $context;
+    protected $date_format_service;
+    protected $pp;
 
-    public function __construct(RequestStack $requestStack, DateFormatExtension $dateFormat)
+    public function __construct(
+        DateFormatService $date_format_service,
+        PageParamsService $pp
+    )
     {
-        $this->dateFormat = $dateFormat;
-        $request = $requestStack->getCurrentRequest();
-        $this->context = $request->attributes->all();
+        $this->date_format_service = $date_format_service;
+        $this->pp = $pp;
     }
 
     public function transform($date)
@@ -25,33 +27,16 @@ class DatepickerTransformer implements DataTransformerInterface
             return '';
         }
 
-        return $this->dateFormat->get($this->context, $date, 'day');
+        return $this->date_format_service->get($date, 'day', $this->pp->schema());
     }
 
-    public function reverseTransform($inputDate)
+    public function reverseTransform($input)
     {
-        if (!$inputDate)
+        if ($input === null || !$input)
         {
             return;
         }
 
-        $parsed = strptime($inputDate, $this->dateFormat->getFormat($this->context, 'day'));
-
-        if ($parsed === false)
-        {
-            throw new TransformationFailedException(sprintf(
-                'User input "%s" could not be parsed to a date',
-                $input_date
-            ));
-        }
-
-        $year = $parsed['tm_year'] + 1900;
-        $month = $parsed['tm_mon'] + 1;
-        $day = $parsed['tm_mday'];
-        $hour = $parsed['tm_hour'];
-        $min = $parsed['tm_min'];
-        $sec = $parsed['tm_sec'];
-
-        return sprintf('%04d-%02d-%02d %02d:%02d:%02d', $year, $month, $day, $hour, $min, $sec);
+        return $this->date_format_service->reverse($input, $this->pp->schema());
     }
 }

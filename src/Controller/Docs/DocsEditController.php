@@ -2,251 +2,126 @@
 
 namespace App\Controller\Docs;
 
+use App\Command\Docs\DocsEditCommand;
+use App\Form\Post\Docs\DocsEditType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\DocRepository;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
-use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
+        DocRepository $doc_repository,
         AlertService $alert_service,
-        HeadingRender $heading_render,
-        ItemAccessService $item_access_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
         MenuService $menu_service,
-        FormTokenService $form_token_service,
         PageParamsService $pp,
         SessionUserService $su,
         string $env_s3_url
     ):Response
     {
-        $errors = [];
+        $docs_edit_command = new DocsEditCommand();
 
-        $access = $request->request->get('access', '');
-        $name = trim($request->request->get('name', ''));
-        $map_name = trim($request->request->get('map_name', ''));
+        $doc = $doc_repository->get($id, $pp->schema());
 
-        $doc = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.docs
-            where id = ?', [$id]);
+        $docs_edit_command->file_location = $env_s3_url . $doc['filename'];
+        $docs_edit_command->original_filename = $doc['original_filename'];
+        $docs_edit_command->name = $doc['name'];
+        $docs_edit_command->access = $doc['access'];
 
-        if (!$doc)
+        if (isset($doc['map_id']))
         {
-            throw new NotFoundHttpException('Document met id ' . $id . ' niet gevonden.');
+            $doc_map = $doc_repository->get_map($doc['map_id'], $pp->schema());
+            $docs_edit_command->map_name = $doc_map['name'];
         }
 
-        if ($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
+        $form = $this->createForm(DocsEditType::class,
+                $docs_edit_command)
+            ->handleRequest($request);
 
-            if (!$access)
-            {
-                $errors[] = 'Vul een zichtbaarheid in.';
-            }
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $docs_edit_command = $form->getData();
+            $name = $docs_edit_command->name;
+            $map_name = $docs_edit_command->map_name;
+            $access = $docs_edit_command->access;
 
             $update = [
-                'name'			=> $name === '' ? null : $name,
-                'access'		=> $access,
+                'access'    => $access,
+                'name'      => $name,
             ];
 
-            if (!count($errors))
+            if (isset($doc['map_id']))
             {
-                if (isset($doc['map_id']))
+                $map_doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
+            }
+            else
+            {
+                $map_doc_count = 0;
+            }
+
+            if (isset($map_name) && strlen($map_name))
+            {
+                $map_id = $doc_repository->get_map_id_by_name($map_name, $pp->schema());
+
+                if (!$map_id)
                 {
-                    $map_doc_count = $db->fetchColumn('select count(*)
-                        from ' . $pp->schema() . '.docs
-                        where map_id = ?', [$doc['map_id']]);
-                }
-                else
-                {
-                    $map_doc_count = 0;
-                }
-
-                if (strlen($map_name))
-                {
-                    $map_id = $db->fetchColumn('select id
-                        from ' . $pp->schema() . '.doc_maps
-                        where lower(name) = ?', [strtolower($map_name)]);
-
-                    if (!$map_id)
-                    {
-                        $db->insert($pp->schema() . '.doc_maps', [
-                            'name'      => $map_name,
-                            'user_id'   => $su->id(),
-                        ]);
-
-                        $map_id = (int) $db->lastInsertId($pp->schema() . '.doc_maps_id_seq');
-
-                        $delete_thumbprint = true;
-                    }
-
-                    if ($map_doc_count === 1 && $map_id !== $doc['map_id'])
-                    {
-                        $delete_map = true;
-                    }
-                }
-                else if ($map_doc_count === 1)
-                {
-                    $delete_map = true;
-                }
-
-                $update['map_id'] = $map_id ?? null;
-
-                if (isset($delete_map) && $delete_map)
-                {
-                    $db->delete($pp->schema() . '.doc_maps', ['id' => $doc['map_id']]);
+                    $map_id = $doc_repository->insert_map($map_name, $su->id(), $pp->schema());
                     $delete_thumbprint = true;
                 }
 
-                if (isset($delete_thumbprint) && $delete_thumbprint)
+                if ($map_doc_count === 1 && $map_id !== $doc['map_id'])
                 {
-                    $typeahead_service->delete_thumbprint('doc_map_names',
-                        $pp->ary(), []);
+                    $delete_map = true;
                 }
-
-                $db->update($pp->schema() . '.docs', $update, ['id' => $id]);
-
-                $alert_service->success('Document aangepast');
-
-                if (!isset($update['map_id']))
-                {
-                    $link_render->redirect('docs', $pp->ary(), []);
-                }
-
-                $link_render->redirect('docs_map', $pp->ary(),
-                    ['id' => $update['map_id']]);
             }
-
-            $alert_service->error($errors);
-        }
-
-        if ($request->isMethod('GET'))
-        {
-            if (isset($doc['map_id']))
+            else if ($map_doc_count === 1)
             {
-                $map_name = $db->fetchColumn('select name
-                    from ' . $pp->schema() . '.doc_maps
-                    where id = ?', [$doc['map_id']]);
+                $delete_map = true;
             }
 
-            $name = $doc['name'] ?? '';
-            $access = $doc['access'];
+            $update['map_id'] = $map_id ?? null;
+
+            if (isset($delete_map) && $delete_map)
+            {
+                $doc_repository->del_map($doc['map_id'], $pp->schema());
+                $delete_thumbprint = true;
+            }
+
+            if (isset($delete_thumbprint) && $delete_thumbprint)
+            {
+                $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);
+            }
+
+            $doc_repository->update_doc($update, $id, $pp->schema());
+
+            $alert_service->success('docs_edit.success');
+
+            if (!isset($update['map_id']))
+            {
+                $link_render->redirect('docs', $pp->ary(), []);
+            }
+
+            $link_render->redirect('docs_map', $pp->ary(),
+                ['id' => $update['map_id']]);
         }
-
-        $heading_render->add('Document aanpassen');
-
-        $out = '<div class="card fcard fcard-info">';
-        $out .= '<div class="card-body">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="location" class="control-label">';
-        $out .= 'Locatie</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
-        $out .= '<span class="fa fa-file-o"></span>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="location" ';
-        $out .= 'name="location" value="';
-        $out .= $env_s3_url . $doc['filename'];
-        $out .= '" readonly>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="org_filename" class="control-label">';
-        $out .= 'Originele bestandsnaam</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
-        $out .= '<span class="fa fa-file-o"></span>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="org_filename" ';
-        $out .= 'name="org_filename" value="';
-        $out .= $doc['original_filename'] ?? '';
-        $out .= '" readonly>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="name" class="control-label">';
-        $out .= 'Naam (optioneel)</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
-        $out .= '<span class="fa fa-file-o"></span>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="name" name="name" value="';
-        $out .= $name ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= $item_access_service->get_radio_buttons('access', $access, 'docs');
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="map_name" class="control-label">';
-        $out .= 'Map</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text form-control">';
-        $out .= '<i class="fa fa-folder-o"></i>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="map_name" name="map_name" value="';
-        $out .= $map_name ?? '';
-        $out .= '" ';
-        $out .= 'data-typeahead="';
-
-        $out .= $typeahead_service->ini($pp->ary())
-            ->add('doc_map_names', [])
-            ->str();
-
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '<p>Optioneel. Creëer een nieuwe map ';
-        $out .= 'of selecteer een bestaande.</p>';
-        $out .= '</div>';
-
-        $out .= $link_render->btn_cancel('docs', $pp->ary(), []);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" value="Aanpassen" class="btn btn-primary btn-lg">';
-
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
 
         $menu_service->set('docs');
 
         return $this->render('docs/docs_edit.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
+            'doc'       => $doc,
             'schema'    => $pp->schema(),
         ]);
     }

@@ -1,13 +1,27 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'news/base/news_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+
+{%- block heading_title -%}
+    {{- 'news_edit.title'|trans({
+        '%subject%': news_item.subject
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('news_show', {'id': news_item.id}) -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
 
 {%- block css -%}
     {{- parent() -}}
-    {{- encore_entry_link_tags('datepicker') -}}
-    {{- encore_entry_link_tags('summernote') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
-	{{- encore_entry_script_tags('datepicker') -}}
-	{{- encore_entry_script_tags('summernote') -}}
 {%- endblock js -%}

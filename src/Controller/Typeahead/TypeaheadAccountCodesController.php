@@ -11,11 +11,19 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadAccountCodesController extends AbstractController
 {
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, []);
+
+        if (isset($cached) && $cached)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $account_codes = [];
 
         $st = $db->prepare('select code
@@ -34,9 +42,9 @@ class TypeaheadAccountCodesController extends AbstractController
             $account_codes[] = $row['code'];
         }
 
-        $crc = (string) crc32(json_encode($account_codes));
-
-        $typeahead_service->set_thumbprint('account_codes', $pp->ary(), [], $crc);
+        $typeahead_service->set_thumbprint(
+            TypeaheadService::GROUP_ACCOUNTS,
+            $thumbprint, $account_codes, []);
 
         return $this->json($account_codes);
     }

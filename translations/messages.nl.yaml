@@ -1,0 +1,439 @@
+var: >
+  %var%
+
+access:
+  admin: Admin
+  admin_explain: Enkel zichtbaar voor administratie.
+  guest: InterSysteem
+  guest_explain: Zichtbaar voor leden en leden van gekoppelde interSystemen.
+  public: Publiek
+  public_explain: Zichtbaar op het publieke internet.
+  user: Leden
+  user_explain: Zichtbaar voor leden.
+  visible: Zichtbaar
+  visible_for: Zichtbaar voor
+  visible_for_access: Zichtbaar voor %access%
+
+btn:
+  add: Toevoegen
+  approve: Goedkeuren
+  cancel: Annuleren
+  delete: Verwijderen
+  edit: Aanpassen
+  filter: Filter
+  generate: Genereer
+  generate_password_explain: >-
+    Genereer automatisch een paswoord
+  password_reset: Reset Paswoord
+  register: Inschrijven
+  save_password: Bewaar paswoord
+  send: Verzenden
+  show: Toon
+  show_columns: Toon Kolommen
+  try_again: Opnieuw proberen
+
+explain:
+  new_password_safety: >-
+    Tip: Gebruik voor de veiligheid nooit
+    hetzelfde paswoord in verschillende toepassingen.
+  email_validation_link: >-
+    Er wordt een aan te klikken validatielink
+    naar je E-mailbox verstuurd.
+  captcha: >-
+    Geef de code in die hieronder getoond wordt.
+
+label:
+  accept: Akkoord
+  access: Toegang
+  access_explain: Wie kan dit zien?
+  account_code: Account Code
+  action: Actie
+  actions: Acties
+  activated: Geactiveerd
+  activity: Activiteit
+  admin_comment: Admin Commentaar
+  amount: Bedrag
+  approved: Goedgekeurd
+  balance: Saldo
+  balance_on_date: Saldo op Datum
+  balance_sum: "Totaal Saldo: %balance_sum%"
+  captcha: Anti-spam verificatiecode
+  code: Code
+  columns: Kolommen
+  comment: Commentaar
+  contact_details: Contacten
+  content: Inhoud
+  created: Gecreëerd
+  description: Omschrijving
+  date: Datum
+  email: E-mail
+  event_date: Agendadatum
+  event_date_explain: Wanneer gaat dit door?
+  exclude_counterparties: Exclusief tegenpartijen
+  file: Bestand
+  file_location: Bestandslocatie
+  first_name: Voornaam
+  from: Van
+  from_date: Vanaf
+  full_name: Volledige Naam
+  hobbies_interests: Hobbies/interesses
+  in: In
+  keep_after_date: Behoud na Datum
+  last_login: Laatste Login
+  last_name: Achternaam
+  link: Link
+  location: Locatie
+  location_explain: Waar?
+  login: Login
+  map: Map
+  map_name: Map
+  max: Max
+  maximum_limit: Maximum Limiet
+  menu: Menu
+  message: Bericht
+  min: Min
+  minimum_limit: Minimum Limiet
+  modified: Aangepast
+  mobile: GSM
+  name: Naam
+  no_email_no_cc: >-
+    Een kopie van je bericht naar jezelf sturen
+    is niet mogelijk want er is geen E-mail
+    adres ingesteld voor je gebruikersaccount.
+  new_password: Nieuw paswoord
+  offer: Aanbod
+  offers: Aanbod
+  offers_and_wants: Vraag en Aanbod
+  optional: Optioneel
+  original_filename: Orginele bestandsnaam
+  out: Uit
+  parsed_address: Ontleed Adres
+  password: Paswoord
+  period_days: Periode in Dagen
+  periodic_mail: Periodieke Overzichts E-mail
+  phone: Telefoon
+  postcode: Postcode
+  replies: Reacties
+  role: Rol
+  save_password: Bewaar Paswoord
+  send_cc: Stuur een kopie van het bericht naar mezelf
+  send_notification_email: Stuur een notificatie E-mail
+  search: Zoeken
+  split_by_char: Split door Teken
+  subject: Onderwerp
+  system_name: Naam van het Systeem
+  time: Tijdstip
+  title: Titel
+  to: Naar
+  total: Totaal
+  to_date: Tot
+  transactions: Transacties
+  transaction_id: Transactie Id
+  user: Gebruiker
+  username: Gebruikersnaam
+  want: Vraag
+  wants: Vraag
+  your_account: Je Account
+  your_email: Je E-Mail adres
+  your_message: Je Bericht
+
+object_info:
+  edit_count: >-
+    , Aangepast: %edit_count%
+
+unique_filter:
+  item_not_unique: >-
+    Dit item bestaat reeds!
+  existing_items: >-
+    Reeds bestaand:
+
+calendar:
+  title: >-
+    Kalender
+calendar_add:
+  title: Kalender evenement toevoegen
+
+calendar_del:
+  title: >-
+    Kalender evenement "%subject%" verwijderen?
+
+calendar_edit:
+  title: >-
+    Kalender evenement "%subject%" aanpassen
+
+calendar_list:
+  title: Kalender evenementen
+
+calendar_month:
+  title: >-
+    %month% %year%
+
+categories:
+  title: Categorieën in vraag en aanbod
+
+categories_add:
+  title: Categorie toevoegen
+
+categories_edit:
+  title: Categorie "%name%" aanpassen
+
+categories_del:
+  title: >-
+    Categorie "%name%" verwijderen?
+
+contact_form:
+  title: Contact
+
+docs:
+  title: Documenten
+  no_maps: Geen mappen.
+
+docs_add:
+  title: >-
+    Document opladen
+  map_name:
+    help: >-
+      Optioneel. Creëer een nieuwe map of selecteer een bestaande.
+
+docs_del:
+  title: >-
+    Document verwijderen?
+
+docs_edit:
+  title: >-
+    Document "%name%" aanpassen
+
+docs_map:
+  title: >-
+    Documenten map "%name%"
+
+docs_map_edit:
+  title: >-
+    Map "%name%" aanpassen
+  not_unique: >-
+    Deze map bestaat reeds!
+
+forum:
+  title: Forum
+  no_topics: >-
+    Er zijn nog geen topics in het forum.
+
+forum_add_topic:
+  title: >-
+    Forum onderwerp toevoegen
+
+forum_del_post:
+  title:
+    admin: >-
+      Reactie van "%user%" verwijderen uit forum onderwerp "%topic_subject%"?
+    personal: >-
+      Je reactie verwijderen uit forum onderwerp "%topic_subject%"?
+
+forum_del_topic:
+  title:
+    admin: >-
+      Forum onderwerp "%topic_subject%" van "%user%" verwijderen?
+    personal: >-
+      Je forum onderwerp "%topic_subject%" verwijderen?
+  posts_warning:
+    0: >-
+      Er zijn geen reacties die verwijderd zullen worden.
+    1: >-
+      Eén reactie zal verwijderd worden.
+    2: >-
+      %count% reacties zullen verwijderd worden.
+
+forum_edit_post:
+  title:
+    personal: >-
+      Je reactie in forum onderwerp "%topic_subject%" aanpassen.
+    admin: >-
+      Reactie van "%user%" in forum onderwerp "%topic_subject" aanpassen.
+
+forum_edit_topic:
+  title:
+    personal: >-
+      Je forum onderwerp "%topic_subject%" aanpassen.
+    admin: >-
+      Forum onderwerp "%topic_subject" van "%user%" aanpassen.
+
+forum_topic:
+  title: >-
+    %topic_subject%
+  add_post: >-
+    Reactie toevoegen
+
+index_contact_form:
+  title: eLAND Contact
+  email_explain: >-
+    Privacy: Je E-mail adres wordt voor geen
+    ander doel gebruikt dan om je terug te
+    kunnen contacteren.
+  hosting_explain: >-
+    Hosting van gemeenschapsmuntsystemen op deze
+    eLAND server wordt gratis en vrijblijvend aangeboden
+    waarbij uw data steeds uw data blijft. Vertrek uit
+    het systeem en alle data opvragen is op elk moment
+    mogelijk. Gebruik dit contactformulier bij interesse.
+  mail:
+    subject:
+      eLAND Contact Formulier
+  success:
+    title: >-
+      Je bericht is verstuurd.
+    explain: >-
+      Er wordt spoedig contact met je opgenomen.
+
+index:
+  title: eLAND index
+  sub_title: Server gemeenschapsmunten
+  hosting_explain: >-
+    Hosting van gemeenschapsmuntsystemen op deze
+    eLAND server wordt gratis en vrijblijvend aangeboden
+    waarbij uw data steeds uw data blijft. Vertrek uit
+    het systeem en alle data opvragen is op elk moment
+    mogelijk. Gebruik %the_contact_form% bij interesse.
+  the_contact_form: het contactformulier
+  eland_link: >-
+    %eland_link% web app voor gemeenschapsmunten
+
+login:
+  title: Login
+  login: Login
+  login_explain: E-mail, Gebruikersnaam of Account Code
+  btn: Inloggen
+  password_reset_request_link: >-
+    Klik hier als je je paswoord vergeten bent.
+
+messages:
+  title: Vraag en aanbod
+
+messages_add:
+  title: >-
+    Vraag of aanbod toevoegen
+
+messages_del:
+  title:
+    offer:
+      admin: >-
+        Aanbod van "%user%" verwijderen?
+      personal: >-
+        Je aanbod verwijderen?
+    want:
+      admin: >-
+        Vraag van "%user%" verwijderen?
+      personal: >-
+        Je vraag verwijderen?
+
+messages_edit:
+  title:
+    offer:
+      admin: >-
+        Aanbod "%subject%" van "%user%" aanpassen
+      personal: >-
+        Je aanbod "%subject%" aanpassen
+    want:
+      admin: >-
+        Vraag "%subject%" van "%user%" aanpassen
+      personal: >-
+        Je vraag "%subject%" aanpassen
+
+messages_show:
+  title:
+    offer: >-
+      Aanbod: %subject%
+    want: >-
+      Vraag: %subject%
+
+news:
+  title: Nieuws
+  no_items: >-
+    Er zijn momenteel geen nieuwsberichten.
+
+news_add:
+  title: Nieuwsbericht toevoegen
+
+news_edit:
+  title: Nieuwsbericht "%subject%" aanpassen
+
+news_del:
+  title: Nieuwsbericht verwijderen?
+
+news_show:
+  title: >-
+    %subject%
+
+password_reset_request:
+  title: Paswoord vergeten
+  email_explain: >-
+    Vul hier het E-mail adres in waarmee je geregistreerd
+    staat in het Systeem. Een link om je paswoord te
+    resetten wordt naar je E-mailbox gestuurd.
+  btn: Zend paswoord reset link
+
+password_reset_set:
+  title: Nieuw paswoord ingeven
+
+register:
+  title: Inschrijven
+
+register_confirm_fail:
+  title: Inschrijving niet geslaagd.
+
+register_confirm_success:
+  title: Inschrijving geslaagd.
+
+support:
+  title: Support
+  explain: >-
+    Stuur een bericht naar de
+    administratie van %system_name%.
+
+transactions:
+  title: Transacties
+
+transactions_add:
+  title: Nieuwe Transactie
+
+transactions_edit:
+  title: >-
+    Omschrijving transactie aanpassen
+  explain:
+    admins_only: >-
+      Enkel Admins kunnen de omschrijving
+      van een transactie aanpassen.
+    only_when_necessary: >-
+      Pas de omschrijving van een transactie
+      enkel aan wanneer het echt noodzakelijk is!
+      Dit om verwarring te vermijden.
+    never_undo: >-
+      Transacties kunnen nooit ongedaan
+      gemaakt worden. Doe een tegenboeking
+      bij vergissing.
+
+users:
+  title: Gebruikers
+
+users_add:
+  title: Gebruiker toevoegen
+
+users_edit_admin:
+  title: Gebruiker "%name%" aanpassen
+
+users_edit_personal:
+  title: Je profiel aanpassen
+
+users_del:
+  title: Gebruiker verwijderen?
+  verify_label: >-
+    Ik ben wis en waarachtig zeker dat
+    ik deze gebruiker wil verwijderen.
+  warning: >-
+    Alle Gegevens, Vraag en aanbod,
+    Contacten en Afbeeldingen van %name%
+    worden verwijderd.
+
+users_password_set:
+  title:
+    personal: Nieuw paswoord ingeven voor je gebruikersaccount
+    admin: Nieuw paswoord ingeven voor "%user%"

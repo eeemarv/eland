@@ -11,11 +11,19 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadPostcodesController extends AbstractController
 {
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, []);
+
+        if (isset($cached) && $cached)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $postcodes = [];
 
         $st = $db->prepare('select distinct postcode
@@ -34,9 +42,9 @@ class TypeaheadPostcodesController extends AbstractController
             $postcodes[] = $row['postcode'];
         }
 
-        $crc = (string) crc32(json_encode($postcodes));
-
-        $typeahead_service->set_thumbprint('postcodes', $pp->ary(), [], $crc);
+        $typeahead_service->set_thumbprint(
+            TypeaheadService::GROUP_USERS,
+            $thumbprint, $postcodes, []);
 
         return $this->json($postcodes);
     }

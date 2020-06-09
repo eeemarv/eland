@@ -1,4 +1,44 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'users/users_single_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_del.title'|trans({
+        '%name%': account(user.id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
+    {%- block form_content -%}
+
+    <h2>
+        {{- oi.user_link(user.id, schema) -}}
+    </h2>
+
+    <p class="text-danger">
+        {{- 'users_del.warning'|trans({
+            '%name%': account(user.id, schema)
+        }) -}}
+    </p>
+
+    {{- form_row(form.verify, {
+        'label': 'users_del.verify_label',
+        'label_attr': {'class': 'checkbox-custom'},
+    }) -}}
+
+    {{- bl.cancel('users_show_admin', {'id': user.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

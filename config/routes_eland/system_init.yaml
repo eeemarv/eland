@@ -2,13 +2,19 @@ init_clear_users_cache:
   controller: App\Controller\Init\InitClearUsersCacheController
   path: /clear-users-cache
   methods: GET
+  defaults:
+    module: init
 
 init_queue_geocoding:
   controller: App\Controller\Init\InitQueueGeocodingController
   path: /queue-geocoding/{start<%assert.id%>?0}
   methods: GET
+  defaults:
+    module: init
 
 init:
   controller: App\Controller\Init\InitController
   path: /
   methods: GET
+  defaults:
+    module: init

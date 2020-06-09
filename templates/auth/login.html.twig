@@ -1,4 +1,33 @@
-{%- extends 'base/sidebar.html.twig' -%}
+{%- extends 'auth/login_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.login, {
+        'label': 'login.login',
+        'help': 'login.login_explain',
+        'addon_fa': 'user',
+        'attr': {'minlength': 2, 'maxlength': 60}
+    }) -}}
+
+    {{- form_row(form.password, {
+        'label': 'label.password',
+        'help': l.pp_link('password_reset_request', {}, 'login.password_reset_request_link'),
+        'help_html': true,
+        'attr': {'minlength': 5, 'maxlength': 60}
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'login.btn',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

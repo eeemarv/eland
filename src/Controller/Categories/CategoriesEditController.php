@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\PageParamsService;
@@ -24,7 +23,6 @@ class CategoriesEditController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         PageParamsService $pp,
         SelectRender $select_render
     ):Response
@@ -60,7 +58,7 @@ class CategoriesEditController extends AbstractController
             $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
             $message_count = $db->fetchColumn('select count(*)
-                from ' . $pp->schema() . '.messsages
+                from ' . $pp->schema() . '.messages
                 where category_id = ?', [$id]);
 
             if (!$cat['name'])
@@ -118,7 +116,7 @@ class CategoriesEditController extends AbstractController
         $parent_cats = [0 => '-- Hoofdcategorie --'];
 
         $rs = $db->prepare('select id, name
-            from ' . $pp->schema . '.categories
+            from ' . $pp->schema() . '.categories
             where leafnote = 0
             order by name');
 
@@ -130,10 +128,6 @@ class CategoriesEditController extends AbstractController
         }
 
         $id_parent = $cat['id_parent'] ?? 0;
-
-        $heading_render->add('Categorie aanpassen : ');
-        $heading_render->add($cat['name']);
-        $heading_render->fa('clone');
 
         $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
@@ -181,6 +175,7 @@ class CategoriesEditController extends AbstractController
 
         return $this->render('categories/categories_edit.html.twig', [
             'content'   => $out,
+            'category'  => $cat,
             'schema'    => $pp->schema(),
         ]);
     }

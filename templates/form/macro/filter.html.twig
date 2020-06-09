@@ -1,0 +1,11 @@
+{%- macro context(all_params) -%}
+    {%- if all_params.s.col is defined -%}
+        <input name="s[col]" value="{{- all_params.s.col -}}" type="hidden">
+    {%- endif -%}
+    {%- if all_params.s.order is defined -%}
+        <input name="s[order]" value="{{- all_params.s.order -}}" type="hidden">
+    {%- endif -%}
+    {%- if all_params.p.limit is defined -%}
+        <input name="p[limit]" value="{{- all_params.p.limit -}}" type="hidden">
+    {%- endif -%}
+{%- endmacro context -%}

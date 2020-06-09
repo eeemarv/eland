@@ -27,26 +27,62 @@
 
 	{{- a.alert() -}}
 
+{#
+	{%- block top_buttons -%}
 	<div class="row">
-		<div class="col top-buttons mb-3">
+		<div class="col mb-2">
 
-	{%- block btn_top -%}
+		{%- block btn_top -%}
+			{%- block btn_top_add -%}
+			{%- endblock btn_top_add -%}
+			{%- block btn_top_edit -%}
+			{%- endblock btn_top_edit -%}
+			{%- block btn_top_del -%}
+			{%- endblock btn_top_del -%}
+		{%- endblock btn_top -%}
+
+		{%- block btn_nav -%}
+		<div class="pull-right">
+			{%- block btn_nav_admin -%}
+			{%- endblock btn_nav_admin -%}
+			{%- block btn_nav_columns_show -%}
+			{%- endblock btn_nav_columns_show -%}
+			{%- block btn_nav_view -%}
+			{%- endblock btn_nav_view -%}
+			{%- block btn_nav_nav -%}
+			{%- endblock btn_nav_nav -%}
+		</div>
+		{%- endblock btn_nav -%}
+		</div>
+	</div>
+	{%- endblock top_buttons -%}
+#}
+
+	<div class="row">
+		<div class="col mb-2">
 		{{- btn_top() -}}
-	{%- endblock btn_top -%}
-
-	{%- block btn_nav -%}
 		{{- btn_nav() -}}
-	{%- endblock btn_nav -%}
-
 		</div>
 	</div>
 
 	{%- block heading -%}
-		{{- heading() -}}
-		{{- heading_sub() -}}
+		<h1 class="mb-3">
+			<i class="fa fa-{%- block heading_fa -%}{{- main_menu_def[active_menu].fa -}}{%- endblock heading_fa -%}"></i>&nbsp;
+			{%- block heading_title -%}
+				{{- (active_menu ~ '.title')|trans -}}
+			{%- endblock heading_title -%}
+		</h1>
 	{%- endblock heading -%}
 
+	{%- block heading_sub -%}{%- endblock -%}
+
+	{#
+		{{- heading() -}}
+		{{- heading_sub() -}}
+	#}
+	{#
 	<div class="mb-3"></div>
+	#}
 
 	{%- block content -%}
 		{{- content|raw -}}

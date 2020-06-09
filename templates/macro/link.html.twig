@@ -1,0 +1,35 @@
+{%- macro pp_path(route, params) -%}
+    {{- path(route, pp_ary()|merge(params|default({}))) -}}
+{%- endmacro pp_path -%}
+
+{%- macro pp_link_label(route, params, label) -%}
+    {%- import _self as l -%}
+    <a href="{{- l.pp_path(route, params) -}}">
+    {{- label -}}
+    </a>
+{%- endmacro pp_link_label -%}
+
+{%- macro pp_link(route, params, trans_key) -%}
+    {%- import _self as l -%}
+    <a href="{{- l.pp_path(route, params) -}}">
+    {{- trans_key|trans -}}
+    </a>
+{%- endmacro pp_link -%}
+
+{%- macro pp_link_account(user_id, schema) -%}
+    <a href="{{- path('users_show' ~ (pp_role('admin') ? '_admin' : ''), pp_ary()|merge({'id': user_id})) -}}">
+    {{- account(user_id, schema) -}}
+    </a>
+{%- endmacro pp_link_account -%}
+
+{%- macro link(route, params, trans_key) -%}
+    <a href="{{- path(route, params) -}}">
+    {{- trans_key|trans -}}
+    </a>
+{%- endmacro link -%}
+
+{%- macro s3_link(file, label) -%}
+    <a href="{{- s3_url(file) -}}" target="_self">
+        {{- label -}}
+    </a>
+{%- endmacro s3_link -%}

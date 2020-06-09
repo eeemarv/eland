@@ -1,0 +1,15 @@
+{%- macro css(location) -%}
+    <link type="text/css" rel="stylesheet" href="{{- asset(location) -}}">
+{%- endmacro -%}
+
+{%- macro js(location) -%}
+    <script src="{{- asset(location) -}}"></script>
+{%- endmacro -%}
+
+{%- macro css_p(location, package) -%}
+    <link type="text/css" rel="stylesheet" href="{{- asset(location, package|default('css')) -}}">
+{%- endmacro -%}
+
+{%- macro js_p(location, package) -%}
+    <script src="{{- asset(location, package|default('js')) -}}"></script>
+{%- endmacro -%}

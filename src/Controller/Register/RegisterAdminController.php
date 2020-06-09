@@ -6,7 +6,6 @@ use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
@@ -29,7 +28,6 @@ class RegisterAdminController extends AbstractController
         HeadingRender $heading_render,
         FormTokenService $form_token_service,
         DataTokenService $data_token_service,
-        CaptchaService $captcha_service,
         ConfigService $config_service,
         AlertService $alert_service,
         PageParamsService $pp,
@@ -129,7 +127,7 @@ class RegisterAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $captcha_service->get_form_field(true);
+        // captcha
 
         $out .= '<input type="submit" class="btn btn-primary btn-lg" ';
         $out .= 'value="Inschrijven" name="zend" disabled>';

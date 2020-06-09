@@ -2,10 +2,11 @@
 
 namespace App\Controller\Docs;
 
-use App\Render\HeadingRender;
+use App\Command\Docs\DocsDelCommand;
+use App\Form\Post\DelType;
 use App\Render\LinkRender;
+use App\Repository\DocRepository;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
@@ -14,46 +15,44 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
-use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsDelController extends AbstractController
 {
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
-        LoggerInterface $logger,
+        DocRepository $doc_repository,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         S3Service $s3_service,
+        LoggerInterface $logger,
         TypeaheadService $typeahead_service,
         MenuService $menu_service,
-        PageParamsService $pp,
-        string $env_s3_url
+        PageParamsService $pp
     ):Response
     {
-        $errors = [];
+        $doc = $doc_repository->get($id, $pp->schema());
+        $doc['name'] ??= $doc['original_filename'];
 
-        $doc = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.docs
-            where id = ?', [$id]);
-
-        if (!$doc)
+        if (isset($doc['map_id']) && $doc['map_id'])
         {
-            throw new NotFoundHttpException('Document met id ' . $id . ' niet gevonden.');
+            $doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
         }
 
-        if ($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
+        $docs_del_command = new DocsDelCommand();
 
-            if (!count($errors))
+        $form = $this->createForm(DelType::class,
+                $docs_del_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $alert_trans_ary = [
+                '%name%'    => $doc['name'],
+            ];
+
+            if ($doc_repository->del($id, $pp->schema()))
             {
                 $err = $s3_service->del($doc['filename']);
 
@@ -63,78 +62,32 @@ class DocsDelController extends AbstractController
                         ['schema' => $pp->schema()]);
                 }
 
-                if (isset($doc['map_id']))
+                if (isset($doc_count) && $doc_count < 2)
                 {
-                    $doc_count = $db->fetchColumn('select count(*)
-                        from ' . $pp->schema() . '.docs
-                        where map_id = ?', [$doc['map_id']]);
-
-                    if ($doc_count < 2)
-                    {
-                        $db->delete($pp->schema() . '.doc_maps', ['id' => $doc['map_id']]);
-
-                        $typeahead_service->delete_thumbprint('doc_map_names',
-                            $pp->ary(), []);
-
-                        unset($doc['map_id']);
-                    }
+                    $doc_repository->del_map($doc['map_id'], $pp->schema());
+                    $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);
+                    unset($doc['map_id']);
                 }
 
-                $db->delete($pp->schema() . '.docs', ['id' => $id]);
-
-                $alert_service->success('Het document werd verwijderd.');
+                $alert_service->success('docs_del.success', $alert_trans_ary);
 
                 if (isset($doc['map_id']))
                 {
-                    $link_render->redirect('docs_map', $pp->ary(),
-                        ['id' => $doc['map_id']]);
+                    $link_render->redirect('docs_map', $pp->ary(), ['id' => $doc['map_id']]);
                 }
 
                 $link_render->redirect('docs', $pp->ary(), []);
             }
 
-            $alert_service->error($errors);
+            $alert_service->error('docs_del.error');
         }
-
-        $heading_render->add('Document verwijderen?');
-
-        $out = '<div class="card fcard fcard-info">';
-        $out .= '<div class="card-body">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<p>';
-        $out .= '<a href="';
-        $out .= $env_s3_url . $doc['filename'];
-        $out .= '" target="_self">';
-        $out .= htmlspecialchars($doc['name'] ?? $doc['original_filename'], ENT_QUOTES);
-        $out .= '</a>';
-        $out .= '</p>';
-
-        if (isset($doc['map_id']))
-        {
-            $out .= $link_render->btn_cancel('docs_map', $pp->ary(),
-                ['id' => $doc['map_id']]);
-        }
-        else
-        {
-            $out .= $link_render->btn_cancel('docs', $pp->ary(), []);
-        }
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="confirm_del" class="btn btn-danger btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
 
         $menu_service->set('docs');
 
         return $this->render('docs/docs_del.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+            'form'          => $form->createView(),
+            'doc'           => $doc,
+            'schema'        => $pp->schema(),
         ]);
     }
 }

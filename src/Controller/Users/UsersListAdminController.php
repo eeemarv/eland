@@ -25,7 +25,6 @@ use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -57,7 +56,6 @@ class UsersListAdminController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         SelectRender $select_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -90,7 +88,6 @@ class UsersListAdminController extends AbstractController
             $mail_addr_user_service,
             $mail_queue,
             $select_render,
-            $thumbprint_accounts_service,
             $typeahead_service,
             $user_cache_service,
             $pp,

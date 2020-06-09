@@ -65,16 +65,41 @@
 
 {%- block jumbotron -%}{%- endblock -%}
 
+{%- set main_menu_def = {
+	'messages': {'fa': 'newspaper-o', 'access': 'guest'},
+	'users': {'fa': 'users', 'access': 'guest'},
+	'accounts': {'fa': 'coffee'},
+	'transactions': {'fa': 'exchange', 'access': 'guest'},
+	'news': {'fa': 'calendar-o', 'access': 'guest'},
+	'calendar': {'fa': 'calendar'},
+	'docs': {'fa': 'files-o', 'access': 'guest'},
+	'forum': {'fa': 'comments-o', 'config': 'forum_en', 'access': 'guest'},
+	'support': {'fa': 'ambulance', 'access': 'user'},
+	'home': {'fa': 'home'},
+	'login': {'fa': 'sign-in', 'access': 'anonymous'},
+	'contact_form': {'fa': 'comment-o', 'config': 'contact_form_en', 'access': 'anonymous'},
+	'register': {'fa': 'check-square-o', 'config': 'registration_en', 'access': 'anonymous'}
+} -%}
+
+{%- set admin_menu_def = {
+	'config': {'fa': 'cogs'},
+	'export': {'fa': 'download'},
+	'logs': {'fa': 'history'}
+} -%}
+
 <div class="container-fluid">
 	{%- block page_container -%}
 		<div class="row row-offcanvas">
 			<div class="menu-offcanvas pt-2">
 				<div class="nav nav-pills flex-column" aria-orientation="vertical">
-					{%- for menu_item in menu_sidebar() -%}
-						<a href="{{- path(menu_item.route, pp_ary()) -}}" class="nav-link{% if menu_item.active %} active{% endif %}{% if menu_item.config_only %} nav-config-only{% endif %}">
-							<i class="fa fa-{{- menu_item.fa -}}"></i>&nbsp;
-							{{- menu_item.label -}}
-						</a>
+					{%- for r, m in main_menu_def -%}
+						{%- if m.access is defined and item_visible(m.access)
+							and (m.config is not defined or config(m.config, schema)) -%}
+								<a href="{{- path(r|var_route, pp_ary()) -}}" class="nav-link{% if r == active_menu %} active{% endif %}{% if m.nav_config_only is defined and m.nav_config_only %} nav-config-only{% endif %}">
+									<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+									{{- (r ~ '.title')|trans -}}
+								</a>
+						{%- endif -%}
 					{%- endfor -%}
 				</div>
 				{%- block text_left -%}{% endblock -%}
@@ -82,7 +107,8 @@
 			<div class="sidebar-offcanvas"></div>
 			<div class="col">
 				<div class="content-container-overlay"></div>
-				{%- block content_container -%}{%- endblock -%}
+				{%- block content_container -%}
+				{%- endblock -%}
 			</div>
 		</div>
 
@@ -93,9 +119,17 @@
 {%- block extra_footer -%}{%- endblock -%}
 
 <footer class="footer">
-	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	<p>
+		{{- 'index.eland_link'|trans({
+			'%eland_link%': '<a href="https://eland.letsa.net">eLAND</a>'
+		})|raw -}}
+	</p>
 	{%- block index_link -%}
-		<p><a href="{{- path('index') -}}">Index</a></p>
+		<p>
+			<a href="{{- path('index') -}}">
+				{{- 'index.title'|trans -}}
+			</a>
+		</p>
 	{%- endblock index_link -%}
 </footer>
 

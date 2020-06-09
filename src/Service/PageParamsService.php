@@ -75,7 +75,7 @@ class PageParamsService
 				exit;
 			}
 
-			throw new NotFoundHttpException('Systeem "' . $this->system . '" niet gevonden.');
+			throw new NotFoundHttpException('System "' . $this->system . '" not found.');
 		}
 
 		$this->schema = $this->systems_service->get_schema($this->system);

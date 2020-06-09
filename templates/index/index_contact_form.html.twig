@@ -1,0 +1,99 @@
+{%- extends 'base/base.html.twig' -%}
+
+{%- block title -%}
+	{{- 'index_contact_form.title'|trans -}}
+{%- endblock title -%}
+{%- block navbar -%}{%- endblock -%}
+
+{%- block jumbotron -%}
+	<div class="jumbotron">
+		<div class="container eland-jumbo">
+			<h1>
+				{{- block('title') -}}
+			</h1>
+			<p>
+				{{- 'index.sub_title'|trans -}}
+			</p>
+		</div>
+
+		<div class="container eland-jumbo-image">
+			<div class="eland-contact"></div>
+		</div>
+	</div>
+{%- endblock jumbotron -%}
+
+{%- block page_container -%}
+
+	<div class="container">
+
+		{%- if form_ok is defined -%}
+			{%- embed 'embed/card.html.twig' -%}
+				{%- block card_type -%}success{%- endblock -%}
+				{%- block body -%}
+					<h2>
+						{{- 'index_contact_form.success.title'|trans -}}
+					</h2>
+					<p>
+						{{- 'index_contact_form.success.explain'|trans -}}
+					</p>
+
+					<a href="{{- path('index') -}}"  class="btn btn-default btn-lg border border-secondary-li">
+						{{- 'index.title'|trans -}}
+					</a>
+
+				{%- endblock body -%}
+			{%- endembed -%}
+
+			<br>
+
+		{%- else -%}
+
+		{%- embed 'form/form_embed.html.twig' -%}
+			{%- block form_content -%}
+
+			{{- form_row(form.email, {
+				'label': 'label.your_email',
+				'help': 'index_contact_form.email_explain'
+			}) -}}
+
+			{{- form_row(form.message, {
+				'label': 'label.your_message',
+				'attr': {'rows': 5, 'minlength': 10, 'maxlength': 5000}
+			}) -}}
+
+			{{- form_row(form.captcha, {
+				'label': 'label.captcha',
+				'help': 'explain.captcha',
+				'addon_fa': 'code'
+			}) -}}
+
+			{{- form_widget(form.submit,{
+				'label': 'btn.send',
+				'attr': {'class': 'btn-info'}
+			}) -}}
+
+			{%- endblock form_content -%}
+		{%- endembed -%}
+
+		{%- endif -%}
+
+		<br>
+
+		{%- embed 'embed/card.html.twig' -%}
+			{%- block body -%}
+				{{- 'index_contact_form.hosting_explain'|trans -}}
+			{%- endblock body -%}
+		{%- endembed -%}
+
+	</div>
+
+	<br><br>
+{%- endblock page_container -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

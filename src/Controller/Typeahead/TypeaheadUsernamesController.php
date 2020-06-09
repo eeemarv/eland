@@ -11,11 +11,19 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadUsernamesController extends AbstractController
 {
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, []);
+
+        if (isset($cached) && $cached)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $usernames = [];
 
         $st = $db->prepare('select name
@@ -34,9 +42,9 @@ class TypeaheadUsernamesController extends AbstractController
             $usernames[] = $row['name'];
         }
 
-        $crc = (string) crc32(json_encode($usernames));
-
-        $typeahead_service->set_thumbprint('usernames', $pp->ary(), [], $crc);
+        $typeahead_service->set_thumbprint(
+            TypeaheadService::GROUP_USERS,
+            $thumbprint, $usernames, []);
 
         return $this->json($usernames);
     }

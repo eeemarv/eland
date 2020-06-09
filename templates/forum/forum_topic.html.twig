@@ -1,11 +1,60 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/lbl.html.twig' as lbl -%}
 
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-{%- endblock css -%}
+{%- block heading_title -%}
+    {{- 'forum_topic.title'|trans({
+        '%topic_subject%': forum_topic.subject,
+    }) -}}
+{%- endblock heading_title -%}
 
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('summernote') -}}
-{%- endblock js -%}
+{%- block before_form -%}
+
+    {%- if show_access -%}
+        {{- lbl.p_access(forum_topic.access) -}}
+    {%- endif -%}
+
+    {%- for p in forum_posts -%}
+        {%- embed 'embed/post.html.twig' -%}
+            {%- import 'macro/object_info.html.twig' as io -%}
+            {%- import 'macro/btn_link.html.twig' as bl -%}
+            {%- block post_content -%}
+                {{- p.content|raw -}}
+            {%- endblock post_content -%}
+            {%- block post_info -%}
+                {{- io.post_info(p, schema) -}}
+            {%- endblock post_info -%}
+            {%- block post_buttons -%}
+                {%- if pp_role('admin') or s_is_owner(p.user_id) -%}
+                    <span class="pull-right">
+                    {%- if loop.first -%}
+                        {{- bl.edit('forum_edit_topic', {'id': forum_topic.id}) -}}
+                        {{- bl.del('forum_del_topic', {'id': forum_topic.id}) -}}
+                    {% else -%}
+                        {{- bl.edit('forum_edit_post', {'id': p.id}) -}}
+                        {{- bl.del('forum_del_post', {'id': p.id}) -}}
+                    {%- endif -%}
+                    </span>
+                {%- endif -%}
+            {%- endblock post_buttons -%}
+        {%- endembed -%}
+    {%- endfor -%}
+{%- endblock before_form -%}
+
+{%- block form -%}
+    {%- if pp_role('user') or pp_role('admin') -%}
+        {%- set form_submit_btn -%}
+            {%- if form.submit is defined -%}
+                {{- form_widget(form.submit,{
+                        'label': 'btn.add',
+                        'attr': {'class': 'btn-success'}
+                    }) -}}
+            {%- endif -%}
+        {%- endset -%}
+
+        <h3>
+            {{- 'forum_topic.add_post'|trans -}}
+        </h3>
+
+        {{- parent() -}}
+    {%- endif -%}
+{%- endblock form -%}

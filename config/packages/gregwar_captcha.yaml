@@ -1,0 +1,6 @@
+gregwar_captcha:
+  width: 200
+  height: 60
+  length: 5
+  distortion: false
+  ignore_all_effects: true

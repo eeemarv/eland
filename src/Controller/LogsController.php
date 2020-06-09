@@ -215,8 +215,8 @@ class LogsController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
-            ->add('log_types', [])
+        $out .= $typeahead_service->ini()
+            ->add('log_types', [], 0)
             ->str();
 
         $out .= '" ';
@@ -238,7 +238,7 @@ class LogsController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
 
         $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini()
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -390,7 +390,7 @@ class LogsController extends AbstractController
 
         $menu_service->set('logs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('logs/logs.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

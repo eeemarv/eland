@@ -1,4 +1,46 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'docs/base/docs_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- embed 'embed/search_box.html.twig' -%}
+{%- endembed -%}
+
+{%- embed 'embed/table.html.twig' -%}
+    {%- import 'macro/table.html.twig' as t -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+
+    {%- block thead -%}
+        {{- t.th('label.map', {'data-sort-initial': 'true'}) -}}
+        {%- if pp_role('admin') -%}
+            {{- t.th('btn.edit', {'data-sort-ignnore': 'true'}) -}}
+        {%- endif -%}
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for map in doc_maps -%}
+            <tr class="table-info">
+                {{- t.td_pp_link('docs_map', {'id': map.id}, map.name ~ ' (' ~ map.doc_count ~ ')') -}}
+                {%- if pp_role('admin') -%}
+                    <td>
+                        {{- bl.edit('docs_map_edit', {'id': map.id}) -}}
+                    </td>
+                {%- endif -%}
+            </tr>
+        {%- else -%}
+            <tr>
+                <td colspan="{{- pp_role('admin') ? '2' : '1' -}}">
+                    {{- 'docs.no_maps'|trans -}}
+                </td>
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}
+
+{%- if docs -%}
+    {%- embed 'docs/embed/docs_list.html.twig' -%}
+    {%- endembed -%}
+{%- endif -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

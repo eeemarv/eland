@@ -1,4 +1,8 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'messages/messages_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{ 'messages_add.title'|trans -}}
+{%- endblock heading_title -%}
 
 {%- block css -%}
     {{- parent() -}}

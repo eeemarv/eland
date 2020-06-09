@@ -18,7 +18,7 @@ import 'blueimp-file-upload/js/jquery.fileupload-process';
 import 'blueimp-file-upload/js/jquery.fileupload-image';
 import 'blueimp-file-upload/js/jquery.fileupload-validate';
 
-import fileupload from './pages/fileupload';
+import fileupload from './overall/fileupload';
 
 $(document).ready(function() {
     fileupload();

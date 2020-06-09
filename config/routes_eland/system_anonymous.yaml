@@ -2,46 +2,64 @@ login:
   path: /login
   controller: App\Controller\Auth\LoginController
   methods: GET|POST
+  defaults:
+    module: login
 
-contact:
+contact_form:
   path: /contact
   controller: App\Controller\ContactForm\ContactFormController
   methods: GET|POST
+  defaults:
+    module: contact_form
 
-contact_token:
+contact_form_confirm:
   path: /contact/{token<%assert.token%>}
-  controller: App\Controller\ContactForm\ContactFormTokenController
+  controller: App\Controller\ContactForm\ContactFormConfirmController
   methods: GET
+  defaults:
+    module: contact_form
 
 register:
   path: /register
   controller: App\Controller\Register\RegisterController
   methods: GET|POST
+  defaults:
+    module: register
 
-register_token:
+register_confirm:
   path: /register/{token<%assert.token%>}
-  controller: App\Controller\Register\RegisterTokenController
+  controller: App\Controller\Register\RegisterConfirmController
   methods: GET
+  defaults:
+    module: register
 
-password_reset:
+password_reset_request:
   path: /password-reset
-  controller: App\Controller\PasswordReset\PasswordResetController
+  controller: App\Controller\PasswordReset\PasswordResetRequestController
   methods: GET|POST
+  defaults:
+    module: password_reset
 
-password_reset_token:
+password_reset_set:
   path: /password-reset/{token<%assert.token%>}
-  controller: App\Controller\PasswordReset\PasswordResetTokenController
+  controller: App\Controller\PasswordReset\PasswordResetSetController
   methods: GET|POST
+  defaults:
+    module: password_reset
 
 mollie_webhook:
   path: /mollie/webhook
   controller: App\Controller\Mollie\MollieWebhookController
   methods: POST
+  defaults:
+    module: mollie
 
 mollie_checkout_anonymous:
   path: /mollie/checkout/{token<%assert.big_token%>}
   controller: App\Controller\Mollie\MollieCheckoutAnonymousController
   methods: GET|POST
+  defaults:
+    module: mollie
 
 system_admin:
   prefix: /{role_short<%assert.role_short.admin%>}
@@ -63,3 +81,5 @@ home:
   path: /
   controller: App\Controller\HomeController
   methods: GET
+  defaults:
+    module: home

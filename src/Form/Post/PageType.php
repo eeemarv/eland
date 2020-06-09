@@ -29,12 +29,8 @@ class PageType extends AbstractType
 			])
 			->add('access', ChoiceType::class, [
                 'choices'   => [
-                    'label.admin'               => 'admin',
-                    'label.user'                => 'user',
-                    'label.interlets_admin'     => 'interlets',
-                    'label.interlets_user'      => 'interlets_user',
-                    'label.public'              => 'public',
-                ], 
+
+                ],
 			])
 			->add('content', TextareaType::class, [
             ])

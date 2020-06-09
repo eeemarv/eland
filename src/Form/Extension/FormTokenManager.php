@@ -39,13 +39,13 @@ class FormTokenManager implements FormTokenManagerInterface
 
     public function get_error_message(string $value):string
     {
-        $key = $this->prefix . $value;
+        $key = FormTokenManagerInterface::STORE_PREFIX . $value;
         $count = $this->predis->incr($key);
 
         if ($count === 1)
         {
             $this->predis->del($key);
-            return 'form.error.form_token.expired';
+            return 'form.form_token.expired';
         }
 
         if ($count === 2)
@@ -53,6 +53,6 @@ class FormTokenManager implements FormTokenManagerInterface
             return '';
         }
 
-        return 'form.error.form_token.double';
+        return 'form.form_token.double';
     }
 }

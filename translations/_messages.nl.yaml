@@ -144,12 +144,6 @@ label:
   postcode: Postcode
   role: Rol
   save_password: Bewaar Paswoord
-  slug: Slak
-  slug_explain: >-
-    De "Slak" is het laatste gedeelte van de URL.
-    Deze kan uit kleine letters, cijfers en
-    ingesloten koppeltekens bestaan. Gebruik minstens
-    4 tekens en "index" voor de thuispagina.
   split_by_char: Split door Teken
   subject: Onderwerp
   system_name: Naam van het Systeem

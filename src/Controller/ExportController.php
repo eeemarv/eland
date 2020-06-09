@@ -139,7 +139,7 @@ class ExportController extends AbstractController
         $heading_render->add('Export');
         $heading_render->fa('download');
 
-        $out .= '<div class="card fcard fcard-info">';
+        $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out = '<form>';
@@ -199,7 +199,7 @@ class ExportController extends AbstractController
 
         $menu_service->set('export');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('export/export.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

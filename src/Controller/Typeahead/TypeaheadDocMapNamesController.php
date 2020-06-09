@@ -11,11 +11,19 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadDocMapNamesController extends AbstractController
 {
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, []);
+
+        if (isset($cached) && $cached)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $map_names = [];
 
         $st = $db->executeQuery('select name
@@ -27,9 +35,9 @@ class TypeaheadDocMapNamesController extends AbstractController
             $map_names[] = $name;
         }
 
-        $crc = (string) crc32(json_encode($map_names));
-
-        $typeahead_service->set_thumbprint('doc_map_names', $pp->ary(), [], $crc);
+        $typeahead_service->set_thumbprint(
+            TypeaheadService::GROUP_DOC_MAP_NAMES,
+            $thumbprint, $map_names, []);
 
         return $this->json($map_names);
     }

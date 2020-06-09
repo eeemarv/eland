@@ -1,9 +1,44 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'news/base/news_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- embed 'embed/search_box.html.twig' -%}
+{%- endembed -%}
+
+{%- if news_items -%}
+    {%- embed 'embed/table.html.twig' -%}
+        {%- import 'macro/table.html.twig' as t -%}
+        {%- block thead -%}
+            {{- t.th('label.subject') -}}
+            {{- t.th('label.event_date') -}}
+            {%- if show_access -%}
+                {{- t.th('access.visible_for', {'data-hide': 'phone, tablet'}) -}}
+            {%- endif -%}
+        {%- endblock thead -%}
+        {%- block tbody -%}
+            {%- for n in news_items -%}
+                <tr>
+                    {{- t.td_pp_link('news_show', {'id': n.id}, n.subject) -}}
+                    {{- t.td_date_format(n.event_at, 'day', schema) -}}
+                    {%- if show_access -%}
+                        {{- t.td_access(n.access) -}}
+                    {%- endif -%}
+                </tr>
+            {%- endfor -%}
+        {%- endblock tbody -%}
+    {%- endembed -%}
+{%- else -%}
+    {%- include 'news/include/no_items.html.twig' -%}
+{%- endif -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}
+    {{- encore_entry_link_tags('footable') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
+    {{- encore_entry_script_tags('footable') -}}
 {%- endblock js -%}

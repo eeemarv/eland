@@ -29,7 +29,6 @@ use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -59,7 +58,6 @@ class UsersEditAdminController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -91,7 +89,6 @@ class UsersEditAdminController extends AbstractController
             $systems_service,
             $typeahead_service,
             $user_cache_service,
-            $thumbprint_accounts_service,
             $mail_addr_user_service,
             $mail_addr_system_service,
             $mail_queue,
@@ -129,7 +126,6 @@ class UsersEditAdminController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -636,15 +632,8 @@ class UsersEditAdminController extends AbstractController
                     }
                 }
 
-                $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('inactive', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('im', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('ip', $pp->ary(), $pp->schema());
-
-                $typeahead_service->delete_thumbprint('account_codes', $pp->ary(), []);
-                $typeahead_service->delete_thumbprint('usernames', $pp->ary(), []);
-                $typeahead_service->delete_thumbprint('postcodes', $pp->ary(), []);
+                $typeahead_service->clear(TypeaheadService::GROUP_ACCOUNTS);
+                $typeahead_service->clear(TypeaheadService::GROUP_USERS);
 
                 $intersystems_service->clear_cache($su->schema());
 
@@ -813,7 +802,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '" required maxlength="20" ';
             $out .= 'data-typeahead="';
 
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini()
                 ->add('account_codes', [])
                 ->str([
                     'render'	=> [
@@ -853,7 +842,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '" required maxlength="50" ';
             $out .= 'data-typeahead="';
 
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini()
                 ->add('usernames', [])
                 ->str([
                     'render'	=> [
@@ -923,7 +912,7 @@ class UsersEditAdminController extends AbstractController
         $out .= 'required maxlength="6" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini()
             ->add('postcodes', [])
             ->str();
 

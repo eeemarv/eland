@@ -2,313 +2,439 @@ status:
   controller: App\Controller\StatusController
   path: /status
   methods: GET
+  defaults:
+    module: status
 
 categories_del:
   controller: App\Controller\Categories\CategoriesDelController
   path: /categories/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: messages
 
 categories_edit:
   controller: App\Controller\Categories\CategoriesEditController
   path: /categories/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: messages
 
 categories_add:
   controller: App\Controller\Categories\CategoriesAddController
   path: /categories/add
   methods: GET|POST
+  defaults:
+    module: messages
 
 categories:
   controller: App\Controller\Categories\CategoriesController
   path: /categories
   methods: GET
+  defaults:
+    module: messages
 
 contact_types_del:
   controller: App\Controller\ContactTypes\ContactTypesDelController
   path: /contact-types/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: users
 
 contact_types_edit:
   controller: App\Controller\ContactTypes\ContactTypesEditController
   path: /contact-types/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: users
 
 contact_types_add:
   controller: App\Controller\ContactTypes\ContactTypesAddController
   path: /contact-types/add
   methods: GET|POST
+  defaults:
+    module: users
 
 contact_types:
   controller: App\Controller\ContactTypes\ContactTypesController
   path: /contact-types
   methods: GET
+  defaults:
+    module: users
 
 contacts_del_admin:
   controller: App\Controller\Contacts\ContactsDelAdminController
   path: /contacts/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: users
 
 contacts_edit_admin:
   controller: App\Controller\Contacts\ContactsEditAdminController
   path: /contacts/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: users
 
 contacts_add_admin:
   controller: App\Controller\Contacts\ContactsAddAdminController
   path: /contacts/add
   methods: GET|POST
+  defaults:
+    module: users
 
 contacts:
   controller: App\Controller\Contacts\ContactsAdminController
   path: /contacts
   methods: GET
+  defaults:
+    module: users
 
 users_contacts_edit_admin:
   controller: App\Controller\UsersContacts\UsersContactsEditAdminController
   path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: users
 
 users_contacts_del_admin:
   controller: App\Controller\UsersContacts\UsersContactsDelAdminController
   path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: users
 
 users_contacts_add_admin:
   controller: App\Controller\UsersContacts\UsersContactsAddAdminController
   path: /users/{user_id<%assert.id%>}/contacts/add
   methods: GET|POST
+  defaults:
+    module: users
 
 config:
   controller: App\Controller\ConfigController
   path: /config/{tab<%assert.config_tab%>?system-name}
   methods: GET|POST
+  defaults:
+    module: config
 
 intersystems_edit:
   controller: App\Controller\Intersystems\IntersystemsEditController
   path: /intersystems/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: intersystems
 
 intersystems_del:
   controller: App\Controller\Intersystems\IntersystemsDelController
   path: /intersystems/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: instersystems
 
 intersystems_add:
   controller: App\Controller\Intersystems\IntersystemsAddController
   path: /intersystems/add
   methods: GET|POST
+  defaults:
+    module: intersystems
 
 intersystems_show:
   controller: App\Controller\Intersystems\IntersystemsShowController
   path: /intersystems/{id<%assert.id%>}
   methods: GET
+  defaults:
+    module: intersystems
 
 intersystems:
   controller: App\Controller\Intersystems\IntersystemsController
   path: /intersystems
   methods: GET
+  defaults:
+    module: intersystems
 
 export:
   controller: App\Controller\ExportController
   path: /export
   methods: GET
+  defaults:
+    module: export
 
 autominlimit:
   controller: App\Controller\AutoMinLimitController
   path: /autominlimit
   methods: GET|POST
+  defaults:
+    module: transactions
 
 mass_transaction:
   controller: App\Controller\MassTransactionController
   path: /mass-transaction
   methods: GET|POST
+  defaults:
+    module: transactions
 
 logs:
   controller: App\Controller\LogsController
   path: /logs
   methods: GET
+  defaults:
+    module: logs
 
 users_image_del_admin:
   controller: App\Controller\UsersImage\UsersImageDelAdminController
   path: /users/{id<%assert.id%>}/image/del
   methods: GET|POST
+  defaults:
+    module: users
 
 users_image_upload_admin:
   controller: App\Controller\UsersImage\UsersImageUploadAdminController
   path: /users/{id<%assert.id%>}/image/upload
   methods: POST
+  defaults:
+    module: users
 
-users_password_admin:
-  controller: App\Controller\Users\UsersPasswordAdminController
+users_password_set_admin:
+  controller: App\Controller\Users\UsersPasswordSetAdminController
   path: /users/{id<%assert.id%>}/password
   methods: GET|POST
+  defaults:
+    module: users
 
 users_show_admin:
   controller: App\Controller\Users\UsersShowAdminController
   path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
   methods: GET|POST
+  defaults:
+    module: users
 
 users_del_admin:
   controller: App\Controller\Users\UsersDelAdminController
   path: /users/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: users
 
 users_edit_admin:
   controller: App\Controller\Users\UsersEditAdminController
   path: /users/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: users
 
 users_add:
   controller: App\Controller\Users\UsersAddController
   path: /users/add
   methods: GET|POST
+  defaults:
+    module: users
 
 users_tiles_admin:
   controller: App\Controller\Users\UsersTilesAdminController
   path: /users/tiles/{status<%assert.account_status%>?active}
   methods: GET
+  defaults:
+    module: users
 
 users_list_admin:
   controller: App\Controller\Users\UsersListAdminController
   path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
+  defaults:
+    module: users
 
 transactions_edit:
   controller: App\Controller\Transactions\TransactionsEditController
   path: /transactions/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: transactions
 
 news_add:
   controller: App\Controller\News\NewsAddController
   path: /news/add
   methods: GET|POST
+  defaults:
+    module: news
 
 news_del:
   controller: App\Controller\News\NewsDelController
   path: /news/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: news
 
 news_edit:
   controller: App\Controller\News\NewsEditController
   path: /news/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: news
 
 calendar_add:
   controller: App\Controller\CalendarAddController
   path: /calendar/add
   methods: GET|POST
+  defaults:
+    module: calendar
 
 calendar_del:
   controller: App\Controller\CalendarDelController
   path: /calendar/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: calendar
 
 calendar_edit:
   controller: App\Controller\CalendarEditController
   path: /calendar/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: calendar
 
 docs_edit:
   controller: App\Controller\Docs\DocsEditController
   path: /docs/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: docs
 
 docs_del:
   controller: App\Controller\Docs\DocsDelController
   path: /docs/{id<%assert.id%>}/del
   methods: GET|POST
+  defaults:
+    module: docs
 
 docs_add:
   controller: App\Controller\Docs\DocsAddController
   path: /docs/add
   methods: GET|POST
+  defaults:
+    module: docs
 
 docs_map_edit:
   controller: App\Controller\Docs\DocsMapEditController
   path: /docs/map/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    module: docs
 
 typeahead_doc_map_names:
   controller: App\Controller\Typeahead\TypeaheadDocMapNamesController
-  path: /typeahead-doc-map-names
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/doc-map-names
   methods: GET
+  defaults:
+    module: docs
 
 typeahead_log_types:
   controller: App\Controller\Typeahead\TypeaheadLogTypesController
-  path: /typeahead-log-types
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/log-types
   methods: GET
+  defaults:
+    module: logs
 
 transactions_sum_in:
   controller: App\Controller\TransactionsSumInController
   path: /transactions-sum-in/{days<%assert.id%>}
   methods: GET
+  defaults:
+    module: transactions
 
 transactions_sum_out:
   controller: App\Controller\TransactionsSumOutController
   path: /transactions-sum-out/{days<%assert.id%>}
   methods: GET
+  defaults:
+    module: transactions
 
 weighted_balances:
   controller: App\Controller\WeightedBalancesController
   path: /weighted-balances/{days<%assert.id%>}
   methods: GET
+  defaults:
+    module: transactions
 
 logo_upload:
   controller: App\Controller\LogoUploadController
   path: /logo/upload
   methods: POST
+  defaults:
+    module: config
 
 logo_del:
   controller: App\Controller\LogoDelController
   path: /logo/del
   methods: GET|POST
+  defaults:
+    module: config
 
 static_content_image_upload:
   controller: App\Controller\StaticContentImageUploadController
   path: /static-content/image-upload
   methods: POST
+  defaults:
+    module: static_content
 
 static_content:
   controller: App\Controller\StaticContentController
   path: /static-content
   methods: POST
+  defaults:
+    module: static_content
 
 login_admin:
   path: /login
   controller: App\Controller\Auth\LoginAdminController
   methods: GET
+  defaults:
+    module: login
 
-contact_admin:
+contact_form_admin:
   path: /contact
   controller: App\Controller\ContactForm\ContactFormAdminController
   methods: GET
+  defaults:
+    module: contact_form
 
 register_admin:
   path: /register
   controller: App\Controller\Register\RegisterAdminController
   methods: GET
+  defaults:
+    module: register
 
 password_reset_admin:
   path: /password-reset
   controller: App\Controller\PasswordReset\PasswordResetAdminController
   methods: GET
+  defaults:
+    module: password_reset
 
 home_admin:
   path: /
   controller: App\Controller\HomeAdminController
   methods: GET
+  defaults:
+    module: home
 
 mollie_config:
   path: /mollie/config
   controller: App\Controller\Mollie\MollieConfigController
   methods: GET|POST
+  defaults:
+    module: mollie
 
 mollie_payments_add:
   path: /mollie/payments/add/{status<%assert.account_status%>?active}
   controller: App\Controller\Mollie\MolliePaymentsAddController
   methods: GET|POST
+  defaults:
+    module: mollie
 
 mollie_payments:
   path: /mollie/payments
   controller: App\Controller\Mollie\MolliePaymentsController
   methods: GET|POST
+  defaults:
+    module: mollie

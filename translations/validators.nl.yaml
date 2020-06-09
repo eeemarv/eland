@@ -1,0 +1,50 @@
+doc_map:
+  not_unique: Deze map naam bestaat reeds
+
+form:
+  form_token:
+    expired: >-
+      De maximale duurtijd van het formulier
+      is overschreden.
+      Gelieve het opnieuw te proberen.
+    double: >-
+      Een dubbele invoer van het formulier werd voorkomen.
+
+login:
+  login:
+    email_not_unique: >-
+      Je kan dit E-mail adres niet gebruiken
+      om in te loggen want het is niet
+      uniek aanwezig in dit Systeem. Gebruik
+      je Account Code of Gebruikersnaam.
+    name_not_unique: >-
+      Je kan deze gebruikersnaam niet gebruiken
+      om in te loggen want deze is niet
+      uniek aanwezig in dit Systeem. Gebruik
+      je E-mail adres of Account Code.
+    code_not_unique: >-
+      Je kan deze Account Code niet gebruiken
+      om in te loggen want deze is niet
+      uniek aanwezig in dit Systeem. Gebruik
+      je E-mail adres of gebruikersnaam.
+    not_known: >-
+      Onbekend gebruikersaccount.
+    not_active: >-
+      Dit Gebruikersaccount is niet actief.
+  password:
+    not_correct: >-
+      Het paswoord is niet correct.
+
+email_unique_to_active_user:
+  not_unique: >-
+    Het E-mail adres is niet uniek in dit Systeem.
+  not_known: >-
+    Het E-mail adres is niet bekend in dit Systeem.
+
+email_not_registered_yet:
+  already_registered: >-
+    Er bestaat reeds een inschrijving met
+    dit E-mail adres.
+
+password_strength:
+  Het paswoord is niet sterk genoeg.

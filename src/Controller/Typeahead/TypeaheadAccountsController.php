@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection as Db;
 class TypeaheadAccountsController extends AbstractController
 {
     public function __invoke(
+        string $thumbprint,
         string $status,
         Db $db,
         TypeaheadService $typeahead_service,
@@ -25,6 +26,17 @@ class TypeaheadAccountsController extends AbstractController
         if(!$pp->is_admin() && !in_array($status, ['active', 'extern']))
         {
             return $this->json(['error' => 'No access.'], 403);
+        }
+
+        $params = [
+            'status'	=> $status,
+        ];
+
+        $cached = $typeahead_service->get_cached_data($thumbprint, $params);
+
+        if (isset($cached) && $cached)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
         switch($status)
@@ -73,13 +85,9 @@ class TypeaheadAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $params = [
-            'status'	=> $status,
-        ];
-
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint('accounts', $pp->ary(), $params, $crc);
+        $typeahead_service->set_thumbprint(
+            TypeaheadService::GROUP_ACCOUNTS,
+            $thumbprint, $accounts, $params);
 
         return $this->json($accounts);
     }

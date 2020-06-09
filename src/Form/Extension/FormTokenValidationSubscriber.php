@@ -42,12 +42,8 @@ class FormTokenValidationSubscriber implements EventSubscriberInterface
 
             if ($error_message)
             {
-                if (null !== $this->translator)
-                {
-                    $error_message = $this->translator->trans($error_message);
-                }
-
-                $form->addError(new FormError($error_message));
+                $translated_error_message = $this->translator->trans($error_message, [], 'validators');
+                $form->addError(new FormError($translated_error_message));
             }
 
             if (is_array($data))

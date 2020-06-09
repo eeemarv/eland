@@ -1,0 +1,78 @@
+{%- macro nav_dropdown(label, fa) -%}
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            <span class="fa fa-{{- fa -}}">
+            </span> {{ label|trans -}}
+            <span class="caret">
+            </span>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+{%- endmacro nav_dropdown -%}
+
+{%- macro nav_dropdown_end() -%}
+        </ul>
+    </li>
+{%- endmacro nav_dropdown_end -%}
+
+{%- macro li_param(key, item, active_menu, acc_sch, param) -%}
+    <li{%- if active_menu == key %} class="active"{%- endif -%}>
+        <a href="{{- path(item['route'], acc_sch|merge(param|default({}))) -}}">
+            <i class="fa fa-{{- item['fa'] -}}">
+            </i> {{ item['title']|trans -}}
+        </a>
+    </li>
+{%- endmacro li_param -%}
+
+{%- macro li(key, item, active_menu, acc_sch) -%}
+    <li class="nav-item{%- if active_menu == key %} active{%- endif -%}">
+        <a class="nav-link" href="{{- path(item['route'], acc_sch) -}}">
+            <i class="fa fa-{{- item['fa'] -}}">
+            </i> {{ item['title']|trans -}}
+        </a>
+    </li>
+{%- endmacro li -%}
+
+{%- macro li_302(item, acc_sch) -%}
+    <li>
+        <a href="{{- path(item['route'], acc_sch) -}}">
+            <i class="fa fa-{{- item['fa'] -}}">
+            </i> {{ item['title']|trans -}}
+        </a>
+    </li>
+{%- endmacro li_302 -%}
+
+{%- macro li_302_no_param(item) -%}
+    <li class="nav-item">
+        <a href="{{- path(item['route']) -}}">
+            <i class="fa fa-{{- item['fa'] -}}">
+            </i> {{ item['title']|trans -}}
+        </a>
+    </li>
+{%- endmacro li_302_no_param -%}
+
+{%- macro li_anon(key, item, active_menu, schema) -%}
+    <li class="nav-item{%- if active_menu == key %} active{%- endif -%}">
+        <a href="{{- path(item['route'], {'schema': schema}) -}}" class="nav-link">
+            <i class="fa fa-{{- item['fa'] -}}">
+            </i> {{ item['title']|trans -}}
+        </a>
+    </li>
+{%- endmacro li_anon -%}
+
+{%- macro divider() -%}
+    <li class="divider"></li>
+{%- endmacro divider -%}
+
+{%- macro item(key, item, active_menu, acc_sch) -%}
+    <a class="list-group-item{%- if active_menu == key %} active{%- endif -%}" href="{{- path(item['route'], acc_sch) -}}">
+        <i class="fa fa-{{- item['fa'] -}}">
+        </i> {{ item['title']|trans -}}
+    </a>
+{%- endmacro item -%}
+
+{%- macro item_anon(key, item, active_menu, schema) -%}
+    <a class="list-group-item{%- if active_menu == key %} active{%- endif -%}" href="{{- path(item['route'], {'schema': schema}) -}}">
+        <i class="fa fa-{{- item['fa'] -}}">
+        </i> {{ item['title']|trans -}}
+    </a>
+{%- endmacro item_anon -%}

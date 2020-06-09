@@ -1,4 +1,39 @@
-{%- extends('base/navbar.html.twig') -%}
+{%- extends 'forum/base/forum_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'forum_del_post.title.'
+        ~ (s_is_owner(forum_post.user_id) ? 'personal' : 'admin') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%topic_subject%': forum_topic.subject,
+        '%user%': account(forum_post.user_id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
+    {%- block form_content -%}
+
+    {{- forum_post.content|raw -}}
+
+    <p>
+        {{- oi.object_info(forum_post.user_id, forum_post.created_at, null, schema) -}}
+    </p>
+
+    {{- bl.cancel('forum_topic', {'id': forum_topic.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

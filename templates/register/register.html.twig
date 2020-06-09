@@ -1,4 +1,63 @@
-{%- extends('base/sidebar.html.twig') -%}
+{%- extends 'register/register_base.html.twig' -%}
+
+{%- block content -%}
+
+{{- config('registration_top_text', schema)|raw -}}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.email, {
+        'label': 'label.your_email',
+        'help': 'explain.email_validation_link'
+    }) -}}
+
+    {{- form_row(form.first_name, {
+        'label': 'label.first_name',
+        'addon_fa': 'user'
+    }) -}}
+
+    {{- form_row(form.last_name, {
+        'label': 'label.last_name',
+        'addon_fa': 'user'
+    }) -}}
+
+    {{- form_row(form.postcode, {
+        'label': 'label.postcode',
+        'addon_fa': 'map-marker'
+    }) -}}
+
+    {{- form_row(form.mobile, {
+        'label': 'label.mobile',
+        'sub_label': 'label.optional',
+        'addon_fa': 'mobile',
+        'required': false
+    }) -}}
+
+    {{- form_row(form.phone, {
+        'label': 'label.phone',
+        'sub_label': 'label.optional',
+        'required': false
+    }) -}}
+
+    {{- form_row(form.captcha, {
+        'label': 'label.captcha',
+        'help': 'explain.captcha',
+        'addon_fa': 'code'
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.send',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{{- config('registration_bottom_text', schema)|raw -}}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

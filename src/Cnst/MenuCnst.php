@@ -55,7 +55,7 @@ class MenuCnst
             'fa'        => 'sign-in',
             'label'     => 'Login',
         ],
-        'contact'   => [
+        'contact_form'   => [
             'access'    => 'anonymous',
             'fa'        => 'comment-o',
             'label'     => 'Contact',
