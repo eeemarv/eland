@@ -28,7 +28,6 @@ use App\Service\MailAddrUserService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -61,7 +60,6 @@ class UsersListController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         SelectRender $select_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -280,11 +278,8 @@ class UsersListController extends AbstractController
                     $user_cache_service->clear($user_id, $pp->schema());
                 }
 
-                if ($bulk_field == 'status')
-                {
-                    $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                    $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                }
+                $typeahead_service->clear(TypeaheadService::GROUP_ACCOUNTS);
+                $typeahead_service->clear(TypeaheadService::GROUP_USERS);
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
                     ' to ' . $store_value .
