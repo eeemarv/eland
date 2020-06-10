@@ -2,6 +2,8 @@
 
 namespace App\Controller\Messages;
 
+use App\Command\Messages\MessagesAddCommand;
+use App\Form\Post\News\MessagesType;
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,6 +53,53 @@ class MessagesAddController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $messages_add_command = new MessagesAddCommand();
+
+        $form = $this->createForm(MessagesType::class,
+                $messages_add_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $messages_add_command = $form->getData();
+
+            $user_id = $messages_add_command->user_id;
+            $user_id = $su->id();
+
+            $message = [
+                'is_offer'      => $messages_add_command->offer_want === 'offer',
+                'is_want'       => $messages_add_command->offer_want === 'want',
+                'subject'       => $messages_add_command->subject,
+                'content'       => $messages_add_command->content,
+                'category_id'   => $messages_add_command->category_id,
+                'expires_at'    => $messages_add_command->validity_days, // something
+                'amount'        => $messages_add_command->amount,
+                'units'         => $messages_add_command->units,
+                'access'        => $messages_add_command->access,
+                'user_id'       => $user_id,
+            ];
+
+            $id = $message_repository->insert($message, $pp->schema());
+
+            if ($su->is_owner($user_id))
+            {
+                $alert_service->success('message_add.success.personal');
+            }
+            else
+            {
+                $alert_service->success('message_add.success.admin');
+            }
+
+            $link_render->redirect('news_show', $pp->ary(),
+                ['id' => $id]);
+        }
+
+
+
+
+
+
         $content = MessagesEditController::messages_form(
             $request,
             0,
