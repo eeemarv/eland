@@ -1,19 +1,25 @@
-{%- extends 'messages/messages_base.html.twig' -%}
+{%- extends 'messages/base/messages_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
 
 {%- block heading_title -%}
     {{ 'messages_add.title'|trans -}}
 {%- endblock heading_title -%}
 
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('messages'|var_route) -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.add',
+        'attr': {'class': 'btn-success'}
+    }) -}}
+{%- endset -%}
+
 {%- block css -%}
     {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-    {{- encore_entry_link_tags('fileupload') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-	{{- encore_entry_script_tags('summernote') -}}
-	{{- encore_entry_script_tags('sortable') -}}
-	{{- encore_entry_script_tags('fileupload') -}}
 {%- endblock js -%}

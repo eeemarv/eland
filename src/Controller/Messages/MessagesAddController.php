@@ -3,57 +3,48 @@
 namespace App\Controller\Messages;
 
 use App\Command\Messages\MessagesAddCommand;
-use App\Form\Post\News\MessagesType;
-use App\HtmlProcess\HtmlPurifier;
+use App\Form\Post\Messages\MessagesType;
+use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Psr\Log\LoggerInterface;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
+use App\Repository\MessageRepository;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
-use App\Service\IntersystemsService;
-use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\S3Service;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
-use App\Service\VarRouteService;
-use Doctrine\DBAL\Connection as Db;
 
 class MessagesAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        Db $db,
-        LoggerInterface $logger,
+        MessageRepository $message_repository,
         AlertService $alert_service,
-        AssetsService $assets_service,
-        ConfigService $config_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
-        IntersystemsService $intersystems_service,
-        ItemAccessService $item_access_service,
-        SelectRender $select_render,
         LinkRender $link_render,
+        AccountRender $account_render,
         MenuService $menu_service,
-        TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service,
+        ConfigService $config_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        HtmlPurifier $html_purifier,
-        S3Service $s3_service,
-        string $env_s3_url
+        SessionUserService $su
     ):Response
     {
         $messages_add_command = new MessagesAddCommand();
+
+        if ($pp->is_admin())
+        {
+            $messages_add_command->user_id = $su->id();
+        }
+
+        $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
+
+        if ($validity_days)
+        {
+/*            $expires_at_unix = time() + ((int) $validity_days * 86400);
+            $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix); */
+            $messages_add_command->expires_at = $validity_days;
+        }
 
         $form = $this->createForm(MessagesType::class,
                 $messages_add_command)
@@ -64,70 +55,45 @@ class MessagesAddController extends AbstractController
         {
             $messages_add_command = $form->getData();
 
-            $user_id = $messages_add_command->user_id;
-            $user_id = $su->id();
+            $user_id = $pp->is_admin() ? $messages_add_command->user_id : $su->id();
+
+            $is_offer = $messages_add_command->offer_want === 'offer';
+            $subject = $messages_add_command->subject;
 
             $message = [
-                'is_offer'      => $messages_add_command->offer_want === 'offer',
-                'is_want'       => $messages_add_command->offer_want === 'want',
-                'subject'       => $messages_add_command->subject,
+                'is_offer'      => $is_offer ? 't' : 'f',
+                'is_want'       => $is_offer ? 'f' : 't',
+                'subject'       => $subject,
                 'content'       => $messages_add_command->content,
                 'category_id'   => $messages_add_command->category_id,
-                'expires_at'    => $messages_add_command->validity_days, // something
+                'expires_at'    => $messages_add_command->expires_at,
                 'amount'        => $messages_add_command->amount,
                 'units'         => $messages_add_command->units,
+                'image_files'   => $messages_add_command->image_files,
                 'access'        => $messages_add_command->access,
                 'user_id'       => $user_id,
+                'created_by'    => $su->id(),
             ];
 
             $id = $message_repository->insert($message, $pp->schema());
 
-            if ($su->is_owner($user_id))
-            {
-                $alert_service->success('message_add.success.personal');
-            }
-            else
-            {
-                $alert_service->success('message_add.success.admin');
-            }
+            $alert_trans_key = 'messages_add.success.';
+            $alert_trans_key .= $is_offer ? 'offer.' : 'want.';
+            $alert_trans_key .= $su->is_owner($user_id) ? 'personal' : 'admin';
 
-            $link_render->redirect('news_show', $pp->ary(),
+            $alert_service->success($alert_trans_key, [
+                '%message_subject%' => $subject,
+                '%user%'            => $account_render->get_str($user_id, $pp->schema()),
+            ]);
+
+            $link_render->redirect('messages_show', $pp->ary(),
                 ['id' => $id]);
         }
 
-
-
-
-
-
-        $content = MessagesEditController::messages_form(
-            $request,
-            0,
-            'add',
-            $db,
-            $logger,
-            $alert_service,
-            $assets_service,
-            $config_service,
-            $form_token_service,
-            $heading_render,
-            $intersystems_service,
-            $item_access_service,
-            $select_render,
-            $link_render,
-            $menu_service,
-            $typeahead_service,
-            $pp,
-            $su,
-            $vr,
-            $user_cache_service,
-            $html_purifier,
-            $s3_service,
-            $env_s3_url
-        );
+        $menu_service->set('messages');
 
         return $this->render('messages/messages_add.html.twig', [
-            'content'   => $content,
+            'form'      => $form->createView(),
             'schema'    => $pp->schema(),
         ]);
     }

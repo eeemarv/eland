@@ -12,6 +12,7 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -26,13 +27,19 @@ class MessagesDelController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         AccountRender $account_render,
+        ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
-        $message = $message_repository->get_visible_for_page($id, $pp->schema());
+        $message = $message_repository->get($id, $pp->schema());
+
+        if (!$item_access_service->is_visible($message['access']))
+        {
+            throw new AccessDeniedHttpException('Access denied for message ' . $id);
+        }
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {

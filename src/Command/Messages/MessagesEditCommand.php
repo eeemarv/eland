@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class MessagesAddCommand
+class MessagesEditCommand
 {
     public $user_id;
     public $offer_want;

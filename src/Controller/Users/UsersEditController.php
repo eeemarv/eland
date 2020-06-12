@@ -26,7 +26,6 @@ use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -54,7 +53,6 @@ class UsersEditController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -86,7 +84,6 @@ class UsersEditController extends AbstractController
             $systems_service,
             $typeahead_service,
             $user_cache_service,
-            $thumbprint_accounts_service,
             $mail_addr_user_service,
             $mail_addr_system_service,
             $mail_queue,

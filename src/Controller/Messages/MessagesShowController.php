@@ -514,6 +514,7 @@ class MessagesShowController extends AbstractController
 
         return $this->render('messages/messages_show.html.twig', [
             'content'   => $out,
+            'message'   => $message,
             'schema'    => $pp->schema(),
         ]);
     }

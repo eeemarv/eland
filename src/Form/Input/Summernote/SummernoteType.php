@@ -10,10 +10,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
-
 class SummernoteType extends AbstractType
 {
-    protected $html_purify_transformer;
+    protected HtmlPurifyTransformer $html_purify_transformer;
 
     public function __construct(
         HtmlPurifyTransformer $html_purify_transformer
@@ -42,8 +41,8 @@ class SummernoteType extends AbstractType
             'attr'              => [
                 'rows'          => 5,
                 'minlength'     => 10,
-                'maxlength'     => 5000,
-            ]
+                'maxlength'     => 100000,
+            ],
         ]);
     }
 

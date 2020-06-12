@@ -14,6 +14,7 @@ use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -35,6 +36,7 @@ class MessagesEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        MessageRepository $message_repository,
         LoggerInterface $logger,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -82,8 +84,16 @@ class MessagesEditController extends AbstractController
             $env_s3_url
         );
 
+        $message = $message_repository->get($id, $pp->schema());
+
+        if (!($pp->is_admin() || $su->is_owner($message['user_id'])))
+        {
+            throw new AccessDeniedHttpException('Access Denied for edit message with id ' . $id);
+        }
+
         return $this->render('messages/messages_edit.html.twig', [
             'content'   => $content,
+            'message'   => $message,
             'schema'    => $pp->schema(),
         ]);
     }

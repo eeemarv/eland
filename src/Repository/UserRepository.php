@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Filter\UserFilter;
 use App\Filter\FilterQuery;
 use App\Service\UserCacheService;
 use App\Util\Sort;
@@ -22,6 +21,20 @@ class UserRepository
 	{
 		$this->db = $db;
 		$this->user_cache_service = $user_cache_service;
+	}
+
+	public function get_account_str(int $id, string $schema):string
+	{
+        $account_str = $this->db->fetchColumn('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
+            from ' . $schema . '.users
+			where id = ?', [$id]);
+
+		if (!$account_str)
+		{
+			throw new NotFoundHttpException('User with id ' . $id . ' not found.');
+		}
+
+		return $account_str;
 	}
 
 	public function count_email(
@@ -129,6 +142,22 @@ class UserRepository
 			from ' . $schema . '.users u
 			where u.status in (1, 2)
 				and lower(u.code) = ?', [$code_lowercase]);
+	}
+
+	public function get_by_code(string $code, string $schema):int
+	{
+		$code_lowercase = strtolower($code);
+
+		$id = $this->db->fetchColumn('select u.id
+			from ' . $schema . '.users u
+			where lower(u.code) = ?', [$code_lowercase]);
+
+		if (!$id)
+		{
+			throw new NotFoundHttpException('User with code ' . $code . ' not found.');
+		}
+
+		return $id;
 	}
 
 	public function get_active_id_by_code(string $code, string $schema):int

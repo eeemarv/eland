@@ -9,44 +9,40 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MessageRepository
 {
 	protected Db $db;
-	protected ItemAccessService $item_access_service;
 
 	public function __construct(
-		Db $db,
-		ItemAccessService $item_access_service
+		Db $db
 	)
 	{
 		$this->db = $db;
-		$this->item_access_service = $item_access_service;
 	}
 
-	public function get_visible_for_page(int $id, string $schema):array
+	public function get(int $id, string $schema):array
 	{
-        $stmt = $this->db->executeQuery('select *
+        $message = $this->db->fetchAssoc('select *
             from ' . $schema . '.messages
-            where id = ?
-                and access in (?)', [
-                $id,
-                $this->item_access_service->get_visible_ary_for_page()
-            ], [
-                \PDO::PARAM_INT,
-                Db::PARAM_STR_ARRAY,
+            where id = ?', [
+                $id
             ]);
 
-        $data = $stmt->fetch();
-
-		if (!$data)
+		if (!$message)
 		{
 			throw new NotFoundHttpException('Message ' . $id . ' not found.');
         }
 
-		return $data;
+		return $message;
 	}
 
 	public function del(int $id, string $schema):bool
 	{
 		return $this->db->delete($schema . '.messages',
 			['id' => $id]) ? true : false;
+	}
+
+	public function insert(array $message, string $schema):int
+	{
+		$this->db->insert($schema . '.messages', $message);
+		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
 	}
 
 	public function get_count_for_user_id(int $user_id, string $schema):int
