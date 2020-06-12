@@ -1,5 +1,8 @@
+category:
+  not_exists: De categorie bestaat niet.
+
 doc_map:
-  not_unique: Deze map naam bestaat reeds
+  not_unique: Deze map naam bestaat reeds.
 
 form:
   form_token:

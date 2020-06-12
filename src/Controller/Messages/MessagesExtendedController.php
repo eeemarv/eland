@@ -93,7 +93,8 @@ class MessagesExtendedController extends AbstractController
             $sf_owner = $pp->is_user()
                 && $msg['user_id'] === $su->id();
 
-            $exp = strtotime($msg['expires_at']) < $time;
+            $exp = isset($msg['expires_at'])
+                && strtotime($msg['expires_at'] . ' UTC') < $time;
 
             $out .= '<div class="card printview mb-3">';
             $out .= '<div class="card-body';

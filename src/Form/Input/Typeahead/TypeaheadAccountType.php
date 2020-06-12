@@ -62,6 +62,7 @@ class TypeaheadAccountType extends AbstractType
         $resolver->setDefaults([
             'attr'              => [
                 'data-typeahead'    => '',
+                'autocomplete'      => 'off',
             ],
         ]);
     }

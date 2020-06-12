@@ -283,7 +283,12 @@ class MessagesShowController extends AbstractController
 
         $heading_render->add(ucfirst($message['label']['offer_want']));
         $heading_render->add(': ' . $message['subject']);
-        $heading_render->add_raw(strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+
+        if (isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time())
+        {
+            $heading_render->add_raw(' <small><span class="text-danger">Vervallen</span></small>');
+        }
+
         $heading_render->fa('newspaper-o');
 
         if ($message['cid'])
@@ -464,21 +469,24 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        $out .= '<dt>Geldig tot</dt>';
-        $out .= '<dd>';
-        $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-        $out .= '</dd>';
-
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
+        if (isset($message['expires_at']))
         {
-            $out .= '<dt>Verlengen</dt>';
+            $out .= '<dt>Geldig tot</dt>';
             $out .= '<dd>';
-            $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-            $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-            $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
             $out .= '</dd>';
+
+            if ($pp->is_admin() || $su->is_owner($message['user_id']))
+            {
+                $out .= '<dt>Verlengen</dt>';
+                $out .= '<dd>';
+                $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
+                $out .= '&nbsp;';
+                $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
+                $out .= '&nbsp;';
+                $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                $out .= '</dd>';
+            }
         }
 
         if ($intersystems_service->get_count($pp->schema()))
