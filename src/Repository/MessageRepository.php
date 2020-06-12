@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -43,6 +42,11 @@ class MessageRepository
 	{
 		$this->db->insert($schema . '.messages', $message);
 		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
+	}
+
+	public function update(array $message, int $id, string $schema):bool
+	{
+		return $this->db->update($schema . '.messages', $message, ['id' => $id]) ? true : false;
 	}
 
 	public function get_count_for_user_id(int $user_id, string $schema):int

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Command\Messages\MessagesEditCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Controller\Messages\MessagesShowController;
+use App\Form\Post\Messages\MessagesType;
 use App\HtmlProcess\HtmlPurifier;
+use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
@@ -35,9 +38,7 @@ class MessagesEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
         MessageRepository $message_repository,
-        LoggerInterface $logger,
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
@@ -47,6 +48,7 @@ class MessagesEditController extends AbstractController
         ItemAccessService $item_access_service,
         SelectRender $select_render,
         LinkRender $link_render,
+        AccountRender $account_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
@@ -58,6 +60,7 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        /*
         $content = self::messages_form(
             $request,
             $id,
@@ -83,6 +86,7 @@ class MessagesEditController extends AbstractController
             $s3_service,
             $env_s3_url
         );
+        */
 
         $message = $message_repository->get($id, $pp->schema());
 
@@ -91,8 +95,70 @@ class MessagesEditController extends AbstractController
             throw new AccessDeniedHttpException('Access Denied for edit message with id ' . $id);
         }
 
+        $messages_edit_command = new MessagesEditCommand();
+
+        if ($pp->is_admin())
+        {
+            $messages_edit_command->user_id = $message['user_id'];
+        }
+
+        $messages_edit_command->offer_want = $message['is_offer'] ? 'offer' : 'want';
+        $messages_edit_command->subject = $message['subject'];
+        $messages_edit_command->content = $message['content'];
+        $messages_edit_command->category_id = $message['category_id'];
+        $messages_edit_command->expires_at = $message['expires_at'];
+        $messages_edit_command->amount = $message['amount'];
+        $messages_edit_command->units = $message['units'];
+        $messages_edit_command->image_files = $message['image_files'];
+        $messages_edit_command->access = $message['access'];
+
+        $form = $this->createForm(MessagesType::class,
+                $messages_edit_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $messages_edit_command = $form->getData();
+
+            $user_id = $pp->is_admin() ? $messages_edit_command->user_id : $su->id();
+
+            $is_offer = $messages_edit_command->offer_want === 'offer';
+            $subject = $messages_edit_command->subject;
+
+            $message = [
+                'is_offer'      => $is_offer ? 't' : 'f',
+                'is_want'       => $is_offer ? 'f' : 't',
+                'subject'       => $subject,
+                'content'       => $messages_edit_command->content,
+                'category_id'   => $messages_edit_command->category_id,
+                'expires_at'    => $messages_edit_command->expires_at,
+                'amount'        => $messages_edit_command->amount,
+                'units'         => $messages_edit_command->units,
+                'image_files'   => $messages_edit_command->image_files,
+                'access'        => $messages_edit_command->access,
+                'user_id'       => $user_id,
+            ];
+
+            $message_repository->update($message, $id, $pp->schema());
+
+            $alert_trans_key = 'messages_edit.success.';
+            $alert_trans_key .= $is_offer ? 'offer.' : 'want.';
+            $alert_trans_key .= $su->is_owner($user_id) ? 'personal' : 'admin';
+
+            $alert_service->success($alert_trans_key, [
+                '%message_subject%' => $subject,
+                '%user%'            => $account_render->get_str($user_id, $pp->schema()),
+            ]);
+
+            $link_render->redirect('messages_show', $pp->ary(),
+                ['id' => $id]);
+        }
+
+        $menu_service->set('messages');
+
         return $this->render('messages/messages_edit.html.twig', [
-            'content'   => $content,
+            'form'      => $form->createView(),
             'message'   => $message,
             'schema'    => $pp->schema(),
         ]);

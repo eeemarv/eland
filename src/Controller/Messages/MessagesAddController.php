@@ -41,9 +41,9 @@ class MessagesAddController extends AbstractController
 
         if ($validity_days)
         {
-/*            $expires_at_unix = time() + ((int) $validity_days * 86400);
-            $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix); */
-            $messages_add_command->expires_at = $validity_days;
+            $expires_at_unix = time() + ((int) $validity_days * 86400);
+            $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+            $messages_add_command->expires_at = $expires_at;
         }
 
         $form = $this->createForm(MessagesType::class,

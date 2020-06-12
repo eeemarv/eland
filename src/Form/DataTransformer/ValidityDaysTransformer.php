@@ -25,7 +25,7 @@ class ValidityDaysTransformer implements DataTransformerInterface
     {
         if (null === $expires_at)
         {
-            return '';
+            return;
         }
 
         $validity_days = (int) round((strtotime($expires_at . ' UTC') - time()) / 86400);
