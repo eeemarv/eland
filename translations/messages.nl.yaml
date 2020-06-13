@@ -114,6 +114,8 @@ label:
   from_date: Vanaf
   full_name: Volledige Naam
   hobbies_interests: Hobbies/interesses
+  image: Afbeelding
+  images: Afbeeldingen
   in: In
   keep_after_date: Behoud na Datum
   last_login: Laatste Login
@@ -168,6 +170,7 @@ label:
   to_date: Tot
   transactions: Transacties
   transaction_id: Transactie Id
+  upload: Opladen
   user: Gebruiker
   username: Gebruikersnaam
   validity: Geldigheid
@@ -347,6 +350,11 @@ login:
 
 messages:
   title: Vraag en aanbod
+  image_files:
+    help: >-
+      Toegestane formaten: jpg/jpeg, png, gif.
+      Je kan ook afbeeldingen hierheen verslepen.
+      De volgorde kan veranderd worden door te verslepen.
 
 messages_add:
   title: >-

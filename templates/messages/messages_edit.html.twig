@@ -12,6 +12,8 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- block before_form -%}{%- endblock -%}
+
 {%- set form_cancel_btn -%}
     {{- bl.cancel('messages_show', {'id': message.id}) -}}
 {%- endset -%}
@@ -21,6 +23,10 @@
         'label': 'btn.edit',
         'attr': {'class': 'btn-primary'}
     }) -}}
+{%- endset -%}
+
+{%- set data_fileupload_url -%}
+    {{- path('messages_edit_images_upload', pp_ary()|merge({'id': message.id, 'form_token': form.children.form_token.vars.value})) -}}
 {%- endset -%}
 
 {%- block css -%}

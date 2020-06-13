@@ -73,9 +73,40 @@
 
         {%- block form_e -%}
             {%- if form.image_files is defined -%}
-                {{- form_row(form.image_files, {
-                    'attr': {'data-image-files-input': ''}
-                }) -}}
+                <div class="form-group" data-base-url="{{- s3_url('') -}}" data-fileupload-container>
+                    <label for="fileupload" class="control-label">
+                        {{- 'label.images'|trans -}}
+                    </label>
+                    <div class="row" data-sortable data-fileupload-sortable>
+                        {%- embed 'messages/embed/image_file_card.html.twig' -%}
+                            {%- block attr %} data-fileupload-model hidden{%- endblock -%}
+                        {%- endembed -%}
+                        {%- for img in (form.vars.value.image_files ?? '[]')|json_decode -%}
+                            {%- embed 'messages/embed/image_file_card.html.twig' -%}
+                                {%- block attr %} data-fileupload-file="{{- img -}}"{%- endblock -%}
+                                {%- block src -%}{{- s3_url(img) -}}{%- endblock -%}
+                            {%- endembed -%}
+                        {%- endfor -%}
+                    </div>
+
+                    <label class="btn btn-default border border-secondary-li" data-fileupload-btn>
+                        <i class="fa fa-plus" data-fileupload-btn-icon></i>&nbsp;
+                            {{- 'label.upload'|trans -}}
+                        <input type="file" name="images[]" data-fileupload-url="{{- data_fileupload_url -}}"
+                            data-data-type="json" data-auto-upload="true"
+                            data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i"
+                            data-max-file-size="999000"
+                            multiple data-fileupload-btn-input hidden>
+                    </label>&nbsp;
+                    <p>
+                        {{- 'messages.image_files.help'|trans -}}
+                    </p>
+
+                    {{- form_row(form.image_files, {
+                        'attr': {'data-fileupload-files-input': ''}
+                    }) -}}
+
+                </div>
             {%- endif -%}
         {%- endblock form_e -%}
 

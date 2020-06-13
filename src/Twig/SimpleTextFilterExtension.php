@@ -12,6 +12,7 @@ class SimpleTextFilterExtension extends AbstractExtension
 		return [
 			new TwigFilter('underline', [$this, 'underline']),
 			new TwigFilter('replace_when_zero', [$this, 'replace_when_zero']),
+			new TwigFilter('json_decode', [$this, 'json_decode']),
 		];
 	}
 
@@ -24,5 +25,10 @@ class SimpleTextFilterExtension extends AbstractExtension
 	public function replace_when_zero(int $input, $replace = null):string
 	{
 		return $input === 0 ? $replace : $input;
+	}
+
+	public function json_decode(string $json):array
+	{
+		return json_decode($json ?: '[]', true);
 	}
 }
