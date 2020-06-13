@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-
 class LoginCommand
 {
     public $login;
@@ -20,14 +19,18 @@ class LoginCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('login', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 2, 'max' => 100]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 2, 'max' => 100]),
+            ],
         ]));
         $metadata->addPropertyConstraint('password', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 5, 'max' => 100]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 5, 'max' => 100]),
+            ],
         ]));
-        $metadata->addConstraint(new Login(['groups' => ['Login']]));
-        $metadata->setGroupSequence(['LoginCommand', 'Login']);
+        $metadata->addConstraint(new Login(['groups' => ['login']]));
+        $metadata->setGroupSequence(['LoginCommand', 'login']);
     }
 }

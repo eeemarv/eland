@@ -15,8 +15,10 @@ class SupportCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('message', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 10, 'max' => 5000]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 10, 'max' => 5000]),
+            ],
         ]));
     }
 }

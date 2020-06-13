@@ -21,15 +21,19 @@ class RegisterCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('email', new Sequentially([
-            new NotBlank(),
-            new Email(),
-            new EmailNotRegisteredYet(),
+            'constraints'   => [
+                new NotBlank(),
+                new Email(),
+                new EmailNotRegisteredYet(),
+            ],
         ]));
         $metadata->addPropertyConstraint('first_name', new NotBlank());
         $metadata->addPropertyConstraint('last_name', new NotBlank());
         $metadata->addPropertyConstraint('postcode', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 4, 'max' => 10]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 4, 'max' => 10]),
+            ],
         ]));
     }
 }

@@ -18,13 +18,17 @@ class NewsCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('subject', new Sequentially([
-            new NotBlank(),
-            new Length(['max' => 200]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['max' => 200]),
+            ],
         ]));
         $metadata->addPropertyConstraint('location', new Length(['max' => 128]));
         $metadata->addPropertyConstraint('content', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 10, 'max' => 100000]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 10, 'max' => 100000]),
+            ],
         ]));
         $metadata->addPropertyConstraint('access', new NotBlank());
     }

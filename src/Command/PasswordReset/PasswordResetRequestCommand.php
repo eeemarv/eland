@@ -15,9 +15,11 @@ class PasswordResetRequestCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('email', new Sequentially([
-            new NotBlank(),
-            new Email(),
-            new EmailUniqueToActiveUser(),
+            'constraints'   => [
+                new NotBlank(),
+                new Email(),
+                new EmailUniqueToActiveUser(),
+            ],
         ]));
     }
 }

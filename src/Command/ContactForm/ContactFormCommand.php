@@ -16,12 +16,16 @@ class ContactFormCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('email', new Sequentially([
-            new NotBlank(),
-            new Email(),
+            'constraints'   => [
+                new NotBlank(),
+                new Email(),
+            ],
         ]));
         $metadata->addPropertyConstraint('message', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 10, 'max' => 5000]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 10, 'max' => 5000]),
+            ],
         ]));
     }
 }

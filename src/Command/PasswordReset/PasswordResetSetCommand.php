@@ -15,9 +15,11 @@ class PasswordResetSetCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('password', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 5, 'max' => 100]),
-            new PasswordStrength(),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 5, 'max' => 100]),
+                new PasswordStrength(),
+            ],
         ]));
     }
 }
