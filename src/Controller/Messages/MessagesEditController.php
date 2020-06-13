@@ -54,8 +54,10 @@ class MessagesEditController extends AbstractController
         $messages_command->image_files = $message['image_files'];
         $messages_command->access = $message['access'];
 
+        $validation_groups = $pp->is_admin() ? ['user', 'admin'] : ['user'];
+
         $form = $this->createForm(MessagesType::class,
-                $messages_command)
+                $messages_command, ['validation_groups' => $validation_groups])
             ->handleRequest($request);
 
         if ($form->isSubmitted()

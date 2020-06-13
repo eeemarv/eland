@@ -50,8 +50,10 @@ class MessagesAddController extends AbstractController
             $messages_command->expires_at = $expires_at;
         }
 
+        $validation_groups = $pp->is_admin() ? ['user', 'admin'] : ['user'];
+
         $form = $this->createForm(MessagesType::class,
-                $messages_command)
+                $messages_command, ['validation_groups' => $validation_groups])
             ->handleRequest($request);
 
         if ($form->isSubmitted()

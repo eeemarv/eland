@@ -26,29 +26,47 @@ class MessagesCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('user_id', new Sequentially([
-            new NotBlank(),
-            new ActiveUser(),
+            'constraints' => [
+                new NotBlank(),
+                new ActiveUser(),
+            ],
+            'groups' => ['admin'],
         ]));
         $metadata->addPropertyConstraint('offer_want', new Sequentially([
-            new NotBlank(),
-            new Choice(['offer', 'want']),
+            'constraints'   => [
+                new NotBlank(),
+                new Choice(['offer', 'want']),
+            ],
+            'groups' => ['user'],
         ]));
         $metadata->addPropertyConstraint('subject', new Sequentially([
-            new NotBlank(),
-            new Length(['max' => 200]),
+            'constraints' => [
+                new NotBlank(),
+                new Length(['max' => 200]),
+            ],
+            'groups' => ['user'],
         ]));
         $metadata->addPropertyConstraint('content', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 10, 'max' => 5000]),
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 10, 'max' => 5000]),
+            ],
+            'groups' => ['user'],
         ]));
         $metadata->addPropertyConstraint('category_id', new Sequentially([
-            new NotBlank(),
-            new Category(),
+            'constraints'   => [
+                new NotBlank(),
+                new Category(),
+            ],
+            'groups' => ['user'],
         ]));
-        $metadata->addPropertyConstraint('units', new Length(['max' => 15]));
+        $metadata->addPropertyConstraint('units', new Length(['max' => 15, 'groups' => ['user']]));
         $metadata->addPropertyConstraint('access', new Sequentially([
-            new NotBlank(),
-            new Choice(['admin', 'user', 'guest']),
+            'constraints'   => [
+                new NotBlank(),
+                new Choice(['admin', 'user', 'guest']),
+            ],
+            'groups' => ['user'],
         ]));
     }
 }
