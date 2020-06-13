@@ -3,7 +3,6 @@
 namespace App\Command\Auth;
 
 use App\Validator\Auth\Login;
-use App\Validator\PasswordStrength;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Sequentially;

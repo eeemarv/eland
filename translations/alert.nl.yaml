@@ -20,7 +20,10 @@ docs_add:
   error: >-
     Opladen document mislukt.
   success:
-    Het bestand is opgeladen.
+    map: >-
+      Het bestand is opgeladen in map "%map_name%"
+    no_map: >-
+      Het bestand is opgeladen.
 
 docs_del:
   error: >-
@@ -31,6 +34,10 @@ docs_del:
 docs_edit:
   success: >-
     Document aangepast.
+
+docs_map_edit:
+  success: >-
+    De naam van de map is aangepast.
 
 email:
   warning:

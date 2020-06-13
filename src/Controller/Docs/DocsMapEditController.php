@@ -2,6 +2,7 @@
 
 namespace App\Controller\Docs;
 
+use App\Command\Docs\DocsMapCommand;
 use App\Command\Docs\DocsMapEditCommand;
 use App\Form\Post\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,12 +32,12 @@ class DocsMapEditController extends AbstractController
 
         $doc_map = $doc_repository->get_map($id, $pp->schema());
 
-        $docs_map_edit_command = new DocsMapEditCommand();
-        $docs_map_edit_command->name = $doc_map['name'];
-        $docs_map_edit_command->id = $id;
+        $docs_map_command = new DocsMapCommand();
+        $docs_map_command->name = $doc_map['name'];
+        $docs_map_command->id = $id;
 
         $form = $this->createForm(DocsMapType::class,
-                $docs_map_edit_command, [
+                $docs_map_command, [
                     'initial_value' => $doc_map['name'],
                 ])
             ->handleRequest($request);
@@ -44,8 +45,8 @@ class DocsMapEditController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $docs_map_edit_command = $form->getData();
-            $name = $docs_map_edit_command->name;
+            $docs_map_command = $form->getData();
+            $name = $docs_map_command->name;
 
             $doc_repository->update_map_name($name, $id, $pp->schema());
             $typeahead_service->clear(TypeaheadService::GROUP_DOC_MAP_NAMES);

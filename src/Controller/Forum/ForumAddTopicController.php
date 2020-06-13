@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumTopicCommand;
+use App\Command\Forum\ForumCommand;
 use App\Form\Post\Forum\ForumTopicType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,19 +26,19 @@ class ForumAddTopicController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $forum_topic_command = new ForumTopicCommand();
+        $forum_command = new ForumCommand();
 
         $form = $this->createForm(ForumTopicType::class,
-                $forum_topic_command)
+                $forum_command, ['validation_groups' => ['topic']])
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $forum_topic_command = $form->getData();
-            $subject = $forum_topic_command->subject;
-            $content = $forum_topic_command->content;
-            $access = $forum_topic_command->access;
+            $forum_command = $form->getData();
+            $subject = $forum_command->subject;
+            $content = $forum_command->content;
+            $access = $forum_command->access;
 
             $id = $forum_repository->insert_topic($subject, $content,
                 $access, $su->id(), $pp->schema());

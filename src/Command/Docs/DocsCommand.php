@@ -7,8 +7,10 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class DocsAddCommand
+class DocsCommand
 {
+    public $file_location;
+    public $original_filename;
     public $file;
     public $name;
     public $map_name;
@@ -16,10 +18,15 @@ class DocsAddCommand
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('access', new NotBlank());
+        $metadata->addPropertyConstraint('access', new NotBlank([
+            'groups'    => ['add', 'edit'],
+        ]));
         $metadata->addPropertyConstraint('file', new Sequentially([
-            new NotBlank(),
-            new File(['maxSize' => '10M']),
+            'constraints'   => [
+                new NotBlank(),
+                new File(['maxSize' => '10M']),
+            ],
+            'groups'    => ['add']
         ]));
     }
 }

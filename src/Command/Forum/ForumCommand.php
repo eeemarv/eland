@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ForumTopicCommand
+class ForumCommand
 {
     public $subject;
     public $content;
@@ -15,11 +15,18 @@ class ForumTopicCommand
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('subject', new NotBlank());
-        $metadata->addPropertyConstraint('content', new Sequentially([
-            new NotBlank(),
-            new Length(['min' => 10, 'max' => 5000]),
+        $metadata->addPropertyConstraint('subject', new NotBlank([
+            'groups'    => ['topic'],
         ]));
-        $metadata->addPropertyConstraint('access', new NotBlank());
+        $metadata->addPropertyConstraint('content', new Sequentially([
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 10, 'max' => 5000]),
+            ],
+            'groups'    => ['post', 'topic'],
+        ]));
+        $metadata->addPropertyConstraint('access', new NotBlank([
+            'groups'    => ['topic'],
+        ]));
     }
 }

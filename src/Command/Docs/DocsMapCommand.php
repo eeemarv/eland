@@ -6,7 +6,7 @@ use App\Validator\DocMap\UniqueDocMap;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class DocsMapEditCommand
+class DocsMapCommand
 {
     public $name;
     public $id;
@@ -15,6 +15,6 @@ class DocsMapEditCommand
     {
         $metadata->addPropertyConstraint('name', new NotBlank());
         $metadata->addConstraint(new UniqueDocMap(['groups' => ['unique']]));
-        $metadata->setGroupSequence(['DocsMapEditCommand', 'unique']);
+        $metadata->setGroupSequence(['DocsMapCommand', 'unique']);
     }
 }

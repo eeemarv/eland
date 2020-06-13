@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumTopicCommand;
+use App\Command\Forum\ForumCommand;
 use App\Form\Post\Forum\ForumTopicType;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,23 +51,23 @@ class ForumEditTopicController extends AbstractController
             throw new AccessDeniedHttpException('Access denied forum forum post.');
         }
 
-        $forum_topic_command = new ForumTopicCommand();
+        $forum_command = new ForumCommand();
 
-        $forum_topic_command->subject = $forum_topic['subject'];
-        $forum_topic_command->content = $forum_post['content'];
-        $forum_topic_command->access = $forum_topic['access'];
+        $forum_command->subject = $forum_topic['subject'];
+        $forum_command->content = $forum_post['content'];
+        $forum_command->access = $forum_topic['access'];
 
         $form = $this->createForm(ForumTopicType::class,
-                $forum_topic_command)
+                $forum_command, ['validation_groups' => ['topic']])
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $forum_topic_command = $form->getData();
-            $subject = $forum_topic_command->subject;
-            $content = $forum_topic_command->content;
-            $access = $forum_topic_command->access;
+            $forum_command = $form->getData();
+            $subject = $forum_command->subject;
+            $content = $forum_command->content;
+            $access = $forum_command->access;
 
             $forum_repository->update_topic($subject,
                 $access, $id, $pp->schema());

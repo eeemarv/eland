@@ -2,14 +2,13 @@
 
 namespace App\Controller\Docs;
 
-use App\Command\Docs\DocsAddCommand;
+use App\Command\Docs\DocsCommand;
 use App\Form\Post\Docs\DocsAddType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Repository\DocRepository;
 use App\Service\PageParamsService;
@@ -33,27 +32,27 @@ class DocsAddController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $docs_add_command = new DocsAddCommand();
+        $docs_command = new DocsCommand();
 
         if ($request->query->has('map_id'))
         {
             $map_id = (int) $request->query->get('map_id');
             $map_name = $doc_repository->get_map($map_id, $pp->schema())['name'];
-            $docs_add_command->map_name = $map_name;
+            $docs_command->map_name = $map_name;
         }
 
         $form = $this->createForm(DocsAddType::class,
-                $docs_add_command)
+                $docs_command, ['validation_groups' => ['add']])
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $docs_add_command = $form->getData();
-            $file = $docs_add_command->file;
-            $name = $docs_add_command->name;
-            $map_name = $docs_add_command->map_name;
-            $access = $docs_add_command->access;
+            $docs_command = $form->getData();
+            $file = $docs_command->file;
+            $name = $docs_command->name;
+            $map_name = $docs_command->map_name;
+            $access = $docs_command->access;
 
             $ext = $file->getClientOriginalExtension();
             $original_filename = $file->getClientOriginalName();
@@ -100,13 +99,17 @@ class DocsAddController extends AbstractController
 
             $doc_repository->insert_doc($doc, $pp->schema());
 
-            $alert_service->success('docs_add.success');
+
 
             if (isset($doc['map_id']))
             {
+                $alert_service->success('docs_add.success.map', [
+                    '%map_name%'    => $map_name,
+                ]);
                 $link_render->redirect('docs_map', $pp->ary(), ['id' => $map_id]);
             }
 
+            $alert_service->success('docs_add.success.no_map');
             $link_render->redirect('docs', $pp->ary(), []);
         }
 
