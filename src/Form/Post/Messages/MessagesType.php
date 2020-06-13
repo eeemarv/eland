@@ -4,6 +4,7 @@ namespace App\Form\Post\Messages;
 
 use App\Form\DataTransformer\ValidityDaysTransformer;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\EventSubscriber\ActiveUserFieldSubscriber;
 use App\Form\EventSubscriber\CategoryFieldSubscriber;
 use App\Form\EventSubscriber\UserFieldSubscriber;
 use App\Form\Input\LblChoiceType;
@@ -21,19 +22,19 @@ class MessagesType extends AbstractType
 {
     protected AccessFieldSubscriber $access_field_subscriber;
     protected CategoryFieldSubscriber $category_field_subscriber;
-    protected UserFieldSubscriber $user_field_subscriber;
+    protected ActiveUserFieldSubscriber $active_user_field_subscriber;
     protected ValidityDaysTransformer $validity_days_transformer;
 
     public function __construct(
         AccessFieldSubscriber $access_field_subscriber,
         CategoryFieldSubscriber $category_field_subscriber,
-        UserFieldSubscriber $user_field_subscriber,
+        ActiveUserFieldSubscriber $active_user_field_subscriber,
         ValidityDaysTransformer $validity_days_transformer
     )
     {
         $this->access_field_subscriber = $access_field_subscriber;
         $this->category_field_subscriber = $category_field_subscriber;
-        $this->user_field_subscriber = $user_field_subscriber;
+        $this->active_user_field_subscriber = $active_user_field_subscriber;
         $this->validity_days_transformer = $validity_days_transformer;
     }
 
@@ -57,7 +58,7 @@ class MessagesType extends AbstractType
         $this->access_field_subscriber->set_object_access_options(['user', 'guest']);
         $builder->addEventSubscriber($this->access_field_subscriber);
         $builder->addEventSubscriber($this->category_field_subscriber);
-        $builder->addEventSubscriber($this->user_field_subscriber);
+        $builder->addEventSubscriber($this->active_user_field_subscriber);
         $builder->get('expires_at')
             ->addModelTransformer($this->validity_days_transformer);
     }

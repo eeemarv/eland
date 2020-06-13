@@ -4,6 +4,7 @@ namespace App\Command\Users;
 
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UsersPasswordSetAdminCommand
@@ -13,7 +14,9 @@ class UsersPasswordSetAdminCommand
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('password', new NotBlank());
-        $metadata->addPropertyConstraint('password', new Length(['min' => 5, 'max' => 100]));
+        $metadata->addPropertyConstraint('password', new Sequentially([
+            new NotBlank(),
+            new Length(['min' => 5, 'max' => 100]),
+        ]));
     }
 }

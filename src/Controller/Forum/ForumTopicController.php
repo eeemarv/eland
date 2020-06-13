@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumAddPostCommand;
+use App\Command\Forum\ForumPostCommand;
 use App\Form\Post\Forum\ForumPostType;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -51,18 +51,18 @@ class ForumTopicController extends AbstractController
 
         $forum_posts = $forum_repository->get_topic_posts($id, $pp->schema());
 
-        $forum_add_post_command = new ForumAddPostCommand();
+        $forum_post_command = new ForumPostCommand();
 
         $form = $this->createForm(ForumPostType::class,
-                $forum_add_post_command)
+                $forum_post_command)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid()
             && ($pp->is_user() || $pp->is_admin()))
         {
-            $forum_add_post_command = $form->getData();
-            $content = $forum_add_post_command->content;
+            $forum_post_command = $form->getData();
+            $content = $forum_post_command->content;
 
             $forum_repository->insert_post($content,
                 $su->id(), $id, $pp->schema());

@@ -35,7 +35,11 @@ class CategoryValidator extends ConstraintValidator
             return;
         }
 
-        if (!ctype_digit($category_id))
+        $filter_options = [
+            'options' => ['min_range' => 1],
+        ];
+
+        if (!filter_var($category_id, FILTER_VALIDATE_INT, $filter_options))
         {
             throw new UnexpectedTypeException($category_id, 'number');
         }

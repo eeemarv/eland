@@ -7,7 +7,7 @@ use App\Service\PageParamsService;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-class TypeaheadAccountTransformer implements DataTransformerInterface
+class TypeaheadActiveUserTransformer implements DataTransformerInterface
 {
     protected UserRepository $user_repository;
     protected PageParamsService $pp;

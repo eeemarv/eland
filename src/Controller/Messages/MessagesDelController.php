@@ -2,7 +2,6 @@
 
 namespace App\Controller\Messages;
 
-use App\Command\Messages\MessagesDelCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,10 +45,7 @@ class MessagesDelController extends AbstractController
             throw new AccessDeniedHttpException('No Rights for this action.');
         }
 
-        $messages_del_command = new MessagesDelCommand();
-
-        $form = $this->createForm(DelType::class,
-                $messages_del_command)
+        $form = $this->createForm(DelType::class)
             ->handleRequest($request);
 
         if ($form->isSubmitted()

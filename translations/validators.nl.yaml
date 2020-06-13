@@ -51,3 +51,7 @@ email_not_registered_yet:
 
 password_strength:
   Het paswoord is niet sterk genoeg.
+
+user:
+  not_active: >-
+    Gebruiker niet actief.

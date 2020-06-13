@@ -274,6 +274,14 @@ class UserRepository
 		return $success;
 	}
 
+	public function is_active(int $id, string $schema):bool
+	{
+		return $this->db->fetchColumn('select id
+			from ' . $schema . '.users
+			where status in (1, 2)
+				and id = ?', [$id]) ? true : false;
+	}
+
 	/********************* */
 
 	public function getFiltered(string $schema, FilterQuery $filterQuery, Sort $sort, Pagination $pagination):array

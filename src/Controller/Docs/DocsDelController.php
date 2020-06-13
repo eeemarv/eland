@@ -2,7 +2,6 @@
 
 namespace App\Controller\Docs;
 
-use App\Command\Docs\DocsDelCommand;
 use App\Form\Post\DelType;
 use App\Render\LinkRender;
 use App\Repository\DocRepository;
@@ -39,10 +38,7 @@ class DocsDelController extends AbstractController
             $doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
         }
 
-        $docs_del_command = new DocsDelCommand();
-
-        $form = $this->createForm(DelType::class,
-                $docs_del_command)
+        $form = $this->createForm(DelType::class)
             ->handleRequest($request);
 
         if ($form->isSubmitted()

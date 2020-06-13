@@ -2,12 +2,12 @@
 
 namespace App\Command\Forum;
 
-use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ForumEditTopicCommand
+class ForumTopicCommand
 {
     public $subject;
     public $content;
@@ -16,8 +16,10 @@ class ForumEditTopicCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('subject', new NotBlank());
-        $metadata->addPropertyConstraint('content', new NotBlank());
-        $metadata->addPropertyConstraint('content', new Length(['min' => 10, 'max' => 5000]));
+        $metadata->addPropertyConstraint('content', new Sequentially([
+            new NotBlank(),
+            new Length(['min' => 10, 'max' => 5000]),
+        ]));
         $metadata->addPropertyConstraint('access', new NotBlank());
     }
 }

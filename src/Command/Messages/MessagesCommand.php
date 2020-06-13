@@ -3,13 +3,14 @@
 namespace App\Command\Messages;
 
 use App\Validator\Category\Category;
+use App\Validator\User\ActiveUser;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class MessagesAddCommand
+class MessagesCommand
 {
     public $user_id;
     public $offer_want;
@@ -24,6 +25,10 @@ class MessagesAddCommand
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
+        $metadata->addPropertyConstraint('user_id', new Sequentially([
+            new NotBlank(),
+            new ActiveUser(),
+        ]));
         $metadata->addPropertyConstraint('offer_want', new Sequentially([
             new NotBlank(),
             new Choice(['offer', 'want']),
@@ -41,6 +46,9 @@ class MessagesAddCommand
             new Category(),
         ]));
         $metadata->addPropertyConstraint('units', new Length(['max' => 15]));
-        $metadata->addPropertyConstraint('access', new NotBlank());
+        $metadata->addPropertyConstraint('access', new Sequentially([
+            new NotBlank(),
+            new Choice(['admin', 'user', 'guest']),
+        ]));
     }
 }

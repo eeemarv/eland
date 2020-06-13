@@ -4,6 +4,7 @@ namespace App\Command\Docs;
 
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class DocsAddCommand
@@ -16,9 +17,9 @@ class DocsAddCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('access', new NotBlank());
-        $metadata->addPropertyConstraint('file', new NotBlank());
-        $metadata->addPropertyConstraint('file', new File([
-            'maxSize'   => '10M',
+        $metadata->addPropertyConstraint('file', new Sequentially([
+            new NotBlank(),
+            new File(['maxSize' => '10M']),
         ]));
     }
 }

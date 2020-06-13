@@ -2,7 +2,7 @@
 
 namespace App\Controller\Messages;
 
-use App\Command\Messages\MessagesAddCommand;
+use App\Command\Messages\MessagesCommand;
 use App\Form\Post\Messages\MessagesType;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,11 +30,11 @@ class MessagesAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        $messages_add_command = new MessagesAddCommand();
+        $messages_command = new MessagesCommand();
 
         if ($pp->is_admin())
         {
-            $messages_add_command->user_id = $su->id();
+            $messages_command->user_id = $su->id();
         }
 
         $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
@@ -43,34 +43,34 @@ class MessagesAddController extends AbstractController
         {
             $expires_at_unix = time() + ((int) $validity_days * 86400);
             $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
-            $messages_add_command->expires_at = $expires_at;
+            $messages_command->expires_at = $expires_at;
         }
 
         $form = $this->createForm(MessagesType::class,
-                $messages_add_command)
+                $messages_command)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $messages_add_command = $form->getData();
+            $messages_command = $form->getData();
 
-            $user_id = $pp->is_admin() ? $messages_add_command->user_id : $su->id();
+            $user_id = $pp->is_admin() ? $messages_command->user_id : $su->id();
 
-            $is_offer = $messages_add_command->offer_want === 'offer';
-            $subject = $messages_add_command->subject;
+            $is_offer = $messages_command->offer_want === 'offer';
+            $subject = $messages_command->subject;
 
             $message = [
                 'is_offer'      => $is_offer ? 't' : 'f',
                 'is_want'       => $is_offer ? 'f' : 't',
                 'subject'       => $subject,
-                'content'       => $messages_add_command->content,
-                'category_id'   => $messages_add_command->category_id,
-                'expires_at'    => $messages_add_command->expires_at,
-                'amount'        => $messages_add_command->amount,
-                'units'         => $messages_add_command->units,
-                'image_files'   => $messages_add_command->image_files,
-                'access'        => $messages_add_command->access,
+                'content'       => $messages_command->content,
+                'category_id'   => $messages_command->category_id,
+                'expires_at'    => $messages_command->expires_at,
+                'amount'        => $messages_command->amount,
+                'units'         => $messages_command->units,
+                'image_files'   => $messages_command->image_files,
+                'access'        => $messages_command->access,
                 'user_id'       => $user_id,
                 'created_by'    => $su->id(),
             ];

@@ -2,13 +2,13 @@
 
 namespace App\Form\EventSubscriber;
 
-use App\Form\Input\Typeahead\TypeaheadAccountType;
+use App\Form\Input\Typeahead\TypeaheadActiveUserType;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
-class UserFieldSubscriber implements EventSubscriberInterface
+class ActiveUserFieldSubscriber implements EventSubscriberInterface
 {
     protected PageParamsService $pp;
 
@@ -35,6 +35,6 @@ class UserFieldSubscriber implements EventSubscriberInterface
 
         $form = $event->getForm();
 
-        $form->add('user_id', TypeaheadAccountType::class);
+        $form->add('user_id', TypeaheadActiveUserType::class);
     }
 }

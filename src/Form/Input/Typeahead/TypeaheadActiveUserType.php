@@ -2,7 +2,7 @@
 
 namespace App\Form\Input\Typeahead;
 
-use App\Form\DataTransformer\TypeaheadAccountTransformer;
+use App\Form\DataTransformer\TypeaheadActiveUserTransformer;
 use App\Form\Input\TextAddonType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -13,24 +13,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
-class TypeaheadAccountType extends AbstractType
+class TypeaheadActiveUserType extends AbstractType
 {
     protected PageParamsService $pp;
     protected TypeaheadService $typeahead_service;
     protected ConfigService $config_service;
-    protected TypeaheadAccountTransformer $typeahead_account_transformer;
+    protected TypeaheadActiveUserTransformer $typeahead_active_user_transformer;
 
     public function __construct(
         PageParamsService $pp,
         TypeaheadService $typeahead_service,
         ConfigService $config_service,
-        TypeaheadAccountTransformer $typeahead_account_transformer
+        TypeaheadActiveUserTransformer $typeahead_active_user_transformer
     )
     {
         $this->pp = $pp;
         $this->typeahead_service = $typeahead_service;
         $this->config_service = $config_service;
-        $this->typeahead_account_transformer = $typeahead_account_transformer;
+        $this->typeahead_active_user_transformer = $typeahead_active_user_transformer;
     }
 
     public function buildForm(
@@ -38,7 +38,7 @@ class TypeaheadAccountType extends AbstractType
         array $options
     )
     {
-        $builder->addModelTransformer($this->typeahead_account_transformer);
+        $builder->addModelTransformer($this->typeahead_active_user_transformer);
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)
