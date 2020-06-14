@@ -12,8 +12,8 @@ class ProcessCleanupImagesConsoleCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_images';
 
-    protected $monitor_process_service;
-    protected $cleanup_images_task;
+    protected MonitorProcessService $monitor_process_service;
+    protected CleanupImagesTask $cleanup_images_task;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,

@@ -12,8 +12,8 @@ class ProcessCleanupCacheConsoleCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_cache';
 
-    protected $monitor_process_service;
-    protected $cache_service;
+    protected MonitorProcessService $monitor_process_service;
+    protected CacheService $cache_service;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,

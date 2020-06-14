@@ -5,6 +5,7 @@ namespace App\Console;
 use App\SchemaTask\SchemaTaskSchedule;
 use App\Service\AssetsService;
 use App\Service\MonitorProcessService;
+use App\Service\TypeaheadConsoleClearService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,14 +14,16 @@ class ProcessWorkerConsoleCommand extends Command
 {
     protected static $defaultName = 'process:worker';
 
-    protected $monitor_process_service;
-    protected $assets_service;
-    protected $schema_task_schedule;
+    protected MonitorProcessService $monitor_process_service;
+    protected AssetsService $assets_service;
+    protected SchemaTaskSchedule $schema_task_schedule;
+    protected TypeaheadConsoleClearService $typeahead_console_clear_service;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,
         AssetsService $assets_service,
-        SchemaTaskSchedule $schema_task_schedule
+        SchemaTaskSchedule $schema_task_schedule,
+        TypeaheadConsoleClearService $typeahead_console_clear_service
     )
     {
         parent::__construct();
@@ -28,6 +31,7 @@ class ProcessWorkerConsoleCommand extends Command
         $this->monitor_process_service = $monitor_process_service;
         $this->assets_service = $assets_service;
         $this->schema_task_schedule = $schema_task_schedule;
+        $this->typeahead_console_clear_service = $typeahead_console_clear_service;
     }
 
     protected function configure()
@@ -39,6 +43,7 @@ class ProcessWorkerConsoleCommand extends Command
     {
         $this->monitor_process_service->boot('worker');
 
+        $this->typeahead_console_clear_service->clear_all();
         $this->assets_service->write_file_hash_ary();
 
         error_log('+------------------------+');

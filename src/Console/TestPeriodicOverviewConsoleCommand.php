@@ -12,7 +12,7 @@ class TestPeriodicOverviewConsoleCommand extends Command
 {
     protected static $defaultName = 'test:periodic_overview';
 
-    protected $periodic_overview_schema_task;
+    protected PeriodicOverviewSchemaTask $periodic_overview_schema_task;
 
     public function __construct(
         PeriodicOverviewSchemaTask $periodic_overview_schema_task

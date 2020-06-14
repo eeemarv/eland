@@ -14,10 +14,10 @@ class ProcessCleanupConsoleCommand extends Command
 {
     protected static $defaultName = 'process:cleanup';
 
-    protected $monitor_process_service;
-    protected $cleanup_images_task;
-    protected $cache_service;
-    protected $db;
+    protected MonitorProcessService $monitor_process_service;
+    protected CleanupImagesTask $cleanup_images_task;
+    protected CacheService $cache_service;
+    protected Db $db;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,

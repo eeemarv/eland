@@ -13,9 +13,9 @@ class ProcessMailConsoleCommand extends Command
 {
     protected static $defaultName = 'process:mail';
 
-    protected $monitor_process_service;
-    protected $mail_queue;
-    protected $queue_service;
+    protected MonitorProcessService $monitor_process_service;
+    protected MailQueue $mail_queue;
+    protected QueueService $queue_service;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,

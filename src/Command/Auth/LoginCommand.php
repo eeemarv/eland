@@ -24,12 +24,14 @@ class LoginCommand
                 new Length(['min' => 2, 'max' => 100]),
             ],
         ]));
+
         $metadata->addPropertyConstraint('password', new Sequentially([
             'constraints'   => [
                 new NotBlank(),
                 new Length(['min' => 5, 'max' => 100]),
             ],
         ]));
+
         $metadata->addConstraint(new Login(['groups' => ['login']]));
         $metadata->setGroupSequence(['LoginCommand', 'login']);
     }
