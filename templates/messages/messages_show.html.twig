@@ -1,4 +1,6 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
+{%- import 'macro/link.html.twig' as l -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_show.title.'
@@ -9,6 +11,109 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- block heading_append -%}
+    {%- if message.is_expired -%}
+        &nbsp;
+        {%- include 'include/heading_expired.html.twig' -%}
+    {%- endif -%}
+{%- endblock heading_append -%}
+
+{%- block content -%}
+    {%- if message.category_id -%}
+        <p>
+            {{- 'messages_show.category'|trans({
+                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': message.category_id}}, message.category_name)
+            })|raw -}}
+        </p>
+    {%- endif -%}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card card-default">
+                <div class="card-img-top">
+                    <div id="no_images" class="text-center center-body"{%- if image_files %} hidden{%- endif -%}>
+                        <i class="fa fa-image fa-5x"></i>
+                        <p>
+                            {%- if message.is_offer -%}
+                                {{- 'messages_show.no_images.offer'|trans -}}
+                            {%- else -%}
+                                {{- 'messages_show.no_images.want'|trans -}}
+                            {%- endif -%}
+                        </p>
+                    </div>
+                    <div id="jssor_1" style="position: relative; top: 0px; left: 0px; width: 800px; height: 600px; overflow: hidden; background-color: #ccc;" data-no-touchswipe>
+                        <div data-u="slides" style="cursor: move; position: absolute; overflow: hidden; left: 0px; top: 0px; width: 800px; height: 600px;">
+                            {%- for i in image_files -%}
+                                <div>
+                                    <img data-u="image" data-src="{{- s3_url(i) -}}">
+                                </div>
+                            {%- endfor -%}
+                        </div>
+                        {# skin bullet 31 #}
+                        <style>
+                            .jssorb031 {position:absolute;}
+                            .jssorb031 .i {position:absolute;cursor:pointer;}
+                            .jssorb031 .i .b {fill:#000;fill-opacity:0.5;stroke:#fff;stroke-width:1200;stroke-miterlimit:10;stroke-opacity:0.3;}
+                            .jssorb031 .i:hover .b {fill:#fff;fill-opacity:.7;stroke:#000;stroke-opacity:.5;}
+                            .jssorb031 .iav .b {fill:#fff;stroke:#000;fill-opacity:1;}
+                            .jssorb031 .i.idn {opacity:.3;}
+                        </style>
+                        <div data-u="navigator" class="jssorb031" style="position:absolute;bottom:12px;right:12px;" data-autocenter="1" data-scale="0.5" data-scale-bottom="0.75">
+                            <div data-u="prototype" class="i" style="width:16px;height:16px;">
+                                <svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+                                    <circle class="b" cx="8000" cy="8000" r="5800"></circle>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {# /skin bullet #}
+
+                        {# skin arrow 55 #}
+                        <style>
+                            .jssorb055 .i {position:absolute;cursor:pointer;}
+                            .jssorb055 .i .b {fill:#fff;fill-opacity:0.5;}
+                            .jssorb055 .i:hover .b {fill-opacity:.7;}
+                            .jssorb055 .iav .b {fill-opacity: 1;}
+                            .jssorb055 .i.idn {opacity:.3;}
+                        </style>
+                        <div data-u="navigator" class="jssorb055" style="position:absolute;bottom:12px;right:12px;" data-autocenter="1" data-scale="0.5" data-scale-bottom="0.75">
+                            <div data-u="prototype" class="i" style="width:16px;height:16px;">
+                                <svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+                                    <rect class="b" x="2200" y="2200" width="11600" height="11600"></rect>
+                                </svg>
+                            </div>
+                        </div>
+                        {# / skin arrow 55 #}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span class="btn btn-success btn-lg btn-block fileinput-button" data-fileupload-btn>
+                        <i class="fa fa-plus" id="img_plus"></i>&nbsp;
+                        {{- 'label.image_upload'|trans -}}
+                        <input id="fileupload" type="file" name="images[]"
+                        data-url="{{- l.pp_path('messages_images_upload', {'id': message.id}) -}}"
+                        data-data-type="json" data-auto-upload="true"
+                        data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i"
+                        data-max-file-size="999000"
+                        multiple>
+                    </span>
+                    <p>
+                        {{- 'help.images_upload'|trans -}}
+                    </p>
+                    <a href="{{- l.pp_path('messages_images_del', {'id': message.id}) -}}" class="btn btn-danger btn-lg btn-block">
+                        <i class="fa fa-times"></i>&nbsp;
+                        {{- 'label.images_remove'|trans -}}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+
+        </div>
+    </div>
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('fileupload') -}}
@@ -16,5 +121,6 @@
 
 {%- block js -%}
     {{- parent() -}}
+	{{- encore_entry_script_tags('jssor') -}}
 	{{- encore_entry_script_tags('fileupload') -}}
 {%- endblock js -%}

@@ -296,7 +296,7 @@ class MessagesShowController extends AbstractController
             $out = '<p>Categorie: ';
 
             $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                ['f' => ['cid' => $message['cid']]], $message['catname']);
+                ['f' => ['cid' => $message['cid']]], $message['category_name']);
 
             $out .= '</p>';
         }
@@ -308,25 +308,23 @@ class MessagesShowController extends AbstractController
         $out .= '<div class="card card-default">';
         $out .= '<div class="card-body">';
 
-        /*
-
         $out .= '<div id="no_images" ';
-        $out .= 'class="text-center center-body';
+        $out .= 'class="text-center center-body"';
         $out .= count($image_files) ? '' : ' hidden';
-        $out .= '">';
+        $out .= '>';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
         $out .= $message['label']['offer_want_this'] . '</p>';
         $out .= '</div>';
-        */
 
-        $out .= '<div id="images_con" ';
-        $out .= 'class="carousel slide no-t-swipe" ';
+        $out .= '<div id="jssor_1" ';
+        $out .= 'class="row carousel slide" ';
         $out .= 'data-ride="carousel" ';
         $out .= 'data-touch="true" ';
         $out .= 'data-images="';
         $out .= htmlspecialchars(json_encode($data_images));
-        $out .= '">';
+        $out .= '"  style="background-color: #777;" ';
+        $out .= 'data-no-tourch-swipe>';
         $out .= '<div class="carousel-inner">';
 
         $crsl_ind = '';
@@ -341,13 +339,17 @@ class MessagesShowController extends AbstractController
             $crsl_ind .= $key === 0 ? ' class="active"' : '';
             $crsl_ind .= '></li>';
 
-            $crsl_items .= '<div class="carousel-item';
+            $crsl_items .= '<div class="carousel-item text-center ';
             $crsl_items .= $key === 0 ? ' active' : '';
             $crsl_items .= '">';
+            $crsl_items .= '<div class="d-flex justify-content-center" style="max-height:400px; max-width:400px;">';
             $crsl_items .= '<img src="';
             $crsl_items .= $env_s3_url . $image_file;
-            $crsl_items .= '" class="d-block w-100 h-100" ';
-            $crsl_items .= 'style="height:400px;">';
+
+            $crsl_items .= '" class="d-block m-auto img-fluid" ';
+//          $crsl_items .= '" class="d-block w-100 img-fluid" ';
+            $crsl_items .= '>';
+            $crsl_items .= '</div>';
             $crsl_items .= '</div>';
         }
 
@@ -520,10 +522,13 @@ class MessagesShowController extends AbstractController
 
         $menu_service->set('messages');
 
+        $message['is_expired'] = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
+
         return $this->render('messages/messages_show.html.twig', [
-            'content'   => $out,
-            'message'   => $message,
-            'schema'    => $pp->schema(),
+            'content'       => $out,
+            'message'       => $message,
+            'image_files'   => json_decode($message['image_files'] ?? '[]'),
+            'schema'        => $pp->schema(),
         ]);
     }
 
@@ -547,7 +552,7 @@ class MessagesShowController extends AbstractController
     {
         $message = $db->fetchAssoc('select m.*,
                 c.id as cid,
-                c.fullname as catname
+                c.fullname as category_name
             from ' . $pp_schema . '.messages m, ' .
                 $pp_schema . '.categories c
             where m.id = ?
