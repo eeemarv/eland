@@ -96,7 +96,7 @@ class MessagesExtendedController extends AbstractController
             $sf_owner = $pp->is_user()
                 && $msg['user_id'] === $su->id();
 
-            $exp = strtotime($msg['expires_at']) < $time;
+            $exp = isset($msg['expires_at']) && strtotime($msg['expires_at']) < $time;
 
             $out .= '<div class="panel panel-info printview">';
             $out .= '<div class="panel-body';

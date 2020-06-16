@@ -11,6 +11,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class MessagesExtendController extends AbstractController
 {
@@ -32,7 +33,12 @@ class MessagesExtendController extends AbstractController
                 $message['label']['offer_want_this'] . ' te verlengen.');
         }
 
-        $expires_at = gmdate('Y-m-d H:i:s', strtotime($message['expires_at']) + (86400 * $days));
+        if (!isset($message['expires_at']))
+        {
+            $message['expires_at'] =  gmdate('Y-m-d H:i:s');
+        }
+
+        $expires_at = gmdate('Y-m-d H:i:s', strtotime($message['expires_at'] . ' UTC') + (86400 * $days));
 
         $m = [
             'expires_at'	=> $expires_at,

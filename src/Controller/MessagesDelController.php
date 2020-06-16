@@ -90,10 +90,13 @@ class MessagesDelController extends AbstractController
         $out .= htmlspecialchars($message['catname'], ENT_QUOTES);
         $out .= '</dd>';
 
-        $out .= '<dt>Geldig tot</dt>';
-        $out .= '<dd>';
-        $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-        $out .= '</dd>';
+        if (isset($message['expires_at']))
+        {
+            $out .= '<dt>Geldig tot</dt>';
+            $out .= '<dd>';
+            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
+            $out .= '</dd>';
+        }
 
         if ($config_service->get_intersystem_en($pp->schema()) && $intersystems_service->get_count($pp->schema()))
         {

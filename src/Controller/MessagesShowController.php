@@ -280,7 +280,7 @@ class MessagesShowController extends AbstractController
 
         $heading_render->add(ucfirst($message['label']['offer_want']));
         $heading_render->add(': ' . $message['subject']);
-        $heading_render->add_raw(strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+        $heading_render->add_raw(isset($message['expires_at']) && strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
         $heading_render->fa('newspaper-o');
 
         if ($message['cid'])
@@ -412,10 +412,13 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        $out .= '<dt>Geldig tot</dt>';
-        $out .= '<dd>';
-        $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-        $out .= '</dd>';
+        if (isset($message['expires_at']))
+        {
+            $out .= '<dt>Geldig tot</dt>';
+            $out .= '<dd>';
+            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
+            $out .= '</dd>';
+        }
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
