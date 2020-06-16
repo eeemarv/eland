@@ -157,7 +157,7 @@ class TransactionsAddController extends AbstractController
 
             if ($fromuser['status'] == 7 && !count($errors))
             {
-                $errors[] = 'Je kan niet rechtstreeks van een interSysteem rekening overschrijven.';
+                $transaction['real_from'] = $request->request->get('real_from');
             }
 
             $transaction['id_from'] = $fromuser['id'];
@@ -208,7 +208,7 @@ class TransactionsAddController extends AbstractController
 
             if(($fromuser['code'] == $touser['code']) && !count($errors))
             {
-                $errors[] = 'Van en Aan Account Code kunnen hetzelfde zijn.';
+                $errors[] = 'Van en Aan Account Code kunnen niet hetzelfde zijn.';
             }
 
             if (!$pp->is_admin() && !count($errors))
@@ -807,9 +807,25 @@ class TransactionsAddController extends AbstractController
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="code_from" name="code_from" ';
-        $out .= 'data-typeahead-source="';
-        $out .= $systems_en ? 'group_self' : 'code_to';
-        $out .= '" ';
+
+        if ($pp->is_admin())
+        {
+            $out .= 'data-typeahead="';
+
+            $out .= $typeahead_service->ini($pp->ary())
+                ->add('accounts', ['status' => 'active'])
+                ->add('accounts', ['status' => 'inactive'])
+                ->add('accounts', ['status' => 'ip'])
+                ->add('accounts', ['status' => 'im'])
+                ->add('intersystem_mail_accounts', [])
+                ->str([
+                    'filter'        => 'accounts',
+                    'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
+                ]);
+
+             $out .= '" ';
+        }
+
         $out .= 'value="';
         $out .= $transaction['code_from'];
         $out .= '" required';
@@ -817,6 +833,26 @@ class TransactionsAddController extends AbstractController
         $out .= '>';
         $out .= '</div>';
         $out .= '</div>';
+
+        if ($pp->is_admin())
+        {
+            $out .= '<div class="form-group" hidden data-real-from>';
+            $out .= '<label for="real_from" class="control-label">';
+            $out .= 'Van Gebruiker/Code in Bovenstaand Remote Systeem';
+            $out .= '</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<i class="fa fa-user"></i>';
+            $out .= '</span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="real_from" name="real_from" ';
+            $out .= 'value="';
+            $out .= $transaction['real_from'] ?? '';
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '<p>Dit veld geeft geen autosuggesties</p>';
+            $out .= '</div>';
+        }
 
         if ($systems_en)
         {

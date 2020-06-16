@@ -233,6 +233,11 @@ typeahead_doc_map_names:
   path: /typeahead-doc-map-names
   methods: GET
 
+typeahead_intersystem_mail_accounts:
+  controller: App\Controller\TypeaheadIntersystemMailAccountsController
+  path: /typeahead-intersystem-mail-accounts
+  methods: GET
+
 typeahead_log_types:
   controller: App\Controller\TypeaheadLogTypesController
   path: /typeahead-log-types
