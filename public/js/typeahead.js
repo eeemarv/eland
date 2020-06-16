@@ -231,7 +231,7 @@ $(document).ready(function(){
 					$('[data-real-from]').removeAttr('hidden');
 				}
 			});
-			$(this).on('keyup keydown change', function(){
+			$(this).on('keyup keydown', function(){
 				$('[data-real-from]').val('');
 				$('[data-real-from]').attr('hidden', '');
 			});
