@@ -17,6 +17,7 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 
 class UsersContactsAddAdminController extends AbstractController
@@ -36,6 +37,7 @@ class UsersContactsAddAdminController extends AbstractController
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
+        SessionUserService $su,
         HeadingRender $heading_render
     ):Response
     {
@@ -55,6 +57,7 @@ class UsersContactsAddAdminController extends AbstractController
             $item_access_service,
             $typeahead_service,
             $pp,
+            $su,
             $heading_render
         );
 
