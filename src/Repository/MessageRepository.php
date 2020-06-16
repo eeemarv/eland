@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageRepository
@@ -60,4 +61,29 @@ class MessageRepository
 	{
 		$this->db->delete($schema . '.messages', ['user_id' => $user_id]);
 	}
+
+	public function add_image_files(array $image_filename_ary, int $id, string $schema):void
+	{
+		$this->db->executeUpdate('update ' . $schema . '.messages
+			set image_files = image_files || ?
+			where id = ?',
+			[$image_filename_ary, $id],
+			[Types::JSON, \PDO::PARAM_INT]);
+	}
+
+	public function update_image_files(array $image_files, int $id, string $schema):void
+	{
+        $image_files = json_encode(array_values($image_files));
+
+		$this->db->update($schema . '.messages',
+			['image_files' => $image_files],
+			['id' => $id]);
+	}
+
+	public function get_max_id(string $schema):int
+	{
+		return $this->db->fetchColumn('select max(id)
+			from ' . $schema . '.messages') ?: 0;
+	}
+
 }

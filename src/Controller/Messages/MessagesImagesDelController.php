@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\FormTokenService;
@@ -22,6 +23,7 @@ class MessagesImagesDelController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
+        MessageRepository $message_repository,
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -37,12 +39,11 @@ class MessagesImagesDelController extends AbstractController
     {
         $errors = [];
 
-        $message = MessagesShowController::get_message($db, $id, $pp->schema());
+        $message = $message_repository->get($id, $pp->schema());
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException(
-                'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
+            throw new AccessDeniedHttpException( 'Access Denied for message with id ' . $id);
         }
 
         $images = array_values(json_decode($message['image_files'] ?? '[]', true));

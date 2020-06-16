@@ -28,7 +28,7 @@ support:
 
 messages_images_instant_del:
   controller: App\Controller\Messages\MessagesImagesInstantDelController
-  path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.message_image_ext%>}/del/{form_token<%assert.token%>}
+  path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.message_image_ext%>}/del/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: messages
@@ -42,21 +42,21 @@ messages_images_del:
 
 messages_edit_images_upload:
   controller: App\Controller\Messages\MessagesEditImagesUploadController
-  path: /messages/{id<%assert.id%>}/images/upload/{form_token<%assert.token%>}
+  path: /messages/{id<%assert.id%>}/images/upload/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: messages
 
 messages_add_images_upload:
   controller: App\Controller\Messages\MessagesAddImagesUploadController
-  path: /messages/images/upload/{form_token<%assert.token%>}
+  path: /messages/images/upload/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: messages
 
-messages_images_upload:
+messages_show_images_upload:
   controller: App\Controller\Messages\MessagesShowImagesUploadController
-  path: /messages/{id<%assert.id%>}/images/upload
+  path: /messages/{id<%assert.id%>}/images/upload/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: messages
@@ -91,14 +91,14 @@ messages_add:
 
 users_image_del:
   controller: App\Controller\UsersImage\UsersImageDelController
-  path: /users/image/del
+  path: /users/image/del/{image_token<%assert.token%>}
   methods: GET|POST
   defaults:
     module: users
 
 users_image_upload:
   controller: App\Controller\UsersImage\UsersImageUploadController
-  path: /users/image/upload
+  path: /users/image/upload/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: users

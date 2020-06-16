@@ -77,7 +77,7 @@
                         <i class="fa fa-plus" id="img_plus"></i>&nbsp;
                         {{- 'label.image_upload'|trans -}}
                         <input id="fileupload" type="file" name="images[]"
-                        data-url="{{- l.pp_path('messages_images_upload', {'id': message.id}) -}}"
+                        data-url="{{- l.pp_path_image_token('messages_show_images_upload', message.id) -}}"
                         data-data-type="json" data-auto-upload="true"
                         data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i"
                         data-max-file-size="999000"

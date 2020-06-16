@@ -31,6 +31,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowAdminController;
+use App\Service\ImageTokenService;
 
 class MessagesShowController extends AbstractController
 {
@@ -38,6 +39,7 @@ class MessagesShowController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ImageTokenService $image_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -382,8 +384,10 @@ class MessagesShowController extends AbstractController
             $out .= '<input id="fileupload" type="file" name="images[]" ';
             $out .= 'data-url="';
 
+/*
             $out .= $link_render->context_path('messages_images_upload',
                 $pp->ary(), ['id' => $id]);
+*/
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';

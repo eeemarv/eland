@@ -5,13 +5,11 @@ namespace App\Controller\Messages;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Controller\Messages\MessagesShowController;
-use App\Service\FormTokenService;
+use App\Repository\MessageRepository;
+use App\Service\ImageTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use Doctrine\DBAL\Connection as Db;
 
 class MessagesImagesInstantDelController extends AbstractController
 {
@@ -19,30 +17,27 @@ class MessagesImagesInstantDelController extends AbstractController
         int $id,
         string $img,
         string $ext,
-        string $form_token,
-        Db $db,
+        string $image_token,
+        MessageRepository $message_repository,
+        ImageTokenService $image_token_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        FormTokenService $form_token_service
+        SessionUserService $su
     ):Response
     {
+        $image_token_service->check_and_throw($id, $image_token);
+
         $img .= '.' . $ext;
 
-        if ($error = $form_token_service->get_ajax_error($form_token))
-        {
-            throw new BadRequestHttpException('Form token fout: ' . $error);
-        }
-
-        $message = MessagesShowController::get_message($db, $id, $pp->schema());
+        $message = $message_repository->get($id, $pp->schema());
 
         if (!$message)
         {
-            throw new NotFoundHttpException('Bericht niet gevonden.');
+            throw new NotFoundHttpException('Message with id ' . $id . ' not found.');
         }
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
+            throw new AccessDeniedHttpException('Access denied.');
         }
 
         $image_file_ary = array_values(json_decode($message['image_files'] ?? '[]', true));
@@ -51,16 +46,12 @@ class MessagesImagesInstantDelController extends AbstractController
 
         if ($key === false)
         {
-            throw new NotFoundHttpException('Afbeelding niet gevonden');
+            throw new NotFoundHttpException('Image ' . $img . ' not found.');
         }
 
         unset($image_file_ary[$key]);
 
-        $image_files = json_encode(array_values($image_file_ary));
-
-        $db->update($pp->schema() . '.messages',
-            ['image_files' => $image_files],
-            ['id' => $id]);
+        $message_repository->update_image_files($image_file_ary, $id, $pp->schema());
 
         return $this->json(['success' => true]);
     }

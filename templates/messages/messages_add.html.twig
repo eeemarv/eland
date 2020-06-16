@@ -1,5 +1,6 @@
 {%- extends 'messages/base/messages_form.html.twig' -%}
 {%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/link.html.twig' as l -%}
 
 {%- block heading_title -%}
     {{ 'messages_add.title'|trans -}}
@@ -17,7 +18,7 @@
 {%- endset -%}
 
 {%- set data_fileupload_url -%}
-    {{- path('messages_add_images_upload', pp_ary()|merge({'form_token': form.children.form_token.vars.value})) -}}
+    {{- l.pp_path_image_token('messages_add_images_upload', 0) -}}
 {%- endset -%}
 
 {%- block css -%}
