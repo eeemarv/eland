@@ -20,7 +20,7 @@ class MessagesShowImagesUploadController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        string $image_upload_token,
+        string $image_token,
         MessageRepository $message_repository,
         ImageTokenService $image_token_service,
         LoggerInterface $logger,
@@ -29,7 +29,7 @@ class MessagesShowImagesUploadController extends AbstractController
         ImageUploadService $image_upload_service
     ):Response
     {
-        $image_token_service->check_and_throw($id, $image_upload_token);
+        $image_token_service->check_and_throw($id, $image_token);
 
         $uploaded_files = $request->files->get('images', []);
 

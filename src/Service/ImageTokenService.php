@@ -7,8 +7,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ImageTokenService
 {
-    const PREFIX_IMG_UPLOAD = 'image_upload_%route%_%id%_%role_short%_%user_id%_%token%_%schema%';
-    const IMG_UPLOAD_TTL = 86400; // 1 day
+    const KEY_TPL = 'image_upload_%route%_%id%_%role_short%_%user_id%_%token%_%schema%';
+    const TTL = 86400; // 1 day
 
 	protected TokenGeneratorService $token_generator_service;
 	protected Predis $predis;
@@ -30,37 +30,37 @@ class ImageTokenService
 
 	public function gen(int $id, string $route):string
 	{
-        $image_upload_token = $this->token_generator_service->gen();
+        $image_token = $this->token_generator_service->gen();
 
-        $image_upload_token_key = strtr(self::PREFIX_IMG_UPLOAD, [
+        $image_token_key = strtr(self::KEY_TPL, [
             '%route%'    	=> $route,
             '%id%'      	=> $id,
-            '%token%'   	=> $image_upload_token,
+            '%token%'   	=> $image_token,
 			'%schema%'  	=> $this->pp->schema(),
 			'%user_id%'		=> $this->su->id(),
 			'%role_short'	=> $this->pp->role_short(),
 		]);
 
-        $this->predis->set($image_upload_token_key, '1');
-        $this->predis->expire($image_upload_token_key, self::IMG_UPLOAD_TTL);
+        $this->predis->set($image_token_key, '1');
+        $this->predis->expire($image_token_key, self::TTL);
 
-		return $image_upload_token;
+		return $image_token;
 	}
 
-	public function check_and_throw(int $id, string $image_upload_token):void
+	public function check_and_throw(int $id, string $image_token):void
 	{
-        $image_upload_token_key = strtr(self::PREFIX_IMG_UPLOAD, [
+        $image_token_key = strtr(self::KEY_TPL, [
             '%route%'    	=> $this->pp->route(),
             '%id%'      	=> $id,
-            '%token%'   	=> $image_upload_token,
+            '%token%'   	=> $image_token,
 			'%schema%'  	=> $this->pp->schema(),
 			'%user_id%'		=> $this->su->id(),
 			'%role_short'	=> $this->pp->role_short(),
 		]);
 
-		if (!$this->predis->get($image_upload_token_key))
+		if (!$this->predis->get($image_token_key))
 		{
-			throw new BadRequestHttpException('No matching image_uplaod_oken.');
+			throw new BadRequestHttpException('No matching image_token.');
 		}
 	}
 }

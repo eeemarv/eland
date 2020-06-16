@@ -42,14 +42,14 @@ messages_images_del:
 
 messages_edit_images_upload:
   controller: App\Controller\Messages\MessagesEditImagesUploadController
-  path: /messages/{id<%assert.id%>}/images/upload/{image_token<%assert.token%>}
+  path: /messages/{id<%assert.id%>}/edit/images/upload/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: messages
 
 messages_add_images_upload:
   controller: App\Controller\Messages\MessagesAddImagesUploadController
-  path: /messages/images/upload/{image_token<%assert.token%>}
+  path: /messages/add/images/upload/{image_token<%assert.token%>}
   methods: POST
   defaults:
     module: messages
