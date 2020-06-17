@@ -1,0 +1,35 @@
+/* extra labels */
+
+
+.label-sm {
+  font-size: 12px;
+}
+
+/** input sm **/
+
+.sm-size {
+    width: 5em;
+}
+
+/** **/
+
+div.pan-sub, div.pan-sab {
+  border-radius: 5px;
+  border: 1px solid #99a;
+  padding: 2px 5px;
+  margin: 5px 0;
+}
+
+div.pan-sub {
+  background: rgba(22, 31, 168, 0.1);
+}
+
+div.pan-sab {
+  background: rgba(255, 255, 255, 0.2)
+}
+
+/** **/
+
+span.num {
+  font-weight: bold;
+}

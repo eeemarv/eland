@@ -1,0 +1,95 @@
+{%- macro form_start(form) -%}
+	{%- import _self as c -%}
+	{{- c.post() -}}
+	{{- form_start(form, {'attr': {'novalidate': 'novalidate'}}) -}} {# TODO remove novalidate #}
+	{{- form_errors(form) -}}
+{%- endmacro form_start -%}
+
+{%- macro form_filter_start(form, collapse) -%}
+	{%- import _self as c -%}
+	{{- c.filter(collapse|default(false)) -}}
+	{{- form_start(form) -}}
+	{{- form_errors(form) -}}
+{%- endmacro form_filter_start -%}
+
+{%- macro form_column_select_start(form) -%}
+	<div class="card card-info collapse" id="show_columns">
+		<div class="card-body">
+			{{- form_start(form) -}}
+			{{- form_errors(form) -}}
+{%- endmacro form_column_select_start -%}
+
+{%- macro form_end(form) -%}
+	{%- import _self as c -%}
+	{{- form_end(form) -}}
+	{{- c.end() -}}
+{%- endmacro form_end -%}
+
+{%- macro filter_toggle_btn() -%}
+    <button class="btn btn-default hidden-xs" title="{{- 'btn.filter'|trans -}}" data-toggle="collapse" data-target="#filter">
+    <i class="fa fa-caret-down"></i>
+    <span class="hidden-xs hidden-sm"> {{ 'btn.filter'|trans -}}</span>
+    </button>
+{%- endmacro filter_toggle_btn -%}
+
+{%- macro filter_indicator() -%}
+	&nbsp;
+	<small>
+		{{- 'filtered'|trans -}}
+	</small>
+{%- endmacro filter_indicator -%}
+
+{%- macro filter(collapse) -%}
+	<div class="card bg-info{%- if collapse|default(false) %} collapse{%- endif -%}" id="filter">
+		<div class="card-body pb-0">
+{%- endmacro filter -%}
+
+{%- macro post() -%}
+	<div class="card bg-info">
+		<div class="card-body">
+{%- endmacro post %}
+
+{%- macro edit() -%}
+	<div class="card card-info">
+		<div class="card-body">
+{%- endmacro edit -%}
+
+{%- macro add() -%}
+	<div class="card card-success">
+		<div class="card-body">
+{%- endmacro add %}
+
+{%- macro del() -%}
+	<div class="card card-danger">
+		<div class="card-body">
+{%- endmacro del -%}
+
+{%- macro mail() -%}
+	<div class="card card-success">
+		<div class="card-heading">
+{%- endmacro mail -%}
+
+{%- macro help() -%}
+	<div class="card card-warning">
+		<div class="card-heading">
+{%- endmacro help -%}
+
+{%- macro default() -%}
+	<div class="card card-default">
+		<div class="card-heading">
+{%- endmacro default -%}
+
+{%- macro warning() -%}
+	<div class="card card-default">
+		<div class="card-heading">
+{%- endmacro warning -%}
+
+{%- macro body() -%}
+	</div>
+	<div class="card-body">
+{%- endmacro body -%}
+
+{%- macro end() -%}
+		</div>
+	</div>
+{%- endmacro -%}

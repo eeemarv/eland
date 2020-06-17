@@ -1,0 +1,80 @@
+{%- extends 'calendar/calendar_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'calendar_month.title'|trans({
+		'%month%': calendar.month,
+		'%year%': calendar.year
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block heading -%}
+	<h1>
+		Kalender
+	</h1>
+{%- endblock heading -%}
+
+{%- block content -%}
+
+<div class="calendar">
+{#	{%- include '@marttiphpbb_calendarmonthview/include/pagination.html' -%} #}
+	<div class="month">
+	{%- for w in weeks -%}
+		<div class="week-container">
+			<div class="weekdays">
+				{%- for d in w.weekdays -%}
+					<div class="day {{ d.WEEKDAY_CLASS }}{%- if SHOW_TODAY and d.JD == TODAY_JD %} today{%- endif -%}{%- if MONTH == d.MONTH %} this-month{%- endif -%}">
+						<div class="dayhead">
+							<div class="monthday">{{- d.MONTHDAY -}}</div>
+							{%- if MONTH == d.MONTH -%}
+								<div class="weekday">{{- d.WEEKDAY_ABBREV -}}</div>
+								{%- if SHOW_MOON_PHASE and d.MOON_ICON -%}
+									<div class="moon">
+										<span class="fa-stack" title="{{- d.MOON_TITLE -}}">
+											<i class="fa fa-circle fa-inverse fa-stack-1x"></i>
+											<i class="fa {{ d.MOON_ICON }} fa-stack-1x"></i>
+										</span>
+									</div>
+								{%- elseif d.WEEKDAY == 1 and SHOW_ISOWEEK -%}
+									<div class="isoweek">
+										{{- d.ISOWEEK -}}
+									</div>
+								{%- endif -%}
+							{%- endif -%}
+						</div>
+					</div>
+				{%- endfor -%}
+			</div>
+			<div class="eventrows">
+				<div class="evrow-head"></div>
+				{%- for er in w.eventrows -%}
+					<div class="evrow">
+					{%- for e in er.eventsegments -%}
+						<div class="f-con flex-{{- e.FLEX -}}">
+						{%- if e.TOPIC_ID -%}
+							<div class="ev forum-{{- e.FORUM_ID }}{%- if e.S_START %} ev-start{%- endif -%}{%- if e.S_END %} ev-end{%- endif -%}{%- if TOPIC_HILIT == e.TOPIC_ID %} topic-hilit{%- endif -%}" data-topic="{{- e.TOPIC_ID -}}" data-forum="{{- e.FORUM_ID -}}">
+								<div class="ev-overlay">
+									<a href="{{- e.TOPIC_LINK -}}" title="{{- e.TOPIC_TITLE -}}">{{- e.TOPIC_TITLE -}}</a>
+								</div>
+							</div>
+						{%- endif -%}
+						</div>
+					{%- endfor -%}
+					</div>
+				{%- endfor -%}
+				<div class="evrow-foot"></div>
+			</div>
+		</div>
+	{%- endfor -%}
+	</div>
+{#	{%- include '@marttiphpbb_calendarmonthview/include/pagination.html' -%} #}
+</div>
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

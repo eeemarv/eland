@@ -28,9 +28,3 @@ security:
          - { path: ^/\w+/a/, roles: admin }
          - { path: ^/\w+/u/, roles: user }
          - { path: ^/\w+/g/, roles: guest }
-
-#    role_hierarchy:
-#        ROLE_MASTER: ROLE_ADMIN
-#        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
-#        ROLE_USER: ROLE_GUEST
-#        ROLE_ELAS_GUEST: ROLE_GUEST

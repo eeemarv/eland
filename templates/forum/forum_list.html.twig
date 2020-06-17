@@ -1,0 +1,50 @@
+{%- extends 'forum/base/forum_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- embed 'embed/search_box.html.twig' -%}
+{%- endembed -%}
+
+{%- embed 'embed/table.html.twig' -%}
+    {%- import 'macro/table.html.twig' as t -%}
+    {%- block thead -%}
+        {{- t.th('label.subject') -}}
+        {{- t.th('label.replies') -}}
+        {{- t.th('label.user', {'data-hide': 'phone, tablet'}) -}}
+        {{- t.th('label.created', {'data-hide': 'phone, tablet', 'data-sort-initial': 'descending', 'data-type': 'numeric'}) -}}
+        {%- if show_access -%}
+            {{- t.th('access.visible_for', {'data-hide': 'phone, tablet'}) -}}
+        {%- endif -%}
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for topic in forum_topics -%}
+            <tr>
+                {{- t.td_pp_link('forum_topic', {'id': topic.id}, topic.subject) -}}
+                {{- t.td(topic.reply_count) -}}
+                {{- t.td_account_pp_link(topic.user_id, schema) -}}
+                {{- t.td_date_format(topic.created_at, 'min', schema) -}}
+                {%- if show_access -%}
+                    {{- t.td_access(topic.access) -}}
+                {%- endif -%}
+            </tr>
+        {%- else -%}
+            <tr>
+                <td colspan="{{- show_access ? '5' : '4' -}}">
+                    {{- 'forum.no_topics'|trans -}}
+                </td>
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('footable') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('footable') -}}
+{%- endblock js -%}

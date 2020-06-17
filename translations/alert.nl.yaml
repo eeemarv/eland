@@ -1,0 +1,224 @@
+error:
+  token_not_valid: >-
+    Geen geldig token.
+
+contact_form:
+  success: >-
+    Open je E-mailbox en klik
+    de link aan die we je zonden om je
+    bericht te bevestigen.
+
+contact_form_confirm:
+  error:
+    token_not_valid: >-
+      Het token is niet geldig ofwel verlopen. Probeer het opnieuw.
+  success:
+    message_sent: >-
+      Je bericht werd succesvol verzonden.
+
+docs_add:
+  error: >-
+    Opladen document mislukt.
+  success:
+    map: >-
+      Het bestand is opgeladen in map "%map_name%"
+    no_map: >-
+      Het bestand is opgeladen.
+
+docs_del:
+  error: >-
+    Document "%name%" is niet verwijderd.
+  success: >-
+    Document "%name%'' is verwijderd.
+
+docs_edit:
+  success: >-
+    Document aangepast.
+
+docs_map_edit:
+  success: >-
+    De naam van de map is aangepast.
+
+email:
+  warning:
+    disabled: >-
+      De E-mail functies zijn uitgeschakeld
+      door de beheerder. Je kan dit formulier
+      niet gebruiken.
+    no_support_address: >-
+      Er is geen support E-mail adres
+      ingesteld door de beheerder.
+      Je kan dit formulier niet gebruiken.
+    master_not_allowed: >-
+      Het master account kan berichten verzenden.
+
+forum_add_topic:
+  success: >-
+    Forum onderwerp toegevoegd.
+
+forum_del_post:
+  error: >-
+    De forum reactie is niet verwijderd.
+  success:
+    admin: >-
+      De reactie van "%user%" is verwijderd uit
+      forum onderwerp "%topic_subject%"
+    personal: >-
+      Je reactie is verwijderd uit forum onderwerp "%topic_subject%"
+
+forum_del_topic:
+  error: >-
+    Forum onderwerp "%topic_subject%" is niet verwijderd.
+  success:
+    admin: >-
+      Forum onderwerp "%topic_subject%" van "%user%" is verwijderd.
+    personal: >-
+      Je forum onderwerp "%topic_subject%" is verwijderd.
+
+forum_edit_post:
+  success:
+    personal: >-
+      Je reactie in forum onderwerp
+      "%topic_subject%" is aangepast.
+    admin: >-
+      De reactie van "%user%" in forum onderwerp
+      "%topic_subject%" is aangepast.
+
+forum_edit_topic:
+  success:
+    personal: >-
+      Je forum onderwerp is aangepast.
+    admin: >-
+      Forum onderwerp van gebruiker "%user%" is aangepast.
+
+forum_topic:
+  add_post:
+    success: >-
+      Reactie toegevoegd aan forum onderwerp "%topic_subject%".
+
+login:
+  warning:
+    maintenance: >-
+      De website is niet beschikbaar
+      wegens onderhoudswerken.
+      Enkel admins kunnen inloggen.
+  success:
+    master: Ok. Ingelogd als master.
+    user: Je bent ingelogd.
+  error:
+    intersystem_guest: >-
+      Het account is een interSysteem-gast
+      account, maar interSysteem functionaliteit
+      is niet ingeschakeld in dit systeem.
+    maintenance: >-
+      De website is in onderhoud. Probeer het later opnieuw.
+
+logout:
+  success: >-
+    Je bent uitgelogd.
+
+messages_add:
+  success:
+    offer:
+      personal: >-
+        Je aanbod "%message_subject%" is teogevoegd.
+      admin: >-
+        Het aanbod "%message_subject%"
+        is toegevoegd voor gebruiker "%user%".
+    want:
+      personal: >-
+        Je vraag "%message_subject%" is toegevoegd.
+      admin: >-
+        De vraag "%message_subject%" is toegevoegd
+        voor gebruker "%user%".
+
+messages_del:
+  error: Het bericht is niet verwijderd.
+  success:
+    offer:
+      admin: >-
+        Het aanbod "%message_subject%" van "%user%" is verwijderd.
+      personal: >-
+        Je aanbod "%message_subject%" is verwijderd.
+    want:
+      admin: >-
+        De vraag "%message_subject%" van "%user%" is verwijderd.
+      personal: >-
+        Je vraag "%message_subject%" is verwijderd.
+
+messages_edit:
+  success:
+    offer:
+      personal: >-
+        Je aanbod "%message_subject%" is aangepast.
+      admin: >-
+        Het aanbod "%message_subject%" van gebruiker
+        "%user%" is aangepast.
+    want:
+      personal: >-
+        Je vraag "%message_subject%" is aangepast.
+      admin: >-
+        De vraag "%message_subject%" van gebruiker
+        "%user%" is aangepast.
+
+news_add:
+  success: >-
+    Nieuwsbericht teogevoegd.
+
+news_del:
+  error: Het nieuwsbericht is niet verwijderd.
+  success: >-
+    Het nieuwsbericht "%news_subject%" is verwijderd.
+
+news_edit:
+  success: >-
+    Nieuwsbericht aangepast.
+
+password_reset_request:
+  success:
+    email_sent: >-
+      Een link om je paswoord te resetten werd
+      naar je E-mailbox verzonden. Deze link
+      blijft 24 uur geldig.
+
+password_reset_set:
+  error:
+    not_valid_anymore: >-
+      Het reset-token is niet meer geldig.
+      Zend eventueel opnieuw een paswoord reset link
+      naar je E-mail box.
+  success: >-
+    Het paswoord van je gebruikersaccount is aangepast.
+
+register:
+  success:
+    link_sent: >-
+      Open je E-mailbox en klik op de
+      bevestigingslink in de E-mail die we naar je gestuurd
+      hebben om je inschrijving te voltooien.
+
+support:
+  success: >-
+    De Support E-mail is verzonden.
+
+users_del:
+  error: >-
+    Gebruikersaccount "%user%" is niet verwijderd.
+  success: >-
+    Gebruikersaccount "%user%" is verwijderd.
+
+users_password_set:
+  success:
+    with_notify:
+      personal: >-
+        Het paswoord van je gebruikersaccount is aangepast
+        en een notificatie E-mail werd naar je mailbox verzonden.
+      admin: >-
+        Een nieuw paswoord werd ingesteld voor "%user%" en
+        een notificatie E-mail werd verzonden.
+    without_notify:
+      personal: >-
+        Het paswoord van je gebruikersaccount is aangepast.
+      admin: >-
+        Een nieuw paswoord werd ingesteld voor "%user%" maar
+        er werd geen notificatie E-mail verzonden.

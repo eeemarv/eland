@@ -1,0 +1,45 @@
+{%- extends 'contact_form/contact_form_base.html.twig' -%}
+
+{%- block content -%}
+
+{{- config('contact_form_top_text', schema)|raw -}}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.email, {
+        'label': 'label.your_email',
+        'help': 'help.email_validation_link'
+    }) -}}
+
+    {{- form_row(form.message, {
+        'label': 'label.your_message',
+        'attr': {'rows': 5, 'minlength': 10, 'maxlength': 5000}
+    }) -}}
+
+    {{- form_row(form.captcha, {
+        'label': 'label.captcha',
+        'help': 'help.captcha',
+        'addon_fa': 'code'
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.send',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{{- config('contact_form_bottom_text', schema)|raw -}}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

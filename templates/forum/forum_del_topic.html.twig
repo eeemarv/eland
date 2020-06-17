@@ -1,0 +1,59 @@
+{%- extends 'forum/base/forum_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'forum_del_topic.title.'
+        ~ (s_is_owner(forum_topic.user_id) ? 'personal' : 'admin') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%topic_subject%': forum_topic.subject,
+        '%user%': account(forum_topic.user_id, schema)
+    }) -}}
+{%- endblock -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
+    {%- block form_content -%}
+    <h2>
+        {{- forum_topic.subject -}}
+    </h2>
+
+    {{- first_post.content|raw -}}
+
+    <p>
+        {{- oi.object_info(forum_topic.user_id, forum_topic.created_at, null, schema) -}}
+    </p>
+
+    <p class="text-danger">
+        {%- if post_count == 1 -%}
+            {{- 'forum_del_topic.posts_warning.0'|trans -}}
+        {%- elseif post_count == 2 -%}
+            {{- 'forum_del_topic.posts_warning.1'|trans -}}
+        {%- else -%}
+            {{- 'forum_del_topic.posts_warning.2'|trans({
+                '%count%': post_count - 1
+            }) -}}
+        {%- endif -%}
+    </p>
+
+    {{- bl.cancel('forum_topic', {'id': forum_topic.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

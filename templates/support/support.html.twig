@@ -1,0 +1,47 @@
+{%- extends 'base/navbar.html.twig' -%}
+
+{%- set active_menu = 'support' -%}
+
+{%- block heading_sub -%}
+    <p>
+    {{- 'support.explain'|trans({
+        '%system_name%': config('systemname', schema)
+    }) -}}
+    </p>
+{%- endblock heading_sub -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/link.html.twig' as l -%}
+    {%- block form_content -%}
+
+    {{- form_row(form.message, {
+        'label': 'label.your_message',
+        'attr': {'rows': 5, 'minlength': 10, 'maxlength': 5000}
+    }) -}}
+
+    {{- form_row(form.cc, {
+        'label': can_reply ? 'label.send_cc' : 'label.no_email_no_cc',
+        'disabled': not can_reply,
+        'checked': can_reply,
+        'label_attr': {'class': 'checkbox-custom'}
+    }) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.send',
+        'attr': {'class': 'btn-info'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

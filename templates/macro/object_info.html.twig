@@ -1,0 +1,26 @@
+{%- macro post_info(post, schema) -%}
+    {%- import _self as oi -%}
+    {{- oi.object_info(post.user_id, post.created_at, post.edit_count, schema) -}}
+{%- endmacro post_info -%}
+
+{%- macro object_info(user_id, created_at, edit_count, schema) -%}
+    {%- import _self as oi -%}
+    {{- oi.user_link(user_id, schema) -}}&nbsp;
+    @{{- created_at|date_format('min', schema) -}}
+    {%- if edit_count is defined and edit_count != 0 -%}
+        {{- 'object_info.edit_count'|trans({
+            '%edit_count%': edit_count
+        }) -}}
+    {%- endif -%}
+{%- endmacro object_info -%}
+
+{%- macro user_link(user_id, schema) -%}
+    <i class="fa fa-user"></i>&nbsp;
+    {%- if pp_role('admin') -%}
+        <a href="{{- path('users_show_admin', pp_ary()|merge({'id': user_id})) -}}">
+    {%- else -%}
+        <a href="{{- path('users_show', pp_ary()|merge({'id': user_id})) -}}">
+    {%- endif -%}
+        {{- account(user_id, schema) -}}
+    </a>
+{% endmacro user_link -%}

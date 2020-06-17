@@ -176,7 +176,7 @@ class LinkRender
 
 		$out .= '>';
 		$out .= '<i class="fa fa-' . $fa .'"></i>';
-		$out .= '<span class="hidden-xs hidden-sm">&nbsp;';
+		$out .= '<span class="d-none d-lg-inline">&nbsp;';
 		$out .= htmlspecialchars($label, ENT_QUOTES);
 		$out .= '</span>';
 		$out .= '</a>';
@@ -214,7 +214,7 @@ class LinkRender
 	):string
 	{
 		return $this->link($route, $params_context, $params,
-			'Annuleren', ['class'	=> 'btn btn-default btn-lg'],
+			'Annuleren', ['class'	=> 'btn btn-default btn-lg border border-secondary-li'],
 			'undo');
 	}
 }

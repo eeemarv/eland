@@ -181,20 +181,22 @@ class LogsController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->fa('history');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out = '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
 
         $out .= '<form method="get" class="form-horizontal">';
 
         $out .= '<div class="row">';
 
         $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="q_addon">';
-        $out .= '<i class="fa fa-search"></i></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-search"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="q_addon" ';
         $out .= 'name="f[q]" id="q" placeholder="Zoek Event" ';
         $out .= 'value="';
         $out .= $filter['q'] ?? '';
@@ -203,16 +205,18 @@ class LogsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="type_addon">';
-        $out .= 'Type</span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= 'Type';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="type_addon" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
-            ->add('log_types', [])
+        $out .= $typeahead_service->ini()
+            ->add('log_types', [], 0)
             ->str();
 
         $out .= '" ';
@@ -224,15 +228,17 @@ class LogsController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<div class="input-group">';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<i class="fa fa-user"></i>';
+        $out .= '</span>';
+        $out .= '</span>';
 
         $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
 
         $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini()
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -290,11 +296,12 @@ class LogsController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        $out .= '<div class="panel panel-default printview">';
-
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-hover table-bordered table-striped footable csv" ';
-        $out .= 'data-sort="false">';
+        $out .= '<div class="table-responsive ';
+        $out .= 'border border-secondary-li rounded mb-3">';
+        $out .= '<table class="table table-hover ';
+        $out .= 'table-bordered table-striped ';
+        $out .= 'bg-default mb-0" ';
+        $out .= 'data-sort="false" data-footable data-csv>';
         $out .= '<thead>';
         $out .= '<tr>';
 
@@ -377,13 +384,13 @@ class LogsController extends AbstractController
 
         $out .= '</tbody>';
         $out .= '</table>';
-        $out .= '</div></div>';
+        $out .= '</div>';
 
         $out .= $pagination_render->get();
 
         $menu_service->set('logs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('logs/logs.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

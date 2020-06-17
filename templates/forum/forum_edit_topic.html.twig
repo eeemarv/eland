@@ -1,0 +1,23 @@
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'forum_edit_topic.title.'
+        ~ (s_is_owner(forum_topic.user_id) ? 'personal' : 'admin') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%topic_subject%': forum_topic.subject,
+        '%user%': account(forum_topic.user_id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('forum_topic', {'id': forum_topic.id}) -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}

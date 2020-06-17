@@ -1,109 +1,153 @@
 logout:
-  controller: App\Controller\LogoutController
+  controller: App\Controller\Auth\LogoutController
   path: /logout
   methods: GET
+  defaults:
+    module: logout
 
 messages_show:
-  controller: App\Controller\MessagesShowController
+  controller: App\Controller\Messages\MessagesShowController
   path: /messages/{id<%assert.id%>}
   methods: GET|POST
+  defaults:
+    module: messages
 
 messages_extended:
-  controller: App\Controller\MessagesExtendedController
+  controller: App\Controller\Messages\MessagesExtendedController
   path: /messages/extended
   methods: GET
+  defaults:
+    module: messages
 
 messages_list:
-  controller: App\Controller\MessagesListController
+  controller: App\Controller\Messages\MessagesListController
   path: /messages
   methods: GET|POST
+  defaults:
+    module: messages
 
 users_show:
-  controller: App\Controller\UsersShowController
+  controller: App\Controller\Users\UsersShowController
   path: /users/{id<%assert.id%>}/{status<%assert.account_status.active%>?active}
   methods: GET|POST
+  defaults:
+    module: users
 
 users_map:
-  controller: App\Controller\UsersMapController
+  controller: App\Controller\Users\UsersMapController
   path: /users/map/{status<%assert.account_status.active%>?active}
   methods: GET
+  defaults:
+    module: users
 
 users_tiles:
-  controller: App\Controller\UsersTilesController
+  controller: App\Controller\Users\UsersTilesController
   path: /users/tiles/{status<%assert.account_status.active%>?active}
   methods: GET
+  defaults:
+    module: users
 
 users_list:
-  controller: App\Controller\UsersListController
+  controller: App\Controller\Users\UsersListController
   path: /users/{status<%assert.account_status.active%>?active}
   methods: GET|POST
+  defaults:
+    module: users
 
 transactions_show:
-  controller: App\Controller\TransactionsShowController
+  controller: App\Controller\Transactions\TransactionsShowController
   path: /transactions/{id<%assert.id%>}
   methods: GET
+  defaults:
+    module: transactions
 
 transactions:
-  controller: App\Controller\TransactionsController
+  controller: App\Controller\Transactions\TransactionsController
   path: /transactions
   methods: GET
+  defaults:
+    module: transactions
 
 news_show:
-  controller: App\Controller\NewsShowController
+  controller: App\Controller\News\NewsShowController
   path: /news/{id<%assert.id%>}
   methods: GET
+  defaults:
+    module: news
 
 news_extended:
-  controller: App\Controller\NewsExtendedController
+  controller: App\Controller\News\NewsExtendedController
   path: /news/extended
   methods: GET
+  defaults:
+    module: news
 
 news_list:
-  controller: App\Controller\NewsListController
+  controller: App\Controller\News\NewsListController
   path: /news
   methods: GET
+  defaults:
+    module: news
 
 calendar_show:
   controller: App\Controller\CalendarShowController
   path: /calendar/{id<%assert.id%>}
   methods: GET
+  defaults:
+    module: calendar
 
 calendar_month:
   controller: App\Controller\CalendarMonthController
   path: /calendar/{year<%assert.year%>}/{month<%assert.month%>}
   methods: GET
+  defaults:
+    module: calendar
 
 calendar_list:
   controller: App\Controller\CalendarListController
   path: /calendar
   methods: GET
+  defaults:
+    module: calendar
 
 docs_map:
-  controller: App\Controller\DocsMapController
+  controller: App\Controller\Docs\DocsMapController
   path: /docs/{id<%assert.id%>}
   methods: GET
+  defaults:
+    module: docs
 
 docs:
-  controller: App\Controller\DocsController
+  controller: App\Controller\Docs\DocsController
   path: /docs
   methods: GET
+  defaults:
+    module: docs
 
 forum_topic:
-  controller: App\Controller\ForumTopicController
+  controller: App\Controller\Forum\ForumTopicController
   path: /forum/{id<%assert.id%>}
   methods: GET|POST
+  defaults:
+    module: forum
 
 forum:
-  controller: App\Controller\ForumController
+  controller: App\Controller\Forum\ForumController
   path: /forum
   methods: GET
+  defaults:
+    module: forum
 
 typeahead_accounts:
-  controller: App\Controller\TypeaheadAccountsController
-  path: /typeahead-accounts/{status<%assert.account_status.primary%>}
+  controller: App\Controller\Typeahead\TypeaheadAccountsController
+  path: /typeahead/{thumbprint<%assert.thumbprint%>}/accounts/{status<%assert.account_status.primary%>}
   methods: GET
+  defaults:
+    module: accounts
 
 plot_user_transactions:
   controller: App\Controller\PlotUserTransactionsController
   path: /plot-user-transactions/{user_id<%assert.id%>}/{days<%assert.id%>}
   methods: GET
+  defaults:
+    module: transactions

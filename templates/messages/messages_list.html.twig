@@ -1,0 +1,12 @@
+{%- extends 'messages/base/messages_base.html.twig' -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('footable') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('footable') -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+{%- endblock js -%}

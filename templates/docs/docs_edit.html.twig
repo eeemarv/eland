@@ -1,0 +1,64 @@
+{%- extends 'docs/base/docs_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'docs_edit.title'|trans({
+        '%name%': doc.name ?? doc.original_filename
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- block form_content -%}
+        {{- form_row(form.file_location, {
+            'label': 'label.file_location',
+            'addon_fa': 'file-o'
+        }) -}}
+
+        {{- form_row(form.original_filename, {
+            'label': 'label.original_filename',
+            'addon_fa': 'file-o'
+        }) -}}
+
+        {{- form_row(form.name, {
+            'label': 'label.name',
+            'addon_fa': 'file-o',
+            'required': false
+        }) -}}
+
+        {{- form_row(form.access, {
+            'label': 'access.visible_for',
+            'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
+        }) -}}
+
+        {{- form_row(form.map_name, {
+            'label': 'label.map_name',
+            'help': 'docs_add.map_name.help',
+            'addon_fa': 'folder-o',
+            'required': false
+        }) -}}
+
+        {%- if app.request.query.get('map_id') -%}
+            {{- bl.cancel('docs_map', {'id': app.request.query.get('map_id')}) -}}
+        {%- else -%}
+            {{- bl.cancel('docs') -}}
+        {%- endif -%}
+
+        {{- form_widget(form.submit,{
+            'label': 'btn.edit',
+            'attr': {'class': 'btn-primary'}
+        }) -}}
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+{%- endblock js -%}

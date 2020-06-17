@@ -1,21 +1,27 @@
 {%- extends 'base/base.html.twig' -%}
 
-{%- block title -%}eLAND{%- endblock -%}
+{%- block title -%}
+	{{- 'index.title'|trans -}}
+{%- endblock -%}
+
 {%- block navbar -%}{%- endblock -%}
 
-{%- block page_container -%}
+{%- block jumbotron -%}
 
-	<div class="row">
-		<div class="col-md-12">
-			<div class="jumbotron eland-index">
-				<div class="container">
-
-				<h1>eLAND Index</h1>
-				<p>Server gemeenschapsmunten</p>
-				</div>
-			</div>
+	<div class="jumbotron eland-index">
+		<div class="container">
+			<h1>
+				{{- block('title') -}}
+			</h1>
+			<p>
+				{{- 'index.sub_title'|trans -}}
+			</p>
 		</div>
 	</div>
+
+{%- endblock jumbotron -%}
+
+{%- block page_container -%}
 
 	<div class="container">
 		<div class="row">
@@ -25,8 +31,8 @@
 
 			{%- for system, schema in schemas -%}
 				{%- if not (loop.index0 % systems_per_col) -%}
-				<div class="col-md-4">
-					<div class="panel panel-info">
+				<div class="col-md-4 mb-3">
+					<div class="card">
 						<ul class="list-group">
 				{%- endif -%}
 							<li class="list-group-item">
@@ -42,7 +48,13 @@
 		{%- endif -%}
 		</div>
 
-	{%- embed 'include/hosting.html.twig' -%}
+	{%- embed 'embed/card.html.twig' -%}
+		{%- import 'macro/link.html.twig' as l -%}
+		{%- block body -%}
+			{{- 'index.hosting_explain'|trans({
+				'%the_contact_form%': l.link('index_contact_form', {}, 'index.the_contact_form')
+			})|raw -}}
+		{%- endblock body -%}
 	{%- endembed -%}
 
 	</div>
@@ -52,8 +64,16 @@
 
 {%- block index_link -%}
 	<p>
-		<a href="{{- path('index_contact') -}}">
-			Contactformulier
+		<a href="{{- path('index_contact_form') -}}">
+			{{- 'index_contact_form.title'|trans -}}
 		</a>
 	</p>
 {%- endblock index_link -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

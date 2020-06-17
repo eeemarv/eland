@@ -1,13 +1,12 @@
 {%- extends 'base/sidebar.html.twig' -%}
 {%- import 'macro/menu.html.twig' as m -%}
 
-{%- block navbar_toggle_button -%}
-	{{- m.navbar_toggle_button() -}}
-{%- endblock navbar_toggle_button -%}
-
 {%- block navbar_collapse -%}
+	<button class="navbar-toggler bg-light border border-secondary-li" type="button" data-toggle="collapse" data-target="#navbar-collapse-1" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
 	<div class="collapse navbar-collapse" id="navbar-collapse-1">
-	<ul class="nav navbar-nav navbar-right">
+	<ul class="nav navbar-nav ml-auto">
 
 	{%- block navbar_menu -%}
 		{%- if not pp_role('anonymous') and has_menu_nav_system() -%}

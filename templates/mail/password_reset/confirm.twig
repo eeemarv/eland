@@ -10,7 +10,7 @@
 <p>
     {{- 'password_reset_confirm.html_msg'|trans({
         '%link_open%': context_url_open(
-            'password_reset_token', mpp_anon_ary(schema), {'token': token}),
+            'password_reset_set', mpp_anon_ary(schema), {'token': token}),
         '%link_close%': '</a>',
         '%system_name%': config('systemname', schema)
     })|raw -}}
@@ -36,7 +36,7 @@
     '%system_name%': config('systemname', schema)
 }) }}
 
-{{ context_url('password_reset_token', mpp_anon_ary(schema), {'token': token}) }}
+{{ context_url('password_reset_set', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'expiration.1_day'|trans }}
 

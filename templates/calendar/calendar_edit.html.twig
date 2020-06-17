@@ -1,0 +1,19 @@
+{%- extends 'calendar/calendar_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'calendar_edit.title'|trans({
+        '%subject%': calendar_event.subject
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block 'content' -%}
+
+{%- endblock 'content' -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

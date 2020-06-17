@@ -1,0 +1,136 @@
+$b-white:    #fff;
+$b-gray-100: #f8f9fa;
+$b-gray-200: #e9ecef;
+$b-gray-300: #dee2e6;
+$b-gray-400: #ced4da;
+$b-gray-500: #adb5bd;
+$b-gray-600: #6c757d;
+$b-gray-700: #495057;
+$b-gray-800: #343a40;
+$b-gray-900: #212529;
+$b-black:    #000;
+
+$b-blue:    #007bff;
+$b-indigo:  #6610f2;
+$b-purple:  #6f42c1;
+$b-pink:    #e83e8c;
+$b-red:     #dc3545;
+$b-orange:  #fd7e14;
+$b-yellow:  #ffc107;
+$b-green:   #28a745;
+$b-teal:    #20c997;
+$b-cyan:    #17a2b8;
+
+/*
+$primary:       #007bff;
+$secondary:     #6c757d;
+$success:       #28a745;
+$info:          #17a2b8;
+$warning:       #ffc107;
+$danger:        #dc3545;
+$light:         #f8f9fa;
+$dark:          #343a40;
+*/
+
+$b-primary:       $b-blue;
+$b-secondary:     $b-gray-600;
+$b-success:       $b-green;
+$b-info:          $b-cyan;
+$b-warning:       $b-yellow;
+$b-danger:        $b-red;
+$b-light:         $b-gray-100;
+$b-dark:          $b-gray-800;
+
+/*
+$primary: adjust-hue($b-primary, 40);
+$secondary: adjust-hue($b-secondary, 20);
+$success: adjust-hue($b-success, 10);
+$info: adjust-hue($b-info, 10);
+$warning: adjust-hue($b-warning, -10);
+$danger: adjust-hue($b-danger, 10);
+$light: $b-light;
+$dark: $b-dark;
+*/
+
+$primary:         #337ab7;
+$success:         #5cb85c;
+$info:            #5bc0de;
+$warning:         #f0ad4e;
+$danger:          #d9534f;
+
+$secondary: $b-gray-600;
+
+$b-extern: $b-indigo;
+
+$light:         $b-gray-100 !default;
+$dark:          $b-gray-800 !default;
+
+$theme-colors: (
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "success":    $success,
+    "info":       $info,
+    "warning":    $warning,
+    "danger":     $danger,
+    "default":    $b-white,
+    "inactive":   $b-gray-300,
+
+/*
+    "light":      $light,
+    "dark":       $dark,
+*/
+
+    "secondary-li": lighten($secondary, 30),
+    "success-li":   lighten($success, 35),
+    "info-li":      lighten($info, 30),
+    "warning-li":   lighten($warning, 32),
+    "danger-li":    lighten($danger, 35),
+    "extern-li":    lighten($b-extern, 45)
+
+);
+
+$label-margin-bottom: .2rem !default;
+
+$nav-tabs-border-color: $b-gray-300; //#000;
+
+$card-border-color: rgba($b-black, .18) !default;  // was .125
+
+$input-border-color: $b-gray-500 !default; // was 400
+
+/*
+
+@btn-default-color:              #333;
+@btn-default-bg:                 #fff;
+@btn-default-border:             #ccc;
+*/
+
+$component-active-bg: $primary;
+
+
+// $enable-gradients: true;
+// $enable-shadows: true;
+
+/*
+$border-radius:               .45rem;
+$border-radius-lg:            .5rem; // was 3rem
+$border-radius-sm:            .4rem;
+*/
+
+$yiq-contrasted-threshold:  200;
+
+$font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+$navbar-padding-y: 0;
+$nav-link-padding-y: .8rem;
+
+$card-spacer-y: .5rem;
+$card-spacer-x: .8rem;
+
+$table-accent-bg: rgba($b-black, .03);
+
+
+// $navbar-padding-x: 0;
+// @font-family-serif:       Georgia, "Times New Roman", Times, serif;
+
+// $font-family-sans-serif:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+// $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;

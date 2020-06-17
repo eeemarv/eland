@@ -11,7 +11,7 @@ class AccessCnst
         ],
         'user'		=> [
             'lbl'   => 'leden',
-            'class' => 'default'
+            'class' => 'default border border-secondary-li'
         ],
         'guest'	    => [
             'lbl'   => 'interSysteem',
@@ -23,18 +23,6 @@ class AccessCnst
         'admin' => 'admin',
         'user'  => 'user',
         'guest' => 'guest',
-    ];
-
-    const FROM_XDB = [
-        'admin'     => 'admin',
-        'users'     => 'user',
-        'interlets' => 'guest',
-    ];
-
-    const TO_XDB = [
-        'admin' => 'admin',
-        'user'  => 'users',
-        'guest' => 'interlets',
     ];
 
     const ACCESS = [

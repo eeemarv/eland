@@ -1,0 +1,40 @@
+{%- extends 'docs/base/docs_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'docs_map_edit.title'|trans({
+        '%name%': doc_map.name
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+    {%- embed 'form/form_embed.html.twig' -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- block form_a -%}
+            {{- form_row(form.name, {
+                'label': 'label.name',
+                'addon_fa': 'folder-o',
+                'item_not_unique_trans_key': 'docs_map_edit.not_unique'
+            }) -}}
+        {%- endblock form_a -%}
+
+        {%- block form_cancel_btn -%}
+            {{- bl.cancel('docs_map', {'id': doc_map.id}) -}}
+        {%- endblock form_cancel_btn -%}
+
+        {%- block form_submit_btn -%}
+            {{- form_widget(form.submit,{
+                'label': 'btn.edit',
+                'attr': {'class': 'btn-primary'}
+            }) -}}
+        {%- endblock form_submit_btn -%}
+    {%- endembed -%}
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+{%- endblock js -%}

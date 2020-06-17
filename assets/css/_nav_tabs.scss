@@ -1,0 +1,10 @@
+.nav-tabs li a.nav-link
+{
+  border-bottom: 2px solid #777;
+}
+
+.nav-tabs li a.active.nav-link
+{
+  border: 2px solid #777;
+  border-bottom-color: transparent;
+}

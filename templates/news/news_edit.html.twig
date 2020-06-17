@@ -1,0 +1,27 @@
+{%- extends 'news/base/news_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+
+{%- block heading_title -%}
+    {{- 'news_edit.title'|trans({
+        '%subject%': news_item.subject
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('news_show', {'id': news_item.id}) -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

@@ -1,0 +1,17 @@
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+
+{%- block heading_title -%}
+    {{- 'forum_add_topic.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('forum') -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.add',
+        'attr': {'class': 'btn-success'}
+    }) -}}
+{%- endset -%}

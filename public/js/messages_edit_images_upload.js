@@ -4,7 +4,7 @@ $(document).ready(function () {
 	var $model = $form.find('#thumbnail_model');
 	var s3_url = $model.data('s3-url');
 	var $input_image_files = $form.find('input[name="image_files"]');
-	var $sortable_div = $form.find('div.sortable');
+	var $sortable_div = $form.find('div[data-sortable]');
 
 	function rewrite_image_files_input(){
 		var image_files = [];
@@ -25,7 +25,7 @@ $(document).ready(function () {
 		rewrite_image_files_input();
 	});
 
-    $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
+    $('input[data-fileupload]').bind('fileuploadprocessfail', function (e, data) {
 		var error = (data.files[data.index].error == 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
 		alert(error);
 		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');

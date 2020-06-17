@@ -166,11 +166,6 @@ body
   background-color: #f9f9ff;
 }
 
-body.body-navbar
-{
-  padding-top: 50px;
-}
-
 body.admin
 {
   background-color: #f3fcff;
@@ -809,9 +804,13 @@ div.eland-exception {
   }
 }
 
-a.logo {
-  padding-right: 10px;
+.logo {
+  padding-right: 1rem;
+  height: 2.5rem;
+  margin-top: -1rem;
+  margin-bottom: -1rem;
 }
+
 
 .nav-config-only a {
   color: #777;

@@ -1,0 +1,42 @@
+{%- extends 'news/base/news_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'news_del.title'|trans -}}
+{%- endblock -%}
+
+{%- block content -%}
+
+{%- embed 'form/form_embed.html.twig' -%}
+    {%- import 'macro/btn_link.html.twig' as bl -%}
+    {%- import 'macro/object_info.html.twig' as oi -%}
+    {%- block form_content -%}
+
+    <h2>
+        {{- news.subject -}}
+    </h2>
+
+    {{- news.content|raw -}}
+
+    <p>
+        {{- oi.object_info(news.user_id, news.created_at, null, schema) -}}
+    </p>
+
+    {{- bl.cancel('news_show', {'id': news.id}) -}}
+
+    {{- form_widget(form.submit,{
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger'}
+    }) -}}
+
+    {%- endblock form_content -%}
+{%- endembed -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

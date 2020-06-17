@@ -30,3 +30,38 @@ END LOOP;
 
 END
 $do$
+
+---
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <>  'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+  SELECT subject, f_schema from news where is_approved = 'f';
+END LOOP;
+
+END
+$do$
+
+SELECT 'SELECT subject, table_schema, id  FROM ' || table_schema || '.news ;' AS query
+FROM information_schema.tables
+WHERE table_schema IN
+(
+    SELECT schema_name
+    FROM information_schema.schemata
+    WHERE schema_name NOT LIKE 'pg_%' AND schema_name != 'information_schema'
+);

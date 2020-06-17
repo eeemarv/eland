@@ -66,7 +66,7 @@ class ConfigController extends AbstractController
 
         $explain_replace_ary = [
             '%path_register%'	=> $link_render->path('register', ['system' => $pp->system()]),
-            '%path_contact%'	=> $link_render->path('contact', ['system' => $pp->system()]),
+            '%path_contact%'	=> $link_render->path('contact_form', ['system' => $pp->system()]),
         ];
 
         $addon_replace_ary = [
@@ -343,22 +343,29 @@ class ConfigController extends AbstractController
 
         foreach (ConfigCnst::TAB_PANES as $tab_id => $tab_pane_data)
         {
-            $out .= '<li role="presentation"';
-            $out .= $tab_id === $tab ? ' class="active"' : '';
-            $out .= '>';
-            $out .= $link_render->link_no_attr('config',
+            $out .= '<li role="presentation" ';
+            $out .= 'class="nav-item">';
+
+            $class = 'nav-link';
+            $class .= $tab_id === $tab ? ' active' : '';
+
+            $out .= $link_render->link('config',
                 $pp->ary(),
                 ['tab' => $tab_id],
-                $tab_pane_data['lbl']);
+                $tab_pane_data['lbl'],
+                ['class' => $class]
+            );
             $out .= '</li>';
         }
 
         $out .= '</ul>';
 
+        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
+
         $out .= '<form method="post">';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading"><h4>';
+        $out .= '<h4>';
         $out .= $pane['lbl_pane'] ?? $pane['lbl'];
         $out .= '</h4>';
 
@@ -407,7 +414,7 @@ class ConfigController extends AbstractController
                 continue;
             }
 
-            $out .= '<li class="list-group-item bg-info">';
+            $out .= '<li class="list-group-item fcard fcard-info">';
 
             if (isset($input['max_inputs']) && $input['max_inputs'] > 1)
             {
@@ -431,7 +438,7 @@ class ConfigController extends AbstractController
             if (isset($input['inline']))
             {
                 $replace_inline_ary = [];
-                $id_for_label = '';
+                $checkbox_id = '';
 
                 $inline_input_names = $this->get_tag_ary('input', $input['inline']);
 
@@ -439,22 +446,26 @@ class ConfigController extends AbstractController
                 {
                     $inline_input_data = ConfigCnst::INPUTS[$inline_input_name];
 
-                    $str = '<input type="';
+                    $str = '';
+
+                    if ($inline_input_data['type'] == 'checkbox')
+                    {
+                        $str .= '<div class="custom-control custom-checkbox">';
+                    }
+
+                    $str .= '<input type="';
                     $str .= $inline_input_data['type'] ?? 'text';
                     $str .= '" name="';
                     $str .= $inline_input_name;
                     $str .= '"';
 
-                    if (!$id_for_label)
-                    {
-                        $id_for_label = 'inline_id_' . $inline_input_name;
-                        $str .= ' id="' . $id_for_label . '"';
-                    }
-
                     if ($inline_input_data['type'] == 'checkbox')
                     {
+                        $checkbox_id = 'inline_id_' . $inline_input_name;
+                        $str .= ' id="' . $checkbox_id . '"';
                         $str .= ' value="1"';
-                        $str .= $config[$inline_input_name] ? ' checked="checked"' : '';
+                        $str .= ' class="custom-control-input" ';
+                        $str .= $config[$inline_input_name] ? ' checked ' : '';
                     }
                     else
                     {
@@ -480,6 +491,13 @@ class ConfigController extends AbstractController
 
                     $str .= '>';
 
+                    if ($inline_input_data['type'] == 'checkbox')
+                    {
+                        $str .= '<label ';
+                        $str .= 'for="' . $checkbox_id . '" ';
+                        $str .= 'class="custom-control-label">';
+                    }
+
                     $search_inline = ConfigCnst::TAG['input']['open'];
                     $search_inline .= $inline_input_name;
                     $search_inline .= ConfigCnst::TAG['input']['close'];
@@ -489,18 +507,12 @@ class ConfigController extends AbstractController
 
                 $out .= '<p>';
 
-                if ($id_for_label)
-                {
-                    $out .= '<label for="';
-                    $out .= $id_for_label;
-                    $out .= '">';
-                }
-
                 $out .= strtr($input['inline'], $replace_inline_ary);
 
-                if ($id_for_label)
+                if ($checkbox_id)
                 {
                     $out .= '</label>';
+                    $out .= '</div>';
                 }
 
                 $out .= '</p>';
@@ -539,8 +551,8 @@ class ConfigController extends AbstractController
                 $out .= '<div class="row">';
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
+                $out .= '<div class="card fcard fcard-default">';
+                $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_active']))
                 {
@@ -550,7 +562,7 @@ class ConfigController extends AbstractController
                 }
 
                 $out .= '</div>';
-                $out .= '<div class="panel-body">';
+                $out .= '<div class="card-body">';
                 $out .= '<ul id="list_active" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
@@ -565,8 +577,8 @@ class ConfigController extends AbstractController
                 $out .= '</div>'; // col
 
                 $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
+                $out .= '<div class="card fcard fcard-default">';
+                $out .= '<div class="card-body">';
 
                 if (isset($input['lbl_inactive']))
                 {
@@ -576,7 +588,7 @@ class ConfigController extends AbstractController
                 }
 
                 $out .= '</div>';
-                $out .= '<div class="panel-body">';
+                $out .= '<div class="card-body">';
                 $out .= '<ul id="list_inactive" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
@@ -622,7 +634,8 @@ class ConfigController extends AbstractController
                 if (isset($input['addon']) || isset($input['addon_fa']))
                 {
                     $out .= '<div class="input-group">';
-                    $out .= '<span class="input-group-addon">';
+                    $out .= '<span class="input-group-prepend">';
+                    $out .= '<span class="input-group-text">';
 
                     if (isset($input['addon']))
                     {
@@ -636,6 +649,7 @@ class ConfigController extends AbstractController
                         $out .= '"></i>';
                     }
 
+                    $out .= '</span>';
                     $out .= '</span>';
                 }
 
@@ -736,7 +750,7 @@ class ConfigController extends AbstractController
 
         $out .= '</ul>';
 
-        $out .= '<div class="panel-heading">';
+        $out .= '<div class="card-body">';
 
         $out .= '<input type="hidden" name="tab" value="' . $tab . '">';
 
@@ -748,17 +762,16 @@ class ConfigController extends AbstractController
 
         $out .= $form_token_service->get_hidden_input();
 
-        $out .= '</div>';
-
-        $out .= '</div>';
-
         $out .= '</form>';
+
+        $out .= '</div>';
+        $out .= '</div>';
 
         $out .= '</div>';
 
         $menu_service->set('config');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('config/config.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
@@ -905,7 +918,7 @@ class ConfigController extends AbstractController
     {
         $logo = $config_service->get('logo', $pp->schema());
 
-        $out = '<div class="panel-body bg-info">';
+        $out = '<div class="card-body">';
         $out .= '<div class="col-md-6">';
 
         $out .= '<div class="text-center ';
@@ -959,14 +972,10 @@ class ConfigController extends AbstractController
         $out .= 'data-max-file-size="999000">';
         $out .= '</span>';
 
-        $out .= '<p class="text-warning">';
+        $out .= '<p>';
         $out .= 'Toegestane formaten: png en gif. ';
         $out .= 'Je kan ook een afbeelding hierheen verslepen. ';
-        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat. ';
-        $out .= 'De afbeelding neemt de hele hoogte van de navigatie-balk in. ';
-        $out .= 'Voeg eventueel vooraf boven en/of onder een doorzichtige strook ';
-        $out .= 'toe met een foto-bewerking programma ';
-        $out .= '(bvb. <a href="https://gimp.org">GIMP</a>") om te positioneren';
+        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat.';
         $out .= '</p>';
 
         $out .= $link_render->link_fa('logo_del', $pp->ary(),

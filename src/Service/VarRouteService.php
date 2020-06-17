@@ -5,14 +5,10 @@ namespace App\Service;
 use App\Cnst\PagesCnst;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class VarRouteService
 {
-	protected RequestStack $request_stack;
-	protected Request $request;
 	protected SessionInterface $session;
 	protected PageParamsService $pp;
 
@@ -20,13 +16,11 @@ class VarRouteService
 	protected bool $is_admin;
 
 	public function __construct(
-		RequestStack $request_stack,
 		SessionInterface $session,
 		PageParamsService $pp,
 		ConfigService $config_service
 	)
 	{
-		$this->request_stack = $request_stack;
 		$this->session = $session;
 		$this->pp = $pp;
 		$this->config_service = $config_service;
@@ -37,8 +31,7 @@ class VarRouteService
 	private function init():void
 	{
 		$this->is_admin = $this->pp->is_admin();
-		$request = $this->request_stack->getCurrentRequest();
-		$route = $request->attributes->get('_route');
+		$route = $this->pp->route();
 
 		$view_ary = $this->session->get('view') ?? PagesCnst::DEFAULT_VIEW;
 

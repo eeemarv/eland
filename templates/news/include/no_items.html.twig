@@ -1,0 +1,10 @@
+{%- embed 'embed/card.html.twig' -%}
+    {%- block card_type -%}
+        warning
+    {%- endblock -%}
+    {%- block body -%}
+        <h2 class="card-title">
+            {{- 'news.no_items'|trans -}}
+        </h2>
+    {%- endblock body -%}
+{%- endembed -%}

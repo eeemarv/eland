@@ -68,9 +68,10 @@ class AutoMinLimitController extends AbstractController
         $heading_render->add('Automatische minimum limiet');
         $heading_render->fa('arrows-v');
 
-        $out = '<div class="panel panel-info">';
+        $out = '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
 
-        $out .= '<div class="panel-heading"><p>';
+        $out .= '<p>';
         $out .= 'Met dit formulier kan een Automatische Minimum Limiet ingesteld worden. ';
         $out .= 'De individuele Minimum Limiet van Accounts zal zo automatisch lager ';
         $out .= 'worden door ontvangen transacties ';
@@ -120,8 +121,11 @@ class AutoMinLimitController extends AbstractController
         $out .= '<label for="exclusive" class="control-label">';
         $out .= 'Exclusief</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-user"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" id="exclusive" name="exclusive" ';
         $out .= 'value="';
         $out .= $data['exclusive'];
@@ -141,8 +145,11 @@ class AutoMinLimitController extends AbstractController
         $out .= '<label for="trans_percentage" class="control-label">';
         $out .= 'Percentage van ontvangen bedrag</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-percent"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-percent"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="number" id="trans_percentage" name="trans_percentage" ';
         $out .= 'value="';
         $out .= $data['trans_percentage'];
@@ -155,8 +162,11 @@ class AutoMinLimitController extends AbstractController
         $out .= '<label for="trans_exclusive" class="control-label">';
         $out .= 'Exclusief tegenpartijen</label>';
         $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $out .= '<span class="input-group-prepend">';
+        $out .= '<span class="input-group-text">';
+        $out .= '<span class="fa fa-user"></span>';
+        $out .= '</span>';
+        $out .= '</span>';
         $out .= '<input type="text" id="trans_exclusive" name="trans_exclusive" ';
         $out .= 'value="';
         $out .= $data['trans_exclusive'];

@@ -1,0 +1,179 @@
+{% extends 'bootstrap_4_layout.html.twig' %}
+
+{% block form_help -%}
+    {#- use <p></p> instead of <small></small> and removed class -#}
+    {%- if help is not empty -%}
+        {#- {%- set help_attr = help_attr|merge({class: (help_attr.class|default('') ~ ' form-text text-muted')|trim}) -%} -#}
+        <p id="{{ id }}_help"{% with { attr: help_attr } %}{{ block('attributes') }}{% endwith %}>
+            {%- if translation_domain is same as(false) -%}
+                {%- if help_html is same as(false) -%}
+                    {{- help -}}
+                {%- else -%}
+                    {{- help|raw -}}
+                {%- endif -%}
+            {%- else -%}
+                {%- if help_html is same as(false) -%}
+                    {{- help|trans(help_translation_parameters, translation_domain) -}}
+                {%- else -%}
+                    {{- help|trans(help_translation_parameters, translation_domain)|raw -}}
+                {%- endif -%}
+            {%- endif -%}
+        </p>
+    {%- endif -%}
+{%- endblock form_help %}
+
+{% block checkbox_radio_label -%}
+    {#- only inserted lbl_choice -#}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
+    {#- Do not display the label if widget is not defined in order to prevent double label rendering -#}
+    {%- if widget is defined -%}
+        {% set is_parent_custom = parent_label_class is defined and ('checkbox-custom' in parent_label_class or 'radio-custom' in parent_label_class or 'switch-custom' in parent_label_class) %}
+        {% set is_custom = label_attr.class is defined and ('checkbox-custom' in label_attr.class or 'radio-custom' in label_attr.class or 'switch-custom' in label_attr.class) %}
+        {%- if is_parent_custom or is_custom -%}
+            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' custom-control-label')|trim}) -%}
+        {%- else %}
+            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' form-check-label')|trim}) -%}
+        {%- endif %}
+        {%- if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {%- if required -%}
+            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) -%}
+        {%- endif -%}
+        {%- if parent_label_class is defined -%}
+            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ parent_label_class)|replace({'checkbox-inline': '', 'radio-inline': '', 'checkbox-custom': '', 'radio-custom': ''})|trim}) -%}
+        {%- endif -%}
+        {%- if label is not same as(false) and label is empty -%}
+            {%- if label_format is not empty -%}
+                {%- set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) -%}
+            {%- else -%}
+                {%- set label = name|humanize -%}
+            {%- endif -%}
+        {%- endif -%}
+
+        {{ widget|raw }}
+        <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}>
+            {%- if label is not same as(false) -%}
+                {%- if 'lbl_choice' in form.parent.vars.block_prefixes -%}
+                    {{- lbl.btn(label) -}}
+                {%- elseif translation_domain is same as(false) -%}
+                    {%- if label_html is same as(false) -%}
+                        {{- label -}}
+                    {%- else -%}
+                        {{- label|raw -}}
+                    {%- endif -%}
+                {%- else -%}
+                    {%- if label_html is same as(false) -%}
+                        {{- label|trans(label_translation_parameters, translation_domain) -}}
+                    {%- else -%}
+                        {{- label|trans(label_translation_parameters, translation_domain)|raw -}}
+                    {%- endif -%}
+                {%- endif -%}
+            {%- endif -%}
+            {{- form_errors(form) -}}
+        </label>
+    {%- endif -%}
+{%- endblock checkbox_radio_label %}
+
+{% block button_widget -%}
+    {#- add btn-lg -#}
+    {%- set attr = attr|merge({class: (attr.class|default('btn-secondary-outline') ~ ' btn btn-lg')|trim}) -%}
+    {{- parent() -}}
+{%- endblock button_widget %}
+
+{% block addon_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('form_widget_simple') -}}
+    </div>
+{%- endblock addon_widget %}
+
+{%- block select_addon_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('choice_widget_collapsed') -}}
+    </div>
+{%- endblock select_addon_widget -%}
+
+{% block addon -%}
+    <span class="input-group-prepend{%- if addon_class is defined %} {{ addon_class -}}{%- endif %}">
+        <span class="input-group-text form-control">
+            {%- if addon_label is defined -%}
+                {%- if addon_html is defined and addon_html -%}
+                    {{- addon_label|trans(addon_translation_parameters|default({}))|raw -}}
+                {%- else -%}
+                    {{- addon_label|trans(addon_translation_parameters|default({})) -}}
+                {%- endif -%}
+            {%- endif -%}
+            {%- if addon_fa is defined -%}
+                {%- if addon_label is defined -%}&nbsp;{%- endif -%}
+                <i class="fa fa-{{- addon_fa -}}"></i>
+            {%- endif -%}
+        </span>
+    </span>
+{%- endblock addon %}
+
+{% block addon_button -%}
+  <span class="input-group-append">
+	<button class="btn{%- if addon_btn_class is defined %} {{ addon_btn_class -}}{%- endif %}" type="button"
+    {%- if addon_btn_title is defined -%} title="{{- addon_btn_title|trans -}}"{%- endif -%}
+    {%- if addon_btn_attr is defined -%}{%- for key, a in addon_btn_attr %} {{ key -}}="{{- a -}}"{%- endfor -%}{%- endif -%}>
+    {%- if addon_btn_label is defined -%}{{- addon_btn_label|trans -}}{%- endif -%}
+    {%- if addon_btn_fa is defined -%}{%- if addon_btn_label is defined -%}&nbsp;{%- endif -%}
+        <i class="fa fa-{{- addon_btn_fa -}}"></i>
+    {%- endif -%}
+    </button>
+  </span>
+{%- endblock addon_button %}
+
+{% block addon_button_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('form_widget_simple') -}}
+        {{- block('addon_button') -}}
+    </div>
+{%- endblock addon_button_widget %}
+
+{%- block unique_addon_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('form_widget_simple') -}}
+    </div>
+    <small class="form-text" data-unique-filter-results-help hidden>
+        {{- 'unique_filter.existing_items'|trans -}}&nbsp;
+    <span data-unique-filter-results></span>
+    </small>
+    <span class="invalid-feedback form-text" data-unique-filter-error-message hidden>
+        {{- (item_not_unique_trans_key|default('unique_filter.item_not_unique'))|trans -}}
+    </span>
+{%- endblock unique_addon_widget -%}
+
+{% block datepicker_widget -%}
+    {%- set attr = attr|merge({
+        'data-provide': 'datepicker',
+        'data-date-language': app.request.locale,
+        'data-date-today-highlight': 'true',
+        'data-date-autoclose': 'true',
+        'data-date-immediate-updates': 'true',
+        'data-date-orientation': 'bottom',
+    }) -%}
+    {%- set addon_fa = 'calendar' -%}
+    {{- block('addon_widget') -}}
+{%- endblock datepicker_widget %}
+
+{%- block captcha_row -%}
+    <div class="form-group">
+    {{- block('form_label') -}}
+    {{- block('addon_widget') -}}
+    {{- block('form_help') -}}
+    <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
+    </div>
+{%- endblock captcha_row -%}
+
+{% block summernote_widget -%}
+    {%- set attr = attr|merge({'data-summernote': ''}) -%}
+    {{- block('textarea_widget') -}}
+{%- endblock summernote_widget %}

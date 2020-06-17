@@ -4,16 +4,12 @@
 
 	<title>{%- block title -%}{%- endblock -%}</title>
 
-	{%- for c in assets_ary('css') -%}
-		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
-	{%- endfor -%}
-
-	{%- for c in assets_ary('css_print') -%}
-		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
-	{%- endfor -%}
+	{%- block css -%}
+		{{- encore_entry_link_tags('app') -}}
+	{%- endblock css -%}
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -36,41 +32,99 @@
 </head>
 <body{%- block body_attr -%}{%- endblock -%}>
 
+    {%- block body_prepend -%}{%- endblock -%}
+
 {%- block navbar -%}
-	<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
-		<div class="container-fluid">
-			<div class="navbar-header">
+	<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-{%- if pp_role('admin') -%}info-li{%- elseif pp_role('guest') %}warning-li{%- else -%}light{%- endif -%}">
 
-			{%- block navbar_toggle_button -%}{%- endblock -%}
+		<button type="button" class="btn btn-secondary d-md-none" data-toggle="offcanvas" title="Menu">
+			<i class="fa fa-chevron-left"></i>
+		</button>
 
+		<a href="{%- block system_link -%}#{%- endblock -%}" class="navbar-brand pull-left">
 			{%- block logo -%}{%- endblock -%}
 
-			<a href="{%- block system_link -%}#{%- endblock -%}" class="navbar-brand">
 			{{- block('title') -}}
-			</a>
-			</div>
+		</a>
 
-		{%- block navbar_collapse -%}{%- endblock -%}
-
-		</div>
-	</div>
+		{%- block navbar_collapse -%}
+		{%- endblock -%}
+	</nav>
 {%- endblock navbar -%}
 
-{%- block page_container -%}{%- endblock -%}
+{%- block jumbotron -%}{%- endblock -%}
+
+{%- set main_menu_def = {
+	'messages': {'fa': 'newspaper-o', 'access': 'guest'},
+	'users': {'fa': 'users', 'access': 'guest'},
+	'accounts': {'fa': 'coffee'},
+	'transactions': {'fa': 'exchange', 'access': 'guest'},
+	'news': {'fa': 'calendar-o', 'access': 'guest'},
+	'calendar': {'fa': 'calendar'},
+	'docs': {'fa': 'files-o', 'access': 'guest'},
+	'forum': {'fa': 'comments-o', 'config': 'forum_en', 'access': 'guest'},
+	'support': {'fa': 'ambulance', 'access': 'user'},
+	'home': {'fa': 'home'},
+	'login': {'fa': 'sign-in', 'access': 'anonymous'},
+	'contact_form': {'fa': 'comment-o', 'config': 'contact_form_en', 'access': 'anonymous'},
+	'register': {'fa': 'check-square-o', 'config': 'registration_en', 'access': 'anonymous'}
+} -%}
+
+{%- set admin_menu_def = {
+	'config': {'fa': 'cogs'},
+	'export': {'fa': 'download'},
+	'logs': {'fa': 'history'}
+} -%}
+
+<div class="container-fluid">
+	{%- block page_container -%}
+		<div class="row row-offcanvas">
+			<div class="menu-offcanvas pt-2">
+				<div class="nav nav-pills flex-column" aria-orientation="vertical">
+					{%- for r, m in main_menu_def -%}
+						{%- if m.access is defined and item_visible(m.access)
+							and (m.config is not defined or config(m.config, schema)) -%}
+								<a href="{{- path(r|var_route, pp_ary()) -}}" class="nav-link{% if r == active_menu %} active{% endif %}{% if m.nav_config_only is defined and m.nav_config_only %} nav-config-only{% endif %}">
+									<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+									{{- (r ~ '.title')|trans -}}
+								</a>
+						{%- endif -%}
+					{%- endfor -%}
+				</div>
+				{%- block text_left -%}{% endblock -%}
+			</div>
+			<div class="sidebar-offcanvas"></div>
+			<div class="col">
+				<div class="content-container-overlay"></div>
+				{%- block content_container -%}
+				{%- endblock -%}
+			</div>
+		</div>
+
+	{%- endblock page_container -%}
+
+</div>
 
 {%- block extra_footer -%}{%- endblock -%}
 
 <footer class="footer">
-	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	<p>
+		{{- 'index.eland_link'|trans({
+			'%eland_link%': '<a href="https://eland.letsa.net">eLAND</a>'
+		})|raw -}}
+	</p>
 	{%- block index_link -%}
-		<p><a href="{{- path('index') -}}">Index</a></p>
+		<p>
+			<a href="{{- path('index') -}}">
+				{{- 'index.title'|trans -}}
+			</a>
+		</p>
 	{%- endblock index_link -%}
 </footer>
 
-
-{%- for j in assets_ary('js') -%}
-	<script src="{{- j -}}"></script>
-{%- endfor -%}
+{%- block js -%}
+	{{- encore_entry_script_tags('app') -}}
+{%- endblock js -%}
 
 </body>
 </html>

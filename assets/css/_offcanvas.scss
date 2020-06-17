@@ -1,0 +1,57 @@
+html,body {
+    overflow-x: hidden; /* Prevent scroll on narrow devices */
+}
+
+footer {
+    padding-top: 60px;
+}
+
+.row-offcanvas {
+    position: relative;
+}
+
+.menu-offcanvas {
+ //   position: fixed;
+    width: 12rem;
+    z-index: 10;
+}
+
+.menu-offcanvas a.nav-link{
+    background-color: rgba(255,255,255, .98);
+}
+
+/*
+.sidebar-offcanvas{
+    width: 12rem;
+}
+*/
+
+div.content-container-overlay{
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+@media screen and (max-width: 767px) {
+    .menu-offcanvas {
+        position: fixed;
+        left: -12rem;
+        transition: all .3s ease-out;
+        z-index: 1200;
+    }
+
+    .sidebar-offcanvas {
+        width: 0;
+    }
+
+    .row-offcanvas.active .menu-offcanvas{
+        left: 0;
+    }
+
+    .row-offcanvas.active .content-container-overlay{
+        background-color: rgba(0, 0, 0, 0.1);
+        z-index: 600;
+        width: 100%;
+        height: 100%;
+    }
+}

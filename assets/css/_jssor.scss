@@ -1,0 +1,59 @@
+div.jssor-container, div.jssor-slides {
+  top: 0px;
+  left: 0px;
+  width: 800px;
+  height: 600px;
+}
+div.jssor-container {
+	background-color: #ccc;
+}
+div.jssor-slides {
+  cursor: move;
+}
+
+.jssorb031 {
+	position:absolute;
+	bottom:12px;
+	right:12px;
+}
+.jssorb031 .i {
+	position:absolute;
+	cursor:pointer;
+	width:20px;
+	height:20px;
+}
+.jssorb031 .i svg{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+.jssorb031 .i .b {fill:#000;fill-opacity:0.5;stroke:#fff;stroke-width:1200;stroke-miterlimit:10;stroke-opacity:0.3;}
+.jssorb031 .i:hover .b {fill:#fff;fill-opacity:.7;stroke:#000;stroke-opacity:.5;}
+.jssorb031 .iav .b {fill:#fff;stroke:#000;fill-opacity:1;}
+.jssorb031 .i.idn {opacity:.3;}
+.jssora055 {display:block;position:absolute;cursor:pointer;}
+.jssora055 .a {fill:none;stroke:#fff;stroke-width:960;stroke-miterlimit:10;}
+.jssora055:hover {opacity:.8;}
+.jssora055.jssora055dn {opacity:.5;}
+.jssora055.jssora055ds {opacity:.3;pointer-events:none;}
+
+.jssora055 {
+	width:55px;
+	height:55px;
+	top:0px;
+}
+.jssora055-left {
+	left: 28px;
+}
+.jssora055-right {
+	right: 25px;
+}
+.jssora055 svg {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}

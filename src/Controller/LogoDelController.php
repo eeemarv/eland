@@ -55,10 +55,10 @@ class LogoDelController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= '<form method="post">';
+        $out .= '<div class="card fcard fcard-info">';
+        $out .= '<div class="card-body">';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $out .= '<form method="post">';
 
         $out .= $link_render->btn_cancel('config', $pp->ary(), ['tab' => 'logo']);
 
