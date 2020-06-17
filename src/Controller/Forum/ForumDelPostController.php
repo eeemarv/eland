@@ -2,7 +2,6 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumDelPostCommand;
 use App\Form\Post\DelType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -52,10 +51,7 @@ class ForumDelPostController extends AbstractController
             throw new AccessDeniedHttpException('Wrong route for this action.');
         }
 
-        $forum_del_post_command = new ForumDelPostCommand();
-
-        $form = $this->createForm(DelType::class,
-                $forum_del_post_command)
+        $form = $this->createForm(DelType::class)
             ->handleRequest($request);
 
         if ($form->isSubmitted()

@@ -3,13 +3,13 @@ var: >
 
 access:
   admin: Admin
-  admin_explain: Enkel zichtbaar voor administratie.
+  admin_title: Enkel zichtbaar voor administratie.
   guest: InterSysteem
-  guest_explain: Zichtbaar voor leden en leden van gekoppelde interSystemen.
+  guest_title: Zichtbaar voor leden en leden van gekoppelde interSystemen.
   public: Publiek
-  public_explain: Zichtbaar op het publieke internet.
+  public_title: Zichtbaar op het publieke internet.
   user: Leden
-  user_explain: Zichtbaar voor leden.
+  user_title: Zichtbaar voor leden.
   visible: Zichtbaar
   visible_for: Zichtbaar voor
   visible_for_access: Zichtbaar voor %access%
@@ -22,7 +22,7 @@ btn:
   edit: Aanpassen
   filter: Filter
   generate: Genereer
-  generate_password_explain: >-
+  generate_password_title: >-
     Genereer automatisch een paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
@@ -32,7 +32,40 @@ btn:
   show_columns: Toon Kolommen
   try_again: Opnieuw proberen
 
-explain:
+date_format:
+  technical:
+    day: '%Y-%m-%d'
+    min: '%Y-%m-%d %H:%M'
+    sec: '%Y-%m-%d %H:%M:%S'
+  numerical:
+    day: '%d-%m-%Y'
+    min: '%d-%m-%Y %H:%M'
+    sec: '%d-%m-%Y %H:%M:%S'
+  month_abbrev:
+    day: '%e %b %Y'
+    min: '%e %b %Y, %H:%M'
+    sec: '%e %b %Y, %H:%M:%S'
+  month_full:
+    day: '%e %B %Y'
+    min: '%e %B %Y, %H:%M'
+    sec: '%e %B %Y, %H:%M:%S'
+  weekday_included:
+    day: '%a %e %b %Y'
+    min: '%a %e %b %Y, %H:%M'
+    sec: '%a %e %b %Y, %H:%M:%S'
+
+datepicker:
+  placeholder:
+    e: d
+    d: dd
+    m: mm
+    Y: jjjj
+    b: mnd
+    B: maand
+    a: (wd)
+    A: (weekdag)
+
+help:
   new_password_safety: >-
     Tip: Gebruik voor de veiligheid nooit
     hetzelfde paswoord in verschillende toepassingen.
@@ -41,6 +74,11 @@ explain:
     naar je E-mailbox verstuurd.
   captcha: >-
     Geef de code in die hieronder getoond wordt.
+  images_upload: >-
+    Toegestane formaten: jpg/jpeg, png, gif.
+    Je kan ook afbeeldingen hierheen verslepen.
+  only_in_admin_modus: >-
+    Enkel in admin modus
 
 label:
   accept: Akkoord
@@ -58,18 +96,21 @@ label:
   balance_on_date: Saldo op Datum
   balance_sum: "Totaal Saldo: %balance_sum%"
   captcha: Anti-spam verificatiecode
+  category: Categorie
   code: Code
   columns: Kolommen
   comment: Commentaar
   contact_details: Contacten
   content: Inhoud
   created: Gecreëerd
+  days: Dagen
   description: Omschrijving
   date: Datum
   email: E-mail
   event_date: Agendadatum
   event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
+  expired: Vervallen
   file: Bestand
   file_location: Bestandslocatie
   first_name: Voornaam
@@ -77,6 +118,10 @@ label:
   from_date: Vanaf
   full_name: Volledige Naam
   hobbies_interests: Hobbies/interesses
+  image: Afbeelding
+  images: Afbeeldingen
+  image_upload: Afbeelding opladen
+  images_remove: Afbeeldingen verwijderen
   in: In
   keep_after_date: Behoud na Datum
   last_login: Laatste Login
@@ -109,6 +154,7 @@ label:
   out: Uit
   parsed_address: Ontleed Adres
   password: Paswoord
+  per_unit: Per (uur, stuk...)
   period_days: Periode in Dagen
   periodic_mail: Periodieke Overzichts E-mail
   phone: Telefoon
@@ -121,6 +167,7 @@ label:
   search: Zoeken
   split_by_char: Split door Teken
   subject: Onderwerp
+  suggested_price: Richtprijs
   system_name: Naam van het Systeem
   time: Tijdstip
   title: Titel
@@ -129,8 +176,10 @@ label:
   to_date: Tot
   transactions: Transacties
   transaction_id: Transactie Id
+  upload: Opladen
   user: Gebruiker
   username: Gebruikersnaam
+  validity: Geldigheid
   want: Vraag
   wants: Vraag
   your_account: Je Account
@@ -307,6 +356,11 @@ login:
 
 messages:
   title: Vraag en aanbod
+  image_files:
+    help: >-
+      Toegestane formaten: jpg/jpeg, png, gif.
+      Je kan ook afbeeldingen hierheen verslepen.
+      De volgorde kan veranderd worden door te verslepen.
 
 messages_add:
   title: >-
@@ -344,6 +398,13 @@ messages_show:
       Aanbod: %subject%
     want: >-
       Vraag: %subject%
+  category: >-
+    Categorie: %category%
+  no_images:
+    offer: >-
+      Er zijn geen afbeeldingen voor dit aanbod.
+    want: >-
+      Er zijn geen afbeeldingen voor deze vraag.
 
 news:
   title: Nieuws

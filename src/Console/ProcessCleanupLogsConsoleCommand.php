@@ -12,8 +12,8 @@ class ProcessCleanupLogsConsoleCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_logs';
 
-    protected $monitor_process_service;
-    protected $db;
+    protected MonitorProcessService $monitor_process_service;
+    protected Db $db;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,

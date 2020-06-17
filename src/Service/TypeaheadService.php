@@ -4,7 +4,6 @@ namespace App\Service;
 
 use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TypeaheadService
@@ -21,7 +20,6 @@ class TypeaheadService
 	const GROUP_DOC_MAP_NAMES = 'doc-map-names';
 
 	protected Predis $predis;
-	protected RequestStack $request_stack;
 	protected LoggerInterface $logger;
 	protected UrlGeneratorInterface $url_generator;
 	protected PageParamsService $pp;
@@ -30,14 +28,12 @@ class TypeaheadService
 
 	public function __construct(
 		Predis $predis,
-		RequestStack $request_stack,
 		LoggerInterface $logger,
 		UrlGeneratorInterface $url_generator,
 		PageParamsService $pp
 	)
 	{
 		$this->predis = $predis;
-		$this->request_stack = $request_stack;
 		$this->logger = $logger;
 		$this->url_generator = $url_generator;
 		$this->pp = $pp;
@@ -158,9 +154,7 @@ class TypeaheadService
 
 	protected function get_current_typeahead_route():string
 	{
-		$request = $this->request_stack->getCurrentRequest();
-		$route = $request->attributes->get('_route');
-		return str_replace(self::ROUTE_PREFIX, '', $route);
+		return str_replace(self::ROUTE_PREFIX, '', $this->pp->route());
 	}
 
 	protected function get_thumbprint_field(

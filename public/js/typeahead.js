@@ -133,13 +133,28 @@ $(document).ready(function(){
 								break;
 						}
 
+						var val = '';
+
+						if (user.c != undefined)
+						{
+							val += user.c + ' ';
+						}
+
+						val += user.n;
+
+						if ('api' in user && user.api == 'mail')
+						{
+							val += ' (manueel interSysteem)';
+						}
+
 						return {
-							value: user.c + ' ' + user.n,
+							value: val,
 							tokens : [ user.c, user.n ],
 							code: user.c,
 							name: user.n,
 							class: cl,
-							leaving: user.s === 2
+							leaving: user.s === 2,
+							api: user.api
 						};
 					});
 				}
@@ -150,8 +165,15 @@ $(document).ready(function(){
 
 				var templates = {
 					suggestion: function(data) {
-						return '<p' + data.class + '><strong>' + data.code +
-							'</strong> ' + data.name + '</p>';
+						var tpl = '<p' + data.class + '>';
+						if (data.code != undefined){
+							tpl += '<strong>' + data.code + '</strong> ';
+						}
+						tpl += data.name;
+						if (data.api != undefined){
+							tpl += ' <small>(manueel InterSysteem)</small>';
+						}
+						return tpl + '</p>';
 					}
 				};
 
@@ -204,6 +226,15 @@ $(document).ready(function(){
 
 		if ($(this).prop('tagName').toLowerCase() == 'input'){
 			$(this).typeahead.apply($(this), args);
+			$(this).bind('typeahead:select', function(ev, suggestion) {
+				if (suggestion.api != undefined){
+					$('[data-real-from]').removeAttr('hidden');
+				}
+			});
+			$(this).on('keyup keydown', function(){
+				$('[data-real-from]').val('');
+				$('[data-real-from]').attr('hidden', '');
+			});
 		}
 	});
 

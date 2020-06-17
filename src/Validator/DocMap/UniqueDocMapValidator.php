@@ -2,7 +2,7 @@
 
 namespace App\Validator\DocMap;
 
-use App\Command\Docs\DocsMapEditCommand;
+use App\Command\Docs\DocsMapCommand;
 use App\Repository\DocRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -23,20 +23,20 @@ class UniqueDocMapValidator extends ConstraintValidator
         $this->pp = $pp;
     }
 
-    public function validate($docs_map_edit_command, Constraint $constraint)
+    public function validate($docs_map_command, Constraint $constraint)
     {
         if (!$constraint instanceof UniqueDocMap)
         {
             throw new UnexpectedTypeException($constraint, UniqueDocMap::class);
         }
 
-        if (!$docs_map_edit_command instanceof DocsMapEditCommand)
+        if (!$docs_map_command instanceof DocsMapCommand)
         {
-            throw new UnexpectedTypeException($docs_map_edit_command, DocsMapEditCommand::class);
+            throw new UnexpectedTypeException($docs_map_command, DocsMapCommand::class);
         }
 
-        $name = $docs_map_edit_command->name;
-        $id = $docs_map_edit_command->id;
+        $name = $docs_map_command->name;
+        $id = $docs_map_command->id;
 
         $is_unique = $this->doc_repository->is_unique_map_name_except_id($name, $id, $this->pp->schema());
 

@@ -30,6 +30,7 @@ Encore
     .addEntry('summernote', './assets/js/summernote.js')
     .addEntry('sortable', './assets/js/sortable.js')
     .addEntry('fileupload', './assets/js/fileupload.js')
+    .addEntry('jssor', './assets/js/jssor.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('generate_password', './assets/js/generate_password.js')
 

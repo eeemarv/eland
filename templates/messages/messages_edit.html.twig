@@ -1,4 +1,6 @@
-{%- extends 'messages/messages_base.html.twig' -%}
+{%- extends 'messages/base/messages_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/link.html.twig' as l -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_edit.title.'
@@ -11,16 +13,27 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- block before_form -%}{%- endblock -%}
+
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('messages_show', {'id': message.id}) -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
+
+{%- set data_fileupload_url -%}
+    {{- l.pp_path_image_token('messages_edit_images_upload', message.id) -}}
+{%- endset -%}
+
 {%- block css -%}
     {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-    {{- encore_entry_link_tags('fileupload') -}}
 {%- endblock css -%}
 
 {%- block js -%}
     {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-	{{- encore_entry_script_tags('summernote') -}}
-	{{- encore_entry_script_tags('sortable') -}}
-	{{- encore_entry_script_tags('fileupload') -}}
 {%- endblock js -%}

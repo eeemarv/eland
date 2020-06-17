@@ -67,10 +67,13 @@
 
 	{%- block heading -%}
 		<h1 class="mb-3">
-			<i class="fa fa-{%- block heading_fa -%}{{- main_menu_def[active_menu].fa -}}{%- endblock heading_fa -%}"></i>&nbsp;
+			{%- block heading_fa_container -%}
+				<i class="fa fa-{%- block heading_fa -%}{{- main_menu_def[active_menu].fa -}}{%- endblock heading_fa -%}"></i>&nbsp;
+			{%- endblock heading_fa_container -%}
 			{%- block heading_title -%}
 				{{- (active_menu ~ '.title')|trans -}}
 			{%- endblock heading_title -%}
+			{%- block heading_append -%}{%- endblock heading_append -%}
 		</h1>
 	{%- endblock heading -%}
 

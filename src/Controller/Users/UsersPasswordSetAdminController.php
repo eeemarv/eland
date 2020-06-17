@@ -2,7 +2,7 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Users\UsersPasswordSetAdminCommand;
+use App\Command\Users\UsersPasswordCommand;
 use App\Form\Post\Users\UsersPasswordSetType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -40,23 +40,24 @@ class UsersPasswordSetAdminController extends AbstractController
     {
         $mail_addr = $mail_addr_user_service->get_active($id, $pp->schema());
 
-        $users_password_set_admin_command = new UsersPasswordSetAdminCommand();
+        $users_password_command = new UsersPasswordCommand();
 
         $notify_enabled = count($mail_addr) > 0;
 
         if ($notify_enabled)
         {
-            $users_password_set_admin_command->notify = true;
+            $users_password_command->notify = true;
         }
 
-        $form = $this->createForm(UsersPasswordSetType::class, $users_password_set_admin_command)
+        $form = $this->createForm(UsersPasswordSetType::class,
+            $users_password_command, ['validation_groups' => ['admin']])
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $users_password_set_admin_command = $form->getData();
-            $password = $users_password_set_admin_command->password;
-            $notify = $users_password_set_admin_command->notify;
+            $users_password_command = $form->getData();
+            $password = $users_password_command->password;
+            $notify = $users_password_command->notify;
             $notify = isset($notify) && $notify;
 
             $encoder = $encoder_factory->getEncoder(new User());

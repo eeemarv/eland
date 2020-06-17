@@ -15,9 +15,14 @@ class PasswordResetAddonType extends AbstractType
         parent::buildView($view, $form, $options);
 
         $keys = [
-            'addon_fa', 'addon_label', 'addon_class',
-            'addon_btn_fa', 'addon_btn_label', 'addon_btn_title',
-            'addon_btn_class', 'addon_btn_attr',
+            'addon_fa',
+            'addon_label',
+            'addon_class',
+            'addon_btn_fa',
+            'addon_btn_label',
+            'addon_btn_title',
+            'addon_btn_class',
+            'addon_btn_attr',
         ];
 
         foreach ($keys as $key)
@@ -38,7 +43,7 @@ class PasswordResetAddonType extends AbstractType
             'addon_class'       => null,
             'addon_btn_fa'      => null,
             'addon_btn_label'   => 'btn.generate',
-            'addon_btn_title'   => 'btn.generate_password_explain',
+            'addon_btn_title'   => 'btn.generate_password_title',
             'addon_btn_class'   => 'btn-default border border-secondary-li',
             'addon_btn_attr'    => [
                 'data-generate-password'    => '',

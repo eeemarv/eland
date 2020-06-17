@@ -31,6 +31,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowAdminController;
+use App\Service\ImageTokenService;
 
 class MessagesShowController extends AbstractController
 {
@@ -38,6 +39,7 @@ class MessagesShowController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ImageTokenService $image_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -283,7 +285,12 @@ class MessagesShowController extends AbstractController
 
         $heading_render->add(ucfirst($message['label']['offer_want']));
         $heading_render->add(': ' . $message['subject']);
-        $heading_render->add_raw(strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+
+        if (isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time())
+        {
+            $heading_render->add_raw(' <small><span class="text-danger">Vervallen</span></small>');
+        }
+
         $heading_render->fa('newspaper-o');
 
         if ($message['cid'])
@@ -291,7 +298,7 @@ class MessagesShowController extends AbstractController
             $out = '<p>Categorie: ';
 
             $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                ['f' => ['cid' => $message['cid']]], $message['catname']);
+                ['f' => ['cid' => $message['cid']]], $message['category_name']);
 
             $out .= '</p>';
         }
@@ -303,25 +310,23 @@ class MessagesShowController extends AbstractController
         $out .= '<div class="card card-default">';
         $out .= '<div class="card-body">';
 
-        /*
-
         $out .= '<div id="no_images" ';
-        $out .= 'class="text-center center-body';
+        $out .= 'class="text-center center-body"';
         $out .= count($image_files) ? '' : ' hidden';
-        $out .= '">';
+        $out .= '>';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
         $out .= $message['label']['offer_want_this'] . '</p>';
         $out .= '</div>';
-        */
 
-        $out .= '<div id="images_con" ';
-        $out .= 'class="carousel slide no-t-swipe" ';
+        $out .= '<div id="jssor_1" ';
+        $out .= 'class="row carousel slide" ';
         $out .= 'data-ride="carousel" ';
         $out .= 'data-touch="true" ';
         $out .= 'data-images="';
         $out .= htmlspecialchars(json_encode($data_images));
-        $out .= '">';
+        $out .= '"  style="background-color: #777;" ';
+        $out .= 'data-no-tourch-swipe>';
         $out .= '<div class="carousel-inner">';
 
         $crsl_ind = '';
@@ -336,13 +341,17 @@ class MessagesShowController extends AbstractController
             $crsl_ind .= $key === 0 ? ' class="active"' : '';
             $crsl_ind .= '></li>';
 
-            $crsl_items .= '<div class="carousel-item';
+            $crsl_items .= '<div class="carousel-item text-center ';
             $crsl_items .= $key === 0 ? ' active' : '';
             $crsl_items .= '">';
+            $crsl_items .= '<div class="d-flex justify-content-center" style="max-height:400px; max-width:400px;">';
             $crsl_items .= '<img src="';
             $crsl_items .= $env_s3_url . $image_file;
-            $crsl_items .= '" class="d-block w-100 h-100" ';
-            $crsl_items .= 'style="height:400px;">';
+
+            $crsl_items .= '" class="d-block m-auto img-fluid" ';
+//          $crsl_items .= '" class="d-block w-100 img-fluid" ';
+            $crsl_items .= '>';
+            $crsl_items .= '</div>';
             $crsl_items .= '</div>';
         }
 
@@ -375,8 +384,10 @@ class MessagesShowController extends AbstractController
             $out .= '<input id="fileupload" type="file" name="images[]" ';
             $out .= 'data-url="';
 
+/*
             $out .= $link_render->context_path('messages_images_upload',
                 $pp->ary(), ['id' => $id]);
+*/
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
@@ -464,21 +475,32 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        $out .= '<dt>Geldig tot</dt>';
-        $out .= '<dd>';
-        $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-        $out .= '</dd>';
+        if (isset($message['expires_at']))
+        {
+            $out .= '<dt>Geldig tot</dt>';
+            $out .= '<dd>';
+            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
+            $out .= '</dd>';
+        }
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
-            $out .= '<dt>Verlengen</dt>';
+            $out .= '<dt>Geldig tot</dt>';
             $out .= '<dd>';
-            $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-            $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-            $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
             $out .= '</dd>';
+
+            if ($pp->is_admin() || $su->is_owner($message['user_id']))
+            {
+                $out .= '<dt>Verlengen</dt>';
+                $out .= '<dd>';
+                $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
+                $out .= '&nbsp;';
+                $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
+                $out .= '&nbsp;';
+                $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                $out .= '</dd>';
+            }
         }
 
         if ($intersystems_service->get_count($pp->schema()))
@@ -512,9 +534,13 @@ class MessagesShowController extends AbstractController
 
         $menu_service->set('messages');
 
+        $message['is_expired'] = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
+
         return $this->render('messages/messages_show.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+            'content'       => $out,
+            'message'       => $message,
+            'image_files'   => json_decode($message['image_files'] ?? '[]'),
+            'schema'        => $pp->schema(),
         ]);
     }
 
@@ -538,7 +564,7 @@ class MessagesShowController extends AbstractController
     {
         $message = $db->fetchAssoc('select m.*,
                 c.id as cid,
-                c.fullname as catname
+                c.fullname as category_name
             from ' . $pp_schema . '.messages m, ' .
                 $pp_schema . '.categories c
             where m.id = ?

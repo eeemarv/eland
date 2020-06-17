@@ -2,7 +2,6 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumDelTopicCommand;
 use App\Form\Post\DelType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -47,10 +46,7 @@ class ForumDelTopicController extends AbstractController
         $first_post = $forum_repository->get_first_post($id, $pp->schema());
         $post_count = $forum_repository->get_post_count($id, $pp->schema());
 
-        $forum_del_topic_command = new ForumDelTopicCommand();
-
-        $form = $this->createForm(DelType::class,
-                $forum_del_topic_command)
+        $form = $this->createForm(DelType::class)
             ->handleRequest($request);
 
         if ($form->isSubmitted()

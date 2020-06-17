@@ -2,7 +2,6 @@
 
 namespace App\Controller\News;
 
-use App\Command\News\NewsDelCommand;
 use App\Form\Post\DelType;
 use App\Render\LinkRender;
 use App\Repository\NewsRepository;
@@ -29,10 +28,7 @@ class NewsDelController extends AbstractController
     {
         $news = $news_repository->get($id, $pp->schema());
 
-        $news_del_command = new NewsDelCommand();
-
-        $form = $this->createForm(DelType::class,
-                $news_del_command)
+        $form = $this->createForm(DelType::class)
             ->handleRequest($request);
 
         if ($form->isSubmitted()

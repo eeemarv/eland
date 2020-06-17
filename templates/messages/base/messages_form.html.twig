@@ -1,0 +1,136 @@
+{%- extends 'messages/base/messages_base.html.twig' -%}
+
+{%- block content -%}
+
+{%- block before_form -%}{%- endblock -%}
+
+{%- block form -%}
+    {%- embed 'form/form_embed.html.twig' -%}
+        {%- block form_a -%}
+            {%- if form.user_id is defined -%}
+                <div class="fcard-primary">
+                {{- form_row(form.user_id, {
+                    'label': 'label.user',
+                    'help': 'help.only_in_admin_modus',
+                    'addon_fa': 'user'
+                }) -}}
+                </div>
+            {%- endif -%}
+
+            {{- form_row(form.offer_want, {
+                'label': false
+            }) -}}
+
+            {{- form_row(form.subject, {
+                'label': 'label.title'
+            }) -}}
+
+            {{- form_row(form.content, {
+                'label': 'label.description'
+            }) -}}
+        {%- endblock form_a -%}
+
+        {%- block form_b -%}
+            {%- if form.category_id is defined -%}
+                {{- form_row(form.category_id, {
+                    'label': 'label.category',
+                    'addon_fa': 'clone'
+                }) -}}
+            {%- endif -%}
+        {%- endblock form_b -%}
+
+        {%- block form_c -%}
+            {{- form_row(form.expires_at, {
+                'label': 'label.validity',
+                'addon_label': 'label.days',
+                'attr': {
+                    'min': '1'
+                }
+            }) -}}
+        {%- endblock form_c -%}
+
+        {%- block form_d -%}
+            {%- if form.amount is defined -%}
+                {{- form_row(form.amount, {
+                    'label': 'label.suggested_price',
+                    'addon_label': 'var',
+                    'addon_translation_parameters': {
+                        '%var%': config('currency', schema)
+                    },
+                    'attr': {
+                        'min': '1'
+                    },
+                    'required': false
+                }) -}}
+
+                {{- form_row(form.units, {
+                    'label': 'label.per_unit',
+                    'addon_fa': 'hourglass-half',
+                    'required': false
+                }) -}}
+            {%- endif -%}
+        {%- endblock form_d -%}
+
+        {%- block form_e -%}
+            {%- if form.image_files is defined -%}
+                <div class="form-group" data-base-url="{{- s3_url('') -}}" data-fileupload-container>
+                    <label for="fileupload" class="control-label">
+                        {{- 'label.images'|trans -}}
+                    </label>
+                    <div class="row" data-sortable data-fileupload-sortable>
+                        {%- embed 'messages/embed/image_file_card.html.twig' -%}
+                            {%- block attr %} data-fileupload-model hidden{%- endblock -%}
+                        {%- endembed -%}
+                        {%- for img in (form.vars.value.image_files ?? '[]')|json_decode -%}
+                            {%- embed 'messages/embed/image_file_card.html.twig' -%}
+                                {%- block attr %} data-fileupload-file="{{- img -}}"{%- endblock -%}
+                                {%- block src -%}{{- s3_url(img) -}}{%- endblock -%}
+                            {%- endembed -%}
+                        {%- endfor -%}
+                    </div>
+
+                    {%- embed 'embed/image_upload_btn.html.twig' -%}
+                        {%- block class %} btn-default border border-secondary-li{%- endblock class -%}
+                        {%- block label -%}{{- 'label.upload'|trans -}}{%- endblock label -%}
+                    {%- endembed -%}
+
+                    <p>
+                        {{- 'messages.image_files.help'|trans -}}
+                    </p>
+
+                    {{- form_row(form.image_files, {
+                        'attr': {'data-fileupload-files-input': ''}
+                    }) -}}
+
+                </div>
+            {%- endif -%}
+        {%- endblock form_e -%}
+
+        {%- block form_access -%}
+            {%- if form.access is defined -%}
+                {{- form_row(form.access, {
+                    'label': 'access.visible_for',
+                    'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
+                }) -}}
+            {%- endif -%}
+        {%- endblock form_access -%}
+    {%- endembed -%}
+{%- endblock form -%}
+
+{%- block after_form -%}{%- endblock -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('summernote') -}}
+    {{- encore_entry_link_tags('fileupload') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+	{{- encore_entry_script_tags('summernote') -}}
+	{{- encore_entry_script_tags('sortable') -}}
+	{{- encore_entry_script_tags('fileupload') -}}
+{%- endblock js -%}

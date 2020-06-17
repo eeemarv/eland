@@ -20,7 +20,10 @@ docs_add:
   error: >-
     Opladen document mislukt.
   success:
-    Het bestand is opgeladen.
+    map: >-
+      Het bestand is opgeladen in map "%map_name%"
+    no_map: >-
+      Het bestand is opgeladen.
 
 docs_del:
   error: >-
@@ -31,6 +34,10 @@ docs_del:
 docs_edit:
   success: >-
     Document aangepast.
+
+docs_map_edit:
+  success: >-
+    De naam van de map is aangepast.
 
 email:
   warning:
@@ -110,6 +117,21 @@ logout:
   success: >-
     Je bent uitgelogd.
 
+messages_add:
+  success:
+    offer:
+      personal: >-
+        Je aanbod "%message_subject%" is teogevoegd.
+      admin: >-
+        Het aanbod "%message_subject%"
+        is toegevoegd voor gebruiker "%user%".
+    want:
+      personal: >-
+        Je vraag "%message_subject%" is toegevoegd.
+      admin: >-
+        De vraag "%message_subject%" is toegevoegd
+        voor gebruker "%user%".
+
 messages_del:
   error: Het bericht is niet verwijderd.
   success:
@@ -123,6 +145,21 @@ messages_del:
         De vraag "%message_subject%" van "%user%" is verwijderd.
       personal: >-
         Je vraag "%message_subject%" is verwijderd.
+
+messages_edit:
+  success:
+    offer:
+      personal: >-
+        Je aanbod "%message_subject%" is aangepast.
+      admin: >-
+        Het aanbod "%message_subject%" van gebruiker
+        "%user%" is aangepast.
+    want:
+      personal: >-
+        Je vraag "%message_subject%" is aangepast.
+      admin: >-
+        De vraag "%message_subject%" van gebruiker
+        "%user%" is aangepast.
 
 news_add:
   success: >-

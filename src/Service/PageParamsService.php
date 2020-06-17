@@ -18,6 +18,7 @@ class PageParamsService
 	protected string $role;
 	protected string $system;
 	protected string $schema;
+	protected string $route;
 	protected array $ary;
 
 	protected bool $is_admin;
@@ -112,6 +113,8 @@ class PageParamsService
 				$this->ary['role_short'] = $this->role_short;
 			}
 		}
+
+		$this->route = $this->request->attributes->get('_route');
 	}
 
 	public function role():string
@@ -172,5 +175,15 @@ class PageParamsService
 	public function ary():array
 	{
 		return $this->ary;
+	}
+
+	public function route():string
+	{
+		return $this->route;
+	}
+
+	public function rquest():Request
+	{
+		return $this->request;
 	}
 }

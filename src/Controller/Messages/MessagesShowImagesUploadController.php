@@ -7,88 +7,64 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use App\Controller\Messages\MessagesShowController;
+use App\Repository\MessageRepository;
+use App\Service\ImageTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesShowImagesUploadController extends AbstractController
 {
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
+        string $image_token,
+        MessageRepository $message_repository,
+        ImageTokenService $image_token_service,
         LoggerInterface $logger,
         PageParamsService $pp,
         SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
-        $uploaded_files = $request->files->get('images', []);
-        $insert_in_db = $request->attributes->get('form_token') ? false : true;
+        $image_token_service->check_and_throw($id, $image_token);
 
-        $filename_ary = [];
+        $uploaded_files = $request->files->get('images', []);
 
         if (!count($uploaded_files))
         {
-            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
+            throw new BadRequestHttpException('Missing file.');
         }
 
-        if ($id)
+        $message = $message_repository->get($id, $pp->schema());
+
+        if (!$message)
         {
-            $message = MessagesShowController::get_message($db, $id, $pp->schema());
-
-            if (!$su->is_owner($message['user_id']) && !$pp->is_admin())
-            {
-                throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
-                    om een afbeelding op te laden voor
-                    dit vraag of aanbod bericht.');
-            }
+            throw new NotFoundHttpException('Message ' . $id . ' not found.');
         }
-        else
+
+        if (!$su->is_owner($message['user_id']) && !$pp->is_admin())
         {
-            $id = $db->fetchColumn('select max(id)
-                from ' . $pp->schema() . '.messages');
-            $id++;
+            throw new AccessDeniedHttpException('Access Denied for image upload.');
         }
 
-        $update_db = false;
+        $filename_ary = [];
 
         foreach ($uploaded_files as $uploaded_file)
         {
             $filename = $image_upload_service->upload($uploaded_file,
                 'm', $id, 400, 400, $pp->schema());
 
-            if ($insert_in_db)
-            {
-                $update_db = true;
-
-                $logger->info('Image file ' .
-                    $filename . ' uploaded and inserted in db.',
-                    ['schema' => $pp->schema()]);
-            }
-            else
-            {
-                $logger->info('Image file ' .
-                    $filename . ' uploaded, not (yet) inserted in db.',
-                    ['schema' => $pp->schema()]);
-            }
+            $logger->info('Image file ' .
+                $filename . ' uploaded and inserted in db.',
+                ['schema' => $pp->schema()]);
 
             $filename_ary[] = $filename;
         }
 
-        if ($update_db)
-        {
-            $db->executeUpdate('update ' . $pp->schema() . '.messages
-                set image_files = image_files || ?
-                where id = ?',
-                [$filename_ary, $id],
-                [Types::JSON, \PDO::PARAM_INT]
-            );
-        }
+        $message_repository->add_image_files($filename_ary, $id, $pp->schema());
 
         return $this->json($filename_ary);
     }

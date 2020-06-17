@@ -12,7 +12,7 @@ class TestExpiredMessagesConsoleCommand extends Command
 {
     protected static $defaultName = 'test:expired_messages';
 
-    protected $user_exp_msgs_schema_task;
+    protected UserExpMsgsSchemaTask $user_exp_msgs_schema_task;
 
     public function __construct(
         UserExpMsgsSchemaTask $user_exp_msgs_schema_task

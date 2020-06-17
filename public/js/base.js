@@ -2,7 +2,7 @@ $(document).ready(function() {
 
 	var $row_offcanvas = $('.row-offcanvas');
 
-	$('[data-toggle=offcanvas]').click(function() {
+	$('[data-toggle="offcanvas"]').click(function() {
 		$row_offcanvas.toggleClass('active');
 	});
 

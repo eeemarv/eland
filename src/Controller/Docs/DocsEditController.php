@@ -2,7 +2,7 @@
 
 namespace App\Controller\Docs;
 
-use App\Command\Docs\DocsEditCommand;
+use App\Command\Docs\DocsCommand;
 use App\Form\Post\Docs\DocsEditType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,32 +30,32 @@ class DocsEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $docs_edit_command = new DocsEditCommand();
+        $docs_command = new DocsCommand();
 
         $doc = $doc_repository->get($id, $pp->schema());
 
-        $docs_edit_command->file_location = $env_s3_url . $doc['filename'];
-        $docs_edit_command->original_filename = $doc['original_filename'];
-        $docs_edit_command->name = $doc['name'];
-        $docs_edit_command->access = $doc['access'];
+        $docs_command->file_location = $env_s3_url . $doc['filename'];
+        $docs_command->original_filename = $doc['original_filename'];
+        $docs_command->name = $doc['name'];
+        $docs_command->access = $doc['access'];
 
         if (isset($doc['map_id']))
         {
             $doc_map = $doc_repository->get_map($doc['map_id'], $pp->schema());
-            $docs_edit_command->map_name = $doc_map['name'];
+            $docs_command->map_name = $doc_map['name'];
         }
 
         $form = $this->createForm(DocsEditType::class,
-                $docs_edit_command)
+                $docs_command, ['validation_groups' => ['edit']])
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $docs_edit_command = $form->getData();
-            $name = $docs_edit_command->name;
-            $map_name = $docs_edit_command->map_name;
-            $access = $docs_edit_command->access;
+            $docs_command = $form->getData();
+            $name = $docs_command->name;
+            $map_name = $docs_command->map_name;
+            $access = $docs_command->access;
 
             $update = [
                 'access'    => $access,

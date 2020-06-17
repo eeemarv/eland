@@ -2,51 +2,52 @@
 
 namespace App\Repository;
 
-use App\Service\ItemAccessService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageRepository
 {
 	protected Db $db;
-	protected ItemAccessService $item_access_service;
 
 	public function __construct(
-		Db $db,
-		ItemAccessService $item_access_service
+		Db $db
 	)
 	{
 		$this->db = $db;
-		$this->item_access_service = $item_access_service;
 	}
 
-	public function get_visible_for_page(int $id, string $schema):array
+	public function get(int $id, string $schema):array
 	{
-        $stmt = $this->db->executeQuery('select *
+        $message = $this->db->fetchAssoc('select *
             from ' . $schema . '.messages
-            where id = ?
-                and access in (?)', [
-                $id,
-                $this->item_access_service->get_visible_ary_for_page()
-            ], [
-                \PDO::PARAM_INT,
-                Db::PARAM_STR_ARRAY,
+            where id = ?', [
+                $id
             ]);
 
-        $data = $stmt->fetch();
-
-		if (!$data)
+		if (!$message)
 		{
 			throw new NotFoundHttpException('Message ' . $id . ' not found.');
         }
 
-		return $data;
+		return $message;
 	}
 
 	public function del(int $id, string $schema):bool
 	{
 		return $this->db->delete($schema . '.messages',
 			['id' => $id]) ? true : false;
+	}
+
+	public function insert(array $message, string $schema):int
+	{
+		$this->db->insert($schema . '.messages', $message);
+		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
+	}
+
+	public function update(array $message, int $id, string $schema):bool
+	{
+		return $this->db->update($schema . '.messages', $message, ['id' => $id]) ? true : false;
 	}
 
 	public function get_count_for_user_id(int $user_id, string $schema):int
@@ -60,4 +61,29 @@ class MessageRepository
 	{
 		$this->db->delete($schema . '.messages', ['user_id' => $user_id]);
 	}
+
+	public function add_image_files(array $image_filename_ary, int $id, string $schema):void
+	{
+		$this->db->executeUpdate('update ' . $schema . '.messages
+			set image_files = image_files || ?
+			where id = ?',
+			[$image_filename_ary, $id],
+			[Types::JSON, \PDO::PARAM_INT]);
+	}
+
+	public function update_image_files(array $image_files, int $id, string $schema):void
+	{
+        $image_files = json_encode(array_values($image_files));
+
+		$this->db->update($schema . '.messages',
+			['image_files' => $image_files],
+			['id' => $id]);
+	}
+
+	public function get_max_id(string $schema):int
+	{
+		return $this->db->fetchColumn('select max(id)
+			from ' . $schema . '.messages') ?: 0;
+	}
+
 }

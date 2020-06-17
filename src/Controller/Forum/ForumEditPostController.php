@@ -2,7 +2,8 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumEditPostCommand;
+use App\Command\Forum\ForumCommand;
+use App\Command\Forum\ForumPostCommand;
 use App\Form\Post\Forum\ForumPostType;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -54,19 +55,19 @@ class ForumEditPostController extends AbstractController
             throw new NotFoundHttpException('Wrong route for this action.');
         }
 
-        $forum_edit_post_command = new ForumEditPostCommand();
+        $forum_command = new ForumCommand();
 
-        $forum_edit_post_command->content = $forum_post['content'];
+        $forum_command->content = $forum_post['content'];
 
         $form = $this->createForm(ForumPostType::class,
-                $forum_edit_post_command)
+                $forum_command, ['validation_groups' => ['post']])
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $forum_edit_post_command = $form->getData();
-            $content = $forum_edit_post_command->content;
+            $forum_command = $form->getData();
+            $content = $forum_command->content;
 
             $forum_repository->update_post($content, $id, $pp->schema());
 

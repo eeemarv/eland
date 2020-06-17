@@ -147,7 +147,7 @@ class MessagesListController extends AbstractController
             {
                 foreach ($update_msgs_ary as $id => $row)
                 {
-                    $expires_at = $row['expires_at'];
+                    $expires_at = $row['expires_at'] ?? gmdate('Y-m-d H:i:s');
                     $expires_at = gmdate('Y-m-d H:i:s', strtotime($expires_at . ' UTC') + (86400 * (int) $bulk_field_value));
 
                     $msg_update = [
@@ -333,7 +333,7 @@ class MessagesListController extends AbstractController
         foreach($messages as $msg)
         {
             $out .= '<tr';
-            $out .= strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
+            $out .= isset($msg['expires_at']) && strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
             $out .= '>';
 
             $out .= '<td>';

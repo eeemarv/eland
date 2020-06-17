@@ -8,17 +8,6 @@
 		{{- encore_entry_link_tags('app') -}}
 	{%- endblock css -%}
 
-{#
-	{%- for c in assets_ary('css') -%}
-		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
-	{%- endfor -%}
-#}
-{#
-	{%- for c in assets_ary('css_print') -%}
-		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
-	{%- endfor -%}
-#}
-
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d55b5b">
@@ -136,12 +125,6 @@
 {%- block js -%}
 	{{- encore_entry_script_tags('app') -}}
 {%- endblock js -%}
-
-{#
-{%- for j in assets_ary('js') -%}
-	<script src="{{- j -}}"></script>
-{%- endfor -%}
-#}
 
 </body>
 </html>

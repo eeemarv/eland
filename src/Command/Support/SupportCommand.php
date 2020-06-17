@@ -4,6 +4,7 @@ namespace App\Command\Support;
 
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class SupportCommand
@@ -13,7 +14,11 @@ class SupportCommand
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('message', new NotBlank());
-        $metadata->addPropertyConstraint('message', new Length(['min' => 10, 'max' => 5000]));
+        $metadata->addPropertyConstraint('message', new Sequentially([
+            'constraints'   => [
+                new NotBlank(),
+                new Length(['min' => 10, 'max' => 5000]),
+            ],
+        ]));
     }
 }

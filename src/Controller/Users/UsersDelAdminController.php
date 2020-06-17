@@ -19,7 +19,7 @@ use App\Service\IntersystemsService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\ThumbprintAccountsService;
+use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
 
 class UsersDelAdminController extends AbstractController
@@ -33,8 +33,8 @@ class UsersDelAdminController extends AbstractController
         AlertService $alert_service,
         AccountRender $account_render,
         LinkRender $link_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         IntersystemsService $intersystems_service,
+        TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -72,10 +72,11 @@ class UsersDelAdminController extends AbstractController
             {
                 $message_repository->del_for_user_id($id, $pp->schema());
 
-                $status = StatusCnst::THUMBPRINT_ARY[$user['status']];
-                $thumbprint_accounts_service->delete($status, $pp->ary(), $pp->schema());
-
+                $typeahead_service->clear(TypeaheadService::GROUP_ACCOUNTS);
+                $typeahead_service->clear(TypeaheadService::GROUP_USERS);
                 $intersystems_service->clear_cache($pp->schema());
+
+                $status = StatusCnst::THUMBPRINT_ARY[$user['status']];
 
                 $alert_service->success('users_del.success', $alert_trans_ary);
                 $link_render->redirect($vr->get('users'), $pp->ary(), ['status' => $status]);

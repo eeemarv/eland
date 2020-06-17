@@ -15,7 +15,7 @@ export default function() {
 		},
 		treshold: 30,
 		preventDefaultEvents: false,
-		excludedElements: ".no-t-swipe"
+		excludedElements: '[data-no-touchswipe]'
 	});
 
 	$('div.content-container-overlay').click(function(ev){

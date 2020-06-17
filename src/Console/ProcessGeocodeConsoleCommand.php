@@ -13,9 +13,9 @@ class ProcessGeocodeConsoleCommand extends Command
 {
     protected static $defaultName = 'process:geocode';
 
-    protected $monitor_process_service;
-    protected $geocode_queue;
-    protected $queue_service;
+    protected MonitorProcessService $monitor_process_service;
+    protected GeocodeQueue $geocode_queue;
+    protected QueueService $queue_service;
 
     public function __construct(
         MonitorProcessService $monitor_process_service,

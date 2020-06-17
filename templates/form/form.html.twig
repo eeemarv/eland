@@ -91,11 +91,22 @@
     </div>
 {%- endblock addon_widget %}
 
+{%- block select_addon_widget -%}
+    <div class="input-group">
+        {{- block('addon') -}}
+        {{- block('choice_widget_collapsed') -}}
+    </div>
+{%- endblock select_addon_widget -%}
+
 {% block addon -%}
     <span class="input-group-prepend{%- if addon_class is defined %} {{ addon_class -}}{%- endif %}">
         <span class="input-group-text form-control">
             {%- if addon_label is defined -%}
-                {{- addon_label|trans -}}
+                {%- if addon_html is defined and addon_html -%}
+                    {{- addon_label|trans(addon_translation_parameters|default({}))|raw -}}
+                {%- else -%}
+                    {{- addon_label|trans(addon_translation_parameters|default({})) -}}
+                {%- endif -%}
             {%- endif -%}
             {%- if addon_fa is defined -%}
                 {%- if addon_label is defined -%}&nbsp;{%- endif -%}
@@ -140,17 +151,6 @@
     </span>
 {%- endblock unique_addon_widget -%}
 
-{#
-{% block typeahead_widget -%}
-    {%- set attr = attr|merge(typeahead_attr) -%}
-    {{- block('addon_widget') -}}
-{%- endblock typeahead_widget %}
-
-{% block typeahead_user_widget -%}
-    {{- block('typeahead_widget') -}}
-{%- endblock typeahead_user_widget -%}
-#}
-
 {% block datepicker_widget -%}
     {%- set attr = attr|merge({
         'data-provide': 'datepicker',
@@ -174,8 +174,6 @@
 {%- endblock captcha_row -%}
 
 {% block summernote_widget -%}
-    {%- set attr = attr|merge({
-        'data-summernote': ''
-    }) -%}
+    {%- set attr = attr|merge({'data-summernote': ''}) -%}
     {{- block('textarea_widget') -}}
 {%- endblock summernote_widget %}

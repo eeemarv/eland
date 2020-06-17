@@ -2,7 +2,7 @@
 
 namespace App\Controller\News;
 
-use App\Command\News\NewsAddCommand;
+use App\Command\News\NewsCommand;
 use App\Form\Post\News\NewsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,23 +26,23 @@ class NewsAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        $news_add_command = new NewsAddCommand();
+        $news_command = new NewsCommand();
 
         $form = $this->createForm(NewsType::class,
-                $news_add_command)
+                $news_command)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $news_add_command = $form->getData();
+            $news_command = $form->getData();
 
             $news_item = [
-                'subject'   => $news_add_command->subject,
-                'location'  => $news_add_command->location,
-                'event_at'  => $news_add_command->event_at,
-                'content'   => $news_add_command->content,
-                'access'    => $news_add_command->access,
+                'subject'   => $news_command->subject,
+                'location'  => $news_command->location,
+                'event_at'  => $news_command->event_at,
+                'content'   => $news_command->content,
+                'access'    => $news_command->access,
                 'user_id'   => $su->id(),
             ];
 
