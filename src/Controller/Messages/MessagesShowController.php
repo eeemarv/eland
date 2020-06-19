@@ -485,11 +485,6 @@ class MessagesShowController extends AbstractController
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
-            $out .= '<dt>Geldig tot</dt>';
-            $out .= '<dd>';
-            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-            $out .= '</dd>';
-
             if ($pp->is_admin() || $su->is_owner($message['user_id']))
             {
                 $out .= '<dt>Verlengen</dt>';
