@@ -1,0 +1,41 @@
+
+<li class="nav-item dropdown{%- block class -%}{%- endblock -%}">
+	<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+        <span class="fa fa-{%- block fa -%}{%- endblock -%}"></span>&nbsp;
+        {%- block label -%}{%- endblock -%}&nbsp;
+        <span class="caret"></span>
+	</a>
+	<div class="dropdown-menu dropdown-menu-right" role="menu">
+        {%- block items -%}{%- endblock -%}
+	</div>
+</li>
+
+{#
+{%- for m in menu_items -%}
+{%- if m.header is defined -%}
+    <h5 class="dropdown-header">{{- m.label -}}</h5>
+{%- elseif m.divider is defined -%}
+    <div class="dropdown-divider"></div>
+{%- elseif m.params is defined -%}
+    <a class="dropdown-item{%- if m.active is defined %} active{%- elseif m.active_group is defined %}  active-group{%- endif -%}" href="
+    {%- if m.same_route is defined -%}
+        {{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge(m.params)) -}}
+    {%- else -%}
+        {{- path(m.route, pp_ary()|merge(m.params)) -}}
+    {%- endif -%}
+    ">
+
+    {%- if m.fa is defined -%}
+        <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+    {%- endif -%}
+
+    {{- m.label -}}
+    </a>
+{%- elseif m.route is defined -%}
+    <a class="dropdown-item{%- if m.active is defined %} active{%- endif -%}" href="{{- path(m.route, pp_ary()) -}}">
+    <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+        {{- m.label -}}
+    </a>
+{%- endif -%}
+{%- endfor -%}
+#}

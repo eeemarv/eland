@@ -117,6 +117,13 @@ config:
   defaults:
     module: config
 
+config_name:
+  controller: App\Controller\Config\ConfigNameController
+  path: /config/name
+  methods: GET|POST
+  defaults:
+    module: config
+
 intersystems_edit:
   controller: App\Controller\Intersystems\IntersystemsEditController
   path: /intersystems/{id<%assert.id%>}/edit

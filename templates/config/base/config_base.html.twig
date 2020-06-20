@@ -1,0 +1,44 @@
+{%- extends 'base/navbar.html.twig' -%}
+
+{%- set active_menu = 'config' -%}
+{%- set active_admin_menu = 'config' -%}
+
+{%- block heading_title -%}
+    {{- 'config.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_fa -%}
+    cogs
+{%- endblock heading_fa -%}
+
+{%- block content -%}
+
+    {%- embed 'form/form_embed.html.twig' -%}
+        {%- block form_header -%}
+            <dvi class="card-header">
+                <h4>{{- tab_title|trans -}}</h4>
+            </dvi>
+        {%- endblock form_header -%}
+
+        {%- block form_submit_btn -%}
+            {{- form_widget(form.submit,{
+                'label': 'btn.edit',
+                'attr': {'class': 'btn-primary'}
+            }) -}}
+        {%- endblock form_submit_btn -%}
+    {%- endembed -%}
+
+{%- endblock content -%}
+{#
+{%- block content -%}
+    {{- content|raw -}}
+{%- endblock content -%}
+#}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

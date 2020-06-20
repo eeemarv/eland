@@ -1,4 +1,5 @@
 <div class="card fcard fcard-info">
+    {%- block form_header -%}{%- endblock -%}
 	<div class="card-body">
 		{{- form_start(form, {'attr': {'novalidate': 'novalidate'}}) -}}
 		{{- form_errors(form) -}}
@@ -16,4 +17,5 @@
         {%- endblock form_content -%}
         {{- form_end(form) -}}
     </div>
+    {%- block form_footer -%}{%- endblock -%}
 </div>

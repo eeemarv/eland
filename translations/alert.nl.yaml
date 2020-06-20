@@ -2,6 +2,10 @@ error:
   token_not_valid: >-
     Geen geldig token.
 
+config:
+  success: >-
+    Instellingen aangepast.
+
 contact_form:
   success: >-
     Open je E-mailbox en klik
