@@ -19,43 +19,6 @@
     }) -}}
 {%- endset -%}
 
-{#
-{%- block content -%}
-
-{%- block form -%}
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- block form_header -%}
-            <dvi class="card-header">
-                <h4>Systeemsnaam</h4>
-            </dvi>
-        {%- endblock form_header -%}
-        {%- block form_a -%}
-            {{- form_row(form.system_name, {
-                'label': 'label.system_name',
-                'addon_fa': 'share-alt',
-            }) -}}
-        {%- endblock form_a -%}
-
-        {%- block form_b -%}
-            {{- form_row(form.email_tag, {
-                'label': 'label.email_tag',
-                'help': 'help.email_tag',
-                'addon_fa': 'tag',
-            }) -}}
-        {%- endblock form_b -%}
-
-        {%- block form_submit_btn -%}
-            {{- form_widget(form.submit,{
-                'label': 'btn.edit',
-                'attr': {'class': 'btn-primary'}
-            }) -}}
-        {%- endblock form_submit_btn -%}
-    {%- endembed -%}
-{%- endblock form -%}
-
-{%- endblock content -%}
-#}
-
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

@@ -4,6 +4,7 @@ namespace App\Controller\Config;
 
 use App\Command\Config\ConfigNameCommand;
 use App\Form\Post\Config\ConfigNameType;
+use App\Form\Post\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +14,7 @@ use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 
-class ConfigNameController extends AbstractController
+class ConfigLogoController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -24,13 +25,8 @@ class ConfigNameController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $config_name_command = new ConfigNameCommand();
 
-        $config_name_command->system_name = $config_service->get('systemname', $pp->schema());
-        $config_name_command->email_tag = $config_service->get('systemtag', $pp->schema());
-
-        $form = $this->createForm(ConfigNameType::class,
-                $config_name_command)
+        $form = $this->createForm(DelType::class)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -44,8 +40,8 @@ class ConfigNameController extends AbstractController
             $config_service->set('systemname', $pp->schema(), $system_name);
             $config_service->set('systemtag', $pp->schema(), $email_tag);
 
-            $alert_service->success('config.success');
-            $link_render->redirect('config_name', $pp->ary(), []);
+            $alert_service->success('config_logo.success.del');
+            $link_render->redirect('config_logo', $pp->ary(), []);
         }
 
         $menu_service->set('config');

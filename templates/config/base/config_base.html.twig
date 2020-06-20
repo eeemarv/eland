@@ -11,7 +11,22 @@
     cogs
 {%- endblock heading_fa -%}
 
+{%- set config_tab_menu = {
+    'config_name': 'config_name.title',
+    'config_logo': 'config_logo.title',
+    'config_modules': 'config_modules.title'
+} -%}
+
 {%- block content -%}
+    <ul class="nav nav-pills mb-2">
+    {%- for rt, lbl in config_tab_menu -%}
+        <li class="nav-item">
+            <a class="nav-link{%- if app.request.attributes.get('_route') == rt %} active{%- endif -%}" href="{{- path(rt, pp_ary()) -}}">
+                {{- lbl|trans -}}
+            </a>
+        </li>
+    {%- endfor -%}
+    </ul>
 
     {%- embed 'form/form_embed.html.twig' -%}
         {%- block form_header -%}
@@ -29,11 +44,6 @@
     {%- endembed -%}
 
 {%- endblock content -%}
-{#
-{%- block content -%}
-    {{- content|raw -}}
-{%- endblock content -%}
-#}
 
 {%- block css -%}
     {{- parent() -}}

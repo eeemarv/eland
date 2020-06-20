@@ -242,6 +242,15 @@ categories_del:
 config:
   title: Instellingen
 
+config_logo:
+  title: Logo
+
+config_modules:
+  title: Modules
+  forum_en: Forum
+  contact_form_en: contactformulier
+  register_en: Inschrijvingsformulier
+
 config_name:
   title: Systeemsnaam
 

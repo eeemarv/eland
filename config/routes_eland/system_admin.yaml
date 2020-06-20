@@ -124,6 +124,20 @@ config_name:
   defaults:
     module: config
 
+config_logo:
+  controller: App\Controller\Config\ConfigLogoController
+  path: /config/logo
+  methods: GET|POST
+  defaults:
+    module: config
+
+config_modules:
+  controller: App\Controller\Config\ConfigModulesController
+  path: /config/modules
+  methods: GET|POST
+  defaults:
+    module: config
+
 intersystems_edit:
   controller: App\Controller\Intersystems\IntersystemsEditController
   path: /intersystems/{id<%assert.id%>}/edit

@@ -6,6 +6,10 @@ config:
   success: >-
     Instellingen aangepast.
 
+config_modules:
+  success: >-
+    Modules aangepast.
+
 contact_form:
   success: >-
     Open je E-mailbox en klik
