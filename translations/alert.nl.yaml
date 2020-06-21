@@ -6,6 +6,10 @@ config:
   success: >-
     Instellingen aangepast.
 
+config_logo_del:
+  success: >-
+    Logo verwijderd.
+
 config_modules:
   success: >-
     Modules aangepast.

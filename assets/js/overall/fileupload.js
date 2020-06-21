@@ -15,6 +15,8 @@ export default function () {
 	var $sortable = $container.find('[data-fileupload-sortable]');
 
 	var $jssor = $('[data-jssor]');
+	var $logo_viewbox = $container.find('[data-logo-viewbox]');
+	var $no_image = $container.find('[data-no-image]');
 
 	function rewrite_image_files_input(){
 		var image_files = [];
@@ -44,7 +46,7 @@ export default function () {
 		imageMaxWidth: size,
 		imageMaxHeight: size,
         imageOrientation: true,
-        dataType: 'json'
+		dataType: 'json'
 
     })
     .on('fileuploadprocessfail', function (e, data) {
@@ -79,12 +81,21 @@ export default function () {
 				image_files.push(file);
 				$container.data('image-files', image_files);
 				$jssor.jssor(image_files, true);
-            } else {
+            } else if ($logo_viewbox.length && file){
+				$logo_viewbox.attr('src', s3_url + file);
+				$no_image.attr('hidden', '');
+				$logo_viewbox.removeAttr('hidden');
+				var $logo = $container.find('[data-logo]');
+				$logo.attr('src', s3_url + file);
+				var $brand = $('[data-brand]');
+				$brand.find('[data-logo]').remove();
+				$brand.prepend($logo.clone());
+			} else {
 				alert('Fout bij het opladen van de afbeelding.');
 			}
         });
-
-	 });
+	 }).prop('disabled', !$.support.fileInput)
+	 	.parent().addClass($.support.fileInput ? undefined : 'disabled');;
 
 	 /*
      .prop('disabled', !$.support.fileInput)

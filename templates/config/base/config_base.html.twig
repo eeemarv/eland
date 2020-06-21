@@ -28,20 +28,20 @@
     {%- endfor -%}
     </ul>
 
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- block form_header -%}
-            <dvi class="card-header">
-                <h4>{{- tab_title|trans -}}</h4>
-            </dvi>
-        {%- endblock form_header -%}
+    {%- block form -%}
+        {%- embed 'form/form_embed.html.twig' -%}
+            {%- block form_header -%}
+                {%- include 'config/include/config_form_header.html.twig' -%}
+            {%- endblock form_header -%}
 
-        {%- block form_submit_btn -%}
-            {{- form_widget(form.submit,{
-                'label': 'btn.edit',
-                'attr': {'class': 'btn-primary'}
-            }) -}}
-        {%- endblock form_submit_btn -%}
-    {%- endembed -%}
+            {%- block form_submit_btn -%}
+                {{- form_widget(form.submit,{
+                    'label': 'btn.edit',
+                    'attr': {'class': 'btn-primary'}
+                }) -}}
+            {%- endblock form_submit_btn -%}
+        {%- endembed -%}
+    {%- endblock form -%}
 
 {%- endblock content -%}
 

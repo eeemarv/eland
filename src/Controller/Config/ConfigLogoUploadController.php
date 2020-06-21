@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Config;
 
 use App\Service\ConfigService;
+use App\Service\ImageTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
@@ -11,17 +12,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class LogoUploadController extends AbstractController
+class ConfigLogoUploadController extends AbstractController
 {
     public function __invoke(
         Request $request,
+        string $image_token,
         LoggerInterface $logger,
         ConfigService $config_service,
         PageParamsService $pp,
+        ImageTokenService $image_token_service,
         ImageUploadService $image_upload_service
     ):Response
     {
-        $uploaded_file = $request->files->get('image');
+        $image_token_service->check_and_throw(0, $image_token);
+
+        $uploaded_file = $request->files->get('logo');
 
         if (!$uploaded_file)
         {

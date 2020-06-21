@@ -25,29 +25,9 @@ class ConfigLogoController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-
-        $form = $this->createForm(DelType::class)
-            ->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $config_name_command = $form->getData();
-
-            $system_name = $config_name_command->system_name;
-            $email_tag = $config_name_command->email_tag;
-
-            $config_service->set('systemname', $pp->schema(), $system_name);
-            $config_service->set('systemtag', $pp->schema(), $email_tag);
-
-            $alert_service->success('config_logo.success.del');
-            $link_render->redirect('config_logo', $pp->ary(), []);
-        }
-
         $menu_service->set('config');
 
-        return $this->render('config/config_name.html.twig', [
-            'form'      => $form->createView(),
+        return $this->render('config/config_logo.html.twig', [
             'schema'    => $pp->schema(),
         ]);
     }

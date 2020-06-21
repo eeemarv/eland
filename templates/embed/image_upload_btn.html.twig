@@ -1,9 +1,10 @@
 <label class="btn{%- block class %} btn-success btn-lg btn-block{%- endblock class -%}" data-fileupload-btn>
     <i class="fa fa-plus" data-fileupload-btn-icon></i>&nbsp;
         {%- block label -%}{{- 'label.image_upload'|trans -}}{%- endblock label -%}
-    <input type="file" name="images[]" data-fileupload-url="{%- block upload_url -%}{{- data_fileupload_url -}}{%- endblock upload_url -%}"
+    <input type="file" name="{%- block name -%}images[]{%- endblock -%}" data-fileupload-url="{%- block upload_url -%}{{- data_fileupload_url -}}{%- endblock upload_url -%}"
         data-data-type="json" data-auto-upload="true"
-        data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i"
+        data-accept-file-types="/(\.|\/)({%- block file_types -%}jpe?g|png|gif{%- endblock -%})$/i"
         data-max-file-size="999000"
-        multiple data-fileupload-btn-input hidden>
+        {% block attr_multiple -%}multiple{%- endblock %}
+        data-fileupload-btn-input hidden>
 </label>

@@ -1,0 +1,65 @@
+{%- extends 'config/base/config_base.html.twig' -%}
+
+{%- block form -%}
+    {%- embed 'form/form_embed.html.twig' -%}
+        {%- import 'macro/link.html.twig' as l -%}
+        {%- block form_header -%}
+            {%- include 'config/include/config_form_header.html.twig' -%}
+        {%- endblock form_header -%}
+        {%- block form_start -%}{%- endblock -%}
+        {%- block form_content -%}
+
+            {%- set logo = config('logo', schema) -%}
+
+            <div class="col-md-6" data-fileupload-container data-s3-url="{{- s3_url('') -}}">
+                <div data-models hidden>
+                    {%- embed 'embed/logo.html.twig' -%}
+                        {%- block src -%}{%- endblock -%}
+                    {%- endembed -%}
+                </div>
+                <div class="text-center center-block">
+                    <img class="img-rounded img-responsive center-block py-5" src="{{- s3_url(logo) -}}" data-logo-viewbox{%- if not logo %} hidden{%- endif -%}>
+                    {%- embed 'embed/no_image.html.twig' -%}
+                        {%- block attr -%}
+                            {%- if logo %} hidden{%- endif -%}
+                        {%- endblock attr -%}
+                        {%- block help -%}
+                            {{- 'config_logo.help.no_logo'|trans -}}
+                        {%- endblock help -%}
+                    {%- endembed -%}
+
+                    {%- embed 'embed/image_upload_btn.html.twig' -%}
+                        {%- import 'macro/link.html.twig' as l -%}
+                        {%- block name -%}logo{%- endblock -%}
+                        {%- block attr_multiple -%}{%- endblock -%}
+                        {%- block upload_url -%}
+                            {{- l.pp_path_image_token('config_logo_upload', 0) -}}
+                        {%- endblock upload_url -%}
+                        {%- block label -%}
+                            {{- 'config_logo.btn.upload'|trans -}}
+                        {%- endblock label -%}
+                    {%- endembed -%}
+
+                    <p>
+                        {{- 'config_logo.help.upload'|trans -}}
+                    </p>
+
+                    <a href="{{- l.pp_path('config_logo_del', {}) -}}" class="btn btn-danger btn-lg btn-block">
+                        <i class="fa fa-times"></i>&nbsp;
+                        {{- 'config_logo.btn.del'|trans -}}
+                    </a>
+                </div>
+            </div>
+        {%- endblock form_content -%}
+        {%- block form_end -%}{%- endblock -%}
+    {%- endembed -%}
+{%- endblock form -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+    {{- encore_entry_script_tags('fileupload') -}}
+{%- endblock js -%}
