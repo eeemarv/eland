@@ -251,9 +251,12 @@ config_logo:
     no_logo: >-
       Geen logo ingesteld.
     upload: >-
-      Toegestane formaten: png en gif. Je kan ook een
+      Toegestane formaten: jpg, png en gif. Je kan ook een
       afbeelding hierheen verslepen. Gebruik een doorzichtige
       achtergrond voor het beste resultaat.
+
+config_logo_del:
+  title: Logo verwijderen?
 
 config_modules:
   title: Modules

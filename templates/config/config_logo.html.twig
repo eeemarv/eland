@@ -1,10 +1,11 @@
-{%- extends 'config/base/config_base.html.twig' -%}
+{%- extends 'config/base/config_form.html.twig' -%}
 
 {%- block form -%}
     {%- embed 'form/form_embed.html.twig' -%}
         {%- import 'macro/link.html.twig' as l -%}
         {%- block form_header -%}
-            {%- include 'config/include/config_form_header.html.twig' -%}
+            {%- embed 'config/embed/config_form_header.html.twig' -%}
+            {%- endembed -%}
         {%- endblock form_header -%}
         {%- block form_start -%}{%- endblock -%}
         {%- block form_content -%}
