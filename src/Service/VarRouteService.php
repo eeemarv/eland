@@ -13,7 +13,6 @@ class VarRouteService
 	protected PageParamsService $pp;
 
 	protected array $var_route_ary;
-	protected bool $is_admin;
 
 	public function __construct(
 		SessionInterface $session,
@@ -30,7 +29,6 @@ class VarRouteService
 
 	private function init():void
 	{
-		$this->is_admin = $this->pp->is_admin();
 		$route = $this->pp->route();
 
 		$view_ary = $this->session->get('view') ?? PagesCnst::DEFAULT_VIEW;
@@ -58,8 +56,6 @@ class VarRouteService
 
 	public function get(string $menu_route):string
 	{
-		$route = $this->var_route_ary[$menu_route] ?? $menu_route;
-		$route .= isset(PagesCnst::ADMIN_ROUTE[$route]) && $this->is_admin ? '_admin' : '';
-		return $route;
+		return $this->var_route_ary[$menu_route] ?? $menu_route;
 	}
 }

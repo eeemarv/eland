@@ -236,13 +236,6 @@ users_password_set_admin:
   defaults:
     module: users
 
-users_show_admin:
-  controller: App\Controller\Users\UsersShowAdminController
-  path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
-  methods: GET|POST
-  defaults:
-    module: users
-
 users_del_admin:
   controller: App\Controller\Users\UsersDelAdminController
   path: /users/{id<%assert.id%>}/del
@@ -260,20 +253,6 @@ users_edit_admin:
 users_add:
   controller: App\Controller\Users\UsersAddController
   path: /users/add
-  methods: GET|POST
-  defaults:
-    module: users
-
-users_tiles_admin:
-  controller: App\Controller\Users\UsersTilesAdminController
-  path: /users/tiles/{status<%assert.account_status%>?active}
-  methods: GET
-  defaults:
-    module: users
-
-users_list_admin:
-  controller: App\Controller\Users\UsersListAdminController
-  path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
   defaults:
     module: users

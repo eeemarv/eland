@@ -120,7 +120,7 @@ class IntersystemsShowController extends AbstractController
 
         if ($user)
         {
-            $out .= $link_render->link('users_show_admin', $pp->ary(),
+            $out .= $link_render->link('users_show', $pp->ary(),
                 ['id' => $user['id']], $group['localletscode'],
                 [
                     'class' => 'btn btn-default',

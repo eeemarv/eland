@@ -110,7 +110,7 @@ class PlotUserTransactionsController extends AbstractController
 
                 if ($pp->is_admin())
                 {
-                    $user_link = $link_render->context_path($vr->get('users_show'),
+                    $user_link = $link_render->context_path('users_show',
                         $pp->ary(), ['id' => $t['user_id']]);
                 }
 
@@ -134,7 +134,7 @@ class PlotUserTransactionsController extends AbstractController
                 if ($pp->is_admin()
                     || ($t['status'] === 1 || $t['status'] === 2))
                 {
-                    $user_link = $link_render->context_path($vr->get('users_show'),
+                    $user_link = $link_render->context_path('users_show',
                         $pp->ary(), ['id' => $t['user_id']]);
                 }
             }

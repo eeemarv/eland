@@ -637,7 +637,7 @@ class UsersEditAdminController extends AbstractController
 
                 $intersystems_service->clear_cache($su->schema());
 
-                $link_render->redirect($vr->get('users_show'),
+                $link_render->redirect('users_show',
                     $pp->ary(), ['id' => $id]);
             }
 
@@ -1297,7 +1297,7 @@ class UsersEditAdminController extends AbstractController
 
         if ($is_edit)
         {
-            $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(),
+            $out .= $link_render->btn_cancel('users_show', $pp->ary(),
                 ['id' => $id]);
         }
         else

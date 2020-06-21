@@ -1269,7 +1269,7 @@ class UsersListController extends AbstractController
                     {
                         if ($can_link)
                         {
-                            $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
+                            $td .= $link_render->link_no_attr('users_show', $pp->ary(),
                                 ['id' => $u['id'], 'status' => $status], $u[$key] ?: '**leeg**');
                         }
                         else
@@ -1294,7 +1294,7 @@ class UsersListController extends AbstractController
                         {
                             if ($can_link)
                             {
-                                $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
+                                $td .= $link_render->link_no_attr('users_show', $pp->ary(),
                                     ['id' => $u['id'], 'status' => $status], $u['fullname']);
                             }
                             else
@@ -1654,13 +1654,11 @@ class UsersListController extends AbstractController
         string $matched_route
     ):void
     {
-        $admin_suffix = $pp_ary['role_short'] === 'a' ? '_admin' : '';
-
-        $btn_nav_render->view('users_list' . $admin_suffix, $pp_ary,
+        $btn_nav_render->view('users_list', $pp_ary,
             $params, 'Lijst', 'align-justify',
             $matched_route === 'users_list');
 
-        $btn_nav_render->view('users_tiles' . $admin_suffix, $pp_ary,
+        $btn_nav_render->view('users_tiles', $pp_ary,
             $params, 'Tegels met foto\'s', 'th',
             $matched_route === 'users_tiles');
 

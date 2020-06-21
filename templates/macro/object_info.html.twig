@@ -16,11 +16,7 @@
 
 {%- macro user_link(user_id, schema) -%}
     <i class="fa fa-user"></i>&nbsp;
-    {%- if pp_role('admin') -%}
-        <a href="{{- path('users_show_admin', pp_ary()|merge({'id': user_id})) -}}">
-    {%- else -%}
-        <a href="{{- path('users_show', pp_ary()|merge({'id': user_id})) -}}">
-    {%- endif -%}
+    <a href="{{- path('users_show', pp_ary()|merge({'id': user_id})) -}}">
         {{- account(user_id, schema) -}}
     </a>
 {% endmacro user_link -%}

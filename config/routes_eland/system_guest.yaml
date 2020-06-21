@@ -28,28 +28,28 @@ messages_list:
 
 users_show:
   controller: App\Controller\Users\UsersShowController
-  path: /users/{id<%assert.id%>}/{status<%assert.account_status.active%>?active}
+  path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
   methods: GET|POST
   defaults:
     module: users
 
 users_map:
   controller: App\Controller\Users\UsersMapController
-  path: /users/map/{status<%assert.account_status.active%>?active}
+  path: /users/map/{status<%assert.account_status%>?active}
   methods: GET
   defaults:
     module: users
 
 users_tiles:
   controller: App\Controller\Users\UsersTilesController
-  path: /users/tiles/{status<%assert.account_status.active%>?active}
+  path: /users/tiles/{status<%assert.account_status%>?active}
   methods: GET
   defaults:
     module: users
 
 users_list:
   controller: App\Controller\Users\UsersListController
-  path: /users/{status<%assert.account_status.active%>?active}
+  path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
   defaults:
     module: users

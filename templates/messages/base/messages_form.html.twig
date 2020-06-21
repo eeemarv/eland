@@ -73,7 +73,7 @@
 
         {%- block form_e -%}
             {%- if form.image_files is defined -%}
-                <div class="form-group" data-base-url="{{- s3_url('') -}}" data-fileupload-container>
+                <div class="form-group" data-s3-url="{{- s3_url('') -}}" data-fileupload-container>
                     <label for="fileupload" class="control-label">
                         {{- 'label.images'|trans -}}
                     </label>
