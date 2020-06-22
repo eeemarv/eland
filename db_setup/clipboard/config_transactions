@@ -1,0 +1,125 @@
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+     INSERT INTO config (id) SELECT 'transactions'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'transactions');
+
+     UPDATE config SET data = jsonb_set(data, '{currency}', '{}'::jsonb)
+          where id = 'transactions';
+
+     UPDATE config SET data = jsonb_set(data, '{currency, name}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'currency')::jsonb)
+          where id = 'transactions';
+
+     UPDATE config SET data = jsonb_set(data, '{currency, per_hour_ratio}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'currencyratio'))
+          where id = 'transactions';
+
+     UPDATE config SET data = jsonb_set(data, '{currency, timebased_en}', coalesce((select (case
+          when data->>'value' = '0' then 'f'::boolean
+          when data->>'value' = '' then 'f'::boolean
+          when data->>'value' = 'false' then 'f'::boolean
+          else 't'::boolean
+          end)::text
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'template_lets')::jsonb, 'false'::jsonb))
+          where id = 'transactions';
+
+     INSERT INTO config (id) SELECT 'accounts'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'accounts');
+
+     UPDATE config SET data = jsonb_set(data, '{global_limits}', '{"min": null, "max": null}'::jsonb)
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{equilibrium}', '0'::jsonb)
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{global_limits, min}', coalesce((select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'minlimit'), null)::jsonb)
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{global_limits, max}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'maxlimit')::jsonb)
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{equilibrium}', coalesce((select data->>'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'balance_equilibrium')::jsonb, '0'::jsonb))
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{auto_min_limit}', '{"enabled": false, "exclude": {"to": "", "from":""}, "percentage": 0}'::jsonb)
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{auto_min_limit, enabled}', coalesce((select 'true'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and data->>'enabled' <> ''
+               and data->>'enabled' <> '0'
+               and data->>'enabled' is not null
+               and agg_schema = f_schema
+               and eland_id = 'autominlimit')::jsonb, 'false'::jsonb))
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{auto_min_limit, percentage}', coalesce((select data->>'trans_percentage'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and data->>'trans_percentage' <> ''
+               and data->>'trans_percentage' is not null
+               and agg_schema = f_schema
+               and eland_id = 'autominlimit')::jsonb, '0'::jsonb))
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{auto_min_limit, exclude, to}', coalesce((select data->'exclusive'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'autominlimit'
+               and data->>'exclusive' is not null
+               and data->>'exclusive' <> '')::jsonb, '""'::jsonb))
+          where id = 'accounts';
+
+     UPDATE config SET data = jsonb_set(data, '{auto_min_limit, exclude, from}', coalesce((select data->'trans_exclusive'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'autominlimit'
+               and data->>'trans_exclusive' is not null
+               and data->>'trans_exclusive' <> '')::jsonb, '""'::jsonb))
+          where id = 'accounts';
+
+END LOOP;
+END
+$do$
+;

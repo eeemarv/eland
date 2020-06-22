@@ -1,0 +1,146 @@
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+     INSERT INTO static_content (id, lang)
+          SELECT 'register_form', 'nl'
+          WHERE NOT EXISTS (SELECT 't'::boolean from static_content where id = 'register_form');
+
+     UPDATE static_content SET data = jsonb_set(data, '{top}', coalesce((select to_jsonb(coalesce(data->>'value'::text, ''::text))
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'registration_top_text'
+               and data->>'value' <> 'false'
+               and data->>'value' <> '0'), to_jsonb(''::text))::jsonb)
+          where id = 'register_form';
+
+     UPDATE static_content SET data = jsonb_set(data, '{bottom}', coalesce((select to_jsonb(coalesce(data->>'value'::text, ''::text))
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'registration_bottom_text'
+               and data->>'value' <> 'false'
+               and data->>'value' <> '0'), to_jsonb(''::text))::jsonb)
+          where id = 'register_form';
+
+     INSERT INTO static_content (id, lang)
+          SELECT 'register_form_confirm', 'nl'
+          WHERE NOT EXISTS (SELECT 't'::boolean from static_content where id = 'register_form_confirm');
+
+     UPDATE static_content SET data = jsonb_set(data, '{success}', coalesce((select to_jsonb(coalesce(data->>'value'::text, ''::text))
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'registration_success_text'
+               and data->>'value' <> 'false'
+               and data->>'value' <> '0'), to_jsonb(''::text))::jsonb)
+          where id = 'register_form_confirm';
+
+     UPDATE static_content SET data = jsonb_set(data, '{success_mail}', coalesce((select to_jsonb(coalesce(data->>'value'::text, ''::text))
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'registration_success_mail'
+               and data->>'value' <> 'false'
+               and data->>'value' <> '0'), to_jsonb(''::text))::jsonb)
+          where id = 'register_form_confirm';
+
+     INSERT INTO static_content (id, lang)
+          SELECT 'contact_form', 'nl'
+          WHERE NOT EXISTS (SELECT 't'::boolean from static_content where id = 'contact_form');
+
+     UPDATE static_content SET data = jsonb_set(data, '{top}', coalesce((select to_jsonb(coalesce(data->>'value'::text, ''::text))
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'contact_form_top_text'
+               and data->>'value' <> 'false'
+               and data->>'value' <> '0'), to_jsonb(''::text))::jsonb)
+          where id = 'contact_form';
+
+     UPDATE static_content SET data = jsonb_set(data, '{bottom}', coalesce((select to_jsonb(coalesce(data->>'value'::text, ''::text))
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'contact_form_bottom_text'
+               and data->>'value' <> 'false'
+               and data->>'value' <> '0'), to_jsonb(''::text))::jsonb)
+          where id = 'contact_form';
+
+     INSERT INTO static_content (id, lang)
+          SELECT 'common', 'nl'
+          WHERE NOT EXISTS (SELECT 't'::boolean from static_content where id = 'common');
+
+END LOOP;
+END
+$do$
+;
+
+
+-----
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+     DELETE FROM static_content;
+END LOOP;
+END
+$do$
+;
+
+------------------
+
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+     ALTER TABLE static_content ADD COLUMN meta jsonb not null default '{}'::jsonb;
+END LOOP;
+END
+$do$
+;

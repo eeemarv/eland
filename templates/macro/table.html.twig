@@ -64,7 +64,7 @@
 
 {%- macro td_account_pp_link(user_id, schema) -%}
     <td>
-        <a href="{{- path('users_show' ~ (pp_role('admin') ? '_admin' : '') , pp_ary()|merge({'id': user_id})) -}}">
+        <a href="{{- path('users_show', pp_ary()|merge({'id': user_id})) -}}">
             {{- account(user_id, schema) -}}
         </a>
     </td>
