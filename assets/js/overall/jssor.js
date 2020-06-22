@@ -11,7 +11,6 @@ export default function(el, jump_to_last_image){
 	var $slide_model = $models.find('[data-jssor-slide-model');
 	var $slides = $jssor.find('[data-u="slides"]');
 	$.each(image_files, function(i, img){
-		console.log(s3_url + img);
 		var $slide = $slide_model.clone();
 		$slide.removeAttr('data-jssor-slide-model');
 		$slide.find('img').attr('data-src', s3_url + img);

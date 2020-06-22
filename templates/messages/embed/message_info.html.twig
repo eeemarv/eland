@@ -27,7 +27,7 @@
                         {{- config('currency', schema) -}}
                         {%- if message.units -%}
                             &nbsp;{{- 'object_info.per_unit'|trans({
-                                '%unit%': message.unit
+                                '%unit%': message.units
                             }) -}}
                         {%- endif -%}
                     {%- else -%}

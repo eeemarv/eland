@@ -57,14 +57,14 @@ class MessagesShowImagesUploadController extends AbstractController
             $filename = $image_upload_service->upload($uploaded_file,
                 'm', $id, 400, 400, $pp->schema());
 
+            $message_repository->add_image_file($filename, $id, $pp->schema());
+
             $logger->info('Image file ' .
                 $filename . ' uploaded and inserted in db.',
                 ['schema' => $pp->schema()]);
 
             $filename_ary[] = $filename;
         }
-
-        $message_repository->add_image_files($filename_ary, $id, $pp->schema());
 
         return $this->json($filename_ary);
     }

@@ -1,5 +1,5 @@
 {%- import 'macro/link.html.twig' as l -%}
-<div class="col-md-6"  data-s3-url="{{- s3_url('') -}}" data-image-files="{{- message.image_files -}}" data-fileupload-container data-jssor>
+<div class="col-md-6"  data-s3-url="{{- s3_url('') -}}" data-image-files="{{- message.image_files ?? '[]' -}}" data-fileupload-container data-jssor>
     <div data-models hidden>
         {%- embed 'embed/no_image.html.twig' -%}
             {%- block help -%}

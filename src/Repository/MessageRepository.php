@@ -62,12 +62,12 @@ class MessageRepository
 		$this->db->delete($schema . '.messages', ['user_id' => $user_id]);
 	}
 
-	public function add_image_files(array $image_filename_ary, int $id, string $schema):void
+	public function add_image_file(string $image_filename, int $id, string $schema):void
 	{
 		$this->db->executeUpdate('update ' . $schema . '.messages
-			set image_files = image_files || ?
+			set image_files = coalesce(image_files, \'[]\') || ?::jsonb
 			where id = ?',
-			[$image_filename_ary, $id],
+			[$image_filename, $id],
 			[Types::JSON, \PDO::PARAM_INT]);
 	}
 
@@ -85,5 +85,4 @@ class MessageRepository
 		return $this->db->fetchColumn('select max(id)
 			from ' . $schema . '.messages') ?: 0;
 	}
-
 }
