@@ -28,51 +28,11 @@
     {%- endif -%}
 
     <div class="row">
-        <div class="col-md-6"  data-s3-url="{{- s3_url('') -}}" data-image-files="{{- message.image_files -}}" data-fileupload-container data-jssor>
+        {%- embed 'messages/embed/images_carousel.html.twig' -%}
+        {%- endembed -%}
 
-            <div data-models hidden>
-                {%- embed 'embed/no_image.html.twig' -%}
-                    {%- block help -%}
-                        {%- if message.is_offer -%}
-                            {{- 'messages_show.no_images.offer'|trans -}}
-                        {%- else -%}
-                            {{- 'messages_show.no_images.want'|trans -}}
-                        {%- endif -%}
-                    {%- endblock help -%}
-                {%- endembed -%}
-                {%- embed 'embed/jssor.html.twig' -%}
-                {%- endembed -%}
-            </div>
-
-            <div class="card card-default">
-                <div class="card-img-top" data-view-box>
-                </div>
-
-                <div class="card-footer">
-                    {%- embed 'embed/image_upload_btn.html.twig' -%}
-                        {%- import 'macro/link.html.twig' as l -%}
-                        {%- block upload_url -%}
-                            {{- l.pp_path_image_token('messages_show_images_upload', message.id) -}}
-                        {%- endblock upload_url -%}
-                    {%- endembed -%}
-                    <p>
-                        {{- 'help.images_upload'|trans -}}
-                    </p>
-                    <a href="{{- l.pp_path('messages_images_del', {'id': message.id}) -}}" class="btn btn-danger btn-lg btn-block">
-                        <i class="fa fa-times"></i>&nbsp;
-                        {{- 'label.images_remove'|trans -}}
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card card-default">
-                <div class="card-body">
-
-                </div>
-            </div>
-        </div>
+        {%- embed 'messages/embed/message_info.html.twig' -%}
+        {%- endembed -%}
     </div>
 
 {%- endblock content -%}

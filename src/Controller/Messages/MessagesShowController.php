@@ -31,6 +31,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowAdminController;
+use App\Controller\Users\UsersShowController;
 use App\Service\ImageTokenService;
 
 class MessagesShowController extends AbstractController
@@ -514,7 +515,7 @@ class MessagesShowController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= UsersShowAdminController::get_mail_form(
+        $out .= UsersShowController::get_mail_form(
             $message['user_id'],
             $user_mail_content,
             $user_mail_cc,
@@ -534,7 +535,8 @@ class MessagesShowController extends AbstractController
         return $this->render('messages/messages_show.html.twig', [
             'content'       => $out,
             'message'       => $message,
-            'image_files'   => json_decode($message['image_files'] ?? '[]'),
+            'show_access'   => $intersystems_service->get_count($pp->schema()) ? true : false,
+            'user'          => $user,
             'schema'        => $pp->schema(),
         ]);
     }

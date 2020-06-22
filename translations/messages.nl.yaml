@@ -118,6 +118,7 @@ label:
   event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
   expired: Vervallen
+  expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
   first_name: Voornaam
@@ -153,6 +154,7 @@ label:
     Een kopie van je bericht naar jezelf sturen
     is niet mogelijk want er is geen E-mail
     adres ingesteld voor je gebruikersaccount.
+  not_defined: Niet bepaald
   new_password: Nieuw paswoord
   offer: Aanbod
   offers: Aanbod
@@ -167,6 +169,7 @@ label:
   periodic_mail: Periodieke Overzichts E-mail
   phone: Telefoon
   postcode: Postcode
+  prolong: Verlengen
   replies: Reacties
   role: Rol
   save_password: Bewaar Paswoord
@@ -198,6 +201,8 @@ label:
 object_info:
   edit_count: >-
     , Aangepast: %edit_count%
+  per_unit: >-
+    per %unit%
 
 unique_filter:
   item_not_unique: >-
@@ -448,6 +453,14 @@ messages_show:
       Er zijn geen afbeeldingen voor dit aanbod.
     want: >-
       Er zijn geen afbeeldingen voor deze vraag.
+  no_content: >-
+    Er werd geen omschrijving ingegeven.
+  no_expiration_defined: >-
+    Er is geen vervaldatum ingesteld.
+  extend:
+    1_month: 1 maand
+    6_months: 6 maanden
+    1_year: 1 jaar
 
 news:
   title: Nieuws
