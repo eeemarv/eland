@@ -1,10 +1,15 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- set active_menu = 'config' -%}
+{%- set active_admin_menu = 'config' -%}
 
-{%- block content -%}
-    {{- content|raw -}}
-{%- endblock content -%}
+{%- block heading_title -%}
+    {{- 'config.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_fa -%}
+    cogs
+{%- endblock heading_fa -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -1,0 +1,53 @@
+{%- macro header(label) -%}
+    <h5 class="dropdown-header">{{- label|trans -}}</h5>
+{%- endmacro header -%}
+
+{%- macro divider() -%}
+    <div class="dropdown-divider"></div>
+{%- endmacro divider -%}
+
+{%- macro item_modus(path, selected, label, fa) -%}
+    <a class="dropdown-item{%- if selected %} active-group{%- endif -%}" href="{{- path -}}">
+        <i class="fa fa-{{- fa -}}"></i>&nbsp;
+        {{- label|trans -}}
+    </a>
+{%- endmacro item_modus -%}
+
+{%- macro item(path, selected, label, fa) -%}
+    <a class="dropdown-item{%- if selected %} active{%- endif -%}" href="{{- path -}}">
+        <i class="fa fa-{{- fa -}}"></i>&nbsp;
+        {{- label|trans -}}
+    </a>
+{%- endmacro item -%}
+
+
+
+{#
+{%- for m in menu_items -%}
+{%- if m.header is defined -%}
+
+{%- elseif m.divider is defined -%}
+
+{%- elseif m.params is defined -%}
+    <a class="dropdown-item{%- if m.active is defined %} active{%- elseif m.active_group is defined %}  active-group{%- endif -%}" href="
+    {%- if m.same_route is defined -%}
+        {{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge(m.params)) -}}
+    {%- else -%}
+        {{- path(m.route, pp_ary()|merge(m.params)) -}}
+    {%- endif -%}
+    ">
+
+    {%- if m.fa is defined -%}
+        <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+    {%- endif -%}
+
+    {{- m.label -}}
+    </a>
+{%- elseif m.route is defined -%}
+    <a class="dropdown-item{%- if m.active is defined %} active{%- endif -%}" href="{{- path(m.route, pp_ary()) -}}">
+    <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+        {{- m.label -}}
+    </a>
+{%- endif -%}
+{%- endfor -%}
+#}

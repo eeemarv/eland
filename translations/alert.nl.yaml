@@ -2,6 +2,18 @@ error:
   token_not_valid: >-
     Geen geldig token.
 
+config:
+  success: >-
+    Instellingen aangepast.
+
+config_logo_del:
+  success: >-
+    Logo verwijderd.
+
+config_modules:
+  success: >-
+    Modules aangepast.
+
 contact_form:
   success: >-
     Open je E-mailbox en klik

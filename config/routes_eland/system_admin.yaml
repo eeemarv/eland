@@ -110,6 +110,41 @@ users_contacts_add_admin:
   defaults:
     module: users
 
+config_name:
+  controller: App\Controller\Config\ConfigNameController
+  path: /config/name
+  methods: GET|POST
+  defaults:
+    module: config
+
+config_logo:
+  controller: App\Controller\Config\ConfigLogoController
+  path: /config/logo
+  methods: GET|POST
+  defaults:
+    module: config
+
+config_logo_upload:
+  controller: App\Controller\Config\ConfigLogoUploadController
+  path: /config/logo/upload/{image_token<%assert.token%>}
+  methods: POST
+  defaults:
+    module: config
+
+config_logo_del:
+  controller: App\Controller\Config\ConfigLogoDelController
+  path: /config/logo/del
+  methods: GET|POST
+  defaults:
+    module: config
+
+config_modules:
+  controller: App\Controller\Config\ConfigModulesController
+  path: /config/modules
+  methods: GET|POST
+  defaults:
+    module: config
+
 config:
   controller: App\Controller\ConfigController
   path: /config/{tab<%assert.config_tab%>?system-name}
@@ -201,13 +236,6 @@ users_password_set_admin:
   defaults:
     module: users
 
-users_show_admin:
-  controller: App\Controller\Users\UsersShowAdminController
-  path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
-  methods: GET|POST
-  defaults:
-    module: users
-
 users_del_admin:
   controller: App\Controller\Users\UsersDelAdminController
   path: /users/{id<%assert.id%>}/del
@@ -225,20 +253,6 @@ users_edit_admin:
 users_add:
   controller: App\Controller\Users\UsersAddController
   path: /users/add
-  methods: GET|POST
-  defaults:
-    module: users
-
-users_tiles_admin:
-  controller: App\Controller\Users\UsersTilesAdminController
-  path: /users/tiles/{status<%assert.account_status%>?active}
-  methods: GET
-  defaults:
-    module: users
-
-users_list_admin:
-  controller: App\Controller\Users\UsersListAdminController
-  path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
   defaults:
     module: users
@@ -359,20 +373,6 @@ weighted_balances:
   methods: GET
   defaults:
     module: transactions
-
-logo_upload:
-  controller: App\Controller\LogoUploadController
-  path: /logo/upload
-  methods: POST
-  defaults:
-    module: config
-
-logo_del:
-  controller: App\Controller\LogoDelController
-  path: /logo/del
-  methods: GET|POST
-  defaults:
-    module: config
 
 static_content_image_upload:
   controller: App\Controller\StaticContentImageUploadController

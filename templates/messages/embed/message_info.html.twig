@@ -1,0 +1,79 @@
+{%- import 'macro/object_info.html.twig' as oi -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/lbl.html.twig' as lbl -%}
+
+<div class="col-md-6">
+    <div class="card card-default">
+        <div class="card-body">
+            <h5 class="card-title">
+                {{- 'label.description'|trans -}}
+            </h5>
+            <p>
+                {%- if message.content -%}
+                    {{- message.content|raw -}}
+                {%- else -%}
+                    <i>
+                        {{- 'messages_show.no_content'|trans -}}
+                    </i>
+                {%- endif -%}
+            </p>
+        </div>
+        <div class="card-footer">
+            <dl>
+                <dt>{{- 'label.suggested_price'|trans -}}</dt>
+                <dd>
+                    {%- if message.amount -%}
+                        {{- message.amount -}}&nbsp;
+                        {{- config('currency', schema) -}}
+                        {%- if message.units -%}
+                            &nbsp;{{- 'object_info.per_unit'|trans({
+                                '%unit%': message.units
+                            }) -}}
+                        {%- endif -%}
+                    {%- else -%}
+                        {{- 'label.not_defined'|trans -}}
+                    {%- endif -%}
+                </dd>
+
+                <dt>{{- 'label.expires_at'|trans -}}</dt>
+
+                {%- if message.expires_at is defined -%}
+                    <dd>
+                        {{- message.expires_at|date_format('day', schema) -}}
+                    </dd>
+
+                    {%- if pp_role('admin') or s_is_owner(message.user_id) -%}
+                        <dt>{{- 'label.prolong'|trans -}}</dt>
+                        <dd>
+                            {{- bl.btn_link('messages_extend', {'id': message.id, 'days': 30}, 'btn btn-default border border-primary-li', 'messages_show.extend.1_month') -}}
+                            {{- bl.btn_link('messages_extend', {'id': message.id, 'days': 182}, 'btn btn-default border border-primary-li', 'messages_show.extend.6_months') -}}
+                            {{- bl.btn_link('messages_extend', {'id': message.id, 'days': 365}, 'btn btn-default border border-primary-li', 'messages_show.extend.1_year') -}}
+                        </dd>
+                    {%- endif -%}
+                {%- else -%}
+                    <dd>
+                        {{- 'messages_show.no_expiration_defined'|trans -}}
+                    </dd>
+                {%- endif -%}
+
+                {%- if user.postcode is defined -%}
+                    <dt>{{- 'label.postcode'|trans -}}</dt>
+                    <dd>
+                        {{- user.postcode -}}
+                    </dd>
+                {%- endif -%}
+
+                {%- if show_access and (pp_role('user') or pp_role('admin')) -%}
+                    <dt>{{- 'access.visible_for'|trans -}}</dt>
+                    <dd>
+                        {{- lbl.lbl(message.access) -}}
+                    </dd>
+                {%- endif -%}
+
+            </dl>
+
+            {{- oi.post_info(message, schema) -}}
+
+        </div>
+    </div>
+</div>

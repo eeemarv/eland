@@ -102,7 +102,7 @@ class UsersTilesController extends AbstractController
                 $row_stat = 3;
             }
 
-            $url = $link_render->context_path($vr->get('users_show'), $pp->ary(),
+            $url = $link_render->context_path('users_show', $pp->ary(),
                 ['id' => $u['id'], 'link' => $status]);
 
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 user-tile js-user-tile">';

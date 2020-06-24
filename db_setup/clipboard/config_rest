@@ -1,0 +1,116 @@
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+     INSERT INTO config (id) SELECT 'mail'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'mail');
+
+     INSERT INTO config (id) SELECT 'periodic_mail'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'periodic_mail');
+
+     INSERT INTO config (id) SELECT 'users'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'users');
+
+     INSERT INTO config (id) SELECT 'register_form'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'register_form');
+
+     INSERT INTO config (id) SELECT 'contact_form'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'contact_form');
+
+     INSERT INTO config (id) SELECT 'support_form'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'support_form');
+
+     INSERT INTO config (id) SELECT 'news'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'news');
+
+     UPDATE config SET data = jsonb_set(data, '{sort}', '{}'::jsonb)
+          where id = 'news';
+
+     UPDATE config SET data = jsonb_set(data, '{sort, asc}', 'true'::jsonb)
+          where id = 'news';
+
+     UPDATE config SET data = jsonb_set(data, '{modules,contact,enabled}', 'false'::jsonb)
+          where id = 'news' and exists (select 1
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and agg_schema = f_schema
+                    and eland_id = 'news_order_asc'
+                    and (data->>'value' = '0'
+                         or data->>'value' = ''
+                         or data->>'value' IS NULL));
+
+     UPDATE config SET data = jsonb_set(data, '{guest_blocks}', '[]'::jsonb)
+          where id = 'periodic_mail';
+
+     UPDATE config SET data = jsonb_set(data, '{user_blocks}', coalesce((select jsonb_agg(to_jsonb(t.unnest))
+          from (select unnest(string_to_array(ltrim(a.data->>'value', '+'), ','))
+               from xdb.aggs a
+               where agg_type = 'setting'
+                    and eland_id = 'periodic_mail_block_ary'
+                    and agg_schema = f_schema) t), '["messages.recent"]'::jsonb))
+          WHERE id = 'periodic_mail';
+
+     UPDATE config SET data = jsonb_set(data, '{days}', (select data->>'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'saldofreqdays')::jsonb)
+          where id = 'periodic_mail';
+
+     UPDATE config SET data = jsonb_set(data, '{tag}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'systemtag')::jsonb)
+          where id = 'mail';
+
+     UPDATE config SET data = jsonb_set(data, '{enabled}', (select (case
+          when data->>'value' = '0' then 'f'::boolean
+          when data->>'value' = '' then 'f'::boolean
+          when data->>'value' = 'false' then 'f'::boolean
+          else 't'::boolean
+          end)::text
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'mailenabled')::jsonb)
+          where id = 'mail';
+
+     UPDATE config SET data = jsonb_set(data, '{self_edit}', '{"full_name": false, "username": false}'::jsonb)
+          where id = 'users';
+
+     UPDATE config SET data = jsonb_set(data, '{self_edit, full_name}', 'true'::jsonb)
+          where id = 'users' and exists (select 1
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and agg_schema = f_schema
+                    and eland_id = 'users_can_edit_fullname'
+                    and data->>'value'  = '1';
+
+     UPDATE config SET data = jsonb_set(data, '{self_edit, username}', 'true'::jsonb)
+          where id = 'users' and exists (select 1
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and agg_schema = f_schema
+                    and eland_id = 'users_can_edit_username'
+                    and data->>'value'  = '1';
+
+END LOOP;
+END
+$do$
+;

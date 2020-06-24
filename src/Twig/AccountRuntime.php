@@ -20,13 +20,6 @@ class AccountRuntime implements RuntimeExtensionInterface
 		return htmlspecialchars($user['code'] . ' ' . $user['name']);
 	}
 
-/*
-	public function get_link(int $id, string $schema):string
-	{
-
-	}
-*/
-
 	public function get_fullname(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);

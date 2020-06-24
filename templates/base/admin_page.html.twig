@@ -1,0 +1,9 @@
+{%- extends 'base/navbar.html.twig' -%}
+
+{%- block heading_fa -%}
+    {{- admin_menu[active_admin_menu].fa -}}
+{%- endblock heading_fa -%}
+
+{%- block heading_title -%}
+    {{- (active_admin_menu ~ '.title')|trans -}}
+{%- endblock heading_title -%}

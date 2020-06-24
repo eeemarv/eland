@@ -66,6 +66,10 @@ datepicker:
     A: (weekdag)
 
 help:
+  email_tag: >-
+    Deze prefix wordt tussen haken [tag] toegevoegd
+    aan het onderwerp van alle E-mail-berichten die
+    het systeem verzendt.
   new_password_safety: >-
     Tip: Gebruik voor de veiligheid nooit
     hetzelfde paswoord in verschillende toepassingen.
@@ -89,7 +93,9 @@ label:
   actions: Acties
   activated: Geactiveerd
   activity: Activiteit
+  admin: Admin
   admin_comment: Admin Commentaar
+  admin_modus: Admin modus
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
@@ -107,16 +113,19 @@ label:
   description: Omschrijving
   date: Datum
   email: E-mail
+  email_tag: E-mail tag
   event_date: Agendadatum
   event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
   expired: Vervallen
+  expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
   first_name: Voornaam
   from: Van
   from_date: Vanaf
   full_name: Volledige Naam
+  guest_modus: Gast modus
   hobbies_interests: Hobbies/interesses
   image: Afbeelding
   images: Afbeeldingen
@@ -145,6 +154,7 @@ label:
     Een kopie van je bericht naar jezelf sturen
     is niet mogelijk want er is geen E-mail
     adres ingesteld voor je gebruikersaccount.
+  not_defined: Niet bepaald
   new_password: Nieuw paswoord
   offer: Aanbod
   offers: Aanbod
@@ -159,6 +169,7 @@ label:
   periodic_mail: Periodieke Overzichts E-mail
   phone: Telefoon
   postcode: Postcode
+  prolong: Verlengen
   replies: Reacties
   role: Rol
   save_password: Bewaar Paswoord
@@ -179,6 +190,7 @@ label:
   upload: Opladen
   user: Gebruiker
   username: Gebruikersnaam
+  user_modus: Leden modus
   validity: Geldigheid
   want: Vraag
   wants: Vraag
@@ -189,6 +201,8 @@ label:
 object_info:
   edit_count: >-
     , Aangepast: %edit_count%
+  per_unit: >-
+    per %unit%
 
 unique_filter:
   item_not_unique: >-
@@ -218,7 +232,7 @@ calendar_month:
     %month% %year%
 
 categories:
-  title: Categorieën in vraag en aanbod
+  title: Vraag en aanbod categorieën
 
 categories_add:
   title: Categorie toevoegen
@@ -229,6 +243,34 @@ categories_edit:
 categories_del:
   title: >-
     Categorie "%name%" verwijderen?
+
+config:
+  title: Instellingen
+
+config_logo:
+  title: Logo
+  btn:
+    del: Logo verwijderen
+    upload: Logo opladen
+  help:
+    no_logo: >-
+      Geen logo ingesteld.
+    upload: >-
+      Toegestane formaten: jpg, png en gif. Je kan ook een
+      afbeelding hierheen verslepen. Gebruik een doorzichtige
+      achtergrond voor het beste resultaat.
+
+config_logo_del:
+  title: Logo verwijderen?
+
+config_modules:
+  title: Modules
+  forum_en: Forum
+  contact_form_en: contactformulier
+  register_en: Inschrijvingsformulier
+
+config_name:
+  title: Systeemsnaam
 
 contact_form:
   title: Contact
@@ -261,6 +303,9 @@ docs_map_edit:
     Map "%name%" aanpassen
   not_unique: >-
     Deze map bestaat reeds!
+
+export:
+  title: Export
 
 forum:
   title: Forum
@@ -354,6 +399,9 @@ login:
   password_reset_request_link: >-
     Klik hier als je je paswoord vergeten bent.
 
+logs:
+  title: Logs
+
 messages:
   title: Vraag en aanbod
   image_files:
@@ -405,6 +453,14 @@ messages_show:
       Er zijn geen afbeeldingen voor dit aanbod.
     want: >-
       Er zijn geen afbeeldingen voor deze vraag.
+  no_content: >-
+    Er werd geen omschrijving ingegeven.
+  no_expiration_defined: >-
+    Er is geen vervaldatum ingesteld.
+  extend:
+    1_month: 1 maand
+    6_months: 6 maanden
+    1_year: 1 jaar
 
 news:
   title: Nieuws

@@ -30,16 +30,4 @@ class PagesCnst
         'news_list'         => ['news', 'list'],
         'news_extended'     => ['news', 'extended'],
     ];
-
-    const ADMIN_ROUTE = [
-        'home'              => true,
-        'login'             => true,
-        'password_reset'    => true,
-        'contact'           => true,
-        'register'          => true,
-        'users_list'        => true,
-        'users_tiles'       => true,
-        'users_show'        => true,
-        'users_edit'        => true,
-    ];
 }

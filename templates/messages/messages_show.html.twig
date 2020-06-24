@@ -28,81 +28,11 @@
     {%- endif -%}
 
     <div class="row">
-        <div class="col-md-6"  data-base-url="{{- s3_url('') -}}" data-fileupload-container>
-            <div class="card card-default">
-                <div class="card-img-top">
-                    <div id="jssor_1" class="jssor-container position-relative overflow-hidden" data-no-touchswipe{%- if not image_files %} hidden{%- endif -%}>
-                        <div data-u="slides" class="jssor-slides position-absolute overflow-hidden">
-                            <div data-model hidden>
-                                <img data-u="image" data-src="">
-                            </div>
-                            {%- for i in image_files -%}
-                                <div>
-                                    <img data-u="image" data-src="{{- s3_url(i) -}}">
-                                </div>
-                            {%- endfor -%}
-                        </div>
-                        {# skin bullet 31 #}
-                        <div data-u="navigator" class="jssorb031" data-autocenter="1" data-scale="0.5" data-scale-bottom="0.75">
-                            <div data-u="prototype" class="i">
-                                <svg viewBox="0 0 16000 16000">
-                                    <circle class="b" cx="8000" cy="8000" r="5800"></circle>
-                                </svg>
-                            </div>
-                        </div>
-                        {# /skin bullet #}
-                        {# skin arrow 55 #}
-                        <div data-u="arrowleft" class="jssora055 jssora055-left" data-autocenter="2" data-scale="0.75" data-scale-left="0.75">
-                            <svg viewBox="0 0 16000 16000">
-                                <polyline class="a" points="11040,1920 4960,8000 11040,14080 "></polyline>
-                            </svg>
-                        </div>
-                        <div data-u="arrowright" class="jssora055 jssora055-right" data-autocenter="2" data-scale="0.75" data-scale-right="0.75">
-                            <svg viewBox="0 0 16000 16000">
-                                <polyline class="a" points="4960,1920 11040,8000 4960,14080 "></polyline>
-                            </svg>
-                        </div>
-                        {# / skin arrow 55 #}
-                    </div>
+        {%- embed 'messages/embed/images_carousel.html.twig' -%}
+        {%- endembed -%}
 
-                    <div id="no_images" class="py-5"{%- if image_files %} hidden{%- endif -%}>
-                        <div class="text-center">
-                        <i class="fa fa-image fa-5x"></i>
-                        <p>
-                            {%- if message.is_offer -%}
-                                {{- 'messages_show.no_images.offer'|trans -}}
-                            {%- else -%}
-                                {{- 'messages_show.no_images.want'|trans -}}
-                            {%- endif -%}
-                        </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-footer">
-                    {%- embed 'embed/image_upload_btn.html.twig' -%}
-                        {%- import 'macro/link.html.twig' as l -%}
-                        {%- block upload_url -%}
-                            {{- l.pp_path_image_token('messages_show_images_upload', message.id) -}}
-                        {%- endblock upload_url -%}
-                    {%- endembed -%}
-                    <p>
-                        {{- 'help.images_upload'|trans -}}
-                    </p>
-                    <a href="{{- l.pp_path('messages_images_del', {'id': message.id}) -}}" class="btn btn-danger btn-lg btn-block">
-                        <i class="fa fa-times"></i>&nbsp;
-                        {{- 'label.images_remove'|trans -}}
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card card-default">
-                <div class="card-body">
-
-                </div>
-            </div>
-        </div>
+        {%- embed 'messages/embed/message_info.html.twig' -%}
+        {%- endembed -%}
     </div>
 
 {%- endblock content -%}

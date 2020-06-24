@@ -31,7 +31,27 @@
 		{%- endif -%}
 
 		{%- if s_role('admin') and is_s_system_self() -%}
-			{{- m.navbar_menu_dropdown_button('Admin', 'cog', menu_nav_admin(), true) -}}
+			{%- set admin_menu = {
+				'config': {'route': 'config_name', 'fa': 'cogs'},
+				'export': {'route': 'export', 'fa': 'download'},
+				'logs': {'route': 'logs', 'fa': 'history'}
+			}-%}
+			{%- embed 'embed/navbar_menu_dropdown.html.twig' -%}
+				{%- import 'macro/navbar_dropdown.html.twig' as nd -%}
+				{%- block class %} bg-info-li{%- endblock -%}
+				{%- block fa -%}cog{%- endblock -%}
+				{%- block label -%}{{- 'label.admin'|trans -}}{%- endblock -%}
+				{%- block items -%}
+					{{- nd.item_modus(path(app.request.attributes.get('_route'), app.request.attributes|merge(app.request.query|merge({'role_short': 'a'}))), pp_role('admin'), 'label.admin_modus', 'cog') -}}
+					{{- nd.item_modus(path('default'|var_route, {'role_short': 'u', 'system': app.request.attributes.get('system')}), pp_role('user'), 'label.user_modus', 'user') -}}
+					{{- nd.item_modus(path('default'|var_route, {'role_short': 'g', 'system': app.request.attributes.get('system')}), pp_role('guest'), 'label.guest_modus', 'share-alt') -}}
+					{{- nd.divider() -}}
+					{%- set pp_admin_ary = {'role_short': 'a', 'system': app.request.attributes.get('system')} -%}
+					{% for key, am in admin_menu -%}
+						{{- nd.item(path(am.route, pp_admin_ary), active_admin_menu is defined and active_admin_menu == key, key ~ '.title', am.fa) -}}
+					{%- endfor -%}
+				{%- endblock items -%}
+			{%- endembed -%}
 		{%- endif -%}
 
 	{%- endblock navbar_menu -%}

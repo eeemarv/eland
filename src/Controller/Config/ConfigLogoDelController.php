@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Config;
 
+use App\Form\Post\DelType;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
-class LogoDelController extends AbstractController
+class ConfigLogoDelController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -30,16 +31,20 @@ class LogoDelController extends AbstractController
 
         if ($logo == '' || !$logo)
         {
-            throw new ConflictHttpException('Er is geen logo ingesteld.');
+            throw new ConflictHttpException('No logo defined.');
         }
 
-        if ($request->isMethod('POST'))
+        $form = $this->createForm(DelType::class)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
             $config_service->set('logo', $pp->schema(), '');
             $config_service->set('logo_width', $pp->schema(), '0');
 
-            $alert_service->success('Logo verwijderd.');
-            $link_render->redirect('config', $pp->ary(), ['tab' => 'logo']);
+            $alert_service->success('config_logo_del.success');
+            $link_render->redirect('config_logo', $pp->ary(), []);
         }
 
         $heading_render->add('Logo verwijderen?');
@@ -72,8 +77,9 @@ class LogoDelController extends AbstractController
 
         $menu_service->set('config');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('config/config_logo_del.html.twig', [
             'content'   => $out,
+            'form'      => $form->createView(),
             'schema'    => $pp->schema(),
         ]);
     }

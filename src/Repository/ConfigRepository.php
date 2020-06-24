@@ -16,8 +16,6 @@ class ConfigRepository
 	protected $isCli;
 
 	protected $default = [
-		'preset_minlimit'					=> '',
-		'preset_maxlimit'					=> '',
 		'users_can_edit_username'			=> '0',
 		'users_can_edit_fullname'			=> '0',
 		'registration_en'					=> '0',

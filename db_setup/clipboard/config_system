@@ -1,0 +1,131 @@
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+
+     INSERT INTO config (id) SELECT 'system'
+          WHERE NOT EXISTS (SELECT 't'::boolean from config where id = 'system');
+
+     UPDATE config SET data = jsonb_set(data, '{modules}',
+               '{"messages":{"enabled":true, "access": "guest"},"users":{"enabled":true, "access": "guest"}, "transactions":{"enabled": true, "access":"guest"}, "news":{"enabled":true, "access": "guest"}, "docs":{"enabled":true, "access":"guest"}, "forum":{"enabled":true, "access":"guest"}, "support":{"enabled": true, "access": "user"}, "home": {"enabled":true}, "login": {"enabled":true}, "contact":{"enabled":true}, "register":{"enabled":true}}'::jsonb)
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{modules,contact,enabled}', 'false'::jsonb)
+          where id = 'system' and exists (select 1
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and agg_schema = f_schema
+                    and eland_id = 'contact_form_en'
+                    and (data->>'value' = '0'
+                         or data->>'value' = ''));
+
+     UPDATE config SET data = jsonb_set(data, '{modules,register,enabled}', 'false'::jsonb)
+          where id = 'system' and exists (select 1
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and agg_schema = f_schema
+                    and eland_id = 'registration_en'
+                    and (data->>'value' = '0'
+                         or data->>'value' = ''));
+
+     UPDATE config SET data = jsonb_set(data, '{modules,forum,enabled}', 'false'::jsonb)
+          where id = 'system' and exists (select 1
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and agg_schema = f_schema
+                    and eland_id = 'forum_en'
+                    and (data->>'value' = '0'
+                         or data->>'value' = ''));
+
+     UPDATE config SET data = jsonb_set(data, '{website_url}', coalesce((select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'homepage_url'
+               and data->>'value' is not null
+               and data->>'value' <> '')::jsonb, 'null'::jsonb))
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{default_landing_page}', coalesce((select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'default_landing_page'
+               and data->>'value' is not null
+               and data->>'value' <> '')::jsonb, '"messages"'::jsonb))
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{name}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'systemname')::jsonb)
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{date_format}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'date_format')::jsonb)
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{logo}', (select data->'value'
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'logo')::jsonb)
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{maintenance_en}', (select (case
+          when data->>'value' = '0' then 'f'::boolean
+          when data->>'value' = '' then 'f'::boolean
+          when data->>'value' = 'false' then 'f'::boolean
+          else 't'::boolean
+          end)::text
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'maintenance')::jsonb)
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{intersystem_en}', (select (case
+          when data->>'value' = '0' then 'f'::boolean
+          when data->>'value' = '' then 'f'::boolean
+          when data->>'value' = 'false' then 'f'::boolean
+          else 't'::boolean
+          end)::text
+          from xdb.aggs
+          where agg_type = 'setting'
+               and agg_schema = f_schema
+               and eland_id = 'interlets_en')::jsonb)
+          where id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{mail,admin_addresses}', (select jsonb_agg(to_jsonb(t.unnest))
+          from (select unnest(string_to_array(data->>'value', ','))
+               from xdb.aggs
+               where agg_type = 'setting'
+                    and eland_id = 'admin'
+                    and agg_schema = f_schema) t))
+          WHERE id = 'system';
+
+     UPDATE config SET data = jsonb_set(data, '{id}', ('"'|| public.uuid_generate_v4() ||'"')::jsonb)
+          WHERE id = 'system';
+
+END LOOP;
+END
+$do$
+;

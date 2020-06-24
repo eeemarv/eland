@@ -1,0 +1,24 @@
+{%- extends 'config/base/config_form.html.twig' -%}
+
+{%- set form_a -%}
+    {{- form_row(form.system_name, {
+        'label': 'label.system_name',
+        'addon_fa': 'share-alt',
+    }) -}}
+{%- endset -%}
+
+{%- set form_b -%}
+    {{- form_row(form.email_tag, {
+        'label': 'label.email_tag',
+        'help': 'help.email_tag',
+        'addon_fa': 'tag',
+    }) -}}
+{%- endset -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

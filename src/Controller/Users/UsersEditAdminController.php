@@ -637,7 +637,7 @@ class UsersEditAdminController extends AbstractController
 
                 $intersystems_service->clear_cache($su->schema());
 
-                $link_render->redirect($vr->get('users_show'),
+                $link_render->redirect('users_show',
                     $pp->ary(), ['id' => $id]);
             }
 
@@ -657,8 +657,8 @@ class UsersEditAdminController extends AbstractController
             $role = 'user';
             $status = '1';
             $admincomment = '';
-            $minlimit = $config_service->get('preset_minlimit', $pp->schema());
-            $maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
+            $minlimit = '';
+            $maxlimit = '';
             $periodic_overview_en	= true;
 
             $contact = $db->fetchAll('select name, abbrev,
@@ -1132,21 +1132,6 @@ class UsersEditAdminController extends AbstractController
                 $out .= '</strong>. ';
             }
 
-            $out .= 'Dit veld wordt bij aanmaak van een ';
-            $out .= 'gebruiker vooraf ingevuld met de "';
-            $out .= $link_render->link_no_attr('config', $pp->ary(),
-                ['tab' => 'balance'],
-                'Preset Individuele Minimum Account Limiet');
-            $out .= '" ';
-            $out .= 'die gedefiniëerd is in de instellingen.';
-
-            if ($config_service->get('preset_minlimit', $pp->schema()) !== '')
-            {
-                $out .= ' De Preset bedraagt momenteel <strong>';
-                $out .= $config_service->get('preset_minlimit', $pp->schema());
-                $out .= '</strong>.';
-            }
-
             $out .= '</p>';
             $out .= '</div>';
 
@@ -1190,21 +1175,6 @@ class UsersEditAdminController extends AbstractController
                 $out .= ' ';
                 $out .= $config_service->get('currency', $pp->schema());
                 $out .= '</strong>. ';
-            }
-
-            $out .= 'Dit veld wordt bij aanmaak van een gebruiker ';
-            $out .= 'vooraf ingevuld wanneer "';
-            $out .= $link_render->link_no_attr('config', $pp->ary(),
-                ['tab' => 'balance'],
-                'Preset Individuele Maximum Account Limiet');
-            $out .= '" ';
-            $out .= 'is ingevuld in de instellingen.';
-
-            if ($config_service->get('preset_maxlimit', $pp->schema()) !== '')
-            {
-                $out .= ' De Preset bedraagt momenteel <strong>';
-                $out .= $config_service->get('preset_maxlimit', $pp->schema());
-                $out .= '</strong>.';
             }
 
             $out .= '</p>';
@@ -1297,7 +1267,7 @@ class UsersEditAdminController extends AbstractController
 
         if ($is_edit)
         {
-            $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(),
+            $out .= $link_render->btn_cancel('users_show', $pp->ary(),
                 ['id' => $id]);
         }
         else

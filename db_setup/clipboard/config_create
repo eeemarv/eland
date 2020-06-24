@@ -1,0 +1,28 @@
+---- migrate config
+
+DO
+$do$
+DECLARE
+  f_schema text;
+BEGIN
+FOR f_schema IN
+    SELECT quote_ident(nspname)
+    FROM   pg_namespace n
+    WHERE  nspname !~~ 'pg_%'
+    AND    nspname <> 'information_schema'
+    AND    nspname <> 'xdb'
+    AND    nspname <> 'c'
+    AND    nspname <> 'e'
+    AND    nspname <> 'migration'
+    AND    nspname <> 'public'
+LOOP
+   EXECUTE 'SET LOCAL search_path = ' || f_schema;
+     create table if not exists config  (
+          created_at timestamp without time zone not null default timezone('utc'::text, now()),
+          last_edit_at timestamp without time zone not null default timezone('utc'::text, now()),
+          edit_count int not null default 0,
+          id text primary key,
+          data jsonb not null default '{}'::jsonb);
+END LOOP;
+END
+$do$

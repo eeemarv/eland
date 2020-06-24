@@ -7,7 +7,8 @@
 
 {%- block logo -%}
 	{%- if config('logo', schema) -%}
-			<img src="{{- s3_url(config('logo', schema)) -}}" class="logo d-none d-md-inline-block">
+		{%- embed 'embed/logo.html.twig' -%}
+		{%- endembed -%}
 	{%- endif -%}
 {%- endblock logo -%}
 
