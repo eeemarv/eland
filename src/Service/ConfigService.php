@@ -3,64 +3,145 @@
 namespace App\Service;
 
 use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
+use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ConfigService
 {
+	const REDIS_KEY_PREFIX = 'config_';
+	const TTL = 518400; // 60 days
+	const TRANS = [
+	];
+
 	protected XdbService $xdb_service;
+	protected Db $db;
 	protected Predis $predis;
-	protected bool $is_cli;
+
+	protected bool $local_cache_en = false;
+	protected bool $in_transaction = false;
+	protected array $load_ary = [];
+	protected array $local_cache = [];
 
 	public function __construct(
 		XdbService $xdb_service,
+		Db $db,
 		Predis $predis
 	)
 	{
 		$this->predis = $predis;
+		$this->db = $db;
 		$this->xdb_service = $xdb_service;
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 
-	public function exists(string $name, string $schema):bool
+	private function flatten_load_ary(string $prefix, array $ary):void
 	{
-		return 0 < $this->xdb_service->count('setting', $name, $schema);
+		foreach($ary as $key => $value)
+		{
+			$id = $prefix . '.' . $key;
+			$this->load_ary[$id] = is_array($value) ? $this->flatten_load_ary($id, $value) : $value;
+		}
 	}
 
-	public function get_uncached(string $key, string $schema):string
+	public function load(string $schema):void
 	{
-		$row = $this->xdb_service->get('setting', $key, $schema);
-
-		if ($row)
+		$this->load_ary = [];
+		$stmt = $this->db->executeQuery('select id, data
+			from ' . $schema . '.config');
+		while($row = $stmt->fetch())
 		{
-			return $row['data']['value'];
+			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
+		}
+		$key = self::REDIS_KEY_PREFIX . $schema;
+		$this->predis->set($key, json_encode($this->load_ary));
+		$this->predis->expire($key, self::TTL);
+		$this->local_cache[$schema] = $this->load_ary;
+	}
+
+	public function read_cache(string $schema):void
+	{
+		$key = self::REDIS_KEY_PREFIX . $schema;
+		$data = $this->predis->get($key);
+		if (!isset($data))
+		{
+			$this->load($schema);
+			return;
+		}
+		$this->local_cache[$schema] = json_decode($data, true);
+	}
+
+	public function get_int(string $key, string $schema):int
+	{
+		if (!isset($this->local_cache[$schema]))
+		{
+			$this->read_cache($schema);
+		}
+		return  $this->local_cache[$schema][$key];
+	}
+
+	public function get_bool(string $key, string $schema):bool
+	{
+		if (!isset($this->local_cache[$schema]))
+		{
+			$this->read_cache($schema);
+		}
+		return  $this->local_cache[$schema][$key];
+	}
+
+	public function get_str(string $key, string $schema):string
+	{
+		if (!isset($this->local_cache[$schema]))
+		{
+			$this->read_cache($schema);
+		}
+		return  $this->local_cache[$schema][$key];
+	}
+
+	private function set_val(string $key, $value, string $schema):void
+	{
+		$path_ary = explode('.', $key);
+		$id = array_shift($path_ary);
+		$path = implode(',', $path_ary);
+
+		if (!preg_match('/^[a-z]+[a-z,_]*[a-z]$/', $path))
+		{
+			throw new BadRequestHttpException('Unacceptable path');
 		}
 
-		return '';
+		$this->db->executeUpdate('update ' . $schema . '.config
+			set data = jsonb_set(data, \'{' . $path . '}\',  ?)
+			where id = ?',
+			[$value, $id],
+			[Types::JSON, \PDO::PARAM_STR]
+		);
+	}
+
+	public function set_int(string $key, int $value, string $schema):void
+	{
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function set_bool(string $key, bool $value, string $schema):void
+	{
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function set_str(string $key, string $value, string $schema):void
+	{
+		$this->set_val($key, $value, $schema);
 	}
 
 	public function set(string $name, string $schema, string $value):void
 	{
 		$this->xdb_service->set('setting', $name, ['value' => $value], $schema);
 		$this->predis->del($schema . '_config_' . $name);
-
-		// here no update for eLAS database
 	}
 
 	public function get(string $key, string $schema):string
 	{
-		if (isset($this->local_cache[$schema][$key]) && !$this->is_cli)
-		{
-			return $this->local_cache[$schema][$key];
-		}
-
-		$redis_key = $schema . '_config_' . $key;
-
-		if ($this->predis->exists($redis_key))
-		{
-			return $this->local_cache[$schema][$key] = $this->predis->get($redis_key);
-		}
-
 		$row = $this->xdb_service->get('setting', $key, $schema);
 
 		if ($row)
@@ -72,13 +153,7 @@ class ConfigService
 			$value = ConfigCnst::INPUTS[$key]['default'];
 		}
 
-		if (isset($value))
-		{
-			$this->predis->set($redis_key, $value);
-			$this->predis->expire($redis_key, 2592000);
-			$this->local_cache[$schema][$key] = $value;
-		}
-		else
+		if (!isset($value))
 		{
 			$value = '';
 		}
