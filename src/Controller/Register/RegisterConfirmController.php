@@ -76,19 +76,6 @@ class RegisterConfirmController extends AbstractController
             'mobile'                => $data['mobile'],
         ];
 
-        $preset_minlimit = $config_service->get('preset_minlimit', $pp->schema());
-        $preset_maxlimit = $config_service->get('preset_maxlimit', $pp->schema());
-
-        if ($preset_minlimit)
-        {
-            $user['minlimit'] = (int) $preset_minlimit;
-        }
-
-        if ($preset_maxlimit)
-        {
-            $user['maxlimit'] = (int) $preset_maxlimit;
-        }
-
         $user_id = $user_repository->register($user, $pp->schema());
 
         $vars = [
