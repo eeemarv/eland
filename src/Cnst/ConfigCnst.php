@@ -78,33 +78,6 @@ class ConfigCnst
             'default'	=> '',
         ],
 
-        'preset_minlimit'	=> [
-            'addon'	=> '%config_currency%',
-            'lbl'	=> 'Preset Minimum Account Limiet',
-            'type'	=> 'number',
-            'explain'	=> 'Bij aanmaak van een nieuw Account wordt
-                deze Minimum Account Limiet vooraf ingevuld in het
-                aanmaakformulier. Dit heeft enkel zin wanneer instappende
-                leden een afwijkende Minimum Account Limiet hebben van
-                de Minimum Systeemslimiet. Deze instelling is ook nuttig
-                wanneer de Automatische Minimum Limiet gebruikt wordt.
-                Dit veld kan leeg gelaten worden.',
-            'default'	=> '',
-        ],
-
-        'preset_maxlimit'	=> [
-            'addon'	=> '%config_currency%',
-            'lbl'	=> 'Preset Maximum Account Limiet',
-            'type'	=> 'number',
-            'explain'	=> 'Bij aanmaak van een nieuw Account wordt deze
-                Maximum Account Limiet vooraf ingevuld in het aanmaakformulier.
-                Dit heeft enkel zin wanneer instappende leden een afwijkende
-                Maximum Account Limiet hebben van de Maximum Systeemslimiet.
-                Dit veld kan leeg gelaten worden.',
-            'default'	=> '',
-
-        ],
-
         'balance_equilibrium'	=> [
             'addon'		=> '%config_currency%',
             'lbl'		=> 'Het uitstapsaldo voor actieve leden. ',
@@ -425,8 +398,6 @@ class ConfigCnst
             'inputs'	=> [
                 'minlimit'	=> true,
                 'maxlimit'	=> true,
-                'preset_minlimit'	=> true,
-                'preset_maxlimit'	=> true,
                 'balance_equilibrium'	=> true,
             ],
         ],
