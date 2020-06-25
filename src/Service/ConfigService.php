@@ -13,7 +13,7 @@ class ConfigService
 {
 	const REDIS_KEY_PREFIX = 'config_';
 	const TTL = 518400; // 60 days
-	const TRANS = [
+	const TRANS_STR = [
 	];
 
 	protected XdbService $xdb_service;
@@ -34,15 +34,42 @@ class ConfigService
 		$this->predis = $predis;
 		$this->db = $db;
 		$this->xdb_service = $xdb_service;
-		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
+		$this->local_cache_en = php_sapi_name() === 'cli' ? false : true;
 	}
 
-	private function flatten_load_ary(string $prefix, array $ary):void
+	protected function is_sequential_ary(array $ary):bool
+	{
+		$i = 0;
+		foreach($ary as $k => $v)
+		{
+			if ($k !== $i)
+			{
+				return false;
+			}
+			$i++;
+		}
+		return true;
+	}
+
+	protected function flatten_load_ary(string $prefix, array $ary):void
 	{
 		foreach($ary as $key => $value)
 		{
 			$id = $prefix . '.' . $key;
-			$this->load_ary[$id] = is_array($value) ? $this->flatten_load_ary($id, $value) : $value;
+
+			if (!is_array($value))
+			{
+				$this->load_ary[$id] = $value;
+				continue;
+			}
+
+			if ($this->is_sequential_ary($value))
+			{
+				$this->load_ary[$id] = $value;
+				continue;
+			}
+
+			$this->flatten_load_ary($id, $value);
 		}
 	}
 
@@ -73,9 +100,15 @@ class ConfigService
 		$this->local_cache[$schema] = json_decode($data, true);
 	}
 
+	public function clear_cache(string $schema):void
+	{
+		$key = self::REDIS_KEY_PREFIX . $schema;
+		$this->predis->del($key);
+	}
+
 	public function get_int(string $key, string $schema):int
 	{
-		if (!isset($this->local_cache[$schema]))
+		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
 		{
 			$this->read_cache($schema);
 		}
@@ -84,7 +117,7 @@ class ConfigService
 
 	public function get_bool(string $key, string $schema):bool
 	{
-		if (!isset($this->local_cache[$schema]))
+		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
 		{
 			$this->read_cache($schema);
 		}
@@ -93,22 +126,47 @@ class ConfigService
 
 	public function get_str(string $key, string $schema):string
 	{
-		if (!isset($this->local_cache[$schema]))
+		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
 		{
 			$this->read_cache($schema);
 		}
 		return  $this->local_cache[$schema][$key];
 	}
 
-	private function set_val(string $key, $value, string $schema):void
+	public function get_ary(string $key, string $schema):array
+	{
+		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
+		{
+			$this->read_cache($schema);
+		}
+		return  $this->local_cache[$schema][$key];
+	}
+
+	protected function set_val(string $key, $value, string $schema):void
 	{
 		$path_ary = explode('.', $key);
+
+		foreach($path_ary as $p)
+		{
+			if (!preg_match('/^[a-z_]+$/', $p))
+			{
+				throw new BadRequestHttpException('Unacceptable path');
+			}
+		}
+
 		$id = array_shift($path_ary);
 		$path = implode(',', $path_ary);
 
-		if (!preg_match('/^[a-z]+[a-z,_]*[a-z]$/', $path))
+		if ($path === '')
 		{
-			throw new BadRequestHttpException('Unacceptable path');
+			$this->db->executeUpdate('update ' . $schema . '.config
+				set data = ?
+				where id = ?',
+				[$value, $id],
+				[Types::JSON, \PDO::PARAM_STR]
+			);
+			$this->clear_cache($schema);
+			return;
 		}
 
 		$this->db->executeUpdate('update ' . $schema . '.config
@@ -117,6 +175,7 @@ class ConfigService
 			[$value, $id],
 			[Types::JSON, \PDO::PARAM_STR]
 		);
+		$this->clear_cache($schema);
 	}
 
 	public function set_int(string $key, int $value, string $schema):void
@@ -130,6 +189,11 @@ class ConfigService
 	}
 
 	public function set_str(string $key, string $value, string $schema):void
+	{
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function set_ary(string $key, array $value, string $schema):void
 	{
 		$this->set_val($key, $value, $schema);
 	}
