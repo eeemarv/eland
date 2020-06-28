@@ -410,7 +410,7 @@ class ConfigCnst
                 Maak het vakje leeg om een E-mail
                 adres te verwijderen.',
             'inputs'	=> [
-                'admin'	=> true,
+                'admin'	    => true,
                 'support'	=> true,
             ]
         ],
