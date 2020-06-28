@@ -121,7 +121,7 @@ class ConfigService
 		unset($this->local_cache[$schema]);
 	}
 
-	public function get_int(string $key, string $schema):int
+	public function get_int(string $key, string $schema):?int
 	{
 		if (!isset($this->local_cache[$schema]))
 		{
@@ -221,6 +221,31 @@ class ConfigService
 
 	public function get(string $key, string $schema):string
 	{
+		$path = ConfigCnst::INPUTS[$key]['path'];
+
+		if (strpos($path, 'static_content.') === 0)
+		{
+			[$table, $id, $field] = explode('.', $path);
+
+			$json = $this->db->fetchAssoc('select data
+				from ' . $schema . '.static_content
+				where id = ?', [$id],
+				[\PDO::PARAM_STR])['data'];
+
+			return json_decode($json, true)[$field];
+		}
+
+		if (!isset($this->local_cache[$schema]))
+		{
+			$ret = $this->read_all($schema)[$path];
+		}
+		else
+		{
+			$ret = $this->local_cache[$schema][$path];
+		}
+
+		/*
+
 		$row = $this->xdb_service->get('setting', $key, $schema);
 
 		if ($row)
@@ -236,8 +261,23 @@ class ConfigService
 		{
 			$value = '';
 		}
+		*/
 
-		return $value;
+		if (in_array($path, ['mail.addresses.support', 'mail.addresses.admin']))
+		{
+			$ret = implode(',', $ret);
+		}
+
+		$ret = (string) $ret;
+
+		/*
+		if ($value !== $ret)
+		{
+			error_log('MISMATCH -- key : ' . $key . ' xdb: ' . $value . ' cnf: ' . $ret);
+		}
+		*/
+
+		return $ret;
 	}
 
 	public function get_intersystem_en(string $schema):bool

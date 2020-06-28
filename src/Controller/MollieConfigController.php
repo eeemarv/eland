@@ -11,7 +11,6 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 
 class MollieConfigController extends AbstractController
