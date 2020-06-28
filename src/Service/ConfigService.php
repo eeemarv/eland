@@ -69,11 +69,16 @@ class ConfigService
 				continue;
 			}
 
+			if ($key === 'access_options')
+			{
+				$this->load_ary[$id] = $value;
+			}
+
 			$this->flatten_load_ary($id, $value);
 		}
 	}
 
-	public function load(string $schema):void
+	public function build_cache_from_db(string $schema):array
 	{
 		$this->load_ary = [];
 		$stmt = $this->db->executeQuery('select id, data
@@ -85,59 +90,69 @@ class ConfigService
 		$key = self::REDIS_KEY_PREFIX . $schema;
 		$this->predis->set($key, json_encode($this->load_ary));
 		$this->predis->expire($key, self::TTL);
-		$this->local_cache[$schema] = $this->load_ary;
+		return $this->load_ary;
 	}
 
-	public function read_cache(string $schema):void
+	public function read_all(string $schema):array
 	{
 		$key = self::REDIS_KEY_PREFIX . $schema;
-		$data = $this->predis->get($key);
-		if (!isset($data))
+		$data_json = $this->predis->get($key);
+		if (isset($data))
 		{
-			$this->load($schema);
-			return;
+			$data = json_decode($data_json, true);
 		}
-		$this->local_cache[$schema] = json_decode($data, true);
+		else
+		{
+			$data = $this->build_cache_from_db($schema);
+		}
+
+		if ($this->local_cache_en)
+		{
+			$this->local_cache[$schema] = $data;
+		}
+
+		return $data;
 	}
 
 	public function clear_cache(string $schema):void
 	{
 		$key = self::REDIS_KEY_PREFIX . $schema;
 		$this->predis->del($key);
+		unset($this->local_cache[$schema]);
 	}
 
 	public function get_int(string $key, string $schema):int
 	{
-		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
+		if (!isset($this->local_cache[$schema]))
 		{
-			$this->read_cache($schema);
+			return $this->read_all($schema)[$key];
 		}
 		return  $this->local_cache[$schema][$key];
 	}
 
 	public function get_bool(string $key, string $schema):bool
 	{
-		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
+		if (!isset($this->local_cache[$schema]))
 		{
-			$this->read_cache($schema);
+			return $this->read_all($schema)[$key];
 		}
 		return  $this->local_cache[$schema][$key];
 	}
 
 	public function get_str(string $key, string $schema):string
 	{
-		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
+		if (!isset($this->local_cache[$schema]))
 		{
-			$this->read_cache($schema);
+			return $this->read_all($schema)[$key];
 		}
 		return  $this->local_cache[$schema][$key];
 	}
 
 	public function get_ary(string $key, string $schema):array
 	{
-		if (!isset($this->local_cache[$schema]) || !$this->local_cache_en)
+		if (!isset($this->local_cache[$schema]))
 		{
-			$this->read_cache($schema);
+			return $this->read_all($schema)[$key];
 		}
 		return  $this->local_cache[$schema][$key];
 	}
