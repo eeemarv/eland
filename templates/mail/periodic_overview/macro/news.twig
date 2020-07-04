@@ -26,10 +26,10 @@
 	</strong>
 	<br />
 {%- endif -%}
-{%- if n.itemdate -%}
+{%- if n.event_at -%}
 	{{- 'label.date'|trans -}}:
 	&nbsp;<strong>
-	{{ n.itemdate|date_format('day', schema) }}
+	{{ n.event_at|date_format('day', schema) }}
 	</strong>
 	<br />
 {%- endif -%}
@@ -71,8 +71,8 @@
 {% if n.location %}
 {{ 'label.location'|trans }}: {{ n.location }}
 {% endif %}
-{% if n.itemdate %}
-{{ 'label.date'|trans }}: {{ n.itemdate|date_format('day', schema) }}
+{% if n.event_at %}
+{{ 'label.date'|trans }}: {{ n.event_at|date_format('day', schema) }}
 {% endif %}
 {{ 'periodic_overview.news.creator'|trans({
 	'%link_open%': '',
