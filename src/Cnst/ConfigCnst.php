@@ -29,7 +29,7 @@ class ConfigCnst
             'messages'		=> [
                 'recent'	=> 'Recent vraag en aanbod',
             ],
-            'interlets'		=> [
+            'intersystem'	=> [
                 'recent'	=> 'Recent interSysteem vraag en aanbod',
             ],
             'forum'			=> [

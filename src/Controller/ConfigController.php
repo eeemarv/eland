@@ -55,7 +55,7 @@ class ConfigController extends AbstractController
 
         if (!$config_service->get_intersystem_en($pp->schema()))
         {
-            unset($block_ary['periodic_mail']['interlets']);
+            unset($block_ary['periodic_mail']['intersystem']);
             unset($cond_ary['config_template_lets']);
         }
 
@@ -93,13 +93,16 @@ class ConfigController extends AbstractController
                 continue;
             }
 
-            error_log(json_encode($input_config));
+            $input_field_cnf = ConfigCnst::INPUTS[$input_name];
 
-            $path = $input_config['path'];
+            error_log($input_name . ' ' . json_encode($input_field_cnf));
 
-            if ($input_config['is_ary'])
+            $path = $input_field_cnf['path'];
+
+            if (isset($input_field_cnf['is_ary']))
             {
-                $config[$input_name] = $config_service->get_ary($path, $pp->schema());
+                $ary_value = $config_service->get_ary($path, $pp->schema());
+                $config[$input_name] = implode(',', $ary_value);
             }
             else
             {
@@ -316,7 +319,7 @@ class ConfigController extends AbstractController
 
                 if (isset(ConfigCnst::INPUTS[$input_name]['is_ary']))
                 {
-                    $posted_ary = explode(',', $posted_value);
+                    $posted_ary = $posted_value === '' ? [] : explode(',', $posted_value);
                     $config_service->set_ary($path, $posted_ary, $pp->schema());
                 }
                 else if (isset(ConfigCnst::INPUTS[$input_name]['type']))
@@ -557,8 +560,13 @@ class ConfigController extends AbstractController
             {
                 $v_options = $active = $inactive = [];
 
-                foreach ($config[$input_name] as $val)
+                foreach ($ary_value as $val)
                 {
+                    if (!$val)
+                    {
+                        continue;
+                    }
+
                     [$block, $option] = explode('.', $val);
                     $v_options[$block] = $option;
                     $active[] = $block;

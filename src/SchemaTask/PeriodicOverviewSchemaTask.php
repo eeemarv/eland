@@ -80,7 +80,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			if ($block === 'interlets' && !$intersystem_en)
+			if ($block === 'intersystem' && !$intersystem_en)
 			{
 				continue;
 			}
@@ -194,7 +194,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// interSystem messages
 
-		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
+		if (isset($block_options['intersystem']) && $block_options['intersystem'] == 'recent')
 		{
 			$eland_ary = $this->intersystems_service->get_eland($schema);
 

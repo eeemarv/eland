@@ -17,7 +17,7 @@
 {%- for b in blocks_sorted -%}
     {%- if b == 'messages' -%}
         {{- m.html(messages, user_id, schema) -}}
-    {%- elseif b == 'interlets' -%}
+    {%- elseif b == 'intersystem' -%}
         {{- i.html(intersystem, user_id, schema) -}}
     {%- elseif b == 'forum' -%}
         {{- f.html(forum, user_id, schema) -}}
@@ -47,7 +47,7 @@
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
 {{ m.text(messages, user_id, schema) }}
-{% elseif b == 'interlets' %}
+{% elseif b == 'intersystem' %}
 {{ i.text(intersystem, user_id, schema) }}
 {% elseif b == 'forum' %}
 {{ f.text(forum, user_id, schema) }}
