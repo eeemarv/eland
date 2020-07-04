@@ -69,9 +69,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		$blocks_sorted = $block_options = [];
 
-		$block_ary = $this->config_service->get('periodic_mail_block_ary', $schema);
-
-		$block_ary = explode(',', ltrim($block_ary, '+'));
+		$block_ary = $this->config_service->get_ary('periodic_mail.user.blocks', $schema);
 
 		foreach ($block_ary as $v)
 		{

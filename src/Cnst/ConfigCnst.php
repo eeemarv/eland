@@ -177,6 +177,7 @@ class ConfigCnst
             'add_btn_text' 	=> 'Extra E-mail Adres',
             'default'	=> '',
             'path'      => 'mail.addresses.admin',
+            'is_ary'    => true,
         ],
 
         'support'	=> [
@@ -190,6 +191,7 @@ class ConfigCnst
             'add_btn_text'	=> 'Extra E-mail Adres',
             'default'	=> '',
             'path'      => 'mail.addresses.support',
+            'is_ary'    => true,
         ],
 
         'saldofreqdays'	=> [
@@ -212,6 +214,7 @@ class ConfigCnst
             'block_ary'			=> 'periodic_mail',
             'default'		    => '+messages.recent',
             'path'              => 'periodic_mail.user.blocks',
+            'is_ary'            => true,
         ],
 
         'contact_form_en' => [

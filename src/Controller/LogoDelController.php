@@ -35,9 +35,7 @@ class LogoDelController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $config_service->set('logo', $pp->schema(), '');
-            $config_service->set('logo_width', $pp->schema(), '0');
-
+            $config_service->set_str('system.logo', '', $pp->schema());
             $alert_service->success('Logo verwijderd.');
             $link_render->redirect('config', $pp->ary(), ['tab' => 'logo']);
         }

@@ -7,14 +7,12 @@ use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
 use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Exception\LogicException;
 
 class ConfigService
 {
 	const REDIS_KEY_PREFIX = 'config_';
 	const TTL = 518400; // 60 days
-	const TRANS_STR = [
-	];
 
 	protected XdbService $xdb_service;
 	protected Db $db;
@@ -165,7 +163,7 @@ class ConfigService
 		{
 			if (!preg_match('/^[a-z_]+$/', $p))
 			{
-				throw new BadRequestHttpException('Unacceptable path');
+				throw new LogicException('Unacceptable path');
 			}
 		}
 
@@ -174,26 +172,56 @@ class ConfigService
 
 		if ($path === '')
 		{
+			throw new LogicException('Config path not set for id ' . $id);
+		}
+
+		if ($id === 'static_content')
+		{
+			if (isset($value))
+			{
+				$this->db->executeUpdate('update ' . $schema . '.static_content
+					set data = jsonb_set(data, \'{' . $path . '}\',  ?)
+					where id = ?',
+					[$value, $id],
+					[Types::JSON, \PDO::PARAM_STR]
+				);
+			}
+			else
+			{
+				$this->db->executeUpdate('update ' . $schema . '.static_content
+					set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
+					where id = ?',
+					[$id],
+					[\PDO::PARAM_STR]
+				);
+			}
+
+			return;
+		}
+
+		if (isset($value))
+		{
 			$this->db->executeUpdate('update ' . $schema . '.config
-				set data = ?
+				set data = jsonb_set(data, \'{' . $path . '}\',  ?)
 				where id = ?',
 				[$value, $id],
 				[Types::JSON, \PDO::PARAM_STR]
 			);
-			$this->clear_cache($schema);
-			return;
+		}
+		else
+		{
+			$this->db->executeUpdate('update ' . $schema . '.config
+				set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
+				where id = ?',
+				[$id],
+				[\PDO::PARAM_STR]
+			);
 		}
 
-		$this->db->executeUpdate('update ' . $schema . '.config
-			set data = jsonb_set(data, \'{' . $path . '}\',  ?)
-			where id = ?',
-			[$value, $id],
-			[Types::JSON, \PDO::PARAM_STR]
-		);
 		$this->clear_cache($schema);
 	}
 
-	public function set_int(string $key, int $value, string $schema):void
+	public function set_int(string $key, ?int $value, string $schema):void
 	{
 		$this->set_val($key, $value, $schema);
 	}
@@ -263,10 +291,20 @@ class ConfigService
 		}
 		*/
 
-		if (in_array($path, ['mail.addresses.support', 'mail.addresses.admin']))
+		if ($path === 'mail.addresses.support')
 		{
 			$ret = implode(',', $ret);
 		}
+		if ($path === 'mail.addresses.admin')
+		{
+			$ret = implode(',', $ret);
+		}
+		if ($path === 'periodic_mail.user.blocks')
+		{
+			$ret = implode(',', $ret);
+		}
+
+		error_log(json_encode($ret));
 
 		$ret = (string) $ret;
 

@@ -93,7 +93,18 @@ class ConfigController extends AbstractController
                 continue;
             }
 
-            $config[$input_name] = $config_service->get($input_name, $pp->schema());
+            error_log(json_encode($input_config));
+
+            $path = $input_config['path'];
+
+            if ($input_config['is_ary'])
+            {
+                $config[$input_name] = $config_service->get_ary($path, $pp->schema());
+            }
+            else
+            {
+                $config[$input_name] = $config_service->get($input_name, $pp->schema());
+            }
         }
 
         if ($request->isMethod('POST'))
@@ -301,7 +312,41 @@ class ConfigController extends AbstractController
 
             foreach ($posted_configs as $input_name => $posted_value)
             {
-                $config_service->set($input_name, $pp->schema(), $posted_value);
+                $path = ConfigCnst::INPUTS[$input_name]['path'];
+
+                if (isset(ConfigCnst::INPUTS[$input_name]['is_ary']))
+                {
+                    $posted_ary = explode(',', $posted_value);
+                    $config_service->set_ary($path, $posted_ary, $pp->schema());
+                }
+                else if (isset(ConfigCnst::INPUTS[$input_name]['type']))
+                {
+                    if (ConfigCnst::INPUTS[$input_name]['type'] === 'checkbox')
+                    {
+                        $config_service->set_bool($path, $posted_value ? true : false, $pp->schema());
+                    }
+                    else if (ConfigCnst::INPUTS[$input_name]['type'] === 'number')
+                    {
+                        if ($posted_value === '' || !isset($posted_value))
+                        {
+                            $config_service->set_int($path, null, $pp->schema());
+                        }
+                        else
+                        {
+                            $config_service->set_int($path, (int) $posted_value, $pp->schema());
+                        }
+                    }
+                    else
+                    {
+                        $config_service->set_str($path, (string) $posted_value, $pp->schema());
+                    }
+                }
+                else
+                {
+                    $config_service->set_str($path, (string) $posted_value, $pp->schema());
+                }
+
+ //               $config_service->set($input_name, $pp->schema(), $posted_value);
 
                 $post_actions = ConfigCnst::INPUTS[$input_name]['post_actions'] ?? [];
 
@@ -507,12 +552,12 @@ class ConfigController extends AbstractController
             }
             else if (isset($input['type'])
                 && $input['type'] === 'sortable'
-                && isset($input['block_ary']))
+                && isset($input['block_ary'])
+                && isset($input['is_ary']))
             {
                 $v_options = $active = $inactive = [];
-                $value_ary = explode(',', ltrim($config[$input_name], '+ '));
 
-                foreach ($value_ary as $val)
+                foreach ($config[$input_name] as $val)
                 {
                     [$block, $option] = explode('.', $val);
                     $v_options[$block] = $option;
@@ -903,7 +948,7 @@ class ConfigController extends AbstractController
         string $env_s3_url
     )
     {
-        $logo = $config_service->get('logo', $pp->schema());
+        $logo = $config_service->get_str('system.logo', $pp->schema());
 
         $out = '<div class="panel-body bg-info">';
         $out .= '<div class="col-md-6">';
