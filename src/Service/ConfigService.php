@@ -177,21 +177,29 @@ class ConfigService
 
 		if ($id === 'static_content')
 		{
+			$st_id = array_shift($path_ary);
+			$st_path = implode(',', $path_ary);
+
+			if ($st_path === '')
+			{
+				throw new LogicException('static content path not set for id ' . $st_id);
+			}
+
 			if (isset($value))
 			{
 				$this->db->executeUpdate('update ' . $schema . '.static_content
-					set data = jsonb_set(data, \'{' . $path . '}\',  ?)
+					set data = jsonb_set(data, \'{' . $st_path . '}\',  ?)
 					where id = ?',
-					[$value, $id],
+					[$value, $st_id],
 					[Types::JSON, \PDO::PARAM_STR]
 				);
 			}
 			else
 			{
 				$this->db->executeUpdate('update ' . $schema . '.static_content
-					set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
+					set data = jsonb_set(data, \'{' . $st_path . '}\',  \'null\'::jsonb)
 					where id = ?',
-					[$id],
+					[$st_id],
 					[\PDO::PARAM_STR]
 				);
 			}
@@ -291,6 +299,7 @@ class ConfigService
 		}
 		*/
 
+		/*
 		if ($path === 'mail.addresses.support')
 		{
 			$ret = implode(',', $ret);
@@ -303,6 +312,7 @@ class ConfigService
 		{
 			$ret = implode(',', $ret);
 		}
+		*/
 
 		error_log(json_encode($ret));
 
