@@ -388,7 +388,16 @@ class MessagesListController extends AbstractController
             }
 
             $out .= '<td>';
-            $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
+
+            if (isset($msg['expires_at']))
+            {
+                $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
+            }
+            else
+            {
+                $out .= '&nbsp;';
+            }
+
             $out .= '</td>';
 
             if ($show_visibility_column)

@@ -512,7 +512,7 @@ class MessagesEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="subject" name="subject" ';
         $out .= 'value="';
-        $out .= self::format($subject);
+        $out .= self::format((string) $subject);
         $out .= '" maxlength="200" required>';
         $out .= '</div>';
 
@@ -521,7 +521,7 @@ class MessagesEditController extends AbstractController
         $out .= 'Omschrijving</label>';
         $out .= '<textarea name="content" ';
         $out .= 'class="form-control summernote" id="content" rows="4" maxlength="2000">';
-        $out .= self::format($content);
+        $out .= self::format((string) $content);
         $out .= '</textarea>';
         $out .= '</div>';
 
@@ -579,7 +579,7 @@ class MessagesEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="units" name="units" ';
         $out .= 'value="';
-        $out .= self::format($units);
+        $out .= self::format((string) $units);
         $out .= '">';
         $out .= '</div>';
         $out .= '</div>';

@@ -66,7 +66,7 @@ class ConfigCnst
                 behalve voor die Accounts waarbij een Minimum Account
                 Limiet ingesteld is. Kan leeg gelaten worden.',
             'default'	=> '',
-            'path'  => 'accounts.global_limits.min',
+            'path'  => 'accounts.limits.global.min',
         ],
 
         'maxlimit'	=> [
@@ -77,7 +77,7 @@ class ConfigCnst
                 behalve voor die Accounts waarbij een Maximum Account
                 Limiet ingesteld is. Kan leeg gelaten worden.',
             'default'	=> '',
-            'path'  => 'accounts.global_limits.max',
+            'path'  => 'accounts.limits.global.max',
         ],
 
         'balance_equilibrium'	=> [
@@ -160,7 +160,7 @@ class ConfigCnst
             'type'		=> 'number',
             'addon_fa'	=> 'clock-o',
             'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdbanken.
-                Zij is vereist voor eLAS/eLAND interSysteem-verbindingen zodat de Systemen
+                Zij is vereist voor eLAND interSysteem-verbindingen zodat de Systemen
                 een gemeenschappelijke tijdbasis hebben.',
             'default'	=> '1',
             'path'      => 'transactions.currency.per_hour_ratio',
@@ -261,7 +261,7 @@ class ConfigCnst
             'summernote'	=> true,
             'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
             'default'	=> '',
-            'path'      => 'static_content.register.bottom',
+            'path'      => 'static_content.register_form.bottom',
         ],
 
         'registration_success_text'	=> [
@@ -273,7 +273,7 @@ class ConfigCnst
                 website heeft, is het nuttig om een link op te nemen
                 om de gebruiker terug te voeren.',
             'default'	=> '',
-            'path'      => 'static_content.register_confirm.success',
+            'path'      => 'static_content.register_form_confirm.success',
         ],
 
         'registration_success_mail'	=> [
@@ -284,7 +284,7 @@ class ConfigCnst
                 'data-template-vars' => '%map_template_vars%',
             ],
             'default'	=> '0',
-            'path'      => 'static_content.register_confirm.success_mail',
+            'path'      => 'static_content.register_form_confirm.success_mail',
         ],
 
         'news_order_asc'	=> [
@@ -567,9 +567,9 @@ class ConfigCnst
                 ],
 
                 'li_4'	=> [
-                    'inline'	=> '%input(interlets_en)% Gebruik eLAS/eLAND
+                    'inline'	=> '%input(interlets_en)% Gebruik eLAND
                         interSysteem. Deze instelling is enkel geldig wanneer
-                        hierboven "Tijdbank" geselecteerd is. eLAS/eLAND
+                        hierboven "Tijdbank" geselecteerd is. eLAND
                         interSysteem is enkel mogelijk met
                         munten met gemeenschappelijke tijdbasis.',
                 ],

@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
 use Doctrine\DBAL\Types\Types;
@@ -11,10 +10,11 @@ use Symfony\Component\Validator\Exception\LogicException;
 
 class ConfigService
 {
-	const REDIS_KEY_PREFIX = 'config_';
+	const PREFIX = 'config_';
 	const TTL = 518400; // 60 days
+	const PREFIX_STATIC_CONTENT = 'static_content_';
+	const TTL_STATIC_CONTENT = 518400;
 
-	protected XdbService $xdb_service;
 	protected Db $db;
 	protected Predis $predis;
 
@@ -22,16 +22,15 @@ class ConfigService
 	protected bool $in_transaction = false;
 	protected array $load_ary = [];
 	protected array $local_cache = [];
+	protected array $st_local_cache = [];
 
 	public function __construct(
-		XdbService $xdb_service,
 		Db $db,
 		Predis $predis
 	)
 	{
 		$this->predis = $predis;
 		$this->db = $db;
-		$this->xdb_service = $xdb_service;
 		$this->local_cache_en = php_sapi_name() === 'cli' ? false : true;
 	}
 
@@ -85,7 +84,7 @@ class ConfigService
 		{
 			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
 		}
-		$key = self::REDIS_KEY_PREFIX . $schema;
+		$key = self::PREFIX . $schema;
 		$this->predis->set($key, json_encode($this->load_ary));
 		$this->predis->expire($key, self::TTL);
 		return $this->load_ary;
@@ -93,9 +92,10 @@ class ConfigService
 
 	public function read_all(string $schema):array
 	{
-		$key = self::REDIS_KEY_PREFIX . $schema;
+		$key = self::PREFIX . $schema;
 		$data_json = $this->predis->get($key);
-		if (isset($data))
+
+		if (isset($data_json))
 		{
 			$data = json_decode($data_json, true);
 		}
@@ -114,45 +114,48 @@ class ConfigService
 
 	public function clear_cache(string $schema):void
 	{
-		$key = self::REDIS_KEY_PREFIX . $schema;
+		$key = self::PREFIX . $schema;
 		$this->predis->del($key);
 		unset($this->local_cache[$schema]);
+		$st_key = self::PREFIX_STATIC_CONTENT . $schema;
+		$this->predis->del($st_key);
+		unset($this->st_local_cache[$schema]);
 	}
 
-	public function get_int(string $key, string $schema):?int
+	public function get_int(string $path, string $schema):?int
 	{
 		if (!isset($this->local_cache[$schema]))
 		{
-			return $this->read_all($schema)[$key];
+			return $this->read_all($schema)[$path];
 		}
-		return  $this->local_cache[$schema][$key];
+		return  $this->local_cache[$schema][$path];
 	}
 
-	public function get_bool(string $key, string $schema):bool
+	public function get_bool(string $path, string $schema):bool
 	{
 		if (!isset($this->local_cache[$schema]))
 		{
-			return $this->read_all($schema)[$key];
+			return $this->read_all($schema)[$path];
 		}
-		return  $this->local_cache[$schema][$key];
+		return  $this->local_cache[$schema][$path];
 	}
 
-	public function get_str(string $key, string $schema):string
+	public function get_str(string $path, string $schema):string
 	{
 		if (!isset($this->local_cache[$schema]))
 		{
-			return $this->read_all($schema)[$key];
+			return $this->read_all($schema)[$path];
 		}
-		return  $this->local_cache[$schema][$key];
+		return  $this->local_cache[$schema][$path];
 	}
 
-	public function get_ary(string $key, string $schema):array
+	public function get_ary(string $path, string $schema):array
 	{
 		if (!isset($this->local_cache[$schema]))
 		{
-			return $this->read_all($schema)[$key];
+			return $this->read_all($schema)[$path];
 		}
-		return  $this->local_cache[$schema][$key];
+		return  $this->local_cache[$schema][$path];
 	}
 
 	protected function set_val(string $key, $value, string $schema):void
@@ -249,12 +252,6 @@ class ConfigService
 		$this->set_val($key, $value, $schema);
 	}
 
-	public function set(string $name, string $schema, string $value):void
-	{
-		$this->xdb_service->set('setting', $name, ['value' => $value], $schema);
-		$this->predis->del($schema . '_config_' . $name);
-	}
-
 	public function get(string $key, string $schema):string
 	{
 		$path = ConfigCnst::INPUTS[$key]['path'];
@@ -263,12 +260,34 @@ class ConfigService
 		{
 			[$table, $id, $field] = explode('.', $path);
 
-			$json = $this->db->fetchAssoc('select data
-				from ' . $schema . '.static_content
-				where id = ?', [$id],
-				[\PDO::PARAM_STR])['data'];
+			if (isset($this->st_local_cache[$schema][$id]))
+			{
+				return $this->st_local_cache[$schema][$id][$field];
+			}
 
-			return json_decode($json, true)[$field];
+			$st_key = self::PREFIX_STATIC_CONTENT . $schema;
+			$data_json = $this->predis->hget($st_key, $id);
+
+			if (!isset($data_json) || !$data_json)
+			{
+				error_log('get id ' . $id . ' field ' . $field);
+
+				$data_json = $this->db->fetchColumn('select data
+					from ' . $schema . '.static_content
+					where id = ?', [$id]);
+
+				$this->predis->hset($st_key, $id, $data_json);
+				$this->predis->expire($st_key, self::TTL_STATIC_CONTENT);
+			}
+
+			$data = json_decode($data_json, true);
+
+			if ($this->local_cache_en)
+			{
+				$this->st_local_cache[$schema][$id] = $data;
+			}
+
+			return $data[$field];
 		}
 
 		if (!isset($this->local_cache[$schema]))
@@ -280,50 +299,9 @@ class ConfigService
 			$ret = $this->local_cache[$schema][$path];
 		}
 
-		/*
-
-		$row = $this->xdb_service->get('setting', $key, $schema);
-
-		if ($row)
-		{
-			$value = (string) $row['data']['value'];
-		}
-		else if (isset(ConfigCnst::INPUTS[$key]['default']))
-		{
-			$value = ConfigCnst::INPUTS[$key]['default'];
-		}
-
-		if (!isset($value))
-		{
-			$value = '';
-		}
-		*/
-
-		/*
-		if ($path === 'mail.addresses.support')
-		{
-			$ret = implode(',', $ret);
-		}
-		if ($path === 'mail.addresses.admin')
-		{
-			$ret = implode(',', $ret);
-		}
-		if ($path === 'periodic_mail.user.blocks')
-		{
-			$ret = implode(',', $ret);
-		}
-		*/
-
-		error_log(json_encode($ret));
+		error_log($path . ' ' . json_encode($ret));
 
 		$ret = (string) $ret;
-
-		/*
-		if ($value !== $ret)
-		{
-			error_log('MISMATCH -- key : ' . $key . ' xdb: ' . $value . ' cnf: ' . $ret);
-		}
-		*/
 
 		return $ret;
 	}

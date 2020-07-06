@@ -6,6 +6,7 @@ use App\SchemaTask\SchemaTaskSchedule;
 use App\Service\AssetsService;
 use App\Service\MonitorProcessService;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -37,6 +38,10 @@ class ProcessWorkerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $clear_redis_cache_command = $this->getApplication()->find('app:clear-redis-cache');
+        $clear_redis_cache_input = new ArrayInput([]);
+        $clear_redis_cache_command->run($clear_redis_cache_input, $output);
+
         $this->monitor_process_service->boot('worker');
 
         $this->assets_service->write_file_hash_ary();
