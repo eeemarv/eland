@@ -80,7 +80,7 @@ class PageParamsService
 
 		$this->schema = $this->systems_service->get_schema($this->system);
 
-		$this->org_system = $this->request->query->get('org_system', '');
+		$this->org_system = $this->request->query->get('os', '');
 
 		if ($this->org_system === $this->system
 			|| !$this->is_guest
@@ -104,7 +104,7 @@ class PageParamsService
 
 			if ($this->org_system !== '')
 			{
-				$this->ary['org_system'] = $this->org_system;
+				$this->ary['os'] = $this->org_system;
 			}
 
 			if ($this->role_short !== '')
