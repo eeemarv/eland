@@ -1761,6 +1761,11 @@ class UsersListController extends AbstractController
             $out .= '<input type="hidden" name="' . $k . '" value="' . $v . '">';
         }
 
+        if ($pp->is_guest() && $pp->org_system())
+        {
+            $out .= '<input type="hidden" name="os" value="' . $pp->org_system() . '">';
+        }
+
         $out .= $before;
 
         $out .= '<div class="card fcard fcard-info mb-3">';
