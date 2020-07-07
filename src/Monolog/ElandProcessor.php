@@ -47,11 +47,9 @@ class ElandProcessor implements EventSubscriberInterface
             $this->extra['logins'] = $logins;
         }
 
-        $org_system = $request->request->get('org_system');
-
-        if ($org_system)
+        if ($request->query->has('os'))
         {
-            $this->extra['org_system'] = $org_system;
+            $this->extra['os'] = $request->query->get('os');
         }
 
         if ($request->attributes->has('role_short'))

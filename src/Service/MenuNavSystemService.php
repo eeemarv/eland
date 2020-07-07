@@ -95,7 +95,7 @@ class MenuNavSystemService
 				'params'	=> [
 					'system' 		=> $this->systems_service->get_system($login_schema),
 					'role_short'	=> $role_short,
-					'org_system'	=> '',
+					'os'			=> '',
 				],
 				'label'		=> $this->config_service->get('systemname', $login_schema),
 			];
@@ -140,7 +140,7 @@ class MenuNavSystemService
 			$m_item = [
 				'route'		=> $route,
 				'params'	=> [
-					'org_system'	=> $this->systems_service->get_system($this->su->schema()),
+					'os'			=> $this->systems_service->get_system($this->su->schema()),
 					'system' 		=> $this->systems_service->get_system($eland_schema),
 					'role_short'	=> 'g',
 					'welcome'		=> '1',
