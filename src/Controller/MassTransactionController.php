@@ -19,7 +19,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,7 +99,6 @@ class MassTransactionController extends AbstractController
         TransactionService $transaction_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         AssetsService $assets_service
     ):Response
     {
@@ -119,8 +117,7 @@ class MassTransactionController extends AbstractController
         $rs = $db->prepare(
             'select id, name, code,
                 role, status, balance,
-                minlimit, maxlimit, adate,
-                postcode
+                adate
             from ' . $pp->schema() . '.users
             where status IN (0, 1, 2, 5, 6)
             order by code');
@@ -130,6 +127,36 @@ class MassTransactionController extends AbstractController
         while ($row = $rs->fetch())
         {
             $users[$row['id']] = $row;
+        }
+
+        $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
+            from ' . $pp->schema() . '.min_limit
+            order by account_id, created_at desc');
+
+        $rs->execute();
+
+        while ($row = $rs->fetch())
+        {
+            if (!isset($users[$row['account_id']]))
+            {
+                continue;
+            }
+            $users[$row['account_id']]['min_limit'] = $row['min_limit'];
+        }
+
+        $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
+            from ' . $pp->schema() . '.max_limit
+            order by account_id, created_at desc');
+
+        $rs->execute();
+
+        while ($row = $rs->fetch())
+        {
+            if (!isset($users[$row['account_id']]))
+            {
+                continue;
+            }
+            $users[$row['account_id']]['max_limit'] = $row['max_limit'];
         }
 
         $to_code = trim($request->request->get('to_code', ''));
@@ -148,7 +175,7 @@ class MassTransactionController extends AbstractController
 
         $amount = $request->request->get('amount', []);
         $description = trim($request->request->get('description', ''));
-        $mail_en = $request->request->get('mail_en', false);
+        $mail_en = $request->request->get('mail_en', true);
 
         if ($request->isMethod('POST'))
         {
@@ -415,10 +442,6 @@ class MassTransactionController extends AbstractController
                 $link_render->redirect('mass_transaction', $pp->ary(), []);
             }
         }
-        else
-        {
-            $mail_en = true;
-        }
 
         if ($to_code)
         {
@@ -429,6 +452,7 @@ class MassTransactionController extends AbstractController
                 $to_code .= ' ' . $to_name;
             }
         }
+
         if ($from_code)
         {
             if ($from_name = $db->fetchColumn('select name
@@ -790,7 +814,6 @@ class MassTransactionController extends AbstractController
         $out .= '<th data-hide="phone">Saldo</th>';
         $out .= '<th data-hide="phone">Min.limit</th>';
         $out .= '<th data-hide="phone">Max.limit</th>';
-        $out .= '<th data-hide="phone, tablet">Postcode</th>';
         $out .= '</tr>';
 
         $out .= '</thead>';
@@ -828,7 +851,7 @@ class MassTransactionController extends AbstractController
             $out .= 'data-code="' . $user['code'] . '" ';
             $out .= 'data-user-id="' . $user_id . '" ';
             $out .= 'data-balance="' . $user['balance'] . '" ';
-            $out .= 'data-minlimit="' . $user['minlimit'] . '"';
+            $out .= 'data-minlimit="' . ($user['min_limit'] ?? '') . '"';
 
             if ($status_key === 'new')
             {
@@ -847,11 +870,11 @@ class MassTransactionController extends AbstractController
 
             $balance = $user['balance'];
 
-            $minlimit = $user['minlimit'] === '' ? $system_minlimit : $user['minlimit'];
-            $maxlimit = $user['maxlimit'] === '' ? $system_maxlimit : $user['maxlimit'];
+            $minlimit = $user['min_limit'] ?? $system_minlimit;
+            $maxlimit = $user['max_limit'] ?? $system_maxlimit;
 
-            if (($minlimit !== '' && $balance < $minlimit)
-                || ($maxlimit !== '' && $balance > $maxlimit))
+            if ((isset($minlimit) && $balance < $minlimit)
+                || (isset($maxlimit) && $balance > $maxlimit))
             {
                 $out .= '<span class="text-danger">' . $balance . '</span>';
             }
@@ -862,9 +885,8 @@ class MassTransactionController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= '<td>' . $user['minlimit'] . '</td>';
-            $out .= '<td>' . $user['maxlimit'] . '</td>';
-            $out .= '<td>' . $user['postcode'] . '</td>';
+            $out .= '<td>' . ($user['min_limit'] ?? '') . '</td>';
+            $out .= '<td>' . ($user['max_limit'] ?? '') . '</td>';
 
             $out .= '</tr>';
         }

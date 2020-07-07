@@ -19,7 +19,6 @@ use App\Service\SystemsService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use Predis\Client as Predis;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
