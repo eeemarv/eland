@@ -165,20 +165,7 @@ class ConfigCnst
             'add_btn_text' 	=> 'Extra E-mail Adres',
             'default'	=> '',
         ],
-/*
-        'newsadmin'	=> [
-            'lbl'	=> 'Nieuws beheerder',
-            'explain_top'	=> 'Krjgt E-mail wanneer een nieuwsbericht,
-                gepost door een gewoon lid, goedgekeurd of
-                verwijderd dient te worden',
-            'attr'	=> ['minlength' => '7'],
-            'type'	=> 'email',
-            'addon_fa'		=> 'envelope-o',
-            'max_inputs'	=> 5,
-            'add_btn_text'	=> 'Extra E-mail Adres',
-            'default'	=> '',
-        ],
-*/
+
         'support'	=> [
             'lbl'	=> 'Support / Helpdesk',
             'explain_top'	=> 'Krjgt E-mail berichten
@@ -387,8 +374,7 @@ class ConfigCnst
                 Maak het vakje leeg om een E-mail
                 adres te verwijderen.',
             'inputs'	=> [
-                'admin'	=> true,
-                'newsadmin'	=> true,
+                'admin'	    => true,
                 'support'	=> true,
             ]
         ],

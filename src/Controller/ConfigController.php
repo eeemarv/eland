@@ -203,7 +203,8 @@ class ConfigController extends AbstractController
                         continue;
                     }
 
-                    if (!filter_var($posted_value, FILTER_VALIDATE_INT))
+                    if ($posted_value !== '0'
+                        && !filter_var($posted_value, FILTER_VALIDATE_INT))
                     {
                         $errors[] = 'Fout: de waarde moet een getal zijn.' . $err_n;
                     }
