@@ -57,8 +57,8 @@ class DateFormatService
 	}
 
 	protected function get_format(
-		string $schema,
-		string $precision
+		string $precision,
+		string $schema
 	):string
 	{
 		$format = $this->config_service->get('date_format', $schema);
@@ -81,7 +81,7 @@ class DateFormatService
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
 		$replace = ['d', 'dd', 'mm', 'yyyy', 'M', 'MM', 'D', 'DD'];
-		$format = $this->get_format($schema, 'day');
+		$format = $this->get_format('day', $schema);
 
 		return trim(str_replace($search, $replace, $format));
 	}
@@ -90,7 +90,7 @@ class DateFormatService
 	{
 		$search = ['%e', '%d', '%m', '%Y', '%b', '%B', '%a', '%A'];
 		$replace = ['d', 'dd', 'mm', 'jjjj', 'mnd', 'maand', '(wd)', '(weekdag)'];
-		$format = $this->get_format($schema, 'day');
+		$format = $this->get_format('day', $schema);
 
 		return trim(str_replace($search, $replace, $format));
 	}
@@ -115,7 +115,7 @@ class DateFormatService
 
 		$str = str_replace($months_search, $months_replace, $from_datepicker);
 
-		$format = $this->get_format($schema, 'day');
+		$format = $this->get_format('day', $schema);
 
 		$map = [
 			'%e' => '%d', '%d' => '%d', '%m' => '%m',
@@ -209,7 +209,7 @@ class DateFormatService
 		string $schema
 	):string
 	{
-		$format = $this->get_format($schema, $precision);
+		$format = $this->get_format($precision, $schema);
 
 		return strftime($format, $unix);
 	}

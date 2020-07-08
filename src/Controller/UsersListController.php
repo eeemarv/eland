@@ -485,8 +485,8 @@ class UsersListController extends AbstractController
                 'role'	        => 'Rol',
                 'balance'		=> 'Saldo',
                 'balance_date'	=> 'Saldo op ',
-                'minlimit'		=> 'Min',
-                'maxlimit'		=> 'Max',
+                'min'		    => 'Min',
+                'max'		    => 'Max',
                 'comments'		=> 'Commentaar',
                 'hobbies'		=> 'Hobbies/interesses',
             ],
@@ -596,6 +596,32 @@ class UsersListController extends AbstractController
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
 
+        /**
+         *
+         * Temp migrate begin
+         */
+
+        if (isset($show_columns['u']['minlimit']))
+        {
+            unset($show_columns['u']['minlimit']);
+            $show_columns['u']['min'] = '1';
+            $session->set($session_users_columns_key, $show_columns);
+            error_log('update sess min');
+        }
+
+        if (isset($show_columns['u']['maxlimit']))
+        {
+            unset($show_columns['u']['maxlimit']);
+            $show_columns['u']['max'] = '1';
+            $session->set($session_users_columns_key, $show_columns);
+            error_log('update_sess_max');
+        }
+
+        /**
+         *
+         * Temp migrate end
+         */
+
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
         $activity_days = $show_columns['p']['a']['days'] ?? 365;
         $activity_days = $activity_days < 1 ? 365 : $activity_days;
@@ -603,16 +629,23 @@ class UsersListController extends AbstractController
         $balance_date = $show_columns['p']['u']['balance_date'] ?? '';
         $balance_date = trim($balance_date);
 
-        $users = $db->fetchAll('select u.*
+        $users = [];
+
+        $stmt = $db->executeQuery('select u.*
             from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.code asc', $sql_bind);
+
+        while($row = $stmt->fetch())
+        {
+            $users[$row['id']] = $row;
+        }
 
         if (isset($show_columns['u']['balance_date']))
         {
             if ($balance_date)
             {
-                $balance_date_rev = $date_format_service->reverse($balance_date, 'min', $pp->schema());
+                $balance_date_rev = $date_format_service->reverse($balance_date, $pp->schema());
             }
 
             if ($balance_date_rev === '' || $balance_date == '')
@@ -625,7 +658,6 @@ class UsersListController extends AbstractController
             }
             else
             {
-                $trans_in = $trans_out = [];
                 $datetime = new \DateTime($balance_date_rev);
 
                 $rs = $db->prepare('select id_to, sum(amount)
@@ -639,7 +671,7 @@ class UsersListController extends AbstractController
 
                 while($row = $rs->fetch())
                 {
-                    $trans_in[$row['id_to']] = $row['sum'];
+                    $users[$row['id_to']]['balance_data'] = $row['sum'];
                 }
 
                 $rs = $db->prepare('select id_from, sum(amount)
@@ -652,33 +684,62 @@ class UsersListController extends AbstractController
 
                 while($row = $rs->fetch())
                 {
-                    $trans_out[$row['id_from']] = $row['sum'];
+                    $users[$row['id_to']]['balance_date'] ??= 0;
+                    $users[$row['id_to']]['balance_data'] -= $row['sum'];
                 }
+            }
+        }
 
-                array_walk($users, function(&$user) use ($trans_out, $trans_in){
-                    $user['balance_date'] = 0;
-                    $user['balance_date'] += $trans_in[$user['id']] ?? 0;
-                    $user['balance_date'] -= $trans_out[$user['id']] ?? 0;
-                });
+        if (isset($show_columns['u']['min']))
+        {
+            $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
+                from ' . $pp->schema() . '.min_limit
+                order by account_id, created_at desc');
+
+            $rs->execute();
+
+            while ($row = $rs->fetch())
+            {
+                if (!isset($users[$row['account_id']]))
+                {
+                    continue;
+                }
+                $users[$row['account_id']]['min'] = $row['min_limit'];
+            }
+        }
+
+        if (isset($show_columns['u']['max']))
+        {
+            $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
+                from ' . $pp->schema() . '.max_limit
+                order by account_id, created_at desc');
+
+            $rs->execute();
+
+            while ($row = $rs->fetch())
+            {
+                if (!isset($users[$row['account_id']]))
+                {
+                    continue;
+                }
+                $users[$row['account_id']]['max'] = $row['max_limit'];
             }
         }
 
         if (isset($show_columns['u']['last_login']))
         {
-            $last_login_ary = [];
-
             $stmt = $db->executeQuery('select user_id, max(created_at) as last_login
                 from ' . $pp->schema() . '.login
                 group by user_id');
 
             while ($row = $stmt->fetch())
             {
-                $last_login_ary[$row['user_id']] = $row['last_login'];
+                if (!isset($users[$row['user_id']]))
+                {
+                    continue;
+                }
+                $users[$row['user_id']]['last_login'] = $row['last_login'];
             }
-
-            array_walk($users, function(&$user) use ($last_login_ary){
-                $user['last_login'] = $last_login_ary[$user['id']] ?? '';
-            });
         }
 
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
@@ -1133,6 +1194,8 @@ class UsersListController extends AbstractController
             'name'		=> true,
         ];
 
+        error_log(json_encode($show_columns));
+
         foreach ($show_columns as $group => $ary)
         {
             if ($group === 'p')
@@ -1312,7 +1375,7 @@ class UsersListController extends AbstractController
                     }
                     else
                     {
-                        $td .= htmlspecialchars((string) $u[$key]);
+                        $td .= htmlspecialchars((string) ($u[$key] ?? ''));
                     }
 
                     if ($pp->is_admin() && $first)
