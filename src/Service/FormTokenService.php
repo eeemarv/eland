@@ -52,7 +52,7 @@ class FormTokenService
 		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
 	}
 
-	public function get_error():string
+	public function get_error(bool $incr = true):string
 	{
 		if ($this->get_posted() === '')
 		{
@@ -74,7 +74,10 @@ class FormTokenService
 			return 'Een dubbele ingave van het formulier werd voorkomen.';
 		}
 
-		$this->predis->incr($key);
+		if ($incr)
+		{
+			$this->predis->incr($key);
+		}
 
 		return '';
 	}

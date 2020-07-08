@@ -73,7 +73,7 @@ class LogDbService
 			if (isset($extra['os'])
 				&& $extra['os'])
 			{
-				$org_schema = $this->systems_service->get_schema($context['os']);
+				$org_schema = $this->systems_service->get_schema($extra['os']);
 
 				if ($org_schema)
 				{

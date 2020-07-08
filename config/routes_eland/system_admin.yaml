@@ -111,7 +111,7 @@ intersystems:
 export:
   controller: App\Controller\ExportController
   path: /export
-  methods: GET
+  methods: GET|POST
 
 autominlimit:
   controller: App\Controller\AutoMinLimitController
