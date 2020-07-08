@@ -62,6 +62,13 @@
 
 <footer class="footer">
 	<p><a href="https://eland.letsa.net">eLAND</a> web app voor gemeenschapsmunten</p>
+	{%- if env_git_rev_short -%}
+		&nbsp;
+		Rev.
+		<a href="https://github.com/eeemarv/eland/tree/{{- env_git_rev_short -}}" title="De actuele code van eLAND">
+			{{- env_git_rev_short -}}
+		</a>
+	{%- endif -%}
 	{%- block index_link -%}
 		<p><a href="{{- path('index') -}}">Index</a></p>
 	{%- endblock index_link -%}
