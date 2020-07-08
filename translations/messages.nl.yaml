@@ -357,6 +357,10 @@ forum_topic:
   add_post: >-
     Reactie toevoegen
 
+git_rev:
+  abbrev: Rev
+  title: Actuele versie van de eLAND code
+
 index_contact_form:
   title: eLAND Contact
   email_explain: >-

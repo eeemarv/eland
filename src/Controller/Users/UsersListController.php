@@ -607,7 +607,7 @@ class UsersListController extends AbstractController
         {
             if ($balance_date)
             {
-                $balance_date_rev = $date_format_service->reverse($balance_date, 'min', $pp->schema());
+                $balance_date_rev = $date_format_service->reverse($balance_date, $pp->schema());
             }
 
             if ($balance_date_rev === '' || $balance_date == '')
@@ -625,7 +625,7 @@ class UsersListController extends AbstractController
 
                 $rs = $db->prepare('select id_to, sum(amount)
                     from ' . $pp->schema() . '.transactions
-                    where date <= ?
+                    where created_at <= ?
                     group by id_to');
 
                 $rs->bindValue(1, $datetime, 'datetime');
@@ -639,7 +639,7 @@ class UsersListController extends AbstractController
 
                 $rs = $db->prepare('select id_from, sum(amount)
                     from ' . $pp->schema() . '.transactions
-                    where date <= ?
+                    where created_at <= ?
                     group by id_from');
                 $rs->bindValue(1, $datetime, 'datetime');
 
