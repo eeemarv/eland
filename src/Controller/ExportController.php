@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Render\HeadingRender;
+use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,7 @@ class ExportController extends AbstractController
         HeadingRender $heading_render,
         PageParamsService $pp,
         MenuService $menu_service,
+        FormTokenService $form_token_service,
         string $cache_dir,
         string $env_database_url
     ):Response
@@ -30,9 +32,10 @@ class ExportController extends AbstractController
 
         exec('echo "Throw exception when php exec() function is not available" > /dev/null');
 
-        $download_sql = $request->query->has('_sql');
-        $download_ag_csv = $request->query->has('_ag_csv');
-        $download_ev_csv = $request->query->has('_ev_csv');
+        $download_sql = $request->request->has('_sql');
+        $download_ag_csv = $request->request->has('_ag_csv');
+        $download_ev_csv = $request->request->has('_ev_csv');
+        $download_zip_csv = $request->request->has('_zip_csv');
 
         $stmt = $db->prepare('select table_name from information_schema.tables
             where table_schema = ?
@@ -44,23 +47,25 @@ class ExportController extends AbstractController
         {
             $table_ary[] = $table_name;
 
-            if ($request->query->has($table_name))
+            if ($request->request->has($table_name))
             {
                 $download_table_csv = $table_name;
             }
         }
 
-        $download_en = $download_sql || $download_ag_csv || $download_ev_csv || isset($download_table_csv);
+        $download_en = $download_sql || $download_ag_csv || $download_ev_csv || isset($download_table_csv) || $download_zip_csv;
 
         if ($download_en)
         {
             $send_file = true;
 
             $download_id = $download_sql ? 'db' : '';
+            $download_id = $download_zip_csv ? 'db-csv' : '';
             $download_id = $download_ag_csv ? 'extra-data' : $download_id;
             $download_id = $download_ev_csv ? 'extra-events' : $download_id;
             $download_id = isset($download_table_csv) ? $download_table_csv : $download_id;
             $download_ext = $download_sql ? 'sql' : 'csv';
+            $download_ext = $download_zip_csv ? 'zip' : $download_ext;
 
             $filename = $pp->schema() . '-';
             $filename .= $download_id;
@@ -71,12 +76,48 @@ class ExportController extends AbstractController
 
             $file_path = $cache_dir . '/' . $filename;
 
-            if ($download_sql)
+            if ($token_error = $form_token_service->get_error(false))
+            {
+                $err = 'Form token error: ' . $token_error;
+                $exec = 'echo "' . $err . '" > ' . $file_path;
+            }
+            else if ($download_sql)
             {
                 $exec = 'pg_dump -d ';
                 $exec .= $env_database_url;
                 $exec .= ' -n ' . $pp->schema();
                 $exec .= ' -O -x > ' . $file_path;
+            }
+            else if ($download_zip_csv)
+            {
+                $unlink_ary = [];
+                $zip = new \ZipArchive();
+
+                if ($zip->open($file_path, \ZipArchive::CREATE))
+                {
+                    foreach($table_ary as $table)
+                    {
+                        $tmp_file = $cache_dir . '/' . 'tmp_csv_' . hash('crc32b', random_bytes(4)) . '.csv';
+                        $local_filename = $table . '.csv';
+                        $ex = 'psql -d ' . $env_database_url . ' -c "';
+                        $ex .= '\\copy ' . $pp->schema() . '.' . $table . ' to \'';
+                        $ex .= $tmp_file . '\' delimiter \',\' csv header;"';
+                        exec($ex);
+                        $zip->addFile($tmp_file, $local_filename);
+                        $unlink_ary[] = $tmp_file;
+                    }
+
+                    $zip->close();
+
+                    foreach($unlink_ary as $unlink)
+                    {
+                        unlink($unlink);
+                    }
+                }
+                else
+                {
+                    $exec = 'echo "ZIP kon niet gecreëerd worden" > ' . $file_path;
+                }
             }
             else if ($download_ag_csv || $download_ev_csv)
             {
@@ -98,10 +139,13 @@ class ExportController extends AbstractController
             }
             else
             {
-                $exec .= 'echo "Interne fout" > ' . $file_path;
+                $exec = 'echo "Interne fout" > ' . $file_path;
             }
 
-            exec($exec);
+            if (isset($exec))
+            {
+                exec($exec);
+            }
 
             if ($send_file)
             {
@@ -139,7 +183,7 @@ class ExportController extends AbstractController
         $heading_render->add('Export');
         $heading_render->fa('download');
 
-        $out = '<form>';
+        $out = '<form method="post">';
 
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -192,7 +236,13 @@ class ExportController extends AbstractController
             $out .= '" class="btn btn-default btn-lg margin-bottom">&nbsp;';
         }
 
+        $out .= '</div>';
+        $out .= '<div class="panel-heading">';
+        $out .= '<input type="submit" value="ZIP van alle tabellen als CSV" ';
+        $out .= 'name="_zip_csv" class="btn btn-default btn-lg margin-bottom">';
+        $out .= '<p><i>De creatie van het ZIP-bestand kan wat tijd in beslag nemen.</i></p>';
         $out .= '</div></div>';
+        $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 
         $menu_service->set('export');
