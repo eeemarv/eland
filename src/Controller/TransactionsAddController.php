@@ -158,6 +158,11 @@ class TransactionsAddController extends AbstractController
             if ($fromuser['status'] == 7 && !count($errors))
             {
                 $transaction['real_from'] = $request->request->get('real_from');
+
+                if ($group_id != 'self' && !count($errors))
+                {
+                    $errors[] = 'Transacties tussen accounts beide van het type "interSysteem" zijn niet mogelijk.';
+                }
             }
 
             $transaction['id_from'] = $fromuser['id'];
