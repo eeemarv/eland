@@ -33,7 +33,7 @@ class MailAddrSystemService
 
 	public function get_support(string $schema):array
 	{
-		$mail_ary = $this->config_service->get_ary('mail.addressses.support', $schema);
+		$mail_ary = $this->config_service->get_ary('mail.addresses.support', $schema);
 		return $this->get_validated_ary($mail_ary, 'support', $schema);
 	}
 

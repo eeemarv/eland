@@ -61,7 +61,7 @@ class SupportController extends AbstractController
                 $errors[] = 'Het bericht is leeg.';
             }
 
-            if (!trim($config_service->get('support', $pp->schema())))
+            if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
             }
@@ -138,7 +138,7 @@ class SupportController extends AbstractController
         {
             $alert_service->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }
-        else if (!$config_service->get('support', $pp->schema()))
+        else if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
         {
             $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
