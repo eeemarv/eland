@@ -37,6 +37,8 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
+use function GuzzleHttp\json_encode;
+
 class UsersListController extends AbstractController
 {
     public function __invoke(
@@ -671,7 +673,12 @@ class UsersListController extends AbstractController
 
                 while($row = $rs->fetch())
                 {
-                    $users[$row['id_to']]['balance_data'] = $row['sum'];
+                    $uid = $row['id_to'];
+                    if (!isset($users[$uid]))
+                    {
+                        continue;
+                    }
+                    $users[$uid]['balance_date'] = $row['sum'];
                 }
 
                 $rs = $db->prepare('select id_from, sum(amount)
@@ -684,8 +691,13 @@ class UsersListController extends AbstractController
 
                 while($row = $rs->fetch())
                 {
-                    $users[$row['id_to']]['balance_date'] ??= 0;
-                    $users[$row['id_to']]['balance_data'] -= $row['sum'];
+                    $uid = $row['id_from'];
+                    if (!isset($users[$uid]))
+                    {
+                        continue;
+                    }
+                    $users[$uid]['balance_date'] ??= 0;
+                    $users[$uid]['balance_date'] -= $row['sum'];
                 }
             }
         }
@@ -1194,8 +1206,6 @@ class UsersListController extends AbstractController
             'name'		=> true,
         ];
 
-        error_log(json_encode($show_columns));
-
         foreach ($show_columns as $group => $ary)
         {
             if ($group === 'p')
@@ -1282,15 +1292,13 @@ class UsersListController extends AbstractController
 
         $can_link = $pp->is_admin();
 
-        foreach($users as $u)
+        foreach($users as $id => $u)
         {
             if (($pp->is_user() || $pp->is_guest())
                 && ($u['status'] === 1 || $u['status'] === 2))
             {
                 $can_link = true;
             }
-
-            $id = $u['id'];
 
             $row_stat = $u['status'];
 
