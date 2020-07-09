@@ -49,7 +49,7 @@ class AutoMinLimitService
 		$this->enabled = $this->config_service->get_bool('accounts.limits.auto_min.enabled', $this->schema);
 		$this->percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $this->schema);
 		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $this->schema);
-		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude_from', $this->schema);
+		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $this->schema);
 
 		$exclude_to_ary = explode(',', $exclude_to_str);
 		$exclude_from_ary = explode(',', $exclude_from_str);
