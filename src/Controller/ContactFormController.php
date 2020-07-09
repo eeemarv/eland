@@ -67,7 +67,7 @@ class ContactFormController extends AbstractController
                 $errors[] = 'Geef een bericht in.';
             }
 
-            if (!trim($config_service->get('support', $pp->schema())))
+            if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
             {
                 $errors[] = 'Het Support E-mail adres is niet ingesteld in dit Systeem';
             }
@@ -132,7 +132,7 @@ class ContactFormController extends AbstractController
 
             $form_disabled = true;
         }
-        else if (!$config_service->get('support', $pp->schema()))
+        else if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
         {
             $alert_service->warning('Er is geen support E-mail adres
                 ingesteld door de beheerder.
