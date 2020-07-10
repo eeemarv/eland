@@ -33,8 +33,6 @@ class ExportController extends AbstractController
         exec('echo "Throw exception when php exec() function is not available" > /dev/null');
 
         $download_sql = $request->request->has('_sql');
-        $download_ag_csv = $request->request->has('_ag_csv');
-        $download_ev_csv = $request->request->has('_ev_csv');
         $download_zip_csv = $request->request->has('_zip_csv');
 
         $stmt = $db->prepare('select table_name from information_schema.tables
@@ -53,7 +51,7 @@ class ExportController extends AbstractController
             }
         }
 
-        $download_en = $download_sql || $download_ag_csv || $download_ev_csv || isset($download_table_csv) || $download_zip_csv;
+        $download_en = $download_sql || isset($download_table_csv) || $download_zip_csv;
 
         if ($download_en)
         {
@@ -61,8 +59,6 @@ class ExportController extends AbstractController
 
             $download_id = $download_sql ? 'db' : '';
             $download_id = $download_zip_csv ? 'db-csv' : '';
-            $download_id = $download_ag_csv ? 'extra-data' : $download_id;
-            $download_id = $download_ev_csv ? 'extra-events' : $download_id;
             $download_id = isset($download_table_csv) ? $download_table_csv : $download_id;
             $download_ext = $download_sql ? 'sql' : 'csv';
             $download_ext = $download_zip_csv ? 'zip' : $download_ext;
@@ -118,18 +114,6 @@ class ExportController extends AbstractController
                 {
                     $exec = 'echo "ZIP kon niet gecreëerd worden" > ' . $file_path;
                 }
-            }
-            else if ($download_ag_csv || $download_ev_csv)
-            {
-                $exec = 'psql -d ' . $env_database_url . ' -c "';
-                $exec .= '\\copy (select * ';
-                $exec .= 'from xdb.';
-                $exec .= $download_ag_csv ? 'aggs ' : 'events ';
-                $exec .= 'where agg_schema = \'';
-                $exec .= $pp->schema() . '\') ';
-                $exec .= 'to \'' . $file_path . '\' ';
-                $exec .= 'delimiter \',\' ';
-                $exec .= 'csv header;"';
             }
             else if (isset($download_table_csv))
             {
@@ -192,32 +176,6 @@ class ExportController extends AbstractController
         $out .= '</div>';
         $out .= '<div class="panel-heading">';
         $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
-        $out .= '</div></div>';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<h3>eLAND extra data (CSV)';
-        $out .= '</h3>';
-        $out .= '</div>';
-        $out .= '<div class="panel-heading">';
-        $out .= '<p>';
-        $out .= 'Naast de database bevat eLAND nog ';
-        $out .= 'deze extra data die je hier kan downloaden ';
-        $out .= 'als csv-file. ';
-        $out .= '"Data" bevat de huidige staat en "Events" de ';
-        $out .= 'gebeurtenissen die de huidige staat veroorzaakt hebben.';
-        $out .= '</p>';
-        $out .= '</div>';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<input type="submit" value="Data" ';
-        $out .= 'name="_ag_csv" ';
-        $out .= 'class="btn btn-default btn-lg margin-bottom">';
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Events" ';
-        $out .= 'name="_ev_csv" ';
-        $out .= 'class="btn btn-default btn-lg margin-bottom">';
-
         $out .= '</div></div>';
 
         $out .= '<div class="panel panel-info">';
