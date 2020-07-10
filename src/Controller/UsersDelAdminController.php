@@ -20,7 +20,6 @@ use App\Service\SessionUserService;
 use App\Service\ThumbprintAccountsService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
@@ -39,7 +38,6 @@ class UsersDelAdminController extends AbstractController
         ThumbprintAccountsService $thumbprint_accounts_service,
         UserCacheService $user_cache_service,
         IntersystemsService $intersystems_service,
-        XdbService $xdb_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,

@@ -16,7 +16,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
@@ -27,7 +26,6 @@ class LoginAdminController extends AbstractController
         Request $request,
         Db $db,
         EncoderFactoryInterface $encoder_factory,
-        XdbService $xdb_service,
         AlertService $alert_service,
         LoggerInterface $logger,
         MenuService $menu_service,
