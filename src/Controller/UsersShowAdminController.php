@@ -81,11 +81,21 @@ class UsersShowAdminController extends AbstractController
             order by created_at desc
             limit 1', [$id]);
 
+        if ($min_limit === false)
+        {
+            $min_limit = null;
+        }
+
         $max_limit = $db->fetchColumn('select max_limit
             from ' . $pp->schema() . '.max_limit
             where account_id = ?
             order by created_at desc
             limit 1', [$id]);
+
+        if ($max_limit === false)
+        {
+            $max_limit = null;
+        }
 
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
@@ -608,7 +618,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '<dt>Minimum limiet</dt>';
         $out .= '<dd>';
 
-        if (isset($min_limit) && $min_limit !== false)
+        if (isset($min_limit))
         {
             $out .= '<span class="label label-danger">';
             $out .= $min_limit;
@@ -621,7 +631,7 @@ class UsersShowAdminController extends AbstractController
             $out .= $system_min_limit;
             $out .= '</span>&nbsp;';
             $out .= $config_service->get('currency', $pp->schema());
-            $out .= ' (systeem minimum limiet)';
+            $out .= ' (Minimum Systeemslimiet)';
         }
         else
         {
@@ -633,7 +643,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '<dt>Maximum limiet</dt>';
         $out .= '<dd>';
 
-        if (isset($max_limit) && $max_limit !== false)
+        if (isset($max_limit))
         {
             $out .= '<span class="label label-success">';
             $out .= $max_limit;
@@ -646,7 +656,7 @@ class UsersShowAdminController extends AbstractController
             $out .= $system_max_limit;
             $out .= '</span>&nbsp;';
             $out .= $config_service->get('currency', $pp->schema());
-            $out .= ' (systeem maximum limiet)';
+            $out .= ' (Maximum Systeemslimiet)';
         }
         else
         {
