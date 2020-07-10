@@ -201,6 +201,13 @@ class UsersDelAdminController extends AbstractController
         $db->delete($pp->schema() . '.contact',
             ['user_id' => $id]);
 
+        // del min/max
+
+        $db->delete($pp->schema() . '.min_limit',
+            ['account_id' => $id]);
+        $db->delete($pp->schema() . '.max_limit',
+            ['account_id' => $id]);
+
         //the user
 
         $db->delete($pp->schema() . '.users',
