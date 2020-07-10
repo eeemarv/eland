@@ -37,8 +37,6 @@ class AppExtension extends AbstractExtension
 			new TwigFunction('username', [AccountRuntime::class, 'get_name']),
 			new TwigFunction('account_code', [AccountRuntime::class, 'get_code']),
 			new TwigFunction('account_balance', [AccountRuntime::class, 'get_balance']),
-			new TwigFunction('account_min', [AccountRuntime::class, 'get_min']),
-			new TwigFunction('account_max', [AccountRuntime::class, 'get_max']),
 			new TwigFunction('mpp_ary', [MppAryRuntime::class, 'get'], ['needs_context' => true]),
 			new TwigFunction('mpp_anon_ary', [MppAryRuntime::class, 'get_anon'], ['needs_context' => true]),
 			new TwigFunction('mpp_guest_ary', [MppAryRuntime::class, 'get_guest'], ['needs_context' => true]),

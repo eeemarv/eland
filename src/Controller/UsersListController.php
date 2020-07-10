@@ -34,6 +34,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Schema\Schema;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -261,14 +262,38 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
+                && $user_tab_data
+                && in_array($bulk_submit_action, ['min_limit', 'max_limit']))
+            {
+                $store_value = $bulk_field_value === '' ? null : $bulk_field_value;
+
+                foreach($user_ids as $user_id)
+                {
+                    $db->insert($pp->schema() . '.' . $bulk_submit_action, [
+                        $bulk_submit_action     => $store_value,
+                        'account_id'            => $user_id,
+                        'created_by'            => $su->id(),
+                    ]);
+                }
+
+                $logger->info('bulk: Set ' . $bulk_submit_action .
+                    ' to ' . ($store_value ?? 'null') .
+                    ' for users ' . $users_log,
+                    ['schema' => $pp->schema()]);
+
+                $alert_msg = 'De ';
+                $alert_msg .= $bulk_submit_action === 'min_lmit' ? 'minimum' : 'maximum';
+                $alert_msg .= ' limiet werd ';
+                $alert_msg .=  isset($store_value) ? 'aangepast.' : 'gewist.';
+
+                $alert_service->success($alert_msg);
+
+                $redirect = true;
+            }
+            else if (!count($errors)
                 && $user_tab_data)
             {
                 $store_value = $bulk_field_value;
-
-                if (in_array($bulk_submit_action, ['minlimit', 'maxlimit']))
-                {
-                    $store_value = $store_value === '' ? null : $store_value;
-                }
 
                 $field_type = isset($user_tab_data['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 

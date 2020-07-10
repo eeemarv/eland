@@ -43,14 +43,4 @@ class AccountRuntime implements RuntimeExtensionInterface
 		$user = $this->user_cache_service->get($id, $schema);
 		return $user['balance'];
 	}
-
-	public function get_min(int $id, string $schema):string
-	{
-		return $this->user_cache_service->get($id, $schema)['minlimit'] ?? '';
-	}
-
-	public function get_max(int $id, string $schema):string
-	{
-		return $this->user_cache_service->get($id, $schema)['maxlimit'] ?? '';
-	}
 }
