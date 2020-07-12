@@ -69,12 +69,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		$blocks_sorted = $block_options = [];
 
-		$block_ary = $this->config_service->get_ary('periodic_mail.user.blocks', $schema);
+		$block_ary = $this->config_service->get_ary('periodic_mail.user.layout', $schema);
 
-		foreach ($block_ary as $v)
+		foreach ($block_ary as $block)
 		{
-			[$block, $option] = explode('.', $v);
-
 			if ($block === 'forum' && !$forum_en)
 			{
 				continue;
@@ -85,7 +83,15 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			$block_options[$block] = $option;
+			$select = 'recent';
+
+			if (in_array($block, ['news', 'new_users', 'leaving_users']))
+			{
+				$select = $this->config_service->get_str('periodic_mail.user.render.' . $block . '.select', $schema);
+				$select = $select === 'all' ? 'all' : 'recent';
+			}
+
+			$block_options[$block] = $select;
 			$blocks_sorted[] = $block;
 		}
 

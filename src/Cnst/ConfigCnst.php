@@ -25,34 +25,32 @@ class ConfigCnst
     ];
 
     const BLOCK_ARY = [
-        'periodic_mail' => [
-            'messages'		=> [
-                'recent'	=> 'Recent vraag en aanbod',
-            ],
-            'intersystem'	=> [
-                'recent'	=> 'Recent interSysteem vraag en aanbod',
-            ],
-            'forum'			=> [
-                'recent'	=> 'Recente forumberichten',
-            ],
-            'news'			=> [
-                'all'		=> 'Alle nieuwsberichten',
-                'recent'	=> 'Recente nieuwsberichten',
-            ],
-            'docs'			=> [
-                'recent'	=> 'Recente documenten',
-            ],
-            'new_users'		=> [
-                'all'		=> 'Alle nieuwe leden',
-                'recent'	=> 'Recente nieuwe leden',
-            ],
-            'leaving_users'	=> [
-                'all'		=> 'Alle uitstappende leden',
-                'recent'	=> 'Recent uitstappende leden',
-            ],
-            'transactions' => [
-                'recent'	=> 'Recente transacties',
-            ],
+        'messages'		=> [
+            'recent'	=> 'Recent vraag en aanbod',
+        ],
+        'intersystem'	=> [
+            'recent'	=> 'Recent interSysteem vraag en aanbod',
+        ],
+        'forum'			=> [
+            'recent'	=> 'Recente forumberichten',
+        ],
+        'news'			=> [
+            'all'		=> 'Alle nieuwsberichten',
+            'recent'	=> 'Recente nieuwsberichten',
+        ],
+        'docs'			=> [
+            'recent'	=> 'Recente documenten',
+        ],
+        'new_users'		=> [
+            'all'		=> 'Alle nieuwe leden',
+            'recent'	=> 'Recente nieuwe leden',
+        ],
+        'leaving_users'	=> [
+            'all'		=> 'Alle uitstappende leden',
+            'recent'	=> 'Recent uitstappende leden',
+        ],
+        'transactions' => [
+            'recent'	=> 'Recente transacties',
         ],
     ];
 
@@ -213,7 +211,7 @@ class ConfigCnst
             'lbl_inactive'		=> 'Niet gebruikte blokken',
             'block_ary'			=> 'periodic_mail',
             'default'		    => '+messages.recent',
-            'path'              => 'periodic_mail.user.blocks',
+            'path'              => 'periodic_mail.user.layout',
             'is_ary'            => true,
         ],
 

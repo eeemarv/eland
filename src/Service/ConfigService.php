@@ -66,10 +66,12 @@ class ConfigService
 				continue;
 			}
 
+			/*
 			if ($key === 'access_options')
 			{
 				$this->load_ary[$id] = $value;
 			}
+			*/
 
 			$this->flatten_load_ary($id, $value);
 		}
@@ -230,25 +232,54 @@ class ConfigService
 		}
 
 		$this->clear_cache($schema);
+		return;
 	}
 
 	public function set_int(string $key, ?int $value, string $schema):void
 	{
+		$current_value = $this->get_int($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
 		$this->set_val($key, $value, $schema);
 	}
 
 	public function set_bool(string $key, bool $value, string $schema):void
 	{
+		$current_value = $this->get_bool($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
 		$this->set_val($key, $value, $schema);
 	}
 
 	public function set_str(string $key, string $value, string $schema):void
 	{
+		$current_value = $this->get_str($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
 		$this->set_val($key, $value, $schema);
 	}
 
 	public function set_ary(string $key, array $value, string $schema):void
 	{
+		$current_value = $this->get_ary($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
 		$this->set_val($key, $value, $schema);
 	}
 
@@ -270,8 +301,6 @@ class ConfigService
 
 			if (!isset($data_json) || !$data_json)
 			{
-				error_log('get id ' . $id . ' field ' . $field);
-
 				$data_json = $this->db->fetchColumn('select data
 					from ' . $schema . '.static_content
 					where id = ?', [$id]);
@@ -298,8 +327,6 @@ class ConfigService
 		{
 			$ret = $this->local_cache[$schema][$path];
 		}
-
-		error_log($path . ' ' . json_encode($ret));
 
 		$ret = (string) $ret;
 

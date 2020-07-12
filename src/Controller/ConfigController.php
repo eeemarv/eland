@@ -50,12 +50,12 @@ class ConfigController extends AbstractController
 
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            unset($block_ary['periodic_mail']['forum']);
+            unset($block_ary['forum']);
         }
 
         if (!$config_service->get_intersystem_en($pp->schema()))
         {
-            unset($block_ary['periodic_mail']['intersystem']);
+            unset($block_ary['intersystem']);
             unset($cond_ary['config_template_lets']);
         }
 
@@ -94,8 +94,6 @@ class ConfigController extends AbstractController
             }
 
             $input_field_cnf = ConfigCnst::INPUTS[$input_name];
-
-            error_log($input_name . ' ' . json_encode($input_field_cnf));
 
             $path = $input_field_cnf['path'];
 
@@ -320,7 +318,30 @@ class ConfigController extends AbstractController
 
                 if (isset(ConfigCnst::INPUTS[$input_name]['is_ary']))
                 {
-                    $posted_ary = $posted_value === '' ? [] : explode(',', $posted_value);
+                    $posted_ary  = $posted_value === '' ? [] : explode(',', $posted_value);
+
+                    if ($input_name = 'periodic_mail_block_ary')
+                    {
+                        $p_ary = $posted_ary;
+                        $posted_ary = [];
+
+                        foreach ($p_ary as $p)
+                        {
+                            [$block, $select] = explode('.', $p);
+
+                            if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                            {
+                                $select = $select === 'all' ? 'all' : 'recent';
+                                $config_service->set_str('periodic_mail.user.render.' . $block . '.select', $select, $pp->schema());
+                            }
+
+                            if (isset($block_ary[$block]))
+                            {
+                                $posted_ary[] = $block;
+                            }
+                        }
+                    }
+
                     $config_service->set_ary($path, $posted_ary, $pp->schema());
                 }
                 else if (isset(ConfigCnst::INPUTS[$input_name]['type']))
@@ -556,29 +577,41 @@ class ConfigController extends AbstractController
             }
             else if (isset($input['type'])
                 && $input['type'] === 'sortable'
-                && isset($input['block_ary'])
+                && $input_name === 'periodic_mail_block_ary'
                 && isset($input['is_ary']))
             {
-                $v_options = $active = $inactive = [];
+                $v_options = $v_input = $active = $inactive = [];
 
-                foreach ($ary_value as $val)
+                foreach ($ary_value as $block)
                 {
-                    if (!$val)
+                    if (!$block)
                     {
                         continue;
                     }
 
-                    [$block, $option] = explode('.', $val);
-                    $v_options[$block] = $option;
+                    $v_options[$block] = 'recent';
+
+                    if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                    {
+                        $select = $config_service->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
+                        if ($select === 'all')
+                        {
+                            $v_options[$block] = 'all';
+                        }
+                    }
+
                     $active[] = $block;
+                    $v_input[] = $block . '.' . $v_options[$block];
                 }
 
-                foreach ($block_ary[$input['block_ary']] as $block => $options)
+                foreach ($block_ary as $block => $options)
                 {
-                    if (!isset($v_options[$block]))
+                    if (isset($v_options[$block]))
                     {
-                        $inactive[] = $block;
+                        continue;
                     }
+
+                    $inactive[] = $block;
                 }
 
                 $out .= isset($input['lbl']) ? '<h4>' . $input['lbl'] . '</h4>' : '';
@@ -608,7 +641,7 @@ class ConfigController extends AbstractController
                 $out .= '<ul id="list_active" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
-                    $block_ary[$input['block_ary']],
+                    $block_ary,
                     $v_options,
                     $active,
                     'bg-success');
@@ -634,7 +667,7 @@ class ConfigController extends AbstractController
                 $out .= '<ul id="list_inactive" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
-                    $block_ary[$input['block_ary']],
+                    $block_ary,
                     $v_options,
                     $inactive,
                     'bg-danger');
@@ -650,7 +683,7 @@ class ConfigController extends AbstractController
                 $out .= $input_name;
                 $out .= '" ';
                 $out .= 'value="';
-                $out .= $config[$input_name];
+                $out .= implode(',', $v_input);
                 $out .= '" id="';
                 $out .= $input_name;
                 $out .= '">';
