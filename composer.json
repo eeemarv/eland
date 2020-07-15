@@ -59,7 +59,8 @@
 		"symfony/var-dumper": "^5",
 		"symfony/yaml": "^5",
 		"twig/extensions": "^1.5",
-		"twig/twig": "^2"
+		"twig/twig": "^2",
+		"xemlock/htmlpurifier-html5": "^0.1.11"
 	},
 
     "require-dev": {
