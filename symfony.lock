@@ -463,6 +463,9 @@
     "webimpress/safe-writer": {
         "version": "2.0.0"
     },
+    "xemlock/htmlpurifier-html5": {
+        "version": "v0.1.11"
+    },
     "zendframework/zend-code": {
         "version": "3.4.0"
     },

@@ -63,7 +63,8 @@
 		"symfony/var-dumper": "^5",
 		"symfony/webpack-encore-bundle": "^1.7",
 		"symfony/yaml": "^5",
-		"twig/twig": "^3"
+		"twig/twig": "^3",
+		"xemlock/htmlpurifier-html5": "^0.1.11"
 	},
 
     "require-dev": {

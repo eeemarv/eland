@@ -8,9 +8,10 @@ class HtmlPurifier
 
 	public function __construct()
 	{
-		$config_purifier = \HTMLPurifier_Config::createDefault();
-		$config_purifier->set('Cache.DefinitionImpl', null);
-		$this->purifier = new \HTMLPurifier($config_purifier);
+		$config = \HTMLPurifier_HTML5Config::createDefault();
+		// $config_purifier = \HTMLPurifier_Config::createDefault();
+		$config->set('Cache.DefinitionImpl', null);
+		$this->purifier = new \HTMLPurifier($config);
 	}
 
 	public function purify(string $content):string
