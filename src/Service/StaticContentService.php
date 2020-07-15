@@ -8,16 +8,13 @@ use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
 use Symfony\Component\Validator\Exception\LogicException;
 
-class ConfigService
+class StaticContentService
 {
-	const PREFIX = 'config_';
-	const TTL = 518400; // 60 days
+	const PREFIX = 'static_content_';
+	const TTL= 518400; // 60 days
 
 	protected Db $db;
 	protected Predis $predis;
-	protected bool $local_cache_en = false;
-	protected array $load_ary = [];
-	protected array $local_cache = [];
 
 	public function __construct(
 		Db $db,
@@ -26,50 +23,6 @@ class ConfigService
 	{
 		$this->predis = $predis;
 		$this->db = $db;
-		$this->local_cache_en = php_sapi_name() === 'cli' ? false : true;
-	}
-
-	protected function is_sequential_ary(array $ary):bool
-	{
-		$i = 0;
-		foreach($ary as $k => $v)
-		{
-			if ($k !== $i)
-			{
-				return false;
-			}
-			$i++;
-		}
-		return true;
-	}
-
-	protected function flatten_load_ary(string $prefix, array $ary):void
-	{
-		foreach($ary as $key => $value)
-		{
-			$id = $prefix . '.' . $key;
-
-			if (!is_array($value))
-			{
-				$this->load_ary[$id] = $value;
-				continue;
-			}
-
-			if ($this->is_sequential_ary($value))
-			{
-				$this->load_ary[$id] = $value;
-				continue;
-			}
-
-			/*
-			if ($key === 'access_options')
-			{
-				$this->load_ary[$id] = $value;
-			}
-			*/
-
-			$this->flatten_load_ary($id, $value);
-		}
 	}
 
 	public function build_cache_from_db(string $schema):array
@@ -113,16 +66,6 @@ class ConfigService
 	{
 		$key = self::PREFIX . $schema;
 		$this->predis->del($key);
-		unset($this->local_cache[$schema]);
-	}
-
-	public function get_int(string $path, string $schema):?int
-	{
-		if (!isset($this->local_cache[$schema]))
-		{
-			return $this->read_all($schema)[$path];
-		}
-		return  $this->local_cache[$schema][$path];
 	}
 
 	public function get_bool(string $path, string $schema):bool
@@ -170,6 +113,38 @@ class ConfigService
 		if ($path === '')
 		{
 			throw new LogicException('Config path not set for id ' . $id);
+		}
+
+		if ($id === 'static_content')
+		{
+			$st_id = array_shift($path_ary);
+			$st_path = implode(',', $path_ary);
+
+			if ($st_path === '')
+			{
+				throw new LogicException('static content path not set for id ' . $st_id);
+			}
+
+			if (isset($value))
+			{
+				$this->db->executeUpdate('update ' . $schema . '.static_content
+					set data = jsonb_set(data, \'{' . $st_path . '}\',  ?)
+					where id = ?',
+					[$value, $st_id],
+					[Types::JSON, \PDO::PARAM_STR]
+				);
+			}
+			else
+			{
+				$this->db->executeUpdate('update ' . $schema . '.static_content
+					set data = jsonb_set(data, \'{' . $st_path . '}\',  \'null\'::jsonb)
+					where id = ?',
+					[$st_id],
+					[\PDO::PARAM_STR]
+				);
+			}
+
+			return;
 		}
 
 		if (isset($value))
@@ -246,6 +221,38 @@ class ConfigService
 	public function get(string $key, string $schema):string
 	{
 		$path = ConfigCnst::INPUTS[$key]['path'];
+
+		if (strpos($path, 'static_content.') === 0)
+		{
+			[$table, $id, $field] = explode('.', $path);
+
+			if (isset($this->st_local_cache[$schema][$id]))
+			{
+				return $this->st_local_cache[$schema][$id][$field];
+			}
+
+			$st_key = self::PREFIX_STATIC_CONTENT . $schema;
+			$data_json = $this->predis->hget($st_key, $id);
+
+			if (!isset($data_json) || !$data_json)
+			{
+				$data_json = $this->db->fetchColumn('select data
+					from ' . $schema . '.static_content
+					where id = ?', [$id]);
+
+				$this->predis->hset($st_key, $id, $data_json);
+				$this->predis->expire($st_key, self::TTL_STATIC_CONTENT);
+			}
+
+			$data = json_decode($data_json, true);
+
+			if ($this->local_cache_en)
+			{
+				$this->st_local_cache[$schema][$id] = $data;
+			}
+
+			return $data[$field];
+		}
 
 		if (!isset($this->local_cache[$schema]))
 		{
