@@ -15,7 +15,7 @@ class ConfigModulesType extends AbstractType
         $builder
             ->add('forum_en', CheckboxType::class)
             ->add('contact_form_en', CheckboxType::class)
-            ->add('register_en', CheckboxType::class)
+            ->add('register_form_en', CheckboxType::class)
             ->add('submit', SubmitType::class);
     }
 

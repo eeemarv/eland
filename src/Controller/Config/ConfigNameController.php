@@ -41,8 +41,8 @@ class ConfigNameController extends AbstractController
             $system_name = $config_name_command->system_name;
             $email_tag = $config_name_command->email_tag;
 
-            $config_service->set_str('system.name', $pp->schema(), $system_name);
-            $config_service->set_str('mail.tag', $pp->schema(), $email_tag);
+            $config_service->set_str('system.name', $system_name, $pp->schema());
+            $config_service->set_str('mail.tag', $email_tag, $pp->schema());
 
             $alert_service->success('config.success');
             $link_render->redirect('config_name', $pp->ary(), []);
