@@ -12,6 +12,7 @@ use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -22,6 +23,7 @@ class RegisterTokenController extends AbstractController
         Db $db,
         TranslatorInterface $translator,
         ConfigService $config_service,
+        StaticContentService $static_content_service,
         AlertService $alert_service,
         DataTokenService $data_token_service,
         LinkRender $link_render,
@@ -196,23 +198,25 @@ class RegisterTokenController extends AbstractController
             '%system_name%'	=> $config_service->get('systemname', $pp->schema()),
         ], 'mail');
 
+        $pre_html_template = $static_content_service->get('register_form_confirm', 'success_mail', $pp->schema());
+
         $mail_queue->queue([
             'schema'				=> $pp->schema(),
             'to' 					=> [$data['email'] => $user['fullname']],
             'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
-            'pre_html_template'		=> $config_service->get('registration_success_mail', $pp->schema()),
+            'pre_html_template'		=> $pre_html_template,
             'template'				=> 'skeleton',
             'vars'					=> $vars,
         ], 8500);
 
         $alert_service->success('Inschrijving voltooid.');
 
-        $registration_success_text = $config_service->get('registration_success_text', $pp->schema());
+        $success_content = $static_content_service->get('register_form_confirm', 'success', $pp->schema());
 
         $menu_service->set('register');
 
         return $this->render('base/sidebar.html.twig', [
-            'content'   => $registration_success_text ?: '',
+            'content'   => $success_content,
             'schema'    => $pp->schema(),
         ]);
     }

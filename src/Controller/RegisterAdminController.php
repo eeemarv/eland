@@ -39,11 +39,9 @@ class RegisterAdminController extends AbstractController
         $heading_render->add('Inschrijven');
         $heading_render->fa('check-square-o');
 
-        $top_text = $config_service->get('registration_top_text', $pp->schema());
+        // static_content top
 
-        $out = $top_text ?: '';
-
-        $out .= '<div class="panel panel-default">';
+        $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<p><i>Formulier niet actief ';
@@ -127,9 +125,7 @@ class RegisterAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $config_service->get('registration_bottom_text', $pp->schema());
-
-        $out .= $bottom_text ?: '';
+        // static_content bottom
 
         $menu_service->set('register');
 

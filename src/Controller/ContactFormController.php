@@ -15,6 +15,7 @@ use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
+use App\Service\StaticContentService;
 use Psr\Log\LoggerInterface;
 
 class ContactFormController extends AbstractController
@@ -26,6 +27,7 @@ class ContactFormController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         ConfigService $config_service,
+        StaticContentService $static_content_service,
         CaptchaService $captcha_service,
         DataTokenService $data_token_service,
         LinkRender $link_render,
@@ -144,9 +146,7 @@ class ContactFormController extends AbstractController
         $heading_render->add('Contact');
         $heading_render->fa('comment-o');
 
-        $top_text = $config_service->get('contact_form_top_text', $pp->schema());
-
-        $out = $top_text ?: '';
+        $out = $static_content_service->get('contact_form', 'top', $pp->schema());
 
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -195,12 +195,7 @@ class ContactFormController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $config_service->get('contact_form_bottom_text', $pp->schema());
-
-        if ($bottom_text)
-        {
-            $out .= $bottom_text;
-        }
+        $out .= $static_content_service->get('contact_form', 'bottom', $pp->schema());
 
         $out .= '<p>Leden: indien mogelijk, login en ';
         $out .= 'gebruik het Support formulier. ';

@@ -61,13 +61,6 @@ class ConfigService
 				continue;
 			}
 
-			/*
-			if ($key === 'access_options')
-			{
-				$this->load_ary[$id] = $value;
-			}
-			*/
-
 			$this->flatten_load_ary($id, $value);
 		}
 	}

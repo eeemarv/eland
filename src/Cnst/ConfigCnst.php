@@ -226,7 +226,10 @@ class ConfigCnst
             'type'	=> 'textarea',
             'summernote'	=> true,
             'default'	=> '',
-            'path'      => 'static_content.contact_form.top',
+            'static_content'    => [
+                'id'    => 'contact_form',
+                'block' => 'top',
+            ],
         ],
 
         'contact_form_bottom_text' => [
@@ -234,7 +237,10 @@ class ConfigCnst
             'type'		=> 'textarea',
             'summernote'	=> true,
             'default'	=> '',
-            'path'      => 'static_content.contact_form.bottom',
+            'static_content'    => [
+                'id'    => 'contact_form',
+                'block' => 'bottom',
+            ],
         ],
 
         'registration_en' => [
@@ -250,7 +256,10 @@ class ConfigCnst
             'explain' => 'Geschikt bijvoorbeeld om nadere uitleg
                 bij de inschrijving te geven.',
             'default'	=> '',
-            'path'      => 'static_content.register_form.top',
+            'static_content'    => [
+                'id'    => 'register_form',
+                'block' => 'top',
+            ],
         ],
 
         'registration_bottom_text' => [
@@ -259,7 +268,10 @@ class ConfigCnst
             'summernote'	=> true,
             'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
             'default'	=> '',
-            'path'      => 'static_content.register_form.bottom',
+            'static_content'    => [
+                'id'    => 'register_form',
+                'block' => 'bottom',
+            ],
         ],
 
         'registration_success_text'	=> [
@@ -271,7 +283,10 @@ class ConfigCnst
                 website heeft, is het nuttig om een link op te nemen
                 om de gebruiker terug te voeren.',
             'default'	=> '',
-            'path'      => 'static_content.register_form_confirm.success',
+            'static_content'    => [
+                'id'    => 'register_form_confirm',
+                'block' => 'success',
+            ],
         ],
 
         'registration_success_mail'	=> [
@@ -282,7 +297,10 @@ class ConfigCnst
                 'data-template-vars' => '%map_template_vars%',
             ],
             'default'	=> '0',
-            'path'      => 'static_content.register_form_confirm.success_mail',
+            'static_content'    => [
+                'id'    => 'register_form_confirm',
+                'block' => 'success_mail',
+            ],
         ],
 
         'news_order_asc'	=> [
