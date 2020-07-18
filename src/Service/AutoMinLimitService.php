@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Service\XdbService;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\ConfigService;
@@ -12,33 +11,33 @@ use App\Render\AccountRender;
 class AutoMinLimitService
 {
 	protected LoggerInterface $logger;
-	protected XdbService $xdb_service;
 	protected Db $db;
 	protected ConfigService $config_service;
 	protected UserCacheService $user_cache_service;
 	protected AccountRender $account_render;
+	protected SessionUserService $su;
 
-	protected $exclusive;
-	protected $trans_exclusive;
-	protected $enabled = false;
-	protected $trans_percentage;
-	protected $group_minlimit;
+	protected array $exclude_to = [];
+	protected array $exclude_from = [];
+	protected bool $enabled = false;
+	protected ?int $global_min_limit;
+	protected ?int $percentage;
 	protected string $schema;
 
 	public function __construct(
 		LoggerInterface $logger,
-		XdbService $xdb_service,
 		Db $db,
 		ConfigService $config_service,
 		UserCacheService $user_cache_service,
+		SessionUserService $su,
 		AccountRender $account_render
 	)
 	{
 		$this->logger = $logger;
-		$this->xdb_service = $xdb_service;
 		$this->db = $db;
 		$this->user_cache_service = $user_cache_service;
 		$this->config_service = $config_service;
+		$this->su = $su;
 		$this->account_render = $account_render;
 	}
 
@@ -46,30 +45,27 @@ class AutoMinLimitService
 	{
 		$this->schema = $schema;
 
-		$row = $this->xdb_service->get('setting',
-			'autominlimit',
-			$this->schema);
+		$this->global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $this->schema);
+		$this->enabled = $this->config_service->get_bool('accounts.limits.auto_min.enabled', $this->schema);
+		$this->percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $this->schema);
+		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $this->schema);
+		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $this->schema);
 
-		if (!$row)
+		$exclude_to_ary = explode(',', $exclude_to_str);
+		$exclude_from_ary = explode(',', $exclude_from_str);
+
+		$this->exclude_to = [];
+		$this->exclude_from = [];
+
+		foreach($exclude_to_ary as $ex_to)
 		{
-			return $this;
+			$this->exclude_to[trim(strtolower($ex_to))] = true;
 		}
 
-		$data = $row['data'];
-
-		$exclusive = explode(',', $data['exclusive']);
-		$trans_exclusive = explode(',', $data['trans_exclusive']);
-
-		array_walk($exclusive, function(&$val){ return strtolower(trim($val)); });
-		array_walk($trans_exclusive, function(&$val){ return strtolower(trim($val)); });
-
-		$this->exclusive = array_fill_keys($exclusive, true);
-		$this->trans_exclusive = array_fill_keys($trans_exclusive, true);
-
-		$this->enabled = (bool) $data['enabled'];
-		$this->trans_percentage = (int) $data['trans_percentage'];
-
-		$this->group_minlimit = $this->config_service->get('minlimit', $this->schema);
+		foreach($exclude_from_ary as $ex_from)
+		{
+			$this->exclude_from[trim(strtolower($ex_from))] = true;
+		}
 
 		return $this;
 	}
@@ -87,9 +83,23 @@ class AutoMinLimitService
 			return;
 		}
 
-		if (!$this->trans_percentage)
+		if (!isset($this->percentage))
 		{
-			$this->logger->debug('autominlimit percentage is zero.',
+			$this->logger->debug('autominlimit percentage not set',
+				['schema' => $this->schema]);
+			return;
+		}
+
+		if ($this->percentage < 1)
+		{
+			$this->logger->debug('autominlimit percentage zero or negative',
+				['schema' => $this->schema]);
+			return;
+		}
+
+		if (!isset($this->percentage) || !$this->percentage)
+		{
+			$this->logger->debug('autominlimit percentage is not set or zero.',
 				['schema' => $this->schema]);
 			return;
 		}
@@ -111,7 +121,15 @@ class AutoMinLimitService
 			return;
 		}
 
-		if ($user['minlimit'] === '')
+		if (isset($this->exclude_to[strtolower($user['code'])]))
+		{
+			$this->logger->debug('autominlimit: to user is excluded ' .
+				$this->account_render->str_id($to_id, $this->schema),
+				['schema' => $this->schema]);
+			return;
+		}
+
+		if (!isset($user['minlimit']))
 		{
 			$this->logger->debug('autominlimit: to user has no minlimit. ' .
 				$this->account_render->str_id($user['id'], $this->schema),
@@ -119,9 +137,10 @@ class AutoMinLimitService
 			return;
 		}
 
-		if ($this->group_minlimit !== '' && $user['minlimit'] < $this->group_minlimit)
+		if (isset($this->global_min_limit)
+			&& $user['minlimit'] < $this->global_min_limit)
 		{
-			$this->logger->debug('autominlimit: to user minlimit is lower than group minlimit. ' .
+			$this->logger->debug('autominlimit: to user minlimit is lower than global system min limit. ' .
 				$this->account_render->str_id($user['id'], $this->schema),
 				['schema' => $this->schema]);
 			return;
@@ -143,7 +162,15 @@ class AutoMinLimitService
 			return;
 		}
 
-		$extract = round(($this->trans_percentage / 100) * $amount);
+		if (isset($this->exclude_from[strtolower($from_user['code'])]))
+		{
+			$this->logger->debug('autominlimit: from user is excluded ' .
+				$this->account_render->str_id($from_id, $this->schema),
+				['schema' => $this->schema]);
+			return;
+		}
+
+		$extract = round(($this->percentage / 100) * $amount);
 
 		if (!$extract)
 		{
@@ -156,41 +183,44 @@ class AutoMinLimitService
 
 		$new_minlimit = $user['minlimit'] - $extract;
 
-		if ($this->group_minlimit !== '' && $new_minlimit <= $this->group_minlimit)
+		$insert = [
+			'account_id'	=> $to_id,
+			'is_auto'		=> 't',
+			'created_by'	=> $this->su->id(),
+		];
+
+		if (isset($this->global_min_limit)
+			&& $new_minlimit <= $this->global_min_limit)
 		{
-			$this->xdb_service->set('autominlimit',
-				(string) $to_id,
-				['minlimit' => '', 'erased' => true],
-				$this->schema);
+			$insert['min_limit'] = null;
 
-			$this->db->update($this->schema . '.users',
-				['minlimit' => null],
-				['id' => $to_id]);
+			$this->db->update($this->schema . '.users', [
+				'minlimit'		=> null,
+			], ['id' => $to_id]);
 
-			$this->user_cache_service->clear($to_id, $this->schema);
-
-			$debug = 'autominlimit: minlimit reached group minlimit, ';
-			$debug .= 'individual minlimit erased for user ';
+			$debug = 'autominlimit: minlimit reached global min limit, ';
+			$debug .= 'individual min limit erased for user ';
 			$debug .= $this->account_render->str_id($user['id'], $this->schema);
 			$this->logger->debug($debug, ['schema' => $this->schema]);
-			return;
 		}
+		else
+		{
+			$insert['min_limit'] = $new_minlimit;
 
-		$this->xdb_service->set('autominlimit', (string) $to_id, [
-			'minlimit' => $new_minlimit,
-		], $this->schema);
+			$this->db->update($this->schema . '.users',
+				['minlimit' => $new_minlimit],
+				['id' => $to_id]);
 
-		$this->db->update($this->schema . '.users',
-			['minlimit' => $new_minlimit],
-			['id' => $to_id]);
+			$this->logger->info('autominlimit: new minlimit : ' .
+				$new_minlimit .
+				' for user ' .
+				$this->account_render->str_id($user['id'], $this->schema),
+				['schema' => $this->schema]);
+		}
 
 		$this->user_cache_service->clear($to_id, $this->schema);
 
-		$this->logger->info('autominlimit: new minlimit : ' .
-			$new_minlimit .
-			' for user ' .
-			$this->account_render->str_id($user['id'], $this->schema),
-			['schema' => $this->schema]);
+		$this->db->insert($this->schema . '.min_limit', $insert);
 
 		return;
 	}

@@ -40,9 +40,7 @@ class ConfigLogoDelController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $config_service->set('logo', $pp->schema(), '');
-            $config_service->set('logo_width', $pp->schema(), '0');
-
+            $config_service->set_str('system.logo', '', $pp->schema());
             $alert_service->success('config_logo_del.success');
             $link_render->redirect('config_logo', $pp->ary(), []);
         }

@@ -19,11 +19,11 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 
 class MassTransactionController extends AbstractController
@@ -82,7 +82,6 @@ class MassTransactionController extends AbstractController
     ];
 
     public function __invoke(
-        Predis $predis,
         Request $request,
         Db $db,
         LoggerInterface $logger,
@@ -99,6 +98,7 @@ class MassTransactionController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         AutoMinLimitService $autominlimit_service,
         TransactionService $transaction_service,
+        UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
         AssetsService $assets_service
@@ -119,8 +119,7 @@ class MassTransactionController extends AbstractController
         $rs = $db->prepare(
             'select id, name, code,
                 role, status, balance,
-                minlimit, maxlimit, adate,
-                postcode
+                adate
             from ' . $pp->schema() . '.users
             where status IN (0, 1, 2, 5, 6)
             order by code');
@@ -130,6 +129,36 @@ class MassTransactionController extends AbstractController
         while ($row = $rs->fetch())
         {
             $users[$row['id']] = $row;
+        }
+
+        $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
+            from ' . $pp->schema() . '.min_limit
+            order by account_id, created_at desc');
+
+        $rs->execute();
+
+        while ($row = $rs->fetch())
+        {
+            if (!isset($users[$row['account_id']]))
+            {
+                continue;
+            }
+            $users[$row['account_id']]['min_limit'] = $row['min_limit'];
+        }
+
+        $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
+            from ' . $pp->schema() . '.max_limit
+            order by account_id, created_at desc');
+
+        $rs->execute();
+
+        while ($row = $rs->fetch())
+        {
+            if (!isset($users[$row['account_id']]))
+            {
+                continue;
+            }
+            $users[$row['account_id']]['max_limit'] = $row['max_limit'];
         }
 
         $to_code = trim($request->request->get('to_code', ''));
@@ -148,7 +177,7 @@ class MassTransactionController extends AbstractController
 
         $amount = $request->request->get('amount', []);
         $description = trim($request->request->get('description', ''));
-        $mail_en = $request->request->get('mail_en', false);
+        $mail_en = $request->request->get('mail_en', true);
 
         if ($request->isMethod('POST'))
         {
@@ -244,72 +273,62 @@ class MassTransactionController extends AbstractController
                 $alert_success = $log_many = '';
                 $total_amount = 0;
 
-                try
+                foreach ($amount as $many_uid => $amo)
                 {
-
-                    foreach ($amount as $many_uid => $amo)
+                    if (!isset($selected_users[$many_uid]))
                     {
-                        if (!isset($selected_users[$many_uid]))
-                        {
-                            continue;
-                        }
-
-                        if (!$amo || $many_uid == $one_uid)
-                        {
-                            continue;
-                        }
-
-                        $many_user = $users[$many_uid];
-                        $to_id = $to_one ? $one_uid : $many_uid;
-                        $from_id = $to_one ? $many_uid : $one_uid;
-                        $from_user = $users[$from_id];
-                        $to_user = $users[$to_id];
-
-                        $alert_success .= 'Transactie van gebruiker ' . $from_user['code'] . ' ' . $from_user['name'];
-                        $alert_success .= ' naar ' . $to_user['code'] . ' ' . $to_user['name'];
-                        $alert_success .= '  met bedrag ' . $amo .' ';
-                        $alert_success .= $config_service->get('currency', $pp->schema());
-                        $alert_success .= ' uitgevoerd.<br>';
-
-                        $log_many .= $many_user['code'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
-
-                        $transaction = [
-                            'id_to' 		=> $to_id,
-                            'id_from' 		=> $from_id,
-                            'amount' 		=> $amo,
-                            'description' 	=> $description,
-                            'transid'		=> $transaction_service->generate_transid($su->id(), $pp->system()),
-                        ];
-
-                        if (!$su->is_master())
-                        {
-                            $transaction['created_by'] = $su->id();
-                        }
-
-                        $db->insert($pp->schema() . '.transactions', $transaction);
-                        $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
-
-                        $db->executeUpdate('update ' . $pp->schema() . '.users
-                            set balance = balance ' . (($to_one) ? '-' : '+') . ' ?
-                            where id = ?', [$amo, $many_uid]);
-
-                        $total_amount += $amo;
-
-                        $transactions[] = $transaction;
+                        continue;
                     }
 
-                    $db->executeUpdate('update ' . $pp->schema() . '.users
-                        set balance = balance ' . (($to_one) ? '+' : '-') . ' ?
-                        where id = ?', [$total_amount, $one_uid]);
+                    if (!$amo || $many_uid == $one_uid)
+                    {
+                        continue;
+                    }
 
-                    $db->commit();
+                    $many_user = $users[$many_uid];
+                    $to_id = $to_one ? $one_uid : $many_uid;
+                    $from_id = $to_one ? $many_uid : $one_uid;
+                    $from_user = $users[$from_id];
+                    $to_user = $users[$to_id];
+
+                    $alert_success .= 'Transactie van gebruiker ' . $from_user['code'] . ' ' . $from_user['name'];
+                    $alert_success .= ' naar ' . $to_user['code'] . ' ' . $to_user['name'];
+                    $alert_success .= '  met bedrag ' . $amo .' ';
+                    $alert_success .= $config_service->get('currency', $pp->schema());
+                    $alert_success .= ' uitgevoerd.<br>';
+
+                    $log_many .= $many_user['code'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
+
+                    $transaction = [
+                        'id_to' 		=> $to_id,
+                        'id_from' 		=> $from_id,
+                        'amount' 		=> $amo,
+                        'description' 	=> $description,
+                        'transid'		=> $transaction_service->generate_transid($su->id(), $pp->system()),
+                    ];
+
+                    if (!$su->is_master())
+                    {
+                        $transaction['created_by'] = $su->id();
+                    }
+
+                    $db->insert($pp->schema() . '.transactions', $transaction);
+                    $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
+
+                    $db->executeUpdate('update ' . $pp->schema() . '.users
+                        set balance = balance ' . (($to_one) ? '-' : '+') . ' ?
+                        where id = ?', [$amo, $many_uid]);
+
+                    $total_amount += $amo;
+
+                    $transactions[] = $transaction;
                 }
-                catch (\Exception $e)
-                {
-                    $alert_service->error('Fout bij het opslaan.');
-                    $db->rollback();
-                    throw $e;
-                }
+
+                $db->executeUpdate('update ' . $pp->schema() . '.users
+                    set balance = balance ' . (($to_one) ? '+' : '-') . ' ?
+                    where id = ?', [$total_amount, $one_uid]);
+
+                $db->commit();
 
                 $autominlimit_service->init($pp->schema());
 
@@ -318,23 +337,21 @@ class MassTransactionController extends AbstractController
                     $autominlimit_service->process((int) $t['id_from'], (int) $t['id_to'], (int) $t['amount']);
                 }
 
+                $user_cache_service->clear((int) $one_uid, $pp->schema());
+
                 if ($to_one)
                 {
                     foreach ($transactions as $t)
                     {
-                        $predis->del($pp->schema() . '_user_' . $t['id_from']);
+                        $user_cache_service->clear((int) $t['id_from'], $pp->schema());
                     }
-
-                    $predis->del($pp->schema() . '_user_' . $t['id_to']);
                 }
                 else
                 {
                     foreach ($transactions as $t)
                     {
-                        $predis->del($pp->schema() . '_user_' . $t['id_to']);
+                        $user_cache_service->clear((int) $t['id_to'], $pp->schema());
                     }
-
-                    $predis->del($pp->schema() . '_user_' . $t['id_from']);
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';
@@ -415,10 +432,6 @@ class MassTransactionController extends AbstractController
                 $link_render->redirect('mass_transaction', $pp->ary(), []);
             }
         }
-        else
-        {
-            $mail_en = true;
-        }
 
         if ($to_code)
         {
@@ -429,6 +442,7 @@ class MassTransactionController extends AbstractController
                 $to_code .= ' ' . $to_name;
             }
         }
+
         if ($from_code)
         {
             if ($from_name = $db->fetchColumn('select name
@@ -825,7 +839,6 @@ class MassTransactionController extends AbstractController
         $out .= '<th data-hide="phone">Saldo</th>';
         $out .= '<th data-hide="phone">Min.limit</th>';
         $out .= '<th data-hide="phone">Max.limit</th>';
-        $out .= '<th data-hide="phone, tablet">Postcode</th>';
         $out .= '</tr>';
 
         $out .= '</thead>';
@@ -863,7 +876,7 @@ class MassTransactionController extends AbstractController
             $out .= 'data-code="' . $user['code'] . '" ';
             $out .= 'data-user-id="' . $user_id . '" ';
             $out .= 'data-balance="' . $user['balance'] . '" ';
-            $out .= 'data-minlimit="' . $user['minlimit'] . '"';
+            $out .= 'data-minlimit="' . ($user['min_limit'] ?? '') . '"';
 
             if ($status_key === 'new')
             {
@@ -882,11 +895,11 @@ class MassTransactionController extends AbstractController
 
             $balance = $user['balance'];
 
-            $minlimit = $user['minlimit'] === '' ? $system_minlimit : $user['minlimit'];
-            $maxlimit = $user['maxlimit'] === '' ? $system_maxlimit : $user['maxlimit'];
+            $minlimit = $user['min_limit'] ?? $system_minlimit;
+            $maxlimit = $user['max_limit'] ?? $system_maxlimit;
 
-            if (($minlimit !== '' && $balance < $minlimit)
-                || ($maxlimit !== '' && $balance > $maxlimit))
+            if ((isset($minlimit) && $balance < $minlimit)
+                || (isset($maxlimit) && $balance > $maxlimit))
             {
                 $out .= '<span class="text-danger">' . $balance . '</span>';
             }
@@ -897,9 +910,8 @@ class MassTransactionController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= '<td>' . $user['minlimit'] . '</td>';
-            $out .= '<td>' . $user['maxlimit'] . '</td>';
-            $out .= '<td>' . $user['postcode'] . '</td>';
+            $out .= '<td>' . ($user['min_limit'] ?? '') . '</td>';
+            $out .= '<td>' . ($user['max_limit'] ?? '') . '</td>';
 
             $out .= '</tr>';
         }

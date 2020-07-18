@@ -36,7 +36,7 @@ class ConfigLogoUploadController extends AbstractController
         $filename = $image_upload_service->upload($uploaded_file,
             'l', 0, 400, 100, $pp->schema());
 
-        $config_service->set('logo', $pp->schema(), $filename);
+        $config_service->set_str('system.logo', $filename, $pp->schema());
 
         $logger->info('Logo ' . $filename .
             ' uploaded.',

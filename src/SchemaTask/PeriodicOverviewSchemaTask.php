@@ -69,25 +69,29 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		$blocks_sorted = $block_options = [];
 
-		$block_ary = $this->config_service->get('periodic_mail_block_ary', $schema);
+		$block_ary = $this->config_service->get_ary('periodic_mail.user.layout', $schema);
 
-		$block_ary = explode(',', ltrim($block_ary, '+'));
-
-		foreach ($block_ary as $v)
+		foreach ($block_ary as $block)
 		{
-			[$block, $option] = explode('.', $v);
-
 			if ($block === 'forum' && !$forum_en)
 			{
 				continue;
 			}
 
-			if ($block === 'interlets' && !$intersystem_en)
+			if ($block === 'intersystem' && !$intersystem_en)
 			{
 				continue;
 			}
 
-			$block_options[$block] = $option;
+			$select = 'recent';
+
+			if (in_array($block, ['news', 'new_users', 'leaving_users']))
+			{
+				$select = $this->config_service->get_str('periodic_mail.user.render.' . $block . '.select', $schema);
+				$select = $select === 'all' ? 'all' : 'recent';
+			}
+
+			$block_options[$block] = $select;
 			$blocks_sorted[] = $block;
 		}
 
@@ -196,7 +200,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// interSystem messages
 
-		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
+		if (isset($block_options['intersystem']) && $block_options['intersystem'] == 'recent')
 		{
 			$eland_ary = $this->intersystems_service->get_eland($schema);
 

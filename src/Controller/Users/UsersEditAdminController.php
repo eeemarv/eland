@@ -143,12 +143,37 @@ class UsersEditAdminController extends AbstractController
         $is_activated = false;
         $mailenabled = $config_service->get('mailenabled', $pp->schema());
 
+        $stored_min_limit = null;
+        $stored_max_limit = null;
+
         if ($is_edit)
         {
             $stored_user = $user_cache_service->get($id, $pp->schema());
             $stored_code = $stored_user['code'];
             $stored_name = $stored_user['name'];
             $is_activated = isset($stored_user['adate']);
+
+            $stored_min_limit = $db->fetchColumn('select min_limit
+                from ' . $pp->schema() . '.min_limit
+                where account_id = ?
+                order by created_at desc
+                limit 1', [$id]);
+
+            if ($stored_min_limit === false)
+            {
+                $stored_min_limit = null;
+            }
+
+            $stored_max_limit = $db->fetchColumn('select max_limit
+                from ' . $pp->schema() . '.max_limit
+                where account_id = ?
+                order by created_at desc
+                limit 1', [$id]);
+
+            if ($stored_max_limit === false)
+            {
+                $stored_max_limit = null;
+            }
         }
 
         $intersystem_code = $request->query->get('intersystem_code', '');
@@ -166,8 +191,8 @@ class UsersEditAdminController extends AbstractController
         $password = trim($request->request->get('password', ''));
         $password_notify = $request->request->has('password_notify');
         $admincomment = trim($request->request->get('admincomment', ''));
-        $minlimit = trim($request->request->get('minlimit', ''));
-        $maxlimit = trim($request->request->get('maxlimit', ''));
+        $min_limit = trim($request->request->get('min_limit', ''));
+        $max_limit = trim($request->request->get('max_limit', ''));
         $periodic_overview_en = $request->request->has('periodic_overview_en');
         $contact = $request->request->get('contact', []);
 
@@ -368,15 +393,15 @@ class UsersEditAdminController extends AbstractController
                         letters, cijfers en koppeltekens bestaan.';
                 }
 
-                if ($minlimit
-                    && filter_var($minlimit, FILTER_VALIDATE_INT) === false)
+                if ($min_limit
+                    && filter_var($min_limit, FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Minimum Account Limiet.';
                 }
 
-                if ($maxlimit
-                    && filter_var($maxlimit, FILTER_VALIDATE_INT) === false)
+                if ($max_limit
+                    && filter_var($max_limit, FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Maximum Account Limiet.';
@@ -437,7 +462,7 @@ class UsersEditAdminController extends AbstractController
 
                 if ($is_add && !$su->is_master())
                 {
-                    $transaction['created_by'] = $su->id();
+                    $post_user['created_by'] = $su->id();
                 }
 
                 if (($is_add || ($is_edit && !$is_activated))
@@ -469,8 +494,6 @@ class UsersEditAdminController extends AbstractController
                     $post_user['role'] = $role;
                     $post_user['status'] = (int) $status;
                     $post_user['admincomment'] = $admincomment;
-                    $post_user['minlimit'] = $minlimit === '' ? null : (int) $minlimit;
-                    $post_user['maxlimit'] = $maxlimit === '' ? null : (int) $maxlimit;
                 }
 
                 if ($is_add)
@@ -496,6 +519,41 @@ class UsersEditAdminController extends AbstractController
                     {
                         $errors[] = 'Gebruiker niet aangepast.';
                     }
+                }
+            }
+
+            if (!count($errors) && $pp->is_admin())
+            {
+                $min_to_store = $min_limit;
+
+                if ($min_to_store === '')
+                {
+                    $min_to_store = null;
+                }
+
+                if ($stored_min_limit !== $min_to_store)
+                {
+                    $db->insert($pp->schema() . '.min_limit', [
+                        'account_id'    => $id,
+                        'min_limit'     => $min_to_store,
+                        'created_by'    => $su->id(),
+                    ]);
+                }
+
+                $max_to_store = $max_limit;
+
+                if ($max_to_store === '')
+                {
+                    $max_to_store = null;
+                }
+
+                if ($stored_max_limit !== $max_to_store)
+                {
+                    $db->insert($pp->schema() . '.max_limit', [
+                        'account_id'    => $id,
+                        'max_limit'     => $max_to_store,
+                        'created_by'    => $su->id(),
+                    ]);
                 }
             }
 
@@ -657,8 +715,8 @@ class UsersEditAdminController extends AbstractController
             $role = 'user';
             $status = '1';
             $admincomment = '';
-            $minlimit = '';
-            $maxlimit = '';
+            $min_limit = '';
+            $max_limit = '';
             $periodic_overview_en	= true;
 
             $contact = $db->fetchAll('select name, abbrev,
@@ -715,8 +773,8 @@ class UsersEditAdminController extends AbstractController
                 $role = $stored_user['role'] ?? 'user';
                 $status = (string) ($stored_user['status'] ?? '1');
                 $admincomment = $stored_user['admincomment'] ?? '';
-                $minlimit = $stored_user['minlimit'] ?? '';
-                $maxlimit = $stored_user['maxlimit'] ?? '';
+                $min_limit = $stored_min_limit ?? '';
+                $max_limit = $stored_max_limit ?? '';
                 $periodic_overview_en = $stored_user['periodic_overview_en'] ?? false;
 
                 // Fetch contacts
@@ -1073,7 +1131,7 @@ class UsersEditAdminController extends AbstractController
 
             $out .= '<h2>Limieten&nbsp;';
 
-            if ($minlimit === '' && $maxlimit === '')
+            if ($min_limit === '' && $max_limit === '')
             {
                 $out .= '<button class="btn btn-default" ';
                 $out .= 'title="Limieten instellen" data-toggle="collapse" ';
@@ -1085,7 +1143,7 @@ class UsersEditAdminController extends AbstractController
 
             $out .= '<div id="limits_pan"';
 
-            if ($minlimit === '' && $maxlimit === '')
+            if ($min_limit === '' && $max_limit === '')
             {
                 $out .= ' class="collapse"';
             }
@@ -1093,7 +1151,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '>';
 
             $out .= '<div class="form-group">';
-            $out .= '<label for="minlimit" class="control-label">';
+            $out .= '<label for="min_limit" class="control-label">';
             $out .= 'Minimum Account Limiet</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-prepend">';
@@ -1103,9 +1161,9 @@ class UsersEditAdminController extends AbstractController
             $out .= '</span>';
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
-            $out .= 'id="minlimit" name="minlimit" ';
+            $out .= 'id="min_limit" name="min_limit" ';
             $out .= 'value="';
-            $out .= $minlimit ?? '';
+            $out .= $min_limit ?? '';
             $out .= '">';
             $out .= '</div>';
             $out .= '<p>Vul enkel in wanneer je een individueel ';
@@ -1136,7 +1194,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
 
             $out .= '<div class="form-group">';
-            $out .= '<label for="maxlimit" class="control-label">';
+            $out .= '<label for="max_limit" class="control-label">';
             $out .= 'Maximum Account Limiet</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-prepend">';
@@ -1146,9 +1204,9 @@ class UsersEditAdminController extends AbstractController
             $out .= '</span>';
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
-            $out .= 'id="maxlimit" name="maxlimit" ';
+            $out .= 'id="max_limit" name="max_limit" ';
             $out .= 'value="';
-            $out .= $maxlimit ?? '';
+            $out .= $max_limit ?? '';
             $out .= '">';
             $out .= '</div>';
 

@@ -30,18 +30,13 @@ $(document).ready(function(){
 	});
 
 	$('form[method="post"]').submit(function(event) {
-
-		var p_string = '';
-
+		var blocks = [];
 		$('ul#list_active > li[data-block]').each(function(){
 			var ul_el = $(this);
-			p_string += ul_el.attr('data-block') + '.';
-			p_string += ul_el.attr('data-option') + ',';
+			var p = ul_el.attr('data-block') + '.';
+			p  += ul_el.attr('data-option');
+			blocks.push(p);
 		});
-
-		p_string = p_string.slice(0, -1);
-		p_string = '+' + p_string;
-
-		$('#periodic_mail_block_ary').val(p_string);
+		$('#periodic_mail_block_ary').val(blocks.join(','));
 	});
 });

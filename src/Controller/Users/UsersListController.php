@@ -33,8 +33,11 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Schema\Schema;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
+use function GuzzleHttp\json_encode;
 
 class UsersListController extends AbstractController
 {
@@ -257,14 +260,38 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
+                && $user_tab_data
+                && in_array($bulk_submit_action, ['min_limit', 'max_limit']))
+            {
+                $store_value = $bulk_field_value === '' ? null : $bulk_field_value;
+
+                foreach($user_ids as $user_id)
+                {
+                    $db->insert($pp->schema() . '.' . $bulk_submit_action, [
+                        $bulk_submit_action     => $store_value,
+                        'account_id'            => $user_id,
+                        'created_by'            => $su->id(),
+                    ]);
+                }
+
+                $logger->info('bulk: Set ' . $bulk_submit_action .
+                    ' to ' . ($store_value ?? 'null') .
+                    ' for users ' . $users_log,
+                    ['schema' => $pp->schema()]);
+
+                $alert_msg = 'De ';
+                $alert_msg .= $bulk_submit_action === 'min_lmit' ? 'minimum' : 'maximum';
+                $alert_msg .= ' limiet werd ';
+                $alert_msg .=  isset($store_value) ? 'aangepast.' : 'gewist.';
+
+                $alert_service->success($alert_msg);
+
+                $redirect = true;
+            }
+            else if (!count($errors)
                 && $user_tab_data)
             {
                 $store_value = $bulk_field_value;
-
-                if (in_array($bulk_submit_action, ['minlimit', 'maxlimit']))
-                {
-                    $store_value = $store_value === '' ? null : $store_value;
-                }
 
                 $field_type = isset($user_tab_data['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
@@ -480,8 +507,8 @@ class UsersListController extends AbstractController
                 'role'	        => 'Rol',
                 'balance'		=> 'Saldo',
                 'balance_date'	=> 'Saldo op ',
-                'minlimit'		=> 'Min',
-                'maxlimit'		=> 'Max',
+                'min'		    => 'Min',
+                'max'		    => 'Max',
                 'comments'		=> 'Commentaar',
                 'hobbies'		=> 'Hobbies/interesses',
             ],
@@ -591,6 +618,32 @@ class UsersListController extends AbstractController
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
 
+        /**
+         *
+         * Temp migrate begin
+         */
+
+        if (isset($show_columns['u']['minlimit']))
+        {
+            unset($show_columns['u']['minlimit']);
+            $show_columns['u']['min'] = '1';
+            $session->set($session_users_columns_key, $show_columns);
+            error_log('update sess min');
+        }
+
+        if (isset($show_columns['u']['maxlimit']))
+        {
+            unset($show_columns['u']['maxlimit']);
+            $show_columns['u']['max'] = '1';
+            $session->set($session_users_columns_key, $show_columns);
+            error_log('update_sess_max');
+        }
+
+        /**
+         *
+         * Temp migrate end
+         */
+
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
         $activity_days = $show_columns['p']['a']['days'] ?? 365;
         $activity_days = $activity_days < 1 ? 365 : $activity_days;
@@ -598,10 +651,17 @@ class UsersListController extends AbstractController
         $balance_date = $show_columns['p']['u']['balance_date'] ?? '';
         $balance_date = trim($balance_date);
 
-        $users = $db->fetchAll('select u.*
+        $users = [];
+
+        $stmt = $db->executeQuery('select u.*
             from ' . $pp->schema() . '.users u
             where ' . $status_def_ary[$status]['sql'] . '
             order by u.code asc', $sql_bind);
+
+        while($row = $stmt->fetch())
+        {
+            $users[$row['id']] = $row;
+        }
 
         if (isset($show_columns['u']['balance_date']))
         {
@@ -620,7 +680,6 @@ class UsersListController extends AbstractController
             }
             else
             {
-                $trans_in = $trans_out = [];
                 $datetime = new \DateTime($balance_date_rev);
 
                 $rs = $db->prepare('select id_to, sum(amount)
@@ -634,7 +693,12 @@ class UsersListController extends AbstractController
 
                 while($row = $rs->fetch())
                 {
-                    $trans_in[$row['id_to']] = $row['sum'];
+                    $uid = $row['id_to'];
+                    if (!isset($users[$uid]))
+                    {
+                        continue;
+                    }
+                    $users[$uid]['balance_date'] = $row['sum'];
                 }
 
                 $rs = $db->prepare('select id_from, sum(amount)
@@ -647,33 +711,67 @@ class UsersListController extends AbstractController
 
                 while($row = $rs->fetch())
                 {
-                    $trans_out[$row['id_from']] = $row['sum'];
+                    $uid = $row['id_from'];
+                    if (!isset($users[$uid]))
+                    {
+                        continue;
+                    }
+                    $users[$uid]['balance_date'] ??= 0;
+                    $users[$uid]['balance_date'] -= $row['sum'];
                 }
+            }
+        }
 
-                array_walk($users, function(&$user) use ($trans_out, $trans_in){
-                    $user['balance_date'] = 0;
-                    $user['balance_date'] += $trans_in[$user['id']] ?? 0;
-                    $user['balance_date'] -= $trans_out[$user['id']] ?? 0;
-                });
+        if (isset($show_columns['u']['min']))
+        {
+            $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
+                from ' . $pp->schema() . '.min_limit
+                order by account_id, created_at desc');
+
+            $rs->execute();
+
+            while ($row = $rs->fetch())
+            {
+                if (!isset($users[$row['account_id']]))
+                {
+                    continue;
+                }
+                $users[$row['account_id']]['min'] = $row['min_limit'];
+            }
+        }
+
+        if (isset($show_columns['u']['max']))
+        {
+            $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
+                from ' . $pp->schema() . '.max_limit
+                order by account_id, created_at desc');
+
+            $rs->execute();
+
+            while ($row = $rs->fetch())
+            {
+                if (!isset($users[$row['account_id']]))
+                {
+                    continue;
+                }
+                $users[$row['account_id']]['max'] = $row['max_limit'];
             }
         }
 
         if (isset($show_columns['u']['last_login']))
         {
-            $last_login_ary = [];
-
             $stmt = $db->executeQuery('select user_id, max(created_at) as last_login
                 from ' . $pp->schema() . '.login
                 group by user_id');
 
             while ($row = $stmt->fetch())
             {
-                $last_login_ary[$row['user_id']] = $row['last_login'];
+                if (!isset($users[$row['user_id']]))
+                {
+                    continue;
+                }
+                $users[$row['user_id']]['last_login'] = $row['last_login'];
             }
-
-            array_walk($users, function(&$user) use ($last_login_ary){
-                $user['last_login'] = $last_login_ary[$user['id']] ?? '';
-            });
         }
 
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
@@ -1221,15 +1319,13 @@ class UsersListController extends AbstractController
 
         $can_link = $pp->is_admin();
 
-        foreach($users as $u)
+        foreach($users as $id => $u)
         {
             if (($pp->is_user() || $pp->is_guest())
                 && ($u['status'] === 1 || $u['status'] === 2))
             {
                 $can_link = true;
             }
-
-            $id = $u['id'];
 
             $row_stat = $u['status'];
 
@@ -1314,7 +1410,7 @@ class UsersListController extends AbstractController
                     }
                     else
                     {
-                        $td .= htmlspecialchars((string) $u[$key]);
+                        $td .= htmlspecialchars((string) ($u[$key] ?? ''));
                     }
 
                     if ($pp->is_admin() && $first)

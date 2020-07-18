@@ -72,14 +72,14 @@ class BulkCnst
             'string'	=> true,
             'fa'		=> 'comment-o',
         ],
-        'minlimit'			=> [
+        'min_limit'			=> [
             'lbl'		=> 'Minimum Account Limiet',
             'explain'   => 'Tip: laat het veld leeg om de minimum limiet te wissen.
                 Bij accounts zonder individuele minimum limiet is de minimum systeemslimiet van toepassing (wanneer ingesteld).',
             'type'		=> 'number',
             'fa'		=> 'arrow-down',
         ],
-        'maxlimit'			=> [
+        'max_limit'			=> [
             'lbl'		=> 'Maximum Account Limiet',
             'explain'   => 'Tip: laat het veld leeg om de maximum limiet te wissen.
                 Bij accounts zonder individuele maximum limiet is de maximum systeems limiet van toepassing (wanneer ingesteld).',

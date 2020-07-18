@@ -18,6 +18,7 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
+use App\Service\StaticContentService;
 
 class ConfigController extends AbstractController
 {
@@ -31,6 +32,7 @@ class ConfigController extends AbstractController
         AssetsService $assets_service,
         HeadingRender $heading_render,
         ConfigService $config_service,
+        StaticContentService $static_content_service,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         SelectRender $select_render,
@@ -50,12 +52,12 @@ class ConfigController extends AbstractController
 
         if (!$config_service->get('forum_en', $pp->schema()))
         {
-            unset($block_ary['periodic_mail']['forum']);
+            unset($block_ary['forum']);
         }
 
         if (!$config_service->get_intersystem_en($pp->schema()))
         {
-            unset($block_ary['periodic_mail']['interlets']);
+            unset($block_ary['intersystem']);
             unset($cond_ary['config_template_lets']);
         }
 
@@ -93,7 +95,28 @@ class ConfigController extends AbstractController
                 continue;
             }
 
-            $config[$input_name] = $config_service->get($input_name, $pp->schema());
+            $input_field_cnf = ConfigCnst::INPUTS[$input_name];
+
+            if (isset($input_field_cnf['static_content']))
+            {
+                $st_id = $input_field_cnf['static_content']['id'];
+                $st_block = $input_field_cnf['static_content']['block'];
+                $config[$input_name] = $static_content_service->get($st_id, $st_block, $pp->schema());
+            }
+            else
+            {
+                $path = $input_field_cnf['path'];
+
+                if (isset($input_field_cnf['is_ary']))
+                {
+                    $ary_value = $config_service->get_ary($path, $pp->schema());
+                    $config[$input_name] = implode(',', $ary_value);
+                }
+                else
+                {
+                    $config[$input_name] = $config_service->get($input_name, $pp->schema());
+                }
+            }
         }
 
         if ($request->isMethod('POST'))
@@ -302,7 +325,72 @@ class ConfigController extends AbstractController
 
             foreach ($posted_configs as $input_name => $posted_value)
             {
-                $config_service->set($input_name, $pp->schema(), $posted_value);
+                $input_cnf = ConfigCnst::INPUTS[$input_name];
+                $path = $input_cnf['path'] ?? '';
+                $static_content_cnf = $input_cnf['static_content'] ?? [];
+
+                if (isset($input_cnf['is_ary']))
+                {
+                    $posted_ary  = $posted_value === '' ? [] : explode(',', $posted_value);
+
+                    if ($input_name = 'periodic_mail_block_ary')
+                    {
+                        $p_ary = $posted_ary;
+                        $posted_ary = [];
+
+                        foreach ($p_ary as $p)
+                        {
+                            [$block, $select] = explode('.', $p);
+
+                            if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                            {
+                                $select = $select === 'all' ? 'all' : 'recent';
+                                $config_service->set_str('periodic_mail.user.render.' . $block . '.select', $select, $pp->schema());
+                            }
+
+                            if (isset($block_ary[$block]))
+                            {
+                                $posted_ary[] = $block;
+                            }
+                        }
+                    }
+
+                    $config_service->set_ary($path, $posted_ary, $pp->schema());
+                }
+                else if (count($static_content_cnf))
+                {
+                    $st_id = $static_content_cnf['id'];
+                    $st_block = $static_content_cnf['block'];
+                    $static_content_service->set($st_id, $st_block, (string) $posted_value, $pp->schema());
+                }
+                else if (isset($input_cnf['type']))
+                {
+                    if ($input_cnf['type'] === 'checkbox')
+                    {
+                        $config_service->set_bool($path, $posted_value ? true : false, $pp->schema());
+                    }
+                    else if ($input_cnf['type'] === 'number')
+                    {
+                        if ($posted_value === '' || !isset($posted_value))
+                        {
+                            $config_service->set_int($path, null, $pp->schema());
+                        }
+                        else
+                        {
+                            $config_service->set_int($path, (int) $posted_value, $pp->schema());
+                        }
+                    }
+                    else
+                    {
+                        $config_service->set_str($path, (string) $posted_value, $pp->schema());
+                    }
+                }
+                else
+                {
+                    $config_service->set_str($path, (string) $posted_value, $pp->schema());
+                }
+
+ //               $config_service->set($input_name, $pp->schema(), $posted_value);
 
                 $post_actions = ConfigCnst::INPUTS[$input_name]['post_actions'] ?? [];
 
@@ -520,24 +608,41 @@ class ConfigController extends AbstractController
             }
             else if (isset($input['type'])
                 && $input['type'] === 'sortable'
-                && isset($input['block_ary']))
+                && $input_name === 'periodic_mail_block_ary'
+                && isset($input['is_ary']))
             {
-                $v_options = $active = $inactive = [];
-                $value_ary = explode(',', ltrim($config[$input_name], '+ '));
+                $v_options = $v_input = $active = $inactive = [];
 
-                foreach ($value_ary as $val)
+                foreach ($ary_value as $block)
                 {
-                    [$block, $option] = explode('.', $val);
-                    $v_options[$block] = $option;
+                    if (!$block)
+                    {
+                        continue;
+                    }
+
+                    $v_options[$block] = 'recent';
+
+                    if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                    {
+                        $select = $config_service->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
+                        if ($select === 'all')
+                        {
+                            $v_options[$block] = 'all';
+                        }
+                    }
+
                     $active[] = $block;
+                    $v_input[] = $block . '.' . $v_options[$block];
                 }
 
-                foreach ($block_ary[$input['block_ary']] as $block => $options)
+                foreach ($block_ary as $block => $options)
                 {
-                    if (!isset($v_options[$block]))
+                    if (isset($v_options[$block]))
                     {
-                        $inactive[] = $block;
+                        continue;
                     }
+
+                    $inactive[] = $block;
                 }
 
                 $out .= isset($input['lbl']) ? '<h4>' . $input['lbl'] . '</h4>' : '';
@@ -567,7 +672,7 @@ class ConfigController extends AbstractController
                 $out .= '<ul id="list_active" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
-                    $block_ary[$input['block_ary']],
+                    $block_ary,
                     $v_options,
                     $active,
                     'bg-success');
@@ -593,7 +698,7 @@ class ConfigController extends AbstractController
                 $out .= '<ul id="list_inactive" class="list-group">';
 
                 $out .= $this->get_sortable_items_str(
-                    $block_ary[$input['block_ary']],
+                    $block_ary,
                     $v_options,
                     $inactive,
                     'bg-danger');
@@ -609,7 +714,7 @@ class ConfigController extends AbstractController
                 $out .= $input_name;
                 $out .= '" ';
                 $out .= 'value="';
-                $out .= $config[$input_name];
+                $out .= implode(',', $v_input);
                 $out .= '" id="';
                 $out .= $input_name;
                 $out .= '">';
@@ -917,7 +1022,7 @@ class ConfigController extends AbstractController
         string $env_s3_url
     )
     {
-        $logo = $config_service->get('logo', $pp->schema());
+        $logo = $config_service->get_str('system.logo', $pp->schema());
 
         $out = '<div class="card-body">';
         $out .= '<div class="col-md-6">';

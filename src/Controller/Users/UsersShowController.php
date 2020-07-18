@@ -30,6 +30,7 @@ use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UsersShowController extends AbstractController
 {
@@ -75,6 +76,37 @@ class UsersShowController extends AbstractController
         $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
         $user = $user_repository->get($id, $pp->schema());
+
+        $min_limit = $db->fetchColumn('select min_limit
+            from ' . $pp->schema() . '.min_limit
+            where account_id = ?
+            order by created_at desc
+            limit 1', [$id]);
+
+        if ($min_limit === false)
+        {
+            $min_limit = null;
+        }
+
+        $max_limit = $db->fetchColumn('select max_limit
+            from ' . $pp->schema() . '.max_limit
+            where account_id = ?
+            order by created_at desc
+            limit 1', [$id]);
+
+        if ($max_limit === false)
+        {
+            $max_limit = null;
+        }
+
+        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+
+        if (!$user)
+        {
+            throw new NotFoundHttpException(
+                'De gebruiker met id ' . $id . ' bestaat niet');
+        }
 
         if (!$pp->is_admin() && !in_array($user['status'], [1, 2]))
         {
@@ -588,12 +620,20 @@ class UsersShowController extends AbstractController
         $out .= '<dt>Minimum limiet</dt>';
         $out .= '<dd>';
 
-        if (isset($user['minlimit']))
+        if (isset($min_limit))
         {
             $out .= '<span class="label label-danger">';
-            $out .= $user['minlimit'];
+            $out .= $min_limit;
             $out .= '</span>&nbsp;';
             $out .= $config_service->get('currency', $pp->schema());
+        }
+        else if (isset($system_min_limit))
+        {
+            $out .= '<span class="label label-default">';
+            $out .= $system_min_limit;
+            $out .= '</span>&nbsp;';
+            $out .= $config_service->get('currency', $pp->schema());
+            $out .= ' (Minimum Systeemslimiet)';
         }
         else
         {
@@ -605,12 +645,20 @@ class UsersShowController extends AbstractController
         $out .= '<dt>Maximum limiet</dt>';
         $out .= '<dd>';
 
-        if (isset($user['maxlimit']))
+        if (isset($max_limit))
         {
             $out .= '<span class="label label-success">';
-            $out .= $user['maxlimit'];
+            $out .= $max_limit;
             $out .= '</span>&nbsp;';
             $out .= $config_service->get('currency', $pp->schema());
+        }
+        else if (isset($system_max_limit))
+        {
+            $out .= '<span class="label label-default">';
+            $out .= $system_max_limit;
+            $out .= '</span>&nbsp;';
+            $out .= $config_service->get('currency', $pp->schema());
+            $out .= ' (Maximum Systeemslimiet)';
         }
         else
         {

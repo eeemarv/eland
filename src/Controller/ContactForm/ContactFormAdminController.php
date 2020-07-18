@@ -21,11 +21,9 @@ class ContactFormAdminController extends AbstractController
         $heading_render->add('Contact');
         $heading_render->fa('comment-o');
 
-        $top_text = $config_service->get('contact_form_top_text', $pp->schema());
+        // static_content top
 
-        $out = $top_text ?: '';
-
-        $out .= '<div class="card fcard fcard-default">';
+        $out = '<div class="card fcard fcard-default">';
         $out .= '<div class="card-body">';
 
         $out .= '<p><i>Formulier niet actief ';
@@ -69,12 +67,7 @@ class ContactFormAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $bottom_text = $config_service->get('contact_form_bottom_text', $pp->schema());
-
-        if ($bottom_text)
-        {
-            $out .= $bottom_text;
-        }
+        //  static_content bottom
 
         $out .= '<p>Leden: indien mogelijk, login en ';
         $out .= 'gebruik het Support formulier. ';
