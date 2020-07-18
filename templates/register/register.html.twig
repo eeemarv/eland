@@ -2,7 +2,7 @@
 
 {%- block content -%}
 
-{{- config('registration_top_text', schema)|raw -}}
+{{- static_content('register_form', 'top', schema)|raw -}}
 
 {%- embed 'form/form_embed.html.twig' -%}
     {%- import 'macro/link.html.twig' as l -%}
@@ -55,7 +55,7 @@
     {%- endblock form_content -%}
 {%- endembed -%}
 
-{{- config('registration_bottom_text', schema)|raw -}}
+{{- static_content('register_form', 'bottom', schema)|raw -}}
 
 {%- endblock content -%}
 

@@ -10,7 +10,7 @@
                 {{- 'register_confirm_success.title'|trans -}}
             </h2>
 
-            {{- config('registration_success_text', schema) -}}
+            {{- static_content('register_form', 'success', schema)|raw -}}
         {%- endblock body -%}
     {%- endembed -%}
 
