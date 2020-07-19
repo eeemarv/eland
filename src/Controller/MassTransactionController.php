@@ -24,6 +24,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 
 class MassTransactionController extends AbstractController
@@ -112,12 +114,24 @@ class MassTransactionController extends AbstractController
         $selected_users = explode('.', $selected_users);
         $selected_users = array_combine($selected_users, $selected_users);
 
+        $balance_ary = [];
+
+        $rs = $db->prepare('select distinct on(account_id) balance, account_id
+            from ' . $pp->schema() . '.balance
+            order by account_id, id desc');
+
+        $rs->execute();
+
+        while ($row = $rs->fetch())
+        {
+            $balance_ary[$row['account_id']] = $row['balance'];
+        }
+
         $users = [];
 
         $rs = $db->prepare(
             'select id, name, code,
-                role, status, balance,
-                adate
+                role, status, adate
             from ' . $pp->schema() . '.users
             where status IN (0, 1, 2, 5, 6)
             order by code');
@@ -126,6 +140,7 @@ class MassTransactionController extends AbstractController
 
         while ($row = $rs->fetch())
         {
+            $row['balance'] = $balance_ary[$row['id']] ?? 0;
             $users[$row['id']] = $row;
         }
 
@@ -175,11 +190,11 @@ class MassTransactionController extends AbstractController
 
         $amount = $request->request->get('amount', []);
         $description = trim($request->request->get('description', ''));
-        $mail_en = $request->request->get('mail_en', true);
+        $mail_en = $request->request->has('mail_en');
 
         if ($request->isMethod('POST'))
         {
-            if (!$request->request->get('verify', false))
+            if (!$request->request->has('verify'))
             {
                 $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
             }
@@ -313,18 +328,24 @@ class MassTransactionController extends AbstractController
                     $db->insert($pp->schema() . '.transactions', $transaction);
                     $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
 
-                    $db->executeUpdate('update ' . $pp->schema() . '.users
-                        set balance = balance ' . (($to_one) ? '-' : '+') . ' ?
-                        where id = ?', [$amo, $many_uid]);
+                    $db->executeUpdate('insert into ' . $pp->schema() . '.balance (account_id, amount, balance)
+                        values (?, ?, (select coalesce(balance, 0) + ? from ' . $pp->schema() . '.balance
+                        where account_id = ?
+                        order by id desc limit 1))',
+                        [$to_id, $amo, $amo, $to_id],
+                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
+
+                    $db->executeUpdate('insert into ' . $pp->schema() . '.balance (account_id, amount, balance)
+                        values (?, 0 - ?, (select coalesce(balance, 0) - ? from ' . $pp->schema() . '.balance
+                        where account_id = ?
+                        order by id desc limit 1))',
+                        [$from_id, $amo, $amo, $from_id],
+                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
 
                     $total_amount += $amo;
 
                     $transactions[] = $transaction;
                 }
-
-                $db->executeUpdate('update ' . $pp->schema() . '.users
-                    set balance = balance ' . (($to_one) ? '+' : '-') . ' ?
-                    where id = ?', [$total_amount, $one_uid]);
 
                 $db->commit();
 
