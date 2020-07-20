@@ -7,10 +7,12 @@ use Psr\Log\LoggerInterface;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Render\AccountRender;
+use App\Repository\AccountRepository;
 
 class TransactionService
 {
 	protected Db $db;
+	protected AccountRepository $account_repository;
 	protected LoggerInterface $logger;
 	protected AutoMinLimitService $autominlimit_service;
 	protected ConfigService $config_service;
@@ -18,6 +20,7 @@ class TransactionService
 
 	public function __construct(
 		Db $db,
+		AccountRepository $account_repository,
 		LoggerInterface $logger,
 		AutoMinLimitService $autominlimit_service,
 		ConfigService $config_service,
@@ -25,6 +28,7 @@ class TransactionService
 	)
 	{
 		$this->db = $db;
+		$this->account_repository = $account_repository;
 		$this->logger = $logger;
 		$this->autominlimit_service = $autominlimit_service;
 		$this->config_service = $config_service;
@@ -50,21 +54,8 @@ class TransactionService
 
 		$this->db->insert($schema . '.transactions', $transaction);
 		$id = (int) $this->db->lastInsertId($schema . '.transactions_id_seq');
-
-		$this->db->executeUpdate('insert into ' . $schema . '.balance (account_id, amount, balance)
-			values (?, ?, (select coalesce(balance, 0) + ? from ' . $schema . '.balance
-			where account_id = ?
-			order by id desc limit 1))',
-			[$to_id, $amount, $amount, $to_id],
-			[\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
-
-		$this->db->executeUpdate('insert into ' . $schema . '.balance (account_id, amount, balance)
-			values (?, 0 - ?, (select coalesce(balance, 0) - ? from ' . $schema . '.balance
-			where account_id = ?
-			order by id desc limit 1))',
-			[$from_id, $amount, $amount, $from_id],
-			[\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
-
+		$this->account_repository->update_balance($to_id, $amount, $schema);
+		$this->account_repository->update_balance($from_id, -$amount, $schema);
 		$this->db->commit();
 
 		$this->autominlimit_service->init($schema)

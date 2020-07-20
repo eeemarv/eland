@@ -7,6 +7,7 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\AutoMinLimitService;
@@ -84,6 +85,7 @@ class MassTransactionController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        AccountRepository $account_repository,
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -146,7 +148,7 @@ class MassTransactionController extends AbstractController
 
         $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
             from ' . $pp->schema() . '.min_limit
-            order by account_id, created_at desc');
+            order by account_id, id desc');
 
         $rs->execute();
 
@@ -161,7 +163,7 @@ class MassTransactionController extends AbstractController
 
         $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
             from ' . $pp->schema() . '.max_limit
-            order by account_id, created_at desc');
+            order by account_id, id desc');
 
         $rs->execute();
 
@@ -327,20 +329,8 @@ class MassTransactionController extends AbstractController
 
                     $db->insert($pp->schema() . '.transactions', $transaction);
                     $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
-
-                    $db->executeUpdate('insert into ' . $pp->schema() . '.balance (account_id, amount, balance)
-                        values (?, ?, (select coalesce(balance, 0) + ? from ' . $pp->schema() . '.balance
-                        where account_id = ?
-                        order by id desc limit 1))',
-                        [$to_id, $amo, $amo, $to_id],
-                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
-
-                    $db->executeUpdate('insert into ' . $pp->schema() . '.balance (account_id, amount, balance)
-                        values (?, 0 - ?, (select coalesce(balance, 0) - ? from ' . $pp->schema() . '.balance
-                        where account_id = ?
-                        order by id desc limit 1))',
-                        [$from_id, $amo, $amo, $from_id],
-                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
+                    $account_repository->update_balance($to_id, $amo, $pp->schema());
+                    $account_repository->update_balance($from_id, -$amo, $pp->schema());
 
                     $total_amount += $amo;
 
