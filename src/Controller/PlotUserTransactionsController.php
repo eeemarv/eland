@@ -8,7 +8,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
-use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +21,6 @@ class PlotUserTransactionsController extends AbstractController
         int $days,
         Db $db,
         AccountRepository $account_repository,
-        UserCacheService $user_cache_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         LinkRender $link_render,

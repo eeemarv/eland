@@ -2,15 +2,21 @@
 
 namespace App\Twig;
 
+use App\Repository\AccountRepository;
 use App\Service\UserCacheService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AccountRuntime implements RuntimeExtensionInterface
 {
+	protected AccountRepository $account_repository;
 	protected UserCacheService $user_cache_service;
 
-	public function __construct(UserCacheService $user_cache_service)
+	public function __construct(
+		AccountRepository $account_repository,
+		UserCacheService $user_cache_service
+	)
 	{
+		$this->account_repository = $account_repository;
 		$this->user_cache_service = $user_cache_service;
 	}
 
@@ -42,7 +48,6 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_balance(int $id, string $schema):int
 	{
-		$user = $this->user_cache_service->get($id, $schema);
-		return $user['balance'];
+		return $this->account_repository->get_balance($id, $schema);
 	}
 }

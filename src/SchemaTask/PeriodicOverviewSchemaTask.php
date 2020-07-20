@@ -98,8 +98,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 	// fetch all active users
 
 		$rs = $this->db->prepare('select u.id,
-				u.name, u.balance, u.status,
-				u.code, u.postcode, u.periodic_overview_en
+				u.name, u.status,
+				u.code, u.postcode,
+				u.periodic_overview_en
 			from ' . $schema . '.users u
 			where u.status in (1, 2)');
 
