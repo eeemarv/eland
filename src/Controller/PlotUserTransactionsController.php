@@ -13,6 +13,7 @@ use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 
 class PlotUserTransactionsController extends AbstractController
 {
@@ -30,14 +31,15 @@ class PlotUserTransactionsController extends AbstractController
         SystemsService $systems_service
     ):Response
     {
-        $user = $user_cache_service->get($user_id, $pp->schema());
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $end_unix = time();
+        $begin_unix = $end_unix - (86400 * $days);
+        $end_datetime = \DateTimeImmutable::createFromFormat('U', (string) $end_unix);
+        $begin_datetime = \DateTimeImmutable::createFromFormat('U', (string) $begin_unix);
+        $begin_balance = $account_repository->get_balance_on_date($user_id, $begin_datetime, $pp->schema());
 
-        if (!$user)
-        {
-            $this->json(['error' => 'User not found'], 404);
-        }
-
-        $intersystem_names = $transactions = [];
+        $intersystem_names = [];
+        $transactions = [];
 
         $st = $db->prepare('select url, apimethod,
             localletscode as code, groupname as name
@@ -57,7 +59,7 @@ class PlotUserTransactionsController extends AbstractController
 
             if ($sys_schema)
             {
-                $name = $config_service->get('systemname', $sys_schema);
+                $name = $config_service->get_str('system.name', $sys_schema);
             }
             else
             {
@@ -66,15 +68,6 @@ class PlotUserTransactionsController extends AbstractController
 
             $intersystem_names[$code] = $name;
         }
-
-        $end_balance = (int) $user['balance'];
-        $balance = 0;
-
-        $begin_unix = time() - (86400 * $days);
-        $end_unix = time();
-
-        $begin_date = gmdate('Y-m-d H:i:s', $begin_unix);
-        $end_date = gmdate('Y-m-d H:i:s', $end_unix);
 
         $query = 'select t.id, t.amount, t.id_from, t.id_to,
                 t.real_from, t.real_to, t.created_at, t.description,
@@ -90,7 +83,10 @@ class PlotUserTransactionsController extends AbstractController
             order by t.created_at asc';
 
         $fetched_transactions = $db->fetchAll($query,
-            [$user_id, $user_id, $user_id, $begin_date, $end_date]);
+            [$user_id, $user_id, $user_id, $begin_datetime, $end_datetime],
+            [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT,
+            Types::DATETIME_IMMUTABLE, Types::DATETIME_IMMUTABLE]
+        );
 
         foreach ($fetched_transactions as $t)
         {
@@ -98,7 +94,6 @@ class PlotUserTransactionsController extends AbstractController
             $out = $t['id_from'] === $user_id;
             $mul = $out ? -1 : 1;
             $amount = ((int) $t['amount']) * $mul;
-            $balance += $amount;
 
             $name = strip_tags((string) $t['name']);
             $code = strip_tags((string) $t['code']);
@@ -167,12 +162,10 @@ class PlotUserTransactionsController extends AbstractController
             ];
         }
 
-        $begin_balance = $end_balance - $balance;
-
         return $this->json([
             'user_id' 		=> $user_id,
             'ticks' 		=> $days === 365 ? 12 : 4,
-            'currency' 		=> $config_service->get('currency', $pp->schema()),
+            'currency' 		=> $currency,
             'transactions' 	=> $transactions,
             'begin_balance' => $begin_balance,
             'begin_unix' 	=> $begin_unix,

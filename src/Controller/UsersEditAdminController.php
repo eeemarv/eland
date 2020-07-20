@@ -1138,11 +1138,12 @@ class UsersEditAdminController extends AbstractController
             else
             {
                 $out .= 'De algemeen geldende ';
-                $out .= 'Minimum Systeemslimiet bedraagt <strong>';
+                $out .= 'Minimum Systeemslimiet bedraagt ';
+                $out .= '<span class="label label-default">';
                 $out .= $system_min_limit;
-                $out .= ' ';
+                $out .= '</span> ';
                 $out .= $currency;
-                $out .= '</strong>. ';
+                $out .= '.';
             }
 
             $out .= '</p>';
@@ -1181,11 +1182,12 @@ class UsersEditAdminController extends AbstractController
             else
             {
                 $out .= 'De algemeen geldende Maximum ';
-                $out .= 'Systeemslimiet bedraagt <strong>';
+                $out .= 'Systeemslimiet bedraagt ';
+                $out .= '<span class="label label-default">';
                 $out .= $system_max_limit;
-                $out .= ' ';
+                $out .= '</span> ';
                 $out .= $currency;
-                $out .= '</strong>. ';
+                $out .= '.';
             }
 
             $out .= '</p>';

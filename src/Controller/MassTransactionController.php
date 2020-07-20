@@ -108,6 +108,11 @@ class MassTransactionController extends AbstractController
     {
         $errors = [];
 
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
 
@@ -281,7 +286,7 @@ class MassTransactionController extends AbstractController
                     $alert_success .= 'Transactie van gebruiker ' . $from_user['code'] . ' ' . $from_user['name'];
                     $alert_success .= ' naar ' . $to_user['code'] . ' ' . $to_user['name'];
                     $alert_success .= '  met bedrag ' . $amo .' ';
-                    $alert_success .= $config_service->get('currency', $pp->schema());
+                    $alert_success .= $currency;
                     $alert_success .= ' uitgevoerd.<br>';
 
                     $log_many .= $many_user['code'] . ' ' . $many_user['name'] . '(' . $amo . '), ';
@@ -336,13 +341,13 @@ class MassTransactionController extends AbstractController
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';
-                $alert_success .= $config_service->get('currency', $pp->schema());
+                $alert_success .= $currency;
                 $alert_service->success($alert_success);
 
                 $log_one = $users[$one_uid]['code'] . ' ';
                 $log_one .= $users[$one_uid]['name'];
                 $log_one .= '(Total amount: ' . $total_amount . ' ';
-                $log_one .= $config_service->get('currency', $pp->schema());
+                $log_one .= $currency;
                 $log_one .= ')';
 
                 $log_many = rtrim($log_many, ', ');
@@ -434,9 +439,6 @@ class MassTransactionController extends AbstractController
             }
         }
 
-        $system_minlimit = $config_service->get('minlimit', $pp->schema());
-        $system_maxlimit = $config_service->get('maxlimit', $pp->schema());
-
         $assets_service->add([
             'mass_transaction.js',
             'combined_filter.js',
@@ -487,7 +489,7 @@ class MassTransactionController extends AbstractController
         $out .= 'Vast bedrag</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</span>';
         $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
         $out .= 'min="0">';
@@ -532,7 +534,7 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= ': basis';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_base">';
@@ -608,7 +610,7 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= ': min';
         $out .= '</span>';
 
@@ -620,7 +622,7 @@ class MassTransactionController extends AbstractController
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= ': max';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="var_max">';
@@ -638,26 +640,27 @@ class MassTransactionController extends AbstractController
         $out .= ' Respecteer minimum limieten</label>';
         $out .= '</div>';
 
-        if ($config_service->get('minlimit', $pp->schema()) !== ''
-            || $config_service->get('maxlimit', $pp->schema()) !== '')
+        if (isset($system_min_limit) || isset($system_max_limit))
         {
             $out .= '<ul>';
 
-            if ($config_service->get('minlimit', $pp->schema()) !== '')
+            if (isset($system_min_limit))
             {
                 $out .= '<li>Minimum Systeemslimiet: ';
-                $out .= $config_service->get('minlimit', $pp->schema());
-                $out .= ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= '<span class="label label-default">';
+                $out .= $system_min_limit;
+                $out .= '</span> ';
+                $out .= $currency;
                 $out .= '</li>';
             }
 
-            if ($config_service->get('maxlimit', $pp->schema()) !== '')
+            if (isset($system_max_limit))
             {
                 $out .= '<li>Maximum Systeemslimiet: ';
-                $out .= $config_service->get('maxlimit', $pp->schema());
-                $out .= ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= '<span class="label label-default">';
+                $out .= $system_max_limit;
+                $out .= '</span> ';
+                $out .= $currency;
                 $out .= '</li>';
             }
 
@@ -755,7 +758,7 @@ class MassTransactionController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
+                'newuserdays'   => $new_user_days,
             ]);
         $out .= '">';
 
@@ -771,10 +774,10 @@ class MassTransactionController extends AbstractController
         $out .= 'table-hover panel-body footable" ';
         $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
         $out .= 'data-minlimit="';
-        $out .= $system_minlimit;
+        $out .= $system_min_limit;
         $out .= '" ';
         $out .= 'data-maxlimit="';
-        $out .= $system_maxlimit;
+        $out .= $system_max_limit;
         $out .= '"';
         $out .= '>';
         $out .= '<thead>';
@@ -841,8 +844,8 @@ class MassTransactionController extends AbstractController
 
             $balance = $user['balance'];
 
-            $minlimit = $user['min_limit'] ?? $system_minlimit;
-            $maxlimit = $user['max_limit'] ?? $system_maxlimit;
+            $minlimit = $user['min_limit'] ?? $system_min_limit;
+            $maxlimit = $user['max_limit'] ?? $system_max_limit;
 
             if ((isset($minlimit) && $balance < $minlimit)
                 || (isset($maxlimit) && $balance > $maxlimit))
@@ -872,7 +875,7 @@ class MassTransactionController extends AbstractController
         $out .= '</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" id="total" readonly>';
         $out .= '</div>';

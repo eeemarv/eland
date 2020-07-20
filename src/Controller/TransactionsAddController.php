@@ -96,7 +96,7 @@ class TransactionsAddController extends AbstractController
                     from ' . $pp->schema() . '.letsgroups
                     where id = ?', [$group_id]);
 
-                if (is_null($group))
+                if (!isset($group) || $group === false)
                 {
                     $errors[] =  'InterSysteem niet gevonden.';
                 }
@@ -195,7 +195,7 @@ class TransactionsAddController extends AbstractController
                 $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
                 $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
 
-                if (is_null($from_user_min_limit))
+                if (!isset($from_user_min_limit))
                 {
                     if(isset($system_min_limit) && ($from_user_balance - $amount) < $system_min_limit)
                     {
@@ -229,7 +229,7 @@ class TransactionsAddController extends AbstractController
                 $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
                 $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
 
-                if (is_null($to_user_max_limit))
+                if (!isset($to_user_max_limit))
                 {
                     if(isset($system_max_limit) && ($to_user_balance + $amount) > $system_max_limit)
                     {
@@ -477,7 +477,7 @@ class TransactionsAddController extends AbstractController
                     $from_remote_min_limit = $account_repository->get_min_limit($from_remote_id, $remote_schema);
                     $from_remote_balance = $account_repository->get_balance($from_remote_id, $remote_schema);
 
-                    if (is_null($from_remote_min_limit))
+                    if (!isset($from_remote_min_limit))
                     {
                         if(isset($remote_system_min_limit) && ($from_remote_balance - $remote_amount) < $remote_system_min_limit)
                         {
@@ -529,7 +529,7 @@ class TransactionsAddController extends AbstractController
                     $to_remote_max_limit = $account_repository->get_max_limit($to_remote_id, $remote_schema);
                     $to_remote_balance = $account_repository->get_balance($to_remote_id, $remote_schema);
 
-                    if (is_null($to_remote_max_limit))
+                    if (!isset($to_remote_max_limit))
                     {
                         if(isset($remote_system_max_limit) && ($to_remote_balance + $remote_amount) > $remote_system_max_limit)
                         {

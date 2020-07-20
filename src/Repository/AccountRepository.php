@@ -21,7 +21,7 @@ class AccountRepository
             left join ' . $schema . '.min_limit as m
             on m.account_id = ?
             order by m.id desc
-            limit 1', [$account_id]);
+            limit 1', [$account_id], 0, [\PDO::PARAM_INT]);
     }
 
     public function update_min_limit(int $account_id, ?int $min_limit, ?int $created_by, string $schema):void
@@ -60,7 +60,7 @@ class AccountRepository
             left join ' . $schema . '.max_limit as m
             on m.account_id = ?
             order by m.id desc
-            limit 1', [$account_id]);
+            limit 1', [$account_id], 0, [\PDO::PARAM_INT]);
     }
 
     public function update_max_limit(int $account_id, ?int $max_limit, ?int $created_by, string $schema):void
@@ -99,7 +99,19 @@ class AccountRepository
             left join ' . $schema . '.balance as b
             on b.account_id = ?
             order by b.id desc
-            limit 1', [$account_id]);
+            limit 1', [$account_id], 0, [\PDO::PARAM_INT]);
+    }
+
+    public function get_balance_on_date(int $account_id, \DateTimeImmutable $datetime, string $schema):int
+    {
+        return $this->db->fetchColumn('select coalesce(b.balance, 0)
+            from (values(0)) as d
+            left join ' . $schema . '.balance as b
+            on b.account_id = ? and b.created_at <= ?
+            order by b.id desc
+            limit 1',
+            [$account_id, $datetime], 0,
+            [\PDO::PARAM_INT, Types::DATE_IMMUTABLE]);
     }
 
     public function update_balance(int $account_id, int $amount, string $schema):void
