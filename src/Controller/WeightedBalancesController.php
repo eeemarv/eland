@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\AccountRepository;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +13,7 @@ class WeightedBalancesController extends AbstractController
     public function __invoke(
         int $days,
         Db $db,
+        AccountRepository $account_repository,
         PageParamsService $pp
     ):Response
     {
@@ -19,16 +21,18 @@ class WeightedBalancesController extends AbstractController
         $begin_unix = $end_unix - ($days * 86400);
         $begin = gmdate('Y-m-d H:i:s', $begin_unix);
 
+        $balance_ary = $account_repository->get_balance_ary($pp->schema());
+
         $balance = [];
 
-        $rs = $db->prepare('select id, balance
+        $rs = $db->prepare('select id
             from ' . $pp->schema() . '.users');
 
         $rs->execute();
 
         while ($row = $rs->fetch())
         {
-            $balance[$row['id']] = $row['balance'];
+            $balance[$row['id']] = $balance_ary[$row['id']] ?? 0;
         }
 
         $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);

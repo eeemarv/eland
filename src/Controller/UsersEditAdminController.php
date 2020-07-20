@@ -14,6 +14,7 @@ use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Repository\AccountRepository;
 use App\Security\User;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -42,6 +43,7 @@ class UsersEditAdminController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        AccountRepository $account_repository,
         EncoderFactoryInterface $encoder_factory,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -74,6 +76,7 @@ class UsersEditAdminController extends AbstractController
             $id,
             true,
             $db,
+            $account_repository,
             $encoder_factory,
             $account_render,
             $alert_service,
@@ -112,6 +115,7 @@ class UsersEditAdminController extends AbstractController
         int $id,
         bool $is_edit,
         Db $db,
+        AccountRepository $account_repository,
         EncoderFactoryInterface $encoder_factory,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -145,7 +149,11 @@ class UsersEditAdminController extends AbstractController
         $username_edit_en = false;
         $fullname_edit_en = false;
         $is_activated = false;
-        $mailenabled = $config_service->get('mailenabled', $pp->schema());
+
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
 
         $stored_min_limit = null;
         $stored_max_limit = null;
@@ -157,27 +165,8 @@ class UsersEditAdminController extends AbstractController
             $stored_name = $stored_user['name'];
             $is_activated = isset($stored_user['adate']);
 
-            $stored_min_limit = $db->fetchColumn('select min_limit
-                from ' . $pp->schema() . '.min_limit
-                where account_id = ?
-                order by created_at desc
-                limit 1', [$id]);
-
-            if ($stored_min_limit === false)
-            {
-                $stored_min_limit = null;
-            }
-
-            $stored_max_limit = $db->fetchColumn('select max_limit
-                from ' . $pp->schema() . '.max_limit
-                where account_id = ?
-                order by created_at desc
-                limit 1', [$id]);
-
-            if ($stored_max_limit === false)
-            {
-                $stored_max_limit = null;
-            }
+            $stored_min_limit = $account_repository->get_min_limit($id, $pp->schema());
+            $stored_max_limit = $account_repository->get_max_limit($id, $pp->schema());
         }
 
         $intersystem_code = $request->query->get('intersystem_code', '');
@@ -209,8 +198,8 @@ class UsersEditAdminController extends AbstractController
         }
         else if ($is_owner)
         {
-            $username_edit_en = $config_service->get('users_can_edit_username', $pp->schema()) ? true : false;
-            $fullname_edit_en = $config_service->get('users_can_edit_fullname', $pp->schema()) ? true : false;
+            $username_edit_en = $config_service->get_bool('users.fields.username.self_edit', $pp->schema());
+            $fullname_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
         }
 
         if ($request->isMethod('POST'))
@@ -397,14 +386,14 @@ class UsersEditAdminController extends AbstractController
                         letters, cijfers en koppeltekens bestaan.';
                 }
 
-                if ($min_limit
+                if ($min_limit !== ''
                     && filter_var($min_limit, FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
                         Minimum Account Limiet.';
                 }
 
-                if ($max_limit
+                if ($max_limit !== ''
                     && filter_var($max_limit, FILTER_VALIDATE_INT) === false)
                 {
                     $errors[] = 'Geef getal of niets op voor de
@@ -529,35 +518,19 @@ class UsersEditAdminController extends AbstractController
             if (!count($errors) && $pp->is_admin())
             {
                 $min_to_store = $min_limit;
-
-                if ($min_to_store === '')
-                {
-                    $min_to_store = null;
-                }
+                $min_to_store = $min_to_store === '' ? null : (int) $min_to_store;
 
                 if ($stored_min_limit !== $min_to_store)
                 {
-                    $db->insert($pp->schema() . '.min_limit', [
-                        'account_id'    => $id,
-                        'min_limit'     => $min_to_store,
-                        'created_by'    => $su->id(),
-                    ]);
+                    $account_repository->update_min_limit($id, $min_to_store, $su->id(), $pp->schema());
                 }
 
                 $max_to_store = $max_limit;
-
-                if ($max_to_store === '')
-                {
-                    $max_to_store = null;
-                }
+                $max_to_store = $max_to_store === '' ? null : (int) $max_to_store;
 
                 if ($stored_max_limit !== $max_to_store)
                 {
-                    $db->insert($pp->schema() . '.max_limit', [
-                        'account_id'    => $id,
-                        'max_limit'     => $max_to_store,
-                        'created_by'    => $su->id(),
-                    ]);
+                    $account_repository->update_max_limit($id, $max_to_store, $su->id(), $pp->schema());
                 }
             }
 
@@ -655,7 +628,7 @@ class UsersEditAdminController extends AbstractController
                     {
                         if ($password_notify && $password)
                         {
-                            if ($mailenabled)
+                            if ($mail_enabled)
                             {
                                 if ($mailadr)
                                 {
@@ -749,7 +722,7 @@ class UsersEditAdminController extends AbstractController
                     {
                         $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
-                        $admin_mail = $config_service->get('admin', $remote_schema);
+                        $admin_mail = $config_service->get_ary('mail.addresses.admin', $remote_schema)[0];
 
                         foreach ($contact as $k => $c)
                         {
@@ -761,7 +734,7 @@ class UsersEditAdminController extends AbstractController
                         }
 
                         // name from source is preferable
-                        $name = $fullname = $config_service->get('systemname', $remote_schema);
+                        $name = $fullname = $config_service->get_str('system.name', $remote_schema);
                     }
                 }
 
@@ -1140,7 +1113,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-arrow-down"></span> ';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="min_limit" name="min_limit" ';
@@ -1157,7 +1130,7 @@ class UsersEditAdminController extends AbstractController
             $out .= ' ';
             $out .= 'van toepassing. ';
 
-            if ($config_service->get('minlimit', $pp->schema()) === '')
+            if (!isset($system_min_limit))
             {
                 $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
                 $out .= 'geledende Minimum Systeemslimiet ingesteld. ';
@@ -1166,9 +1139,9 @@ class UsersEditAdminController extends AbstractController
             {
                 $out .= 'De algemeen geldende ';
                 $out .= 'Minimum Systeemslimiet bedraagt <strong>';
-                $out .= $config_service->get('minlimit', $pp->schema());
+                $out .= $system_min_limit;
                 $out .= ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= $currency;
                 $out .= '</strong>. ';
             }
 
@@ -1181,7 +1154,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-arrow-up"></span> ';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
             $out .= '</span>';
             $out .= '<input type="number" class="form-control" ';
             $out .= 'id="max_limit" name="max_limit" ';
@@ -1200,7 +1173,7 @@ class UsersEditAdminController extends AbstractController
             $out .= ' ';
             $out .= 'van toepassing. ';
 
-            if ($config_service->get('maxlimit', $pp->schema()) === '')
+            if (!isset($system_max_limit))
             {
                 $out .= 'Er is momenteel <strong>geen</strong> algemeen ';
                 $out .= 'geledende Maximum Systeemslimiet ingesteld. ';
@@ -1209,9 +1182,9 @@ class UsersEditAdminController extends AbstractController
             {
                 $out .= 'De algemeen geldende Maximum ';
                 $out .= 'Systeemslimiet bedraagt <strong>';
-                $out .= $config_service->get('maxlimit', $pp->schema());
+                $out .= $system_max_limit;
                 $out .= ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= $currency;
                 $out .= '</strong>. ';
             }
 

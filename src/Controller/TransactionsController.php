@@ -9,6 +9,7 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +30,7 @@ class TransactionsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -55,6 +57,8 @@ class TransactionsController extends AbstractController
         if (isset($filter['uid']))
         {
             $filter['uid'] = (int) $filter['uid'];
+
+            $balance = $account_repository->get_balance($filter['uid'], $pp->schema());
         }
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
@@ -348,7 +352,7 @@ class TransactionsController extends AbstractController
             }
 
             $heading_render->add_sub_raw('Huidig saldo: <span class="label label-info">');
-            $heading_render->add_sub((string) $user['balance']);
+            $heading_render->add_sub((string) $balance);
             $heading_render->add_sub_raw('</span>&nbsp;');
             $heading_render->add_sub($config_service->get('currency', $pp->schema()));
         }

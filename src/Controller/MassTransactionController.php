@@ -116,18 +116,9 @@ class MassTransactionController extends AbstractController
         $selected_users = explode('.', $selected_users);
         $selected_users = array_combine($selected_users, $selected_users);
 
-        $balance_ary = [];
-
-        $rs = $db->prepare('select distinct on(account_id) balance, account_id
-            from ' . $pp->schema() . '.balance
-            order by account_id, id desc');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $balance_ary[$row['account_id']] = $row['balance'];
-        }
+        $balance_ary = $account_repository->get_balance_ary($pp->schema());
+        $min_limit_ary = $account_repository->get_min_limit_ary($pp->schema());
+        $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
 
         $users = [];
 
@@ -143,37 +134,18 @@ class MassTransactionController extends AbstractController
         while ($row = $rs->fetch())
         {
             $row['balance'] = $balance_ary[$row['id']] ?? 0;
+
+            if (isset($min_limit_ary[$row['id']]))
+            {
+                $row['min_limit'] = $min_limit_ary[$row['id']];
+            }
+
+            if (isset($max_limit_ary[$row['id']]))
+            {
+                $row['max_limit'] = $max_limit_ary[$row['id']];
+            }
+
             $users[$row['id']] = $row;
-        }
-
-        $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
-            from ' . $pp->schema() . '.min_limit
-            order by account_id, id desc');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            if (!isset($users[$row['account_id']]))
-            {
-                continue;
-            }
-            $users[$row['account_id']]['min_limit'] = $row['min_limit'];
-        }
-
-        $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
-            from ' . $pp->schema() . '.max_limit
-            order by account_id, id desc');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            if (!isset($users[$row['account_id']]))
-            {
-                continue;
-            }
-            $users[$row['account_id']]['max_limit'] = $row['max_limit'];
         }
 
         $to_code = trim($request->request->get('to_code', ''));

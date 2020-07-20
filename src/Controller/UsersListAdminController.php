@@ -13,6 +13,7 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\SelectRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\CacheService;
@@ -39,6 +40,7 @@ class UsersListAdminController extends AbstractController
         Request $request,
         string $status,
         Db $db,
+        AccountRepository $account_repository,
         LoggerInterface $logger,
         SessionInterface $session,
         AccountRender $account_render,
@@ -72,6 +74,7 @@ class UsersListAdminController extends AbstractController
             $request,
             $status,
             $db,
+            $account_repository,
             $logger,
             $session,
             $account_render,

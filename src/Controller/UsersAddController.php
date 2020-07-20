@@ -12,6 +12,7 @@ use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -38,6 +39,7 @@ class UsersAddController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        AccountRepository $account_repository,
         EncoderFactoryInterface $encoder_factory,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -70,6 +72,7 @@ class UsersAddController extends AbstractController
             0,
             false,
             $db,
+            $account_repository,
             $encoder_factory,
             $account_render,
             $alert_service,

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Render\LinkRender;
+use App\Repository\AccountRepository;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
@@ -19,6 +20,7 @@ class PlotUserTransactionsController extends AbstractController
         int $user_id,
         int $days,
         Db $db,
+        AccountRepository $account_repository,
         UserCacheService $user_cache_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
