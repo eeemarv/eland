@@ -478,7 +478,7 @@ class MassTransactionController extends AbstractController
         $out .= 'aanpassen alvorens de massa transactie uit te voeren. ';
         $out .= '</p>';
 
-        $out .= '<form class="form" id="fill_in_aid" ';
+        $out .= '<form class="form" data-fill-in ';
 
         $out .= 'data-transactions-sum-in="';
         $out .= htmlspecialchars($link_render->context_path('transactions_sum_in',

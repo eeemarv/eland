@@ -34,10 +34,10 @@ class WeightedBalancesController extends AbstractController
         $next = array_map(function () use ($end_unix){ return $end_unix; }, $balance);
         $acc = array_map(function (){ return 0; }, $balance);
 
-        $trans = $db->fetchAll('select id_to, id_from, amount, date
+        $trans = $db->fetchAll('select id_to, id_from, amount, created_at
             from ' . $pp->schema() . '.transactions
-            where date >= ?
-            order by date desc', [$begin]);
+            where created_at >= ?
+            order by created_at desc', [$begin]);
 
         foreach ($trans as $t)
         {
