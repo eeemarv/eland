@@ -17,13 +17,13 @@ class TransactionsSumInController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        return self::calc(
+        return $this->json(self::calc(
             $request,
             $days,
             true,
             $db,
             $pp
-        );
+        ));
     }
 
     public static function calc(
@@ -32,15 +32,13 @@ class TransactionsSumInController extends AbstractController
         bool $in,
         Db $db,
         PageParamsService $pp
-    ):Response
+    ):array
     {
         $ex_codes = $request->query->get('ex', []);
 
         if (!is_array($ex_codes))
         {
-            return $this->json([
-                'error' => 'No array for codes (ex parameter)',
-            ], 400);
+            return [];
         }
 
         array_walk($ex_codes, function(&$value){ $value = trim($value); });
@@ -85,6 +83,6 @@ class TransactionsSumInController extends AbstractController
             $ary[$row['uid']] = $row['sum'];
         }
 
-        return $this->json($ary);
+        return $ary;
     }
 }
