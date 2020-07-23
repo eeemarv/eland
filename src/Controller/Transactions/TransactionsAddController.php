@@ -5,6 +5,7 @@ namespace App\Controller\Transactions;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -29,6 +30,7 @@ class TransactionsAddController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        AccountRepository $account_repository,
         LoggerInterface $logger,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -54,9 +56,14 @@ class TransactionsAddController extends AbstractController
         $tuid = (int) $request->query->get('tuid', 0);
         $tus = $request->query->get('tus', '');
 
-        $currency = $config_service->get('currency', $pp->schema());
-
-        $transaction = [];
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $currency_ratio = $config_service->get_int('transactions.currency.per_hour_ratio', $pp->schema());
+        $timebased_enabled = $config_service->get_bool('transactions.currency.timebased_en', $pp->schema());
+        $system_name = $config_service->get_str('system.name', $pp->schema());
+        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
+        $new_user_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
 
         if ($request->isMethod('POST'))
         {
@@ -65,24 +72,18 @@ class TransactionsAddController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            $transaction['transid'] = $transaction_service->generate_transid(
-                $su->id(), $pp->system());
-
-            $transaction['description'] = trim($request->request->get('description', ''));
+            $transid = $transaction_service->generate_transid($su->id(), $pp->system());
+            $description = trim($request->request->get('description', ''));
+            $real_from = $request->request->get('real_from');
 
             [$code_from] = explode(' ', trim($request->request->get('code_from', '')));
             [$code_to] = explode(' ', trim($request->request->get('code_to', '')));
 
-            $transaction['amount'] = $amount = ltrim($request->request->get('amount', ''), '0 ');
-
-            if (!$su->is_master())
-            {
-                $transaction['created_by'] = $su->id();
-            }
+            $amount = (int) $request->request->get('amount', 0);
 
             $group_id = trim($request->request->get('group_id', ''));
 
-            if (strlen($transaction['description']) > 60)
+            if (strlen($description) > 60)
             {
                 $errors[] = 'De omschrijving mag maximaal 60 tekens lang zijn.';
             }
@@ -93,7 +94,7 @@ class TransactionsAddController extends AbstractController
                     from ' . $pp->schema() . '.letsgroups
                     where id = ?', [$group_id]);
 
-                if (!isset($group))
+                if (!isset($group) || $group === false)
                 {
                     $errors[] =  'InterSysteem niet gevonden.';
                 }
@@ -105,26 +106,30 @@ class TransactionsAddController extends AbstractController
 
             if ($pp->is_user() && !$su->is_master())
             {
-                $fromuser = $db->fetchAssoc('select *
+                $from_user = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.users
                     where id = ?', [$su->id()]);
             }
             else
             {
-                $fromuser = $db->fetchAssoc('select *
+                $from_user = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.users
                     where code = ?', [$code_from]);
             }
 
-            $code_touser = $group_id == 'self' ? $code_to : $group['localletscode'];
+            $code_to_self = $group_id == 'self' ? $code_to : $group['localletscode'];
 
-            $touser = $db->fetchAssoc('select *
+            $to_user = $db->fetchAssoc('select *
                 from ' . $pp->schema() . '.users
-                where code = ?', [$code_touser]);
+                where code = ?', [$code_to_self]);
 
-            if(empty($fromuser))
+            if(!is_array($from_user))
             {
                 $errors[] = 'De "Van Account Code" bestaat niet';
+            }
+            else
+            {
+                $from_id = $from_user['id'];
             }
 
             if (!strlen($code_to))
@@ -132,7 +137,7 @@ class TransactionsAddController extends AbstractController
                 $errors[] = 'Geen bestemmings Account (Aan Account Code) ingevuld';
             }
 
-            if(empty($touser) && !count($errors))
+            if(!count($errors) && !is_array($to_user))
             {
                 if ($group_id == 'self')
                 {
@@ -144,69 +149,67 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            if ($group_id == 'self' && !count($errors))
+            if (!count($errors))
             {
-                if ($touser['status'] == 7)
+                $to_id = $to_user['id'];
+            }
+
+            if (!count($errors) && $group_id == 'self')
+            {
+                if ($to_user['status'] == 7)
                 {
                     $errors[] = 'Je kan niet rechtstreeks naar een interSysteem rekening overschrijven.';
                 }
             }
 
-            if ($fromuser['status'] == 7 && !count($errors))
+            if (!count($errors) && $from_user['status'] == 7)
             {
-                $transaction['real_from'] = $request->request->get('real_from');
-
-                if ($group_id != 'self' && !count($errors))
+                if ($group_id != 'self')
                 {
                     $errors[] = 'Transacties tussen accounts beide van het type "interSysteem" zijn niet mogelijk.';
                 }
             }
+            else
+            {
+                unset($real_from);
+            }
 
-            $transaction['id_from'] = $fromuser['id'];
-            $transaction['id_to'] = $touser['id'];
-
-            if (!$transaction['description'])
+            if (!$description)
             {
                 $errors[]= 'De omschrijving is niet ingevuld';
             }
 
-            if (!$transaction['amount'])
+            if (!$amount)
             {
                 $errors[] = 'Bedrag is niet ingevuld';
             }
-
-            else if (!(ctype_digit((string) $transaction['amount'])) && !count($errors))
+            else if (!count($errors) && !(ctype_digit((string) $amount)))
             {
                 $errors[] = 'Het bedrag is geen geldig getal';
             }
 
             if (!$pp->is_admin() && !count($errors))
             {
-                $from_user_min_limit = $db->fetchColumn('select min_limit
-                    from ' . $pp->schema() . '.min_limit
-                    where account_id = ?
-                    order by created_at desc
-                    limit 1', [$fromuser['id']]);
+                $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
+                $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
 
-                if (!isset($from_user_min_limit) || $from_user_min_limit === false)
+                if (!isset($from_user_min_limit))
                 {
-                    $minlimit = $config_service->get('minlimit', $pp->schema());
-
-                    if(($fromuser['balance'] - $amount) < $minlimit && $minlimit !== '')
+                    if(isset($system_min_limit) && ($from_user_balance - $amount) < $system_min_limit)
                     {
                         $err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
-                        $err .= 'Je saldo bedraagt ' . $fromuser['balance'] . ' ' . $currency . ' ';
+                        $err .= 'Je saldo bedraagt ' . $from_user_balance . ' ' . $currency . ' ';
                         $err .= 'en de minimum Systeemslimiet bedraagt ';
-                        $err .= $minlimit . ' ' . $currency;
+                        $err .= $system_min_limit . ' ' . $currency;
                         $errors[] = $err;
                     }
                 }
                 else
                 {
-                    if(($fromuser['balance'] - $amount) < $from_user_min_limit)
+                    if(($from_user_balance - $amount) < $from_user_min_limit)
                     {
                         $err = 'Je beschikbaar saldo laat deze transactie niet toe. ';
-                        $err .= 'Je saldo bedraagt ' . $fromuser['balance'] . ' ';
+                        $err .= 'Je saldo bedraagt ' . $from_user_balance . ' ';
                         $err .= $currency . ' en je minimum limiet bedraagt ';
                         $err .= $from_user_min_limit . ' ' . $currency . '.';
                         $errors[] = $err;
@@ -214,42 +217,37 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            if(($fromuser['code'] == $touser['code']) && !count($errors))
+            if(!count($errors) && ($from_user['code'] == $to_user['code']))
             {
                 $errors[] = 'Van en Aan Account Code kunnen niet hetzelfde zijn.';
             }
 
             if (!$pp->is_admin() && !count($errors))
             {
-                $to_user_max_limit = $db->fetchColumn('select max_limit
-                    from ' . $pp->schema() . '.max_limit
-                    where account_id = ?
-                    order by created_at desc
-                    limit 1', [$touser['id']]);
+                $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
+                $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
 
-                if (!isset($to_user_max_limit) || $to_user_max_limit === false)
+                if (!isset($to_user_max_limit))
                 {
-                    $maxlimit = $config_service->get('maxlimit', $pp->schema());
-
-                    if(($touser['balance'] + $transaction['amount']) > $maxlimit && $maxlimit !== '')
+                    if(isset($system_max_limit) && ($to_user_balance + $amount) > $system_max_limit)
                     {
                         $err = 'Het ';
                         $err .= $group_id == 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (in dit Systeem)';
                         $err .= ' heeft haar maximum limiet bereikt. ';
-                        $err .= 'Het saldo bedraagt ' . $touser['balance'] . ' ' . $currency;
+                        $err .= 'Het saldo bedraagt ' . $to_user_balance . ' ' . $currency;
                         $err .= ' en de maximum ';
-                        $err .= 'Systeemslimiet bedraagt ' . $maxlimit . ' ' . $currency . '.';
+                        $err .= 'Systeemslimiet bedraagt ' . $system_max_limit . ' ' . $currency . '.';
                         $errors[] = $err;
                     }
                 }
                 else
                 {
-                    if(($touser['balance'] + $transaction['amount']) > $to_user_max_limit)
+                    if(($to_user_balance + $amount) > $to_user_max_limit)
                     {
                         $err = 'Het ';
                         $err .= $group_id == 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (in dit Systeem)';
                         $err .= ' heeft haar maximum limiet bereikt. ';
-                        $err .= 'Het saldo bedraagt ' . $touser['balance'] . ' ' . $currency;
+                        $err .= 'Het saldo bedraagt ' . $to_user_balance . ' ' . $currency;
                         $err .= ' en de Maximum Account ';
                         $err .= 'Limiet bedraagt ' . $to_user_max_limit . ' ' . $currency . '.';
                         $errors[] = $err;
@@ -257,35 +255,33 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            if($group_id == 'self'
+            if(!count($errors) && $group_id == 'self'
                 && !$pp->is_admin()
-                && !($touser['status'] == '1' || $touser['status'] == '2')
-                && !count($errors))
+                && !($to_user['status'] == '1' || $to_user['status'] == '2')
+            )
             {
                 $errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
             }
 
             if ($pp->is_user() && !count($errors))
             {
-                $balance_eq = $config_service->get('balance_equilibrium', $pp->schema());
-
-                if (($fromuser['status'] == 2) && (($fromuser['balance'] - $amount) < $balance_eq))
+                if (($from_user['status'] == 2) && (($from_user_balance - $amount) < $balance_equilibrium))
                 {
                     $err = 'Als Uitstapper kan je geen ';
                     $err .= $amount;
                     $err .= ' ';
-                    $err .= $config_service->get('currency', $pp->schema());
+                    $err .= $currency;
                     $err .= ' uitgeven.';
                     $errors[] = $err;
                 }
 
-                if (($touser['status'] == 2) && (($touser['balance'] + $amount) > $balance_eq))
+                if (($to_user['status'] == 2) && (($to_user_balance + $amount) > $balance_equilibrium))
                 {
                     $err = 'Het ';
                     $err .= $group_id === 'self' ? 'bestemmings Account (Aan Account Code)' : 'interSysteem Account (op dit Systeem)';
                     $err .= ' heeft de status \'Uitstapper\' en kan geen ';
                     $err .= $amount . ' ';
-                    $err .= $config_service->get('currency', $pp->schema());
+                    $err .= $currency;
                     $err .= ' ontvangen.';
                     $errors[] = $err;
                 }
@@ -302,11 +298,28 @@ class TransactionsAddController extends AbstractController
                 $group_domain = false;
             }
 
-            if(count($errors))
+            if(!count($errors))
             {
-                $alert_service->error($errors);
+                $transaction = [
+                    'id_from'       => $from_id,
+                    'id_to'         => $to_id,
+                    'amount'        => $amount,
+                    'description'   => $description,
+                    'transid'       => $transid,
+                ];
+
+                if (!$su->is_master())
+                {
+                    $transaction['created_by'] = $su->id();
+                }
+
+                if (isset($real_from) && $real_from !== '')
+                {
+                    $transaction['real_from'] = $real_from;
+                }
             }
-            else if ($group_id == 'self')
+
+            if (!count($errors) && $group_id === 'self')
             {
                 if ($id = $transaction_service->insert($transaction, $pp->schema()))
                 {
@@ -321,7 +334,8 @@ class TransactionsAddController extends AbstractController
 
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
-            else if ($group['apimethod'] == 'mail')
+
+            if (!count($errors) && $group['apimethod'] === 'mail')
             {
                 $transaction['real_to'] = $code_to;
 
@@ -343,27 +357,31 @@ class TransactionsAddController extends AbstractController
 
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
-            else if ($group['apimethod'] != 'elassoap')
+
+            if (!count($errors) && $group['apimethod'] !== 'elassoap')
             {
                 $alert_service->error('InterSysteem ' .
                     $group['groupname'] .
                     ' heeft geen geldige Api Methode.' . $contact_admin);
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
-            else if (!$group_domain)
+
+            if (!count($errors) && !$group_domain)
             {
                 $alert_service->error('Geen URL ingesteld voor interSysteem ' .
                     $group['groupname'] . '. ' . $contact_admin);
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
-            else if (!$systems_service->get_schema_from_legacy_eland_origin($group['url']))
+
+            if (!count($errors) && !$systems_service->get_schema_from_legacy_eland_origin($group['url']))
             {
                 // Previously eLAS intersystem
 
                 $alert_service->error('Geen verbinding met interSysteem ' . $group['groupname']).
                 $link_render->redirect('transactions', $pp->ary(), []);
             }
-            else
+
+            if (!count($errors))
             {
                 // the interSystem group is on the same server (eLAND)
 
@@ -392,109 +410,106 @@ class TransactionsAddController extends AbstractController
                     from ' . $remote_schema . '.letsgroups
                     where url = ?', [$legacy_eland_origin]);
 
-                if (!$remote_group && !count($errors))
+                if (!count($errors) && !$remote_group)
                 {
                     $err = 'Het andere Systeem heeft dit Systeem (';
-                    $err .= $config_service->get('systemname', $pp->schema());
+                    $err .= $system_name;
                     $err .= ') niet geconfigureerd als interSysteem.';
                     $errors[] = $err;
                 }
 
-                if (!$remote_group['localletscode'] && !count($errors))
+                if (!count($errors) && !$remote_group['localletscode'])
                 {
                     $errors[] = 'Er is geen interSysteem Account gedefiniëerd in het andere Systeem.';
                 }
 
-                $remote_intersystem_account = $db->fetchAssoc('select *
+                $from_remote_user = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
                     where code = ?', [$remote_group['localletscode']]);
 
-                if (!$remote_intersystem_account && !count($errors))
+                if (!count($errors) && !$from_remote_user)
                 {
                     $errors[] = 'Er is geen interSysteem Account in het andere Systeem.';
                 }
 
-                if ($remote_intersystem_account['role'] !== 'guest' && !count($errors))
+                if (!count($errors) && $from_remote_user['role'] !== 'guest')
                 {
                     $errors[] = 'Het Account in het andere Systeem is niet ingesteld met rol "Gast".';
                 }
 
-                if (!in_array($remote_intersystem_account['status'], [1, 2, 7]) && !count($errors))
+                if (!count($errors) && !in_array($from_remote_user['status'], [1, 2, 7]))
                 {
                     $errors[] = 'Het interSysteem Account in het andere Systeem heeft geen actieve status.';
                 }
 
-                $remote_currency = $config_service->get('currency', $remote_schema);
-                $remote_currencyratio = $config_service->get('currencyratio', $remote_schema);
-                $remote_balance_eq = $config_service->get('balance_equilibrium', $remote_schema);
-                $currencyratio = $config_service->get('currencyratio', $pp->schema());
+                if (!count($errors))
+                {
+                    $from_remote_id = $from_remote_user['id'];
+                }
 
-                if ((!$currencyratio || !ctype_digit((string) $currencyratio) || $currencyratio < 1)
-                    && !count($errors))
+                $remote_currency = $config_service->get_str('transactions.currency.name', $remote_schema);
+                $remote_currency_ratio = $config_service->get_int('transactions.currency.per_hour_ratio', $remote_schema);
+                $remote_balance_equilibrium = $config_service->get_int('accounts.equilibrium', $remote_schema) ?? 0;
+                $remote_system_min_limit = $config_service->get_int('accounts.limits.global.min', $remote_schema);
+                $remote_system_max_limit = $config_service->get_int('accounts.limits.global.max', $remote_schema);
+
+                if (!count($errors) && $currency_ratio < 1)
                 {
                     $errors[] = 'De Currency Ratio is niet correct ingesteld. ' . $contact_admin;
                 }
 
-                if ((!$remote_currencyratio ||
-                    !ctype_digit((string) $remote_currencyratio)
-                    || $remote_currencyratio < 1) && !count($errors))
+                if (!count($errors) && $remote_currency_ratio < 1)
                 {
                     $errors[] = 'De Currency Ratio van het andere Systeem is niet correct ingesteld. ' . $contact_admin;
                 }
 
-                $remote_amount = (int) round(($transaction['amount'] * $remote_currencyratio) / $currencyratio);
+                $remote_amount = (int) round(($amount * $remote_currency_ratio) / $currency_ratio);
 
-                if (($remote_amount < 1) && !count($errors))
+                if (!count($errors) && ($remote_amount < 1))
                 {
                     $errors[] = 'Het bedrag is te klein want het kan niet uitgedrukt worden in de gebruikte munt van het andere Systeem.';
                 }
 
                 if (!count($errors))
                 {
-                    $remote_intersystem_id = $remote_intersystem_account['id'];
+                    $from_remote_min_limit = $account_repository->get_min_limit($from_remote_id, $remote_schema);
+                    $from_remote_balance = $account_repository->get_balance($from_remote_id, $remote_schema);
 
-                    $remote_min_limit = $db->fetchColumn('select min_limit
-                        from ' . $remote_schema . '.min_limit
-                        where account_id = ?
-                        order by created_at desc
-                        limit 1', [$remote_intersystem_id]);
-
-                    if (!isset($remote_min_limit) || $remote_min_limit === false)
+                    if (!isset($from_remote_min_limit))
                     {
-                        $minlimit = $config_service->get('minlimit', $remote_schema);
-
-                        if(($remote_intersystem_account['balance'] - $remote_amount) < $minlimit && $minlimit !== '')
+                        if(isset($remote_system_min_limit) && ($from_remote_balance - $remote_amount) < $remote_system_min_limit)
                         {
                             $err = 'Het interSysteem Account van dit Systeem ';
                             $err .= 'in het andere Systeem heeft onvoldoende saldo ';
                             $err .= 'beschikbaar. Het saldo bedraagt ';
-                            $err .= $remote_intersystem_account['balance'] . ' ';
+                            $err .= $from_remote_balance . ' ';
                             $err .= $remote_currency . ' ';
                             $err .= 'en de Minimum Systeemslimiet ';
                             $err .= 'in het andere Systeem bedraagt ';
-                            $err .= $minlimit . ' ';
+                            $err .= $remote_system_min_limit . ' ';
                             $err .= $remote_currency . '.';
                             $errors[] = $err;
                         }
                     }
                     else
                     {
-                        if(($remote_intersystem_account['balance'] - $remote_amount) < $remote_min_limit)
+                        if(($from_remote_balance - $remote_amount) < $from_remote_min_limit)
                         {
                             $err = 'Het interSysteem Account van dit Systeem in het andere Systeem heeft onvoldoende balance ';
-                            $err .= 'beschikbaar. Het saldo bedraagt ' . $remote_intersystem_account['balance'] . ' ';
+                            $err .= 'beschikbaar. Het saldo bedraagt ' . $from_remote_balance . ' ';
                             $err .= $remote_currency . ' ';
                             $err .= 'en de Minimum Limiet van het Account in het andere Systeem ';
-                            $err .= 'bedraagt ' . $remote_min_limit . ' ';
+                            $err .= 'bedraagt ' . $from_remote_min_limit . ' ';
                             $err .= $remote_currency . '.';
                             $errors[] = $err;
                         }
                     }
                 }
 
-                if (($remote_intersystem_account['status'] == 2)
-                    && (($remote_intersystem_account['balance'] - $remote_amount) < $remote_balance_eq)
-                    && !count($errors))
+                if (!count($errors)
+                    && ($from_remote_user['status'] == 2)
+                    && (($from_remote_balance - $remote_amount) < $remote_balance_equilibrium)
+                )
                 {
                     $err = 'Het interSysteem Account van dit Systeem in het andere Systeem ';
                     $err .= 'heeft de status uitstapper ';
@@ -502,44 +517,39 @@ class TransactionsAddController extends AbstractController
                     $err .= $remote_amount . ' ';
                     $err .= $remote_currency . ' uitgeven ';
                     $err .= '(' . $amount . ' ';
-                    $err .= $config_service->get('currency', $pp->schema());
+                    $err .= $currency;
                     $err .= ').';
                     $errors[] = $err;
                 }
 
                 if (!count($errors))
                 {
-                    $to_remote_max_limit = $db->fetchColumn('select max_limit
-                        from ' . $remote_schema . '.max_limit
-                        where account_id = ?
-                        order by created_at desc
-                        limit 1', [$to_remote_id]);
+                    $to_remote_max_limit = $account_repository->get_max_limit($to_remote_id, $remote_schema);
+                    $to_remote_balance = $account_repository->get_balance($to_remote_id, $remote_schema);
 
-                    if (!isset($to_remote_max_limit) || $to_remote_max_limit === false)
+                    if (!isset($to_remote_max_limit))
                     {
-                        $maxlimit = $config_service->get('maxlimit', $remote_schema);
-
-                        if(($to_remote_user['balance'] + $remote_amount) > $maxlimit && $maxlimit !== '')
+                        if(isset($remote_system_max_limit) && ($to_remote_balance + $remote_amount) > $remote_system_max_limit)
                         {
                             $err = 'Het bestemmings-Account in het andere Systeem ';
                             $err .= 'heeft de maximum Systeemslimiet bereikt. ';
                             $err .= 'Het saldo bedraagt ';
-                            $err .= $to_remote_user['balance'];
+                            $err .= $to_remote_balance;
                             $err .= ' ';
                             $err .= $remote_currency;
                             $err .= ' en de maximum ';
                             $err .= 'Systeemslimiet bedraagt ';
-                            $err .= $maxlimit . ' ' . $remote_currency . '.';
+                            $err .= $remote_system_max_limit . ' ' . $remote_currency . '.';
                             $errors[] = $err;
                         }
                     }
                     else
                     {
-                        if(($to_remote_user['balance'] + $remote_amount) > $to_remote_max_limit)
+                        if(($to_remote_balance + $remote_amount) > $to_remote_max_limit)
                         {
                             $err = 'Het bestemmings-Account in het andere Systeem ';
                             $err .= 'heeft de maximum limiet bereikt. ';
-                            $err .= 'Het saldo bedraagt ' . $to_remote_user['balance'] . ' ' . $remote_currency;
+                            $err .= 'Het saldo bedraagt ' . $to_remote_balance . ' ' . $remote_currency;
                             $err .= ' en de maximum ';
                             $err .= 'limiet voor het Account bedraagt ' . $to_remote_max_limit . ' ' . $remote_currency . '.';
                             $errors[] = $err;
@@ -547,107 +557,84 @@ class TransactionsAddController extends AbstractController
                     }
                 }
 
-                if (($to_remote_user['status'] == 2)
-                    && (($to_remote_user['balance'] + $remote_amount) > $remote_balance_eq)
-                    && !count($errors))
+                if (!count($errors)
+                    && ($to_remote_user['status'] == 2)
+                    && (($to_remote_balance + $remote_amount) > $remote_balance_equilibrium)
+                )
                 {
                     $err = 'Het bestemmings-Account heeft status uitstapper ';
                     $err .= 'en kan geen ' . $remote_amount . ' ';
                     $err .= $remote_currency . ' ontvangen (';
                     $err .= $amount . ' ';
-                    $err .= $config_service->get('currency', $pp->schema());
+                    $err .= $currency;
                     $err .= ').';
                     $errors[] = $err;
                 }
 
-                if (count($errors))
+                if (!count($errors))
                 {
-                    $alert_service->error($errors);
-                }
-                else
-                {
-                    if (!$su->is_master())
-                    {
-                        $transaction['created_by'] = $su->id();
-                    }
-
                     $transaction['real_to'] = $to_remote_user['code'] . ' ' . $to_remote_user['name'];
 
                     $db->beginTransaction();
 
                     $db->insert($pp->schema() . '.transactions', $transaction);
                     $id = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
-                    $db->executeUpdate('update ' . $pp->schema() . '.users
-                        set balance = balance + ? where id = ?',
-                        [$transaction['amount'], $transaction['id_to']]);
-                    $db->executeUpdate('update ' . $pp->schema() . '.users
-                        set balance = balance - ? where id = ?',
-                        [$transaction['amount'], $transaction['id_from']]);
-
-                    $trans_org = $transaction;
-                    $trans_org['id'] = $id;
-
-                    $transaction['amount'] = $remote_amount;
-                    $transaction['id_from'] = $remote_intersystem_id;
-                    $transaction['id_to'] = $to_remote_user['id'];
-                    $transaction['real_from'] = $account_render->str($fromuser['id'], $pp->schema());
-
-                    unset($transaction['real_to']);
-
-                    $db->insert($remote_schema . '.transactions', $transaction);
-                    $id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
-                    $db->executeUpdate('update ' . $remote_schema . '.users
-                        set balance = balance + ? where id = ?',
-                        [$remote_amount, $transaction['id_to']]);
-                    $db->executeUpdate('update ' . $remote_schema . '.users
-                        set balance = balance - ? where id = ?',
-                        [$transaction['amount'], $transaction['id_from']]);
                     $transaction['id'] = $id;
+                    $account_repository->update_balance($to_id, $amount, $pp->schema());
+                    $account_repository->update_balance($from_id, -$amount, $pp->schema());
+
+                    $remote_transaction = [
+                        'id_from'       => $from_remote_id,
+                        'id_to'         => $to_remote_id,
+                        'amount'        => $remote_amount,
+                        'real_from'     => $account_render->str($from_id, $pp->schema()),
+                        'description'   => $description,
+                        'transid'       => $transid,
+                    ];
+
+                    $db->insert($remote_schema . '.transactions', $remote_transaction);
+                    $remote_id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
+                    $remote_transaction['id'] = $remote_id;
+                    $account_repository->update_balance($to_remote_id, $remote_amount, $remote_schema);
+                    $account_repository->update_balance($from_remote_id, -$remote_amount, $remote_schema);
 
                     $db->commit();
 
-                    $user_cache_service->clear($fromuser['id'], $pp->schema());
-                    $user_cache_service->clear($touser['id'], $pp->schema());
-                    $user_cache_service->clear($remote_intersystem_id, $remote_schema);
-                    $user_cache_service->clear($to_remote_user['id'], $remote_schema);
-
                     // to eLAND interSystem
-                    $mail_transaction_service->queue($trans_org, $pp->schema());
-                    $mail_transaction_service->queue($transaction, $remote_schema);
+                    $mail_transaction_service->queue($transaction, $pp->schema());
+                    $mail_transaction_service->queue($remote_transaction, $remote_schema);
 
-                    $logger->info('direct interSystem transaction ' . $transaction['transid'] . ' amount: ' .
-                        $amount . ' from user: ' .  $account_render->str_id($fromuser['id'], $pp->schema()) .
-                        ' to user: ' . $account_render->str_id($touser['id'], $pp->schema()),
+                    $logger->info('direct interSystem transaction ' . $transid . ' amount: ' .
+                        $amount . ' from user: ' .  $account_render->str_id($from_id, $pp->schema()) .
+                        ' to user: ' . $account_render->str_id($to_id, $pp->schema()),
                         ['schema' => $pp->schema()]);
 
-                    $logger->info('direct interSystem transaction (receiving) ' . $transaction['transid'] .
-                        ' amount: ' . $remote_amount . ' from user: ' . $remote_intersystem_account['code'] . ' ' .
-                        $remote_intersystem_account['name'] . ' to user: ' . $to_remote_user['code'] . ' ' .
+                    $logger->info('direct interSystem transaction (receiving) ' . $transid.
+                        ' amount: ' . $remote_amount . ' from user: ' . $from_remote_user['code'] . ' ' .
+                        $from_remote_user['name'] . ' to user: ' . $to_remote_user['code'] . ' ' .
                         $to_remote_user['name'], ['schema' => $remote_schema]);
 
                     $autominlimit_service->init($pp->schema())
-                        ->process($transaction['id_from'], $transaction['id_to'], $transaction['amount']);
+                        ->process($from_id, $to_id, $amount);
 
                     $alert_service->success('InterSysteem transactie uitgevoerd.');
                     $link_render->redirect('transactions', $pp->ary(), []);
                 }
             }
 
-            $transaction['code_to'] = $request->request->get('code_to', '');
-            $transaction['code_from'] = $pp->is_admin() || $su->is_master()
+            // At least one error
+
+            $alert_service->error($errors);
+
+            $code_to = $request->request->get('code_to', '');
+            $code_from = $pp->is_admin() || $su->is_master()
                 ? $request->request->get('code_from', '')
                 : $account_render->str($su->id(), $pp->schema());
         }
 
         if ($request->isMethod('GET'))
         {
-            $transaction = [
-                'code_from'	=> $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema()),
-                'code_to'	=> '',
-                'amount'		=> '',
-                'description'	=> '',
-            ];
-
+            $code_from = $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema());
             $group_id = 'self';
 
             if ($tus)
@@ -673,21 +660,26 @@ class TransactionsAddController extends AbstractController
 
                         if ($row)
                         {
-                            $transaction['code_to'] = $row['code'] . ' ' . $row['name'];
-                            $transaction['description'] =  substr($row['subject'], 0, 60);
-                            $amount = $row['amount'];
-                            $amount = ($config_service->get('currencyratio', $pp->schema()) * $amount) / $config_service->get('currencyratio', $tus);
-                            $amount = (int) round($amount);
-                            $transaction['amount'] = $amount;
+                            $tus_currency_ratio = $config_service->get_int('ransactions.tcurrency.per_hour_ratio', $tus);
+
+                            $code_to = $row['code'] . ' ' . $row['name'];
+                            $description =  substr($row['subject'], 0, 60);
+
+                            if (isset($tus_currency_ratio) && $tus_currency_ratio >  0)
+                            {
+                                $amount = $row['amount'];
+                                $amount = ($currency_ratio * $amount) / $tus_currency_ratio;
+                                $amount = (int) round($amount);
+                            }
                         }
                     }
                     else if ($tuid)
                     {
-                        $to_user = $user_cache_service->get($tuid, $tus);
+                        $tuid_to_user = $user_cache_service->get($tuid, $tus);
 
-                        if (in_array($to_user['status'], [1, 2]))
+                        if (in_array($tuid_to_user['status'], [1, 2]))
                         {
-                            $transaction['code_to'] = $account_render->str($tuid, $tus);
+                            $code_to = $account_render->str($tuid, $tus);
                         }
                     }
                 }
@@ -706,44 +698,44 @@ class TransactionsAddController extends AbstractController
                 {
                     if ($row['status'] === 1 || $row['status'] === 2)
                     {
-                        $transaction['code_to'] = $row['code'] . ' ' . $row['name'];
-                        $transaction['description'] =  substr($row['subject'], 0, 60);
-                        $transaction['amount'] = $row['amount'];
+                        $code_to = $row['code'] . ' ' . $row['name'];
+                        $description =  substr($row['subject'], 0, 60);
+                        $amount = $row['amount'];
                     }
 
                     if ($su->id() === $row['user_id'])
                     {
                         if ($pp->is_admin())
                         {
-                            $transaction['code_from'] = '';
+                            $code_from = '';
                         }
                         else
                         {
-                            $transaction['code_to'] = '';
-                            $transaction['description'] = '';
-                            $transaction['amount'] = '';
+                            $code_to = '';
+                            $description = '';
+                            $amount = '';
                         }
                     }
                 }
             }
             else if ($tuid)
             {
-                $to_user = $user_cache_service->get($tuid, $pp->schema());
+                $tuid_to_user = $user_cache_service->get($tuid, $pp->schema());
 
-                if (in_array($to_user['status'], [1, 2]) || $pp->is_admin())
+                if (in_array($tuid_to_user['status'], [1, 2]) || $pp->is_admin())
                 {
-                    $transaction['code_to'] = $account_render->str($tuid, $pp->schema());
+                    $code_to = $account_render->str($tuid, $pp->schema());
                 }
 
                 if ($tuid === $su->id())
                 {
                     if ($pp->is_admin())
                     {
-                        $transaction['code_from'] = '';
+                        $code_from = '';
                     }
                     else
                     {
-                        $transaction['code_to'] = '';
+                        $code_to = '';
                     }
                 }
             }
@@ -752,7 +744,7 @@ class TransactionsAddController extends AbstractController
         $systems = [];
 
         $systems[] = [
-            'groupname' => $config_service->get('systemname', $pp->schema()),
+            'groupname' => $system_name,
             'id'		=> 'self',
         ];
 
@@ -778,7 +770,7 @@ class TransactionsAddController extends AbstractController
             {
                 $sys['eland'] = true;
                 $sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
-                $sys['groupname'] = $config_service->get('systemname', $sys['remote_schema']);
+                $sys['groupname'] = $config_service->get_str('system.name', $sys['remote_schema']);
                 $systems[] = $sys;
             }
         }
@@ -800,7 +792,8 @@ class TransactionsAddController extends AbstractController
         }
 
         $systems_en = count($systems) > 1
-            && $config_service->get('currencyratio', $pp->schema()) > 0;
+            && isset($currency_ratio)
+            && $currency_ratio > 0;
 
         $heading_render->add('Nieuwe transactie');
         $heading_render->fa('exchange');
@@ -837,14 +830,14 @@ class TransactionsAddController extends AbstractController
                 ->add('intersystem_mail_accounts', [])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
+                    'newuserdays'   => $new_user_days,
                 ]);
 
              $out .= '" ';
         }
 
         $out .= 'value="';
-        $out .= $transaction['code_from'];
+        $out .= $code_from ?? '';
         $out .= '" required';
         $out .= $pp->is_admin() ? '' : ' disabled';
         $out .= '>';
@@ -864,7 +857,7 @@ class TransactionsAddController extends AbstractController
             $out .= '<input type="text" class="form-control" ';
             $out .= 'id="real_from" name="real_from" ';
             $out .= 'value="';
-            $out .= $transaction['real_from'] ?? '';
+            $out .= $real_from ?? '';
             $out .= '">';
             $out .= '</div>';
             $out .= '<p>Dit veld geeft geen autosuggesties</p>';
@@ -929,17 +922,22 @@ class TransactionsAddController extends AbstractController
                 if (isset($config_schema))
                 {
                     $out .= ' data-minlimit="';
-                    $out .= $config_service->get('minlimit', $config_schema) . '"';
+                    $out .= $config_service->get_int('accounts.limits.global.min', $config_schema);
+                    $out .= '"';
                     $out .= ' data-maxlimit="';
-                    $out .= $config_service->get('maxlimit', $config_schema) . '"';
+                    $out .= $config_service->get_int('accounts.limits.global.max', $config_schema);
+                    $out .= '"';
                     $out .= ' data-currency="';
-                    $out .= $config_service->get('currency', $config_schema) . '"';
+                    $out .= $config_service->get_str('transactions.currency.name', $config_schema);
+                    $out .= '"';
                     $out .= ' data-currencyratio="';
-                    $out .= $config_service->get('currencyratio', $config_schema) . '"';
+                    $out .= $config_service->get_int('transactions.currency.per_hour_ratio', $config_schema);
+                    $out .= '"';
                     $out .= ' data-balance-equilibrium="';
-                    $out .= $config_service->get('balance_equilibrium', $config_schema) . '"';
+                    $out .= $config_service->get_int('accounts.equilibrium', $config_schema);
+                    $out .= '"';
 
-                    $typeahead_process_ary['newuserdays'] = $config_service->get('newuserdays', $config_schema);
+                    $typeahead_process_ary['newuserdays'] = $config_service->get_int('users.new.days', $config_schema);
                 }
 
                 $typeahead = $typeahead_service->str($typeahead_process_ary);
@@ -1012,14 +1010,14 @@ class TransactionsAddController extends AbstractController
 
             $out .= $typeahead_service->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
+                'newuserdays'	=> $new_user_days,
             ]);
 
             $out .= '" ';
         }
 
         $out .= 'value="';
-        $out .= $transaction['code_to'];
+        $out .= $code_to ?? '';
         $out .= '" required>';
         $out .= '</div>';
 
@@ -1055,13 +1053,13 @@ class TransactionsAddController extends AbstractController
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</span>';
         $out .= '</span>';
         $out .= '<input type="number" class="form-control" ';
         $out .= 'id="amount" name="amount" ';
         $out .= 'value="';
-        $out .= $transaction['amount'];
+        $out .= $amount ?? '';
         $out .= '" min="1" required>';
         $out .= '</div>';
 
@@ -1109,8 +1107,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<ul>';
 
-        if ($config_service->get('template_lets', $pp->schema())
-            && $config_service->get('currencyratio', $pp->schema()) > 0)
+        if ($timebased_enabled && $currency_ratio > 0)
         {
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
             $out .= '</span> per uur</li>';
@@ -1133,7 +1130,7 @@ class TransactionsAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="description" name="description" ';
         $out .= 'value="';
-        $out .= $transaction['description'];
+        $out .= $description ?? '';
         $out .= '" required maxlength="60">';
         $out .= '</div>';
         $out .= '</div>';

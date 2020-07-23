@@ -16,6 +16,7 @@ use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\UserRepository;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -40,6 +41,7 @@ class UsersShowController extends AbstractController
         int $id,
         Db $db,
         UserRepository $user_repository,
+        AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -77,31 +79,6 @@ class UsersShowController extends AbstractController
 
         $user = $user_repository->get($id, $pp->schema());
 
-        $min_limit = $db->fetchColumn('select min_limit
-            from ' . $pp->schema() . '.min_limit
-            where account_id = ?
-            order by created_at desc
-            limit 1', [$id]);
-
-        if ($min_limit === false)
-        {
-            $min_limit = null;
-        }
-
-        $max_limit = $db->fetchColumn('select max_limit
-            from ' . $pp->schema() . '.max_limit
-            where account_id = ?
-            order by created_at desc
-            limit 1', [$id]);
-
-        if ($max_limit === false)
-        {
-            $max_limit = null;
-        }
-
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
-
         if (!$user)
         {
             throw new NotFoundHttpException(
@@ -112,6 +89,14 @@ class UsersShowController extends AbstractController
         {
             throw new AccessDeniedHttpException('Access denied.');
         }
+
+        $min_limit = $account_repository->get_min_limit($id, $pp->schema());
+        $max_limit = $account_repository->get_max_limit($id, $pp->schema());
+        $balance = $account_repository->get_balance($id, $pp->schema());
+
+        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
@@ -612,9 +597,9 @@ class UsersShowController extends AbstractController
         $out .= '<dt>Saldo</dt>';
         $out .= '<dd>';
         $out .= '<span class="label label-info">';
-        $out .= $user['balance'];
+        $out .= $balance;
         $out .= '</span>&nbsp;';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</dd>';
 
         $out .= '<dt>Minimum limiet</dt>';
@@ -625,14 +610,14 @@ class UsersShowController extends AbstractController
             $out .= '<span class="label label-danger">';
             $out .= $min_limit;
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
         }
         else if (isset($system_min_limit))
         {
             $out .= '<span class="label label-default">';
             $out .= $system_min_limit;
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
             $out .= ' (Minimum Systeemslimiet)';
         }
         else
@@ -650,14 +635,14 @@ class UsersShowController extends AbstractController
             $out .= '<span class="label label-success">';
             $out .= $max_limit;
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
         }
         else if (isset($system_max_limit))
         {
             $out .= '<span class="label label-default">';
             $out .= $system_max_limit;
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
             $out .= ' (Maximum Systeemslimiet)';
         }
         else
@@ -695,9 +680,9 @@ class UsersShowController extends AbstractController
         $out .= '<div class="col-md-12">';
 
         $out .= '<h3>Huidig saldo: <span class="label label-info">';
-        $out .= $user['balance'];
+        $out .= $balance;
         $out .= '</span> ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</h3>';
         $out .= '</div></div>';
 

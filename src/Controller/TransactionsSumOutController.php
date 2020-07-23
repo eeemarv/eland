@@ -17,12 +17,12 @@ class TransactionsSumOutController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        return TransactionsSumInController::calc(
+        return $this->json(TransactionsSumInController::calc(
             $request,
             $days,
             false,
             $db,
             $pp
-        );
+        ));
     }
 }

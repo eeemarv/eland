@@ -16,6 +16,7 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\SelectRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\CacheService;
@@ -33,7 +34,6 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Schema\Schema;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -45,6 +45,7 @@ class UsersListController extends AbstractController
         Request $request,
         string $status,
         Db $db,
+        AccountRepository $account_repository,
         LoggerInterface $logger,
         SessionInterface $session,
         AccountRender $account_render,
@@ -263,15 +264,23 @@ class UsersListController extends AbstractController
                 && $user_tab_data
                 && in_array($bulk_submit_action, ['min_limit', 'max_limit']))
             {
-                $store_value = $bulk_field_value === '' ? null : $bulk_field_value;
+                $store_value = $bulk_field_value === '' ? null : (int) $bulk_field_value;
 
-                foreach($user_ids as $user_id)
+                if ($bulk_submit_action === 'min_limit')
                 {
-                    $db->insert($pp->schema() . '.' . $bulk_submit_action, [
-                        $bulk_submit_action     => $store_value,
-                        'account_id'            => $user_id,
-                        'created_by'            => $su->id(),
-                    ]);
+                    foreach($user_ids as $user_id)
+                    {
+                        $account_repository->update_min_limit($user_id, $store_value, $su->id(), $pp->schema());
+                    }
+                    $alert_msg = 'De minimum limiet werd ';
+                }
+                else
+                {
+                    foreach($user_ids as $user_id)
+                    {
+                        $account_repository->update_max_limit($user_id, $store_value, $su->id(), $pp->schema());
+                    }
+                    $alert_msg = 'De maximum limiet werd ';
                 }
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
@@ -279,11 +288,7 @@ class UsersListController extends AbstractController
                     ' for users ' . $users_log,
                     ['schema' => $pp->schema()]);
 
-                $alert_msg = 'De ';
-                $alert_msg .= $bulk_submit_action === 'min_lmit' ? 'minimum' : 'maximum';
-                $alert_msg .= ' limiet werd ';
                 $alert_msg .=  isset($store_value) ? 'aangepast.' : 'gewist.';
-
                 $alert_service->success($alert_msg);
 
                 $redirect = true;
@@ -618,32 +623,6 @@ class UsersListController extends AbstractController
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
 
-        /**
-         *
-         * Temp migrate begin
-         */
-
-        if (isset($show_columns['u']['minlimit']))
-        {
-            unset($show_columns['u']['minlimit']);
-            $show_columns['u']['min'] = '1';
-            $session->set($session_users_columns_key, $show_columns);
-            error_log('update sess min');
-        }
-
-        if (isset($show_columns['u']['maxlimit']))
-        {
-            unset($show_columns['u']['maxlimit']);
-            $show_columns['u']['max'] = '1';
-            $session->set($session_users_columns_key, $show_columns);
-            error_log('update_sess_max');
-        }
-
-        /**
-         *
-         * Temp migrate end
-         */
-
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
         $activity_days = $show_columns['p']['a']['days'] ?? 365;
         $activity_days = $activity_days < 1 ? 365 : $activity_days;
@@ -670,91 +649,49 @@ class UsersListController extends AbstractController
                 $balance_date_rev = $date_format_service->reverse($balance_date, $pp->schema());
             }
 
-            if ($balance_date_rev === '' || $balance_date == '')
+            if (!isset($balance_date_rev) || $balance_date_rev === '')
             {
-                $balance_date = $date_format_service->get('', 'day', $pp->schema());
-
-                array_walk($users, function(&$user, $user_id){
-                    $user['balance_date'] = $user['balance'];
-                });
+                $balance_date = $date_format_service->get('now', 'day', $pp->schema());
+                $balance_date_rev = 'now';
             }
-            else
-            {
-                $datetime = new \DateTime($balance_date_rev);
 
-                $rs = $db->prepare('select id_to, sum(amount)
-                    from ' . $pp->schema() . '.transactions
-                    where created_at <= ?
-                    group by id_to');
+            $datetime = new \DateTimeImmutable($balance_date_rev, new \DateTimeZone('UTC'));
 
-                $rs->bindValue(1, $datetime, 'datetime');
+            $balance_ary_on_date = $account_repository->get_balance_ary_on_date($datetime, $pp->schema());
 
-                $rs->execute();
+            array_walk($users, function(&$user, $user_id) use ($balance_ary_on_date){
+                $user['balance_date'] = $balance_ary_on_date[$user_id] ?? 0;
+            });
+        }
 
-                while($row = $rs->fetch())
-                {
-                    $uid = $row['id_to'];
-                    if (!isset($users[$uid]))
-                    {
-                        continue;
-                    }
-                    $users[$uid]['balance_date'] = $row['sum'];
-                }
+        if (isset($show_columns['u']['balance']))
+        {
+            $balance_ary = $account_repository->get_balance_ary($pp->schema());
 
-                $rs = $db->prepare('select id_from, sum(amount)
-                    from ' . $pp->schema() . '.transactions
-                    where created_at <= ?
-                    group by id_from');
-                $rs->bindValue(1, $datetime, 'datetime');
-
-                $rs->execute();
-
-                while($row = $rs->fetch())
-                {
-                    $uid = $row['id_from'];
-                    if (!isset($users[$uid]))
-                    {
-                        continue;
-                    }
-                    $users[$uid]['balance_date'] ??= 0;
-                    $users[$uid]['balance_date'] -= $row['sum'];
-                }
-            }
+            array_walk($users, function(&$user, $user_id) use ($balance_ary){
+                $user['balance'] = $balance_ary[$user_id] ?? 0;
+            });
         }
 
         if (isset($show_columns['u']['min']))
         {
-            $rs = $db->prepare('select distinct on(account_id) min_limit, account_id
-                from ' . $pp->schema() . '.min_limit
-                order by account_id, created_at desc');
+            $min_limit_ary = $account_repository->get_min_limit_ary($pp->schema());
+            $min_intersect_ary = array_intersect_key($min_limit_ary, $users);
 
-            $rs->execute();
-
-            while ($row = $rs->fetch())
+            foreach ($min_intersect_ary as $user_id => $min_limit)
             {
-                if (!isset($users[$row['account_id']]))
-                {
-                    continue;
-                }
-                $users[$row['account_id']]['min'] = $row['min_limit'];
+                $users[$user_id]['min'] = $min_limit;
             }
         }
 
         if (isset($show_columns['u']['max']))
         {
-            $rs = $db->prepare('select distinct on(account_id) max_limit, account_id
-                from ' . $pp->schema() . '.max_limit
-                order by account_id, created_at desc');
+            $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
+            $max_intersect_ary = array_intersect_key($max_limit_ary, $users);
 
-            $rs->execute();
-
-            while ($row = $rs->fetch())
+            foreach ($max_intersect_ary as $user_id => $max_limit)
             {
-                if (!isset($users[$row['account_id']]))
-                {
-                    continue;
-                }
-                $users[$row['account_id']]['max'] = $row['max_limit'];
+                $users[$user_id]['max'] = $max_limit;
             }
         }
 
