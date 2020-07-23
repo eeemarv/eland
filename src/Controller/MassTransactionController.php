@@ -545,7 +545,6 @@ class MassTransactionController extends AbstractController
 
         $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group">';
-        $out .= '</span>';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
         $out .= $currency;
