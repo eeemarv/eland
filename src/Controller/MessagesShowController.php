@@ -327,12 +327,12 @@ class MessagesShowController extends AbstractController
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
+            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif|svg)$/i" ';
             $out .= 'data-max-file-size="999000" ';
             $out .= 'multiple></span>';
 
             $out .= '<p class="text-warning">';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
             $out .= $link_render->link_fa('messages_images_del', $pp->ary(),

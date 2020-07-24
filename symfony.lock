@@ -63,6 +63,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "enshrined/svg-sanitize": {
+        "version": "0.13.3"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },

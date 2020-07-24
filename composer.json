@@ -18,6 +18,7 @@
 		"aws/aws-sdk-php": "^3",
 		"bramus/monolog-colored-line-formatter": "^2.0",
 		"doctrine/dbal": "^2.5",
+		"enshrined/svg-sanitize": "^0.13.3",
 		"ezyang/htmlpurifier": "^4.8",
 		"fabpot/goutte": "^3",
 		"geocoder-php/google-maps-provider": "^4.1",

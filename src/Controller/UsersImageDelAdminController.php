@@ -56,11 +56,11 @@ class UsersImageDelAdminController extends AbstractController
 
             $user_cache_service->clear($id, $pp->schema());
 
-            $alert_service->success('Profielfoto verwijderd.');
+            $alert_service->success('Profielfoto/afbeelding verwijderd.');
             $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
         }
 
-        $heading_render->add('Profielfoto ');
+        $heading_render->add('Profielfoto/afbeelding ');
 
         if ($pp->is_admin())
         {

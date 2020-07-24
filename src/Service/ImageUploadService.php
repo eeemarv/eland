@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use enshrined\svgSanitize\Sanitizer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -18,6 +19,7 @@ class ImageUploadService
         'image/jpeg'    => 'jpg',
         'image/png'     => 'png',
         'image/gif'     => 'gif',
+        'image/svg+xml' => 'svg',
     ];
 
     const FILENAME_WITH_ID_TPL = '%schema%_%type%_%id%_%hash%.%ext%';
@@ -76,6 +78,24 @@ class ImageUploadService
 
         $tmp_upload_path = $uploaded_file->getRealPath();
 
+        if ($ext === 'svg')
+        {
+            $this->upload_svg($tmp_upload_path, $filename);
+            return $filename;
+        }
+
+        $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height);
+        return $filename;
+    }
+
+    protected function upload_bitmap(
+        string $tmp_upload_path,
+        string $filename,
+        string $ext,
+        int $width,
+        int $height
+    ):void
+    {
         if ($ext === 'jpg')
         {
             $exif = exif_read_data($tmp_upload_path);
@@ -115,7 +135,31 @@ class ImageUploadService
 
 		$err = $this->s3_service->img_upload($filename, $tmp_after_resize_path);
 
+        unlink($tmp_upload_path);
         unlink($tmp_after_resize_path);
+
+        if ($err)
+        {
+            $this->logger->error('image_upload: ' .  $err . ' -- ' .
+				$filename, ['schema' => $schema]);
+
+            throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
+        }
+    }
+
+    protected function upload_svg(string $tmp_upload_path, string $filename):void
+    {
+        $svg = file_get_contents($tmp_upload_path);
+        $sanitizer = new Sanitizer();
+        $sanitizer->removeRemoteReferences(true);
+        $sanitizer->minify(true);
+        $clean_svg = $sanitizer->sanitize($svg);
+        $tmp_after_sanitize_path = tempnam(sys_get_temp_dir(), 'img');
+        file_put_contents($tmp_after_sanitize_path, $clean_svg);
+
+        $err = $this->s3_service->img_upload($filename, $tmp_after_sanitize_path);
+
+        unlink($tmp_after_sanitize_path);
         unlink($tmp_upload_path);
 
         if ($err)
@@ -125,7 +169,5 @@ class ImageUploadService
 
             throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
         }
-
-        return $filename;
     }
 }

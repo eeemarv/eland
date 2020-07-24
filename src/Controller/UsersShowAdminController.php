@@ -415,7 +415,7 @@ class UsersShowAdminController extends AbstractController
         $out .= $no_user_img;
         $out .= '>';
         $out .= '<i class="fa fa-user fa-5x text-muted"></i>';
-        $out .= '<br>Geen profielfoto</div>';
+        $out .= '<br>Geen profielfoto/afbeelding</div>';
 
         $out .= '</div>';
 
@@ -430,7 +430,7 @@ class UsersShowAdminController extends AbstractController
 
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
-            $out .= '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
+            $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
             $out .= '<input id="fileupload" type="file" name="image" ';
             $out .= 'data-url="';
 
@@ -446,26 +446,26 @@ class UsersShowAdminController extends AbstractController
 
             $out .= '" ';
             $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
+            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif|svg)$/i" ';
             $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
-            $out .= 'data-image-crop="true" ';
+//            $out .= 'data-image-crop="true" ';
             $out .= 'data-image-max-height="400"></span>';
 
             $out .= '<p class="text-warning">';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
-            $out .= 'Je kan ook een foto hierheen verslepen.</p>';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
+            $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
 
             if ($pp->is_admin())
             {
                 $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
-                    ['id' => $id], 'Foto verwijderen',
+                    ['id' => $id], 'Afbeelding verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
             else
             {
                 $out .= $link_render->link_fa('users_image_del', $pp->ary(),
-                    [], 'Foto verwijderen',
+                    [], 'Afbeelding verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
