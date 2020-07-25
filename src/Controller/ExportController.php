@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class ExportController extends AbstractController
 {
@@ -55,8 +58,6 @@ class ExportController extends AbstractController
 
         if ($download_en)
         {
-            $send_file = true;
-
             $download_id = $download_sql ? 'db' : '';
             $download_id = $download_zip_csv ? 'db-csv' : '';
             $download_id = isset($download_table_csv) ? $download_table_csv : $download_id;
@@ -74,15 +75,28 @@ class ExportController extends AbstractController
 
             if ($token_error = $form_token_service->get_error(false))
             {
-                $err = 'Form token error: ' . $token_error;
-                $exec = 'echo "' . $err . '" > ' . $file_path;
+                $error_message = 'Form token error: ' . $token_error;
             }
             else if ($download_sql)
             {
-                $exec = 'pg_dump -d ';
-                $exec .= $env_database_url;
-                $exec .= ' -n ' . $pp->schema();
-                $exec .= ' -O -x > ' . $file_path;
+                $process_ary = [
+                    'pg_dump',
+                    '-d',
+                    $env_database_url,
+                    '-n',
+                    $pp->schema(),
+                    '-O',
+                    '-x',
+                    '-f',
+                    $file_path,
+                ];
+                $process = new Process($process_ary);
+                $process->run();
+                if (!$process->isSuccessful())
+                {
+                    throw new ProcessFailedException($process);
+                }
+                error_log($process->getOutput());
             }
             else if ($download_zip_csv)
             {
@@ -95,10 +109,22 @@ class ExportController extends AbstractController
                     {
                         $tmp_file = $cache_dir . '/' . 'tmp_csv_' . hash('crc32b', random_bytes(4)) . '.csv';
                         $local_filename = $table . '.csv';
-                        $ex = 'psql -d ' . $env_database_url . ' -c "';
-                        $ex .= '\\copy ' . $pp->schema() . '.' . $table . ' to \'';
-                        $ex .= $tmp_file . '\' delimiter \',\' csv header;"';
-                        exec($ex);
+                        $copy_cmd = '\\copy ' . $pp->schema() . '.' . $table . ' to \'';
+                        $copy_cmd .= $tmp_file . '\' delimiter \',\' csv header;';
+                        $process_ary = [
+                            'psql',
+                            '-d',
+                            $env_database_url,
+                            '-c',
+                            $copy_cmd,
+                        ];
+                        $process = new Process($process_ary);
+                        $process->run();
+                        if (!$process->isSuccessful())
+                        {
+                            throw new ProcessFailedException($process);
+                        }
+                        error_log($process->getOutput());
                         $zip->addFile($tmp_file, $local_filename);
                         $unlink_ary[] = $tmp_file;
                     }
@@ -112,56 +138,66 @@ class ExportController extends AbstractController
                 }
                 else
                 {
-                    $exec = 'echo "ZIP kon niet gecreëerd worden" > ' . $file_path;
+                    $error_message = 'ZIP kon niet gecreëerd worden';
                 }
             }
             else if (isset($download_table_csv))
             {
-                $exec = 'psql -d ' . $env_database_url . ' -c "';
-                $exec .= '\\copy ' . $pp->schema() . '.' . $download_table_csv . ' to \'';
-                $exec .= $file_path . '\' delimiter \',\' csv header;"';
+                $copy_cmd = '\\copy ' . $pp->schema() . '.' . $download_table_csv . ' to \'';
+                $copy_cmd .= $file_path . '\' delimiter \',\' csv header;';
+                $process_ary = [
+                    'psql',
+                    '-d',
+                    $env_database_url,
+                    '-c',
+                    $copy_cmd
+                ];
+                $process = new Process($process_ary);
+                $process->run();
+                if (!$process->isSuccessful())
+                {
+                    throw new ProcessFailedException($process);
+                }
+                error_log($process->getOutput());
             }
             else
             {
-                $exec = 'echo "Interne fout" > ' . $file_path;
+                $error_message = 'Interne fout';
             }
 
-            if (isset($exec))
+            if (isset($error_message))
             {
-                exec($exec);
+                throw new HttpException(500, $error_message);
             }
 
-            if ($send_file)
+            $handle = fopen($file_path, 'rb');
+
+            if (!$handle)
             {
-                $handle = fopen($file_path, 'rb');
-
-                if (!$handle)
-                {
-                    exit;
-                }
-
-                $out = '';
-
-                while (!feof($handle))
-                {
-                    $out .= fread($handle, 8192);
-                }
-
-                fclose($handle);
-
-                unlink($file_path);
-
-                $logger->info($filename . ' downloaded',
-                    ['schema' => $pp->schema()]);
-
-                $response = new Response($out);
-
-                $response->headers->set('Content-Type', 'application/octet-stream');
-                $response->headers->set('Content-Disposition', 'attachment; filename=' . $filename);
-                $response->headers->set('Content-Transfer-Encoding', 'binary');
-
-                return $response;
+                exit;
             }
+
+            $out = '';
+
+            while (!feof($handle))
+            {
+                $out .= fread($handle, 8192);
+            }
+
+            fclose($handle);
+
+            unlink($file_path);
+
+            $logger->info($filename . ' downloaded',
+                ['schema' => $pp->schema()]);
+
+            $response = new Response($out);
+
+            $response->headers->set('Content-Type', 'application/octet-stream');
+            $response->headers->set('Content-Disposition', 'attachment; filename=' . $filename);
+            $response->headers->set('Content-Transfer-Encoding', 'binary');
+
+            return $response;
         }
 
         $heading_render->add('Export');
