@@ -11,6 +11,7 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -33,6 +34,7 @@ class UsersShowController extends AbstractController
         string $status,
         int $id,
         Db $db,
+        AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -64,6 +66,7 @@ class UsersShowController extends AbstractController
             $status,
             $id,
             $db,
+            $account_repository,
             $account_render,
             $alert_service,
             $assets_service,
