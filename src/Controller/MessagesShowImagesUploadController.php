@@ -60,7 +60,7 @@ class MessagesShowImagesUploadController extends AbstractController
         foreach ($uploaded_files as $uploaded_file)
         {
             $filename = $image_upload_service->upload($uploaded_file,
-                'm', $id, 400, 400, $pp->schema());
+                'm', $id, 400, 400, false, $pp->schema());
 
             if ($insert_in_db)
             {

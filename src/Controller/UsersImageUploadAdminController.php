@@ -32,7 +32,7 @@ class UsersImageUploadAdminController extends AbstractController
         }
 
         $filename = $image_upload_service->upload($uploaded_file,
-            'u', $id, 400, 400, $pp->schema());
+            'u', $id, 400, 400, true, $pp->schema());
 
         $db->update($pp->schema() . '.users', [
             'image_file'	=> $filename

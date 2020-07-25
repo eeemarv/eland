@@ -7,14 +7,18 @@ use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use enshrined\svgSanitize\Sanitizer;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class ImageUploadService
 {
+    const MAX_SIZE = 400 * 1024;
     const ALLOWED_MIME = [
         'image/jpeg'    => 'jpg',
         'image/png'     => 'png',
@@ -24,6 +28,17 @@ class ImageUploadService
 
     const FILENAME_WITH_ID_TPL = '%schema%_%type%_%id%_%hash%.%ext%';
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
+    const NODE_PATH = '/usr/bin/node';
+    const SVGO_PATH = __DIR__ . '/../../node_modules/svgo/bin/svgo';
+    const SVGO_EN = [
+        'cleanupListOfValues',
+        'removeRasterImages',
+        'sortAttrs',
+        'removeOffCanvasPaths',
+        'removeScriptElement',
+        'reusePaths',
+    ];
+    const SVGO_PRECISION = 3;
 
 	protected LoggerInterface $logger;
     protected S3Service $s3_service;
@@ -43,6 +58,7 @@ class ImageUploadService
         int $id,
         int $width,
         int $height,
+        bool $crop,
 		string $schema
 	):string
 	{
@@ -54,7 +70,7 @@ class ImageUploadService
         $size = $uploaded_file->getSize();
         $mime = $uploaded_file->getMimeType();
 
-        if ($size > 400 * 1024
+        if ($size > self::MAX_SIZE
             || $size > $uploaded_file->getMaxFilesize())
         {
             throw new HttpException(413, 'Het bestand is te groot.');
@@ -80,11 +96,11 @@ class ImageUploadService
 
         if ($ext === 'svg')
         {
-            $this->upload_svg($tmp_upload_path, $filename);
+            $this->upload_svg($tmp_upload_path, $filename, $width, $height, $crop, $schema);
             return $filename;
         }
 
-        $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height);
+        $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height, $crop, $schema);
         return $filename;
     }
 
@@ -93,7 +109,9 @@ class ImageUploadService
         string $filename,
         string $ext,
         int $width,
-        int $height
+        int $height,
+        bool $crop,
+        string $schema
     ):void
     {
         if ($ext === 'jpg')
@@ -130,7 +148,13 @@ class ImageUploadService
                 break;
         }
 
-        $thumbnail = $image->thumbnail(new Box($width, $height), ImageInterface::THUMBNAIL_INSET);
+        $current_box = $image->getSize();
+        $max_box = new Box($width, $height);
+
+
+
+        $mode = $crop ? ImageInterface::THUMBNAIL_OUTBOUND : ImageInterface::THUMBNAIL_INSET;
+        $thumbnail = $image->thumbnail(new Box($width, $height), $mode, ImageInterface::FILTER_BLACKMAN);
         $thumbnail->save($tmp_after_resize_path);
 
 		$err = $this->s3_service->img_upload($filename, $tmp_after_resize_path);
@@ -147,19 +171,40 @@ class ImageUploadService
         }
     }
 
-    protected function upload_svg(string $tmp_upload_path, string $filename):void
+    protected function upload_svg(
+        string $tmp_upload_path,
+        string $filename,
+        int $width,
+        int $height,
+        bool $crop,
+        string $schema
+    ):void
     {
-        $svg = file_get_contents($tmp_upload_path);
-        $sanitizer = new Sanitizer();
-        $sanitizer->removeRemoteReferences(true);
-        $sanitizer->minify(true);
-        $clean_svg = $sanitizer->sanitize($svg);
-        $tmp_after_sanitize_path = tempnam(sys_get_temp_dir(), 'img');
-        file_put_contents($tmp_after_sanitize_path, $clean_svg);
+        $tmp_after_optimize_path = tempnam(sys_get_temp_dir(), 'img');
+        $enabled = implode(',', self::SVGO_EN);
+        $process_args = [
+            self::NODE_PATH,
+            self::SVGO_PATH,
+            '--enable=' . $enabled,
+            '-p',
+            self::SVGO_PRECISION,
+            '-i',
+            $tmp_upload_path,
+            '-o',
+            $tmp_after_optimize_path,
+        ];
+        $process = new Process($process_args);
+        $process->run();
+        if (!$process->isSuccessful())
+        {
+            throw new ProcessFailedException($process);
+        }
 
-        $err = $this->s3_service->img_upload($filename, $tmp_after_sanitize_path);
+        error_log($process->getOutput());
 
-        unlink($tmp_after_sanitize_path);
+        $err = $this->s3_service->img_upload($filename, $tmp_after_optimize_path);
+
+        unlink($tmp_after_optimize_path);
         unlink($tmp_upload_path);
 
         if ($err)

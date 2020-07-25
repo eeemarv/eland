@@ -29,7 +29,7 @@ class LogoUploadController extends AbstractController
         }
 
         $filename = $image_upload_service->upload($uploaded_file,
-            'l', 0, 400, 100, $pp->schema());
+            'l', 0, 400, 100, false, $pp->schema());
 
         $config_service->set_str('system.logo', $filename, $pp->schema());
 

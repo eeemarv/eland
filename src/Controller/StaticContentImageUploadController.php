@@ -30,13 +30,13 @@ class StaticContentImageUploadController extends AbstractController
         }
 
         $file = $image_upload_service->upload($uploaded_file,
-            'c', 0, 600, 600, $pp->schema());
+            'c', 0, 600, 600, false, $pp->schema());
 
         $db->insert($pp->schema() . '.static_content_images', [
             'file'          => $file,
         ]);
 
-        $logger->info('Static Content image ' . $filename .
+        $logger->info('Static Content image ' . $file .
             ' uploaded.',
             ['schema' => $pp->schema()]);
 
