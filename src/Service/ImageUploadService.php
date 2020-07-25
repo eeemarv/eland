@@ -6,8 +6,6 @@ use Psr\Log\LoggerInterface;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
-use enshrined\svgSanitize\Sanitizer;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -148,13 +146,23 @@ class ImageUploadService
                 break;
         }
 
-        $current_box = $image->getSize();
         $max_box = new Box($width, $height);
 
+        if ($crop)
+        {
+            $box = $image->getSize();
 
+            if ($box->getHeight() < $max_box)
+            {
 
-        $mode = $crop ? ImageInterface::THUMBNAIL_OUTBOUND : ImageInterface::THUMBNAIL_INSET;
-        $thumbnail = $image->thumbnail(new Box($width, $height), $mode, ImageInterface::FILTER_BLACKMAN);
+            }
+
+        }
+        else
+        {
+            $thumbnail = $image->thumbnail($max_box, ImageInterface::THUMBNAIL_INSET);
+        }
+
         $thumbnail->save($tmp_after_resize_path);
 
 		$err = $this->s3_service->img_upload($filename, $tmp_after_resize_path);
@@ -167,7 +175,7 @@ class ImageUploadService
             $this->logger->error('image_upload: ' .  $err . ' -- ' .
 				$filename, ['schema' => $schema]);
 
-            throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
+            throw new HttpException(800, 'Afbeelding opladen mislukt.');
         }
     }
 
