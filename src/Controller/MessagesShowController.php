@@ -297,7 +297,7 @@ class MessagesShowController extends AbstractController
         $out .= '<div class="col-md-6">';
 
         $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body">';
+        $out .= '<div class="panel-body img-upload">';
 
         $out .= '<div id="no_images" ';
         $out .= 'class="text-center center-body">';
@@ -319,16 +319,17 @@ class MessagesShowController extends AbstractController
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $out .= '<input id="fileupload" type="file" name="images[]" ';
+            $out .= '<input type="file" name="images[]" ';
             $out .= 'data-url="';
 
             $out .= $link_render->context_path('messages_images_upload',
                 $pp->ary(), ['id' => $id]);
 
             $out .= '" ';
-            $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif|svg)$/i" ';
-            $out .= 'data-max-file-size="999000" ';
+            $out .= 'data-fileupload ';
+            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
             $out .= 'multiple></span>';
 
             $out .= '<p class="text-warning">';

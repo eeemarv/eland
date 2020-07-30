@@ -20,7 +20,7 @@ support:
 
 messages_images_instant_del:
   controller: App\Controller\MessagesImagesInstantDelController
-  path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.message_image_ext%>}/del/{form_token<%assert.token%>}
+  path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.image_ext%>}/del/{form_token<%assert.token%>}
   methods: POST
 
 messages_images_del:

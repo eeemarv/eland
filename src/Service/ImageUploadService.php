@@ -29,12 +29,16 @@ class ImageUploadService
     const NODE_PATH = '/usr/bin/node';
     const SVGO_PATH = __DIR__ . '/../../node_modules/svgo/bin/svgo';
     const SVGO_EN = [
+        'removeDimensions',
         'cleanupListOfValues',
         'removeRasterImages',
         'sortAttrs',
         'removeOffCanvasPaths',
         'removeScriptElement',
         'reusePaths',
+    ];
+    const SVGO_DIS = [
+        'removeViewBox',
     ];
     const SVGO_PRECISION = 3;
 
@@ -56,7 +60,7 @@ class ImageUploadService
         int $id,
         int $width,
         int $height,
-        bool $crop,
+        bool $crop_to_square,
 		string $schema
 	):string
 	{
@@ -94,11 +98,11 @@ class ImageUploadService
 
         if ($ext === 'svg')
         {
-            $this->upload_svg($tmp_upload_path, $filename, $width, $height, $crop, $schema);
+            $this->upload_svg($tmp_upload_path, $filename, $crop_to_square, $schema);
             return $filename;
         }
 
-        $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height, $crop, $schema);
+        $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height, $crop_to_square, $schema);
         return $filename;
     }
 
@@ -108,7 +112,7 @@ class ImageUploadService
         string $ext,
         int $width,
         int $height,
-        bool $crop,
+        bool $crop_to_square,
         string $schema
     ):void
     {
@@ -148,11 +152,11 @@ class ImageUploadService
 
         $max_box = new Box($width, $height);
 
-        if ($crop)
+        if ($crop_to_square)
         {
             $box = $image->getSize();
 
-            if ($box->getHeight() < $max_box)
+            if ($box->getHeight() < $max_box->getHeight())
             {
 
             }
@@ -182,18 +186,18 @@ class ImageUploadService
     protected function upload_svg(
         string $tmp_upload_path,
         string $filename,
-        int $width,
-        int $height,
-        bool $crop,
+        bool $crop_to_square,
         string $schema
     ):void
     {
         $tmp_after_optimize_path = tempnam(sys_get_temp_dir(), 'img');
         $enabled = implode(',', self::SVGO_EN);
+        $disabled = implode(',', self::SVGO_DIS);
         $process_args = [
             self::NODE_PATH,
             self::SVGO_PATH,
             '--enable=' . $enabled,
+            '--disable=' . $disabled,
             '-p',
             self::SVGO_PRECISION,
             '-i',
@@ -208,7 +212,45 @@ class ImageUploadService
             throw new ProcessFailedException($process);
         }
 
-        error_log($process->getOutput());
+        $this->logger->debug('svgo compress (' . $filename . ') ' . $process->getOutput(), ['schema' => $schema]);
+
+        if ($crop_to_square)
+        {
+            $do_crop = false;
+            $doc = new \DOMDocument();
+            $doc->load($tmp_after_optimize_path);
+            $svg = $doc->documentElement;
+            $viewbox = $svg->getAttribute('viewBox');
+            $viewbox = strtr($viewbox, [
+                '   '   => ' ',
+                '  '    => ' ',
+                ','     => ' ',
+            ]);
+            [$x, $y, $w, $h] = explode(' ', $viewbox);
+            if ($w < $h)
+            {
+                $do_crop = true;
+                $x -= ($h - $w) / 2;
+                $x = round($x, 3);
+                $w = $h;
+            }
+            else if ($h < $w)
+            {
+                $do_crop = true;
+                $y -= ($w - $h) / 2;
+                $y = round($y, 3);
+                $h = $w;
+            }
+
+            if ($do_crop)
+            {
+                $viewbox = $x . ' ' . $y . ' ' . $w . ' ' . $h;
+                $svg->setAttribute('viewBox', $viewbox);
+                $doc->save($tmp_after_optimize_path);
+
+                $this->logger->debug('svg pad to square (' . $filename  . ')', ['schema' => $schema]);
+            }
+        }
 
         $err = $this->s3_service->img_upload($filename, $tmp_after_optimize_path);
 

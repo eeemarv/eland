@@ -25,17 +25,30 @@ $(document).ready(function () {
 		rewrite_image_files_input();
 	});
 
-    $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
+	$fileupload = $('[data-fileupload]');
+	var messages = {
+		acceptFileTypes: $fileupload.data('message-file-type-not-allowed'),
+		maxFileSize: $fileupload.data('message-max-file-size'),
+		uploadedBytes : $fileupload.data('message-uploaded-bytes')
+	};
+
+    $fileupload.bind('fileuploadprocessfail', function (e, data) {
 		var error = (data.files[data.index].error == 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
 		alert(error);
 		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
 	}).fileupload({
 
+		dataType: 'json',
+		autoUpload: true,
+        acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|svg)$/i,
+		maxFileSize: 999000,
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
 		imageMaxHeight: 400,
-		imageOrientation: true
+		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
+		imageOrientation: true,
+		messages: messages
 
 	}).on('fileuploadadd', function (e, data) {
 		$img_add_btn.removeClass('fa-plus').addClass('fa-spinner fa-spin');

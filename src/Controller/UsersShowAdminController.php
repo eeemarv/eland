@@ -387,7 +387,7 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body text-center ';
-        $out .= 'center-block" id="img_user">';
+        $out .= 'center-block upload-img" id="img_user">';
 
         $show_img = $user['image_file'] ? true : false;
 
@@ -431,7 +431,7 @@ class UsersShowAdminController extends AbstractController
             $out .= '<div class="panel-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $out .= '<input id="fileupload" type="file" name="image" ';
+            $out .= '<input type="file" name="image" ';
             $out .= 'data-url="';
 
             if ($pp->is_admin())
@@ -444,12 +444,11 @@ class UsersShowAdminController extends AbstractController
                 $out .= $link_render->context_path('users_image_upload', $pp->ary(), []);
             }
 
-            $out .= '" ';
-            $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif|svg)$/i" ';
-            $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
-//            $out .= 'data-image-crop="true" ';
-            $out .= 'data-image-max-height="400"></span>';
+            $out .= '" data-image-crop data-fileupload ';
+            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
+            $out .= '></span>';
 
             $out .= '<p class="text-warning">';
             $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';

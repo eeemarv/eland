@@ -66,6 +66,9 @@
     "enshrined/svg-sanitize": {
         "version": "0.13.3"
     },
+    "intervention/image": {
+        "version": "2.5.1"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },

@@ -1,6 +1,13 @@
 $(document).ready(function () {
 
-    $('#fileupload').bind('fileuploadprocessfail', function (e, data) {
+	$fileupload = $('[data-fileupload]');
+	var messages = {
+		acceptFileTypes: $fileupload.data('message-file-type-not-allowed'),
+		maxFileSize: $fileupload.data('message-max-file-size'),
+		uploadedBytes : $fileupload.data('message-uploaded-bytes')
+	};
+
+    $fileupload.bind('fileuploadprocessfail', function (e, data) {
 
 		var error = (data.files[data.index].error === 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
 
@@ -10,11 +17,17 @@ $(document).ready(function () {
 
 	}).fileupload({
 
+		dataType: 'json',
+		autoUpload: true,
+        acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|svg)$/i,
+		maxFileSize: 999000,
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
 		imageMaxHeight: 400,
-		imageOrientation: true
+		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
+		imageOrientation: true,
+		messages: messages
 
 	}).on('fileuploadadd', function (e, data) {
 

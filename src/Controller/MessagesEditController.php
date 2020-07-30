@@ -641,19 +641,20 @@ class MessagesEditController extends AbstractController
 
         $out .= '<span class="btn btn-default fileinput-button">';
         $out .= '<i class="fa fa-plus" id="img_plus"></i> Opladen';
-        $out .= '<input id="fileupload" type="file" name="images[]" ';
+        $out .= '<input type="file" name="images[]" ';
         $out .= 'data-url="';
 
         $out .= $link_render->context_path($upload_img_route, $pp->ary(),
             $upload_img_param);
 
-        $out .= '" ';
-        $out .= 'data-data-type="json" data-auto-upload="true" ';
-        $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
-        $out .= 'data-max-file-size="999000" ';
-        $out .= 'multiple></span>&nbsp;';
+        $out .= '" multiple ';
+        $out .= 'data-fileupload ';
+        $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+        $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+        $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
+        $out .= '></span>&nbsp;';
 
-        $out .= '<p>Toegestane formaten: jpg/jpeg, png, gif. ';
+        $out .= '<p>Toegestane formaten: jpg/jpeg, png, gif, svg. ';
         $out .= 'Je kan ook afbeeldingen hierheen ';
         $out .= 'verslepen. ';
         $out .= 'De volgorde kan veranderd worden door te verslepen.</p>';
