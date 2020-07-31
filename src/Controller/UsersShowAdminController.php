@@ -396,7 +396,7 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '<img id="img"';
         $out .= $user_img;
-        $out .= ' class="img-rounded img-responsive center-block" ';
+        $out .= ' class="img-rounded img-responsive center-block w-100" ';
         $out .= 'src="';
 
         if ($user['image_file'])

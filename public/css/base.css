@@ -713,6 +713,10 @@ div.jqplot-cursor-legend-swatch {
 .img-upload {
   background-color: #e6e6e6;
 }
+.img-upload img {
+  width: 100%;
+  height: auto;
+}
 
 .jqplot-error {
     text-align: center;

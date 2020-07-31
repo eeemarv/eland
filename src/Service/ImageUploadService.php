@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Intervention\Image\ImageManagerStatic;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
 
@@ -142,21 +143,26 @@ class ImageUploadService
             $orientation = 1;
         }
 
-        $imagine = new Imagine();
-
-        $image = $imagine->open($tmp_upload_path);
+        ImageManagerStatic::configure(['driver' => 'imagick']);
+        $image = ImageManagerStatic::make($tmp_upload_path);
 
         switch ($orientation)
         {
-            case 3:
+            case 2:
+                $image->flip();
+                break;
             case 4:
+                $image->flip();
+            case 3:
                 $image->rotate(180);
                 break;
             case 5:
+                $image->flip();
             case 6:
-                $image->rotate(-90);
+                $image->rotate(270);
                 break;
             case 7:
+                $image->flip();
             case 8:
                 $image->rotate(90);
                 break;
@@ -164,24 +170,42 @@ class ImageUploadService
                 break;
         }
 
-        $max_box = new Box($width, $height);
+        $h = $image->height();
+        $w = $image->width();
+        $rh = $h / $height;
+        $rw = $w / $width;
+
+        if ($rh > 1 || $rw > 1)
+        {
+            if ($rh > $rw)
+            {
+                $h = $height;
+                $w = round($w / $rh * $height);
+            }
+            else
+            {
+                $w = $width;
+                $h = round($h / $rw * $width);
+            }
+
+            $image->resize($w, $h);
+        }
 
         if ($crop_to_square)
         {
-            $box = $image->getSize();
-
-            if ($box->getHeight() < $max_box->getHeight())
+            if ($w > $h)
             {
-
+                $x = round(($w - $h) / 2);
+                $image->crop($h, $h, $x, 0);
             }
-
+            else if ($h > $w)
+            {
+                $y = round(($h - $w) / 2);
+                $image->crop($w, $w, 0, $y);
+            }
         }
-        else
-        {
-            $thumbnail = $image->thumbnail($max_box, ImageInterface::THUMBNAIL_INSET);
-        }
 
-        $thumbnail->save($tmp_upload_path);
+        $image->save($tmp_upload_path);
 
 		$err = $this->s3_service->img_upload($filename, $tmp_upload_path);
 

@@ -29,7 +29,7 @@ $(document).ready(function () {
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
 		var data_images = $images_con.data('images');
 		if (data.result.hasOwnProperty('error')){
-			alert(res.error);
+			alert(data.result.error);
 		} else {
 			$.each(data.result.filenames, function (index, file) {
 				data_images.files.push(file);
