@@ -387,7 +387,7 @@ class UsersShowAdminController extends AbstractController
 
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body text-center ';
-        $out .= 'center-block upload-img" id="img_user">';
+        $out .= 'center-block img-upload" id="img_user">';
 
         $show_img = $user['image_file'] ? true : false;
 

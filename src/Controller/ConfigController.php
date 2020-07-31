@@ -1043,6 +1043,7 @@ class ConfigController extends AbstractController
         $out .= '<i class="fa fa-image fa-5x text-muted"></i>';
         $out .= '<br>Geen logo';
         $out .= '</div>';
+        $out .= '</div>';
         $out .= '<br>';
 
         $btn_del_attr = ['id'	=> 'btn_remove'];
@@ -1076,7 +1077,6 @@ class ConfigController extends AbstractController
             array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
             'times');
 
-        $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
 

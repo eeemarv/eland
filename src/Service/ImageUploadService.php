@@ -7,11 +7,6 @@ use Imagine\Imagick\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
-use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class ImageUploadService
@@ -28,19 +23,33 @@ class ImageUploadService
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
     const NODE_PATH = '/usr/bin/node';
     const SVGO_PATH = __DIR__ . '/../../node_modules/svgo/bin/svgo';
-    const SVGO_EN = [
-        'removeDimensions',
-        'cleanupListOfValues',
-        'removeRasterImages',
-        'sortAttrs',
-        'removeOffCanvasPaths',
-        'removeScriptElement',
-        'reusePaths',
-    ];
     const SVGO_DIS = [
         'removeViewBox',
     ];
+    const SVGO_EN = [
+        'cleanupListOfValues',
+        'removeRasterImages',
+        'sortAttrs',
+        'sortDefsChildren',
+        'removeOffCanvasPaths',
+        'removeScriptElement',
+        'reusePaths',
+        'removeDimensions',
+    ];
     const SVGO_PRECISION = 3;
+    const SVG_CROP_ALLOWED_PADDING_PERCENTAGE = 10;
+    const UNIT_CONV = [
+        'px'    => 1,
+        'in'    => 96,
+        'cm'    => 37.795,
+        'mm'    => 3.7795,
+        'pt'    => 1.3333,
+        'pc'    => 16,
+        'em'    => 16,
+        'ex'    => 10,
+        'rem'   => 16,
+        'ch'    => 10,
+    ];
 
 	protected LoggerInterface $logger;
     protected S3Service $s3_service;
@@ -62,11 +71,14 @@ class ImageUploadService
         int $height,
         bool $crop_to_square,
 		string $schema
-	):string
+	):array
 	{
         if (!$uploaded_file->isValid())
         {
-            throw new BadRequestHttpException('Ongeldig bestand.');
+            return [
+                'error' => 'Ongeldig bestand',
+                'code'  => 400,
+            ];
         }
 
         $size = $uploaded_file->getSize();
@@ -75,12 +87,18 @@ class ImageUploadService
         if ($size > self::MAX_SIZE
             || $size > $uploaded_file->getMaxFilesize())
         {
-            throw new HttpException(413, 'Het bestand is te groot.');
+            return [
+                'error' => 'Het bestand is te groot.',
+                'code'  => 413,
+            ];
         }
 
         if (!in_array($mime, array_keys(self::ALLOWED_MIME)))
         {
-            throw new UnsupportedMediaTypeHttpException('Ongeldig bestandstype.');
+            return [
+                'error'     => 'Ongeldig bestandstype.',
+                'code'      => 415,
+            ];
         }
 
         $tpl = $id < 1 ? self::FILENAME_TPL : self::FILENAME_WITH_ID_TPL;
@@ -98,12 +116,10 @@ class ImageUploadService
 
         if ($ext === 'svg')
         {
-            $this->upload_svg($tmp_upload_path, $filename, $crop_to_square, $schema);
-            return $filename;
+            return $this->upload_svg($tmp_upload_path, $filename, $crop_to_square, $schema);
         }
 
-        $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height, $crop_to_square, $schema);
-        return $filename;
+        return $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height, $crop_to_square, $schema);
     }
 
     protected function upload_bitmap(
@@ -114,7 +130,7 @@ class ImageUploadService
         int $height,
         bool $crop_to_square,
         string $schema
-    ):void
+    ):array
     {
         if ($ext === 'jpg')
         {
@@ -125,8 +141,6 @@ class ImageUploadService
         {
             $orientation = 1;
         }
-
-        $tmp_after_resize_path = tempnam(sys_get_temp_dir(), 'img');
 
         $imagine = new Imagine();
 
@@ -167,20 +181,27 @@ class ImageUploadService
             $thumbnail = $image->thumbnail($max_box, ImageInterface::THUMBNAIL_INSET);
         }
 
-        $thumbnail->save($tmp_after_resize_path);
+        $thumbnail->save($tmp_upload_path);
 
-		$err = $this->s3_service->img_upload($filename, $tmp_after_resize_path);
+		$err = $this->s3_service->img_upload($filename, $tmp_upload_path);
 
         unlink($tmp_upload_path);
-        unlink($tmp_after_resize_path);
 
         if ($err)
         {
             $this->logger->error('image_upload: ' .  $err . ' -- ' .
 				$filename, ['schema' => $schema]);
 
-            throw new HttpException(800, 'Afbeelding opladen mislukt.');
+            return [
+                'error' => 'Afbeelding opladen mislukt.',
+                'code'  => 400,
+            ];
         }
+
+        return [
+            'filename'  => $filename,
+            'code'      => 200,
+        ]
     }
 
     protected function upload_svg(
@@ -188,73 +209,144 @@ class ImageUploadService
         string $filename,
         bool $crop_to_square,
         string $schema
-    ):void
+    ):array
     {
-        $tmp_after_optimize_path = tempnam(sys_get_temp_dir(), 'img');
         $enabled = implode(',', self::SVGO_EN);
         $disabled = implode(',', self::SVGO_DIS);
         $process_args = [
             self::NODE_PATH,
             self::SVGO_PATH,
-            '--enable=' . $enabled,
             '--disable=' . $disabled,
+            '--enable=' . $enabled,
             '-p',
             self::SVGO_PRECISION,
             '-i',
             $tmp_upload_path,
             '-o',
-            $tmp_after_optimize_path,
+            $tmp_upload_path,
         ];
         $process = new Process($process_args);
         $process->run();
+        $this->logger->debug('svgo compress (' . $filename . ') ' . $process->getOutput(), ['schema' => $schema]);
         if (!$process->isSuccessful())
         {
-            throw new ProcessFailedException($process);
+            return [
+                'error'     => 'Proces fout.',
+                'code'      => 500,
+            ];
         }
 
-        $this->logger->debug('svgo compress (' . $filename . ') ' . $process->getOutput(), ['schema' => $schema]);
-
-        if ($crop_to_square)
+        $rewrite = false;
+        $crop = false;
+        $doc = new \DOMDocument();
+        $doc->load($tmp_upload_path);
+        $svg = $doc->documentElement;
+        $viewbox = $svg->getAttribute('viewBox');
+        if ($viewbox === '')
         {
-            $do_crop = false;
-            $doc = new \DOMDocument();
-            $doc->load($tmp_after_optimize_path);
-            $svg = $doc->documentElement;
-            $viewbox = $svg->getAttribute('viewBox');
+            $rewrite = true;
+            $height = $svg->getAttribute('height');
+            $width = $svg->getAttribute('width');
+            $svg->removeAttribute('height');
+            $svg->removeAttribute('width');
+            $h = filter_var($height, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            $w = filter_var($width, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            foreach(self::UNIT_CONV as $unit => $conv)
+            {
+                if (stripos($height, $unit) !== false)
+                {
+                    $h = $h * $conv;
+                }
+                if (stripos($width, $unit) !== false)
+                {
+                    $w = $w * $conv;
+                }
+            }
+            $x = 0;
+            $y = 0;
+        }
+        else
+        {
             $viewbox = strtr($viewbox, [
                 '   '   => ' ',
                 '  '    => ' ',
                 ','     => ' ',
             ]);
+            error_log(file_get_contents($tmp_upload_path));
+            error_log('viewbox: ' . $viewbox);
             [$x, $y, $w, $h] = explode(' ', $viewbox);
+        }
+
+        if ($crop_to_square)
+        {
+            $pad_ratio = (self::SVG_CROP_ALLOWED_PADDING_PERCENTAGE + 100) / 100;
             if ($w < $h)
             {
-                $do_crop = true;
-                $x -= ($h - $w) / 2;
-                $x = round($x, 3);
-                $w = $h;
+                $rewrite = true;
+                $crop = true;
+                $p_w = $pad_ratio * $w;
+                if ($p_w <= $h)
+                {
+                    $y += ($h - $p_w) / 2;
+                    $x -= ($p_w - $w) / 2;
+                    $w = $p_w;
+                    $h = $p_w;
+                }
+                else
+                {
+                    $x -= ($h - $w) / 2;
+                    $w = $h;
+                }
             }
             else if ($h < $w)
             {
-                $do_crop = true;
-                $y -= ($w - $h) / 2;
-                $y = round($y, 3);
-                $h = $w;
+                $rewrite = true;
+                $crop = true;
+                $p_h = $pad_ratio * $h;
+                if ($p_h <= $w)
+                {
+                    $x += ($w - $p_h) / 2;
+                    $y -= ($p_h - $h) / 2;
+                    $w = $p_h;
+                    $h = $p_h;
+                }
+                else
+                {
+                    $y -= ($w - $h) / 2;
+                    $h = $w;
+                }
             }
 
-            if ($do_crop)
+            if ($rewrite)
             {
+                $x = round($x, 3);
+                $y = round($y, 3);
+                $w = round($w, 3);
+                $h = round($h, 3);
+
                 $viewbox = $x . ' ' . $y . ' ' . $w . ' ' . $h;
                 $svg->setAttribute('viewBox', $viewbox);
-                $doc->save($tmp_after_optimize_path);
+                $doc->save($tmp_upload_path);
 
-                $this->logger->debug('svg pad to square (' . $filename  . ')', ['schema' => $schema]);
+                if ($crop)
+                {
+                    $this->logger->debug('svg crop to square (' . $filename  . ')', ['schema' => $schema]);
+                    $process = new Process($process_args);
+                    $process->run();
+                    $this->logger->debug('svgo compress after crop (' . $filename . ') ' . $process->getOutput(), ['schema' => $schema]);
+                    if (!$process->isSuccessful())
+                    {
+                        return [
+                            'error'     => 'Proces fout (2).',
+                            'code'      => 500,
+                        ];
+                    }
+                }
             }
         }
 
-        $err = $this->s3_service->img_upload($filename, $tmp_after_optimize_path);
+        $err = $this->s3_service->img_upload($filename, $tmp_upload_path);
 
-        unlink($tmp_after_optimize_path);
         unlink($tmp_upload_path);
 
         if ($err)
@@ -262,7 +354,14 @@ class ImageUploadService
             $this->logger->error('image_upload: ' .  $err . ' -- ' .
 				$filename, ['schema' => $schema]);
 
-            throw new ServiceUnavailableHttpException('Afbeelding opladen mislukt.');
+            return [
+                'error' => 'Afbeelding opladen mislukt.',
+                'code'  => 400,
         }
+
+        return [
+            'filename'  => $filename,
+            'code'      => 200,
+        ];
     }
 }
