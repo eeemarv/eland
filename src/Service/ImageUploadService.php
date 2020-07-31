@@ -201,7 +201,7 @@ class ImageUploadService
         return [
             'filename'  => $filename,
             'code'      => 200,
-        ]
+        ];
     }
 
     protected function upload_svg(
@@ -272,8 +272,6 @@ class ImageUploadService
                 '  '    => ' ',
                 ','     => ' ',
             ]);
-            error_log(file_get_contents($tmp_upload_path));
-            error_log('viewbox: ' . $viewbox);
             [$x, $y, $w, $h] = explode(' ', $viewbox);
         }
 
@@ -357,6 +355,7 @@ class ImageUploadService
             return [
                 'error' => 'Afbeelding opladen mislukt.',
                 'code'  => 400,
+            ];
         }
 
         return [

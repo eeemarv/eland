@@ -28,15 +28,18 @@ class LogoUploadController extends AbstractController
             throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
         }
 
-        $filename = $image_upload_service->upload($uploaded_file,
+        $res = $image_upload_service->upload($uploaded_file,
             'l', 0, 400, 100, false, $pp->schema());
 
-        $config_service->set_str('system.logo', $filename, $pp->schema());
+        if (isset($res['filename']))
+        {
+            $config_service->set_str('system.logo', $res['filename'], $pp->schema());
 
-        $logger->info('Logo ' . $filename .
-            ' uploaded.',
-            ['schema' => $pp->schema()]);
+            $logger->info('Logo ' . $res['filename'] .
+                ' uploaded.',
+                ['schema' => $pp->schema()]);
+        }
 
-        return $this->json([$filename]);
+        return $this->json($res);
     }
 }

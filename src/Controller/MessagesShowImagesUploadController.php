@@ -5,8 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Controller\MessagesShowController;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
@@ -34,7 +32,10 @@ class MessagesShowImagesUploadController extends AbstractController
 
         if (!count($uploaded_files))
         {
-            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
+            return $this->json([
+                'error' => 'Afbeeldingsbestand ontbreekt.',
+                'code'  => 400,
+            ], 400);
         }
 
         if ($id)
@@ -43,9 +44,12 @@ class MessagesShowImagesUploadController extends AbstractController
 
             if (!$su->is_owner($message['user_id']) && !$pp->is_admin())
             {
-                throw new AccessDeniedHttpException('Je hebt onvoldoende rechten
-                    om een afbeelding op te laden voor
-                    dit vraag of aanbod bericht.');
+                return $this->json([
+                    'error' => 'Je hebt onvoldoende rechten
+                        om een afbeelding op te laden voor
+                        dit vraag of aanbod bericht.',
+                    'code'  => 403,
+                ], 403);
             }
         }
         else
@@ -59,15 +63,22 @@ class MessagesShowImagesUploadController extends AbstractController
 
         foreach ($uploaded_files as $uploaded_file)
         {
-            $filename = $image_upload_service->upload($uploaded_file,
+            $res = $image_upload_service->upload($uploaded_file,
                 'm', $id, 400, 400, false, $pp->schema());
+
+            if (isset($res['error']))
+            {
+                return $this->json($res);
+            }
+
+            $filename = $res['filename'];
 
             if ($insert_in_db)
             {
                 $update_db = true;
 
                 $logger->info('Image file ' .
-                    $filename . ' uploaded and inserted in db.',
+                    $res['filename'] . ' uploaded and inserted in db.',
                     ['schema' => $pp->schema()]);
             }
             else
@@ -90,6 +101,9 @@ class MessagesShowImagesUploadController extends AbstractController
             );
         }
 
-        return $this->json($filename_ary);
+        return $this->json([
+            'filenames' => $filename_ary,
+            'code'      => 200,
+        ]);
     }
 }

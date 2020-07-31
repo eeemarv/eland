@@ -447,6 +447,7 @@ class UsersShowAdminController extends AbstractController
             $out .= '" data-image-crop data-fileupload ';
             $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
             $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
             $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
             $out .= '></span>';
 

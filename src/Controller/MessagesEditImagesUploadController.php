@@ -30,7 +30,10 @@ class MessagesEditImagesUploadController extends AbstractController
     {
         if ($error = $form_token_service->get_ajax_error($form_token))
         {
-            throw new BadRequestHttpException('Form token fout: ' . $error);
+            return $this->json([
+                'error' => 'Form token fout: ' . $error,
+                'code'  => 400,
+            ], 400);
         }
 
         return $upload_controller(

@@ -1,26 +1,21 @@
 $(document).ready(function () {
-
 	$fileupload = $('[data-fileupload]');
 	var messages = {
 		acceptFileTypes: $fileupload.data('message-file-type-not-allowed'),
 		maxFileSize: $fileupload.data('message-max-file-size'),
+		minFileSize: $fileupload.data('message-min-file-size'),
 		uploadedBytes : $fileupload.data('message-uploaded-bytes')
 	};
-
     $fileupload.bind('fileuploadprocessfail', function (e, data) {
-
-		var error = (data.files[data.index].error === 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
-
+		var error = data.files[data.index].error;
 		alert(error);
-
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
-
 	}).fileupload({
-
 		dataType: 'json',
 		autoUpload: true,
         acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|svg)$/i,
 		maxFileSize: 999000,
+		minFileSize: 100,
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
@@ -28,31 +23,23 @@ $(document).ready(function () {
 		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
 		imageOrientation: true,
 		messages: messages
-
 	}).on('fileuploadadd', function (e, data) {
-
 		$('#img_plus').removeClass('fa-plus').addClass('fa-spinner fa-spin');
-
 	}).on('fileuploaddone', function (e, data) {
-
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
-
 		var data_images = $images_con.data('images');
-
-        $.each(data.result, function (index, file) {
-
-            if (file) {
+		if (data.result.hasOwnProperty('error')){
+			alert(res.error);
+		} else {
+			$.each(data.result.filenames, function (index, file) {
 				data_images.files.push(file);
 				$("#slider1_container").remove();
 				jssor_init(data_images);
 				jssor_slider1.$GoTo(jssor_slider1.$SlidesCount() - 1);
 				$('#btn_remove').css('display', 'inherit');
-            } else {
-				alert('Fout bij het opladen van de afbeelding.');
-            }
-
-            $images_con.data('images', data_images);
-        });
+			});
+			$images_con.data('images', data_images);
+		}
      }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 });
