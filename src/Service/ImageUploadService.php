@@ -254,6 +254,7 @@ class ImageUploadService
         $this->logger->debug('svgo compress (' . $filename . ') ' . $process->getOutput(), ['schema' => $schema]);
         if (!$process->isSuccessful())
         {
+            $this->logger->debug('svgo process fail: ' . $process->getErrorOutput(), ['schema' => $schema]);
             return [
                 'error'     => 'Proces fout.',
                 'code'      => 500,
@@ -358,6 +359,7 @@ class ImageUploadService
                     $this->logger->debug('svgo compress after crop (' . $filename . ') ' . $process->getOutput(), ['schema' => $schema]);
                     if (!$process->isSuccessful())
                     {
+                        $this->logger->debug('svgo process fail (2): ' . $process->getErrorOutput(), ['schema' => $schema]);
                         return [
                             'error'     => 'Proces fout (2).',
                             'code'      => 500,
