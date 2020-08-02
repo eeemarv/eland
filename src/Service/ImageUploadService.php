@@ -22,7 +22,7 @@ class ImageUploadService
 
     const FILENAME_WITH_ID_TPL = '%schema%_%type%_%id%_%hash%.%ext%';
     const FILENAME_TPL = '%schema%_%type%_%hash%.%ext%';
-    const NODE_PATH = '/usr/bin/node';
+    const NODE_PATH = 'node';
     const SVGO_PATH = __DIR__ . '/../../node_modules/svgo/bin/svgo';
     const SVGO_DIS = [
         'removeViewBox',
