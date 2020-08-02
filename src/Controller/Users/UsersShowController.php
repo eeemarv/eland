@@ -389,7 +389,7 @@ class UsersShowController extends AbstractController
 
         $out .= '<div class="card card-default">';
         $out .= '<div class="card-body text-center ';
-        $out .= 'center-block" id="img_user">';
+        $out .= 'center-block img-upload" id="img_user">';
 
         $show_img = $user['image_file'] ? true : false;
 
@@ -398,7 +398,7 @@ class UsersShowController extends AbstractController
 
         $out .= '<img id="img"';
         $out .= $user_img;
-        $out .= ' class="img-rounded img-responsive center-block" ';
+        $out .= ' class="img-rounded img-responsive center-block w-100" ';
         $out .= 'src="';
 
         if ($user['image_file'])
@@ -417,7 +417,7 @@ class UsersShowController extends AbstractController
         $out .= $no_user_img;
         $out .= '>';
         $out .= '<i class="fa fa-user fa-5x text-muted"></i>';
-        $out .= '<br>Geen profielfoto</div>';
+        $out .= '<br>Geen profielfoto/afbeelding</div>';
 
         $out .= '</div>';
 
@@ -432,8 +432,8 @@ class UsersShowController extends AbstractController
 
             $out .= '<div class="card-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
-            $out .= '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
-            $out .= '<input id="fileupload" type="file" name="image" ';
+            $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
+            $out .= '<input type="file" name="image" ';
             $out .= 'data-url="';
 
             if ($pp->is_admin())
@@ -446,28 +446,28 @@ class UsersShowController extends AbstractController
                 $out .= $link_render->context_path('users_image_upload', $pp->ary(), []);
             }
 
-            $out .= '" ';
-            $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
-            $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
-            $out .= 'data-image-crop="true" ';
-            $out .= 'data-image-max-height="400"></span>';
+            $out .= '" data-image-crop data-fileupload ';
+            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
+            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
+            $out .= '></span>';
 
-            $out .= '<p>';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
-            $out .= 'Je kan ook een foto hierheen verslepen.</p>';
+            $out .= '<p class="text-warning">';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
+            $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
 
             if ($pp->is_admin())
             {
                 $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
-                    ['id' => $id], 'Foto verwijderen',
+                    ['id' => $id], 'Afbeelding verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
             else
             {
                 $out .= $link_render->link_fa('users_image_del', $pp->ary(),
-                    [], 'Foto verwijderen',
+                    [], 'Afbeelding verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }

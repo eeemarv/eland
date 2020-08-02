@@ -49,7 +49,7 @@ class ConfigLogoDelController extends AbstractController
 
         $out = '<div class="row">';
         $out .= '<div class="col-xs-6">';
-        $out .= '<div class="thumbnail">';
+        $out .= '<div class="thumbnail img-upload">';
         $out .= '<img src="';
         $out .= $env_s3_url . $logo;
         $out .= '" class="img-rounded">';

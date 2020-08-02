@@ -24,6 +24,7 @@
 		"geocoder-php/google-maps-provider": "^4.1",
 		"gregwar/captcha-bundle": "^2.1",
 		"imagine/imagine": "^0.6",
+		"intervention/image": "^2.5",
 		"league/html-to-markdown": "^4.4",
 		"minishlink/web-push-bundle": "^5.0",
 		"mollie/mollie-api-php": "^2",

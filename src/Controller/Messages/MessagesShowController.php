@@ -382,7 +382,7 @@ class MessagesShowController extends AbstractController
             $out .= '<div class="card-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $out .= '<input id="fileupload" type="file" name="images[]" ';
+            $out .= '<input type="file" name="images[]" ';
             $out .= 'data-url="';
 
 /*
@@ -391,13 +391,15 @@ class MessagesShowController extends AbstractController
 */
 
             $out .= '" ';
-            $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
-            $out .= 'data-max-file-size="999000" ';
+            $out .= 'data-fileupload ';
+            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
+            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
             $out .= 'multiple></span>';
 
-            $out .= '<p>';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
+            $out .= '<p class="text-warning">';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
             $out .= $link_render->link_fa('messages_images_del', $pp->ary(),

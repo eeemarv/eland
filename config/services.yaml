@@ -19,7 +19,7 @@ parameters:
     assert.account_status.primary: 'active|inactive|im|ip|extern'
     assert.account_status.active: 'active|new|leaving'
     assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
-    assert.message_image_ext: 'jpg|png|gif'
+    assert.image_ext: 'jpg|png|gif|svg'
     assert.year: ^(19|20)[0-9]{2}$
     assert.month: ^[1-9]|1[012]$
 

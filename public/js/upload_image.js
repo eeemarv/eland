@@ -3,26 +3,38 @@ $(document).ready(function () {
 	var img = $('#img');
 	var no_img = $('#no_img');
 
-	$('#fileupload').bind('fileuploadprocessfail', function (e, data) {
-
-		var error = (data.files[data.index].error === 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
+	$fileupload = $('[data-fileupload]');
+	var messages = {
+		acceptFileTypes: $fileupload.data('message-file-type-not-allowed'),
+		maxFileSize: $fileupload.data('message-max-file-size'),
+		minFileSize: $fileupload.data('message-min-file-size'),
+		uploadedBytes : $fileupload.data('message-uploaded-bytes')
+	};
+	$fileupload.bind('fileuploadprocessfail', function (e, data) {
+		var error = data.files[data.index].error;
 		alert(error);
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
-
 	}).fileupload({
+		dataType: 'json',
+		autoUpload: true,
+        acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|svg)$/i,
+		maxFileSize: 999000,
+		minFileSize: 100,
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
 		imageMaxHeight: 400,
-		imageOrientation: true
+		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
+		imageOrientation: true,
+		messages: messages
 	}).on('fileuploadadd', function (e, data) {
 		$('#img_plus').removeClass('fa-plus').addClass('fa-spinner fa-spin');
 	}).on('fileuploaddone', function (e, data) {
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
-
-		if (data.result[0]) {
-
-			var img_filename = img.data('base-url') + data.result[0];
+		if (data.result.hasOwnProperty('error')){
+			alert(data.result.error);
+		} else {
+			var img_filename = img.data('base-url') + data.result.filename;
 			img.attr('src', img_filename);
 			img.css('display', 'inherit');
 			no_img.css('display', 'none');

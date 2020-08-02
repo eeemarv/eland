@@ -8,7 +8,6 @@ use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
@@ -28,22 +27,30 @@ class UsersImageUploadAdminController extends AbstractController
 
         if (!$uploaded_file)
         {
-            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
+            return $this->json([
+                'error' => 'Afbeeldingsbestand ontbreekt.',
+                'code'  => 400,
+            ], 400);
         }
 
-        $filename = $image_upload_service->upload($uploaded_file,
-            'u', $id, 400, 400, $pp->schema());
+        $res = $image_upload_service->upload($uploaded_file,
+            'u', $id, 400, 400, true, $pp->schema());
+
+        if (!isset($res['filename']))
+        {
+            return $this->json($res);
+        }
 
         $db->update($pp->schema() . '.users', [
-            'image_file'	=> $filename
+            'image_file'	=> $res['filename'],
         ],['id' => $id]);
 
-        $logger->info('User image ' . $filename .
+        $logger->info('User image ' . $res['filename'] .
             ' uploaded. User: ' . $id,
             ['schema' => $pp->schema()]);
 
         $user_cache_service->clear($id, $pp->schema());
 
-        return $this->json([$filename]);
+        return $this->json($res);
     }
 }

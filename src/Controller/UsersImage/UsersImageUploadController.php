@@ -28,7 +28,10 @@ class UsersImageUploadController extends AbstractController
     {
         if ($su->id() < 1)
         {
-            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
+            return $this->json([
+                'error' => 'Je hebt onvoldoende rechten voor deze actie.',
+                'code'  => 403,
+            ], 403);
         }
 
         return $users_image_upload_admin_controller(

@@ -1056,6 +1056,7 @@ class ConfigController extends AbstractController
         $out .= '<i class="fa fa-image fa-5x text-muted"></i>';
         $out .= '<br>Geen logo';
         $out .= '</div>';
+        $out .= '</div>';
         $out .= '<br>';
 
         $btn_del_attr = ['id'	=> 'btn_remove'];
@@ -1067,21 +1068,21 @@ class ConfigController extends AbstractController
 
         $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
         $out .= '<i class="fa fa-plus" id="img_plus"></i> Logo opladen';
-        $out .= '<input id="fileupload" type="file" name="image" ';
+        $out .= '<input type="file" name="image" ';
         $out .= 'data-url="';
 
         $out .= $link_render->context_path('logo_upload', $pp->ary(), []);
 
         $out .= '" ';
-        $out .= 'data-data-type="json" data-auto-upload="true" ';
-        $out .= 'data-accept-file-types="/(\.|\/)(png|gif)$/i" ';
-        $out .= 'data-max-file-size="999000">';
+        $out .= 'data-fileupload ';
+        $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+        $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+        $out .= 'data-message-uploaded-bytes="Het bestand is te groot.">';
         $out .= '</span>';
 
-        $out .= '<p>';
-        $out .= 'Toegestane formaten: png en gif. ';
+        $out .= '<p class="text-warning">';
+        $out .= 'Toegestane formaten: jpg/jpeg, png, gif of svg. ';
         $out .= 'Je kan ook een afbeelding hierheen verslepen. ';
-        $out .= 'Gebruik een doorzichtige achtergrond voor beste resultaat.';
         $out .= '</p>';
 
         $out .= $link_render->link_fa('logo_del', $pp->ary(),
@@ -1089,7 +1090,6 @@ class ConfigController extends AbstractController
             array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
             'times');
 
-        $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
 

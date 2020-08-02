@@ -17,6 +17,7 @@ class S3Service
 		'jpeg'	=> 'image/jpeg',
 		'png'	=> 'image/png',
 		'gif'	=> 'image/gif',
+		'svg'	=> 'image/svg+xml',
 	];
 
 	const DOC_TYPES = [
