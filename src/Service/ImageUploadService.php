@@ -180,12 +180,12 @@ class ImageUploadService
             if ($rh > $rw)
             {
                 $h = $height;
-                $w = round($w / $rh * $height);
+                $w = round($w / $rh);
             }
             else
             {
                 $w = $width;
-                $h = round($h / $rw * $width);
+                $h = round($h / $rw);
             }
 
             $image->resize($w, $h);
