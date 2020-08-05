@@ -2,9 +2,11 @@
     <i class="fa fa-plus" data-fileupload-btn-icon></i>&nbsp;
         {%- block label -%}{{- 'label.image_upload'|trans -}}{%- endblock label -%}
     <input type="file" name="{%- block name -%}images[]{%- endblock -%}" data-fileupload-url="{%- block upload_url -%}{{- data_fileupload_url -}}{%- endblock upload_url -%}"
-        data-data-type="json" data-auto-upload="true"
-        data-accept-file-types="/(\.|\/)({%- block file_types -%}jpe?g|png|gif{%- endblock -%})$/i"
-        data-max-file-size="999000"
+        data-error-file-type="{{- 'error_fileupload.file_type'|trans -}}"
+        data-error-max-size="{{- 'error_fileupload.max_size'|trans -}}"
+        data-error-min-size="{{- 'error_fileupload.min_size'|trans -}}"
+        data-error-uploaded-bytes="{{- 'error_fileupload.uploaded_bytes'|trans -}}"
+        data-error-general="{{- 'error_fileupload.general'|trans -}}"
         {% block attr_multiple -%}multiple{%- endblock %}
         data-fileupload-btn-input hidden>
 </label>

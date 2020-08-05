@@ -3,12 +3,10 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use Imagine\Imagick\Imagine;
-use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
 use Intervention\Image\ImageManagerStatic;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ImageUploadService
 {
@@ -52,14 +50,17 @@ class ImageUploadService
         'ch'    => 10,
     ];
 
+    protected TranslatorInterface $translator;
 	protected LoggerInterface $logger;
     protected S3Service $s3_service;
 
 	public function __construct(
+        TranslatorInterface $translator,
 		LoggerInterface $logger,
 		S3Service $s3_service
 	)
 	{
+        $this->translator = $translator;
 		$this->logger = $logger;
 		$this->s3_service = $s3_service;
 	}
@@ -77,7 +78,7 @@ class ImageUploadService
         if (!$uploaded_file->isValid())
         {
             return [
-                'error' => 'Ongeldig bestand',
+                'error' => $this->translator->trans('image_upload.error.unvalid_file'),
                 'code'  => 400,
             ];
         }
@@ -89,7 +90,7 @@ class ImageUploadService
             || $size > $uploaded_file->getMaxFilesize())
         {
             return [
-                'error' => 'Het bestand is te groot.',
+                'error' => $this->translator->trans('image_upload.error.file_too_big'),
                 'code'  => 413,
             ];
         }
@@ -97,7 +98,7 @@ class ImageUploadService
         if (!in_array($mime, array_keys(self::ALLOWED_MIME)))
         {
             return [
-                'error'     => 'Ongeldig bestandstype.',
+                'error'     => $this->translator->trans('image_upload.error.unvalid_file_type'),
                 'code'      => 415,
             ];
         }
@@ -217,7 +218,7 @@ class ImageUploadService
 				$filename, ['schema' => $schema]);
 
             return [
-                'error' => 'Afbeelding opladen mislukt.',
+                'error' => $this->translator->trans('image_upload.error.fail'),
                 'code'  => 400,
             ];
         }
@@ -256,7 +257,7 @@ class ImageUploadService
         {
             $this->logger->debug('svgo process fail: ' . $process->getErrorOutput(), ['schema' => $schema]);
             return [
-                'error'     => 'Proces fout.',
+                'error'     => $this->translator->trans('image_upload.error.process_fail'),
                 'code'      => 500,
             ];
         }
@@ -361,7 +362,7 @@ class ImageUploadService
                     {
                         $this->logger->debug('svgo process fail (2): ' . $process->getErrorOutput(), ['schema' => $schema]);
                         return [
-                            'error'     => 'Proces fout (2).',
+                            'error'     => $this->translator->trans('image_upload.error.process_fail'),
                             'code'      => 500,
                         ];
                     }

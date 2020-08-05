@@ -65,6 +65,20 @@ datepicker:
     a: (wd)
     A: (weekdag)
 
+error_fileupload:
+  file_type: >-
+    Bestandstype niet toegelaten.
+  max_size: >-
+    Het bestand is te groot.
+  min_size: >-
+    Het bestand is te klein.
+  no_permission: >-
+    Je hebt onvoldoende rechten voor deze actie.
+  uploaded_bytes: >-
+    Het bestand is te groot.
+  general: >-
+    Fout bij het opladen van de afbeelding.
+
 help:
   email_tag: >-
     Deze prefix wordt tussen haken [tag] toegevoegd
@@ -360,6 +374,27 @@ forum_topic:
 git_rev:
   abbrev: Rev
   title: Actuele versie van de eLAND code
+
+image_upload:
+  error:
+    access_denied: >-
+      Toegang geweigerd om afbeelding op te laden.
+    fail: >-
+      Opladen afbeelding mislukt.
+    file_too_big: >-
+      Het afbeeldingsbestand is te groot.
+    process_fail: >-
+      Proces fout bij opladen van afbeelding.
+    token: >-
+      Fout afbeeldingstoken. Vernieuw pagina en probeer opnieuw.
+    missing: >-
+      Afbeeldingsbestand ontbreekt.
+    message_not_found: >-
+      Bericht niet gevonden voor opladen afbeeldingsbestand.
+    unvalid_file: >-
+      Ongeldig afbeeldingsbestand.
+    unvalid_file_type: >-
+      Ongeldig type bestand.
 
 index_contact_form:
   title: eLAND Contact

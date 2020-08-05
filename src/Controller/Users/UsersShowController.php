@@ -387,7 +387,7 @@ class UsersShowController extends AbstractController
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="card card-default">';
+        $out .= '<div class="card card-default" data-fileupload-container>';
         $out .= '<div class="card-body text-center ';
         $out .= 'center-block img-upload" id="img_user">';
 
@@ -431,7 +431,7 @@ class UsersShowController extends AbstractController
             }
 
             $out .= '<div class="card-footer">';
-            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
+            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button" data-fileupload-btn>';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
             $out .= '<input type="file" name="image" ';
             $out .= 'data-url="';
@@ -446,11 +446,11 @@ class UsersShowController extends AbstractController
                 $out .= $link_render->context_path('users_image_upload', $pp->ary(), []);
             }
 
-            $out .= '" data-image-crop data-fileupload ';
-            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
-            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
-            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
-            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
+            $out .= '" data-fileupload-btn-input ';
+            $out .= 'data-error-file-type="Bestandstype is niet toegelaten." ';
+            $out .= 'data-error-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-error-min-file-size="Het bestand is te klein." ';
+            $out .= 'data-error-uploaded-bytes="Het bestand is te groot." ';
             $out .= '></span>';
 
             $out .= '<p class="text-warning">';
