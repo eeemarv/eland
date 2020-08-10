@@ -333,7 +333,7 @@ class ConfigController extends AbstractController
                 {
                     $posted_ary  = $posted_value === '' ? [] : explode(',', $posted_value);
 
-                    if ($input_name = 'periodic_mail_block_ary')
+                    if ($input_name === 'periodic_mail_block_ary')
                     {
                         $p_ary = $posted_ary;
                         $posted_ary = [];
