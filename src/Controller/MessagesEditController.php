@@ -438,7 +438,12 @@ class MessagesEditController extends AbstractController
         {
             $parent_id = $row['id_parent'] ?? null;
 
-            if (isset($parent_id) && $parent_id)
+            if ($parent_id === 0)
+            {
+                $parent_id = null;
+            }
+
+            if (isset($parent_id))
             {
                 $cat_ary[$parent_id]['children'][$row['id']] = [
                     'name'  => $row['name'],
@@ -561,14 +566,15 @@ class MessagesEditController extends AbstractController
                 $out .= '</optgroup>';
                 continue;
             }
-            /* Only subcategories for now
-
-            $out .= '<option value="';
-            $out .= $cat_id;
-            $out .= '">';
-            $out .= $cat_data['name'];
-            $out .= '</option>';
-            **/
+            // Only subcategories for now
+            if ($cat_id === '')
+            {
+                $out .= '<option value="';
+                $out .= $cat_id;
+                $out .= '">';
+                $out .= $cat_data['name'];
+                $out .= '</option>';
+            }
         }
 
         $out .= '</select>';

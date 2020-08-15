@@ -431,6 +431,38 @@ class MessagesListController extends AbstractController
                 '1825'	=> '5 jaar',
             ];
 
+            $cat_options = '';
+
+            foreach ($categories_move_options as $cat_id => $cat_data)
+            {
+                if (isset($cat_data['children']) && count($cat_data['children']))
+                {
+                    $cat_options .= '<optgroup label="';
+                    $cat_options .= $cat_data['name'];
+                    $cat_options .= '">';
+
+                    foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+                    {
+                        $cat_options .= '<option value="';
+                        $cat_options .= $sub_cat_id;
+                        $cat_options .= '">';
+                        $cat_options .= $sub_cat_data['name'];
+                        $cat_options .= '</option>';
+                    }
+                    $cat_options .= '</optgroup>';
+                    continue;
+                }
+                // Only subcategories for now
+                if ($cat_id === '')
+                {
+                    $cat_options .= '<option value="';
+                    $cat_options .= $cat_id;
+                    $cat_options .= '">';
+                    $cat_options .= $cat_data['name'];
+                    $cat_options .= '</option>';
+                }
+            }
+
             $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
@@ -511,11 +543,12 @@ class MessagesListController extends AbstractController
             $out .= '<form method="post">';
 
             $out .= strtr(BulkCnst::TPL_SELECT, [
-                '%options%' => $select_render->get_options($categories_move_options, ''),
+                '%options%' => $cat_options,
                 '%name%'    => 'bulk_field[category]',
                 '%label%'   => 'Categorie',
                 '%attr%'    => ' required',
                 '%fa%'      => 'clone',
+                '%explain%' => '',
             ]);
 
             $out .= strtr(BulkCnst::TPL_CHECKBOX, [
@@ -921,7 +954,7 @@ class MessagesListController extends AbstractController
             $row_count, $params);
 
         $categories_filter_options = ['' => '-- alle categorieën --'];
-        $categories_move_options = ['' => ''];
+        $categories_move_options = ['' => ['name' => '']];
 
         $categories = $cat_params  = [];
 
@@ -950,12 +983,19 @@ class MessagesListController extends AbstractController
 
         while ($row = $st->fetch())
         {
-            $categories_filter_options[$row['id']] = $row['id_parent'] ? ' . . ' : '';
+            $parent_id = $row['id_parent'] ?? null;
+
+            if ($parent_id === 0)
+            {
+                $parent_id = null;
+            }
+
+            $categories_filter_options[$row['id']] = isset($parent_id) ? ' . . ' : '';
             $categories_filter_options[$row['id']] .= $row['name'];
 
             $count_msgs = $cat_count_ary[$row['id']] ?? 0;
 
-            if ($row['id_parent'] && $count_msgs)
+            if (isset($p) && $count_msgs)
             {
                 $categories_filter_options[$row['id']] .= ' (' . $count_msgs . ')';
             }
@@ -965,9 +1005,18 @@ class MessagesListController extends AbstractController
             $cat_params[$row['id']] = $cat_params_sort;
             $cat_params[$row['id']]['f']['cid'] = $row['id'];
 
-            if ($row['id_parent'])
+            if (isset($parent_id))
             {
-                $categories_move_options[$row['id']] = $row['fullname'];
+                $categories_move_options[$parent_id]['children'][$row['id']] = [
+                    'name'  => $row['name'],
+                ];
+            }
+            else
+            {
+                $categories_move_options[$row['id']] = [
+                    'name'          => $row['name'],
+                    'children'      => [],
+                ];
             }
         }
 
