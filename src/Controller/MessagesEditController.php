@@ -121,7 +121,7 @@ class MessagesEditController extends AbstractController
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $offer_want = $request->request->get('offer_want', '');
-        $category_id = $request->request->get('category_id', '');
+        $category_id = (int) $request->request->get('category_id', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
 
@@ -559,7 +559,9 @@ class MessagesEditController extends AbstractController
                 {
                     $out .= '<option value="';
                     $out .= $sub_cat_id;
-                    $out .= '">';
+                    $out .= '"';
+                    $out .= $sub_cat_id === $category_id ? ' selected' : '';
+                    $out .= '>';
                     $out .= $sub_cat_data['name'];
                     $out .= '</option>';
                 }
