@@ -168,7 +168,7 @@ class ItemAccessService
 		$out .= '" class="control-label">';
 		$out .= $label;
 		$out .= '</label>';
-		$out .= '<div';
+		$out .= '<div class="custom-radio"';
 
 		if ($cache_id)
 		{
@@ -187,8 +187,10 @@ class ItemAccessService
 			$out .= $key === $selected ? ' checked="checked"' : '';
 			$out .= ' value="' . $key . '" ';
 			$out .= 'id="' . $name . '" ';
-			$out .= 'required> ';
+			$out .= 'required>&nbsp;';
+			$out .= '<span class="label-text">';
 			$out .= $this->get_label($key);
+			$out .= '</span>';
 			$out .= '</label>';
 		}
 

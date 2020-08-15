@@ -13,7 +13,6 @@ use App\Controller\MessagesShowController;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -29,11 +28,10 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 
-class MessagesEditController extends AbstractController
+class MessagesCleanupController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        int $id,
         Db $db,
         LoggerInterface $logger,
         AlertService $alert_service,
@@ -55,63 +53,9 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $content = self::messages_form(
-            $request,
-            $id,
-            'edit',
-            $db,
-            $logger,
-            $alert_service,
-            $assets_service,
-            $config_service,
-            $form_token_service,
-            $heading_render,
-            $intersystems_service,
-            $item_access_service,
-            $link_render,
-            $menu_service,
-            $typeahead_service,
-            $pp,
-            $su,
-            $vr,
-            $user_cache_service,
-            $html_purifier,
-            $s3_service,
-            $env_s3_url
-        );
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $content,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    public static function messages_form(
-        Request $request,
-        int $id,
-        string $mode,
-        Db $db,
-        LoggerInterface $logger,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        ConfigService $config_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
-        IntersystemsService $intersystems_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        MenuService $menu_service,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        UserCacheService $user_cache_service,
-        HtmlPurifier $html_purifier,
-        S3Service $s3_service,
-        string $env_s3_url
-    ):string
-    {
         $errors = [];
+
+        $mode = 'add';
 
         $edit_mode = $mode === 'edit';
         $add_mode = $mode === 'add';
@@ -737,9 +681,12 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set('messages');
+        $menu_service->set('messages_cleanup');
 
-        return $out;
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function format(string $value):string
@@ -754,7 +701,7 @@ class MessagesEditController extends AbstractController
         bool $required
     ):string
     {
-        $out = '<div class="custom-radio">';
+        $out = '';
 
         foreach ($radio_ary as $value => $label)
         {
@@ -764,15 +711,11 @@ class MessagesEditController extends AbstractController
             $out .= (string) $value === $selected ? ' checked' : '';
             $out .= $required ? ' required' : '';
             $out .= '>&nbsp;';
-            $out .= '<span class="label-text">';
             $out .= '<span class="btn btn-default">';
             $out .= $label;
             $out .= '</span>';
-            $out .= '</span>';
             $out .= '</label>';
         }
-
-        $out .= '</div>';
 
         return $out;
     }

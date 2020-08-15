@@ -123,6 +123,16 @@ mass_transaction:
   path: /mass-transaction
   methods: GET|POST
 
+messages_cleanup:
+  controller: App\Controller\MessagesCleanupController
+  path: /messages/cleanup
+  methods: GET|POST
+
+messages_modules:
+  controller: App\Controller\MessagesModulesController
+  path: /messages/modules
+  methods: GET|POST
+
 logs:
   controller: App\Controller\LogsController
   path: /logs

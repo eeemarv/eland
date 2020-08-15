@@ -92,7 +92,7 @@ class BulkCnst
         ],
     ];
 
-    const TPL_CHECKBOX_ITEM = '<label for="sel[%id%]">&nbsp;&nbsp;<input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>&nbsp;&nbsp;%label%</label>';
+    const TPL_CHECKBOX_ITEM = '<div class="custom-checkbox"><label for="sel[%id%]">&nbsp;&nbsp;<input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>&nbsp;&nbsp;<span class="label-text">%label%</span></label></div>';
 
     const TPL_INPUT =  <<<'TPL'
     <div class="form-group">
@@ -108,9 +108,11 @@ class BulkCnst
 
     const TPL_CHECKBOX = <<<'TPL'
     <div class="form-group">
+    <div class="custom-checkbox">
     <label for="%name%" class="control-label">
     <input type="checkbox" id="%name%" name="%name%"%attr%>
-    &nbsp;%label%</label></div>
+    &nbsp;<span class="label-text">%label%</span></label>
+    </div></div>
     TPL;
 
     const TPL_SELECT = <<<'TPL'
