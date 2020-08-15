@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Controller\MessagesShowController;
-use App\Cnst\MessageTypeCnst;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -44,7 +43,6 @@ class MessagesEditController extends AbstractController
         HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
-        SelectRender $select_render,
         LinkRender $link_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
@@ -70,7 +68,6 @@ class MessagesEditController extends AbstractController
             $heading_render,
             $intersystems_service,
             $item_access_service,
-            $select_render,
             $link_render,
             $menu_service,
             $typeahead_service,
@@ -102,7 +99,6 @@ class MessagesEditController extends AbstractController
         HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
-        SelectRender $select_render,
         LinkRender $link_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
@@ -430,18 +426,30 @@ class MessagesEditController extends AbstractController
             }
         }
 
-        $cat_list = ['' => ''];
+        $cat_ary = ['' => ['name' => '']];
 
-        $rs = $db->prepare('select id, fullname, id_parent
+        $rs = $db->prepare('select id, name, id_parent
             from ' . $pp->schema() . '.categories
-            where leafnote = 1
             order by fullname');
 
         $rs->execute();
 
         while ($row = $rs->fetch())
         {
-            $cat_list[$row['id']] = $row['fullname'];
+            $parent_id = $row['id_parent'] ?? null;
+
+            if (isset($parent_id) && $parent_id)
+            {
+                $cat_ary[$parent_id]['children'][$row['id']] = [
+                    'name'  => $row['name'],
+                ];
+                continue;
+            }
+
+            $cat_ary[$row['id']] = [
+                'name'          => $row['name'],
+                'children'      => [],
+            ];
         }
 
         $assets_service->add([
@@ -533,8 +541,37 @@ class MessagesEditController extends AbstractController
         $out .= '<i class="fa fa-clone"></i>';
         $out .= '</span>';
         $out .= '<select name="category_id" id="category_id" class="form-control" required>';
-        $out .= $select_render->get_options($cat_list, (string) $category_id);
-        $out .= "</select>";
+
+        foreach ($cat_ary as $cat_id => $cat_data)
+        {
+            if (isset($cat_data['children']) && count($cat_data['children']))
+            {
+                $out .= '<optgroup label="';
+                $out .= $cat_data['name'];
+                $out .= '">';
+
+                foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+                {
+                    $out .= '<option value="';
+                    $out .= $sub_cat_id;
+                    $out .= '">';
+                    $out .= $sub_cat_data['name'];
+                    $out .= '</option>';
+                }
+                $out .= '</optgroup>';
+                continue;
+            }
+            /* Only subcategories for now
+
+            $out .= '<option value="';
+            $out .= $cat_id;
+            $out .= '">';
+            $out .= $cat_data['name'];
+            $out .= '</option>';
+            **/
+        }
+
+        $out .= '</select>';
         $out .= '</div>';
         $out .= '</div>';
 

@@ -3,9 +3,6 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use Imagine\Imagick\Imagine;
-use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
 use Intervention\Image\ImageManagerStatic;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Process\Process;

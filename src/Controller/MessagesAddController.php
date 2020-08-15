@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -38,7 +37,6 @@ class MessagesAddController extends AbstractController
         HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
-        SelectRender $select_render,
         LinkRender $link_render,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
@@ -64,7 +62,6 @@ class MessagesAddController extends AbstractController
             $heading_render,
             $intersystems_service,
             $item_access_service,
-            $select_render,
             $link_render,
             $menu_service,
             $typeahead_service,
