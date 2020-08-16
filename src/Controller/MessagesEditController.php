@@ -115,6 +115,8 @@ class MessagesEditController extends AbstractController
         $edit_mode = $mode === 'edit';
         $add_mode = $mode === 'add';
 
+        $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
+
         $validity_days = $request->request->get('validity_days', '');
         $account_code = $request->request->get('account_code', '');
         $subject = $request->request->get('subject', '');

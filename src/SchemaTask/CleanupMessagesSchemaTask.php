@@ -30,8 +30,9 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
+		$after_days = $this->config_service->get_int('messages.cleanup.after_days', $schema);
 		$msgs = '';
-		$testdate = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('msgexpcleanupdays', $schema) * 86400);
+		$testdate = gmdate('Y-m-d H:i:s', time() - ($after_days * 86400));
 
 		$st = $this->db->prepare('select id, subject
 			from ' . $schema . '.messages
@@ -92,7 +93,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return true;
+		return $this->config_service->get_bool('messages.cleanup.enabled', $schema);
 	}
 
 	public function get_interval(string $schema):int

@@ -85,7 +85,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get('msgexpwarnenabled', $schema) ? true : false;
+		return $this->config_service->get_bool('messages.expire.notify', $schema);
 	}
 
 	public function get_interval(string $schema):int
