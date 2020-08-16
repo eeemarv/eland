@@ -99,7 +99,8 @@ class BulkCnst
     <span class="label-text"></span>
     %label%
     </label>
-    </div>';
+    </div>'
+    TPL;
 
     const TPL_INPUT =  <<<'TPL'
     <div class="form-group">
