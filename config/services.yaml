@@ -13,7 +13,7 @@ parameters:
     assert.role_short.admin: 'a'
     assert.id: \d++
     assert.view: 'extended|list|map|tiles'
-    assert.config_tab: 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|messages|users|news|forum|system'
+    assert.config_tab: 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|users|news|forum|system'
     assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
     assert.account_status.primary: 'active|inactive|im|ip|extern'
     assert.account_status.active: 'active|new|leaving'

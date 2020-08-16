@@ -1607,7 +1607,7 @@ class UsersListController extends AbstractController
                     }
                     else
                     {
-                        $tpl = BulkCnst::TPL_INPUT;
+                        $tpl = BulkCnst::TPL_INPUT_FA;
                     }
 
                     $out .= strtr($tpl, [
@@ -1619,6 +1619,7 @@ class UsersListController extends AbstractController
                         '%fa%'          => $t['fa'] ?? '',
                         '%attr%'        => $t['attr'] ?? '',
                         '%explain%'     => $t['explain'] ?? '',
+                        '%value%'       => '',
                     ]);
                 }
 
