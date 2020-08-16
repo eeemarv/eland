@@ -410,7 +410,7 @@ class MessagesEditController extends AbstractController
                 $units = '';
                 $category_id = '';
                 $offer_want = '';
-                $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
+                $validity_days = (int) $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
                 $account_code = '';
                 $access = '';
                 $image_files = '[]';
