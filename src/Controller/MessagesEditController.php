@@ -13,7 +13,6 @@ use App\Controller\MessagesShowController;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;

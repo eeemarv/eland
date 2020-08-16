@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
@@ -174,21 +175,19 @@ class UsersPasswordAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="notify" class="control-label">';
-        $out .= '<input type="checkbox" name="notify" id="notify"';
-        $out .= $user['status'] == 1 || $user['status'] == 2 ? ' checked="checked"' : ' readonly';
-        $out .= '>';
-        $out .= ' Verzend notificatie E-mail met nieuw paswoord. ';
+        $notify_lbl = ' Verzend notificatie E-mail met nieuw paswoord. ';
 
         if ($pp->is_admin())
         {
-            $out .= 'Dit is enkel mogelijk wanneer de Status ';
-            $out .= 'actief is en E-mail adres ingesteld.';
+            $notify_lbl .= 'Dit is enkel mogelijk wanneer de Status ';
+            $notify_lbl .= 'actief is en E-mail adres ingesteld.';
         }
 
-        $out .= '</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'notify',
+            '%label%'       => $notify_lbl,
+            '%attr%'        => $user['status'] == 1 || $user['status'] == 2 ? ' checked' : ' readonly',
+        ]);
 
         $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(), ['id' => $id]);
 

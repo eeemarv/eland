@@ -669,14 +669,11 @@ class UsersListController extends AbstractController
             });
         }
 
-        if (isset($show_columns['u']['balance']))
-        {
-            $balance_ary = $account_repository->get_balance_ary($pp->schema());
+        $balance_ary = $account_repository->get_balance_ary($pp->schema());
 
-            array_walk($users, function(&$user, $user_id) use ($balance_ary){
-                $user['balance'] = $balance_ary[$user_id] ?? 0;
-            });
-        }
+        array_walk($users, function(&$user, $user_id) use ($balance_ary){
+            $user['balance'] = $balance_ary[$user_id] ?? 0;
+        });
 
         if (isset($show_columns['u']['min']))
         {
@@ -1016,22 +1013,13 @@ class UsersListController extends AbstractController
                 {
                     foreach($a_ary as $key => $lbl)
                     {
-                        $checkbox_id = 'id_' . $group . '_' . $a_type . '_' . $key;
+                        $checkbox_name = 'sh[' . $group . '][' . $a_type . '][' . $key . ']';
 
-                        $f_col .= '<div class="checkbox">';
-                        $f_col .= '<label for="';
-                        $f_col .= $checkbox_id;
-                        $f_col .= '">';
-                        $f_col .= '<input type="checkbox" ';
-                        $f_col .= 'id="';
-                        $f_col .= $checkbox_id;
-                        $f_col .= '" ';
-                        $f_col .= 'name="sh[' . $group . '][' . $a_type . '][' . $key . ']" ';
-                        $f_col .= 'value="1"';
-                        $f_col .= isset($show_columns[$group][$a_type][$key]) ? ' checked="checked"' : '';
-                        $f_col .= '> ' . $lbl;
-                        $f_col .= '</label>';
-                        $f_col .= '</div>';
+                        $f_col .= strtr(BulkCnst::TPL_CHECKBOX, [
+                            '%name%'    => $checkbox_name,
+                            '%attr%'    => isset($show_columns[$group][$a_type][$key]) ? ' checked' : '',
+                            '%label%'   => $lbl,
+                        ]);
                     }
                 }
 
@@ -1046,64 +1034,55 @@ class UsersListController extends AbstractController
 
             foreach ($ary as $key => $lbl)
             {
-                $checkbox_id = 'id_' . $group . '_' . $key;
+                $checkbox_name = 'sh[' . $group . '][' . $key . ']';
 
-                $f_col .= '<div class="checkbox">';
-                $f_col .= '<label for="';
-                $f_col .= $checkbox_id;
-                $f_col .= '">';
-                $f_col .= '<input type="checkbox" name="sh[';
-                $f_col .= $group . '][' . $key . ']" ';
-                $f_col .= 'id="';
-                $f_col .= $checkbox_id;
-                $f_col .= '" ';
-                $f_col .= 'value="1"';
-                $f_col .= isset($show_columns[$group][$key]) ? ' checked="checked"' : '';
-                $f_col .= '> ';
-                $f_col .= $lbl;
+                $lbl_plus = '';
 
                 if ($key === 'adr')
                 {
-                    $f_col .= ', split door teken: ';
-                    $f_col .= '<input type="text" ';
-                    $f_col .= 'name="sh[p][c][adr_split]" ';
-                    $f_col .= 'size="1" value="';
-                    $f_col .= $adr_split;
-                    $f_col .= '">';
+                    $lbl_plus .= ', split door teken: ';
+                    $lbl_plus .= '<input type="text" ';
+                    $lbl_plus .= 'name="sh[p][c][adr_split]" ';
+                    $lbl_plus .= 'size="1" value="';
+                    $lbl_plus .= $adr_split;
+                    $lbl_plus .= '">';
                 }
 
                 if ($key === 'balance_date')
                 {
-                    $f_col .= '<div class="input-group">';
-                    $f_col .= '<span class="input-group-addon">';
-                    $f_col .= '<i class="fa fa-calendar"></i>';
-                    $f_col .= '</span>';
-                    $f_col .= '<input type="text" ';
-                    $f_col .= 'class="form-control" ';
-                    $f_col .= 'name="sh[p][u][balance_date]" ';
-                    $f_col .= 'data-provide="datepicker" ';
-                    $f_col .= 'data-date-format="';
-                    $f_col .= $date_format_service->datepicker_format($pp->schema());
-                    $f_col .= '" ';
-                    $f_col .= 'data-date-language="nl" ';
-                    $f_col .= 'data-date-today-highlight="true" ';
-                    $f_col .= 'data-date-autoclose="true" ';
-                    $f_col .= 'data-date-enable-on-readonly="false" ';
-                    $f_col .= 'data-date-end-date="0d" ';
-                    $f_col .= 'data-date-orientation="bottom" ';
-                    $f_col .= 'placeholder="';
-                    $f_col .= $date_format_service->datepicker_placeholder($pp->schema());
-                    $f_col .= '" ';
-                    $f_col .= 'value="';
-                    $f_col .= $balance_date;
-                    $f_col .= '">';
-                    $f_col .= '</div>';
+                    $lbl_plus .= '<div class="input-group">';
+                    $lbl_plus .= '<span class="input-group-addon">';
+                    $lbl_plus .= '<i class="fa fa-calendar"></i>';
+                    $lbl_plus .= '</span>';
+                    $lbl_plus .= '<input type="text" ';
+                    $lbl_plus .= 'class="form-control" ';
+                    $lbl_plus .= 'name="sh[p][u][balance_date]" ';
+                    $lbl_plus .= 'data-provide="datepicker" ';
+                    $lbl_plus .= 'data-date-format="';
+                    $lbl_plus .= $date_format_service->datepicker_format($pp->schema());
+                    $lbl_plus .= '" ';
+                    $lbl_plus .= 'data-date-language="nl" ';
+                    $lbl_plus .= 'data-date-today-highlight="true" ';
+                    $lbl_plus .= 'data-date-autoclose="true" ';
+                    $lbl_plus .= 'data-date-enable-on-readonly="false" ';
+                    $lbl_plus .= 'data-date-end-date="0d" ';
+                    $lbl_plus .= 'data-date-orientation="bottom" ';
+                    $lbl_plus .= 'placeholder="';
+                    $lbl_plus .= $date_format_service->datepicker_placeholder($pp->schema());
+                    $lbl_plus .= '" ';
+                    $lbl_plus .= 'value="';
+                    $lbl_plus .= $balance_date;
+                    $lbl_plus .= '">';
+                    $lbl_plus .= '</div>';
 
                     $columns['u']['balance_date'] = 'Saldo op ' . $balance_date;
                 }
 
-                $f_col .= '</label>';
-                $f_col .= '</div>';
+                $f_col .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => $checkbox_name,
+                    '%attr%'    => isset($show_columns[$group][$key]) ? ' checked' : '',
+                    '%label%'   => $lbl .  $lbl_plus,
+                ]);
             }
         }
 
@@ -1152,7 +1131,7 @@ class UsersListController extends AbstractController
         $out .= '<tr>';
 
         $numeric_keys = [
-            'balance'			=> true,
+            'balance'	    => true,
             'balance_date'	=> true,
         ];
 

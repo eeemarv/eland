@@ -632,13 +632,12 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '</div>';
-        /**/
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="respect_minlimit" class="control-label">';
-        $out .= '<input type="checkbox" id="respect_minlimit" checked="checked">';
-        $out .= ' Respecteer minimum limieten</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'respect_minlimit',
+            '%label%'       => 'Respecteer minimum limieten',
+            '%attr%'        => ' checked',
+        ]);
 
         if (isset($system_min_limit) || isset($system_max_limit))
         {
@@ -915,23 +914,21 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="mail_en" class="control-label">';
-        $out .= '<input type="checkbox" id="mail_en" name="mail_en" value="1"';
-        $out .= $mail_en ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Verstuur notificatie mails</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'mail_en',
+            '%label%'       => 'Verstuur notificatie E-mails',
+            '%attr%'        => $mail_en ? ' checked' : '',
+        ]);
 
-        $out .= '<div class="form-group">';
-        $out .= '<label>';
-        $out .= '<input type="checkbox" name="verify" ';
-        $out .= 'value="1" required> ';
-        $out .= 'Ik heb nagekeken dat de juiste ';
-        $out .= 'bedragen en de juiste "Van" of "Aan" ';
-        $out .= 'Account Code ingevuld zijn.';
-        $out .= '</label>';
-        $out .= '</div>';
+        $lbl_verify = 'Ik heb nagekeken dat de juiste ';
+        $lbl_verify .= 'bedragen en de juiste "Van" of "Aan" ';
+        $lbl_verify .= 'Account Code ingevuld zijn.';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'verify',
+            '%label%'       => $lbl_verify,
+            '%attr%'        => ' required',
+        ]);
 
         $out .= $link_render->btn_cancel('transactions', $pp->ary(), []);
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -819,15 +820,14 @@ class UsersShowAdminController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="user_mail_cc" class="control-label">';
-        $out .= '<input type="checkbox" name="user_mail_cc" ';
-        $out .= 'id="user_mail_cc" value="1"';
-        $out .= $user_mail_cc ? ' checked="checked"' : '';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '> Stuur een kopie naar mijzelf';
-        $out .= '</label>';
-        $out .= '</div>';
+        $user_mail_cc_attr = $user_mail_cc ? ' checked' : '';
+        $user_mail_cc_attr .= $user_mail_disabled ? ' disabled' : '';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'user_mail_cc',
+            '%label%'       => 'Stuur een kopie naar mijzelf',
+            '%attr%'        => $user_mail_cc_attr,
+        ]);
 
         $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';

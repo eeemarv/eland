@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -161,31 +162,28 @@ class SupportController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group';
-        $out .= $can_reply ? '' : ' checkbox disabled has-warning';
-        $out .= '">';
-        $out .= '<label for="cc" class="control-label">';
-        $out .= '<input type="checkbox" name="cc" ';
-        $out .= $can_reply ? '' : 'disabled ';
-        $out .= 'id="cc" value="1"';
-        $out .= $cc ? ' checked="checked"' : '';
-        $out .= '> ';
-
         if ($can_reply)
         {
-            $out .= 'Stuur een kopie naar mijzelf.';
+            $cc_lbl = 'Stuur een kopie naar mijzelf.';
         }
         else
         {
-            $out .= 'Een kopie van je bericht naar ';
-            $out .= 'jezelf sturen is ';
-            $out .= 'niet mogelijk want er is ';
-            $out .= 'geen E-mail adres ingesteld voor ';
-            $out .= 'je account.';
+            $cc_lbl = 'Een kopie van je bericht naar ';
+            $cc_lbl .= 'jezelf sturen is ';
+            $cc_lbl .= 'niet mogelijk want er is ';
+            $cc_lbl .= 'geen E-mail adres ingesteld voor ';
+            $cc_lbl .= 'je account.';
         }
 
-        $out .= '</label>';
-        $out .= '</div>';
+        $cc_attr = $can_reply ? '' : ' disabled';
+        $cc_attr .= $cc ? ' checked' : '';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX_DIV_ATTR, [
+            '%div_attr%'    => $can_reply ? '' : ' checkbox disabled has-warning',
+            '%name%'        => 'cc',
+            '%label%'       => $cc_lbl,
+            '%attr%'        => $cc_attr,
+        ]);
 
         $out .= '<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">';
         $out .= $form_token_service->get_hidden_input();

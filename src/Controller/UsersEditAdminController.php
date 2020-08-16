@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -1267,14 +1268,11 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="periodic_overview_en" class="control-label">';
-        $out .= '<input type="checkbox" name="periodic_overview_en" id="periodic_overview_en"';
-        $out .= $periodic_overview_en ? ' checked="checked"' : '';
-        $out .= '>	';
-        $out .= 'Periodieke Overzichts E-mail';
-        $out .= '</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'periodic_overview_en',
+            '%label%'       => 'Periodieke Overzichts E-mail',
+            '%attr%'        => $periodic_overview_en ? ' checked' : '',
+        ]);
 
         if ($is_edit)
         {

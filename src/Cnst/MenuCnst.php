@@ -183,6 +183,7 @@ class MenuCnst
 
     const LOCAL_ADMIN = [
         'messages'  => [
+            /*
             'messages_modules'   => [
                 'fa'        => 'cog',
                 'label'     => 'Submodules en velden',
@@ -193,6 +194,7 @@ class MenuCnst
                 'label'     => 'Opruiming',
                 'route'     => 'messages_cleanup',
             ],
+            */
             'categories'	 	=> [
                 'fa'        => 'clone',
                 'label'     => 'Categorieën',
