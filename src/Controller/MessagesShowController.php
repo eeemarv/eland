@@ -64,6 +64,7 @@ class MessagesShowController extends AbstractController
     {
         $errors = [];
 
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $message = self::get_message($db, $id, $pp->schema());
 
         $user_mail_content = $request->request->get('user_mail_content', '');
@@ -380,7 +381,7 @@ class MessagesShowController extends AbstractController
 
         $out .= '<dl>';
         $out .= '<dt>';
-        $out .= '(Richt)prijs';
+        $out .= 'Richtprijs';
         $out .= '</dt>';
         $out .= '<dd>';
 
@@ -391,7 +392,7 @@ class MessagesShowController extends AbstractController
         else
         {
             $out .= $message['amount'] . ' ';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
             $out .= $message['units'] ? ' per ' . $message['units'] : '';
         }
 
@@ -413,23 +414,29 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
+        $out .= '<dt>Geldig tot</dt>';
+        $out .= '<dd>';
+
         if (isset($message['expires_at']))
         {
-            $out .= '<dt>Geldig tot</dt>';
-            $out .= '<dd>';
             $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
             $out .= '</dd>';
-        }
 
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
+            if ($pp->is_admin() || $su->is_owner($message['user_id']))
+            {
+                $out .= '<dt>Verlengen</dt>';
+                $out .= '<dd>';
+                $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
+                $out .= '&nbsp;';
+                $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
+                $out .= '&nbsp;';
+                $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                $out .= '</dd>';
+            }
+        }
+        else
         {
-            $out .= '<dt>Verlengen</dt>';
-            $out .= '<dd>';
-            $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-            $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-            $out .= '&nbsp;';
-            $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+            $out .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
             $out .= '</dd>';
         }
 

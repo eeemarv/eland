@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -116,6 +117,9 @@ class MessagesEditController extends AbstractController
         $add_mode = $mode === 'add';
 
         $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
+        $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
 
         $validity_days = $request->request->get('validity_days', '');
         $account_code = $request->request->get('account_code', '');
@@ -153,6 +157,7 @@ class MessagesEditController extends AbstractController
         if ($request->isMethod('POST'))
         {
             $content = $html_purifier->purify($content);
+            $expires_at = null;
 
             if ($error_form = $form_token_service->get_error())
             {
@@ -164,14 +169,24 @@ class MessagesEditController extends AbstractController
                 throw new BadRequestHttpException('Ongeldig bericht type.');
             }
 
-            if (!ctype_digit((string) $validity_days))
+            if ($validity_days === '')
             {
-                $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+                if ($expires_at_required)
+                {
+                    $errors[] = 'Vul een geldigheid in.';
+                }
             }
             else
             {
-                $expires_at_unix = time() + ((int) $validity_days * 86400);
-                $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+                if (!ctype_digit((string) $validity_days))
+                {
+                    $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+                }
+                else
+                {
+                    $expires_at_unix = time() + ((int) $validity_days * 86400);
+                    $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+                }
             }
 
             if ($pp->is_admin())
@@ -220,7 +235,7 @@ class MessagesEditController extends AbstractController
             if (!ctype_digit((string) $amount) && $amount !== '')
             {
                 $err = 'De (richt)prijs in ';
-                $err .= $config_service->get('currency', $pp->schema());
+                $err .= $currency;
                 $err .= ' moet nul of een positief getal zijn.';
                 $errors[] = $err;
             }
@@ -412,7 +427,7 @@ class MessagesEditController extends AbstractController
                 $units = '';
                 $category_id = '';
                 $offer_want = '';
-                $validity_days = (int) $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
+                $validity_days = $expires_at_days_default;
                 $account_code = '';
                 $access = '';
                 $image_files = '[]';
@@ -500,7 +515,7 @@ class MessagesEditController extends AbstractController
                 ->add('accounts', ['status' => 'active'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
+                    'newuserdays'   => $new_user_days,
                 ]);
             $out .= '" ';
 
@@ -584,51 +599,40 @@ class MessagesEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="validity_days" class="control-label">';
-        $out .= 'Geldigheid</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'dagen';
-        $out .= '</span>';
-        $out .= '<input type="number" class="form-control" ';
-        $out .= 'id="validity_days" name="validity_days" min="1" ';
-        $out .= 'value="';
-        $out .= self::format((string) $validity_days);
-        $out .= '" required>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $attr_val = ' min="1"';
+        $attr_val .= $expires_at_required ?  ' required' : '';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="amount" class="control-label">';
-        $out .= 'Aantal';
-        $out .= '</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= $config_service->get('currency', $pp->schema());
-        $out .= '</span>';
-        $out .= '<input type="number" class="form-control" ';
-        $out .= 'id="amount" name="amount" min="0" ';
-        $out .= 'value="';
-        $out .= self::format((string) $amount);
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $explain_val = $expires_at_required ? '' : 'Vul niets in voor een permanent vraag of aanbod.';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="units" class="control-label">';
-        $out .= 'Per (uur, stuk, ...)</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-hourglass-half"></span>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="units" name="units" ';
-        $out .= 'value="';
-        $out .= self::format((string) $units);
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
+            '%name%'    => 'validity_days',
+            '%value%'   => self::format((string) $validity_days),
+            '%type%'    => 'number',
+            '%label%'   => 'Geldigheid',
+            '%addon%'   => 'dagen',
+            '%explain%' => $explain_val,
+            '%attr%'    => $attr_val,
+        ]);
+
+        $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
+            '%name%'    => 'amount',
+            '%value%'   => self::format((string) $amount),
+            '%type%'    => 'number',
+            '%label%'   => 'Richtprijs',
+            '%addon%'   => $currency,
+            '%explain%' => '',
+            '%attr%'    => ' min="0"',
+        ]);
+
+        $out .= strtr(BulkCnst::TPL_INPUT_FA, [
+            '%name%'    => 'units',
+            '%value%'   => self::format((string) $units),
+            '%type%'    => 'text',
+            '%label%'   => 'Per eenheid (uur, stuk, ...)',
+            '%fa%'      => 'hourglass-half',
+            '%explain%' => '',
+            '%attr%'    => '',
+        ]);
 
         $out .= '<div class="form-group">';
         $out .= '<label for="fileupload" class="control-label">';
