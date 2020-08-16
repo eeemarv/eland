@@ -34,6 +34,7 @@ class MessagesCleanupController extends AbstractController
         $enabled = $request->request->has('enabled');
         $after_days = $request->request->get('after_days', '');
         $expires_at_days_default = $request->request->get('expires_at_days_default', '');
+        $expires_at_required = $request->request->has('expires_at_required');
         $expire_notify = $request->request->has('expire_notify');
 
         if ($expires_at_days_default === '')
@@ -64,6 +65,7 @@ class MessagesCleanupController extends AbstractController
                 $config_service->set_bool('messages.cleanup.enabled', $enabled, $pp->schema());
                 $config_service->set_int('messages.cleanup.after_days', (int) $after_days, $pp->schema());
                 $config_service->set_int('messages.fields.expires_at.days_default', (int) $expires_at_days_default, $pp->schema());
+                $config_service->set_bool('messages.fields.expires_at.required', $expires_at_required, $pp->schema());
                 $config_service->set_bool('messages.expire.notify', $expire_notify, $pp->schema());
                 $alert_service->success('Opruim instellingen Vraag/aanbod aangepast');
                 $link_render->redirect('messages_cleanup', $pp->ary(), []);
@@ -77,11 +79,12 @@ class MessagesCleanupController extends AbstractController
             $enabled = $config_service->get_bool('messages.cleanup.enabled', $pp->schema());
             $after_days = $config_service->get_int('messages.cleanup.after_days', $pp->schema());
             $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
+            $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
             $expire_notify = $config_service->get_bool('messages.expire.notify', $pp->schema());
         }
 
         $heading_render->fa('trash-o');
-        $heading_render->add('Opruiming vraag en aanbod');
+        $heading_render->add('Opruim instellingen vraag en aanbod');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -96,6 +99,12 @@ class MessagesCleanupController extends AbstractController
             '%type%'    => 'number',
             '%attr%'    => ' min="1" max="1460"',
             '%explain%' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
+        ]);
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'expires_at_required',
+            '%label%'   => 'De geldigheidsduur moet verplicht ingevuld worden bij vraag of aanbod (m.a.w. vraag en aanbod moet altijd vervallen).',
+            '%attr%'    => $expires_at_required ? ' checked' : '',
         ]);
 
         $lbl_en = 'Ruim vervallen vraag en aanbod op na ';
@@ -135,36 +144,5 @@ class MessagesCleanupController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
-    }
-
-    public static function format(string $value):string
-    {
-        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-    }
-
-    static public function get_radio(
-        array $radio_ary,
-        string $name,
-        string $selected,
-        bool $required
-    ):string
-    {
-        $out = '';
-
-        foreach ($radio_ary as $value => $label)
-        {
-            $out .= '<label class="radio-inline">';
-            $out .= '<input type="radio" name="' . $name . '" ';
-            $out .= 'value="' . $value . '"';
-            $out .= (string) $value === $selected ? ' checked' : '';
-            $out .= $required ? ' required' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
-        }
-
-        return $out;
     }
 }
