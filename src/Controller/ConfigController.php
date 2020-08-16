@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -520,7 +521,8 @@ class ConfigController extends AbstractController
             if (isset($input['inline']))
             {
                 $replace_inline_ary = [];
-                $id_for_label = '';
+                $inline_checkbox_name = null;
+                $inline_checkbox_attr = '';
 
                 $inline_input_names = $this->get_tag_ary('input', $input['inline']);
 
@@ -528,30 +530,27 @@ class ConfigController extends AbstractController
                 {
                     $inline_input_data = ConfigCnst::INPUTS[$inline_input_name];
 
+                    $search_inline = ConfigCnst::TAG['input']['open'];
+                    $search_inline .= $inline_input_name;
+                    $search_inline .= ConfigCnst::TAG['input']['close'];
+
+                    if ($inline_input_data['type'] === 'checkbox')
+                    {
+                        $inline_checkbox_name = $inline_input_name;
+                        $inline_checkbox_attr = $config[$inline_input_name] ? ' checked' : '';
+                        $inline_checkbox_attr .= isset($inline_input_data['required']) ? ' required' : '';
+                        $replace_inline_ary[$search_inline] = '';
+                        continue;
+                    }
+
                     $str = '<input type="';
                     $str .= $inline_input_data['type'] ?? 'text';
                     $str .= '" name="';
                     $str .= $inline_input_name;
+                    $str .= '" class="sm-size"';
+                    $str .= ' value="';
+                    $str .= $config[$inline_input_name];
                     $str .= '"';
-
-                    if (!$id_for_label)
-                    {
-                        $id_for_label = 'inline_id_' . $inline_input_name;
-                        $str .= ' id="' . $id_for_label . '"';
-                    }
-
-                    if ($inline_input_data['type'] == 'checkbox')
-                    {
-                        $str .= ' value="1"';
-                        $str .= $config[$inline_input_name] ? ' checked="checked"' : '';
-                    }
-                    else
-                    {
-                        $str .= ' class="sm-size"';
-                        $str .= ' value="';
-                        $str .= $config[$inline_input_name];
-                        $str .= '"';
-                    }
 
                     if (isset($inline_input_data['attr']))
                     {
@@ -569,27 +568,24 @@ class ConfigController extends AbstractController
 
                     $str .= '>';
 
-                    $search_inline = ConfigCnst::TAG['input']['open'];
-                    $search_inline .= $inline_input_name;
-                    $search_inline .= ConfigCnst::TAG['input']['close'];
-
                     $replace_inline_ary[$search_inline] = $str;
                 }
 
                 $out .= '<p>';
 
-                if ($id_for_label)
+                $inline = strtr($input['inline'], $replace_inline_ary);
+
+                if (isset($inline_checkbox_name))
                 {
-                    $out .= '<label for="';
-                    $out .= $id_for_label;
-                    $out .= '">';
+                    $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                        '%name%'    => $inline_checkbox_name,
+                        '%attr%'    => $inline_checkbox_attr,
+                        '%label%'   => $inline,
+                    ]);
                 }
-
-                $out .= strtr($input['inline'], $replace_inline_ary);
-
-                if ($id_for_label)
+                else
                 {
-                    $out .= '</label>';
+                    $out .= $inline;
                 }
 
                 $out .= '</p>';
