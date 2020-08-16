@@ -995,7 +995,7 @@ class MessagesListController extends AbstractController
 
             $count_msgs = $cat_count_ary[$row['id']] ?? 0;
 
-            if (isset($p) && $count_msgs)
+            if (isset($parent_id) && $count_msgs)
             {
                 $categories_filter_options[$row['id']] .= ' (' . $count_msgs . ')';
             }

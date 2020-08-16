@@ -48,9 +48,9 @@ ajv@^4.9.1:
     json-stable-stringify "^1.0.1"
 
 ajv@^6.12.3:
-  version "6.12.3"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.3.tgz#18c5af38a111ddeb4f2697bd78d68abc1cabd706"
-  integrity sha512-4K0cK3L1hsqk9xIb2z9vs/XU+PGJZ9PNpJRDS9YLzmNdX6jmVPfamLvTJr0aDAusnHyCHO6MjzlkAsgtqp9teA==
+  version "6.12.4"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.4.tgz#0614facc4522127fa713445c6bfd3ebd376e2234"
+  integrity sha512-eienB2c9qVQs2KWexhkrdMLVDoIQCz5KSeLxwg9Lzk4DOfBtIK9PQwwufcsn1jjGuf9WZmqPMbGxOzfcuphJCQ==
   dependencies:
     fast-deep-equal "^3.1.1"
     fast-json-stable-stringify "^2.0.0"
@@ -537,11 +537,11 @@ config-chain@~1.1.10, config-chain@~1.1.11:
     proto-list "~1.2.1"
 
 configstore@^3.0.0:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/configstore/-/configstore-3.1.4.tgz#596122c2e5d47630438a3f622156be3a771a82a4"
-  integrity sha512-0zrqA+vOj4tKAFjho2DjcPby8YNYvU0g2fJLusolvRxpeC3qzfLTrTdPK1/lreiOd2J6prloAR6dcXhcr7mJEw==
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/configstore/-/configstore-3.1.5.tgz#e9af331fadc14dabd544d3e7e76dc446a09a530f"
+  integrity sha512-nlOhI4+fdzoK5xmJ+NY+1gZK56bwEaWZr8fYuXohZ9Vkc1o3a4T/R3M+yE/w7x/ZVJ1zF8c+oaOvF0dztdUgmA==
   dependencies:
-    dot-prop-legacy "^4.2.1"
+    dot-prop "^4.2.1"
     graceful-fs "^4.1.2"
     make-dir "^1.0.0"
     unique-string "^1.0.0"
@@ -740,10 +740,10 @@ domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
-dot-prop-legacy@^4.2.1:
+dot-prop@^4.2.1:
   version "4.2.1"
-  resolved "https://registry.yarnpkg.com/dot-prop-legacy/-/dot-prop-legacy-4.2.1.tgz#ca8f75d79f1471af35d9129a2647aa346bf0df07"
-  integrity sha512-OpVdloKY3b038o/XJ8zV0b6Uh2VZ/WJhdG2L94YOy+OeFjTZBWxeYfQVx5doIezkWCg7UVTjP2hGQBeSeljTag==
+  resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.1.tgz#45884194a71fc2cda71cbb4bceb3a4dd2f433ba4"
+  integrity sha512-l0p4+mIuJIua0mhxGoh4a+iNL9bmeK5DvnSVQa6T0OhrVmaEa1XScX5Etc673FePCJOArq/4Pa2cLGODUWTPOQ==
   dependencies:
     is-obj "^1.0.0"
 
