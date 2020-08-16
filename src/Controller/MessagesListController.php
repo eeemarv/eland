@@ -58,6 +58,10 @@ class MessagesListController extends AbstractController
     {
         $errors = [];
 
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+
         $selected_messages = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
@@ -303,6 +307,16 @@ class MessagesListController extends AbstractController
 
         $table_header_ary = self::get_table_header_ary($params, $show_visibility_column);
 
+        if (!$category_enabled)
+        {
+            unset($table_header_ary['c.fullname']);
+        }
+
+        if (!$expires_at_enabled)
+        {
+            unset($table_header_ary['m.expires_at']);
+        }
+
         foreach ($table_header_ary as $key_orderby => $data)
         {
             $out .= '<th';
@@ -378,27 +392,39 @@ class MessagesListController extends AbstractController
                 $out .= '</td>';
             }
 
-            if (!($params['f']['cid'] ?? false))
+            if ($category_enabled && !($params['f']['cid'] ?? false))
             {
                 $out .= '<td>';
-                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    $cat_params[$msg['category_id']],
-                    $categories[$msg['category_id']]);
+
+                if (isset($msg['category_id']))
+                {
+                    $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                        $cat_params[$msg['category_id']],
+                        $categories[$msg['category_id']]);
+                }
+                else
+                {
+                    $out .= '** onbepaald **';
+                }
+
                 $out .= '</td>';
             }
 
-            $out .= '<td>';
-
-            if (isset($msg['expires_at']))
+            if ($expires_at_enabled)
             {
-                $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
-            }
-            else
-            {
-                $out .= '&nbsp;';
-            }
+                $out .= '<td>';
 
-            $out .= '</td>';
+                if (isset($msg['expires_at']))
+                {
+                    $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
+                }
+                else
+                {
+                    $out .= '&nbsp;';
+                }
+
+                $out .= '</td>';
+            }
 
             if ($show_visibility_column)
             {
@@ -722,6 +748,10 @@ class MessagesListController extends AbstractController
         TypeaheadService $typeahead_service
     ):array
     {
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -865,7 +895,8 @@ class MessagesListController extends AbstractController
         $no_cat_params_sql = $params_sql;
 
         if (isset($filter['cid'])
-            && $filter['cid'])
+            && $filter['cid']
+            && $category_enabled)
         {
             $cat_ary = [];
 
@@ -893,14 +924,15 @@ class MessagesListController extends AbstractController
             $params['f']['cid'] = $filter['cid'];
         }
 
-        $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
+        $where_sql = implode(' and ', $where_sql) . ' ';
 
         $query = 'select m.*, u.postcode, c.fullname
-            from ' . $pp->schema() . '.messages m, ' .
-                $pp->schema() . '.users u, ' .
-                $pp->schema() . '.categories c
-                where m.user_id = u.id
-                    and m.category_id = c.id' . $where_sql . '
+            from ' . $pp->schema() . '.messages m
+            inner join ' . $pp->schema() . '.users u
+                on m.user_id = u.id
+            left join ' . $pp->schema() . '.categories c
+                on m.category_id = c.id
+            where ' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -1071,7 +1103,7 @@ class MessagesListController extends AbstractController
             $heading_render->add('Vraag en aanbod');
         }
 
-        if (isset($filter['cid']) && $filter['cid'])
+        if (isset($filter['cid']) && $filter['cid'] && $category_enabled)
         {
             $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
         }
@@ -1086,7 +1118,9 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="row">';
 
-        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="col-sm-';
+        $out .= $category_enabled ? '5' : '10';
+        $out .= '">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-search"></i>';
@@ -1097,20 +1131,23 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-5 col-xs-10">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-clone"></i>';
-        $out .= '</span>';
-        $out .= '<select class="form-control" id="cid" name="f[cid]">';
+        if ($category_enabled)
+        {
+            $out .= '<div class="col-sm-5 col-xs-10">';
+            $out .= '<div class="input-group margin-bottom">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<i class="fa fa-clone"></i>';
+            $out .= '</span>';
+            $out .= '<select class="form-control" id="cid" name="f[cid]">';
 
-        $cid = (string) ($filter['cid'] ?? '');
+            $cid = (string) ($filter['cid'] ?? '');
 
-        $out .= $select_render->get_options($categories_filter_options, $cid);
+            $out .= $select_render->get_options($categories_filter_options, $cid);
 
-        $out .= '</select>';
-        $out .= '</div>';
-        $out .= '</div>';
+            $out .= '</select>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $out .= '<div class="col-sm-2 col-xs-2">';
         $out .= '<button class="btn btn-default btn-block" title="Meer filters" ';

@@ -183,22 +183,20 @@ class MenuCnst
 
     const LOCAL_ADMIN = [
         'messages'  => [
-            /*
             'messages_modules'   => [
                 'fa'        => 'cog',
                 'label'     => 'Submodules en velden',
                 'route'     => 'messages_modules',
             ],
-            */
-            'messages_cleanup'   => [
-                'fa'        => 'trash-o',
-                'label'     => 'Opruiming',
-                'route'     => 'messages_cleanup',
-            ],
             'categories'	 	=> [
                 'fa'        => 'clone',
                 'label'     => 'Categorieën',
                 'route'     => 'categories',
+            ],
+            'messages_cleanup'   => [
+                'fa'        => 'trash-o',
+                'label'     => 'Geldigheid en opruiming',
+                'route'     => 'messages_cleanup',
             ],
         ],
         'users' => [

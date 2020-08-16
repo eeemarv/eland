@@ -31,8 +31,8 @@ class MessagesModulesController extends AbstractController
     {
         $errors = [];
 
-        $expires_at_enabled = $request->request->has('expires_at_enabled');
         $category_enabled = $request->request->has('category_enabled');
+        $expires_at_enabled = $request->request->has('expires_at_enabled');
         $units_enabled = $request->request->has('units_enabled');
 
         if ($request->isMethod('POST'))
@@ -44,12 +44,12 @@ class MessagesModulesController extends AbstractController
 
             if (!count($errors))
             {
-                $config_service->set_bool('messages.cleanup.enabled', $enabled, $pp->schema());
-                $config_service->set_int('messages.cleanup.after_days', (int) $after_days, $pp->schema());
-                $config_service->set_int('messages.fields.expires_at.enabled', $expires_at_enabled, $pp->schema());
-                $config_service->set_bool('messages.expire.notify', $expire_notify, $pp->schema());
-                $alert_service->success('Opruim instellingen Vraag/aanbod aangepast');
-                $link_render->redirect('messages_cleanup', $pp->ary(), []);
+                $config_service->set_bool('messages.fields.category.enabled', $category_enabled, $pp->schema());
+                $config_service->set_bool('messages.fields.expires_at.enabled', $expires_at_enabled, $pp->schema());
+                $config_service->set_bool('messages.fields.units.enabled', $units_enabled, $pp->schema());
+
+                $alert_service->success('Submodules/velden vraag en aanbod aangepast');
+                $link_render->redirect('messages_modules', $pp->ary(), []);
             }
 
             $alert_service->error($errors);
@@ -57,13 +57,12 @@ class MessagesModulesController extends AbstractController
 
         if ($request->isMethod('GET'))
         {
+            $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
             $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-            $after_days = $config_service->get_int('messages.cleanup.after_days', $pp->schema());
-            $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
-            $expire_notify = $config_service->get_bool('messages.expire.notify', $pp->schema());
+            $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
         }
 
-        $heading_render->fa('trash-o');
+        $heading_render->fa('newspaper-o');
         $heading_render->add('Submodules en velden vraag en aanbod');
 
         $out = '<div class="panel panel-info">';
@@ -71,34 +70,22 @@ class MessagesModulesController extends AbstractController
 
         $out .= '<form method="post">';
 
-        $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
-            '%name%'    => 'expires_at_days_default',
-            '%label%'   => 'Standaard geldigheidsduur',
-            '%addon%'   => 'dagen',
-            '%value%'   => $expires_at_days_default,
-            '%type%'    => 'number',
-            '%attr%'    => ' min="1" max="1460"',
-            '%explain%' => 'Bij aanmaak van nieuw vraag of aanbod wordt deze waarde standaard ingevuld in het formulier.',
-        ]);
-
-        $lbl_en = 'Ruim vervallen vraag en aanbod op na ';
-        $lbl_en .= strtr(BulkCnst::TPL_INLINE_NUMBER_INPUT, [
-            '%name%'    => 'after_days',
-            '%value%'   => $after_days,
-            '%attr%'    => ' min="1" max="365"',
-        ]);
-        $lbl_en .= ' dagen.';
-
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'enabled',
+            '%name%'    => 'category_enabled',
             '%label%'   => 'Categorieën',
-            '%attr%'    => $enabled ? ' checked' : '',
+            '%attr%'    => $category_enabled ? ' checked' : '',
         ]);
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'expire_notify',
-            '%label%'   => 'Mail een notificatie naar de eigenaar van een vraag of aanbod bericht op het moment dat het vervalt.',
-            '%attr%'    => $expire_notify ? ' checked' : '',
+            '%name%'    => 'expires_at_enabled',
+            '%label%'   => 'Geldigheid en opruiming',
+            '%attr%'    => $expires_at_enabled ? ' checked' : '',
+        ]);
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'units_enabled',
+            '%label%'   => 'Richtprijs',
+            '%attr%'    => $units_enabled ? ' checked' : '',
         ]);
 
         $out .= $link_render->btn_cancel($vr->get('messages'), $pp->ary(), []);
@@ -112,7 +99,7 @@ class MessagesModulesController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set('messages_cleanup');
+        $menu_service->set('messages_modules');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

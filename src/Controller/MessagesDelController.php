@@ -10,6 +10,7 @@ use App\Controller\MessagesShowController;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\CategoryRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -28,6 +29,7 @@ class MessagesDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        CategoryRepository $category_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -44,6 +46,12 @@ class MessagesDelController extends AbstractController
     ):Response
     {
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        if ($category_enabled && isset($message['category_id']))
+        {
+            $category = $category_repository->get($message['category_id'], $pp->schema());
+        }
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
@@ -85,12 +93,15 @@ class MessagesDelController extends AbstractController
         $out .= $account_render->link($message['user_id'], $pp->ary());
         $out .= '</dd>';
 
-        $out .= '<dt>Categorie</dt>';
-        $out .= '<dd>';
-        $out .= htmlspecialchars($message['catname'], ENT_QUOTES);
-        $out .= '</dd>';
+        if ($category_enabled)
+        {
+            $out .= '<dt>Categorie</dt>';
+            $out .= '<dd>';
+            $out .= isset($message['category_id']) ? $category['fullname'] : '** onbepaald **';
+            $out .= '</dd>';
+        }
 
-        if (isset($message['expires_at']))
+        if ($expires_at_enabled && isset($message['expires_at']))
         {
             $out .= '<dt>Geldig tot</dt>';
             $out .= '<dd>';

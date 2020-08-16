@@ -120,6 +120,9 @@ class MessagesEditController extends AbstractController
         $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
 
         $validity_days = $request->request->get('validity_days', '');
         $account_code = $request->request->get('account_code', '');
@@ -169,23 +172,26 @@ class MessagesEditController extends AbstractController
                 throw new BadRequestHttpException('Ongeldig bericht type.');
             }
 
-            if ($validity_days === '')
+            if ($expires_at_enabled)
             {
-                if ($expires_at_required)
+                if ($validity_days === '')
                 {
-                    $errors[] = 'Vul een geldigheid in.';
-                }
-            }
-            else
-            {
-                if (!ctype_digit((string) $validity_days))
-                {
-                    $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+                    if ($expires_at_required)
+                    {
+                        $errors[] = 'Vul een geldigheid in.';
+                    }
                 }
                 else
                 {
-                    $expires_at_unix = time() + ((int) $validity_days * 86400);
-                    $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+                    if (!ctype_digit((string) $validity_days))
+                    {
+                        $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+                    }
+                    else
+                    {
+                        $expires_at_unix = time() + ((int) $validity_days * 86400);
+                        $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+                    }
                 }
             }
 
@@ -240,15 +246,18 @@ class MessagesEditController extends AbstractController
                 $errors[] = $err;
             }
 
-            if (!$category_id)
+            if ($category_enabled)
             {
-                $errors[] = 'Geieve een categorie te selecteren.';
-            }
-            else if(!$db->fetchColumn('select id
-                from ' . $pp->schema() . '.categories
-                where id = ?', [$category_id]))
-            {
-                throw new BadRequestHttpException('Categorie bestaat niet!');
+                if (!$category_id)
+                {
+                    $errors[] = 'Geieve een categorie te selecteren.';
+                }
+                else if(!$db->fetchColumn('select id
+                    from ' . $pp->schema() . '.categories
+                    where id = ?', [$category_id]))
+                {
+                    throw new BadRequestHttpException('Categorie bestaat niet!');
+                }
             }
 
             if (!$subject)
@@ -281,22 +290,34 @@ class MessagesEditController extends AbstractController
             if (!count($errors))
             {
                 $post_message = [
-                    'expires_at'        => $expires_at,
                     'subject'           => $subject,
                     'content'           => $content,
                     'is_offer'          => $offer_want === 'offer' ? 't' : 'f',
                     'is_want'           => $offer_want === 'want' ? 't' : 'f',
                     'user_id'           => $user_id,
-                    'category_id'       => $category_id,
-                    'amount'            => $amount,
-                    'units'             => $units,
                     'access'            => $access,
                     'image_files'       => $image_files,
                 ];
 
-                if (empty($amount))
+                if ($category_enabled)
                 {
-                    unset($post_message['amount']);
+                    $post_message['category_id'] = $category_id;
+                }
+
+                if ($expires_at_enabled)
+                {
+                    $post_message['expires_at'] = $expires_at;
+                }
+
+                if ($units_enabled)
+                {
+                    $post_message['amount'] = $amount;
+                    $post_message['units'] = $units;
+
+                    if (empty($amount))
+                    {
+                        unset($post_message['amount']);
+                    }
                 }
             }
 
@@ -391,15 +412,16 @@ class MessagesEditController extends AbstractController
 
             $alert_service->error($errors);
         }
-        else if ($request->isMethod('GET'))
+
+        if ($request->isMethod('GET'))
         {
             if ($edit_mode)
             {
                 $content = $message['content'];
                 $subject = $message['subject'];
-                $amount = $message['amount'];
-                $units = $message['units'];
-                $category_id = $message['category_id'];
+                $amount = $message['amount'] ?? '';
+                $units = $message['units'] ?? '';
+                $category_id = $message['category_id'] ?? '';
                 $offer_want = $message['is_offer'] ? 'offer' : 'want';
                 $access = $message['access'];
                 $image_files = $message['image_files'];
@@ -554,85 +576,94 @@ class MessagesEditController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="category_id" class="control-label">';
-        $out .= 'Categorie</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-clone"></i>';
-        $out .= '</span>';
-        $out .= '<select name="category_id" id="category_id" class="form-control" required>';
-
-        foreach ($cat_ary as $cat_id => $cat_data)
+        if ($category_enabled)
         {
-            if (isset($cat_data['children']) && count($cat_data['children']))
-            {
-                $out .= '<optgroup label="';
-                $out .= $cat_data['name'];
-                $out .= '">';
+            $out .= '<div class="form-group">';
+            $out .= '<label for="category_id" class="control-label">';
+            $out .= 'Categorie</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<i class="fa fa-clone"></i>';
+            $out .= '</span>';
+            $out .= '<select name="category_id" id="category_id" class="form-control" required>';
 
-                foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+            foreach ($cat_ary as $cat_id => $cat_data)
+            {
+                if (isset($cat_data['children']) && count($cat_data['children']))
+                {
+                    $out .= '<optgroup label="';
+                    $out .= $cat_data['name'];
+                    $out .= '">';
+
+                    foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+                    {
+                        $out .= '<option value="';
+                        $out .= $sub_cat_id;
+                        $out .= '"';
+                        $out .= $sub_cat_id === $category_id ? ' selected' : '';
+                        $out .= '>';
+                        $out .= $sub_cat_data['name'];
+                        $out .= '</option>';
+                    }
+                    $out .= '</optgroup>';
+                    continue;
+                }
+                // Only subcategories for now
+                if ($cat_id === '')
                 {
                     $out .= '<option value="';
-                    $out .= $sub_cat_id;
-                    $out .= '"';
-                    $out .= $sub_cat_id === $category_id ? ' selected' : '';
-                    $out .= '>';
-                    $out .= $sub_cat_data['name'];
+                    $out .= $cat_id;
+                    $out .= '">';
+                    $out .= $cat_data['name'];
                     $out .= '</option>';
                 }
-                $out .= '</optgroup>';
-                continue;
             }
-            // Only subcategories for now
-            if ($cat_id === '')
-            {
-                $out .= '<option value="';
-                $out .= $cat_id;
-                $out .= '">';
-                $out .= $cat_data['name'];
-                $out .= '</option>';
-            }
+
+            $out .= '</select>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
-        $out .= '</select>';
-        $out .= '</div>';
-        $out .= '</div>';
+        if ($expires_at_enabled)
+        {
+            $attr_val = ' min="1"';
+            $attr_val .= $expires_at_required ?  ' required' : '';
 
-        $attr_val = ' min="1"';
-        $attr_val .= $expires_at_required ?  ' required' : '';
+            $explain_val = $expires_at_required ? '' : 'Vul niets in voor een permanent vraag of aanbod.';
 
-        $explain_val = $expires_at_required ? '' : 'Vul niets in voor een permanent vraag of aanbod.';
+            $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
+                '%name%'    => 'validity_days',
+                '%value%'   => self::format((string) $validity_days),
+                '%type%'    => 'number',
+                '%label%'   => 'Geldigheid',
+                '%addon%'   => 'dagen',
+                '%explain%' => $explain_val,
+                '%attr%'    => $attr_val,
+            ]);
+        }
 
-        $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
-            '%name%'    => 'validity_days',
-            '%value%'   => self::format((string) $validity_days),
-            '%type%'    => 'number',
-            '%label%'   => 'Geldigheid',
-            '%addon%'   => 'dagen',
-            '%explain%' => $explain_val,
-            '%attr%'    => $attr_val,
-        ]);
+        if ($units_enabled)
+        {
+            $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
+                '%name%'    => 'amount',
+                '%value%'   => self::format((string) $amount),
+                '%type%'    => 'number',
+                '%label%'   => 'Richtprijs',
+                '%addon%'   => $currency,
+                '%explain%' => '',
+                '%attr%'    => ' min="0"',
+            ]);
 
-        $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
-            '%name%'    => 'amount',
-            '%value%'   => self::format((string) $amount),
-            '%type%'    => 'number',
-            '%label%'   => 'Richtprijs',
-            '%addon%'   => $currency,
-            '%explain%' => '',
-            '%attr%'    => ' min="0"',
-        ]);
-
-        $out .= strtr(BulkCnst::TPL_INPUT_FA, [
-            '%name%'    => 'units',
-            '%value%'   => self::format((string) $units),
-            '%type%'    => 'text',
-            '%label%'   => 'Per eenheid (uur, stuk, ...)',
-            '%fa%'      => 'hourglass-half',
-            '%explain%' => '',
-            '%attr%'    => '',
-        ]);
+            $out .= strtr(BulkCnst::TPL_INPUT_FA, [
+                '%name%'    => 'units',
+                '%value%'   => self::format((string) $units),
+                '%type%'    => 'text',
+                '%label%'   => 'Per eenheid (uur, stuk, ...)',
+                '%fa%'      => 'hourglass-half',
+                '%explain%' => '',
+                '%attr%'    => '',
+            ]);
+        }
 
         $out .= '<div class="form-group">';
         $out .= '<label for="fileupload" class="control-label">';
