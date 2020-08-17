@@ -122,9 +122,11 @@ class MessagesEditController extends AbstractController
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
         $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
 
         $validity_days = $request->request->get('validity_days', '');
+        $expires_at_switch = $request->request->get('expires_at_switch', '');
         $account_code = $request->request->get('account_code', '');
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
@@ -174,23 +176,46 @@ class MessagesEditController extends AbstractController
 
             if ($expires_at_enabled)
             {
-                if ($validity_days === '')
+                if (!$expires_at_required
+                    && isset($expires_at_days_default)
+                    && $expires_at_days_default > 0
+                    && $expires_at_switch_enabled
+                    && $add_mode)
                 {
-                    if ($expires_at_required)
+                    if ($expires_at_switch === '')
                     {
-                        $errors[] = 'Vul een geldigheid in.';
+                        $errors[] = 'Vul een geldigheid in (tijdelijk of permanent).';
+                    }
+                    else if (!in_array($expires_at_switch, ['temporal', 'permanent']))
+                    {
+                        $errors[] = 'Foute waarde geldigheid (tijdelijk of permanent)';
+                    }
+                    else if ($expires_at_switch === 'temporal')
+                    {
+                        $expires_at_unix = time() + ((int) $expires_at_days_default * 86400);
+                        $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
                     }
                 }
                 else
                 {
-                    if (!ctype_digit((string) $validity_days))
+                    if ($validity_days === '')
                     {
-                        $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+                        if ($expires_at_required)
+                        {
+                            $errors[] = 'Vul een geldigheid in.';
+                        }
                     }
                     else
                     {
-                        $expires_at_unix = time() + ((int) $validity_days * 86400);
-                        $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+                        if (!ctype_digit((string) $validity_days))
+                        {
+                            $errors[] = 'De geldigheid in dagen moet een positief getal zijn.';
+                        }
+                        else
+                        {
+                            $expires_at_unix = time() + ((int) $validity_days * 86400);
+                            $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
+                        }
                     }
                 }
             }
@@ -240,7 +265,7 @@ class MessagesEditController extends AbstractController
 
             if (!ctype_digit((string) $amount) && $amount !== '')
             {
-                $err = 'De (richt)prijs in ';
+                $err = 'De richtprijs in ';
                 $err .= $currency;
                 $err .= ' moet nul of een positief getal zijn.';
                 $errors[] = $err;
@@ -449,7 +474,8 @@ class MessagesEditController extends AbstractController
                 $units = '';
                 $category_id = '';
                 $offer_want = '';
-                $validity_days = $expires_at_days_default;
+                $validity_days = $expires_at_days_default ?? '';
+                $expires_at_switch = '';
                 $account_code = '';
                 $access = '';
                 $image_files = '[]';
@@ -548,13 +574,23 @@ class MessagesEditController extends AbstractController
             $out .= '</div>';
         }
 
-        $out .= '<div class="form-group">';
-
-        $out .= self::get_radio([
+        $offer_want_tpl_ary = [
             'offer'     => 'Aanbod',
             'want'      => 'Vraag',
-        ], 'offer_want', $offer_want, true);
+        ];
 
+        $out .= '<div class="form-group">';
+        $out .= '<div class="custom-radio">';
+        foreach ($offer_want_tpl_ary as $val => $lbl)
+        {
+            $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                '%name%'    => 'offer_want',
+                '%value%'   => $val,
+                '%attr%'    => ' required' . ($offer_want === $val ? ' checked' : ''),
+                '%label%'    => '<span class="btn btn-default">' . $lbl . '</span>',
+            ]);
+        }
+        $out .= '</div>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
@@ -626,20 +662,53 @@ class MessagesEditController extends AbstractController
 
         if ($expires_at_enabled)
         {
-            $attr_val = ' min="1"';
-            $attr_val .= $expires_at_required ?  ' required' : '';
+            if (!$expires_at_required
+                && isset($expires_at_days_default)
+                && $expires_at_days_default > 0
+                && $expires_at_switch_enabled
+                && $add_mode)
+            {
+                $expires_at_switch_tpl_ary = [
+                    'temporal'  => 'Tijdelijk',
+                    'permanent' => 'Permanent',
+                ];
 
-            $explain_val = $expires_at_required ? '' : 'Vul niets in voor een permanent vraag of aanbod.';
+                $out .= '<div class="form-group">';
+                $out .= '<label for="expires_at_switch" ';
+                $out .= 'class="control-label">Geldigheid</label>';
+                $out .= '<div class="custom-radio">';
+                foreach ($expires_at_switch_tpl_ary as $val => $lbl)
+                {
+                    $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                        '%name%'    => 'expires_at_switch',
+                        '%value%'   => $val,
+                        '%attr%'    => ' required' . ($expires_at_switch === $val ? ' checked' : ''),
+                        '%label%'    => '<span class="btn btn-default">' . $lbl . '</span>',
+                    ]);
+                }
+                $out .= '</div>';
+                $out .= '<p>Een tijdelijk aanbod of vraag blijft <strong>';
+                $out .= $expires_at_days_default;
+                $out .= '</strong> dagen geldig en kan nog verlengd worden.</p>';
+                $out .= '</div>';
+            }
+            else
+            {
+                $attr_val = ' min="1"';
+                $attr_val .= $expires_at_required ?  ' required' : '';
 
-            $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
-                '%name%'    => 'validity_days',
-                '%value%'   => self::format((string) $validity_days),
-                '%type%'    => 'number',
-                '%label%'   => 'Geldigheid',
-                '%addon%'   => 'dagen',
-                '%explain%' => $explain_val,
-                '%attr%'    => $attr_val,
-            ]);
+                $explain_val = $expires_at_required ? '' : 'Vul niets in voor een permanent vraag of aanbod.';
+
+                $out .= strtr(BulkCnst::TPL_INPUT_ADDON, [
+                    '%name%'    => 'validity_days',
+                    '%value%'   => self::format((string) $validity_days),
+                    '%type%'    => 'number',
+                    '%label%'   => 'Geldigheid',
+                    '%addon%'   => 'dagen',
+                    '%explain%' => $explain_val,
+                    '%attr%'    => $attr_val,
+                ]);
+            }
         }
 
         if ($units_enabled)
@@ -796,18 +865,15 @@ class MessagesEditController extends AbstractController
 
         foreach ($radio_ary as $value => $label)
         {
-            $out .= '<label class="radio-inline">';
-            $out .= '<input type="radio" name="' . $name . '" ';
-            $out .= 'value="' . $value . '"';
-            $out .= (string) $value === $selected ? ' checked' : '';
-            $out .= $required ? ' required' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="label-text">';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</span>';
-            $out .= '</label>';
+            $attr = (string) $value === $selected ? ' checked' : '';
+            $attr .= $required ? ' required' : '';
+
+            $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                '%name%'    => $name,
+                '%value%'   => $value,
+                '%attr%'    => $attr,
+                '%label%'    => '<span class="btn btn-default">' . $label . '</span>',
+            ]);
         }
 
         $out .= '</div>';

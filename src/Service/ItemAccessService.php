@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Service\AssetsService;
 use App\Cnst\AccessCnst;
+use App\Cnst\BulkCnst;
 
 class ItemAccessService
 {
@@ -182,16 +183,15 @@ class ItemAccessService
 
 		foreach ($ary as $key)
 		{
-			$out .= '<label class="radio-inline">';
-			$out .= '<input type="radio" name="' . $name . '"';
-			$out .= $key === $selected ? ' checked="checked"' : '';
-			$out .= ' value="' . $key . '" ';
-			$out .= 'id="' . $name . '" ';
-			$out .= 'required>&nbsp;';
-			$out .= '<span class="label-text">';
-			$out .= $this->get_label($key);
-			$out .= '</span>';
-			$out .= '</label>';
+			$attr = $key === $selected ? ' checked' : '';
+			$attr .= ' required';
+
+			$out .= strtr(BulkCnst::TPL_RADIO_INLINE, [
+				'%name%'	=> $name,
+				'%value%'	=> $key,
+				'%attr%'	=> $attr,
+				'%label%'	=> $this->get_label($key),
+			]);
 		}
 
 		$out .= '</div>';

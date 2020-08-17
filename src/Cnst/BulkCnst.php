@@ -184,4 +184,11 @@ class BulkCnst
     </div>
     </div>
     TPL;
+
+    const TPL_RADIO_INLINE = <<<'TPL'
+    <label class="radio-inline">
+    <input type="radio" name="%name%"
+    value="%value%"%attr%>
+    <span class="label-text"></span>&nbsp;%label%</label>
+    TPL;
 }

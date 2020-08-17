@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
@@ -21,6 +22,7 @@ class MessagesCleanupController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
+        AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         HeadingRender $heading_render,
@@ -41,6 +43,7 @@ class MessagesCleanupController extends AbstractController
         $after_days = $request->request->get('after_days', '');
         $expires_at_days_default = $request->request->get('expires_at_days_default', '');
         $expires_at_required = $request->request->has('expires_at_required');
+        $expires_at_switch_enabled = $request->request->has('expires_at_switch_enabled');
         $expire_notify = $request->request->has('expire_notify');
 
         if ($expires_at_days_default === '')
@@ -72,8 +75,9 @@ class MessagesCleanupController extends AbstractController
                 $config_service->set_int('messages.cleanup.after_days', (int) $after_days, $pp->schema());
                 $config_service->set_int('messages.fields.expires_at.days_default', (int) $expires_at_days_default, $pp->schema());
                 $config_service->set_bool('messages.fields.expires_at.required', $expires_at_required, $pp->schema());
+                $config_service->set_bool('messages.fields.expires_at.switch_enabled', $expires_at_switch_enabled, $pp->schema());
                 $config_service->set_bool('messages.expire.notify', $expire_notify, $pp->schema());
-                $alert_service->success('Opruim instellingen Vraag/aanbod aangepast');
+                $alert_service->success('Geldigheid en opruiming instellingen van vraag en aanbod aangepast');
                 $link_render->redirect('messages_cleanup', $pp->ary(), []);
             }
 
@@ -86,11 +90,14 @@ class MessagesCleanupController extends AbstractController
             $after_days = $config_service->get_int('messages.cleanup.after_days', $pp->schema());
             $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
             $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
+            $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
             $expire_notify = $config_service->get_bool('messages.expire.notify', $pp->schema());
         }
 
+        $assets_service->add(['messages_cleanup.js']);
+
         $heading_render->fa('trash-o');
-        $heading_render->add('Opruim instellingen vraag en aanbod');
+        $heading_render->add('Geldigheid en opruiming instellingen vraag en aanbod');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -109,8 +116,14 @@ class MessagesCleanupController extends AbstractController
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'expires_at_required',
-            '%label%'   => 'De geldigheidsduur moet verplicht ingevuld worden bij vraag of aanbod (m.a.w. vraag en aanbod moet altijd vervallen).',
+            '%label%'   => 'De geldigheidsduur moet verplicht ingevuld worden bij vraag of aanbod M.a.w. aangemaakt vraag en aanbod vervalt altijd en blijft niet permanent geldig.',
             '%attr%'    => $expires_at_required ? ' checked' : '',
+        ]);
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'expires_at_switch_enabled',
+            '%label%'   => 'Gebruik een eenvoudige schakelaar permanent/tijdelijk bij aanmaak vraag of aanbod. Hiertoe moet hierboven een standaard geldigheidsduur ingevuld zijn en verplichte geldigheidsduur afgevinkt.',
+            '%attr%'    => $expires_at_switch_enabled ? ' checked' : '',
         ]);
 
         $lbl_en = 'Ruim vervallen vraag en aanbod op na ';
