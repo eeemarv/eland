@@ -14,6 +14,7 @@ use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesCleanupController extends AbstractController
 {
@@ -29,6 +30,11 @@ class MessagesCleanupController extends AbstractController
         VarRouteService $vr
     ):Response
     {
+        if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages cleanup module not enabled.');
+        }
+
         $errors = [];
 
         $enabled = $request->request->has('enabled');

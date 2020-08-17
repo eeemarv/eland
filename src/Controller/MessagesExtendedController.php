@@ -44,6 +44,12 @@ class MessagesExtendedController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+
         $fetch_and_filter = MessagesListController::fetch_and_filter(
             $request,
             $db,
@@ -96,11 +102,13 @@ class MessagesExtendedController extends AbstractController
             $sf_owner = $pp->is_user()
                 && $msg['user_id'] === $su->id();
 
-            $exp = isset($msg['expires_at']) && strtotime($msg['expires_at']) < $time;
+            $expired = $expires_at_enabled
+                && isset($msg['expires_at'])
+                && strtotime($msg['expires_at']) < $time;
 
             $out .= '<div class="panel panel-info printview">';
             $out .= '<div class="panel-body';
-            $out .= $exp ? ' bg-danger' : '';
+            $out .= $expired ? ' bg-danger' : '';
             $out .= '">';
 
             $out .= '<div class="media">';
@@ -128,7 +136,7 @@ class MessagesExtendedController extends AbstractController
                 ['id' => $msg['id']],
                 ucfirst($msg['label']['offer_want']) . ': ' . $msg['subject']);
 
-            if ($exp)
+            if ($expired)
             {
                 $out .= ' <small><span class="text-danger">';
                 $out .= 'Vervallen</span></small>';

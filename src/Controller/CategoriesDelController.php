@@ -11,7 +11,9 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesDelController extends AbstractController
 {
@@ -19,6 +21,7 @@ class CategoriesDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
@@ -27,6 +30,11 @@ class CategoriesDelController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
+        }
+
         if($request->isMethod('POST'))
         {
             if ($error_token = $form_token_service->get_error())

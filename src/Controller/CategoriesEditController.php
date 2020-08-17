@@ -12,7 +12,9 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesEditController extends AbstractController
 {
@@ -20,6 +22,7 @@ class CategoriesEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
@@ -29,6 +32,11 @@ class CategoriesEditController extends AbstractController
         SelectRender $select_render
     ):Response
     {
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
+        }
+
         $cats = [];
         $errors = [];
 

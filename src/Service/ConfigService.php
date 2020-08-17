@@ -256,13 +256,13 @@ class ConfigService
 
 	public function get_intersystem_en(string $schema):bool
 	{
-		return $this->get('template_lets', $schema)
-			&& $this->get('interlets_en', $schema);
+		return $this->get_bool('transactions.currency.timebased_en', $schema)
+			&& $this->get_bool('intersystem.enabled', $schema);
 	}
 
 	public function get_new_user_treshold(string $schema):int
 	{
-		$new_user_days = (int) $this->get('newuserdays', $schema);
+		$new_user_days = $this->get_int('users.new.days', $schema);
 		return time() -  ($new_user_days * 86400);
 	}
 }

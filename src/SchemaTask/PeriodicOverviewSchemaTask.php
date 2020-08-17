@@ -54,7 +54,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('saldofreqdays', $schema) * 86400);
+		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+		$treshold_time = gmdate('Y-m-d H:i:s', time() - ($days * 86400));
+
+		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
@@ -63,9 +66,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// get blocks
 
-		$forum_en = $this->config_service->get('forum_en', $schema) ? true : false;
-		$intersystem_en = $this->config_service->get('interlets_en', $schema) ? true : false;
-		$intersystem_en = $intersystem_en && $this->config_service->get('template_lets', $schema) ? true : false;
+		$forum_en = $this->config_service->get_bool('forum.enabled', $schema);
+		$intersystem_en = $this->config_service->get_intersystem_en($schema);
 
 		$blocks_sorted = $block_options = [];
 
@@ -169,13 +171,13 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					m.subject, m.content,
 					m.user_id,
 					m.is_offer, m.is_want,
-					m.amount, m.units, m.image_files
+					m.image_files
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
 				where m.user_id = u.id
 					and u.status IN (1, 2)
 					and m.created_at >= ?
-				order BY m.created_at DESC');
+				order BY m.created_at desc');
 
 			$rs->bindValue(1, $treshold_time);
 			$rs->execute();
@@ -212,8 +214,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$rs = $this->db->prepare('select m.id, m.subject,
 						m.content,
 						m.is_offer, m.is_want,
-						m.user_id as user_id,
-						m.amount, m.units
+						m.user_id as user_id
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
 					where m.user_id = u.id
@@ -254,7 +255,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';
 			$query .= 'order by n.event_at ';
-			$query .= $this->config_service->get('news_order_asc', $schema) === '1' ? 'asc' : 'desc';
+			$query .= $this->config_service->get_bool('news.sort.asc', $schema) ? 'asc' : 'desc';
 			$query .= ' nulls last';
 
 			$rs = $this->db->prepare($query);
@@ -283,8 +284,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where u.status = 1
 					and u.adate > ?');
 
-			$time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('newuserdays', $schema) * 86400);
-			$time = ($block_options['new_users'] === 'recent') ? $treshold_time: $time;
+			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 
 			$rs->bindValue(1, $time);
 			$rs->execute();
@@ -455,19 +455,15 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get('saldofreqdays', $schema) ? true : false;
+		return $this->config_service->get_int('periodic_mail.days', $schema) > 0
+			&& $this->config_service->get_bool('periodic_mail.enabled', $schema);
 	}
 
 	public function get_interval(string $schema):int
 	{
-		if (isset($schema))
-		{
-			$days = $this->config_service->get('saldofreqdays', $schema);
-			$days = $days < 1 ? 7 : $days;
+		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+		$days = $days < 1 ? 7 : $days;
 
-			return 86400 * $days;
-		}
-
-		return 86400;
+		return 86400 * $days;
 	}
 }

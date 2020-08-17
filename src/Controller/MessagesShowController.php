@@ -290,7 +290,12 @@ class MessagesShowController extends AbstractController
 
         $heading_render->add(ucfirst($message['label']['offer_want']));
         $heading_render->add(': ' . $message['subject']);
-        $heading_render->add_raw(isset($message['expires_at']) && strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+
+        if ($expires_at_enabled)
+        {
+            $heading_render->add_raw(isset($message['expires_at']) && strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
+        }
+
         $heading_render->fa('newspaper-o');
 
         $out = '';

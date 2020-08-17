@@ -9,13 +9,16 @@ use App\Service\MenuService;
 use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesController extends AbstractController
 {
     public function __invoke(
         Db $db,
+        ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
@@ -24,6 +27,11 @@ class CategoriesController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
+        }
+
         $cats = $db->fetchAll('select *
             from ' . $pp->schema() . '.categories
             order by fullname');

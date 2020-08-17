@@ -61,6 +61,8 @@ class MessagesListController extends AbstractController
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $intersytem_en = $config_service->get_intersystem_en($pp->schema());
+        $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
 
         $selected_messages = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
@@ -69,7 +71,8 @@ class MessagesListController extends AbstractController
 
         if ($request->isMethod('POST')
             && !$pp->is_guest()
-            && count($bulk_submit))
+            && count($bulk_submit)
+            && $bulk_actions_enabled)
         {
             if (count($bulk_submit) > 1)
             {
@@ -271,7 +274,7 @@ class MessagesListController extends AbstractController
             'list'
         );
 
-        if ($pp->is_admin())
+        if ($bulk_actions_enabled && $pp->is_admin())
         {
             $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             $btn_nav_render->csv();
@@ -354,12 +357,17 @@ class MessagesListController extends AbstractController
         foreach($messages as $msg)
         {
             $out .= '<tr';
-            $out .= isset($msg['expires_at']) && strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
+
+            if ($expires_at_enabled)
+            {
+                $out .= isset($msg['expires_at']) && strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
+            }
+
             $out .= '>';
 
             $out .= '<td>';
 
-            if ($pp->is_admin() || $is_owner)
+            if ($bulk_actions_enabled && ($pp->is_admin() || $is_owner))
             {
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
@@ -444,7 +452,7 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        if (($pp->is_admin() || $is_owner) && count($messages))
+        if ($bulk_actions_enabled && ($pp->is_admin() || $is_owner) && count($messages))
         {
             $extend_options = [
                 '7'		=> '1 week',
@@ -498,52 +506,61 @@ class MessagesListController extends AbstractController
 
             $out .= '<ul class="nav nav-tabs" role="tablist">';
 
-            $out .= '<li class="active"><a href="#extend_tab" ';
-            $out .= 'data-toggle="tab">Verlengen</a></li>';
+            if ($expires_at_enabled)
+            {
+                $out .= '<li class="active"><a href="#extend_tab" ';
+                $out .= 'data-toggle="tab">Verlengen</a></li>';
+            }
 
-            if ($config_service->get_intersystem_en($pp->schema()))
+            if ($intersytem_en)
             {
                 $out .= '<li>';
                 $out .= '<a href="#access_tab" data-toggle="tab">';
                 $out .= 'Zichtbaarheid</a><li>';
             }
 
-            $out .= '<li><a href="#category_tab" ';
-            $out .= 'data-toggle="tab">Categorie</a></li>';
+            if ($category_enabled)
+            {
+                $out .= '<li><a href="#category_tab" ';
+                $out .= 'data-toggle="tab">Categorie</a></li>';
+            }
 
             $out .= '</ul>';
 
             $out .= '<div class="tab-content">';
 
-            $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
-            $out .= '<h3>Vraag en aanbod verlengen</h3>';
+            if ($expires_at_enabled)
+            {
+                $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
+                $out .= '<h3>Vraag en aanbod verlengen</h3>';
 
-            $out .= '<form method="post">';
+                $out .= '<form method="post">';
 
-            $out .= '<div class="form-group">';
-            $out .= '<label for="buld_field[extend]" class="control-label">';
-            $out .= 'Verlengen met</label>';
-            $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
-            $out .= $select_render->get_options($extend_options, '30');
-            $out .= "</select>";
-            $out .= '</div>';
+                $out .= '<div class="form-group">';
+                $out .= '<label for="buld_field[extend]" class="control-label">';
+                $out .= 'Verlengen met</label>';
+                $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
+                $out .= $select_render->get_options($extend_options, '30');
+                $out .= "</select>";
+                $out .= '</div>';
 
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-                '%name%'    => 'bulk_verify[extend]',
-                '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
-                '%attr%'    => ' required',
-            ]);
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[extend]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
 
-            $out .= '<input type="submit" value="Verlengen" ';
-            $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
+                $out .= '<input type="submit" value="Verlengen" ';
+                $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
 
-            $out .= $form_token_service->get_hidden_input();
+                $out .= $form_token_service->get_hidden_input();
 
-            $out .= '</form>';
+                $out .= '</form>';
 
-            $out .= '</div>';
+                $out .= '</div>';
+            }
 
-            if ($config_service->get_intersystem_en($pp->schema()))
+            if ($intersytem_en)
             {
                 $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
                 $out .= '<h3>Zichtbaarheid instellen</h3>';
@@ -564,30 +581,33 @@ class MessagesListController extends AbstractController
                 $out .= '</div>';
             }
 
-            $out .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
-            $out .= '<h3>Verhuizen naar categorie</h3>';
-            $out .= '<form method="post">';
+            if ($category_enabled)
+            {
+                $out .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
+                $out .= '<h3>Verhuizen naar categorie</h3>';
+                $out .= '<form method="post">';
 
-            $out .= strtr(BulkCnst::TPL_SELECT, [
-                '%options%' => $cat_options,
-                '%name%'    => 'bulk_field[category]',
-                '%label%'   => 'Categorie',
-                '%attr%'    => ' required',
-                '%fa%'      => 'clone',
-                '%explain%' => '',
-            ]);
+                $out .= strtr(BulkCnst::TPL_SELECT, [
+                    '%options%' => $cat_options,
+                    '%name%'    => 'bulk_field[category]',
+                    '%label%'   => 'Categorie',
+                    '%attr%'    => ' required',
+                    '%fa%'      => 'clone',
+                    '%explain%' => '',
+                ]);
 
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-                '%name%'    => 'bulk_verify[category]',
-                '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
-                '%attr%'    => ' required',
-            ]);
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[category]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
 
-            $out .= '<input type="submit" value="Categorie anpassen" ';
-            $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
-            $out .= $form_token_service->get_hidden_input();
-            $out .= '</form>';
-            $out .= '</div>';
+                $out .= '<input type="submit" value="Categorie anpassen" ';
+                $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
+                $out .= $form_token_service->get_hidden_input();
+                $out .= '</form>';
+                $out .= '</div>';
+            }
 
             $out .= '</div>';
 
@@ -751,6 +771,8 @@ class MessagesListController extends AbstractController
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -861,7 +883,7 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['new']))
             {
                 $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
+                $params_sql[] = gmdate('Y-m-d H:i:s', $new_user_treshold);
                 $params['f']['ustatus']['new'] = 'on';
             }
 
@@ -874,7 +896,7 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['active']))
             {
                 $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $config_service->get_new_user_treshold($pp->schema()));
+                $params_sql[] = gmdate('Y-m-d H:i:s', $new_user_treshold);
                 $params['f']['ustatus']['active'] = 'on';
             }
 
@@ -898,33 +920,40 @@ class MessagesListController extends AbstractController
             && $filter['cid']
             && $category_enabled)
         {
-            $cat_ary = [];
-
-            $st = $db->prepare('select id
-                from ' . $pp->schema() . '.categories
-                where id_parent = ?');
-            $st->bindValue(1, $filter['cid']);
-            $st->execute();
-
-            while ($row = $st->fetch())
+            if ($filter['cid'] === 'null')
             {
-                $cat_ary[] = $row['id'];
-            }
-
-            if (count($cat_ary))
-            {
-                $where_sql[] = 'm.category_id in (' . implode(', ', $cat_ary) . ')';
+                $where_sql[] = 'm.category_id is null';
             }
             else
             {
-                $where_sql[] = 'm.category_id = ?';
-                $params_sql[] = $filter['cid'];
+                $cat_ary = [];
+
+                $st = $db->prepare('select id
+                    from ' . $pp->schema() . '.categories
+                    where id_parent = ?');
+                $st->bindValue(1, $filter['cid']);
+                $st->execute();
+
+                while ($row = $st->fetch())
+                {
+                    $cat_ary[] = $row['id'];
+                }
+
+                if (count($cat_ary))
+                {
+                    $where_sql[] = 'm.category_id in (' . implode(', ', $cat_ary) . ')';
+                }
+                else
+                {
+                    $where_sql[] = 'm.category_id = ?';
+                    $params_sql[] = $filter['cid'];
+                }
             }
 
             $params['f']['cid'] = $filter['cid'];
         }
 
-        $where_sql = implode(' and ', $where_sql) . ' ';
+        $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
 
         $query = 'select m.*, u.postcode, c.fullname
             from ' . $pp->schema() . '.messages m
@@ -932,7 +961,7 @@ class MessagesListController extends AbstractController
                 on m.user_id = u.id
             left join ' . $pp->schema() . '.categories c
                 on m.category_id = c.id
-            where ' . $where_sql . '
+            where 1 = 1' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
@@ -954,6 +983,7 @@ class MessagesListController extends AbstractController
         $no_cat_where_sql = ' and ' . implode(' and ', $no_cat_where_sql) . ' ';
 
         $cat_count_ary = [];
+        $no_cat_count = 0;
 
         $cat_count_query = 'select count(m.*), m.category_id
             from ' . $pp->schema() . '.messages m, ' .
@@ -966,29 +996,45 @@ class MessagesListController extends AbstractController
 
         while($row = $st->fetch())
         {
-            $cat_count_ary[$row['category_id']] = $row['count'];
+            if (isset($row['category_id']))
+            {
+                $cat_count_ary[$row['category_id']] = $row['count'];
+                continue;
+            }
+
+            $no_cat_count = $row['count'];
         }
 
         if (isset($filter['cid'])
-            && $filter['cid'])
+            && $filter['cid']
+            && $category_enabled)
         {
             $row_count = $db->fetchColumn('select count(m.*)
                 from ' . $pp->schema() . '.messages m, ' .
                     $pp->schema() . '.users u
-                where m.user_id = u.id' . $where_sql, $params_sql);
+                where m.user_id = u.id ' . $where_sql, $params_sql);
         }
         else
         {
             $row_count = array_sum($cat_count_ary);
+            $row_count += $no_cat_count;
         }
 
         $pagination_render->init($vr->get('messages'), $pp->ary(),
             $row_count, $params);
 
-        $categories_filter_options = ['' => '-- alle categorieën --'];
+        $categories_filter_options = [];
+        $categories_filter_options[''] = '-- alle categorieën --';
+
+        if ($no_cat_count)
+        {
+            $categories_filter_options['null'] = '-- zonder categorie (' . $no_cat_count . ')-- ';
+        }
+
         $categories_move_options = ['' => ['name' => '']];
 
-        $categories = $cat_params  = [];
+        $categories = [];
+        $cat_params  = [];
 
         $cat_params_sort = $params;
 
@@ -997,21 +1043,9 @@ class MessagesListController extends AbstractController
             unset($cat_params_sort['s']);
         }
 
-        if (isset($filter['uid']))
-        {
-            $st = $db->executeQuery('select c.*
-                from ' . $pp->schema() . '.categories c, ' .
-                    $pp->schema() . '.messages m
-                where m.category_id = c.id
-                    and m.user_id = ?
-                order by c.fullname', [$filter['uid']]);
-        }
-        else
-        {
-            $st = $db->executeQuery('select *
-                from ' . $pp->schema() . '.categories
-                order by fullname');
-        }
+        $st = $db->executeQuery('select *
+            from ' . $pp->schema() . '.categories
+            order by fullname');
 
         while ($row = $st->fetch())
         {
@@ -1105,7 +1139,14 @@ class MessagesListController extends AbstractController
 
         if (isset($filter['cid']) && $filter['cid'] && $category_enabled)
         {
-            $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
+            if ($filter['cid'] === 'null')
+            {
+                $heading_render->add(', zonder categorie');
+            }
+            else
+            {
+                $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
+            }
         }
 
         $heading_render->add_filtered($filtered);
@@ -1179,22 +1220,26 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
 
         $out .= '</div>';
-        $out .= '<div class="row">';
 
-        $valid_options = [
-            'yes'		=> 'Geldig',
-            'no'		=> 'Vervallen',
-        ];
+        if ($expires_at_enabled)
+        {
+            $out .= '<div class="row">';
 
-        $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+            $valid_options = [
+                'yes'		=> 'Geldig',
+                'no'		=> 'Vervallen',
+            ];
 
-        $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
+            $out .= '<div class="col-md-12">';
+            $out .= '<div class="input-group margin-bottom">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+            $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
 
-        $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
         $out .= '<div class="row">';
 
         $user_status_options = [
@@ -1228,7 +1273,7 @@ class MessagesListController extends AbstractController
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
+                'newuserdays'	=> $new_user_days,
             ]);
 
         $out .= '" ';

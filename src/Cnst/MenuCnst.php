@@ -192,11 +192,13 @@ class MenuCnst
                 'fa'        => 'clone',
                 'label'     => 'Categorieën',
                 'route'     => 'categories',
+                'config_en' => 'messages.fields.category.enabled',
             ],
             'messages_cleanup'   => [
                 'fa'        => 'trash-o',
                 'label'     => 'Geldigheid en opruiming',
                 'route'     => 'messages_cleanup',
+                'config_en' => 'messages.fields.expires_at.enabled',
             ],
         ],
         'users' => [
