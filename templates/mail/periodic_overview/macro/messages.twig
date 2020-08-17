@@ -2,11 +2,11 @@
 
 {% macro html(messages, user_id, schema) -%}
 <h3>
-{{- 'periodic_overview.ads.title'|trans -}}
+{{- 'periodic_overview.messages.title'|trans -}}
 </h3>
 {% if messages %}
 <p>
-{{- 'periodic_overview.ads.explain'|trans({
+{{- 'periodic_overview.messages.explain'|trans({
 	'%link_open%': context_url_open('messages_extended', mpp_ary(user_id, schema), {}),
 	'%link_close%': '</a>',
 	'%days%': config('saldofreqdays', schema)
@@ -51,7 +51,7 @@
 
 {%- else -%}
 <p>
-{{- 'periodic_overview.ads.none'|trans({
+{{- 'periodic_overview.messages.none'|trans({
 	'%link_open%': context_url_open('messages_extended',
 		mpp_ary(user_id, schema), {}),
 	'%link_close%': '</a>'
@@ -60,7 +60,7 @@
 {%- endif -%}
 
 <p>
-{{- 'periodic_overview.ads.add'|trans({
+{{- 'periodic_overview.messages.add'|trans({
 	'%link_open%': context_url_open('messages_add', mpp_ary(user_id, schema), {}),
 	'%link_close%': '</a>'
 })|raw -}}
@@ -71,10 +71,10 @@
 {% macro text(messages, user_id, schema) %}
 {% autoescape false %}
 
-{{ 'periodic_overview.ads.title'|trans|underline }}
+{{ 'periodic_overview.messages.title'|trans|underline }}
 
 {% if messages %}
-{{ 'periodic_overview.ads.explain'|trans({
+{{ 'periodic_overview.messages.explain'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
 	'%days%': config('saldofreqdays', schema)
@@ -91,14 +91,14 @@
 
 {% endfor %}
 {% else %}
-{{ 'periodic_overview.ads.none'|trans({
+{{ 'periodic_overview.messages.none'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
 	'%days%': config('saldofreqdays', schema)
 }) }}
 {% endif %}
 
-{{- 'periodic_overview.ads.add'|trans({
+{{- 'periodic_overview.messages.add'|trans({
 	'%link_open%': '',
 	'%link_close%': ''
 }) }}

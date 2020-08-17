@@ -1,7 +1,7 @@
 {% trans_default_domain 'mail' %}
 {{ 'label.your_account'|trans|underline|raw }}
 
-{{ 'label.login'|trans|raw }}: {{ context_url('login', mpp_ary(user_id, schema),
+{{ 'label.login'|trans|raw }}: {{ context_url('login', mpp_anon_ary(schema),
     {'login': account_code(user_id, schema)})|raw }}
 {{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema)|raw }}
 {{ 'label.username'|trans|raw }}: {{ username(user_id, schema)|raw }}

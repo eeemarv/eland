@@ -343,7 +343,7 @@ class ConfigController extends AbstractController
                         {
                             [$block, $select] = explode('.', $p);
 
-                            if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                            if (isset($block_ary[$block]) && count($block_ary[$block]) > 1)
                             {
                                 $select = $select === 'all' ? 'all' : 'recent';
                                 $config_service->set_str('periodic_mail.user.render.' . $block . '.select', $select, $pp->schema());
@@ -606,7 +606,7 @@ class ConfigController extends AbstractController
 
                     $v_options[$block] = 'recent';
 
-                    if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                    if (isset($block_ary[$block]) && count($block_ary[$block]) > 1)
                     {
                         $select = $config_service->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
                         if ($select === 'all')

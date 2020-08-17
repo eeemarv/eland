@@ -91,6 +91,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$select = $select === 'all' ? 'all' : 'recent';
 			}
 
+			$select = $block === 'messages_self' ? 'all' : $select;
+
 			$block_options[$block] = $select;
 			$blocks_sorted[] = $block;
 		}
@@ -175,7 +177,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where m.user_id = u.id
 					and u.status IN (1, 2)
 					and m.created_at >= ?
-				order BY m.created_at DESC');
+				order by m.created_at desc');
 
 			$rs->bindValue(1, $treshold_time);
 			$rs->execute();
@@ -412,14 +414,36 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		$log_to = [];
 
-		foreach ($periodic_overview_ary as $id => $b)
+		foreach ($periodic_overview_ary as $user_id => $b)
 		{
-			$to = $this->mail_addr_user_service->get_active($id, $schema);
+			// messages_self
+
+			$vars['messages_self'] = [];
+
+			if (isset($block_options['messages_self']))
+			{
+				$rs = $this->db->prepare('select m.id,
+						m.subject, m.is_offer, m.is_want
+					from ' . $schema . '.messages m
+					where m.user_id = ?
+					order by m.created_at desc');
+
+				$rs->bindValue(1, $user_id);
+				$rs->execute();
+
+				while ($row = $rs->fetch())
+				{
+					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
+					$vars['messages_self'][] = $row;
+				}
+			}
+
+			$to = $this->mail_addr_user_service->get_active($user_id, $schema);
 
 			if (!count($to))
 			{
 				$this->logger->info('No periodic mail queued for user ' .
-				$this->account_str_render->get_with_id($id, $schema) . ' because no email address.',
+				$this->account_str_render->get_with_id($user_id, $schema) . ' because no email address.',
 				['schema' => $schema]);
 
 				continue;
@@ -430,11 +454,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',
 				'vars'				=> array_merge($vars, [
-					'user_id'		=> $id,
+					'user_id'		=> $user_id,
 				]),
 			], random_int(0, 5000));
 
-			$log_str = $this->account_str_render->get_with_id($id, $schema);
+			$log_str = $this->account_str_render->get_with_id($user_id, $schema);
 			$log_str .= ' to: ' . json_encode($to) . ' )';
 			$log_to[] = $log_str;
 		}

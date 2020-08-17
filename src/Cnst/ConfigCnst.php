@@ -52,6 +52,9 @@ class ConfigCnst
         'transactions' => [
             'recent'	=> 'Recente transacties',
         ],
+        'messages_self' => [
+            'all'       => 'Lijst eigen vraag en aanbod',
+        ],
     ];
 
     const INPUTS = [
