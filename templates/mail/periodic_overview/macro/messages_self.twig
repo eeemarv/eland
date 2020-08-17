@@ -1,0 +1,69 @@
+{%- trans_default_domain 'mail' -%}
+
+{% macro html(c) -%}
+{%- set et = c.et -%}
+<h3>
+{{- 'periodic_overview.messages_self.title'|trans -}}
+</h3>
+{% if c.messages_self %}
+<ul>
+{% for msg in c.messages_self %}
+<li>
+	{{- context_url_open('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})|raw -}}
+		{%- if msg.is_offer -%}
+			{{- 'label.offer'|trans -}}
+		{%- else -%}
+			{{- 'label.want'|trans -}}
+		{%- endif -%}:&nbsp;
+		{{ msg.subject -}}
+	</a>
+</li>
+{%- endfor -%}
+</ul>
+{%- else -%}
+<p>
+{{- 'periodic_overview.messages_self.none'|trans({
+	'%link_open%': context_url_open('messages_extended',
+		mpp_ary(c.user_id, c.schema), {}),
+	'%link_close%': '</a>'
+})|raw -}}
+</p>
+{%- endif -%}
+
+<p>
+{{- 'periodic_overview.messages_self.add'|trans({
+	'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
+	'%link_close%': '</a>'
+})|raw -}}
+</p>
+
+{%- endmacro html -%}
+
+{% macro text(c) %}
+{%- set et = c.et -%}
+{% autoescape false %}
+
+{{ 'periodic_overview.messages_self.title'|trans|underline }}
+{% if c.messages_self %}
+{% for msg in c.messages_self %}
+
+{% if msg.is_offer -%}
+	{{- 'label.offer'|trans -}}
+{%- else -%}
+	{{- 'label.want'|trans -}}
+{%- endif -%}: {{ msg.subject }} {{ context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id}) }}
+{% endfor %}
+{% else %}
+{{ 'periodic_overview.messages_self.none'|trans({
+	'%link_open%': '',
+	'%link_close%': ''
+}) }}
+{% endif %}
+
+{{- 'periodic_overview.messages_self.add'|trans({
+	'%link_open%': '',
+	'%link_close%': ''
+}) }}:
+{{ context_url('messages_add', mpp_ary(c.user_id, c.schema), {}) }}
+{% endautoescape %}
+{% endmacro text %}

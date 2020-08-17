@@ -380,7 +380,7 @@ periodic_overview:
     Je ontvangt deze E-mail omdat de optie
     'Periodieke Overzichts E-mail' aangevinkt
     staat in %link_open%je instellingen%link_close%
-  ads:
+  messages:
     title: >-
       Recent Vraag en Aanbod
     explain: >-
@@ -390,6 +390,17 @@ periodic_overview:
       Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
     add: >-
       %link_open%Geef zelf je eigen Vraag of Aanbod in%link_close%.
+  messages_self:
+    title: >-
+      Je eigen Vraag en Aanbod
+    explain: >-
+      Dit is het vraag en aanbod dat je momenteel online bebt staan.
+    explain_limit: >-
+      Dit zijn de laatste %max% berichten die je online hebt staan.
+    none: >-
+      Je hebt momenteel geen berichten online staan.
+    add: >-
+      %link_open%Geef een nieuw vraag of aanbod bericht in%link_close%
   intersystem:
     title: >-
       Recent InterSysteem Vraag en Aanbod

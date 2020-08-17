@@ -99,7 +99,7 @@ class BulkCnst
     <span class="label-text"></span>
     %label%
     </label>
-    </div>'
+    </div>
     TPL;
 
     const TPL_INLINE_NUMBER_INPUT = <<<'TPL'
