@@ -1,20 +1,20 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(intersystem, user_id, schema) -%}
-
-{%- if intersystem -%}
+{%- macro html(c) -%}
+{%- set et = c.et -%}
+{%- if c.intersystem -%}
 <h3>
 {{- 'periodic_overview.intersystem.title'|trans -}}
 </h3>
 
 <p>
 	{{- 'periodic_overview.intersystem.explain'|trans({
-		'%link_open%': context_url_open('login', mpp_anon_ary(schema), {}),
+		'%link_open%': context_url_open('login', mpp_anon_ary(c.schema), {}),
 		'%link_close%': '</a>'
 	})|raw -}}
 </p>
 
-{%- for i in intersystem -%}
+{%- for i in c.intersystem -%}
 	<h4>
 		{{- 'periodic_overview.intersystem.system_name'|trans({
 			'%name%': i.system_name ?? config('systemname', i.schema),
@@ -47,14 +47,15 @@
 
 {%- endmacro html -%}
 
-{% macro text(intersystem, user_id, schema) %}
+{% macro text(c) %}
+{%- set et = c.et -%}
 {% autoescape false %}
 
-{% if intersystem %}
+{% if c.intersystem %}
 
 {{ 'periodic_overview.intersystem.title'|trans|underline }}
 
-{% for i in intersystem %}
+{% for i in c.intersystem %}
 
 ** {{ 'periodic_overview.intersystem.system_name'|trans({
 			'%name%': i.system_name ?? config('systemname', i.schema),

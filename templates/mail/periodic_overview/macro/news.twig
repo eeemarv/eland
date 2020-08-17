@@ -1,20 +1,20 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(news, option, user_id, schema) -%}
-
+{%- macro html(c) -%}
+{%- set et = c.et -%}
 <h3>
 {{- 'periodic_overview.news.title'|trans({
-	'%link_open%': context_url_open('news_extended', mpp_ary(user_id, schema), {}),
+	'%link_open%': context_url_open('news_extended', mpp_ary(c.user_id, c.schema), {}),
 	'%link_close%': '</a>'
 })|raw -}}
 </h3>
 
-{%- if news -%}
+{%- if c.news -%}
 <ul>
-{%- for n in news -%}
+{%- for n in c.news -%}
 <li>
 <h4>
-{{- context_url_open('news_show', mpp_ary(user_id, schema), {'id': n.id})|raw -}}
+{{- context_url_open('news_show', mpp_ary(c.user_id, c.schema), {'id': n.id})|raw -}}
 {{- n.subject -}}
 </a>
 </h4>
@@ -29,14 +29,14 @@
 {%- if n.event_at -%}
 	{{- 'label.date'|trans -}}:
 	&nbsp;<strong>
-	{{ n.event_at|date_format('day', schema) }}
+	{{ n.event_at|date_format('day', c.schema) }}
 	</strong>
 	<br />
 {%- endif -%}
 {{- 'periodic_overview.news.creator'|trans({
-	'%link_open%': context_url_open('users_show', mpp_ary(user_id, schema), {'id': n.user_id}),
+	'%link_open%': context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': n.user_id}),
 	'%link_close%': '</a>',
-	'%account%': account(n.user_id, schema)
+	'%account%': account(n.user_id, c.schema)
 })|raw -}}
 </li>
 
@@ -44,7 +44,7 @@
 </ul>
 {%- else -%}
 	<p>
-	{%- if option == 'recent' -%}
+	{%- if c.block_options.news == 'recent' -%}
 		{{- 'periodic_overview.news.no_recent'|trans -}}
 	{%- else -%}
 		{{- 'periodic_overview.news.none'|trans -}}
@@ -54,15 +54,16 @@
 
 {%- endmacro html -%}
 
-{% macro text(news, option, user_id, schema) %}
+{% macro text(c) %}
+{%- set et = c.et -%}
 {% autoescape false %}
 
 {{- 'periodic_overview.news.title'|trans({
 	'%link_open%': '',
 	'%link_close%': ''
 })|underline }}
-{% if news %}
-{% for n in news %}
+{% if c.news %}
+{% for n in c.news %}
 
 {{ n.subject|underline('.') }}
 
@@ -72,17 +73,17 @@
 {{ 'label.location'|trans }}: {{ n.location }}
 {% endif %}
 {% if n.event_at %}
-{{ 'label.date'|trans }}: {{ n.event_at|date_format('day', schema) }}
+{{ 'label.date'|trans }}: {{ n.event_at|date_format('day', c.schema) }}
 {% endif %}
 {{ 'periodic_overview.news.creator'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
-	'%account%': account(n.user_id, schema)
+	'%account%': account(n.user_id, c.schema)
 }) }}
 {% endfor %}
 {% else %}
 
-{% if option == 'recent' %}
+{% if c.block_options.news == 'recent' %}
 {{ 'periodic_overview.news.no_recent'|trans }}
 {% else %}
 {{ 'periodic_overview.news.none'|trans }}

@@ -1,14 +1,14 @@
 {%- trans_default_domain 'mail' -%}
 
-{% macro html(docs) %}
-
+{%- macro html(c) -%}
+{%- set et = c.et -%}
 <h3>
 	{{- 'periodic_overview.docs.title'|trans -}}
 </h3>
 
-{%- if docs -%}
+{%- if c.docs -%}
 <ul>
-	{%- for d in docs -%}
+	{%- for d in c.docs -%}
 		<li>
 			{{- s3_link_open(d.filename)|raw -}}
 				{{- d.name -}}
@@ -24,12 +24,13 @@
 
 {%- endmacro html -%}
 
-{% macro text(docs) %}
+{% macro text(c) %}
+{%- set et = c.et -%}
 {% autoescape false %}
 
 {{ 'periodic_overview.docs.title'|trans|underline }}
 
-{% for d in docs %}
+{% for d in c.docs %}
 * {{ d.name }} {{ s3_url(d.filename) }}
 {% else %}
 {{ 'periodic_overview.docs.none'|trans }}

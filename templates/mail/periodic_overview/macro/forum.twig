@@ -1,26 +1,25 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(forum, user_id, schema) -%}
-
+{%- macro html(c) -%}
+{%- set et = c.et -%}
 	<h3>
 		{{- 'periodic_overview.forum.title'|trans -}}
 	</h3>
 
-	{%- if forum -%}
+	{%- if c.forum -%}
 	<ul>
-	{%- for f in forum -%}
+	{%- for f in c.forum -%}
 	<li>
-	{{- context_url_open('forum_topic', mpp_ary(user_id, schema), {'id': f.id})|raw -}}
+	{{- context_url_open('forum_topic', mpp_ary(c.user_id, c.schema), {'id': f.id})|raw -}}
 	{{- f.subject -}}
 	</a>
-	{#	&nbsp;[{{ msg.new_reply_count }}]  #}
 	</li>
 	{%- endfor -%}
 	</ul>
 	{%- else -%}
 	<p>
 	{{- 'periodic_overview.forum.none'|trans({
-		'%link_open%': context_url_open('forum', mpp_ary(user_id, schema), {}),
+		'%link_open%': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
 		'%link_close%': '</a>'
 	})|raw -}}
 	</p>
@@ -28,13 +27,14 @@
 
 {%- endmacro html -%}
 
-{% macro text(forum, user_id, schema) %}
+{% macro text(c) %}
+{%- set et = c.et -%}
 {% autoescape false %}
 
 {{ 'periodic_overview.forum.title'|trans|underline }}
 
-{% for f in forum %}
-* {{ f.subject }} {{ context_url('forum_topic', mpp_ary(user_id, schema), {'id': f.id}) }}
+{% for f in c.forum %}
+* {{ f.subject }} {{ context_url('forum_topic', mpp_ary(c.user_id, c.schema), {'id': f.id}) }}
 {% else %}
 {{ 'periodic_overview.forum.none'|trans({
 	'%link_open%' : '',

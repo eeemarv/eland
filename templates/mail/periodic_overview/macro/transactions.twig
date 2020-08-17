@@ -1,31 +1,31 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(transactions, user_id, schema) -%}
-
+{%- macro html(c) -%}
+{%- set et = c.et -%}
 	<h3>
-		{{- context_url_open('transactions', mpp_ary(user_id, schema), {})|raw -}}
+		{{- context_url_open('transactions', mpp_ary(c.user_id, c.schema), {})|raw -}}
 		{{- 'periodic_overview.transactions.title'|trans -}}
 		</a>
 	</h3>
 
-	{%- if transactions -%}
+	{%- if c.transactions -%}
 	<ul>
-	{%- for tr in transactions -%}
+	{%- for tr in c.transactions -%}
 		<li>
 		{{- 'periodic_overview.transactions.amount_from_to'|trans({
 			'%amount%': tr.amount,
-			'%currency%': config('currency', schema),
+			'%currency%': config('currency', c.schema),
 			'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_from,
-				'%system_name%': account(tr.id_from, schema)
-			}) : context_url_open('users_show', mpp_ary(user_id, schema), {'id': tr.id_from})
-				~ account(tr.id_from, schema)
+				'%system_name%': account(tr.id_from, c.schema)
+			}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_from})
+				~ account(tr.id_from, c.schema)
 				~ '</a>',
 			'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_to,
-				'%system_name%': account(tr.id_to, schema)
-			}) : context_url_open('users_show', mpp_ary(user_id, schema), {'id': tr.id_to})
-				~ account(tr.id_to, schema)
+				'%system_name%': account(tr.id_to, c.schema)
+			}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_to})
+				~ account(tr.id_to, c.schema)
 				~ '</a>',
 		})|raw -}}
 		<br>
@@ -41,25 +41,26 @@
 
 {%- endmacro html -%}
 
-{% macro text(transactions, user_id, schema) %}
+{% macro text(c) %}
+{%- set et = c.et -%}
 {% autoescape false %}
 
 {{ 'periodic_overview.transactions.title'|trans|underline }}
 
-{% if transactions %}
-{% for tr in transactions %}
+{% if c.transactions %}
+{% for tr in c.transactions %}
 
 * {{ 'periodic_overview.transactions.amount_from_to'|trans({
 	'%amount%': tr.amount,
-	'%currency%': config('currency', schema),
+	'%currency%': config('currency', c.schema),
 	'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
 		'%account%': tr.real_from,
-		'%system_name%': account(tr.id_from, schema)
-	}) : account(tr.id_from, schema),
+		'%system_name%': account(tr.id_from, c.schema)
+	}) : account(tr.id_from, c.schema),
 	'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
 		'%account%': tr.real_to,
-		'%system_name%': account(tr.id_to, schema)
-	}) : account(tr.id_to, schema),
+		'%system_name%': account(tr.id_to, c.schema)
+	}) : account(tr.id_to, c.schema),
 }) }}
 	{{ tr.description }}
 {% endfor %}
