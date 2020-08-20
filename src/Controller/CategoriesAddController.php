@@ -37,7 +37,6 @@ class CategoriesAddController extends AbstractController
         {
             $cat['name'] = $request->request->get('name', '');
             $cat['id_parent'] = (int) $request->request->get('id_parent', 0);
-            $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
             if (trim($cat['name']) === '')
             {
@@ -63,7 +62,7 @@ class CategoriesAddController extends AbstractController
 
                 $cat['fullname'] = '';
 
-                if ($cat['leafnote'])
+                if (isset($cat['id_parent']) && $cat['id_parent'] > 0)
                 {
                     $cat['fullname'] .= $db->fetchColumn('select name
                         from ' . $pp->schema() . '.categories
@@ -91,7 +90,8 @@ class CategoriesAddController extends AbstractController
 
         $rs = $db->prepare('select id, name
             from ' . $pp->schema() . '.categories
-            where leafnote = 0 order by name');
+            where id_parent = 0 or id_parent is null
+            order by name');
 
         $rs->execute();
 
