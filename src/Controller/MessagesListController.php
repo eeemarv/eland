@@ -209,8 +209,7 @@ class MessagesListController extends AbstractController
 
                 $test_category_id = $db->fetchColumn('select id
                     from ' . $pp->schema() . '.categories
-                    where id_parent <> 0
-                        and leafnote = 1
+                    where id_parent > 0
                         and id = ?', [$to_category_id]);
 
                 if (!$test_category_id)

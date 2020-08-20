@@ -65,7 +65,6 @@ class CategoriesEditController extends AbstractController
         {
             $cat['name'] = $request->request->get('name', '');
             $cat['id_parent'] = (int) $request->request->get('id_parent', 0);
-            $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
 
             $message_count = $db->fetchColumn('select count(*)
                 from ' . $pp->schema() . '.messages
@@ -76,13 +75,16 @@ class CategoriesEditController extends AbstractController
                 $errors[] = 'Vul naam in!';
             }
 
-            if ($message_count && !$cat['leafnote'])
+            if ($message_count
+                && (!isset($cat['id_parent']) || $cat['id_parent'] === 0))
             {
                 $errors[] = 'Hoofdcategoriën kunnen
                     geen berichten bevatten.';
             }
 
-            if ($cat['leafnote'] && $child_count_ary[$id])
+            if (isset($cat['id_parent'])
+                && $cat['id_parent'] > 0
+                && $child_count_ary[$id])
             {
                 $errors[] = 'Subcategoriën kunnen
                     geen categoriën bevatten.';
@@ -127,7 +129,7 @@ class CategoriesEditController extends AbstractController
 
         $rs = $db->prepare('select id, name
             from ' . $pp->schema() . '.categories
-            where leafnote = 0
+            where id_parent = 0 or id_parent is null
             order by name');
 
         $rs->execute();
