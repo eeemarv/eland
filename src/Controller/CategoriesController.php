@@ -9,7 +9,9 @@ use App\Service\MenuService;
 use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\AssetsService;
 use App\Service\ConfigService;
+use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -19,6 +21,8 @@ class CategoriesController extends AbstractController
     public function __invoke(
         Db $db,
         ConfigService $config_service,
+        AssetsService $assets_service,
+        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
@@ -32,48 +36,14 @@ class CategoriesController extends AbstractController
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        $cats = $db->fetchAll('select *
-            from ' . $pp->schema() . '.categories
-            order by fullname');
+        $categories = $db->fetchAll('select c.*, count(m.*)
+            from ' . $pp->schema() . '.categories c
+            left join ' . $pp->schema() . '.messages m
+            on m.category_id = c.id
+            group by c.id
+            order by c.left_id asc');
 
-        $want_count_ary = [];
-        $offer_count_ary = [];
-
-        $stmt = $db->prepare('select c.id, count(m.*)
-            from ' . $pp->schema() . '.categories c,
-                ' . $pp->schema() . '.messages m
-            where m.category_id = c.id
-                and m.is_want = \'t\'
-            group by c.id');
-
-        $stmt->execute();
-
-        while($row = $stmt->fetch())
-        {
-            $want_count_ary[$row['id']] = $row['count'];
-        }
-
-        $stmt = $db->prepare('select c.id, count(m.*)
-            from ' . $pp->schema() . '.categories c,
-                ' . $pp->schema() . '.messages m
-            where m.category_id = c.id
-                and m.is_offer = \'t\'
-            group by c.id');
-
-        $stmt->execute();
-
-        while($row = $stmt->fetch())
-        {
-            $offer_count_ary[$row['id']] = $row['count'];
-        }
-
-        $child_count_ary = [];
-
-        foreach ($cats as $cat)
-        {
-            $child_count_ary[$cat['id_parent']] ??= 0;
-            $child_count_ary[$cat['id_parent']]++;
-        }
+        $assets_service->add(['sortable', 'categories.js']);
 
         $btn_top_render->add('categories_add',
             $pp->ary(), [], 'Categorie toevoegen');
@@ -81,120 +51,95 @@ class CategoriesController extends AbstractController
         $heading_render->add('Categorieën');
         $heading_render->fa('clone');
 
-        $out = '<div class="panel panel-default printview">';
+        $out = '<form  method="post">';
+        $out .= '<div class="list-group" data-sortable data-sort-base>';
 
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-striped table-hover ';
-        $out .= 'table-bordered footable" data-sort="false">';
-        $out .= '<tr>';
-        $out .= '<thead>';
-        $out .= '<th>Categorie</th>';
-        $out .= '<th data-hide="phone">Vraag</th>';
-        $out .= '<th data-hide="phone">Aanbod</th>';
-        $out .= '<th data-hide="phone">Verwijderen</th>';
-        $out .= '</tr>';
-        $out .= '</thead>';
+        $open_div = 0;
 
-        $out .= '<tbody>';
-
-        $messages_param_ary = [
-            'f'	=> [
-                's'		=> '1',
-                'valid'	=> ['yes' => 'on', 'no' => 'on'],
-                'ustatus'	=> ['active' => 'on', 'new' => 'on', 'leaving' => 'on'],
-            ],
-        ];
-
-        foreach($cats as $cat)
+        foreach($categories as $cat)
         {
             $id = $cat['id'];
+            $level = $cat['level'];
+            $name = $cat['name'];
+            $left_id = $cat['left_id'];
+            $right_id = $cat['right_id'];
+            $count = $cat['count'];
 
-            $want_count = $want_count_ary[$id] ?? 0;
-            $offer_count = $offer_count_ary[$id] ?? 0;
-
-            $dependency_count = $want_count + $offer_count;
-
-            if (isset($child_count_ary[$id]))
+            if ($level === 1)
             {
-                $dependency_count += $child_count_ary[$id];
+                while($open_div > 0)
+                {
+                    $out .= '</div>';
+                    $open_div--;
+                }
             }
 
-            $td = [];
+            $out .= '<div class="list-group-item';
+            $out .= $level === 1 ? ' list-group-item-info' : '';
+            $out .= '"';
+            $out .= ' data-id="' . $id . '"';
+            $out .= $count === 0 ? '' : ' data-has-messages';
+            $out .= ($left_id + 1) === $right_id ? '' : ' data-has-categories';
+            $out .= '>';
+            $out .= '<strong>';
+            $out .= htmlspecialchars($name, ENT_QUOTES);
 
-            if (!$cat['id_parent'])
+            if ($count <> 0)
             {
-                $out .= '<tr class="info"><td>';
-
-                $str = '<strong>';
-                $str .= $link_render->link_no_attr('categories_edit', $pp->ary(),
-                    ['id' => $cat['id']], $cat['name']);
-                $td[] = $str . '</strong>';
-            }
-            else
-            {
-                $out .= '<tr><td>';
-                $str = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                $str .= $link_render->link_no_attr('categories_edit', $pp->ary(),
-                    ['id' => $cat['id']], $cat['name']);
-                $td[] = $str;
-            }
-
-            if ($want_count)
-            {
-                $param_ary = array_merge_recursive($messages_param_ary, [
-                    'f'	=> [
-                        'cid'	=> $cat['id'],
-                        'type'	=> [
-                            'want'	=> 'on',
-                        ],
-                    ],
-                ]);
-
-                $td[] = $link_render->link_no_attr($vr->get('messages'), $pp->ary(), $param_ary,
-                    (string) $want_count);
-            }
-            else
-            {
-                $td[] = '&nbsp;';
+                $out .= ' (';
+                $out .= $link_render->link_no_attr($vr->get('messages'),
+                    $pp->ary(), ['f' => ['cid' => $id]],
+                    (string) $count);
+                $out .= ')';
             }
 
-            if ($offer_count)
-            {
-                $param_ary = array_merge_recursive($messages_param_ary, [
-                    'f'	=> [
-                        'cid'	=> $cat['id'],
-                        'type'	=> [
-                            'offer'	=> 'on',
-                        ],
-                    ],
-                ]);
+            $out .= '</strong>';
 
-                $td[] = $link_render->link_no_attr($vr->get('messages'), $pp->ary(), $param_ary,
-                    (string) $offer_count);
-            }
-            else
-            {
-                $td[] = '&nbsp;';
-            }
+            $out .= '<div class="pull-right">';
+            $out .= $link_render->link_fa('categories_edit', $pp->ary(),
+                ['id' => $id], 'Aanpassen', ['class' => 'btn btn-primary'], 'pencil');
 
-            if (!$dependency_count)
+            if (($left_id + 1) === $right_id && $count === 0)
             {
-                $td[] = $link_render->link_fa('categories_del', $pp->ary(),
-                    ['id' => $cat['id']], 'Verwijderen',
+                $out .= '&nbsp;';
+                $out .= $link_render->link_fa('categories_del', $pp->ary(),
+                    ['id' => $id], 'Verwijderen',
                     ['class' => 'btn btn-danger'], 'times');
             }
-            else
+
+            $out .= '</div>';
+            $out .= '<div class="clearfix"></div>';
+
+            if ($count === 0)
             {
-                $td[] = '&nbsp;';
+                $out .= '<div class="list-group" data-sortable>';
+                $open_div += 2;
+                continue;
             }
 
-            $out .= implode('</td><td>', $td);
-            $out .= '</td></tr>';
+            $out .= '</div>';
         }
 
-        $out .= '</tbody>';
-        $out .= '</table>';
-        $out .= '</div></div>';
+        while ($open_div > 0)
+        {
+            $out .= '</div>';
+            $open_div--;
+        }
+
+        $out .= '</div>';
+
+        $out .= '<br/>';
+        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
+        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
+        $out .= '&nbsp;';
+        $out .= '<input type="submit" name="zend" value="Opslaan" ';
+        $out .= 'class="btn btn-primary btn-lg">';
+        $out .= '</div>';
+        $out .= '</div>';
+
+        $out .= $form_token_service->get_hidden_input();
+        $out .= '</form>';
 
         $out .= '<p><ul><li>Categorieën met berichten ';
         $out .= 'of hoofdcategorieën met subcategorieën kan je niet verwijderen.</li>';

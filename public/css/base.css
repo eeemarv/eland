@@ -923,3 +923,7 @@ element {
   content: "\f111";
   color: #ccc;
 }
+
+.list-group{
+  margin-bottom: 0;
+}
