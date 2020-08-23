@@ -9,12 +9,14 @@ use App\Service\MenuService;
 use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
+use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesController extends AbstractController
@@ -24,6 +26,7 @@ class CategoriesController extends AbstractController
         Db $db,
         ConfigService $config_service,
         AssetsService $assets_service,
+        AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -78,28 +81,114 @@ class CategoriesController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $posted_categories = $request->request->get('categories', '[]');
-            $posted = json_decode($posted_categories, true);
+            $posted_json = $request->request->get('categories', '[]');
+            $posted_categories = json_decode($posted_json, true);
 
             if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
+            $left_id = 0;
 
-            if (!count($errors))
+            foreach ($posted_categories as $base_item)
             {
-                foreach ($update_ary as $update)
+                if (!isset($base_item['id']))
                 {
+                    throw new BadRequestHttpException('Malformed request for categories input (missing id): ' . $posted_json);
+                }
 
+                $left_id++;
+                $base_id = $base_item['id'];
+                $children_count = count($base_item['children'] ?? []);
+                $right_id = $left_id + ($children_count * 2) + 1;
 
+                if ($children_count > 0 && $categories[$base_id]['count'] > 0)
+                {
+                    throw new BadRequestHttpException('A category with messages cannot contain sub-categories. id: ' . $base_id);
+                }
 
+                $update_ary[$base_id] = [
+                    'left_id'   => $left_id,
+                    'right_id'  => $right_id,
+                    'level'     => 1,
+                    'parent_id' => null,
+                ];
+
+                $left_id++;
+
+                if (isset($base_item['children']) && count($base_item['children']))
+                {
+                    foreach($base_item['children'] as $sub_item)
+                    {
+                        if (!isset($sub_item['id']))
+                        {
+                            throw new BadRequestHttpException('Malformed request for categories input (missing id): ' . $posted_json);
+                        }
+
+                        if (isset($sub_item['children']))
+                        {
+                            throw new BadRequestHttpException('A subcategory can not have subcategories. id: ' . $sub_item['id']);
+                        }
+
+                        $right_id = $left_id + 1;
+
+                        $update_ary[$sub_item['id']] = [
+                            'left_id'   => $left_id,
+                            'right_id'  => $right_id,
+                            'level'     => 2,
+                            'parent_id' => $base_id,
+                        ];
+
+                        $left_id = $right_id + 1;
+                    }
                 }
             }
 
+            $count_update_ary = count($update_ary);
+            $count_categories = count($categories);
 
+            if ($count_update_ary !== $count_categories)
+            {
+                throw new BadRequestHttpException('Mismatch number of stored and posted
+                    categories, stored: ' . $count_categories . ', update: ' . $count_update_ary);
+            }
 
+            if (!count($errors))
+            {
+                $count_updated = 0;
 
+                foreach ($update_ary as $id => $update)
+                {
+                    $stored_cat = $categories[$id];
+
+                    if ($stored_cat['level'] === $update['level']
+                        && $stored_cat['parent_id'] === $update['parent_id']
+                        && $stored_cat['left_id'] === $update['left_id']
+                        && $stored_cat['right_id'] === $update['right_id'])
+                    {
+                        continue;
+                    }
+
+                    $db->update($pp->schema() . '.categories', $update, ['id' => $id]);
+                    $count_updated++;
+                }
+
+                if ($count_updated > 0)
+                {
+                    $alert_service->success('Plaatsing categorieën aangepast.');
+                }
+                else
+                {
+                    $alert_service->warning('Geen gewijzigde plaatsing van categorieën.');
+                }
+
+                error_log('count_updated: ' . $count_updated);
+
+                $link_render->redirect('categories', $pp->ary(), []);
+            }
+
+            $alert_service->error($errors);
         }
 
         $assets_service->add(['sortable', 'categories.js']);

@@ -70,10 +70,8 @@ class CategoriesAddController extends AbstractController
                 $alert_service->success('Categorie "' . $name . '" toegevoegd.');
                 $link_render->redirect('categories', $pp->ary(), []);
             }
-            else
-            {
-                $alert_service->error($errors);
-            }
+
+            $alert_service->error($errors);
         }
 
         $heading_render->add('Categorie toevoegen');
