@@ -8,11 +8,30 @@ $(document).ready(function(){
 		new Sortable(el, {
 			group: {
 				name: 'sortable_categories',
-				put: put_en
+				pull: function (to, from, el) {
+					if (to.el.hasAttribute('data-sort-base')){
+						return true;
+					}
+					if (to.el.parentElement.parentElement.hasAttribute('data-sort-base')
+						&& $(el).find('[data-id]').length === 0){
+						return true;
+					}
+					return false;
+				}
 			},
 			animation: 150,
 			fallbackOnBody: true,
-			swapThreshold: 0.65
+			swapThreshold: 0.65,
+			onAdd: function (evt){
+				var is_base = evt.item.parentElement.hasAttribute('data-sort-base');
+				if (is_base){
+					evt.item.classList.remove('list-group-item-default');
+					evt.item.classList.add('list-group-item-info');
+				} else {
+					evt.item.classList.remove('list-group-item-info');
+					evt.item.classList.add('list-group-item-default');
+				}
+			}
 		});
 	}
 

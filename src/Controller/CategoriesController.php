@@ -128,7 +128,7 @@ class CategoriesController extends AbstractController
 
                         if (isset($sub_item['children']))
                         {
-                            throw new BadRequestHttpException('A subcategory can not have subcategories. id: ' . $sub_item['id']);
+                            throw new BadRequestHttpException('A subcategory can not have subcategories itself. id: ' . $sub_item['id']);
                         }
 
                         $right_id = $left_id + 1;
