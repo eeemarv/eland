@@ -21,7 +21,7 @@ categories_add:
 categories:
   controller: App\Controller\CategoriesController
   path: /categories
-  methods: GET
+  methods: GET|POST
 
 contact_types_del:
   controller: App\Controller\ContactTypesDelController

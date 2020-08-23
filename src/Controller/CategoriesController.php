@@ -14,11 +14,13 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesController extends AbstractController
 {
     public function __invoke(
+        Request $request,
         Db $db,
         ConfigService $config_service,
         AssetsService $assets_service,
@@ -31,17 +33,74 @@ class CategoriesController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        $errors = [];
+
         if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        $categories = $db->fetchAll('select c.*, count(m.*)
+        $categories = [];
+        $update_ary = [];
+        $stored_categories = [];
+        $base_cat_index = -1;
+
+        $stmt = $db->prepare('select c.*, count(m.*)
             from ' . $pp->schema() . '.categories c
             left join ' . $pp->schema() . '.messages m
             on m.category_id = c.id
             group by c.id
             order by c.left_id asc');
+
+        $stmt->execute();
+
+        while ($row = $stmt->fetch())
+        {
+            $id = $row['id'];
+            $level = $row['level'];
+
+            $categories[$id] = $row;
+
+            if ($level === 1)
+            {
+                $base_cat_index++;
+                $stored_categories[$base_cat_index] = ['id' => $id];
+                continue;
+            }
+
+            if (!isset($stored_categories[$base_cat_index]['children']))
+            {
+                $stored_categories[$base_cat_index]['children'] = [];
+            }
+
+            $stored_categories[$base_cat_index]['children'][] = ['id' => $id];
+        }
+
+        if ($request->isMethod('POST'))
+        {
+            $posted_categories = $request->request->get('categories', '[]');
+            $posted = json_decode($posted_categories, true);
+
+            if ($token_error = $form_token_service->get_error())
+            {
+                $errors[] = $token_error;
+            }
+
+
+            if (!count($errors))
+            {
+                foreach ($update_ary as $update)
+                {
+
+
+
+                }
+            }
+
+
+
+
+        }
 
         $assets_service->add(['sortable', 'categories.js']);
 
@@ -56,9 +115,8 @@ class CategoriesController extends AbstractController
 
         $open_div = 0;
 
-        foreach($categories as $cat)
+        foreach($categories as $id => $cat)
         {
-            $id = $cat['id'];
             $level = $cat['level'];
             $name = $cat['name'];
             $left_id = $cat['left_id'];
@@ -84,7 +142,7 @@ class CategoriesController extends AbstractController
             $out .= '<strong>';
             $out .= htmlspecialchars($name, ENT_QUOTES);
 
-            if ($count <> 0)
+            if ($count > 0)
             {
                 $out .= ' (';
                 $out .= $link_render->link_no_attr($vr->get('messages'),
@@ -137,7 +195,9 @@ class CategoriesController extends AbstractController
         $out .= 'class="btn btn-primary btn-lg">';
         $out .= '</div>';
         $out .= '</div>';
-
+        $out .= '<input type="hidden" value="';
+        $out .= htmlspecialchars(json_encode($stored_categories));
+        $out .= '" name="categories" data-categories-input>';
         $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
 

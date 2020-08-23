@@ -16,43 +16,21 @@ $(document).ready(function(){
 		});
 	}
 
-
-/*
-	$('a[data-o]').click(function(e){
-		e.preventDefault();
-		var option = $(this).data('o');
-		console.log(option);
-		var li_el = $(this).parent().parent().parent();
-		li_el.find('span.lbl').text($(this).text());
-		li_el.data('option', option);
-		li_el.attr('data-option', option);
-	});
-	*/
 	$('form[method="post"]').submit(function(event) {
 		var $base = $('[data-sort-base]');
 		function serialize($sort){
 			var ary = [];
 			$sort.children('[data-id]').each(function(){
 				var $item = $(this);
-				ary.push({
-					id: $item.data('id'),
-					children: serialiaze($item)
-				});
+				var children = serialize($item.children('[data-sortable]'));
+				var ary_item = {id: $item.data('id')};
+				if (children.length > 0){
+					ary_item.children = children;
+				}
+				ary.push(ary_item);
 			});
 			return ary;
 		}
-		.children('[data-id]').each(function(){
-			var  = [];
-			var iel = $(this);
-			blocks.push({
-				'id': iel.data('id'),
-				'children':
-			});
-			var p = ul_el.attr('data-block') + '.';
-			p  += ul_el.attr('data-option');
-			blocks.push(p);
-		});
-		$('#periodic_mail_block_ary').val(blocks.join(','));
+		$('[data-categories-input]').val(JSON.stringify(serialize($base)));
 	});
-
 });
