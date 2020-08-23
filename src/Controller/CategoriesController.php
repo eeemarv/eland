@@ -212,13 +212,10 @@ class CategoriesController extends AbstractController
             $right_id = $cat['right_id'];
             $count = $cat['count'];
 
-            if ($level === 1)
+            while($open_div > (($level - 1) * 2))
             {
-                while($open_div > 0)
-                {
-                    $out .= '</div>';
-                    $open_div--;
-                }
+                $out .= '</div>';
+                $open_div--;
             }
 
             $out .= '<div class="list-group-item';
