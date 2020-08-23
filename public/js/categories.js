@@ -1,11 +1,7 @@
 $(document).ready(function(){
 	var sortable_categories = [].slice.call(document.querySelectorAll('[data-sortable]'));
 	for (var i = 0; i < sortable_categories.length; i++) {
-		var el = sortable_categories[i];
-		var has_messages = $(el).data('has-messages');
-		var has_categories = $(el).data('has-categories');
-		var put_en = !(has_messages || has_categories);
-		new Sortable(el, {
+		new Sortable(sortable_categories[i], {
 			group: {
 				name: 'sortable_categories',
 				pull: function (to, from, el) {
@@ -31,6 +27,7 @@ $(document).ready(function(){
 					evt.item.classList.remove('list-group-item-info');
 					evt.item.classList.add('list-group-item-default');
 				}
+				$(evt.item).find('[data-del-btn').remove();
 			}
 		});
 	}

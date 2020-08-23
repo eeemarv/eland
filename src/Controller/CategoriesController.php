@@ -251,7 +251,7 @@ class CategoriesController extends AbstractController
                 $out .= '&nbsp;';
                 $out .= $link_render->link_fa('categories_del', $pp->ary(),
                     ['id' => $id], 'Verwijderen',
-                    ['class' => 'btn btn-danger'], 'times');
+                    ['class' => 'btn btn-danger', 'data-del-btn' => ''], 'times');
             }
 
             $out .= '</div>';
