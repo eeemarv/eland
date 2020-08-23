@@ -28,6 +28,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class MessagesEditController extends AbstractController
 {
@@ -277,12 +278,26 @@ class MessagesEditController extends AbstractController
                 {
                     $errors[] = 'Geieve een categorie te selecteren.';
                 }
-                else if(!$db->fetchColumn('select id
-                    from ' . $pp->schema() . '.categories
-                    where id = ?', [$category_id]))
+                else
                 {
-                    throw new BadRequestHttpException('Categorie bestaat niet!');
+                    $category = $db->fetchAssoc('select *
+                        from ' . $pp->schema() . '.categories
+                        where id = ?',
+                        [$category_id],
+                        [\PDO::PARAM_INT]
+                    );
+
+                    if (!$category)
+                    {
+                        throw new BadRequestHttpException('Category with id ' . $category_id . ' does not exist!');
+                    }
+
+                    if (($category['left_id'] + 1) !== $category['right_id'])
+                    {
+                        throw new BadRequestException('A category containing sub-categories can not contain messages. (id: ' . $category_id . ')');
+                    }
                 }
+
             }
 
             if (!$subject)
@@ -490,35 +505,38 @@ class MessagesEditController extends AbstractController
             }
         }
 
-        $cat_ary = ['' => ['name' => '']];
-
-        $rs = $db->prepare('select id, name, id_parent
-            from ' . $pp->schema() . '.categories
-            order by fullname');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
+        if ($category_enabled)
         {
-            $parent_id = $row['id_parent'] ?? null;
-
-            if ($parent_id === 0)
-            {
-                $parent_id = null;
-            }
-
-            if (isset($parent_id))
-            {
-                $cat_ary[$parent_id]['children'][$row['id']] = [
-                    'name'  => $row['name'],
-                ];
-                continue;
-            }
-
-            $cat_ary[$row['id']] = [
-                'name'          => $row['name'],
-                'children'      => [],
+            $cat_ary = [
+                '' => [
+                    'name'  => '',
+                    'count' => 0,
+                ],
             ];
+
+            $rs = $db->prepare('select c.*, count(m.*)
+                from ' . $pp->schema() . '.categories c
+                left join ' . $pp->schema() . '.messages m
+                    on m.category_id = c.id
+                group by c.id
+                order by c.left_id asc');
+
+            $rs->execute();
+
+            while ($row = $rs->fetch())
+            {
+                $cat_id = $row['id'];
+                $parent_id = $row['parent_id'];
+
+                if (isset($parent_id))
+                {
+                    $cat_ary[$parent_id]['children'][$cat_id] = $row;
+                    continue;
+                }
+
+                $cat_ary[$cat_id] = $row;
+                $cat_ary[$cat_id]['children'] = [];
+            }
         }
 
         $assets_service->add([
@@ -639,20 +657,19 @@ class MessagesEditController extends AbstractController
                         $out .= $sub_cat_id === $category_id ? ' selected' : '';
                         $out .= '>';
                         $out .= $sub_cat_data['name'];
+                        $out .= $sub_cat_data['count'] ? ' (' . $sub_cat_data['count'] . ')' : '';
                         $out .= '</option>';
                     }
                     $out .= '</optgroup>';
                     continue;
                 }
-                // Only subcategories for now
-                if ($cat_id === '')
-                {
-                    $out .= '<option value="';
-                    $out .= $cat_id;
-                    $out .= '">';
-                    $out .= $cat_data['name'];
-                    $out .= '</option>';
-                }
+
+                $out .= '<option value="';
+                $out .= $cat_id;
+                $out .= '">';
+                $out .= $cat_data['name'];
+                $out .= $cat_data['count'] ? ' (' . $cat_data['count'] . ')' : '';
+                $out .= '</option>';
             }
 
             $out .= '</select>';
