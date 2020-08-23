@@ -76,17 +76,17 @@ class MessagesListController extends AbstractController
         {
             if (count($bulk_submit) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Meer dan 1 submit.');
+                throw new BadRequestHttpException('Invalid form. More than one submit.');
             }
 
             if (count($bulk_field) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Request voor meer dan één veld.');
+                throw new BadRequestHttpException('Invalid form. More than one bulk field.');
             }
 
             if (count($bulk_verify) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
+                throw new BadRequestHttpException('Invalid form. More than one bulk verify checkbox.');
             }
 
             if ($error_token = $form_token_service->get_error())
@@ -111,18 +111,18 @@ class MessagesListController extends AbstractController
             if (isset($bulk_verify_action)
                 && $bulk_verify_action !== $bulk_submit_action)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Actie nazichtvakje klopt niet.');
+                throw new BadRequestHttpException('Invalid form. Not matching verify checkbox to bulk action.');
             }
 
             if (isset($bulk_field_action)
                 && $bulk_field_action !== $bulk_submit_action)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Actie waardeveld klopt niet.');
+                throw new BadRequestHttpException('Invalid form. Not matching field to bulk action.');
             }
 
             if (!isset($bulk_field_action))
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Waarde veld ontbreekt.');
+                throw new BadRequestHttpException('Invalid form. Missing value.');
             }
 
             $bulk_field_value = $bulk_field[$bulk_field_action];
@@ -145,7 +145,7 @@ class MessagesListController extends AbstractController
             {
                 if (!$pp->is_admin() && !$su->is_owner($row['user_id']))
                 {
-                    throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
+                    throw new AccessDeniedHttpException('You are not the owner of this message: ' .
                         $row['subject'] . ' ( ' . $row['id'] . ')');
                 }
 
@@ -154,6 +154,11 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'extend' && !count($errors))
             {
+                if (!$expires_at_enabled)
+                {
+                    throw new BadRequestHttpException('Message expiration sub-module not enabled.');
+                }
+
                 foreach ($update_msgs_ary as $id => $row)
                 {
                     $expires_at = $row['expires_at'] ?? gmdate('Y-m-d H:i:s');
@@ -182,6 +187,11 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'access' && !count($errors))
             {
+                if (!$intersytem_en)
+                {
+                    throw new BadRequestHttpException('Bulk access not enabled when intersystem functionality is not enabledd.');
+                }
+
                 $msg_update = [
                     'access'    => $bulk_field_value,
                 ];
@@ -205,16 +215,27 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'category' && !count($errors))
             {
+                if (!$category_enabled)
+                {
+                    throw new BadRequestHttpException('Categories sub-module not enabled.');
+                }
+
                 $to_category_id = (int) $bulk_field_value;
 
-                $test_category_id = $db->fetchColumn('select id
+                $test_category = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.categories
-                    where id_parent > 0
-                        and id = ?', [$to_category_id]);
+                    where id = ?',
+                    [$to_category_id],
+                    [\PDO::PARAM_INT]);
 
-                if (!$test_category_id)
+                if (!$test_category)
                 {
-                    throw new BadRequestHttpException('Ongeldig categorie id ' . $to_category_id);
+                    throw new BadRequestHttpException('Non existing category. Id: ' . $to_category_id);
+                }
+
+                if (($test_category['left_id'] + 1) !== $test_category['right_id'])
+                {
+                    throw new BadRequestHttpException('A category with sub-categories cannot contain messages. Id: ' . $to_category_id);
                 }
 
                 $msg_update = [
@@ -838,7 +859,8 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $filter_valid = isset($filter['valid'])
+        $filter_valid = $expires_at_enabled
+            && isset($filter['valid'])
             && (isset($filter['valid']['yes']) xor isset($filter['valid']['no']));
 
         if ($filter_valid)
@@ -954,12 +976,16 @@ class MessagesListController extends AbstractController
 
         $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
 
-        $query = 'select m.*, u.postcode, c.fullname
+        $query = 'select m.*, u.postcode,
+            c.name as category_name,
+            cp.name as parent_category_name
             from ' . $pp->schema() . '.messages m
             inner join ' . $pp->schema() . '.users u
                 on m.user_id = u.id
             left join ' . $pp->schema() . '.categories c
                 on m.category_id = c.id
+            left join ' . $pp->schema() . '.categories cp
+                on c.parent_id = cp.id
             where 1 = 1' . $where_sql . '
             order by ' . $params['s']['orderby'] . ' ';
 
@@ -1044,41 +1070,36 @@ class MessagesListController extends AbstractController
 
         $st = $db->executeQuery('select *
             from ' . $pp->schema() . '.categories
-            order by fullname');
+            order by left_id asc');
 
         while ($row = $st->fetch())
         {
-            $parent_id = $row['id_parent'] ?? null;
+            $cat_id = $row['id'];
+            $parent_id = $row['parent_id'];
+            $categories_filter_options[$cat_id] = isset($parent_id) ? ' . . ' : '';
+            $categories_filter_options[$cat_id] .= $row['name'];
 
-            if ($parent_id === 0)
+            $count_msgs = $cat_count_ary[$cat_id] ?? 0;
+
+            if ($count_msgs)
             {
-                $parent_id = null;
+                $categories_filter_options[$cat_id] .= ' (' . $count_msgs . ')';
             }
 
-            $categories_filter_options[$row['id']] = isset($parent_id) ? ' . . ' : '';
-            $categories_filter_options[$row['id']] .= $row['name'];
+            $categories[$cat_id] = $row['fullname'];
 
-            $count_msgs = $cat_count_ary[$row['id']] ?? 0;
-
-            if (isset($parent_id) && $count_msgs)
-            {
-                $categories_filter_options[$row['id']] .= ' (' . $count_msgs . ')';
-            }
-
-            $categories[$row['id']] = $row['fullname'];
-
-            $cat_params[$row['id']] = $cat_params_sort;
-            $cat_params[$row['id']]['f']['cid'] = $row['id'];
+            $cat_params[$cat_id] = $cat_params_sort;
+            $cat_params[$cat_id]['f']['cid'] = $cat_id;
 
             if (isset($parent_id))
             {
-                $categories_move_options[$parent_id]['children'][$row['id']] = [
+                $categories_move_options[$parent_id]['children'][$cat_id] = [
                     'name'  => $row['name'],
                 ];
             }
             else
             {
-                $categories_move_options[$row['id']] = [
+                $categories_move_options[$cat_id] = [
                     'name'          => $row['name'],
                     'children'      => [],
                 ];

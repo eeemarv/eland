@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryRepository
@@ -17,9 +16,11 @@ class CategoryRepository
 
     public function get(int $id, string $schema):array
     {
-        $category = $this->db->fetchAssoc('select *
-            from ' . $schema . '.categories
-            where id = ?', [$id], [\PDO::PARAM_INT]);
+        $category = $this->db->fetchAssoc('select c.*, cp.name as parent_name
+            from ' . $schema . '.categories c
+            left join ' . $schema . '.categories cp
+                on c.parent_id = cp.id
+            where c.id = ?', [$id], [\PDO::PARAM_INT]);
 
         if (!$category)
         {

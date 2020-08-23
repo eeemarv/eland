@@ -48,6 +48,7 @@ class MessagesDelController extends AbstractController
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+
         if ($category_enabled && isset($message['category_id']))
         {
             $category = $category_repository->get($message['category_id'], $pp->schema());
@@ -97,7 +98,20 @@ class MessagesDelController extends AbstractController
         {
             $out .= '<dt>Categorie</dt>';
             $out .= '<dd>';
-            $out .= isset($message['category_id']) ? $category['fullname'] : '** onbepaald **';
+
+            if (isset($message['category_id']))
+            {
+                $cat_name = $category['parent_name'] ?? '';
+                $cat_name .= isset($category['parent_name']) ? ' > ' : '';
+                $cat_name .= $category['name'];
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cid' => $message['category_id']]], $cat_name);
+            }
+            else
+            {
+                $out .= '<i>** onbepaald **</i>';
+            }
+
             $out .= '</dd>';
         }
 
