@@ -199,7 +199,17 @@ class CategoriesController extends AbstractController
         $heading_render->add('Categorieën');
         $heading_render->fa('clone');
 
-        $out = '<form  method="post">';
+        $out = '<p><ul>';
+        $out .= '<li>De plaats en volgorde van categorieën kan hier veranderd worden door ze te verslepen.</li>';
+        $out .= '<li>Enkel bij het klikken van de "Opslaan" knop onderaan worden wijzigingen opgeslagen.</li>';
+        $out .= '<li>Hoofdcategorieën (blauw) kunnen subcategorieën (wit) bevatten ofwel vraag en aanbod berichten, niet beide.';
+        $out .= '</li>';
+        $out .= '<li>Subcategoriën (wit) kunnen op hun beurt geen categorieën bevatten, enkel vraag en aanbod berichten.</li>';
+        $out .= '<li>Categorieën die subcategorieën of vraag en aanbod berichten bevatten kunnen niet verwijderd worden.</li>';
+        $out .= '</ul>';
+        $out .= '</p>';
+
+        $out .= '<form  method="post">';
         $out .= '<div class="list-group" data-sortable data-sort-base>';
 
         $open_div = 0;
@@ -286,11 +296,6 @@ class CategoriesController extends AbstractController
         $out .= '" name="categories" data-categories-input>';
         $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
-
-        $out .= '<p><ul><li>Categorieën met berichten ';
-        $out .= 'of hoofdcategorieën met subcategorieën kan je niet verwijderen.</li>';
-        $out .= '<li>Enkel subcategorieën kunnen berichten bevatten.</li></ul>';
-        $out .= '</p>';
 
         $menu_service->set('categories');
 

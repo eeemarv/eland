@@ -1213,7 +1213,7 @@ class MessagesListController extends AbstractController
         {
             $cat_id = $row['id'];
             $parent_id = $row['parent_id'];
-            $categories_filter_options[$cat_id] = isset($parent_id) ? ' . . ' : '';
+            $categories_filter_options[$cat_id] = isset($parent_id) ? ' . > . ' : '';
             $categories_filter_options[$cat_id] .= $row['name'];
 
             $count_msgs = $cat_count_ary[$cat_id] ?? 0;
