@@ -29,51 +29,56 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
+use Doctrine\DBAL\Types\Types;
 
 class MessagesListController extends AbstractController
 {
-    const ASC_PRESET_ARY = [
-        'asc'	=> '0',
-        'fa' 	=> 'sort',
-    ];
     const COLUMNS_DEF_ARY = [
         'offer'  => [
             'lbl'   => 'V/A',
-            'sort'  => ['m.is_offer'],
-            'asc'   => '0',
+            'sort'  => ['col' => ['m.is_offer'], 'dir' => 'desc'],
+            'enabled'   => true,
         ],
         'subject'   => [
             'lbl'   => 'Wat',
-            'sort'  => ['m.subject'],
-            'asc'   => '0',
+            'sort'  => ['col' => ['m.subject'], 'dir' => 'desc'],
+            'enabled'   => true,
         ],
         'user'  => [
             'lbl'       => 'Wie',
-            'sort'      => ['u.name'],
+            'sort'      => ['col' => ['u.name'], 'dir' => 'desc'],
             'hide'      => ['phone', 'tablet'],
-            'asc'       => '0',
+            'enabled'   => true,
         ],
         'postcode'  => [
             'lbl'   => 'Postcode',
-            'sort'  => ['u.postcode'],
+            'sort'  => ['col' => ['u.postcode'], 'dir' => 'desc'],
             'hide'  => ['phone', 'tablet'],
-            'asc'   => '0',
+            'enabled'   => true,
         ],
         'category'  => [
             'lbl'   => 'Categorie',
-            'sort'  => ['cp.name', 'c.name'],
+            'sort'  => ['col' => ['cp.name', 'c.name'], 'dir' => 'desc'],
             'hide'  => ['phone', 'tablet'],
-            'asc'   => '0',
+            'enabled'   => true,
         ],
         'expires'   => [
             'lbl'   => 'Geldig tot',
-            'sort'  => ['m.expires_at'],
+            'sort'  => ['col' => ['m.expires_at'], 'dir' => 'desc'],
             'hide'  => ['phone', 'tablet'],
-            'asc'   => '0',
+            'enabled'   => true,
+        ],
+        'created'   => [
+            'lbl'   => 'Gecreëerd',
+            'sort'  => ['col' => ['m.created_at'], 'dir' => 'desc'],
+            'hide'  => ['phone', 'tablet'],
+            'enabled'   => false,
         ],
         'access'    => [
             'lbl'   => 'Zichtbaar',
             'hide'  => ['phone', 'tablet'],
+            'sort'  => ['col' => ['m.access'], 'dir' => 'desc'],
+            'enabled'   => true,
         ],
     ];
 
@@ -347,8 +352,6 @@ class MessagesListController extends AbstractController
 
         $assets_service->add(['table_sel.js']);
 
-        $show_visibility_column = !$pp->is_guest() && $intersystems_service->get_count($pp->schema());
-
         if (!count($messages))
         {
             $out .= self::no_messages($pagination_render, $menu_service);
@@ -373,25 +376,54 @@ class MessagesListController extends AbstractController
 
         $th_params = $params;
 
-        $table_header_ary = self::get_table_header_ary($params, $show_visibility_column);
+//        $table_header_ary = self::get_table_header_ary($params, $show_visibility_column);
 
-        if (!$category_enabled)
+        $column_ary = self::COLUMNS_DEF_ARY;
+
+        if (isset($params['f']['uid']))
         {
-            unset($table_header_ary['c.fullname']);
+            unset($column_ary['user']);
+            unset($column_ary['postcode']);
+        }
+
+        if (isset($params['f']['cid']) || !$category_enabled)
+        {
+            unset($column_ary['category']);
         }
 
         if (!$expires_at_enabled)
         {
-            unset($table_header_ary['m.expires_at']);
+            unset($column_ary['expires']);
         }
 
-        foreach ($table_header_ary as $key_orderby => $data)
+        $show_visibility_column = !$pp->is_guest() && $intersystems_service->get_count($pp->schema());
+
+        if (!$show_visibility_column)
         {
+            unset($column_ary['access']);
+        }
+
+        foreach ($column_ary as $col => $data)
+        {
+            // error_log('data ' . $col . ' :: ' . json_encode($data));
+
+            if (!isset(self::COLUMNS_DEF_ARY[$col]))
+            {
+                continue;
+            }
+
+            if (!$data['enabled'])
+            {
+                continue;
+            }
+
             $out .= '<th';
 
-            if (isset($data['data_hide']))
+            if (isset($data['hide']))
             {
-                $out .= ' data-hide="' . $data['data_hide'] . '"';
+                $out .= ' data-hide="';
+                $out .= implode(',', $data['hide']);
+                $out .= '"';
             }
 
             $out .= '>';
@@ -402,13 +434,22 @@ class MessagesListController extends AbstractController
             }
             else
             {
+                $fa = 'sort';
+                $dir = $data['sort']['dir'];
+
+                if ($col === $params['s']['col'])
+                {
+                    $dir = $params['s']['dir'] === 'asc' ? 'desc' : 'asc';
+                    $fa = $params['s']['dir'] === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+
                 $th_params['s'] = [
-                    'orderby'	=> $key_orderby,
-                    'asc' 		=> $data['asc'],
+                    'col'	    => $col,
+                    'dir' 		=> $dir,
                 ];
 
                 $out .= $link_render->link_fa($vr->get('messages'), $pp->ary(),
-                    $th_params, $data['lbl'], [], $data['fa']);
+                    $th_params, $data['lbl'], [], $fa);
             }
 
             $out .= '</th>';
@@ -865,21 +906,34 @@ class MessagesListController extends AbstractController
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $is_owner = isset($filter['uid'])
-            && $su->is_owner((int) $filter['uid']);
+        $sort_col = $sort['col'] ?? 'created';
+        $sort_col = isset(self::COLUMNS_DEF_ARY[$sort_col]) ? $sort_col : 'created';
+
+        $sort_dir = $sort['dir'] ?? 'desc';
+        $sort_dir = in_array($sort_dir, ['asc', 'desc']) ? $sort_dir : 'desc';
+
+        $pag_start = $pag['start'] ?? 0;
+        $pag_limit = $pag['limit'] ?? 25;
 
         $params = [
             's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'm.created_at',
-                'asc'		=> $sort['asc'] ?? 0,
+                'col'	    => $sort_col,
+                'dir'		=> $sort_dir,
             ],
             'p'	=> [
-                'start'		=> $pag['start'] ?? 0,
-                'limit'		=> $pag['limit'] ?? 25,
+                'start'		=> $pag_start,
+                'limit'		=> $pag_limit,
             ],
         ];
 
-        $params_sql = $where_sql = $ustatus_sql = [];
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
+        $is_owner = isset($filter['uid'])
+            && $su->is_owner((int) $filter['uid']);
 
         if (isset($filter['uid'])
             && $filter['uid']
@@ -896,9 +950,11 @@ class MessagesListController extends AbstractController
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $where_sql[] = '(m.subject ilike ? or m.content ilike ?)';
-            $params_sql[] = '%' . $filter['q'] . '%';
-            $params_sql[] = '%' . $filter['q'] . '%';
+            $sql['where'][] = '(m.subject ilike ? or m.content ilike ?)';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['types'][] = \PDO::PARAM_INT;
+            $sql['types'][] = \PDO::PARAM_INT;
             $params['f']['q'] = $filter['q'];
         }
 
@@ -910,19 +966,20 @@ class MessagesListController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode]);
+                where code = ?', [$fcode], [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
-                $where_sql[] = 'u.id = ?';
-                $params_sql[] = $fuid;
+                $sql['where'][] = 'u.id = ?';
+                $sql['params'][] = $fuid;
+                $sql['types'][] = \PDO::PARAM_INT;
 
                 $fcode = $account_render->str((int) $fuid, $pp->schema());
                 $params['f']['fcode'] = $fcode;
             }
             else
             {
-                $where_sql[] = '1 = 2';
+                $sql['where'][] = '1 = 2';
             }
         }
 
@@ -934,12 +991,12 @@ class MessagesListController extends AbstractController
         {
             if (isset($filter['valid']['yes']))
             {
-                $where_sql[] = 'm.expires_at >= now()';
+                $sql['where'][] = 'm.expires_at >= now()';
                 $params['f']['valid']['yes'] = 'on';
             }
             else
             {
-                $where_sql[] = 'm.expires_at < now()';
+                $sql['where'][] = 'm.expires_at < now()';
                 $params['f']['valid']['no'] = 'on';
             }
         }
@@ -951,12 +1008,12 @@ class MessagesListController extends AbstractController
         {
             if (isset($filter['type']['want']))
             {
-                $where_sql[] = 'm.is_want = \'t\'';
+                $sql['where'][] = 'm.is_want = \'t\'';
                 $params['f']['type']['want'] = 'on';
             }
             else
             {
-                $where_sql[] = 'm.is_offer = \'t\'';
+                $sql['where'][] = 'm.is_offer = \'t\'';
                 $params['f']['type']['offer'] = 'on';
             }
         }
@@ -968,10 +1025,13 @@ class MessagesListController extends AbstractController
 
         if ($filter_ustatus)
         {
+            $ustatus_sql = [];
+
             if (isset($filter['ustatus']['new']))
             {
                 $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $new_user_treshold);
+                $sql['params'][] = \DateTimeImmutable::createFromFormat('U', (string) $new_user_treshold);
+                $sql['types'][] = Types::DATE_IMMUTABLE;
                 $params['f']['ustatus']['new'] = 'on';
             }
 
@@ -984,25 +1044,25 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['active']))
             {
                 $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $params_sql[] = gmdate('Y-m-d H:i:s', $new_user_treshold);
+                $sql['params'][] = \DateTimeImmutable::createFromFormat('U', (string) $new_user_treshold);
+                $sql['types'][] = Types::DATE_IMMUTABLE;
                 $params['f']['ustatus']['active'] = 'on';
             }
 
             if (count($ustatus_sql))
             {
-                $where_sql[] = '(' . implode(' or ', $ustatus_sql) . ')';
+                $sql['where'][] = '(' . implode(' or ', $ustatus_sql) . ')';
             }
         }
 
         if ($pp->is_guest())
         {
-            $where_sql[] = 'm.access = \'guest\'';
+            $sql['where'][] = 'm.access = \'guest\'';
         }
 
-        $where_sql[] = 'u.status in (1, 2)';
+        $sql['where'][] = 'u.status in (1, 2)';
 
-        $no_cat_where_sql = $where_sql;
-        $no_cat_params_sql = $params_sql;
+        $omit_cat_sql = $sql;
 
         if (isset($filter['cid'])
             && $filter['cid']
@@ -1010,38 +1070,45 @@ class MessagesListController extends AbstractController
         {
             if ($filter['cid'] === 'null')
             {
-                $where_sql[] = 'm.category_id is null';
+                $sql['where'][] = 'm.category_id is null';
             }
             else
             {
-                $cat_ary = [];
-
-                $st = $db->prepare('select id
+                $cat_lr = $db->fetchAssoc('select left_id, right_id
                     from ' . $pp->schema() . '.categories
-                    where id_parent = ?');
-                $st->bindValue(1, $filter['cid']);
-                $st->execute();
+                    where id = ?',
+                    [$filter['cid']],
+                    [\PDO::PARAM_INT]);
 
-                while ($row = $st->fetch())
+                if (!$cat_lr)
                 {
-                    $cat_ary[] = $row['id'];
+                    throw new BadRequestHttpException('Category not found, id:' . $filter['cid']);
                 }
 
-                if (count($cat_ary))
-                {
-                    $where_sql[] = 'm.category_id in (' . implode(', ', $cat_ary) . ')';
-                }
-                else
-                {
-                    $where_sql[] = 'm.category_id = ?';
-                    $params_sql[] = $filter['cid'];
-                }
+                $sql['where'][] = 'c.left_id >= ? and c.right_id <= ?';
+                $sql['params'][] = $cat_lr['left_id'];
+                $sql['params'][] = $cat_lr['right_id'];
+                $sql['types'][] = \PDO::PARAM_INT;
+                $sql['types'][] = \PDO::PARAM_INT;
             }
 
             $params['f']['cid'] = $filter['cid'];
         }
 
-        $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
+        $sql_where = ' and ' . implode(' and ', $sql['where']) . ' ';
+
+        $sort_ary = self::COLUMNS_DEF_ARY[$params['s']['col']]['sort'];
+        $order_query = [];
+        foreach ($sort_ary['col'] as $col)
+        {
+            $order_query[] = $col . ' ' . $params['s']['dir'];
+        }
+
+        $sql_pag = $sql;
+        $sql_pag['params'][] = $params['p']['limit'];
+        $sql_pag['types'][] = \PDO::PARAM_INT;
+        $sql_pag['params'][] = $params['p']['start'];
+        $sql_pag['types'][] = \PDO::PARAM_INT;
 
         $query = 'select m.*, u.postcode,
             c.name as category_name,
@@ -1053,16 +1120,14 @@ class MessagesListController extends AbstractController
                 on m.category_id = c.id
             left join ' . $pp->schema() . '.categories cp
                 on c.parent_id = cp.id
-            where 1 = 1' . $where_sql . '
-            order by ' . $params['s']['orderby'] . ' ';
-
-        $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
-        $query .= ' limit ' . $params['p']['limit'];
-        $query .= ' offset ' . $params['p']['start'];
+            where 1 = 1' . $sql_where . '
+            order by ' . implode(', ', $order_query) . '
+            limit ?
+            offset ?';
 
         $messages = [];
 
-        $st = $db->executeQuery($query, $params_sql);
+        $st = $db->executeQuery($query, $sql_pag['params'], $sql_pag['types']);
 
         while ($msg = $st->fetch())
         {
@@ -1072,7 +1137,7 @@ class MessagesListController extends AbstractController
             $messages[] = $msg;
         }
 
-        $no_cat_where_sql = ' and ' . implode(' and ', $no_cat_where_sql) . ' ';
+        $omit_cat_sql_where = ' and ' . implode(' and ', $omit_cat_sql['where']) . ' ';
 
         $cat_count_ary = [];
         $no_cat_count = 0;
@@ -1081,10 +1146,11 @@ class MessagesListController extends AbstractController
             from ' . $pp->schema() . '.messages m, ' .
                 $pp->schema() . '.users u
             where m.user_id = u.id
-                ' . $no_cat_where_sql . '
+                ' . $omit_cat_sql_where . '
             group by m.category_id';
 
-        $st = $db->executeQuery($cat_count_query, $no_cat_params_sql);
+        $st = $db->executeQuery($cat_count_query,
+            $omit_cat_sql['params'], $omit_cat_sql['types']);
 
         while($row = $st->fetch())
         {
@@ -1102,9 +1168,13 @@ class MessagesListController extends AbstractController
             && $category_enabled)
         {
             $row_count = $db->fetchColumn('select count(m.*)
-                from ' . $pp->schema() . '.messages m, ' .
-                    $pp->schema() . '.users u
-                where m.user_id = u.id ' . $where_sql, $params_sql);
+                from ' . $pp->schema() . '.messages m
+                inner join ' . $pp->schema() . '.users u
+                    on m.user_id = u.id
+                left join ' . $pp->schema() . '.categories c
+                    on c.id = m.category_id
+                where 1 = 1'. $sql_where,
+                $sql['params'], 0, $sql['types']);
         }
         else
         {
@@ -1130,7 +1200,7 @@ class MessagesListController extends AbstractController
 
         $cat_params_sort = $params;
 
-        if ($params['s']['orderby'] === 'c.fullname')
+        if ($params['s']['col'] === 'category')
         {
             unset($cat_params_sort['s']);
         }
