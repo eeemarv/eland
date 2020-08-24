@@ -654,7 +654,7 @@ class MessagesEditController extends AbstractController
                         $out .= '<option value="';
                         $out .= $sub_cat_id;
                         $out .= '"';
-                        $out .= $sub_cat_id === $category_id ? ' selected' : '';
+                        $out .= $sub_cat_id === $category_id ? '  selected' : '';
                         $out .= '>';
                         $out .= $sub_cat_data['name'];
                         $out .= $sub_cat_data['count'] ? ' (' . $sub_cat_data['count'] . ')' : '';
@@ -666,7 +666,9 @@ class MessagesEditController extends AbstractController
 
                 $out .= '<option value="';
                 $out .= $cat_id;
-                $out .= '">';
+                $out .= '"';
+                $out .= $cat_id === $category_id ? ' selected' : '';
+                $out .= '>';
                 $out .= $cat_data['name'];
                 $out .= $cat_data['count'] ? ' (' . $cat_data['count'] . ')' : '';
                 $out .= '</option>';

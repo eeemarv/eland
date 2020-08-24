@@ -32,6 +32,51 @@ use App\Service\VarRouteService;
 
 class MessagesListController extends AbstractController
 {
+    const ASC_PRESET_ARY = [
+        'asc'	=> '0',
+        'fa' 	=> 'sort',
+    ];
+    const COLUMNS_DEF_ARY = [
+        'offer'  => [
+            'lbl'   => 'V/A',
+            'sort'  => ['m.is_offer'],
+            'asc'   => '0',
+        ],
+        'subject'   => [
+            'lbl'   => 'Wat',
+            'sort'  => ['m.subject'],
+            'asc'   => '0',
+        ],
+        'user'  => [
+            'lbl'       => 'Wie',
+            'sort'      => ['u.name'],
+            'hide'      => ['phone', 'tablet'],
+            'asc'       => '0',
+        ],
+        'postcode'  => [
+            'lbl'   => 'Postcode',
+            'sort'  => ['u.postcode'],
+            'hide'  => ['phone', 'tablet'],
+            'asc'   => '0',
+        ],
+        'category'  => [
+            'lbl'   => 'Categorie',
+            'sort'  => ['cp.name', 'c.name'],
+            'hide'  => ['phone', 'tablet'],
+            'asc'   => '0',
+        ],
+        'expires'   => [
+            'lbl'   => 'Geldig tot',
+            'sort'  => ['m.expires_at'],
+            'hide'  => ['phone', 'tablet'],
+            'asc'   => '0',
+        ],
+        'access'    => [
+            'lbl'   => 'Zichtbaar',
+            'hide'  => ['phone', 'tablet'],
+        ],
+    ];
+
     public function __invoke(
         Request $request,
         Db $db,
@@ -506,15 +551,12 @@ class MessagesListController extends AbstractController
                     $cat_options .= '</optgroup>';
                     continue;
                 }
-                // Only subcategories for now
-                if ($cat_id === '')
-                {
-                    $cat_options .= '<option value="';
-                    $cat_options .= $cat_id;
-                    $cat_options .= '">';
-                    $cat_options .= $cat_data['name'];
-                    $cat_options .= '</option>';
-                }
+
+                $cat_options .= '<option value="';
+                $cat_options .= $cat_id;
+                $cat_options .= '">';
+                $cat_options .= $cat_data['name'];
+                $cat_options .= '</option>';
             }
 
             $out .= BulkCnst::TPL_SELECT_BUTTONS;
@@ -708,6 +750,31 @@ class MessagesListController extends AbstractController
         bool $show_visibility_column
     ):array
     {
+        $column_ary = self::COLUMNS_DEF_ARY;
+
+        if (isset($params['f']['uid']))
+        {
+            unset($column_ary['user']);
+            unset($column_ary['postcode']);
+        }
+
+        if (isset($params['f']['cid']))
+        {
+            unset($column_ary['category']);
+        }
+
+        if (!$show_visibility_column)
+        {
+            unset($column_ary['access']);
+        }
+
+        foreach($column_ary as $key => $column)
+        {
+            $column_ary[$key] = array_merge(self::ASC_PRESET_ARY, $column);
+        }
+
+
+
         $asc_preset_ary = [
             'asc'	=> '0',
             'fa' 	=> 'sort',

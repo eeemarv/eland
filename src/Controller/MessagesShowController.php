@@ -306,8 +306,12 @@ class MessagesShowController extends AbstractController
 
             if (isset($category))
             {
+                $cat_name = $category['parent_name'] ?? '';
+                $cat_name .= isset($category['parent_name']) ? ' > ' : '';
+                $cat_name .= $category['name'];
+
                 $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    ['f' => ['cid' => $category['id']]], $category['fullname']);
+                    ['f' => ['cid' => $category['id']]], $cat_name);
             }
             else
             {
