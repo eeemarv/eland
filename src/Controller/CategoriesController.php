@@ -200,12 +200,12 @@ class CategoriesController extends AbstractController
         $heading_render->fa('clone');
 
         $out = '<p><ul>';
-        $out .= '<li>De plaats en volgorde van categorieën kan hier veranderd worden door ze te verslepen.</li>';
-        $out .= '<li>Enkel bij het klikken van de "Opslaan" knop onderaan worden wijzigingen opgeslagen.</li>';
+        $out .= '<li>Versleep categorieën om plaats en volgorde te veranderen..</li>';
+        $out .= '<li>Wijzigingen worden enkel opgeslagen na het klikken van de "Opslaan" knop onderaan.</li>';
         $out .= '<li>Hoofdcategorieën (blauw) kunnen subcategorieën (wit) bevatten ofwel vraag en aanbod berichten, niet beide.';
         $out .= '</li>';
-        $out .= '<li>Subcategoriën (wit) kunnen op hun beurt geen categorieën bevatten, enkel vraag en aanbod berichten.</li>';
-        $out .= '<li>Categorieën die subcategorieën of vraag en aanbod berichten bevatten kunnen niet verwijderd worden.</li>';
+        $out .= '<li>Subcategoriën (wit) kunnen enkel vraag en aanbod berichten bevatten, geen categorieën.</li>';
+        $out .= '<li>Enkel lege categorieën (zonder subcategorieën of vraag en aanbod) kunnen verwijderd worden.</li>';
         $out .= '</ul>';
         $out .= '</p>';
 

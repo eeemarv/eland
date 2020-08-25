@@ -303,6 +303,7 @@ class MessagesShowController extends AbstractController
         if ($category_enabled)
         {
             $out .= '<p>Categorie: ';
+            $out .= '<strong><i>';
 
             if (isset($category))
             {
@@ -315,9 +316,11 @@ class MessagesShowController extends AbstractController
             }
             else
             {
-                $out .= '<span class="text-danger"><strong><i> ** onbepaald ** </i></strong></span>';
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cid' => 'null']], '** zonder categorie **');
             }
 
+            $out .= '</i></strong>';
             $out .= '</p>';
         }
 

@@ -215,7 +215,7 @@ class MessagesListController extends AbstractController
                     $expires_at = gmdate('Y-m-d H:i:s', strtotime($expires_at . ' UTC') + (86400 * (int) $bulk_field_value));
 
                     $msg_update = [
-                        'expires_at'		=> $expires_at,
+                        'expires_at'    => $expires_at,
                         'exp_user_warn'	=> 'f',
                     ];
 
@@ -403,8 +403,6 @@ class MessagesListController extends AbstractController
 
         foreach ($column_ary as $col => $data)
         {
-            // error_log('data ' . $col . ' :: ' . json_encode($data));
-
             if (!isset(self::COLUMNS_DEF_ARY[$col]))
             {
                 continue;
@@ -508,16 +506,9 @@ class MessagesListController extends AbstractController
             {
                 $out .= '<td>';
 
-                if (isset($msg['category_id']))
-                {
-                    $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                        $cat_params[$msg['category_id']],
-                        $categories[$msg['category_id']]);
-                }
-                else
-                {
-                    $out .= '** onbepaald **';
-                }
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    $cat_params[$msg['category_id'] ?? 'null'],
+                    $categories[$msg['category_id'] ?? 'null']);
 
                 $out .= '</td>';
             }
@@ -1099,13 +1090,21 @@ class MessagesListController extends AbstractController
 
         $categories = [];
         $cat_params  = [];
-
         $cat_params_sort = $params;
+
+        if ($no_cat_count)
+        {
+            $categories['null'] = '** zonder categorie **';
+            $cat_params['null'] = $cat_params_sort;
+            $cat_params['null']['f']['cid'] = 'null';
+        }
 
         if ($params['s']['col'] === 'category')
         {
             unset($cat_params_sort['s']);
         }
+
+        $parent_name = '***';
 
         $st = $db->executeQuery('select *
             from ' . $pp->schema() . '.categories
