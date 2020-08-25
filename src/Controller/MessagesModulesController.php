@@ -99,6 +99,10 @@ class MessagesModulesController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
+        $out .= '<ul>';
+        $out .= '<li>Noot: Uitgeschakelde submodules blijven hun data behouden.</li>';
+        $out .= '</ul>';
+
         $menu_service->set('messages_modules');
 
         return $this->render('base/navbar.html.twig', [

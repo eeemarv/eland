@@ -376,8 +376,6 @@ class MessagesListController extends AbstractController
 
         $th_params = $params;
 
-//        $table_header_ary = self::get_table_header_ary($params, $show_visibility_column);
-
         $column_ary = self::COLUMNS_DEF_ARY;
 
         if (isset($params['f']['uid']))
@@ -786,99 +784,6 @@ class MessagesListController extends AbstractController
             $params, 'Lijst met omschrijvingen', 'th-list', $view === 'extended');
     }
 
-    public static function get_table_header_ary(
-        array $params,
-        bool $show_visibility_column
-    ):array
-    {
-        $column_ary = self::COLUMNS_DEF_ARY;
-
-        if (isset($params['f']['uid']))
-        {
-            unset($column_ary['user']);
-            unset($column_ary['postcode']);
-        }
-
-        if (isset($params['f']['cid']))
-        {
-            unset($column_ary['category']);
-        }
-
-        if (!$show_visibility_column)
-        {
-            unset($column_ary['access']);
-        }
-
-        foreach($column_ary as $key => $column)
-        {
-            $column_ary[$key] = array_merge(self::ASC_PRESET_ARY, $column);
-        }
-
-
-
-        $asc_preset_ary = [
-            'asc'	=> '0',
-            'fa' 	=> 'sort',
-        ];
-
-        $table_header_ary = [
-            'm.is_offer' => array_merge($asc_preset_ary, [
-                'lbl' => 'V/A']),
-            'm.subject' => array_merge($asc_preset_ary, [
-                'lbl' => 'Wat']),
-        ];
-
-        if (!isset($params['f']['uid']))
-        {
-            $table_header_ary += [
-                'u.name'	=> array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Wie',
-                    'data_hide' => 'phone,tablet',
-                ]),
-                'u.postcode'	=> array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Postcode',
-                    'data_hide'	=> 'phone,tablet',
-                ]),
-            ];
-        }
-
-        if (!($params['f']['cid'] ?? false))
-        {
-            $table_header_ary += [
-                'c.fullname' => array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Categorie',
-                    'data_hide'	=> 'phone, tablet',
-                ]),
-            ];
-        }
-
-        $table_header_ary += [
-            'm.expires_at' => array_merge($asc_preset_ary, [
-                'lbl' 	=> 'Geldig tot',
-                'data_hide'	=> 'phone, tablet',
-            ]),
-        ];
-
-        if ($show_visibility_column)
-        {
-            $table_header_ary += [
-                'm.access' => array_merge($asc_preset_ary, [
-                    'lbl' 	=> 'Zichtbaarheid',
-                    'data_hide'	=> 'phone, tablet',
-                ]),
-            ];
-        }
-
-        $table_header_ary[$params['s']['orderby']]['asc']
-            = $params['s']['asc'] ? '0' : '1';
-        $table_header_ary[$params['s']['orderby']]['fa']
-            = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
-
-        unset($table_header_ary['m.created_at']);
-
-        return $table_header_ary;
-    }
-
     public static function fetch_and_filter(
         Request $request,
         Db $db,
@@ -1110,9 +1015,7 @@ class MessagesListController extends AbstractController
         $sql_pag['params'][] = $params['p']['start'];
         $sql_pag['types'][] = \PDO::PARAM_INT;
 
-        $query = 'select m.*, u.postcode,
-            c.name as category_name,
-            cp.name as parent_category_name
+        $query = 'select m.*, u.postcode
             from ' . $pp->schema() . '.messages m
             inner join ' . $pp->schema() . '.users u
                 on m.user_id = u.id
@@ -1122,8 +1025,7 @@ class MessagesListController extends AbstractController
                 on c.parent_id = cp.id
             where 1 = 1' . $sql_where . '
             order by ' . implode(', ', $order_query) . '
-            limit ?
-            offset ?';
+            limit ? offset ?';
 
         $messages = [];
 
@@ -1213,17 +1115,14 @@ class MessagesListController extends AbstractController
         {
             $cat_id = $row['id'];
             $parent_id = $row['parent_id'];
-            $categories_filter_options[$cat_id] = isset($parent_id) ? ' . > . ' : '';
-            $categories_filter_options[$cat_id] .= $row['name'];
-
-            $count_msgs = $cat_count_ary[$cat_id] ?? 0;
-
-            if ($count_msgs)
-            {
-                $categories_filter_options[$cat_id] .= ' (' . $count_msgs . ')';
-            }
-
-            $categories[$cat_id] = $row['fullname'];
+            $name = $row['name'];
+            $parent_name = isset($parent_id) ? $parent_name : $name;
+            $cat_ident = isset($parent_id) ? ' . > . ' : '';
+            $count_str = isset($cat_count_ary[$cat_id]) ? ' (' . $cat_count_ary[$cat_id] . ')' : '';
+            $categories_filter_options[$cat_id] = $cat_ident . $name . $count_str;
+            $full_name = isset($parent_id) ? $parent_name . ' > ' : '';
+            $full_name .= $name;
+            $categories[$cat_id] = $full_name;
 
             $cat_params[$cat_id] = $cat_params_sort;
             $cat_params[$cat_id]['f']['cid'] = $cat_id;
@@ -1231,13 +1130,13 @@ class MessagesListController extends AbstractController
             if (isset($parent_id))
             {
                 $categories_move_options[$parent_id]['children'][$cat_id] = [
-                    'name'  => $row['name'],
+                    'name'  => $name . $count_str,
                 ];
             }
             else
             {
                 $categories_move_options[$cat_id] = [
-                    'name'          => $row['name'],
+                    'name'          => $name . $count_str,
                     'children'      => [],
                 ];
             }
