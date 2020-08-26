@@ -177,8 +177,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
 				where m.user_id = u.id
-					and u.status IN (1, 2)
+					and u.status in (1, 2)
 					and m.created_at >= ?
+					and (m.expires_at >= timezone(\'utc\', now())
+						or m.expires_at is null)
 				order by m.created_at desc');
 
 			$rs->bindValue(1, $treshold_time);
@@ -223,6 +225,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						and m.access = \'guest\'
 						and u.status in (1, 2)
 						and m.created_at >= ?
+						and (m.expires_at >= timezone(\'utc\', now())
+							or m.expires_at is null)
 					order by m.created_at desc');
 
 				$rs->bindValue(1, $treshold_time);
@@ -416,6 +420,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		foreach ($periodic_overview_ary as $user_id => $b)
 		{
+			$vars['user_id'] = $user_id;
+
 			// messages_self
 
 			$vars['messages_self'] = [];
@@ -423,7 +429,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			if (isset($block_options['messages_self']))
 			{
 				$rs = $this->db->prepare('select m.id,
-						m.subject, m.is_offer, m.is_want
+						m.subject, m.is_offer, m.is_want,
+						m.expires_at, m.created_at
 					from ' . $schema . '.messages m
 					where m.user_id = ?
 					order by m.created_at desc');
@@ -453,9 +460,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				'schema'			=> $schema,
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',
-				'vars'				=> array_merge($vars, [
-					'user_id'		=> $user_id,
-				]),
+				'vars'				=> $vars,
 			], random_int(0, 5000));
 
 			$log_str = $this->account_str_render->get_with_id($user_id, $schema);

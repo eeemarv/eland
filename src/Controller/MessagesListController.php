@@ -887,12 +887,12 @@ class MessagesListController extends AbstractController
         {
             if (isset($filter['valid']['yes']))
             {
-                $sql['where'][] = 'm.expires_at >= now()';
+                $sql['where'][] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
                 $params['f']['valid']['yes'] = 'on';
             }
             else
             {
-                $sql['where'][] = 'm.expires_at < now()';
+                $sql['where'][] = 'm.expires_at < timezone(\'utc\', now())';
                 $params['f']['valid']['no'] = 'on';
             }
         }
