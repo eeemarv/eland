@@ -76,10 +76,13 @@ class CategoriesDelController extends AbstractController
             if (!count($errors))
             {
                 $db->beginTransaction();
-                $db->delete($pp->schema() . '.categories', ['id' => $id]);
                 $db->executeUpdate('update ' . $pp->schema() . '.categories
-                    set left_id = left_id - 2,  right_id = right_id - 2
-                    where left_id > ?', [$right_id], [\PDO::PARAM_INT]);
+                    set left_id = left_id - 2
+                    where left_id > ?', [$left_id], [\PDO::PARAM_INT]);
+                $db->executeUpdate('update ' . $pp->schema() . '.categories
+                    set right_id = right_id - 2
+                    where right_id > ?', [$right_id], [\PDO::PARAM_INT]);
+                $db->delete($pp->schema() . '.categories', ['id' => $id]);
                 $db->commit();
                 $alert_service->success('Categorie "' . $name . '" verwijderd.');
                 $link_render->redirect('categories', $pp->ary(), []);
