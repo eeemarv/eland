@@ -746,16 +746,11 @@ class MessagesListController extends AbstractController
 
         foreach ($checkbox_ary as $key => $label)
         {
-            $id = 'f_' . $filter_id . '_' . $key;
-            $out .= '<label class="checkbox-inline" for="' . $id . '">';
-            $out .= '<input type="checkbox" id="' . $id . '" ';
-            $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
-            $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                '%name%'    => 'f[' . $filter_id . '][' . $key . ']',
+                '%attr%'    => isset($filter_ary[$filter_id][$key]) ? ' checked' : '',
+                '%label%'   => $label,
+            ]);
         }
 
         return $out;
@@ -1267,7 +1262,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
         $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
 
@@ -1286,7 +1281,7 @@ class MessagesListController extends AbstractController
             ];
 
             $out .= '<div class="col-md-12">';
-            $out .= '<div class="input-group margin-bottom">';
+            $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
             $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
 
@@ -1304,7 +1299,7 @@ class MessagesListController extends AbstractController
         ];
 
         $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
         $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
 
