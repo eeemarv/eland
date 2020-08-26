@@ -857,7 +857,7 @@ class MessagesListController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode], [\PDO::PARAM_STR]);
+                where code = ?', [$fcode], 0, [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
