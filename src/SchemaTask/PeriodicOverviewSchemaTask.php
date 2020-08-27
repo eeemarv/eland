@@ -55,6 +55,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 	public function run(string $schema, bool $update):void
 	{
 		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+		$treshold_time_unix = time() - ($days * 86400);
 		$treshold_time = gmdate('Y-m-d H:i:s', time() - ($days * 86400));
 
 		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
@@ -289,6 +290,12 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.users u
 				where u.status = 1
 					and u.adate > ?');
+
+/*
+			$time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('newuserdays', $schema) * 86400);
+			$time = ($block_options['new_users'] === 'recent') ? $treshold_time: $time;
+*/
+
 
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 

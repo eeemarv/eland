@@ -395,8 +395,9 @@ periodic_overview:
       Je eigen Vraag en Aanbod
     explain: >-
       Dit is het vraag en aanbod dat je momenteel online bebt staan.
-    explain_limit: >-
-      Dit zijn de laatste %max% berichten die je online hebt staan.
+    explain_max: >-
+      Dit zijn de %max% meest recente vraag en aanbod
+      berichten die je online hebt geplaatst.
     none: >-
       Je hebt momenteel geen berichten online staan.
     add: >-

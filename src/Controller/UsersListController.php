@@ -35,6 +35,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -87,6 +88,8 @@ class UsersListController extends AbstractController
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
         $bulk_submit = $request->request->get('bulk_submit', []);
+
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         /**
          * Begin bulk POST
@@ -492,13 +495,20 @@ class UsersListController extends AbstractController
          * End bulk POST
          */
 
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
         $status_def_ary = self::get_status_def_ary($config_service, $pp);
 
-        $sql_bind = [];
-
-        if (isset($status_def_ary[$status]['sql_bind']))
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
-            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
+            foreach ($def_sql_ary as $def_val)
+            {
+                $sql[$st_def_key][] = $def_val;
+            }
         }
 
         $params = ['status'	=> $status];
@@ -637,10 +647,12 @@ class UsersListController extends AbstractController
 
         $users = [];
 
+        $sql_where = ' and ' . implode(' and ', $sql['where']);
+
         $stmt = $db->executeQuery('select u.*
             from ' . $pp->schema() . '.users u
-            where ' . $status_def_ary[$status]['sql'] . '
-            order by u.code asc', $sql_bind);
+            where 1 = 1 ' . $sql_where . '
+            order by u.code asc', $sql['params'], $sql['types']);
 
         while($row = $stmt->fetch())
         {
@@ -723,7 +735,7 @@ class UsersListController extends AbstractController
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.user_id = u.id
-                    and ' . $status_def_ary[$status]['sql'], $sql_bind);
+                    and ' . $sql_where, $sql['params'], $sql['types']);
 
             $contacts = [];
 
@@ -771,8 +783,8 @@ class UsersListController extends AbstractController
                         $pp->schema() . '.users u
                     where m.is_offer = \'t\'
                         and m.user_id = u.id
-                        and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.user_id', $sql_bind);
+                        and 1 = 1 ' . $sql_where . '
+                    group by m.user_id', $sql['params'], $sql['types']);
 
                 foreach ($ary as $a)
                 {
@@ -787,8 +799,8 @@ class UsersListController extends AbstractController
                         $pp->schema() . '.users u
                     where m.is_want = \'t\'
                         and m.user_id = u.id
-                        and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.user_id', $sql_bind);
+                        and 1 = 1 ' . $sql_where . '
+                    group by m.user_id', $sql['params'], $sql['types']);
 
                 foreach ($ary as $a)
                 {
@@ -802,8 +814,8 @@ class UsersListController extends AbstractController
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.user_id = u.id
-                        and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.user_id', $sql_bind);
+                        and 1 = 1 ' . $sql_where . '
+                    group by m.user_id', $sql['params'], $sql['types']);
 
                 foreach ($ary as $a)
                 {
@@ -1245,7 +1257,7 @@ class UsersListController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] === 1
-                && $config_service->get_new_user_treshold($pp->schema()) < strtotime($u['adate']))
+                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
             {
                 $row_stat = 3;
             }
@@ -1691,19 +1703,30 @@ class UsersListController extends AbstractController
         $status_def_ary = [
             'active'	=> [
                 'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
-                'sql'	=> 'u.status in (1, 2)',
+                'sql'	=> [
+                    'where'     => ['u.status in (1, 2)'],
+                    'params'    => [],
+                    'types'     => [],
+                ],
                 'st'	=> [1, 2],
             ],
             'new'		=> [
                 'lbl'	=> 'Instappers',
-                'sql'	=> 'u.status = 1 and u.adate > ?',
-                'sql_bind'	=> gmdate('Y-m-d H:i:s', $new_user_treshold),
+                'sql'	=> [
+                    'where'     => ['u.status = 1 and u.adate > ?'],
+                    'params'    => [$new_user_treshold],
+                    'types'     => [Types::DATE_IMMUTABLE],
+                ],
                 'cl'	=> 'success',
                 'st'	=> 3,
             ],
             'leaving'	=> [
                 'lbl'	=> 'Uitstappers',
-                'sql'	=> 'u.status = 2',
+                'sql'	=> [
+                    'where'     => ['u.status = 2'],
+                    'params'    => [],
+                    'types'     => [],
+                ],
                 'cl'	=> 'danger',
                 'st'	=> 2,
             ],
@@ -1714,31 +1737,51 @@ class UsersListController extends AbstractController
             $status_def_ary = $status_def_ary + [
                 'inactive'	=> [
                     'lbl'	=> 'Inactief',
-                    'sql'	=> 'u.status = 0',
+                    'sql'	=> [
+                        'where'     => ['u.status = 0'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'cl'	=> 'inactive',
                     'st'	=> 0,
                 ],
                 'ip'		=> [
                     'lbl'	=> 'Info-pakket',
-                    'sql'	=> 'u.status = 5',
+                    'sql'	=> [
+                        'where'     => ['u.status = 5'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'cl'	=> 'warning',
                     'st'	=> 5,
                 ],
                 'im'		=> [
                     'lbl'	=> 'Info-moment',
-                    'sql'	=> 'u.status = 6',
+                    'sql'	=> [
+                        'where'     => ['u.status = 6'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'cl'	=> 'info',
                     'st'	=> 6
                 ],
                 'extern'	=> [
                     'lbl'	=> 'Extern',
-                    'sql'	=> 'u.status = 7',
+                    'sql'	=> [
+                        'where'     => ['u.status = 7'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'cl'	=> 'extern',
                     'st'	=> 7,
                 ],
                 'all'		=> [
                     'lbl'	=> 'Alle',
-                    'sql'	=> '1 = 1',
+                    'sql'	=> [
+                        'where'     => ['1 = 1'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                 ],
             ];
         }
@@ -1756,6 +1799,8 @@ class UsersListController extends AbstractController
         VarRouteService $vr
     ):string
     {
+        $status_def_ary = self::get_status_def_ary($config_service, $pp);
+
         $out = '';
 
         $out .= '<form method="get">';
@@ -1803,7 +1848,7 @@ class UsersListController extends AbstractController
 
         $nav_params = $params;
 
-        foreach (self::get_status_def_ary($config_service, $pp) as $k => $tab)
+        foreach ($status_def_ary as $k => $tab)
         {
             $nav_params['status'] = $k;
 

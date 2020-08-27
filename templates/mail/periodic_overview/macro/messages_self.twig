@@ -5,9 +5,16 @@
 <h3>
 {{- 'periodic_overview.messages_self.title'|trans -}}
 </h3>
-{% if c.messages_self %}
+{%- if c.messages_self -%}
+<p>
+{%- if c.messages_self|length > config_int('periodic_mail.render.messages_self.max', c.schema) -%}
+{{- 'periodic_overview.messages_self.max'|trans({
+	'%max%' : config_int('periodic_mail.render.messages_self.max', c.schema)
+}) -}}
+{%- endif -%}
+</p>
 <ul>
-{% for msg in c.messages_self %}
+{%- for msg in c.messages_self -%}
 <li>
 	{{- context_url_open('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})|raw -}}
 		{%- if msg.is_offer -%}
@@ -15,7 +22,7 @@
 		{%- else -%}
 			{{- 'label.want'|trans -}}
 		{%- endif -%}:&nbsp;
-		{{ msg.subject -}}
+		{{- msg.subject -}}
 	</a>
 </li>
 {%- endfor -%}
@@ -45,6 +52,11 @@
 
 {{ 'periodic_overview.messages_self.title'|trans|underline }}
 {% if c.messages_self %}
+{% if c.messages_self|length > config_int('periodic_mail.render.messages_self.max', c.schema) %}
+{{ 'periodic_overview.messages_self.max'|trans({
+	'%max%' : config_int('periodic_mail.render.messages_self.max', c.schema)
+}) }}
+{% endif %}
 {% for msg in c.messages_self %}
 
 {% if msg.is_offer -%}
