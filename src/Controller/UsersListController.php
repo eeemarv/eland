@@ -1282,7 +1282,7 @@ class UsersListController extends AbstractController
                 foreach ($show_columns['u'] as $key => $one)
                 {
                     $out .= '<td';
-                    $out .= isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
+                    $out .= isset($date_keys[$key]) && isset($u[$key]) ? ' data-value="' . $u[$key] . '"' : '';
                     $out .= '>';
 
                     $td = '';
@@ -1301,7 +1301,7 @@ class UsersListController extends AbstractController
                     }
                     else if (isset($date_keys[$key]))
                     {
-                        if ($u[$key])
+                        if (isset($u[$key]) && $u[$key])
                         {
                             $td .= $date_format_service->get($u[$key], 'day', $pp->schema());
                         }
