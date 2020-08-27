@@ -123,7 +123,7 @@ class ContactsAdminController extends AbstractController
                 case 'new':
                     $sql['where'][]= 'u.adate > ? and u.status = 1';
                     $sql['params'][]= $config_service->get_new_user_treshold($pp->schema());
-                    $sql['types'][]= Types::DATE_IMMUTABLE;
+                    $sql['types'][]= Types::DATETIME_IMMUTABLE;
                     break;
                 case 'leaving':
                     $sql['where'][]= 'u.status = 2';

@@ -44,11 +44,7 @@ class MessagesExtendedController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
-        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $fetch_and_filter = MessagesListController::fetch_and_filter(
             $request,

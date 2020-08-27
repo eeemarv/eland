@@ -789,7 +789,6 @@ class MessagesListController extends AbstractController
     {
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
@@ -921,8 +920,8 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['new']))
             {
                 $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $sql['params'][] = \DateTimeImmutable::createFromFormat('U', (string) $new_user_treshold);
-                $sql['types'][] = Types::DATE_IMMUTABLE;
+                $sql['params'][] = $new_user_treshold;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['ustatus']['new'] = 'on';
             }
 
@@ -935,8 +934,8 @@ class MessagesListController extends AbstractController
             if (isset($filter['ustatus']['active']))
             {
                 $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $sql['params'][] = \DateTimeImmutable::createFromFormat('U', (string) $new_user_treshold);
-                $sql['types'][] = Types::DATE_IMMUTABLE;
+                $sql['params'][] = $new_user_treshold;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['ustatus']['active'] = 'on';
             }
 

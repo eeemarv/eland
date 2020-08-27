@@ -11,6 +11,7 @@ use App\Service\IntersystemsService;
 use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use App\Render\AccountStrRender;
+use Doctrine\DBAL\Types\Types;
 
 class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 {
@@ -56,8 +57,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 	{
 		$days = $this->config_service->get_int('periodic_mail.days', $schema);
 		$treshold_time_unix = time() - ($days * 86400);
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - ($days * 86400));
-
+		$treshold_time =\DateTimeImmutable::createFromFormat('U', (string) $treshold_time_unix);
 		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
 
 		$users = $news = $new_users = [];
@@ -184,7 +184,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						or m.expires_at is null)
 				order by m.created_at desc');
 
-			$rs->bindValue(1, $treshold_time);
+			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -230,7 +230,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 							or m.expires_at is null)
 					order by m.created_at desc');
 
-				$rs->bindValue(1, $treshold_time);
+				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 				$rs->execute();
 
 				while ($row = $rs->fetch())
@@ -269,7 +269,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			if ($block_options['news'] == 'recent')
 			{
-				$rs->bindValue(1, $treshold_time);
+				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			}
 
 			$rs->execute();
@@ -291,15 +291,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where u.status = 1
 					and u.adate > ?');
 
-/*
-			$time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('newuserdays', $schema) * 86400);
-			$time = ($block_options['new_users'] === 'recent') ? $treshold_time: $time;
-*/
-
-
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 
-			$rs->bindValue(1, $time);
+			$rs->bindValue(1, $time, Types::DATETIME_IMMUTABLE);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -325,7 +319,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			if ($block_options['leaving_users'] === 'recent')
 			{
-				$rs->bindValue(1, $treshold_time);
+				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			}
 
 			$rs->execute();
@@ -344,7 +338,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.transactions t
 				where t.created_at > ?');
 
-			$rs->bindValue(1, $treshold_time);
+			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -373,7 +367,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$rows = $this->db->executeQuery('select *
 				from ' . $schema . '.forum_posts
 				where created_at > ?',
-				[$treshold_time]);
+				[$treshold_time], [Types::DATETIME_IMMUTABLE]);
 
 			foreach($rows as $row)
 			{
@@ -382,7 +376,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			foreach($all_visible_forum_topics as $forum_topic)
 			{
-				if ($forum_topic['created_at'] <= $treshold_time
+				$created_at = \DateTimeImmutable::createFromFormat('U', (string) strtotime($forum_topic['created_at'] . ' UTC'));
+
+				if ($created_at->getTimestamp() <= $treshold_time->getTimestamp()
 					&& !isset($new_replies[$forum_topic['id']]))
 				{
 					continue;
@@ -401,7 +397,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					filename, created_at
 				from ' . $schema . '.docs
 				where access in (\'user\', \'guest\')
-					and created_at > ?', [$treshold_time]);
+					and created_at > ?', [$treshold_time], [Types::DATETIME_IMMUTABLE]);
 
 			$docs = $stmt->fetchAll();
 		}

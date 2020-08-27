@@ -7,14 +7,14 @@
 </h3>
 {%- if c.messages_self -%}
 <p>
-{%- if c.messages_self|length > config_int('periodic_mail.render.messages_self.max', c.schema) -%}
+{%- if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) -%}
 {{- 'periodic_overview.messages_self.max'|trans({
-	'%max%' : config_int('periodic_mail.render.messages_self.max', c.schema)
+	'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)
 }) -}}
 {%- endif -%}
 </p>
 <ul>
-{%- for msg in c.messages_self -%}
+{%- for msg in c.messages_self|slice(0, config_int('periodic_mail.user.render.messages_self.max', c.schema)) -%}
 <li>
 	{{- context_url_open('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})|raw -}}
 		{%- if msg.is_offer -%}
@@ -52,12 +52,12 @@
 
 {{ 'periodic_overview.messages_self.title'|trans|underline }}
 {% if c.messages_self %}
-{% if c.messages_self|length > config_int('periodic_mail.render.messages_self.max', c.schema) %}
+{% if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) %}
 {{ 'periodic_overview.messages_self.max'|trans({
-	'%max%' : config_int('periodic_mail.render.messages_self.max', c.schema)
+	'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)
 }) }}
 {% endif %}
-{% for msg in c.messages_self %}
+{% for msg in c.messages_self|slice(0, config_int('periodic_mail.user.render.messages_self.max', c.schema)) %}
 
 {% if msg.is_offer -%}
 	{{- 'label.offer'|trans -}}
@@ -72,7 +72,7 @@
 }) }}
 {% endif %}
 
-{{- 'periodic_overview.messages_self.add'|trans({
+{{ 'periodic_overview.messages_self.add'|trans({
 	'%link_open%': '',
 	'%link_close%': ''
 }) }}:

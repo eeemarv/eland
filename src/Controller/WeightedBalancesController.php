@@ -44,7 +44,7 @@ class WeightedBalancesController extends AbstractController
             where created_at >= ?
             order by created_at desc',
             [$begin_datetime],
-            [Types::DATE_IMMUTABLE]);
+            [Types::DATETIME_IMMUTABLE]);
 
         foreach ($trans as $t)
         {

@@ -45,8 +45,6 @@ class MolliePaymentsAddController extends AbstractController
     {
         $errors = [];
         $params = [];
-        $where_sql = [];
-        $params_sql = [];
 
         $q = $request->get('q', '');
         $amount = $request->request->get('amount', []);
@@ -87,16 +85,23 @@ class MolliePaymentsAddController extends AbstractController
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
-        if (isset($status_def_ary[$status]['sql_bind']))
-        {
-            $params_sql[] = $status_def_ary[$status]['sql_bind'];
-        }
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
 
-        $where_sql[] = $status_def_ary[$status]['sql'];
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
+        {
+            foreach ($def_sql_ary as $def_val)
+            {
+                $sql[$st_def_key][] = $def_val;
+            }
+        }
 
         $params['status'] = $status;
 
-        $where_sql = count($where_sql) ? implode(' and ', $where_sql) : '1 = 1';
+        $sql_where = ' and ' . implode(' and ', $sql['where']);
 
         $users = [];
 
@@ -114,8 +119,8 @@ class MolliePaymentsAddController extends AbstractController
                 order by p.created_at desc
                 limit 1) p1
             on \'t\'::bool
-            where ' . $where_sql . '
-            order by u.code asc', $params_sql);
+            where 1 = 1 ' . $sql_where . '
+            order by u.code asc', $sql['params'], $sql['types']);
 
         while($row = $stmt->fetch())
         {
@@ -353,7 +358,7 @@ class MolliePaymentsAddController extends AbstractController
 
             if (isset($user['adate'])
                 && $user['status'] === 1
-                && $new_user_treshold < strtotime($user['adate']))
+                && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
             {
                 $user_status = 3;
             }

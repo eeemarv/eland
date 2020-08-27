@@ -111,7 +111,7 @@ class AccountRepository
             order by b.id desc
             limit 1',
             [$account_id, $datetime], 0,
-            [\PDO::PARAM_INT, Types::DATE_IMMUTABLE]);
+            [\PDO::PARAM_INT, Types::DATETIME_IMMUTABLE]);
     }
 
     public function update_balance(int $account_id, int $amount, string $schema):void
@@ -153,7 +153,7 @@ class AccountRepository
             where created_at <= ?
             order by account_id, id desc');
 
-        $rs->bindValue(1, $datetime, Types::DATE_IMMUTABLE);
+        $rs->bindValue(1, $datetime, Types::DATETIME_IMMUTABLE);
 
         $rs->execute();
 

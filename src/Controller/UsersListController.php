@@ -735,7 +735,7 @@ class UsersListController extends AbstractController
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.user_id = u.id
-                    and ' . $sql_where, $sql['params'], $sql['types']);
+                    and 1 = 1 ' . $sql_where, $sql['params'], $sql['types']);
 
             $contacts = [];
 
@@ -1715,7 +1715,7 @@ class UsersListController extends AbstractController
                 'sql'	=> [
                     'where'     => ['u.status = 1 and u.adate > ?'],
                     'params'    => [$new_user_treshold],
-                    'types'     => [Types::DATE_IMMUTABLE],
+                    'types'     => [Types::DATETIME_IMMUTABLE],
                 ],
                 'cl'	=> 'success',
                 'st'	=> 3,
