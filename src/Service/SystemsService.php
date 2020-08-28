@@ -23,10 +23,6 @@ class SystemsService
 		'pg_catalog'			=> true,
 	];
 
-	const TEMP_ALT = [
-		'letsdurme'			=> 'durme',
-	];
-
 	public function __construct(
 		Db $db,
 		string $env_legacy_eland_origin_pattern
@@ -53,7 +49,7 @@ class SystemsService
 				continue;
 			}
 
-			$system = self::TEMP_ALT[$schema] ?? $schema;
+			$system = $schema;
 
 			$this->schemas[$system] = $schema;
 			$this->systems[$schema] = $system;
