@@ -225,7 +225,7 @@ class MessagesEditController extends AbstractController
             {
                 if (!$account_code)
                 {
-                    $errors[] = 'Het vald Account Code is niet ingevuld.';
+                    $errors[] = 'Het veld Account Code is niet ingevuld.';
                 }
                 else
                 {

@@ -429,6 +429,10 @@ index:
   the_contact_form: het contactformulier
   eland_link: >-
     %eland_link% web app voor gemeenschapsmunten
+  privacy: Privacy
+  privacy_cookies: >-
+    Deze site gebruikt enkel essentiële sessie cookies voor
+    de eigen werking en geen cookies van externe partijen.
 
 login:
   title: Login
