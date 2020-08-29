@@ -7,11 +7,12 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Controller\Messages\MessagesShowController;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesExtendController extends AbstractController
 {
@@ -19,12 +20,18 @@ class MessagesExtendController extends AbstractController
         int $id,
         int $days,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su,
         LinkRender $link_render
     ):Response
     {
+        if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Expire messages module not enabled.');
+        }
+
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))

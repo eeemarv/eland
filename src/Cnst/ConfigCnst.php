@@ -52,6 +52,9 @@ class ConfigCnst
         'transactions' => [
             'recent'	=> 'Recente transacties',
         ],
+        'messages_self' => [
+            'all'       => 'Lijst eigen vraag en aanbod',
+        ],
     ];
 
     const INPUTS = [
@@ -87,36 +90,6 @@ class ConfigCnst
                 kan enkel bewegen in de richting van deze instelling.',
             'default'	=> '0',
             'path'      => 'accounts.equilibrium',
-        ],
-
-        'msgs_days_default'	=> [
-            'addon'	=> 'dagen',
-            'lbl'	=> 'Standaard geldigheidsduur',
-            'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt
-                deze waarde standaard ingevuld in het formulier.',
-            'type'	=> 'number',
-            'attr'	=> ['min' => '1', 'max' => '1460'],
-            'default'	=> '365',
-            'path'  => 'messages.fields.expires_at.days_default',
-        ],
-
-        'msgcleanupenabled'	=> [
-            'type'	=> 'checkbox',
-            'default'	=> '0',
-            'path'  => 'messages.cleanup.enabled',
-        ],
-
-        'msgexpcleanupdays'	=> [
-            'type'	=> 'number',
-            'attr'	=> ['min' => '1', 'max' => '365'],
-            'default'	=> '30',
-            'path'  => 'messages.cleanup.after_days',
-        ],
-
-        'msgexpwarnenabled'	=> [
-            'type'	=> 'checkbox',
-            'default'	=> '1',
-            'path'      => 'messages.expire.notify',
         ],
 
         'systemname' => [
@@ -505,25 +478,6 @@ class ConfigCnst
                 'registration_bottom_text' => true,
                 'registration_success_text'	=> true,
                 'registration_success_mail'	=> true,
-            ],
-        ],
-
-        'messages'		=> [
-            'lbl'		=> 'Vraag en aanbod',
-            'inputs'	=> [
-
-                'msgs_days_default'	=> true,
-
-                'li_1'	=> [
-                    'inline' => '%input(msgcleanupenabled)% Ruim vervallen
-                        vraag en aanbod op na %input(msgexpcleanupdays)% dagen.',
-                ],
-
-                'li_2'	=> [
-                    'inline' => '%input(msgexpwarnenabled)% Mail een notificatie
-                        naar de eigenaar van een vraag of aanbod bericht op
-                        het moment dat het vervalt.',
-                ],
             ],
         ],
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,24 +81,14 @@ class AutoMinLimitController extends AbstractController
         $out .= '<p>Individuele Account Minimum Limieten die ';
         $out .= 'lager zijn dan de algemene Minimum Systeemslimiet ';
         $out .= 'blijven altijd ongewijzigd.</p>';
-        $out .= '<p>Wanneer de Automatische Minimum Limiet systematisch ';
-        $out .= 'voor instappende leden gebruikt wordt, is het ';
-        $out .= 'nuttig de ';
-        $out .= $link_render->link_no_attr('config',
-            $pp->ary(), ['tab' => 'balance'],
-            'Preset Individuele Account Minimum Limiet');
-        $out .= ' ';
-        $out .= 'in te vullen in de instellingen.</p>';
 
         $out .= '<form method="post">';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="enabled" class="control-label">';
-        $out .= '<input type="checkbox" id="enabled" name="enabled" value="1" ';
-        $out .= $enabled ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Zet de automatische minimum limiet aan</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'enabled',
+            '%label%'       => 'Schakel de automatische minimum limiet in',
+            '%attr%'        => $enabled ? ' checked' : '',
+        ]);
 
         $out .= '<hr>';
 

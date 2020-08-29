@@ -103,7 +103,7 @@ class CacheService
 		$row = $this->db->fetchAssoc('select data, expires
 			from xdb.cache
 			where id = ?
-				and (expires < timezone(\'utc\'::text, now())
+				and (expires < timezone(\'utc\', now())
 					or expires is null)', [$id]);
 
 		if ($row)
@@ -139,7 +139,7 @@ class CacheService
 		$exists = $this->db->fetchColumn('select id
 			from xdb.cache
 			where id = ?
-				and (expires < timezone(\'utc\'::text, now())
+				and (expires < timezone(\'utc\', now())
 					or expires is null)', [$id]);
 
 		if ($exists)
@@ -179,7 +179,7 @@ class CacheService
 	public function cleanup():void
 	{
 		$this->db->executeQuery('delete from xdb.cache
-			where expires < timezone(\'utc\'::text, now())
+			where expires < timezone(\'utc\', now())
 				and expires is not null');
 	}
 }

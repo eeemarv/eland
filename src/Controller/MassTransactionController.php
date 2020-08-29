@@ -114,6 +114,7 @@ class MassTransactionController extends AbstractController
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
@@ -662,13 +663,12 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= '</div>';
-        /**/
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="respect_minlimit" class="control-label">';
-        $out .= '<input type="checkbox" id="respect_minlimit" checked>';
-        $out .= ' Respecteer minimum limieten</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'respect_minlimit',
+            '%label%'       => 'Respecteer minimum limieten',
+            '%attr%'        => ' checked',
+        ]);
 
         if (isset($system_min_limit) || isset($system_max_limit))
         {
@@ -833,9 +833,12 @@ class MassTransactionController extends AbstractController
         {
             $status_key = self::STATUS[$user['status']];
 
-            if (isset($user['adate']))
+            if (isset($user['adate'])
+                && $status_key === 'active'
+                && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC')
+            )
             {
-                $status_key = ($status_key == 'active' && $config_service->get_new_user_treshold($pp->schema()) < strtotime($user['adate'])) ? 'new' : $status_key;
+                $status_key = 'new';
             }
 
             $hsh = self::STATUS_RENDER[$status_key]['hsh'] ?: '';
@@ -961,15 +964,19 @@ class MassTransactionController extends AbstractController
         $out .= '</div>';
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'mail_en',
-            '%label%'   => 'Verstuur notificatie emails',
-            '%attr%'    => $mail_en ? ' checked' : '',
+            '%name%'        => 'mail_en',
+            '%label%'       => 'Verstuur notificatie E-mails',
+            '%attr%'        => $mail_en ? ' checked' : '',
         ]);
 
+        $lbl_verify = 'Ik heb nagekeken dat de juiste ';
+        $lbl_verify .= 'bedragen en de juiste "Van" of "Aan" ';
+        $lbl_verify .= 'Account Code ingevuld zijn.';
+
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'verify',
-            '%label%'   => 'Ik heb nagekeken dat de juiste bedragen
-                en de juiste "Van" of "Aan" Account Code ingevuld zijn.',
+            '%name%'        => 'verify',
+            '%label%'       => $lbl_verify,
+            '%attr%'        => ' required',
         ]);
 
         $out .= $link_render->btn_cancel('transactions', $pp->ary(), []);

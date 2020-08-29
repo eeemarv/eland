@@ -29,7 +29,7 @@ categories_add:
 categories:
   controller: App\Controller\Categories\CategoriesController
   path: /categories
-  methods: GET
+  methods: GET|POST
   defaults:
     module: messages
 
@@ -207,6 +207,16 @@ mass_transaction:
   methods: GET|POST
   defaults:
     module: transactions
+
+messages_cleanup:
+  controller: App\Controller\MessagesCleanupController
+  path: /messages/cleanup
+  methods: GET|POST
+
+messages_modules:
+  controller: App\Controller\MessagesModulesController
+  path: /messages/modules
+  methods: GET|POST
 
 logs:
   controller: App\Controller\LogsController

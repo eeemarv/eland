@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -333,7 +334,7 @@ class ConfigController extends AbstractController
                 {
                     $posted_ary  = $posted_value === '' ? [] : explode(',', $posted_value);
 
-                    if ($input_name = 'periodic_mail_block_ary')
+                    if ($input_name === 'periodic_mail_block_ary')
                     {
                         $p_ary = $posted_ary;
                         $posted_ary = [];
@@ -342,7 +343,7 @@ class ConfigController extends AbstractController
                         {
                             [$block, $select] = explode('.', $p);
 
-                            if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                            if (isset($block_ary[$block]) && count($block_ary[$block]) > 1)
                             {
                                 $select = $select === 'all' ? 'all' : 'recent';
                                 $config_service->set_str('periodic_mail.user.render.' . $block . '.select', $select, $pp->schema());
@@ -527,7 +528,8 @@ class ConfigController extends AbstractController
             if (isset($input['inline']))
             {
                 $replace_inline_ary = [];
-                $checkbox_id = '';
+                $inline_checkbox_name = null;
+                $inline_checkbox_attr = '';
 
                 $inline_input_names = $this->get_tag_ary('input', $input['inline']);
 
@@ -535,34 +537,27 @@ class ConfigController extends AbstractController
                 {
                     $inline_input_data = ConfigCnst::INPUTS[$inline_input_name];
 
-                    $str = '';
+                    $search_inline = ConfigCnst::TAG['input']['open'];
+                    $search_inline .= $inline_input_name;
+                    $search_inline .= ConfigCnst::TAG['input']['close'];
 
-                    if ($inline_input_data['type'] == 'checkbox')
+                    if ($inline_input_data['type'] === 'checkbox')
                     {
-                        $str .= '<div class="custom-control custom-checkbox">';
+                        $inline_checkbox_name = $inline_input_name;
+                        $inline_checkbox_attr = $config[$inline_input_name] ? ' checked' : '';
+                        $inline_checkbox_attr .= isset($inline_input_data['required']) ? ' required' : '';
+                        $replace_inline_ary[$search_inline] = '';
+                        continue;
                     }
 
-                    $str .= '<input type="';
+                    $str = '<input type="';
                     $str .= $inline_input_data['type'] ?? 'text';
                     $str .= '" name="';
                     $str .= $inline_input_name;
+                    $str .= '" class="sm-size"';
+                    $str .= ' value="';
+                    $str .= $config[$inline_input_name];
                     $str .= '"';
-
-                    if ($inline_input_data['type'] == 'checkbox')
-                    {
-                        $checkbox_id = 'inline_id_' . $inline_input_name;
-                        $str .= ' id="' . $checkbox_id . '"';
-                        $str .= ' value="1"';
-                        $str .= ' class="custom-control-input" ';
-                        $str .= $config[$inline_input_name] ? ' checked ' : '';
-                    }
-                    else
-                    {
-                        $str .= ' class="sm-size"';
-                        $str .= ' value="';
-                        $str .= $config[$inline_input_name];
-                        $str .= '"';
-                    }
 
                     if (isset($inline_input_data['attr']))
                     {
@@ -580,28 +575,24 @@ class ConfigController extends AbstractController
 
                     $str .= '>';
 
-                    if ($inline_input_data['type'] == 'checkbox')
-                    {
-                        $str .= '<label ';
-                        $str .= 'for="' . $checkbox_id . '" ';
-                        $str .= 'class="custom-control-label">';
-                    }
-
-                    $search_inline = ConfigCnst::TAG['input']['open'];
-                    $search_inline .= $inline_input_name;
-                    $search_inline .= ConfigCnst::TAG['input']['close'];
-
                     $replace_inline_ary[$search_inline] = $str;
                 }
 
                 $out .= '<p>';
 
-                $out .= strtr($input['inline'], $replace_inline_ary);
+                $inline = strtr($input['inline'], $replace_inline_ary);
 
-                if ($checkbox_id)
+                if (isset($inline_checkbox_name))
                 {
-                    $out .= '</label>';
-                    $out .= '</div>';
+                    $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                        '%name%'    => $inline_checkbox_name,
+                        '%attr%'    => $inline_checkbox_attr,
+                        '%label%'   => $inline,
+                    ]);
+                }
+                else
+                {
+                    $out .= $inline;
                 }
 
                 $out .= '</p>';
@@ -622,7 +613,7 @@ class ConfigController extends AbstractController
 
                     $v_options[$block] = 'recent';
 
-                    if (isset($block_ary[$block]) && isset($block_ary[$block]['all']))
+                    if (isset($block_ary[$block]) && count($block_ary[$block]) > 1)
                     {
                         $select = $config_service->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
                         if ($select === 'all')

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -97,6 +98,7 @@ class UsersShowController extends AbstractController
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
@@ -199,37 +201,37 @@ class UsersShowController extends AbstractController
             where id_from = ?
                 or id_to = ?', [$id, $id]);
 
-        $sql_bind = [$user['code']];
+        $sql_nxt_prv = [
+            'where'     => [],
+            'params'    => [$user['code']],
+            'types'     => [\PDO::PARAM_STR],
+        ];
 
-        if ($status && isset($status_def_ary[$status]))
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
-            $and_status = isset($status_def_ary[$status]['sql'])
-                ? ' and ' . $status_def_ary[$status]['sql']
-                : '';
-
-            if (isset($status_def_ary[$status]['sql_bind']))
+            foreach ($def_sql_ary as $def_val)
             {
-                $sql_bind[] = $status_def_ary[$status]['sql_bind'];
+                $sql_nxt_prv[$st_def_key][] = $def_val;
             }
         }
-        else
-        {
-            $and_status = $pp->is_admin() ? '' : ' and u.status in (1, 2) ';
-        }
+
+        $params['status'] = $status;
+
+        $sql_nxt_prv_where = ' and ' . implode(' and ', $sql_nxt_prv['where']);
 
         $next = $db->fetchColumn('select id
             from ' . $pp->schema() . '.users u
             where u.code > ?
-            ' . $and_status . '
+            ' . $sql_nxt_prv_where . '
             order by u.code asc
-            limit 1', $sql_bind);
+            limit 1', $sql_nxt_prv['params'], 0, $sql_nxt_prv['types']);
 
         $prev = $db->fetchColumn('select id
             from ' . $pp->schema() . '.users u
             where u.code < ?
-            ' . $and_status . '
+            ' . $sql_nxt_prv_where . '
             order by u.code desc
-            limit 1', $sql_bind);
+            limit 1', $sql_nxt_prv['params'], 0, $sql_nxt_prv['types']);
 
         $intersystem_missing = false;
 
@@ -239,7 +241,7 @@ class UsersShowController extends AbstractController
         {
             $intersystem_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?', [$user['code']]);
+                where localletscode = ?', [$user['code']], 0, [\PDO::PARAM_STR]);
 
             if (!$intersystem_id)
             {
@@ -255,7 +257,7 @@ class UsersShowController extends AbstractController
         {
             $last_login = $db->fetchColumn('select max(created_at)
                 from ' . $pp->schema() . '.login
-                where user_id = ?', [$id]);
+                where user_id = ?', [$id], 0, [\PDO::PARAM_INT]);
         }
 
         $contacts_response = $contacts_user_show_inline_controller(
@@ -341,9 +343,12 @@ class UsersShowController extends AbstractController
 
         $status_id = $user['status'];
 
-        if (isset($user['adate']))
+        if (isset($user['adate'])
+            && $status_id === 1
+            && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC')
+        )
         {
-            $status_id = ($config_service->get_new_user_treshold($pp->schema()) < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
+            $status_id = 3;
         }
 
         $h_status_ary = StatusCnst::LABEL_ARY;
@@ -823,15 +828,14 @@ class UsersShowController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="user_mail_cc" class="control-label">';
-        $out .= '<input type="checkbox" name="user_mail_cc" ';
-        $out .= 'id="user_mail_cc" value="1"';
-        $out .= $user_mail_cc ? ' checked="checked"' : '';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '> Stuur een kopie naar mijzelf';
-        $out .= '</label>';
-        $out .= '</div>';
+        $user_mail_cc_attr = $user_mail_cc ? ' checked' : '';
+        $user_mail_cc_attr .= $user_mail_disabled ? ' disabled' : '';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'user_mail_cc',
+            '%label%'       => 'Stuur een kopie naar mijzelf',
+            '%attr%'        => $user_mail_cc_attr,
+        ]);
 
         $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';

@@ -34,6 +34,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -85,6 +86,8 @@ class UsersListController extends AbstractController
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
         $bulk_submit = $request->request->get('bulk_submit', []);
+
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         /**
          * Begin bulk POST
@@ -487,13 +490,20 @@ class UsersListController extends AbstractController
          * End bulk POST
          */
 
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
         $status_def_ary = self::get_status_def_ary($config_service, $pp);
 
-        $sql_bind = [];
-
-        if (isset($status_def_ary[$status]['sql_bind']))
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
-            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
+            foreach ($def_sql_ary as $def_val)
+            {
+                $sql[$st_def_key][] = $def_val;
+            }
         }
 
         $params = ['status'	=> $status];
@@ -632,10 +642,12 @@ class UsersListController extends AbstractController
 
         $users = [];
 
+        $sql_where = ' and ' . implode(' and ', $sql['where']);
+
         $stmt = $db->executeQuery('select u.*
             from ' . $pp->schema() . '.users u
-            where ' . $status_def_ary[$status]['sql'] . '
-            order by u.code asc', $sql_bind);
+            where 1 = 1 ' . $sql_where . '
+            order by u.code asc', $sql['params'], $sql['types']);
 
         while($row = $stmt->fetch())
         {
@@ -664,14 +676,11 @@ class UsersListController extends AbstractController
             });
         }
 
-        if (isset($show_columns['u']['balance']))
-        {
-            $balance_ary = $account_repository->get_balance_ary($pp->schema());
+        $balance_ary = $account_repository->get_balance_ary($pp->schema());
 
-            array_walk($users, function(&$user, $user_id) use ($balance_ary){
-                $user['balance'] = $balance_ary[$user_id] ?? 0;
-            });
-        }
+        array_walk($users, function(&$user, $user_id) use ($balance_ary){
+            $user['balance'] = $balance_ary[$user_id] ?? 0;
+        });
 
         if (isset($show_columns['u']['min']))
         {
@@ -721,7 +730,7 @@ class UsersListController extends AbstractController
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.user_id = u.id
-                    and ' . $status_def_ary[$status]['sql'], $sql_bind);
+                    and 1 = 1 ' . $sql_where, $sql['params'], $sql['types']);
 
             $contacts = [];
 
@@ -769,8 +778,8 @@ class UsersListController extends AbstractController
                         $pp->schema() . '.users u
                     where m.is_offer = \'t\'
                         and m.user_id = u.id
-                        and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.user_id', $sql_bind);
+                        and 1 = 1 ' . $sql_where . '
+                    group by m.user_id', $sql['params'], $sql['types']);
 
                 foreach ($ary as $a)
                 {
@@ -785,8 +794,8 @@ class UsersListController extends AbstractController
                         $pp->schema() . '.users u
                     where m.is_want = \'t\'
                         and m.user_id = u.id
-                        and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.user_id', $sql_bind);
+                        and 1 = 1 ' . $sql_where . '
+                    group by m.user_id', $sql['params'], $sql['types']);
 
                 foreach ($ary as $a)
                 {
@@ -800,8 +809,8 @@ class UsersListController extends AbstractController
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.user_id = u.id
-                        and ' . $status_def_ary[$status]['sql'] . '
-                    group by m.user_id', $sql_bind);
+                        and 1 = 1 ' . $sql_where . '
+                    group by m.user_id', $sql['params'], $sql['types']);
 
                 foreach ($ary as $a)
                 {
@@ -1015,22 +1024,13 @@ class UsersListController extends AbstractController
                 {
                     foreach($a_ary as $key => $lbl)
                     {
-                        $checkbox_id = 'id_' . $group . '_' . $a_type . '_' . $key;
+                        $checkbox_name = 'sh[' . $group . '][' . $a_type . '][' . $key . ']';
 
-                        $f_col .= '<div class="checkbox">';
-                        $f_col .= '<label for="';
-                        $f_col .= $checkbox_id;
-                        $f_col .= '">';
-                        $f_col .= '<input type="checkbox" ';
-                        $f_col .= 'id="';
-                        $f_col .= $checkbox_id;
-                        $f_col .= '" ';
-                        $f_col .= 'name="sh[' . $group . '][' . $a_type . '][' . $key . ']" ';
-                        $f_col .= 'value="1"';
-                        $f_col .= isset($show_columns[$group][$a_type][$key]) ? ' checked="checked"' : '';
-                        $f_col .= '> ' . $lbl;
-                        $f_col .= '</label>';
-                        $f_col .= '</div>';
+                        $f_col .= strtr(BulkCnst::TPL_CHECKBOX, [
+                            '%name%'    => $checkbox_name,
+                            '%attr%'    => isset($show_columns[$group][$a_type][$key]) ? ' checked' : '',
+                            '%label%'   => $lbl,
+                        ]);
                     }
                 }
 
@@ -1045,66 +1045,57 @@ class UsersListController extends AbstractController
 
             foreach ($ary as $key => $lbl)
             {
-                $checkbox_id = 'id_' . $group . '_' . $key;
+                $checkbox_name = 'sh[' . $group . '][' . $key . ']';
 
-                $f_col .= '<div class="checkbox">';
-                $f_col .= '<label for="';
-                $f_col .= $checkbox_id;
-                $f_col .= '">';
-                $f_col .= '<input type="checkbox" name="sh[';
-                $f_col .= $group . '][' . $key . ']" ';
-                $f_col .= 'id="';
-                $f_col .= $checkbox_id;
-                $f_col .= '" ';
-                $f_col .= 'value="1"';
-                $f_col .= isset($show_columns[$group][$key]) ? ' checked="checked"' : '';
-                $f_col .= '> ';
-                $f_col .= $lbl;
+                $lbl_plus = '';
 
                 if ($key === 'adr')
                 {
-                    $f_col .= ', split door teken: ';
-                    $f_col .= '<input type="text" ';
-                    $f_col .= 'name="sh[p][c][adr_split]" ';
-                    $f_col .= 'size="1" value="';
-                    $f_col .= $adr_split;
-                    $f_col .= '">';
+                    $lbl_plus .= ', split door teken: ';
+                    $lbl_plus .= '<input type="text" ';
+                    $lbl_plus .= 'name="sh[p][c][adr_split]" ';
+                    $lbl_plus .= 'size="1" value="';
+                    $lbl_plus .= $adr_split;
+                    $lbl_plus .= '">';
                 }
 
                 if ($key === 'balance_date')
                 {
-                    $f_col .= '<div class="input-group">';
-                    $f_col .= '<span class="input-group-prepend">';
-                    $f_col .= '<span class="input-group-text">';
-                    $f_col .= '<i class="fa fa-calendar"></i>';
-                    $f_col .= '</span>';
-                    $f_col .= '</span>';
-                    $f_col .= '<input type="text" ';
-                    $f_col .= 'class="form-control" ';
-                    $f_col .= 'name="sh[p][u][balance_date]" ';
-                    $f_col .= 'data-provide="datepicker" ';
-                    $f_col .= 'data-date-format="';
-                    $f_col .= $date_format_service->datepicker_format($pp->schema());
-                    $f_col .= '" ';
-                    $f_col .= 'data-date-language="nl" ';
-                    $f_col .= 'data-date-today-highlight="true" ';
-                    $f_col .= 'data-date-autoclose="true" ';
-                    $f_col .= 'data-date-enable-on-readonly="false" ';
-                    $f_col .= 'data-date-end-date="0d" ';
-                    $f_col .= 'data-date-orientation="bottom" ';
-                    $f_col .= 'placeholder="';
-                    $f_col .= $date_format_service->datepicker_placeholder($pp->schema());
-                    $f_col .= '" ';
-                    $f_col .= 'value="';
-                    $f_col .= $balance_date;
-                    $f_col .= '">';
-                    $f_col .= '</div>';
+                    $lbl_plus .= '<div class="input-group">';
+                    $lbl_plus .= '<span class="input-group-prepend">';
+                    $lbl_plus .= '<span class="input-group-text">';
+                    $lbl_plus .= '<i class="fa fa-calendar"></i>';
+                    $lbl_plus .= '</span>';
+                    $lbl_plus .= '</span>';
+                    $lbl_plus .= '<input type="text" ';
+                    $lbl_plus .= 'class="form-control" ';
+                    $lbl_plus .= 'name="sh[p][u][balance_date]" ';
+                    $lbl_plus .= 'data-provide="datepicker" ';
+                    $lbl_plus .= 'data-date-format="';
+                    $lbl_plus .= $date_format_service->datepicker_format($pp->schema());
+                    $lbl_plus .= '" ';
+                    $lbl_plus .= 'data-date-language="nl" ';
+                    $lbl_plus .= 'data-date-today-highlight="true" ';
+                    $lbl_plus .= 'data-date-autoclose="true" ';
+                    $lbl_plus .= 'data-date-enable-on-readonly="false" ';
+                    $lbl_plus .= 'data-date-end-date="0d" ';
+                    $lbl_plus .= 'data-date-orientation="bottom" ';
+                    $lbl_plus .= 'placeholder="';
+                    $lbl_plus .= $date_format_service->datepicker_placeholder($pp->schema());
+                    $lbl_plus .= '" ';
+                    $lbl_plus .= 'value="';
+                    $lbl_plus .= $balance_date;
+                    $lbl_plus .= '">';
+                    $lbl_plus .= '</div>';
 
                     $columns['u']['balance_date'] = 'Saldo op ' . $balance_date;
                 }
 
-                $f_col .= '</label>';
-                $f_col .= '</div>';
+                $f_col .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => $checkbox_name,
+                    '%attr%'    => isset($show_columns[$group][$key]) ? ' checked' : '',
+                    '%label%'   => $lbl .  $lbl_plus,
+                ]);
             }
         }
 
@@ -1154,7 +1145,7 @@ class UsersListController extends AbstractController
         $out .= '<tr>';
 
         $numeric_keys = [
-            'balance'			=> true,
+            'balance'	    => true,
             'balance_date'	=> true,
         ];
 
@@ -1268,7 +1259,7 @@ class UsersListController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] === 1
-                && $config_service->get_new_user_treshold($pp->schema()) < strtotime($u['adate']))
+                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
             {
                 $row_stat = 3;
             }
@@ -1293,7 +1284,7 @@ class UsersListController extends AbstractController
                 foreach ($show_columns['u'] as $key => $one)
                 {
                     $out .= '<td';
-                    $out .= isset($date_keys[$key]) ? ' data-value="' . $u[$key] . '"' : '';
+                    $out .= isset($date_keys[$key]) && isset($u[$key]) ? ' data-value="' . $u[$key] . '"' : '';
                     $out .= '>';
 
                     $td = '';
@@ -1312,7 +1303,7 @@ class UsersListController extends AbstractController
                     }
                     else if (isset($date_keys[$key]))
                     {
-                        if ($u[$key])
+                        if (isset($u[$key]) && $u[$key])
                         {
                             $td .= $date_format_service->get($u[$key], 'day', $pp->schema());
                         }
@@ -1637,7 +1628,7 @@ class UsersListController extends AbstractController
                     }
                     else
                     {
-                        $tpl = BulkCnst::TPL_INPUT;
+                        $tpl = BulkCnst::TPL_INPUT_FA;
                     }
 
                     $out .= strtr($tpl, [
@@ -1649,6 +1640,7 @@ class UsersListController extends AbstractController
                         '%fa%'          => $t['fa'] ?? '',
                         '%attr%'        => $t['attr'] ?? '',
                         '%explain%'     => $t['explain'] ?? '',
+                        '%value%'       => '',
                     ]);
                 }
 
@@ -1718,21 +1710,32 @@ class UsersListController extends AbstractController
         $status_def_ary = [
             'active'	=> [
                 'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
-                'sql'	=> 'u.status in (1, 2)',
                 'cl'    => 'bg-light',
+                'sql'	=> [
+                    'where'     => ['u.status in (1, 2)'],
+                    'params'    => [],
+                    'types'     => [],
+                ],
                 'st'	=> [1, 2],
             ],
             'new'		=> [
                 'lbl'	=> 'Instappers',
-                'sql'	=> 'u.status = 1 and u.adate > ?',
-                'sql_bind'	=> gmdate('Y-m-d H:i:s', $new_user_treshold),
                 'cl'	=> 'bg-success-li',
+                'sql'	=> [
+                    'where'     => ['u.status = 1 and u.adate > ?'],
+                    'params'    => [$new_user_treshold],
+                    'types'     => [Types::DATETIME_IMMUTABLE],
+                ],
                 'st'	=> 3,
             ],
             'leaving'	=> [
                 'lbl'	=> 'Uitstappers',
-                'sql'	=> 'u.status = 2',
                 'cl'	=> 'bg-danger-li',
+                'sql'	=> [
+                    'where'     => ['u.status = 2'],
+                    'params'    => [],
+                    'types'     => [],
+                ],
                 'st'	=> 2,
             ],
         ];
@@ -1742,32 +1745,52 @@ class UsersListController extends AbstractController
             $status_def_ary = $status_def_ary + [
                 'inactive'	=> [
                     'lbl'	=> 'Inactief',
-                    'sql'	=> 'u.status = 0',
                     'cl'	=> 'bg-secondary-li',
+                    'sql'	=> [
+                        'where'     => ['u.status = 0'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'st'	=> 0,
                 ],
                 'ip'		=> [
                     'lbl'	=> 'Info-pakket',
-                    'sql'	=> 'u.status = 5',
                     'cl'	=> 'bg-warning-li',
+                    'sql'	=> [
+                        'where'     => ['u.status = 5'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'st'	=> 5,
                 ],
                 'im'		=> [
                     'lbl'	=> 'Info-moment',
-                    'sql'	=> 'u.status = 6',
                     'cl'	=> 'bg-info-li',
+                    'sql'	=> [
+                        'where'     => ['u.status = 6'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'st'	=> 6
                 ],
                 'extern'	=> [
                     'lbl'	=> 'Extern',
-                    'sql'	=> 'u.status = 7',
                     'cl'	=> 'bg-extern-li',
+                    'sql'	=> [
+                        'where'     => ['u.status = 7'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                     'st'	=> 7,
                 ],
                 'all'		=> [
                     'lbl'	=> 'Alle',
-                    'sql'	=> '1 = 1',
                     'cl'    => 'bg-light',
+                    'sql'	=> [
+                        'where'     => ['1 = 1'],
+                        'params'    => [],
+                        'types'     => [],
+                    ],
                 ],
             ];
         }
@@ -1785,6 +1808,8 @@ class UsersListController extends AbstractController
         VarRouteService $vr
     ):string
     {
+        $status_def_ary = self::get_status_def_ary($config_service, $pp);
+
         $out = '';
 
         $out .= '<form method="get">';
@@ -1832,7 +1857,7 @@ class UsersListController extends AbstractController
 
         $nav_params = $params;
 
-        foreach (self::get_status_def_ary($config_service, $pp) as $k => $tab)
+        foreach ($status_def_ary as $k => $tab)
         {
             $nav_params['status'] = $k;
 

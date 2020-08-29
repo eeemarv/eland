@@ -6,7 +6,8 @@ use App\Cnst\MenuCnst;
 use App\Render\LinkRender;
 use App\Render\TagRender;
 use App\Service\AssetsService;
-use Symfony\Component\HttpFoundation\RequestStack;
+use App\Service\ConfigService;
+use App\Service\PageParamsService;
 
 class BtnNavRender
 {
@@ -17,22 +18,22 @@ class BtnNavRender
 		'nav'				=> true,
 	];
 
-	protected RequestStack $request_stack;
 	protected LinkRender $link_render;
+	protected ConfigService $config_service;
 	protected TagRender $tag_render;
 	protected AssetsService $assets_service;
 	protected array $out = [];
 	protected array $local_admin = [];
 
 	public function __construct(
-		RequestStack $request_stack,
 		LinkRender $link_render,
+		ConfigService $config_service,
 		TagRender $tag_render,
 		AssetsService $assets_service
 	)
 	{
-		$this->request_stack = $request_stack;
 		$this->link_render = $link_render;
+		$this->config_service = $config_service;
 		$this->tag_render = $tag_render;
 		$this->assets_service = $assets_service;
 	}
@@ -188,8 +189,7 @@ class BtnNavRender
 
 	public function local_admin(
 		string $menu,
-		array $params_context,
-		array $disabled_items
+		PageParamsService $pp
 	):void
 	{
 		$main_menu = MenuCnst::LOCAL_ADMIN_MAIN[$menu] ?? $menu;
@@ -201,9 +201,20 @@ class BtnNavRender
 
 		foreach(MenuCnst::LOCAL_ADMIN[$main_menu] as $menu_key => $ary)
 		{
-			if (isset($disabled_items[$menu_key]))
+			if (isset($ary['config_en']))
 			{
-				continue;
+				if ($ary['config_en'] === 'intersystem')
+				{
+					if (!$this->config_service->get_intersystem_en($pp->schema()))
+					{
+						continue;
+					}
+				}
+
+				if (!$this->config_service->get_bool($ary['config_en'], $pp->schema()))
+				{
+					continue;
+				}
 			}
 
 			if (isset($ary['divider']))

@@ -863,7 +863,7 @@ class MolliePaymentsController extends AbstractController
 
             if (isset($payment['adate'])
                 && $payment['status'] === 1
-                && $new_user_treshold < strtotime($payment['adate']))
+                && $new_user_treshold->getTimestamp() < strtotime($payment['adate'] . ' UTC'))
             {
                 $user_status = 3;
             }

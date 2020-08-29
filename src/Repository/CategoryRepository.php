@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryRepository
 {
-	protected $db;
+	protected Db $db;
 
 	public function __construct(Db $db)
 	{
@@ -16,6 +16,8 @@ class CategoryRepository
 
 	public function get_all(string $schema):array
 	{
+		throw new \Exception('Needs to be rewritten');
+
 		$categories = $this->db->fetchAll('select *
 			from ' . $schema . '.categories
 			order by fullname');
@@ -45,6 +47,8 @@ class CategoryRepository
 
 	public function get_all_choices(string $schema):array
 	{
+		throw new \Exception('Needs to be rewritten');
+
 		$choices = [];
 
 		$st = $this->db->executeQuery('select c.name,
@@ -82,58 +86,28 @@ class CategoryRepository
 
 	public function exists(int $id, string $schema):bool
 	{
+		throw new \Exception('Needs to be rewritten (maybe)');
+
 		return $this->db->fetchColumn('select id
 			from ' . $schema . '.categories
 			where id = ?', [$id]) ? true : false;
 	}
 
-	public function get(int $id, string $schema):array
-	{
-		$data = $this->db->fetchAssoc('select *
-			from ' . $schema . '.categories
-			where id = ?', [$id]);
+	///
 
-		if (!$data)
-		{
-			throw new NotFoundHttpException('Category ' . $id . ' not found.');
+    public function get(int $id, string $schema):array
+    {
+        $category = $this->db->fetchAssoc('select c.*, cp.name as parent_name
+            from ' . $schema . '.categories c
+            left join ' . $schema . '.categories cp
+                on c.parent_id = cp.id
+            where c.id = ?', [$id], [\PDO::PARAM_INT]);
+
+        if (!$category)
+        {
+            throw new NotFoundHttpException('Category ' . $id . ' not found.');
         }
 
-		return $data;
-	}
-
-	public function getCountAds(int $id, string $schema):int
-	{
-		return $this->db->fetchColumn('select count(*)
-			from ' . $schema . '.categories
-			where id_parent = ?', [$id]);
-	}
-
-	public function getCountSubcategories(int $id, string $schema):int
-	{
-		return $this->db->fetchColumn('select count(*)
-			from ' . $schema . '.categories
-			where id_parent = ?', [$id]);
-	}
-
-	public function delete(int $id, string $schema)
-	{
-		$this->db->delete($schema . '.categories', ['id' => $id]);
-	}
-
-	public function update(int $id, string $schema, array $data)
-	{
-		$this->db->update($schema . '.categories', $data, ['id' => $id]);
-	}
-
-	public function getName(int $id, string $schema):string
-	{
-		return $this->db->fetchColumn('select name
-			from ' . $schema . '.categories
-			where id = ?', [$id]);
-	}
-
-	public function insert(string $schema, array $data)
-	{
-		$this->db->insert($schema . '.categories', $data);
-	}
+        return $category;
+    }
 }

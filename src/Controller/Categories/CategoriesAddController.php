@@ -10,97 +10,72 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp,
-        SessionUserService $su,
-        SelectRender $select_render
+        SessionUserService $su
     ):Response
     {
-        $cat = [];
         $errors = [];
+
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
+        }
 
         if ($request->isMethod('POST'))
         {
-            $cat['name'] = $request->request->get('name', '');
-            $cat['id_parent'] = (int) $request->request->get('id_parent', 0);
-            $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
-
-            if (trim($cat['name']) === '')
-            {
-                $errors[] = 'Vul naam in!';
-            }
-
-            if (strlen($cat['name']) > 40)
-            {
-                $errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
-            }
+            $name = $request->request->get('name', '');
 
             if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
+            if (trim($name) === '')
+            {
+                $errors[] = 'Vul naam in!';
+            }
+
+            if (strlen($name) > 40)
+            {
+                $errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
+            }
+
             if (!count($errors))
             {
-                if (!$su->is_master())
-                {
-                    $cat['created_by'] = $su->id();
-                }
+                $created_by = $su->is_master() ? null : $su->id();
 
-                $cat['fullname'] = '';
+                $db->executeUpdate('insert into ' . $pp->schema() . '.categories (name, created_by, level, left_id, right_id)
+                    select ?, ?, 1, coalesce(max(right_id), 0) + 1, coalesce(max(right_id), 0) + 2
+                    from ' . $pp->schema() . '.categories',
+                    [$name, $created_by],
+                    [\PDO::PARAM_STR, \PDO::PARAM_INT]);
 
-                if ($cat['leafnote'])
-                {
-                    $cat['fullname'] .= $db->fetchColumn('select name
-                        from ' . $pp->schema() . '.categories
-                        where id = ?', [(int) $cat['id_parent']]);
-                    $cat['fullname'] .= ' - ';
-                }
-
-                $cat['fullname'] .= $cat['name'];
-
-                if ($db->insert($pp->schema() . '.categories', $cat))
-                {
-                    $alert_service->success('Categorie toegevoegd.');
-                    $link_render->redirect('categories', $pp->ary(), []);
-                }
-
-                $alert_service->error('Categorie niet toegevoegd.');
+                $alert_service->success('Categorie "' . $name . '" toegevoegd.');
+                $link_render->redirect('categories', $pp->ary(), []);
             }
-            else
-            {
-                $alert_service->error($errors);
-            }
+
+            $alert_service->error($errors);
         }
 
-        $parent_cats = [0 => '-- Hoofdcategorie --'];
+        $out = '<p>De nieuwe categorie wordt aan het einde van de ';
+        $out .= 'lijst toegevoegd en kan nadien verplaatst worden.</p>';
 
-        $rs = $db->prepare('select id, name
-            from ' . $pp->schema() . '.categories
-            where leafnote = 0 order by name');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $parent_cats[$row['id']] = $row['name'];
-        }
-
-        $id_parent = $cat['id_parent'] ?? 0;
-
-        $out = '<div class="card fcard fcard-info">';
+        $out .= '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
 
         $out .= '<form  method="post">';
@@ -117,17 +92,9 @@ class CategoriesAddController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" ';
         $out .= 'value="';
-        $out .= $cat['name'] ?? '';
+        $out .= $name ?? '';
         $out .= '" required maxlength="40">';
         $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="id_parent" class="control-label">';
-        $out .= 'Hoofdcategorie of deelcategorie van</label>';
-        $out .= '<select name="id_parent" id="id_parent" class="form-control">';
-        $out .= $select_render->get_options($parent_cats, (string) ($id_parent ?? 0));
-        $out .= '</select>';
         $out .= '</div>';
 
         $out .= $link_render->btn_cancel('categories', $pp->ary(), []);

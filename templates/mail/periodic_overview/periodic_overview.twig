@@ -7,6 +7,7 @@
 
 {% block html_content -%}
 {%- import 'mail/periodic_overview/macro/messages.twig' as m -%}
+{%- import 'mail/periodic_overview/macro/messages_self.twig' as ms -%}
 {%- import 'mail/periodic_overview/macro/intersystem.twig' as i -%}
 {%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
 {%- import 'mail/periodic_overview/macro/news.twig' as n -%}
@@ -16,21 +17,23 @@
 
 {%- for b in blocks_sorted -%}
     {%- if b == 'messages' -%}
-        {{- m.html(messages, user_id, schema) -}}
+        {{- m.html(_context) -}}
+    {%- elseif b == 'messages_self' -%}
+        {{- ms.html(_context) -}}
     {%- elseif b == 'intersystem' -%}
-        {{- i.html(intersystem, user_id, schema) -}}
+        {{- i.html(_context) -}}
     {%- elseif b == 'forum' -%}
-        {{- f.html(forum, user_id, schema) -}}
+        {{- f.html(_context) -}}
     {%- elseif b == 'news' -%}
-        {{- n.html(news, block_options.news, user_id, schema) -}}
+        {{- n.html(_context) -}}
     {%- elseif b == 'docs' -%}
-        {{- d.html(docs) -}}
+        {{- d.html(_context) -}}
     {%- elseif b == 'new_users' -%}
-        {{- u.html(new_users, 'new', block_options.new_users, user_id, schema) -}}
+        {{- u.html(_context, 'new') -}}
     {%- elseif b == 'leaving_users' -%}
-        {{- u.html(leaving_users, 'leaving', block_options.leaving_users, user_id, schema) -}}
+        {{- u.html(_context, 'leaving') -}}
     {%- elseif b == 'transactions' -%}
-        {{- t.html(transactions, user_id, schema) -}}
+        {{- t.html(_context) -}}
     {%- endif -%}
 {%- endfor -%}
 
@@ -38,6 +41,7 @@
 
 {% block text_content %}
 {% import 'mail/periodic_overview/macro/messages.twig' as m %}
+{% import 'mail/periodic_overview/macro/messages_self.twig' as ms %}
 {% import 'mail/periodic_overview/macro/intersystem.twig' as i %}
 {% import 'mail/periodic_overview/macro/forum.twig' as f %}
 {% import 'mail/periodic_overview/macro/news.twig' as n %}
@@ -46,21 +50,23 @@
 {% import 'mail/periodic_overview/macro/transactions.twig' as t %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
-{{ m.text(messages, user_id, schema) }}
+{{ m.text(_context) }}
+{% elseif b == 'messages_self' %}
+{{ ms.text(_context) }}
 {% elseif b == 'intersystem' %}
-{{ i.text(intersystem, user_id, schema) }}
+{{ i.text(_context) }}
 {% elseif b == 'forum' %}
-{{ f.text(forum, user_id, schema) }}
+{{ f.text(_context) }}
 {% elseif b == 'news' %}
-{{ n.text(news, block_options.news, user_id, schema) }}
+{{ n.text(_context) }}
 {% elseif b == 'docs' %}
-{{ d.text(docs) }}
+{{ d.text(_context) }}
 {% elseif b == 'new_users' %}
-{{ u.text(new_users, 'new', block_options.new_users, user_id, schema) }}
+{{ u.text(_context, 'new') }}
 {% elseif b == 'leaving_users' %}
-{{ u.text(leaving_users, 'leaving', block_options.leaving_users, user_id, schema) }}
+{{ u.text(_context, 'leaving') }}
 {% elseif b == 'transactions' %}
-{{ t.text(transactions, user_id, schema) }}
+{{ t.text(_context) }}
 {% endif %}
 {% endfor %}
 {% endblock text_content %}

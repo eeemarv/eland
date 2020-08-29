@@ -15,6 +15,7 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\CategoryRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -41,6 +42,7 @@ class MessagesShowController extends AbstractController
         int $id,
         Db $db,
         ImageTokenService $image_token_service,
+        CategoryRepository $category_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -69,7 +71,16 @@ class MessagesShowController extends AbstractController
     {
         $errors = [];
 
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
         $message = self::get_message($db, $id, $pp->schema());
+
+        if ($category_enabled && isset($message['category_id']))
+        {
+            $category = $category_repository->get($message['category_id'], $pp->schema());
+        }
 
         $user_mail_content = $request->request->get('user_mail_content', '');
         $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
@@ -287,20 +298,38 @@ class MessagesShowController extends AbstractController
         $heading_render->add(ucfirst($message['label']['offer_want']));
         $heading_render->add(': ' . $message['subject']);
 
-        if (isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time())
+        if ($expires_at_enabled
+            && isset($message['expires_at'])
+            && strtotime($message['expires_at'] . ' UTC') < time())
         {
             $heading_render->add_raw(' <small><span class="text-danger">Vervallen</span></small>');
         }
 
         $heading_render->fa('newspaper-o');
 
-        if ($message['cid'])
+        $out = '';
+
+        if ($category_enabled)
         {
-            $out = '<p>Categorie: ';
+            $out .= '<p>Categorie: ';
+            $out .= '<strong><i>';
 
-            $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                ['f' => ['cid' => $message['cid']]], $message['category_name']);
+            if (isset($category))
+            {
+                $cat_name = $category['parent_name'] ?? '';
+                $cat_name .= isset($category['parent_name']) ? ' > ' : '';
+                $cat_name .= $category['name'];
 
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cid' => $category['id']]], $cat_name);
+            }
+            else
+            {
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cid' => 'null']], '** zonder categorie **');
+            }
+
+            $out .= '</i></strong>';
             $out .= '</p>';
         }
 
@@ -444,23 +473,27 @@ class MessagesShowController extends AbstractController
         $out .= '<div class="card-body">';
 
         $out .= '<dl>';
-        $out .= '<dt>';
-        $out .= '(Richt)prijs';
-        $out .= '</dt>';
-        $out .= '<dd>';
 
-        if (empty($message['amount']))
+        if ($units_enabled)
         {
-            $out .= 'niet opgegeven.';
-        }
-        else
-        {
-            $out .= $message['amount'] . ' ';
-            $out .= $config_service->get('currency', $pp->schema());
-            $out .= $message['units'] ? ' per ' . $message['units'] : '';
-        }
+            $out .= '<dt>';
+            $out .= 'Richtprijs';
+            $out .= '</dt>';
+            $out .= '<dd>';
 
-        $out .= '</dd>';
+            if (empty($message['amount']))
+            {
+                $out .= 'niet opgegeven.';
+            }
+            else
+            {
+                $out .= $message['amount'] . ' ';
+                $out .= $currency;
+                $out .= $message['units'] ? ' per ' . $message['units'] : '';
+            }
+
+            $out .= '</dd>';
+        }
 
         $out .= '<dt>Van gebruiker: ';
         $out .= '</dt>';
@@ -478,25 +511,31 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        if (isset($message['expires_at']))
+        if ($expires_at_enabled)
         {
             $out .= '<dt>Geldig tot</dt>';
             $out .= '<dd>';
-            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-            $out .= '</dd>';
-        }
 
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
-            if ($pp->is_admin() || $su->is_owner($message['user_id']))
+            if (isset($message['expires_at']))
             {
-                $out .= '<dt>Verlengen</dt>';
-                $out .= '<dd>';
-                $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-                $out .= '&nbsp;';
-                $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-                $out .= '&nbsp;';
-                $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
+                $out .= '</dd>';
+
+                if ($pp->is_admin() || $su->is_owner($message['user_id']))
+                {
+                    $out .= '<dt>Verlengen</dt>';
+                    $out .= '<dd>';
+                    $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
+                    $out .= '&nbsp;';
+                    $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
+                    $out .= '&nbsp;';
+                    $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                    $out .= '</dd>';
+                }
+            }
+            else
+            {
+                $out .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
                 $out .= '</dd>';
             }
         }
@@ -561,13 +600,9 @@ class MessagesShowController extends AbstractController
 
     public static function get_message(Db $db, int $id, string $pp_schema):array
     {
-        $message = $db->fetchAssoc('select m.*,
-                c.id as cid,
-                c.fullname as category_name
-            from ' . $pp_schema . '.messages m, ' .
-                $pp_schema . '.categories c
-            where m.id = ?
-                and c.id = m.category_id', [$id]);
+        $message = $db->fetchAssoc('select m.*
+            from ' . $pp_schema . '.messages m
+            where m.id = ?', [$id]);
 
         if (!$message)
         {

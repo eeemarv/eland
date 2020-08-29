@@ -2,6 +2,7 @@
 
 namespace App\Controller\Categories;
 
+use App\Render\HeadingRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,8 +11,10 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Http\Discovery\Exception\NotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesEditController extends AbstractController
 {
@@ -19,118 +22,70 @@ class CategoriesEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        SelectRender $select_render
+        HeadingRender $heading_render,
+        PageParamsService $pp
     ):Response
     {
-        $cats = [];
         $errors = [];
 
-        $rs = $db->prepare('select *
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
+        }
+
+        $name = $db->fetchColumn('select name
             from ' . $pp->schema() . '.categories
-            order by fullname');
+            where id = ?', [$id]);
 
-        $rs->execute();
-
-        while ($row = $rs->fetch())
+        if ($name === false)
         {
-            $cats[$row['id']] = $row;
+            throw new NotFoundException('Category with id ' . $id . ' not found.');
         }
-
-        $child_count_ary = [];
-
-        foreach ($cats as $cat)
-        {
-            $child_count_ary[$cat['id_parent']] ??= 0;
-            $child_count_ary[$cat['id_parent']]++;
-        }
-
-        $cat = $cats[$id];
 
         if ($request->isMethod('POST'))
         {
-            $cat['name'] = $request->request->get('name', '');
-            $cat['id_parent'] = (int) $request->request->get('id_parent', 0);
-            $cat['leafnote'] = $cat['id_parent'] === 0 ? 0 : 1;
-
-            $message_count = $db->fetchColumn('select count(*)
-                from ' . $pp->schema() . '.messages
-                where category_id = ?', [$id]);
-
-            if (!$cat['name'])
-            {
-                $errors[] = 'Vul naam in!';
-            }
-
-            if ($message_count && !$cat['leafnote'])
-            {
-                $errors[] = 'Hoofdcategoriën kunnen
-                    geen berichten bevatten.';
-            }
-
-            if ($cat['leafnote'] && $child_count_ary[$id])
-            {
-                $errors[] = 'Subcategoriën kunnen
-                    geen categoriën bevatten.';
-            }
+            $old_name = $name;
+            $name = $request->request->get('name', '');
 
             if ($token_error = $form_token_service->get_error())
             {
                 $errors[] = $token_error;
             }
 
+            if (!$name === '')
+            {
+                $errors[] = 'Vul een naam in!';
+            }
+
+            if (strlen($name) > 40)
+            {
+                $errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
+            }
+
             if (!count($errors))
             {
-                $prefix = '';
+                $db->update($pp->schema() . '.categories', [
+                    'name'  => $name,
+                ], ['id' => $id]);
 
-                if ($cat['id_parent'])
-                {
-                    $prefix .= $db->fetchColumn('select name
-                        from ' . $pp->schema() . '.categories
-                        where id = ?', [$cat['id_parent']]) . ' - ';
-                }
-
-                $cat['fullname'] = $prefix . $cat['name'];
-                unset($cat['id']);
-
-                if ($db->update($pp->schema() . '.categories', $cat, ['id' => $id]))
-                {
-                    $db->executeUpdate('update ' . $pp->schema() . '.categories
-                        set fullname = ? || \' - \' || name
-                        where id_parent = ?', [$cat['name'], $id]);
-
-                    $alert_service->success('Categorie aangepast.');
-                    $link_render->redirect('categories', $pp->ary(), []);
-                }
-
-                $alert_service->error('Categorie niet aangepast.');
+                $alert_service->success('Naam van Categorie aangepast van "' . $old_name . '" naar "' . $name . '".');
+                $link_render->redirect('categories', $pp->ary(), []);
             }
 
             $alert_service->error($errors);
         }
 
-        $parent_cats = [0 => '-- Hoofdcategorie --'];
+        $heading_render->add('Naam van categorie aanpassen : ');
+        $heading_render->add($name);
+        $heading_render->fa('clone');
 
-        $rs = $db->prepare('select id, name
-            from ' . $pp->schema() . '.categories
-            where leafnote = 0
-            order by name');
-
-        $rs->execute();
-
-        while ($row = $rs->fetch())
-        {
-            $parent_cats[$row['id']] = $row['name'];
-        }
-
-        $id_parent = $cat['id_parent'] ?? 0;
-
-        $out = '<div class="card fcard fcard-info">';
-        $out .= '<div class="card-body">';
+        $out = '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';
 
@@ -146,17 +101,9 @@ class CategoriesEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" ';
         $out .= 'value="';
-        $out .= $cat["name"] ?? '';
+        $out .= $name ?? '';
         $out .= '" required>';
         $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="id_parent" class="control-label">';
-        $out .= 'Hoofdcategorie of deelcategorie van</label>';
-        $out .= '<select class="form-control" id="id_parent" name="id_parent">';
-        $out .= $select_render->get_options($parent_cats, (string) $id_parent);
-        $out .= '</select>';
         $out .= '</div>';
 
         $out .= $link_render->btn_cancel('categories', $pp->ary(), []);

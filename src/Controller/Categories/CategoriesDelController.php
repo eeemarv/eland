@@ -10,7 +10,11 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Http\Discovery\Exception\NotFoundException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesDelController extends AbstractController
 {
@@ -18,6 +22,7 @@ class CategoriesDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
@@ -25,26 +30,64 @@ class CategoriesDelController extends AbstractController
         PageParamsService $pp
     ):Response
     {
+        $errors = [];
+
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
+        }
+
+        $message_count = $db->fetchColumn('select count(*)
+            from ' . $pp->schema() . '.messages
+            where category_id = ?', [$id]);
+
+        if ($message_count !== 0)
+        {
+            throw new ConflictHttpException('A category containing messages cannot be deleted.');
+        }
+
+        $category = $db->fetchAssoc('select name, left_id, right_id
+            from ' . $pp->schema() . '.categories
+            where id = ?', [$id]);
+
+        if ($category === false)
+        {
+            throw new NotFoundException('Category with id ' . $id . ' not found.');
+        }
+
+        $name = $category['name'];
+        $left_id = $category['left_id'];
+        $right_id = $category['right_id'];
+
+        if (($left_id + 1) !== $right_id)
+        {
+            throw new ConflictHttpException('A category containing categories cannot be deleted.');
+        }
+
         if($request->isMethod('POST'))
         {
             if ($error_token = $form_token_service->get_error())
             {
-                $alert_service->error($error_token);
-                $link_render->redirect('categories', $pp->ary(), []);
+                $errors[] = $error_token;
             }
 
-            if ($db->delete($pp->schema() . '.categories', ['id' => $id]))
+            if (!count($errors))
             {
-                $alert_service->success('Categorie verwijderd.');
+                $db->beginTransaction();
+                $db->executeUpdate('update ' . $pp->schema() . '.categories
+                    set left_id = left_id - 2
+                    where left_id > ?', [$left_id], [\PDO::PARAM_INT]);
+                $db->executeUpdate('update ' . $pp->schema() . '.categories
+                    set right_id = right_id - 2
+                    where right_id > ?', [$right_id], [\PDO::PARAM_INT]);
+                $db->delete($pp->schema() . '.categories', ['id' => $id]);
+                $db->commit();
+                $alert_service->success('Categorie "' . $name . '" verwijderd.');
                 $link_render->redirect('categories', $pp->ary(), []);
             }
 
-            $alert_service->error('Categorie niet verwijderd.');
+            $alert_service->error($errors);
         }
-
-        $category = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.categories
-            where id = ?', [$id]);
 
         $out = '<div class="card fcard fcard-info">';
         $out .= '<div class="card-body">';
