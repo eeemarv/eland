@@ -37,7 +37,7 @@
 
                 <dt>{{- 'label.expires_at'|trans -}}</dt>
 
-                {%- if message.expires_at is defined -%}
+                {%- if message.expires_at -%}
                     <dd>
                         {{- message.expires_at|date_format('day', schema) -}}
                     </dd>

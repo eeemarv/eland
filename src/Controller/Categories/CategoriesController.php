@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
 use App\Render\BtnTopRender;
+use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -24,6 +25,7 @@ class CategoriesController extends AbstractController
         Request $request,
         Db $db,
         ConfigService $config_service,
+        HeadingRender $heading_render,
         AssetsService $assets_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,

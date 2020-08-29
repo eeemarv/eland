@@ -105,7 +105,7 @@ class MessagesModulesController extends AbstractController
 
         $menu_service->set('messages_modules');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/admin/messages_modules.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

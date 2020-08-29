@@ -32,6 +32,7 @@ Encore
     .addEntry('fileupload', './assets/js/fileupload.js')
     .addEntry('jssor', './assets/js/jssor.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
+    .addEntry('categories', './assets/js/categories.js')
     .addEntry('generate_password', './assets/js/generate_password.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.

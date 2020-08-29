@@ -159,7 +159,7 @@ class MessagesCleanupController extends AbstractController
 
         $menu_service->set('messages_cleanup');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/admin/messages_cleanup.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

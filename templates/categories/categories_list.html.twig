@@ -5,5 +5,7 @@
 {%- endblock css -%}
 
 {%- block js -%}
+    {{- encore_entry_script_tags('sortable') -}}
+    {{- encore_entry_script_tags('categories') -}}
     {{- parent() -}}
 {%- endblock js -%}

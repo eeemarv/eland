@@ -108,6 +108,12 @@ class BulkCnst
     </div>
     TPL;
 
+    const TPL_INLINE_NUMBER_INPUT = <<<'TPL'
+    <input type="number" name="%name%"
+    id="%name%" class="sm-size"
+    value="%value%"%attr%>
+    TPL;
+
     const TPL_INPUT_FA =  <<<'TPL'
     <div class="form-group">
     <label for="%name%" class="control-label">%label%</label>
@@ -118,6 +124,18 @@ class BulkCnst
     </span>
     </span>
     <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
+    </div>
+    %explain%
+    </div>
+    TPL;
+
+    const TPL_INPUT_ADDON =  <<<'TPL'
+    <div class="form-group">
+    <label for="%name%" class="control-label">%label%</label>
+    <div class="input-group">
+    <span class="input-group-addon">
+    %addon%</span>
+    <input type="%type%" id="%name%" name="%name%" class="form-control" value="%value%"%attr%>
     </div>
     %explain%
     </div>

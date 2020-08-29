@@ -11,6 +11,7 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Http\Discovery\Exception\NotFoundException;
@@ -22,6 +23,7 @@ class CategoriesEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -38,18 +40,10 @@ class CategoriesEditController extends AbstractController
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        $name = $db->fetchColumn('select name
-            from ' . $pp->schema() . '.categories
-            where id = ?', [$id]);
-
-        if ($name === false)
-        {
-            throw new NotFoundException('Category with id ' . $id . ' not found.');
-        }
+        $category = $category_repository->get($id, $pp->schema());
 
         if ($request->isMethod('POST'))
         {
-            $old_name = $name;
             $name = $request->request->get('name', '');
 
             if ($token_error = $form_token_service->get_error())
@@ -73,7 +67,7 @@ class CategoriesEditController extends AbstractController
                     'name'  => $name,
                 ], ['id' => $id]);
 
-                $alert_service->success('Naam van Categorie aangepast van "' . $old_name . '" naar "' . $name . '".');
+                $alert_service->success('Naam van Categorie aangepast van "' . $category['name'] . '" naar "' . $name . '".');
                 $link_render->redirect('categories', $pp->ary(), []);
             }
 
@@ -81,7 +75,7 @@ class CategoriesEditController extends AbstractController
         }
 
         $heading_render->add('Naam van categorie aanpassen : ');
-        $heading_render->add($name);
+        $heading_render->add($category['name']);
         $heading_render->fa('clone');
 
         $out = '<div class="panel panel-info">';
@@ -101,7 +95,7 @@ class CategoriesEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="name" name="name" ';
         $out .= 'value="';
-        $out .= $name ?? '';
+        $out .= $category['name'];
         $out .= '" required>';
         $out .= '</div>';
         $out .= '</div>';
@@ -122,7 +116,7 @@ class CategoriesEditController extends AbstractController
 
         return $this->render('categories/categories_edit.html.twig', [
             'content'   => $out,
-            'category'  => $cat,
+            'category'  => $category,
             'schema'    => $pp->schema(),
         ]);
     }

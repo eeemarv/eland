@@ -227,7 +227,7 @@ class BtnNavRender
 			$class .= $menu === $menu_key ? ' active' : '';
 
 			$this->local_admin[] = $this->link_render->link_fa(
-				$ary['route'], $params_context, $ary['params'] ?? [],
+				$ary['route'], $pp->ary(), $ary['params'] ?? [],
 				$ary['label'], ['class' => $class],
 				$ary['fa']);
 		}
