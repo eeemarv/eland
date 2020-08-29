@@ -173,6 +173,10 @@ messages_edit:
         De vraag "%message_subject%" van gebruiker
         "%user%" is aangepast.
 
+messages_modules:
+  success: >-
+    Submodules/velden vraag en aanbod aangepast.
+
 news_add:
   success: >-
     Nieuwsbericht teogevoegd.

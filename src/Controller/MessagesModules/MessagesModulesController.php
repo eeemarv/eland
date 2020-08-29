@@ -1,19 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\MessagesModules;
 
-use App\Cnst\BulkCnst;
+use App\Command\MessagesModules\MessagesModulesCommand;
+use App\Form\Post\MessagesModules\MessagesModulesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\VarRouteService;
 
 class MessagesModulesController extends AbstractController
 {
@@ -21,92 +19,42 @@ class MessagesModulesController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         MenuService $menu_service,
-        PageParamsService $pp,
-        VarRouteService $vr
+        PageParamsService $pp
     ):Response
     {
-        $errors = [];
+        $messages_modules_command = new MessagesModulesCommand();
 
-        $category_enabled = $request->request->has('category_enabled');
-        $expires_at_enabled = $request->request->has('expires_at_enabled');
-        $units_enabled = $request->request->has('units_enabled');
+        $messages_modules_command->category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $messages_modules_command->expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $messages_modules_command->units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
 
-        if ($request->isMethod('POST'))
+        $form = $this->createForm(MessagesModulesType::class,
+                $messages_modules_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
-            if ($error_form = $form_token_service->get_error())
-            {
-                $errors[] = $error_form;
-            }
+            $messages_modules_command = $form->getData();
 
-            if (!count($errors))
-            {
-                $config_service->set_bool('messages.fields.category.enabled', $category_enabled, $pp->schema());
-                $config_service->set_bool('messages.fields.expires_at.enabled', $expires_at_enabled, $pp->schema());
-                $config_service->set_bool('messages.fields.units.enabled', $units_enabled, $pp->schema());
+            $category_enabled = $messages_modules_command->category_enabled;
+            $expires_at_enabled = $messages_modules_command->expires_at_enabled;
+            $units_enabled = $messages_modules_command->units_enabled;
 
-                $alert_service->success('Submodules/velden vraag en aanbod aangepast');
-                $link_render->redirect('messages_modules', $pp->ary(), []);
-            }
+            $config_service->set_bool('messages.fields.category.enabled', $category_enabled, $pp->schema());
+            $config_service->set_bool('messages.fields.expires_at.enabled', $expires_at_enabled, $pp->schema());
+            $config_service->set_bool('messages.fields.units.enabled', $units_enabled, $pp->schema());
 
-            $alert_service->error($errors);
+            $alert_service->success('messages_modules.success');
+            $link_render->redirect('messages_modules', $pp->ary(), []);
         }
-
-        if ($request->isMethod('GET'))
-        {
-            $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-            $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-            $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
-        }
-
-        $heading_render->fa('newspaper-o');
-        $heading_render->add('Submodules en velden vraag en aanbod');
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'category_enabled',
-            '%label%'   => 'Categorieën',
-            '%attr%'    => $category_enabled ? ' checked' : '',
-        ]);
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'expires_at_enabled',
-            '%label%'   => 'Geldigheid en opruiming',
-            '%attr%'    => $expires_at_enabled ? ' checked' : '',
-        ]);
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'units_enabled',
-            '%label%'   => 'Richtprijs',
-            '%attr%'    => $units_enabled ? ' checked' : '',
-        ]);
-
-        $out .= $link_render->btn_cancel($vr->get('messages'), $pp->ary(), []);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-primary btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<ul>';
-        $out .= '<li>Noot: Uitgeschakelde submodules blijven hun data behouden.</li>';
-        $out .= '</ul>';
 
         $menu_service->set('messages_modules');
 
-        return $this->render('messages/admin/messages_modules.html.twig', [
-            'content'   => $out,
+        return $this->render('messages/modules/messages_modules.html.twig', [
+            'form'      => $form->createView(),
             'schema'    => $pp->schema(),
         ]);
     }

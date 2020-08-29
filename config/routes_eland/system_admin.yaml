@@ -209,14 +209,14 @@ mass_transaction:
     module: transactions
 
 messages_cleanup:
-  controller: App\Controller\MessagesCleanupController
+  controller: App\Controller\MessagesModules\MessagesCleanupController
   path: /messages/cleanup
   methods: GET|POST
   defaults:
     module: messages
 
 messages_modules:
-  controller: App\Controller\MessagesModulesController
+  controller: App\Controller\MessagesModules\MessagesModulesController
   path: /messages/modules
   methods: GET|POST
   defaults:

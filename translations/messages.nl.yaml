@@ -483,6 +483,15 @@ messages_edit:
       personal: >-
         Je vraag "%subject%" aanpassen
 
+messages_modules:
+  title: >-
+    Submodules en velden vraag en aanbod
+  explain: >-
+    Noot: Uitgeschakelde submodules blijven hun data behouden.
+  category_enabled: Categorieën
+  expires_at_enabled: Geldigheid en opruiming
+  units_enabled: Richtprijs
+
 messages_show:
   title:
     offer: >-
