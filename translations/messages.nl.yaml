@@ -279,9 +279,9 @@ config_logo_del:
 
 config_modules:
   title: Modules
-  forum_en: Forum
-  contact_form_en: contactformulier
-  register_form_en: Inschrijvingsformulier
+  forum_enabled: Forum
+  contact_form_enabled: contactformulier
+  register_form_enabled: Inschrijvingsformulier
 
 config_name:
   title: Systeemsnaam

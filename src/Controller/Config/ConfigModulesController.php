@@ -26,9 +26,9 @@ class ConfigModulesController extends AbstractController
     {
         $config_modules_command = new ConfigModulesCommand();
 
-        $config_modules_command->forum_en = $config_service->get_bool('forum.enabled', $pp->schema());
-        $config_modules_command->contact_form_en = $config_service->get_bool('contact_form.enabled', $pp->schema());
-        $config_modules_command->register_form_en = $config_service->get_bool('register_form.enabled', $pp->schema());
+        $config_modules_command->forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
+        $config_modules_command->contact_form_enabled = $config_service->get_bool('contact_form.enabled', $pp->schema());
+        $config_modules_command->register_form_enabled = $config_service->get_bool('register_form.enabled', $pp->schema());
 
         $form = $this->createForm(ConfigModulesType::class,
                 $config_modules_command)
@@ -39,13 +39,13 @@ class ConfigModulesController extends AbstractController
         {
             $config_modules_command = $form->getData();
 
-            $forum_en = $config_modules_command->forum_en;
-            $contact_form_en = $config_modules_command->contact_form_en;
-            $register_form_en = $config_modules_command->register_form_en;
+            $forum_enabled = $config_modules_command->forum_enabled;
+            $contact_form_enabled = $config_modules_command->contact_form_enabled;
+            $register_form_enabled = $config_modules_command->register_form_enabled;
 
-            $config_service->set_bool('forum.enabled', $forum_en, $pp->schema());
-            $config_service->set_bool('contact_form.enabled', $contact_form_en, $pp->schema());
-            $config_service->set_bool('register_form.enabled', $register_form_en, $pp->schema());
+            $config_service->set_bool('forum.enabled', $forum_enabled, $pp->schema());
+            $config_service->set_bool('contact_form.enabled', $contact_form_enabled, $pp->schema());
+            $config_service->set_bool('register_form.enabled', $register_form_enabled, $pp->schema());
 
             $alert_service->success('config_modules.success');
             $link_render->redirect('config_modules', $pp->ary(), []);
