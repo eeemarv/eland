@@ -34,6 +34,13 @@ class MessagesAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
+        $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
+        $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+
         $messages_command = new MessagesCommand();
 
         if ($pp->is_admin())
@@ -41,11 +48,9 @@ class MessagesAddController extends AbstractController
             $messages_command->user_id = $su->id();
         }
 
-        $validity_days = (int) $config_service->get('msgs_days_default', $pp->schema());
-
-        if ($validity_days)
+        if (isset($expires_at_days_default))
         {
-            $expires_at_unix = time() + ((int) $validity_days * 86400);
+            $expires_at_unix = time() + ($expires_at_days_default * 86400);
             $expires_at =  gmdate('Y-m-d H:i:s', $expires_at_unix);
             $messages_command->expires_at = $expires_at;
         }

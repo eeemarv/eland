@@ -47,38 +47,42 @@ class CategoryRepository
 
 	public function get_all_choices(string $schema):array
 	{
-		throw new \Exception('Needs to be rewritten');
-
 		$choices = [];
+		$parent_label = '***';
 
-		$st = $this->db->executeQuery('select c.name,
-			c.id, c.id_parent, count(m.id)
-			from ' . $schema . '.categories c left join
-				' . $schema . '.messages m on m.category_id = c.id
+		$st = $this->db->executeQuery('select count(m.*),
+			c.name, c.id, c.parent_id, c.left_id, c.right_id
+			from ' . $schema . '.categories c
+			left join ' . $schema . '.messages m
+				on m.category_id = c.id
 			group by c.id
-			order by fullname');
+			order by c.left_id asc');
 
         while ($row = $st->fetch())
         {
-			if (!isset($row['id_parent']) || !$row['id_parent'])
+			$parent_id = $row['parent_id'];
+			$count = $row['count'];
+			$name = $row['name'];
+			$left_id = $row['left_id'];
+			$right_id = $row['right_id'];
+			$id = $row['id'];
+
+			$label = $name;
+			$label .= $count ? ' (' . $count . ')' : '';
+
+			if (($left_id + 1) === $right_id)
 			{
-				if (isset($parent_name) && isset($sub_cats) && count($sub_cats))
+				if (isset($parent_id))
 				{
-					$choices[$parent_name] = $sub_cats;
+					$choices[$parent_label][$label] = $id;
+					continue;
 				}
-				$parent_name = $row['name'];
-				$sub_cats = [];
+				$choices[$label] = $id;
 				continue;
 			}
 
-			$label = $row['name'];
-			$label .= $row['count'] ? ' (' . $row['count'] . ')' : '';
-			$sub_cats[$label] = (string) $row['id'];
-		}
-
-		if (isset($parent_name) && isset($sub_cats) && count($sub_cats))
-		{
-			$choices[$parent_name] = $sub_cats;
+			$parent_label = $label;
+			$choices[$label] = [];
 		}
 
 		return $choices;
