@@ -2,28 +2,34 @@
 
 namespace App\Command\MessagesModules;
 
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class MessagesCleanupCommand
 {
-    public $system_name;
-    public $email_tag;
+    public $cleanup_enabled;
+    public $cleanup_after_days;
+    public $expires_at_days_default;
+    public $expires_at_required;
+    public $expires_at_switch_enabled;
+    public $expire_notify;
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('system_name', new Sequentially([
+        $metadata->addPropertyConstraint('cleanup_after_days', new Sequentially([
             'constraints'   => [
                 new NotBlank(),
-                new Length(['max' => 60]),
+                new Positive(),
+                new Range(['min' => 1, 'max' => 365]),
             ],
         ]));
-        $metadata->addPropertyConstraint('email_tag', new Sequentially([
+        $metadata->addPropertyConstraint('expires_at_days_default', new Sequentially([
             'constraints'   => [
-                new NotBlank(),
-                new Length(['max' => 20]),
+                new Positive(),
+                new Range(['min' => 1, 'max' => 1460]),
             ],
         ]));
     }

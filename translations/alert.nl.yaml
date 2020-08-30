@@ -144,6 +144,10 @@ messages_add:
         De vraag "%message_subject%" is toegevoegd
         voor gebruker "%user%".
 
+messages_cleanup:
+  success: >-
+    Geldigheid en opruiming instellingen van vraag en aanbod aangepast.
+
 messages_del:
   error: Het bericht is niet verwijderd.
   success:

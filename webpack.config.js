@@ -33,6 +33,7 @@ Encore
     .addEntry('jssor', './assets/js/jssor.js')
     .addEntry('transactions_add', './assets/js/transactions_add.js')
     .addEntry('categories', './assets/js/categories.js')
+    .addEntry('messages_cleanup', './assets/js/messages_cleanup.js')
     .addEntry('generate_password', './assets/js/generate_password.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
