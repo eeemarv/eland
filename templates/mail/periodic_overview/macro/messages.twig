@@ -10,7 +10,7 @@
 {{- 'periodic_overview.messages.explain'|trans({
 	'%link_open%': context_url_open('messages_extended', mpp_ary(c.user_id, c.schema), {}),
 	'%link_close%': '</a>',
-	'%days%': config('saldofreqdays', c.schema)
+	'%days%': config_int('periodic_mail.days', c.schema)
 })|raw -}}
 </p>
 <ul>
@@ -79,7 +79,7 @@
 {{ 'periodic_overview.messages.explain'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
-	'%days%': config('saldofreqdays', c.schema)
+	'%days%': config_int('periodic_mail.days', c.schema)
 }) }}
 {% for msg in c.messages %}
 
@@ -96,7 +96,7 @@
 {{ 'periodic_overview.messages.none'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
-	'%days%': config('saldofreqdays', c.schema)
+	'%days%': config_int('periodic_mail.days', c.schema)
 }) }}
 {% endif %}
 

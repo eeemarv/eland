@@ -17,7 +17,7 @@
 {%- for i in c.intersystem -%}
 	<h4>
 		{{- 'periodic_overview.intersystem.system_name'|trans({
-			'%name%': i.system_name ?? config('systemname', i.schema),
+			'%name%': i.system_name ?? config_str('system.name', i.schema),
 		}) -}}
 	</h4>
 	<ul>
@@ -30,7 +30,7 @@
 		{%- if i.eland_server -%}
 		{{- 'periodic_overview.intersystem.account'|trans({
 			'%account%': account(msg.user_id, i.schema),
-			'%system_name%': config('systemname', i.schema)
+			'%system_name%': config_str('system.name', i.schema)
 		}) -}}
 		{%- else -%}
 		{{- 'periodic_overview.intersystem.account'|trans({
@@ -58,7 +58,7 @@
 {% for i in c.intersystem %}
 
 ** {{ 'periodic_overview.intersystem.system_name'|trans({
-			'%name%': i.system_name ?? config('systemname', i.schema),
+			'%name%': i.system_name ?? config_str('system.name', i.schema),
 }) }}
 
 {% for msg in i.messages %}
@@ -70,7 +70,7 @@
 {% if i.eland_server %}
 	{{ 'periodic_overview.intersystem.account'|trans({
 	'%account%': account(msg.user_id, i.schema),
-	'%system_name%': config('systemname', i.schema)
+	'%system_name%': config_str('system.name', i.schema)
 }) }}
 {% else %}
 	{{ 'periodic_overview.intersystem.account'|trans({

@@ -10,7 +10,7 @@
 {% block html_explain -%}
     {{- ('message_msg_intersystem.explain_' ~ message.offer_want)|trans({
         '%from_account%': account(from_user.id, from_schema),
-        '%from_system_name%': config('systemname', from_schema),
+        '%from_system_name%': config_str('system.name', from_schema),
         '%message_subject%': message.subject,
         '%link_message_open%': context_url_open('messages_show', mpp_ary(to_user.id, to_schema), {'id': message.id}),
         '%link_message_close%': '</a>'
@@ -20,7 +20,7 @@
 {% block text_explain %}
 {{ ('message_msg_intersystem.explain_' ~ message.offer_want)|trans({
     '%from_account%': account(from_user.id, from_schema),
-    '%from_system_name%': config('systemname', from_schema),
+    '%from_system_name%': config_str('system.name', from_schema),
     '%message_subject%': message.subject,
     '%link_message_open%': '',
     '%link_message_close%': ''

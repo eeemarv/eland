@@ -1,7 +1,7 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-    {%- if schema is defined -%}[{{- config('systemtag', schema) }}] {% endif -%}
+    {%- if schema is defined -%}[{{- config_str('mail.tag', schema) }}] {% endif -%}
     {%- block subject_line -%}{%- endblock -%}
 {%- endblock subject -%}
 
@@ -25,7 +25,7 @@
                     '%link_open%': context_url_open(
                         'home', mpp_anon_ary(schema), {}),
                     '%link_close%': '</a>',
-                    '%system_name%': config('systemname', schema)
+                    '%system_name%': config_str('system.name', schema)
                 })|raw -}}
             </p>
         {%- endif -%}
@@ -45,7 +45,7 @@
 {{ 'b.footer'|trans({
     '%link_open%': '',
     '%link_close%': '',
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 })|raw }}
 {{ context_url('home', mpp_anon_ary(schema), {})|raw }}
 {% endif %}

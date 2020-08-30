@@ -5,4 +5,4 @@
     {'login': account_code(user_id, schema)})|raw }}
 {{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema)|raw }}
 {{ 'label.username'|trans|raw }}: {{ username(user_id, schema)|raw }}
-{{ 'label.balance'|trans|raw }}: {{ account_balance(user_id, schema) }} {{ config('currency', schema)|raw }}
+{{ 'label.balance'|trans|raw }}: {{ account_balance(user_id, schema) }} {{ config_str('transactions.currency.name', schema)|raw }}

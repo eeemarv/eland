@@ -19,7 +19,7 @@
     </a>:&nbsp;
     <strong>{{- t.amount -}}</strong>
     &nbsp;
-    {{- config('currency', schema) -}}
+    {{- config_str('transactions.currency.name', schema) -}}
     </li>
 {%- endfor -%}
 </ul>
@@ -29,7 +29,7 @@
 <p>
 {{- 'label.total'|trans -}}<br />
 <strong>{{- total_amount -}}</strong>&nbsp;
-{{- config('currency', schema) -}}
+{{- config_str('transactions.currency.name', schema) -}}
 </p>
 
 <p>
@@ -46,13 +46,13 @@
 {% block text_before_many %}{% endblock %}
 
 {% for t in transactions %}
-{% block text_account_many %}{% endblock %}: {{ t.amount|raw }} {{ config('currency', schema)|raw }}
+{% block text_account_many %}{% endblock %}: {{ t.amount|raw }} {{ config_str('transactions.currency.name', schema)|raw }}
 {% endfor %}
 
 {% block text_after_many %}{% endblock %}
 
 {{ 'label.total'|trans }}
-{{ total_amount }} {{ config('currency', schema) }}
+{{ total_amount }} {{ config_str('transactions.currency.name', schema) }}
 
 {{ 'label.description'|trans }}
 {{ description }}

@@ -12,7 +12,7 @@
     '%message_subject%': message.subject,
     '%link_open%': context_url_open('messages_show', mpp_ary(user_id, schema), {'id': message.id}),
     '%link_close%': '</a>',
-    '%days%': config('msgexpcleanupdays', schema)
+    '%days%': config_int('messages.cleanup.after_days', schema)
 })|raw -}}
 {%- endblock html_explain -%}
 
@@ -21,6 +21,6 @@
     '%message_subject%': message.subject,
     '%link_open%': '',
     '%link_close%': '',
-    '%days%': config('msgexpcleanupdays', schema)
+    '%days%': config_int('messages.cleanup.after_days', schema)
 })|raw }}
 {% endblock text_explain %}

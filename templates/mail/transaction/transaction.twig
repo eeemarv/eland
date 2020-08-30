@@ -43,7 +43,7 @@
     <br />
     <strong>
         {{- transaction.amount -}}&nbsp;
-        {{- config('currency', schema) -}}
+        {{- config_str('transactions.currency.name', schema) -}}
     </strong>
 </p>
 
@@ -87,7 +87,7 @@
 {% endblock %}
 
 {{ 'label.amount'|trans }}
-{{ transaction.amount }} {{ config('currency', schema) }}
+{{ transaction.amount }} {{ config_str('transactions.currency.name', schema) }}
 
 {% block text_amount_explain %}{% endblock %}
 

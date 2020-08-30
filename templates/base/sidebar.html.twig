@@ -1,20 +1,20 @@
 {%- extends 'base/base.html.twig' -%}
 {%- import 'macro/alert.html.twig' as a -%}
 
-{%- block title -%}{{- config('systemname', schema) -}}{%- endblock -%}
+{%- block title -%}{{- config_str('system.name', schema) -}}{%- endblock -%}
 
 {%- block body_attr %} class="body-navbar{%- if pp_role('admin') %} admin{%- elseif pp_role('guest') %} guest{%- endif -%}"{%- endblock body_attr -%}
 
 {%- block logo -%}
-	{%- if config('logo', schema) -%}
+	{%- if config_str('system.logo', schema) -%}
 		{%- embed 'embed/logo.html.twig' -%}
 		{%- endembed -%}
 	{%- endif -%}
 {%- endblock logo -%}
 
 {%- block system_link -%}
-	{%- if config('homepage_url', schema) -%}
-		{{- config('homepage_url', schema) -}}
+	{%- if config_str('system.website_url', schema) -%}
+		{{- config_str('system.website_url', schema) -}}
 	{%- elseif pp_role('anonymous') -%}
 		{{- path('login', pp_ary()) -}}
 	{%- else -%}

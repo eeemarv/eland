@@ -12,7 +12,7 @@
         '%link_open%': context_url_open(
             'password_reset_set', mpp_anon_ary(schema), {'token': token}),
         '%link_close%': '</a>',
-        '%system_name%': config('systemname', schema)
+        '%system_name%': config_str('system.name', schema)
     })|raw -}}
 </p>
 
@@ -22,7 +22,7 @@
 
 <p>
     {{- 'password_reset_confirm.explain'|trans({
-        '%system_name%': config('systemname', schema),
+        '%system_name%': config_str('system.name', schema),
         '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
         '%link_close%': '</a>'
     })|raw -}}
@@ -33,7 +33,7 @@
 {% autoescape false %}
 
 {{ 'password_reset_confirm.text_msg'|trans({
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 }) }}
 
 {{ context_url('password_reset_set', mpp_anon_ary(schema), {'token': token}) }}
@@ -41,7 +41,7 @@
 {{ 'expiration.1_day'|trans }}
 
 {{ 'password_reset_confirm.explain'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%link_open%': '',
     '%link_close%': ''
 }) }}
