@@ -3,7 +3,7 @@
 
 {%- block subject_line -%}
     {{- 'register_confirm.subject'|trans({
-        '%system_name%': config('systemname', schema)}) -}}
+        '%system_name%': config_str('system.name', schema)}) -}}
 {%- endblock subject_line %}
 
 {%- block html_content -%}
@@ -22,7 +22,7 @@
 
 <p>
     {{- 'register_confirm.explain'|trans({
-        '%system_name%': config('systemname', schema),
+        '%system_name%': config_str('system.name', schema),
         '%link_open%': context_url_open('register', mpp_anon_ary(schema), {}),
         '%link_close%': '</a>'
     })|raw -}}
@@ -39,7 +39,7 @@
 {{ 'expiration.1_week'|trans }}
 
 {{ 'register_confirm.explain'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%link_open%': '',
     '%link_close%': ''
 }) }}

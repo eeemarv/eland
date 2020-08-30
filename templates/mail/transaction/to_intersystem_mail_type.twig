@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
 {{- 'transaction_to_intersystem_mail_type.subject'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%remote_system_name%': user_fullname(to_user_id, schema)
 })|raw -}}
 {%- endblock subject_line -%}
@@ -14,7 +14,7 @@
 {%- block html_content_explain -%}
 <p>
 {{- 'transaction_to_intersystem_mail_type.explain'|trans({
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 }) -}}
 </p>
 {%- endblock html_content_explain -%}
@@ -22,7 +22,7 @@
 {% block text_content_explain %}
 
 {{ 'transaction_to_intersystem_mail_type.explain'|trans({
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 })|raw }}
 
 {% endblock text_content_explain %}
@@ -30,14 +30,14 @@
 {%- block html_from -%}
 {{- account(from_user_id, schema)
     ~ ' ['
-    ~ config('systemname', schema)
+    ~ config_str('system.name', schema)
     ~ ']' -}}
 {%- endblock -%}
 
 {% block text_from %}
 {{ (account(from_user_id, schema)
     ~ ' ['
-    ~ config('systemname', schema)
+    ~ config_str('system.name', schema)
     ~ ']')|raw }}
 {% endblock %}
 
@@ -45,9 +45,9 @@
 {%- block html_amount_time_explain -%}
 <p>
 {{- 'transaction_to_intersystem_mail_type.amount_explain'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%amount%': transaction.amount,
-    '%currency%': config('currency', schema),
+    '%currency%': config_str('transactions.currency.name', schema),
     '%dec_hours%': amount_time.dec_hours,
     '%to_account%': transaction.real_to
 }) -}}
@@ -73,9 +73,9 @@
 {% block text_amount_time_explain %}
 
 {{ 'transaction_to_intersystem_mail_type.amount_explain'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%amount%': transaction.amount,
-    '%currency%': config('currency', schema),
+    '%currency%': config_str('transactions.currency.name', schema),
     '%dec_hours%': amount_time.dec_hours,
     '%to_account%': transaction.real_to
 })|raw }}

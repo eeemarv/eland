@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
 {{- 'transaction_to_intersystem_mail_type_admin.subject'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%remote_system_name%': user_fullname(to_user_id, schema)
 })|raw -}}
 {%- endblock subject_line -%}
@@ -33,7 +33,7 @@
 <p>
 {{- 'transaction_to_intersystem_mail_type_admin.amount_time_explain'|trans({
     '%amount%': transaction.amount,
-    '%currency%': config('currency', schema),
+    '%currency%': config_str('transactions.currency.name', schema),
     '%dec_hours%': amount_time.dec_hours
 }) -}}
 </p>
@@ -43,7 +43,7 @@
 
 {{ 'transaction_to_intersystem_mail_type_admin.amount_time_explain'|trans({
     '%amount%': transaction.amount,
-    '%currency%': config('currency', schema),
+    '%currency%': config_str('transactions.currency.name', schema),
     '%dec_hours%': amount_time.dec_hours
 })|raw }}
 

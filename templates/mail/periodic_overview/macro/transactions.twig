@@ -14,7 +14,7 @@
 		<li>
 		{{- 'periodic_overview.transactions.amount_from_to'|trans({
 			'%amount%': tr.amount,
-			'%currency%': config('currency', c.schema),
+			'%currency%': config_str('transactions.currency.name', c.schema),
 			'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
 				'%account%': tr.real_from,
 				'%system_name%': account(tr.id_from, c.schema)
@@ -52,7 +52,7 @@
 
 * {{ 'periodic_overview.transactions.amount_from_to'|trans({
 	'%amount%': tr.amount,
-	'%currency%': config('currency', c.schema),
+	'%currency%': config_str('transactions.currency.name', c.schema),
 	'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
 		'%account%': tr.real_from,
 		'%system_name%': account(tr.id_from, c.schema)

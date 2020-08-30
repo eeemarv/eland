@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
 {{- 'account_activation.subject'|trans({
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 }) -}}
 {%- endblock subject_line %}
 
@@ -12,7 +12,7 @@
 {{- 'account_activation.welcome'|trans({
     '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
     '%link_close%': '</a>',
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 })|raw -}}
 </p>
 <p>
@@ -36,7 +36,7 @@
 {{ 'account_activation.welcome'|trans({
     '%link_open%': '',
     '%link_close%': '',
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 }) }}
 
 {{ context_url('home', mpp_anon_ary(schema), {})|raw }}

@@ -3,14 +3,14 @@
 
 {% block subject_line -%}
     {{- 'support_copy.subject'|trans({
-        '%system_name%': config('systemname', schema)
+        '%system_name%': config_str('system.name', schema)
     }) -}}
 {%- endblock -%}
 
 {% block html_content -%}
     <p>
         {{- 'support_copy.explain'|trans({
-            '%system_name%': config('systemname', schema)
+            '%system_name%': config_str('system.name', schema)
         }) -}}
     </p>
     <hr />
@@ -24,7 +24,7 @@
 {% autoescape false %}
 
 {{ 'support_copy.explain'|trans({
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 }) }}
 - - - - - -
 

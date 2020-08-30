@@ -25,6 +25,6 @@
     <strong>
         {{- account_balance(user_id, schema) -}}
     </strong>&nbsp;
-    {{- config('currency', schema) -}}
+    {{- config_str('transactions.currency.name', schema) -}}
 </li>
 </ul>

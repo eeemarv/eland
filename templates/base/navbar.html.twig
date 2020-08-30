@@ -22,7 +22,7 @@
 
 		{%- if pp_role('guest') or is_s_master() -%}
 			{%- if not is_s_system_self() -%}
-				{%- set account_name = account_name ~ ' [' ~ config('systemname', get_s_schema()) ~ ']' -%}
+				{%- set account_name = account_name ~ ' [' ~ config_str('system.name', get_s_schema()) ~ ']' -%}
 			{%- endif -%}
 
 			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_logout()) -}}

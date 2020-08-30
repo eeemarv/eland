@@ -8,6 +8,6 @@
         '%link_open%': context_url_open('support',
             mpp_ary(user_id, schema), {}),
         '%link_close%': '</a>',
-        '%system_name%': config('systemname', schema)
+        '%system_name%': config_str('system.name', schema)
     })|raw }}.
 </p>
