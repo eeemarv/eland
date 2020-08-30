@@ -93,7 +93,7 @@ help:
   captcha: >-
     Geef de code in die hieronder getoond wordt.
   images_upload: >-
-    Toegestane formaten: jpg/jpeg, png, gif.
+    Toegestane formaten: jpg/jpeg, png, gif en svg.
     Je kan ook afbeeldingen hierheen verslepen.
   only_in_admin_modus: >-
     Enkel in admin modus

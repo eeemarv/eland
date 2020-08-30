@@ -32,12 +32,13 @@
             }) -}}
             {{- form_row(form.cleanup_enabled, {
                 'label': 'messages_cleanup.cleanup_enabled',
-                'label_attr': {'class': 'checkbox-custom'}
+                'label_attr': {'class': 'checkbox-custom'},
+                'attr': {'data-cleanup-enabled': ''}
             }) -}}
             {{- form_row(form.cleanup_after_days, {
                 'label': 'messages_cleanup.cleanup_after_days',
                 'addon_label': 'label.days',
-                'attr': {'min': 1, 'max': 365}
+                'attr': {'min': 1, 'max': 365, 'data-cleanup-after-days': ''}
             }) -}}
             {{- form_row(form.expire_notify, {
                 'label': 'messages_cleanup.expire_notify',
