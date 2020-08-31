@@ -7,6 +7,6 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class Category extends Constraint
+class CategoryExists extends Constraint
 {
 }

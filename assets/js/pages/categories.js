@@ -21,11 +21,9 @@ export default function(){
 			onAdd: function (evt){
 				var is_base = evt.item.parentElement.hasAttribute('data-sort-base');
 				if (is_base){
-					evt.item.classList.remove('list-group-item-default');
 					evt.item.classList.add('list-group-item-info');
 				} else {
 					evt.item.classList.remove('list-group-item-info');
-					evt.item.classList.add('list-group-item-default');
 				}
 				$(evt.item).find('[data-del-btn').remove();
 			}

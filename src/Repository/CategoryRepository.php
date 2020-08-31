@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryRepository
@@ -43,6 +44,189 @@ class CategoryRepository
 		}
 
 		return $categories;
+	}
+
+	public function is_unique_name_except_id(
+		string $name, int $id, string $schema
+	):bool
+	{
+		$lowercase_name = trim(strtolower($name));
+
+		return $this->db->fetchColumn('select id
+			from ' . $schema . '.categories
+			where id <> ? and lower(name) = ?',
+			[$id, $lowercase_name],
+			0,
+			[\PDO::PARAM_INT, \PDO::PARAM_STR]) ? false : true;
+	}
+
+	public function get_flat_ary(string $schema):array
+	{
+        $categories = [];
+
+        $stmt = $this->db->prepare('select c.*, count(m.*)
+            from ' . $schema . '.categories c
+            left join ' . $schema . '.messages m
+            on m.category_id = c.id
+            group by c.id
+            order by c.left_id asc');
+
+        $stmt->execute();
+
+        while ($row = $stmt->fetch())
+        {
+            $categories[$row['id']] = $row;
+		}
+
+		return $categories;
+	}
+
+	public function update_list(array $posted_ary, string $schema):int
+	{
+		$update_ary = [];
+		$count_posted = 0;
+		$left_id = 0;
+
+		$this->db->beginTransaction();
+        $stored_ary = $this->get_flat_ary($schema);
+
+        foreach ($posted_ary as $base_item)
+        {
+            if (!isset($base_item['id']))
+            {
+                throw new BadRequestHttpException('Malformed request for categories input (missing id): ' . json_encode($posted_ary));
+            }
+
+            $count_posted++;
+            $base_id = $base_item['id'];
+            $children_count = count($base_item['children'] ?? []);
+
+            if ($children_count > 0 && $stored_ary[$base_id]['count'] > 0)
+            {
+                throw new BadRequestHttpException('A category with messages cannot contain sub-categories. id: ' . $base_id);
+            }
+
+            if (!isset($stored_ary[$base_id]))
+            {
+                throw new BadRequestHttpException('Category with id ' . $base_id . ' not found.');
+			}
+
+			$right_id = $left_id + ($children_count * 2) + 1;
+
+			$update_ary[$base_id] = [
+				'left_id'   => $left_id,
+				'right_id'  => $right_id,
+				'level'     => 1,
+				'parent_id' => null,
+			];
+
+			$left_id++;
+
+            if (isset($base_item['children']) && count($base_item['children']))
+            {
+                foreach($base_item['children'] as $sub_item)
+                {
+                    $count_posted++;
+
+                    if (!isset($sub_item['id']))
+                    {
+                        throw new BadRequestHttpException('Malformed request for categories input (missing id): ' . json_encode($posted_ary));
+                    }
+
+                    $sub_id = $sub_item['id'];
+
+                    if (!isset($stored_ary[$sub_id]))
+                    {
+                        throw new BadRequestHttpException('Category with id ' . $sub_id . ' not found.');
+                    }
+
+                    if (isset($sub_item['children']))
+                    {
+                        throw new BadRequestHttpException('A subcategory can not have subcategories itself. id: ' . $sub_id);
+					}
+
+					$right_id = $left_id + 1;
+
+					$update_ary[$sub_id] = [
+						'left_id'   => $left_id,
+						'right_id'  => $right_id,
+						'level'     => 2,
+						'parent_id' => $base_id,
+					];
+
+					$left_id = $right_id + 1;
+                }
+			}
+		}
+
+		if (count($update_ary) !== count($stored_ary))
+		{
+			throw new BadRequestHttpException('Update Category count (' . count($update_ary) . ') to stored count (' . count($stored_ary) . ') mismatch.');
+		}
+
+		$count_updated = 0;
+
+		foreach ($update_ary as $id => $update)
+		{
+			$stored_cat = $stored_ary[$id];
+
+			if ($stored_cat['level'] === $update['level']
+				&& $stored_cat['parent_id'] === $update['parent_id']
+				&& $stored_cat['left_id'] === $update['left_id']
+				&& $stored_cat['right_id'] === $update['right_id'])
+			{
+				continue;
+			}
+
+			$this->db->update($schema . '.categories', $update, ['id' => $id]);
+			$count_updated++;
+		}
+		$this->db->commit();
+
+		return $count_updated;
+	}
+
+	public function get_list_and_input_ary(string $schema):array
+	{
+        $categories = [];
+        $input_ary = [];
+        $base_cat_index = -1;
+
+        $stmt = $this->db->prepare('select c.*, count(m.*)
+            from ' . $schema . '.categories c
+            left join ' . $schema . '.messages m
+            on m.category_id = c.id
+            group by c.id
+            order by c.left_id asc');
+
+        $stmt->execute();
+
+        while ($row = $stmt->fetch())
+        {
+            $id = $row['id'];
+            $level = $row['level'];
+
+            $categories[$id] = $row;
+
+            if ($level === 1)
+            {
+                $base_cat_index++;
+                $input_ary[$base_cat_index] = ['id' => $id];
+                continue;
+            }
+
+            if (!isset($input_ary[$base_cat_index]['children']))
+            {
+                $input_ary[$base_cat_index]['children'] = [];
+            }
+
+            $input_ary[$base_cat_index]['children'][] = ['id' => $id];
+		}
+
+		return [
+			'categories'	=> $categories,
+			'input_ary'		=> $input_ary,
+		];
 	}
 
 	public function get_all_choices(string $schema):array

@@ -7,9 +7,8 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
-use App\Validator\Category\Category;
 
-class CategoryValidator extends ConstraintValidator
+class CategoryIsLeafValidator extends ConstraintValidator
 {
     protected CategoryRepository $category_repository;
     protected PageParamsService $pp;
@@ -25,9 +24,9 @@ class CategoryValidator extends ConstraintValidator
 
     public function validate($category_id, Constraint $constraint)
     {
-        if (!$constraint instanceof Category)
+        if (!$constraint instanceof CategoryIsLeaf)
         {
-            throw new UnexpectedTypeException($constraint, Category::class);
+            throw new UnexpectedTypeException($constraint, CategoryIsLeaf::class);
         }
 
         if (!isset($category_id) || !$category_id)
@@ -44,11 +43,11 @@ class CategoryValidator extends ConstraintValidator
             throw new UnexpectedTypeException($category_id, 'number');
         }
 
-        $exists = $this->category_repository->exists((int) $category_id, $this->pp->schema());
+        $category = $this->category_repository->get((int) $category_id, $this->pp->schema());
 
-        if (!$exists)
+        if (($category['left_id'] + 1) !== $category['right_id'])
         {
-            $this->context->buildViolation('category.not_exists')
+            $this->context->buildViolation('category.not_leaf')
                 ->addViolation();
             return;
         }

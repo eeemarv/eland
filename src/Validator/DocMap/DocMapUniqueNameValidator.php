@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 
-class UniqueDocMapValidator extends ConstraintValidator
+class DocMapUniqueNameValidator extends ConstraintValidator
 {
     protected DocRepository $doc_repository;
     protected PageParamsService $pp;
@@ -25,9 +25,9 @@ class UniqueDocMapValidator extends ConstraintValidator
 
     public function validate($docs_map_command, Constraint $constraint)
     {
-        if (!$constraint instanceof UniqueDocMap)
+        if (!$constraint instanceof DocMapUniqueName)
         {
-            throw new UnexpectedTypeException($constraint, UniqueDocMap::class);
+            throw new UnexpectedTypeException($constraint, DocMapUniqueName::class);
         }
 
         if (!$docs_map_command instanceof DocsMapCommand)
@@ -42,7 +42,7 @@ class UniqueDocMapValidator extends ConstraintValidator
 
         if (!$is_unique)
         {
-            $this->context->buildViolation('doc_map.not_unique')
+            $this->context->buildViolation('doc_map.name_not_unique')
                 ->atPath('name')
                 ->addViolation();
             return;

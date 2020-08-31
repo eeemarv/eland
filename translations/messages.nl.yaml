@@ -247,6 +247,21 @@ calendar_month:
 
 categories:
   title: Vraag en aanbod categorieën
+  explain:
+    drag: >-
+      Versleep categorieën om plaats en volgorde te veranderen..
+    store: >-
+      Wijzigingen worden enkel opgeslagen na het
+      klikken van de "Opslaan" knop onderaan.
+    sub_types: >-
+      Hoofdcategorieën (blauw) kunnen subcategorieën (wit)
+      bevatten ofwel vraag en aanbod berichten, niet beide.
+    allowed_in_sub: >-
+      Subcategoriën (wit) kunnen enkel vraag en aanbod
+      berichten bevatten, geen categorieën.
+    del: >-
+      Enkel lege categorieën (zonder subcategorieën of vraag en aanbod)
+      kunnen verwijderd worden.
 
 categories_add:
   title: Categorie toevoegen

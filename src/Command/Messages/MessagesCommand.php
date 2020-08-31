@@ -2,9 +2,11 @@
 
 namespace App\Command\Messages;
 
-use App\Validator\Category\Category;
+use App\Validator\Category\CategoryExists;
+use App\Validator\Category\CategoryIsLeaf;
 use App\Validator\User\ActiveUser;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
@@ -56,11 +58,19 @@ class MessagesCommand
         $metadata->addPropertyConstraint('category_id', new Sequentially([
             'constraints'   => [
                 new NotBlank(),
-                new Category(),
+                new CategoryExists(),
+                new CategoryIsLeaf(),
             ],
             'groups' => ['user'],
         ]));
         $metadata->addPropertyConstraint('units', new Length(['max' => 15, 'groups' => ['user']]));
+        $metadata->addPropertyConstraint('image_files', new Sequentially([
+            'constraints'   => [
+                new NotBlank(),
+                new Json(),
+            ],
+            'groups' => ['user'],
+        ]));
         $metadata->addPropertyConstraint('access', new Sequentially([
             'constraints'   => [
                 new NotBlank(),

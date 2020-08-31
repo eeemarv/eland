@@ -2,6 +2,13 @@ error:
   token_not_valid: >-
     Geen geldig token.
 
+categories:
+  success: >-
+    De categorieën zijn aangepast (%count% updates).
+  warning:
+    no_change: >-
+      Geen wijzigingen in de categorieën.
+
 config:
   success: >-
     Instellingen aangepast.

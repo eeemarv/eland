@@ -53,7 +53,9 @@ class DocRepository
 		return $this->db->fetchColumn('select id
 			from ' . $schema . '.doc_maps
 			where id <> ? and lower(name) = ?',
-			[$map_id, $lowercase_name]) ? false : true;
+			[$map_id, $lowercase_name],
+			0,
+			[\PDO::PARAM_INT, \PDO::PARAM_STR]) ? false : true;
 	}
 
 	public function update_map_name(
@@ -190,9 +192,13 @@ class DocRepository
 		string $schema
 	):int
 	{
+		$lowercase_map_name = strtolower($map_name);
 		$map_id = $this->db->fetchColumn('select id
 			from ' . $schema . '.doc_maps
-			where lower(name) = ?', [strtolower($map_name)]);
+			where lower(name) = ?',
+			[$lowercase_map_name],
+			0,
+			[\PDO::PARAM_STR]);
 
 		return $map_id ?: 0;
 	}
