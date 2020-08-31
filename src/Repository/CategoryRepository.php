@@ -29,6 +29,11 @@ class CategoryRepository
 		return (int) $this->db->lastInsertId($schema . '.categories_id_seq');
 	}
 
+	public function update_name(int $id, string $name, string $schema):bool
+	{
+		return $this->db->update($schema . '.categories', ['name' => $name], ['id' => $id]) ? true : false;
+	}
+
 	public function get_all(string $schema):array
 	{
 		throw new \Exception('Needs to be rewritten');

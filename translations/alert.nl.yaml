@@ -13,6 +13,10 @@ categories_add:
   success: >-
     Categorie "%name%" toegevoegd.
 
+categories_edit:
+  success: >-
+    Categorie naam aangepast van "%old_name%" naar "%new_name%".
+
 config:
   success: >-
     Instellingen aangepast.
