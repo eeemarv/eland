@@ -9,6 +9,10 @@ categories:
     no_change: >-
       Geen wijzigingen in de categorieën.
 
+categories_add:
+  success: >-
+    Categorie "%name%" toegevoegd.
+
 config:
   success: >-
     Instellingen aangepast.

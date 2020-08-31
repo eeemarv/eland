@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -13,6 +14,19 @@ class CategoryRepository
 	public function __construct(Db $db)
 	{
 		$this->db = $db;
+	}
+
+	public function insert(string $name, SessionUserService $su, string $schema):int
+	{
+		$created_by = $su->is_master() ? null : $su->id();
+
+		$this->db->executeUpdate('insert into ' . $schema . '.categories (name, created_by, level, left_id, right_id)
+			select ?, ?, 1, coalesce(max(right_id), 0) + 1, coalesce(max(right_id), 0) + 2
+			from ' . $schema . '.categories',
+			[$name, $created_by],
+			[\PDO::PARAM_STR, \PDO::PARAM_INT]);
+
+		return (int) $this->db->lastInsertId($schema . '.categories_id_seq');
 	}
 
 	public function get_all(string $schema):array

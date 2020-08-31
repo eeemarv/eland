@@ -15,7 +15,7 @@ class CategoriesNameCommand
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('categories', new Sequentially([
+        $metadata->addPropertyConstraint('name', new Sequentially([
             'constraints' => [
                 new NotBlank(),
                 new Length(['min' => 1, 'max' => 40]),

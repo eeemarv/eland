@@ -1,8 +1,15 @@
-{%- extends 'categories/categories_base.html.twig' -%}
+{%- extends 'categories/base/categories_form.html.twig' -%}
 {%- import 'macro/link.html.twig' as l -%}
 {%- import 'macro/btn_link.html.twig' as bl -%}
 
-{%- block content -%}
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
+
+{%- block before_form -%}
     <p>
         <ul>
             <li>{{- 'categories.explain.drag'|trans -}}</li>
@@ -53,30 +60,7 @@
         {%- endfor -%}
     {%- endif -%}
     </div>
-
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- import 'macro/link.html.twig' as l -%}
-        {%- import 'macro/btn_link.html.twig' as bl -%}
-        {%- block form_content -%}
-            {%- block form_a -%}
-                {{- form_row(form.categories,{
-                    'attr': {'data-categories-input': 'btn-info'}
-                }) -}}
-            {%- endblock form_a -%}
-
-            {%- block form_cancel_btn -%}
-                {{- bl.cancel('categories') -}}
-            {%- endblock form_cancel_btn -%}
-
-            {%- block form_submit_btn -%}
-                {{- form_widget(form.submit,{
-                    'label': 'btn.edit',
-                    'attr': {'class': 'btn-primary'}
-                }) -}}
-            {%- endblock form_submit_btn -%}
-        {%- endblock form_content -%}
-    {%- endembed -%}
-{%- endblock content -%}
+{%- endblock before_form -%}
 
 {%- block css -%}
     {{- parent() -}}

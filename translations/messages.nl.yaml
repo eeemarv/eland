@@ -265,6 +265,9 @@ categories:
 
 categories_add:
   title: Categorie toevoegen
+  explain: >-
+    De nieuwe categorie wordt aan het einde van de lijst
+    toegevoegd en kan nadien verplaatst worden.
 
 categories_edit:
   title: Categorie "%name%" aanpassen

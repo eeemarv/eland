@@ -1,10 +1,21 @@
-{%- extends 'categories/categories_base.html.twig' -%}
+{%- extends 'categories/base/categories_form.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'categories_add.title'|trans -}}
 {%- endblock heading_title -%}
 
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.add',
+        'attr': {'class': 'btn-success'}
+    }) -}}
+{%- endset -%}
 
+{%- block before_form -%}
+    <p>
+        {{- 'categories_add.explain'|trans -}}
+    </p>
+{%- endblock before_form -%}
 
 {%- block css -%}
     {{- parent() -}}
