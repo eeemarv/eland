@@ -17,6 +17,10 @@ categories_edit:
   success: >-
     Categorie naam aangepast van "%old_name%" naar "%new_name%".
 
+categories_del:
+  success: >-
+    Categorie "%name%" verwijderd.
+
 config:
   success: >-
     Instellingen aangepast.

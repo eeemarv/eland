@@ -34,6 +34,23 @@ class CategoryRepository
 		return $this->db->update($schema . '.categories', ['name' => $name], ['id' => $id]) ? true : false;
 	}
 
+	public function del(int $id, string $schema):bool
+	{
+		$this->db->beginTransaction();
+		$this->db->executeUpdate('update ' . $schema . '.categories
+			set left_id = left_id - 2
+			where left_id > (select left_id
+				from ' . $schema . '.categories
+				where id = ?)', [$id], [\PDO::PARAM_INT]);
+		$this->db->executeUpdate('update ' . $schema . '.categories
+			set right_id = right_id - 2
+			where right_id > (select right_id
+				from ' . $schema . '.categories
+				where id = ?)', [$id], [\PDO::PARAM_INT]);
+		$this->db->delete($schema . '.categories', ['id' => $id]);
+		return $this->db->commit();
+	}
+
 	public function get_all(string $schema):array
 	{
 		throw new \Exception('Needs to be rewritten');
@@ -116,6 +133,7 @@ class CategoryRepository
                 throw new BadRequestHttpException('Malformed request for categories input (missing id): ' . json_encode($posted_ary));
             }
 
+			$left_id++;
             $count_posted++;
             $base_id = $base_item['id'];
             $children_count = count($base_item['children'] ?? []);
@@ -309,6 +327,26 @@ class CategoryRepository
             left join ' . $schema . '.categories cp
                 on c.parent_id = cp.id
             where c.id = ?', [$id], [\PDO::PARAM_INT]);
+
+        if (!$category)
+        {
+            throw new NotFoundHttpException('Category ' . $id . ' not found.');
+        }
+
+        return $category;
+	}
+
+    public function get_with_messages_count(int $id, string $schema):array
+    {
+		$category = $this->db->fetchAssoc('select c.*,
+				cp.name as parent_name, count(m.*)
+            from ' . $schema . '.categories c
+            left join ' . $schema . '.categories cp
+				on c.parent_id = cp.id
+			left join ' . $schema . '.messages m
+				on m.category_id = c.id
+			where c.id = ?
+			group by c.id, cp.name', [$id], [\PDO::PARAM_INT]);
 
         if (!$category)
         {
