@@ -181,6 +181,7 @@ label:
   per_unit: Per (uur, stuk...)
   period_days: Periode in Dagen
   periodic_mail: Periodieke Overzichts E-mail
+  permanent: Permanent
   phone: Telefoon
   postcode: Postcode
   prolong: Verlengen
@@ -194,6 +195,7 @@ label:
   subject: Onderwerp
   suggested_price: Richtprijs
   system_name: Naam van het Systeem
+  temporal: Tijdelijk
   time: Tijdstip
   title: Titel
   to: Naar
@@ -288,7 +290,7 @@ config_logo:
     no_logo: >-
       Geen logo ingesteld.
     upload: >-
-      Toegestane formaten: jpg, png en gif. Je kan ook een
+      Toegestane formaten: jpg/jpeg, png, gif en svg. Je kan ook een
       afbeelding hierheen verslepen. Gebruik een doorzichtige
       achtergrond voor het beste resultaat.
 
@@ -467,7 +469,7 @@ messages:
   title: Vraag en aanbod
   image_files:
     help: >-
-      Toegestane formaten: jpg/jpeg, png, gif.
+      Toegestane formaten: jpg/jpeg, png, gif en svg.
       Je kan ook afbeeldingen hierheen verslepen.
       De volgorde kan veranderd worden door te verslepen.
 

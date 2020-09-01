@@ -14,7 +14,6 @@ use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Http\Discovery\Exception\NotFoundException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -23,11 +22,9 @@ class CategoriesDelController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp
@@ -39,11 +36,6 @@ class CategoriesDelController extends AbstractController
         }
 
         $category = $category_repository->get_with_messages_count($id, $pp->schema());
-
-        if ($category === false)
-        {
-            throw new NotFoundException('Category with id ' . $id . ' not found.');
-        }
 
         if ($category['count'] !== 0)
         {
@@ -72,51 +64,6 @@ class CategoriesDelController extends AbstractController
 
         return $this->render('categories/categories_del.html.twig', [
             'form'      => $form->createView(),
-            'category'  => $category,
-            'schema'    => $pp->schema(),
-        ]);
-
-
-        if($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
-
-            if (!count($errors))
-            {
-
-
-                $alert_service->success('Categorie "' . $name . '" verwijderd.');
-                $link_render->redirect('categories', $pp->ary(), []);
-            }
-
-            $alert_service->error($errors);
-        }
-
-        $out = '<div class="card fcard fcard-info">';
-        $out .= '<div class="card-body">';
-
-        $out .= '<p class="text-danger"><strong>Ben je zeker dat deze categorie';
-        $out .= ' moet verwijderd worden?</strong></p>';
-        $out .= '<form method="post">';
-
-        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $menu_service->set('categories');
-
-        return $this->render('categories/categories_del.html.twig', [
-            'content'   => $out,
             'category'  => $category,
             'schema'    => $pp->schema(),
         ]);

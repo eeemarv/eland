@@ -12,6 +12,7 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -22,6 +23,7 @@ class MessagesEditController extends AbstractController
         Request $request,
         int $id,
         MessageRepository $message_repository,
+        ConfigService $config_service,
         AlertService $alert_service,
         LinkRender $link_render,
         AccountRender $account_render,
@@ -30,6 +32,10 @@ class MessagesEditController extends AbstractController
         SessionUserService $su
     ):Response
     {
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+
         $message = $message_repository->get($id, $pp->schema());
 
         if (!($pp->is_admin() || $su->is_owner($message['user_id'])))
@@ -54,7 +60,27 @@ class MessagesEditController extends AbstractController
         $messages_command->image_files = $message['image_files'];
         $messages_command->access = $message['access'];
 
-        $validation_groups = $pp->is_admin() ? ['user', 'admin'] : ['user'];
+        $validation_groups = ['common'];
+
+        if ($pp->is_admin())
+        {
+            $validation_groups[] = 'user_id';
+        }
+
+        if ($category_enabled)
+        {
+            $validation_groups[] = 'category_id';
+        }
+
+        if ($expires_at_enabled)
+        {
+            $validation_groups[] = 'expires_at';
+        }
+
+        if ($units_enabled)
+        {
+            $validation_groups[] = 'units';
+        }
 
         $form = $this->createForm(MessagesType::class,
                 $messages_command, ['validation_groups' => $validation_groups])
@@ -75,14 +101,26 @@ class MessagesEditController extends AbstractController
                 'is_want'       => $is_offer ? 'f' : 't',
                 'subject'       => $subject,
                 'content'       => $messages_command->content,
-                'category_id'   => $messages_command->category_id,
-                'expires_at'    => $messages_command->expires_at,
-                'amount'        => $messages_command->amount,
-                'units'         => $messages_command->units,
                 'image_files'   => $messages_command->image_files,
                 'access'        => $messages_command->access,
                 'user_id'       => $user_id,
             ];
+
+            if ($category_enabled)
+            {
+                $message['category_id'] = $messages_command->category_id;
+            }
+
+            if ($expires_at_enabled)
+            {
+                $message['expires_at'] = $messages_command->expires_at;
+            }
+
+            if ($units_enabled)
+            {
+                $message['amount'] = $messages_command->amount;
+                $message['units'] = $messages_command->units;
+            }
 
             $message_repository->update($message, $id, $pp->schema());
 

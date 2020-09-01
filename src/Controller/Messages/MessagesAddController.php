@@ -39,6 +39,7 @@ class MessagesAddController extends AbstractController
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
 
         $messages_command = new MessagesCommand();
@@ -55,10 +56,69 @@ class MessagesAddController extends AbstractController
             $messages_command->expires_at = $expires_at;
         }
 
-        $validation_groups = $pp->is_admin() ? ['user', 'admin'] : ['user'];
+        /*
+        'expires_at_switch_enabled'     => false,
+        'expires_at_field_enabled'      => false,
+        'category_id_field_enabled'     => false,
+        'units_field_enabled'           => false,
+        'offer_want_switch_enabled'     => false,
+        'service_stuff_switch_enabled'  => false,
+        */
+
+        $form_options = [];
+        $validation_groups = [];
+
+        $form_options['offer_want_switch_enabled'] = true;
+        $validation_groups[] = 'common';
+
+        if ($pp->is_admin())
+        {
+            $validation_groups[] = 'user_id';
+        }
+
+        if ($service_stuff_enabled)
+        {
+            $form_options['service_stuff_switch_enabled'] = true;
+            $validation_groups[] = 'service_stuff';
+        }
+
+        if ($category_enabled)
+        {
+            $form_options['category_id_field_enabled'] = true;
+            $validation_groups[] = 'category_id';
+        }
+
+        if ($expires_at_enabled)
+        {
+            $validation_groups[] = 'expires_at';
+
+            if ($expires_at_required)
+            {
+                $validation_groups[] = 'expires_at_required';
+            }
+            else
+            {
+                if ($expires_at_switch_enabled)
+                {
+                    $validation_groups[] = 'expires_at_switch';
+                }
+            }
+        }
+
+        if ($units_enabled)
+        {
+            $form_options['units_field_enabled'] = true;
+            $validation_groups[] = 'units';
+        }
+
+        $switch_en = $expires_at_enabled
+            && !$expires_at_required
+            && $expires_at_switch_enabled;
+
+        $form_options['validation_groups'] = $validation_groups;
 
         $form = $this->createForm(MessagesType::class,
-                $messages_command, ['validation_groups' => $validation_groups])
+            $messages_command, $form_options)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -76,15 +136,38 @@ class MessagesAddController extends AbstractController
                 'is_want'       => $is_offer ? 'f' : 't',
                 'subject'       => $subject,
                 'content'       => $messages_command->content,
-                'category_id'   => $messages_command->category_id,
-                'expires_at'    => $messages_command->expires_at,
-                'amount'        => $messages_command->amount,
-                'units'         => $messages_command->units,
                 'image_files'   => $messages_command->image_files,
                 'access'        => $messages_command->access,
                 'user_id'       => $user_id,
                 'created_by'    => $su->id(),
             ];
+
+            if ($category_enabled)
+            {
+                $message['category_id'] = $messages_command->category_id;
+            }
+
+            if ($expires_at_enabled)
+            {
+                if (!$expires_at_required
+                    && $expires_at_switch_enabled)
+                {
+                    if ($message['expires_at_switch'] === 'temporal')
+                    {
+                        $message['expires_at'] = $messages_command->expires_at;
+                    }
+                }
+                else
+                {
+                    $message['expires_at'] = $messages_command->expires_at;
+                }
+            }
+
+            if ($units_enabled)
+            {
+                $message['amount'] = $messages_command->amount;
+                $message['units'] = $messages_command->units;
+            }
 
             $id = $message_repository->insert($message, $pp->schema());
 
