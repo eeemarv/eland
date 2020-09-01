@@ -278,6 +278,8 @@ class MassTransactionController extends AbstractController
                         continue;
                     }
 
+                    $amo = (int) $amo;
+
                     $many_user = $users[$many_uid];
                     $to_id = $to_one ? $one_uid : $many_uid;
                     $from_id = $to_one ? $many_uid : $one_uid;
