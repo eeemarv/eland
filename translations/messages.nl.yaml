@@ -188,10 +188,12 @@ label:
   replies: Reacties
   role: Rol
   save_password: Bewaar Paswoord
+  search: Zoeken
   send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
-  search: Zoeken
+  services: Diensten
   split_by_char: Split door Teken
+  stuff: Spullen
   subject: Onderwerp
   suggested_price: Richtprijs
   system_name: Naam van het Systeem

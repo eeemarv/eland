@@ -2,7 +2,6 @@
 
 namespace App\Command\Messages;
 
-use App\Validator\Category\CategoryExists;
 use App\Validator\Category\CategoryIsLeaf;
 use App\Validator\User\ActiveUser;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -80,7 +79,6 @@ class MessagesCommand
         $metadata->addPropertyConstraint('category_id', new Sequentially([
             'constraints'   => [
                 new NotBlank(),
-                new CategoryExists(),
                 new CategoryIsLeaf(),
             ],
             'groups' => ['category_id'],

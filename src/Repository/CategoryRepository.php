@@ -51,37 +51,6 @@ class CategoryRepository
 		return $this->db->commit();
 	}
 
-	public function get_all(string $schema):array
-	{
-		throw new \Exception('Needs to be rewritten');
-
-		$categories = $this->db->fetchAll('select *
-			from ' . $schema . '.categories
-			order by fullname');
-
-		$child_count_ary = [];
-
-		foreach ($categories as $cat)
-		{
-			if (!isset($child_count_ary[$cat['id_parent']]))
-			{
-				$child_count_ary[$cat['id_parent']] = 0;
-			}
-
-			$child_count_ary[$cat['id_parent']]++;
-		}
-
-		foreach ($categories as &$cat)
-		{
-			if (isset($child_count_ary[$cat['id']]))
-			{
-				$cat['child_count'] = $child_count_ary[$cat['id']];
-			}
-		}
-
-		return $categories;
-	}
-
 	public function is_unique_name_except_id(
 		string $name, int $id, string $schema
 	):bool
@@ -308,17 +277,6 @@ class CategoryRepository
 
 		return $choices;
 	}
-
-	public function exists(int $id, string $schema):bool
-	{
-		throw new \Exception('Needs to be rewritten (maybe)');
-
-		return $this->db->fetchColumn('select id
-			from ' . $schema . '.categories
-			where id = ?', [$id]) ? true : false;
-	}
-
-	///
 
     public function get(int $id, string $schema):array
     {
