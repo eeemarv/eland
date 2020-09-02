@@ -26,6 +26,7 @@ class MessagesModulesController extends AbstractController
     {
         $messages_modules_command = new MessagesModulesCommand();
 
+        $messages_modules_command->service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $messages_modules_command->category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $messages_modules_command->expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $messages_modules_command->units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
@@ -39,10 +40,12 @@ class MessagesModulesController extends AbstractController
         {
             $messages_modules_command = $form->getData();
 
+            $service_stuff_enabled = $messages_modules_command->service_stuff_enabled;
             $category_enabled = $messages_modules_command->category_enabled;
             $expires_at_enabled = $messages_modules_command->expires_at_enabled;
             $units_enabled = $messages_modules_command->units_enabled;
 
+            $config_service->set_bool('messages.fields.service_stuff.enabled', $service_stuff_enabled, $pp->schema());
             $config_service->set_bool('messages.fields.category.enabled', $category_enabled, $pp->schema());
             $config_service->set_bool('messages.fields.expires_at.enabled', $expires_at_enabled, $pp->schema());
             $config_service->set_bool('messages.fields.units.enabled', $units_enabled, $pp->schema());

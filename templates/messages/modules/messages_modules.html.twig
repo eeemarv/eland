@@ -11,6 +11,10 @@
     {%- embed 'form/form_embed.html.twig' -%}
         {%- import 'macro/btn_link.html.twig' as bl -%}
         {%- block form_a -%}
+            {{- form_row(form.service_stuff_enabled, {
+                'label': 'messages_modules.service_stuff_enabled',
+                'label_attr': {'class': 'checkbox-custom'}
+            }) -}}
             {{- form_row(form.category_enabled, {
                 'label': 'messages_modules.category_enabled',
                 'label_attr': {'class': 'checkbox-custom'}

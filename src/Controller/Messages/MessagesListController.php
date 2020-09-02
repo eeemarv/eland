@@ -347,8 +347,6 @@ class MessagesListController extends AbstractController
             $btn_nav_render->csv();
         }
 
-        $assets_service->add(['table_sel.js']);
-
         if (!count($messages))
         {
             $out .= self::no_messages($pagination_render, $menu_service);

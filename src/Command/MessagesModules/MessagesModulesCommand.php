@@ -6,6 +6,7 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class MessagesModulesCommand
 {
+    public $service_stuff_enabled;
     public $category_enabled;
     public $expires_at_enabled;
     public $units_enabled;

@@ -111,10 +111,6 @@ class MessagesAddController extends AbstractController
             $validation_groups[] = 'units';
         }
 
-        $switch_en = $expires_at_enabled
-            && !$expires_at_required
-            && $expires_at_switch_enabled;
-
         $form_options['validation_groups'] = $validation_groups;
 
         $form = $this->createForm(MessagesType::class,
@@ -141,6 +137,13 @@ class MessagesAddController extends AbstractController
                 'user_id'       => $user_id,
                 'created_by'    => $su->id(),
             ];
+
+            if ($service_stuff_enabled)
+            {
+                $is_service = $messages_command->service_stuff === 'service';
+                $message['is_service'] = $is_service ? 't' : 'f';
+                $message['is_stuff'] = $is_service ? 'f' : 't';
+            }
 
             if ($category_enabled)
             {

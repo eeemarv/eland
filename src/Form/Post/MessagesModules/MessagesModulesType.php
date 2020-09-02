@@ -13,6 +13,7 @@ class MessagesModulesType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('service_stuff_enabled', CheckboxType::class)
             ->add('category_enabled', CheckboxType::class)
             ->add('expires_at_enabled', CheckboxType::class)
             ->add('units_enabled', CheckboxType::class)

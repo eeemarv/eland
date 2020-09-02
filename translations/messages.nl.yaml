@@ -534,6 +534,7 @@ messages_modules:
     Submodules en velden vraag en aanbod
   explain: >-
     Noot: Uitgeschakelde submodules blijven hun data behouden.
+  service_stuff_enabled: Diensten/spullen schakelaar
   category_enabled: Categorieën
   expires_at_enabled: Geldigheid en opruiming
   units_enabled: Richtprijs
