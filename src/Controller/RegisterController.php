@@ -214,7 +214,7 @@ class RegisterController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $static_content_service->get('register_form', 'top', $pp->schema());
+        $out .= $static_content_service->get('register_form', 'bottom', $pp->schema());
 
         $menu_service->set('register');
 
