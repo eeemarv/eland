@@ -1,6 +1,4 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
-{%- import 'macro/link.html.twig' as l -%}
-{%- import 'macro/btn_link.html.twig' as bl -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_show.title.'
@@ -19,25 +17,8 @@
 {%- endblock heading_append -%}
 
 {%- block content -%}
-    {%- if config_bool('messages.fields.category.enabled', schema) -%}
-        <p>
-        <strong>
-        {%- if category -%}
-            {%- set cat_name = category.name -%}
-            {%- if category.parent_name -%}
-                {%- set cat_name = category.parent_name ~ ' > ' ~ cat_name -%}
-            {%- endif -%}
-            {{- 'messages_show.category'|trans({
-                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': message.category_id}}, cat_name)
-            })|raw -}}
-        {%- else -%}
-            {{- 'messages_show.category'|trans({
-                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': 'null'}}, '*** ' ~ ('messages.without_category'|trans) ~ ' ***')
-            })|raw -}}
-        {%- endif -%}
-        </strong>
-        </p>
-    {%- endif -%}
+    {%- embed 'messages/embed/category_service_stuff.html.twig' -%}
+    {%- endembed -%}
 
     <div class="row">
         {%- embed 'messages/embed/images_carousel.html.twig' -%}

@@ -886,10 +886,10 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $filter_type = isset($filter['type'])
+        $filter_type_ow = isset($filter['type'])
             && (isset($filter['type']['want']) xor isset($filter['type']['offer']));
 
-        if ($filter_type)
+        if ($filter_type_ow)
         {
             if (isset($filter['type']['want']))
             {
@@ -900,6 +900,23 @@ class MessagesListController extends AbstractController
             {
                 $sql['where'][] = 'm.is_offer = \'t\'';
                 $params['f']['type']['offer'] = 'on';
+            }
+        }
+
+        $filter_type_ss = isset($filter['type'])
+            && (isset($filter['type']['service']) xor isset($filter['type']['stuff']));
+
+        if ($filter_type_ss)
+        {
+            if (isset($filter['type']['service']))
+            {
+                $sql['where'][] = 'm.is_service = \'t\'';
+                $params['f']['type']['service'] = 'on';
+            }
+            else
+            {
+                $sql['where'][] = 'm.is_stuff = \'t\'';
+                $params['f']['type']['stuff'] = 'on';
             }
         }
 
@@ -1152,7 +1169,8 @@ class MessagesListController extends AbstractController
         }
 
         $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
-            || $filter_type
+            || $filter_type_ow
+            || $filter_type_ss
             || $filter_valid;
 
         $filtered = ($filter['q'] ?? false) || $filter_panel_open;
