@@ -19,11 +19,23 @@
 {%- endblock heading_append -%}
 
 {%- block content -%}
-    {%- if message.category_id -%}
+    {%- if config_bool('messages.fields.category.enabled', schema) -%}
         <p>
+        <strong>
+        {%- if category -%}
+            {%- set cat_name = category.name -%}
+            {%- if category.parent_name -%}
+                {%- set cat_name = category.parent_name ~ ' > ' ~ cat_name -%}
+            {%- endif -%}
             {{- 'messages_show.category'|trans({
-                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': message.category_id}}, message.category_name)
+                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': message.category_id}}, cat_name)
             })|raw -}}
+        {%- else -%}
+            {{- 'messages_show.category'|trans({
+                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': 'null'}}, '*** ' ~ ('messages.without_category'|trans) ~ ' ***')
+            })|raw -}}
+        {%- endif -%}
+        </strong>
         </p>
     {%- endif -%}
 

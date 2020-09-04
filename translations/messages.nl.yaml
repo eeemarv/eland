@@ -469,6 +469,7 @@ logs:
 
 messages:
   title: Vraag en aanbod
+  without_category: zonder categorie
   image_files:
     help: >-
       Toegestane formaten: jpg/jpeg, png, gif en svg.

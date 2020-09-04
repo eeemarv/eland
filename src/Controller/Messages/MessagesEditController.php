@@ -32,8 +32,10 @@ class MessagesEditController extends AbstractController
         SessionUserService $su
     ):Response
     {
+        $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
 
         $message = $message_repository->get($id, $pp->schema());
@@ -45,12 +47,9 @@ class MessagesEditController extends AbstractController
 
         $messages_command = new MessagesCommand();
 
-        if ($pp->is_admin())
-        {
-            $messages_command->user_id = $message['user_id'];
-        }
-
+        $messages_command->user_id = $message['user_id'];
         $messages_command->offer_want = $message['is_offer'] ? 'offer' : 'want';
+        $messages_command->service_stuff = $message['is_service'] ? 'service' : 'stuff';
         $messages_command->subject = $message['subject'];
         $messages_command->content = $message['content'];
         $messages_command->category_id = $message['category_id'];
@@ -60,6 +59,51 @@ class MessagesEditController extends AbstractController
         $messages_command->image_files = $message['image_files'];
         $messages_command->access = $message['access'];
 
+        $form_options = [];
+        $validation_groups = [];
+
+        $form_options['offer_want_switch_enabled'] = true;
+        $validation_groups[] = 'common';
+
+        if ($pp->is_admin())
+        {
+            $form_options['user_id_field_enabled'] = true;
+            $validation_groups[] = 'user_id';
+        }
+
+        if ($service_stuff_enabled)
+        {
+            $form_options['service_stuff_switch_enabled'] = true;
+            $validation_groups[] = 'service_stuff';
+        }
+
+        if ($category_enabled)
+        {
+            $form_options['category_id_field_enabled'] = true;
+            $validation_groups[] = 'category_id';
+        }
+
+        if ($expires_at_enabled)
+        {
+            $validation_groups[] = 'expires_at';
+
+            $form_options['expires_at_field_enabled'] = true;
+
+            if ($expires_at_required)
+            {
+                $validation_groups[] = 'expires_at_required';
+            }
+        }
+
+        if ($units_enabled)
+        {
+            $form_options['units_field_enabled'] = true;
+            $validation_groups[] = 'units';
+        }
+
+        $form_options['validation_groups'] = $validation_groups;
+
+/*
         $validation_groups = ['common'];
 
         if ($pp->is_admin())
@@ -81,9 +125,10 @@ class MessagesEditController extends AbstractController
         {
             $validation_groups[] = 'units';
         }
+        */
 
         $form = $this->createForm(MessagesType::class,
-                $messages_command, ['validation_groups' => $validation_groups])
+                $messages_command, $form_options)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -105,6 +150,13 @@ class MessagesEditController extends AbstractController
                 'access'        => $messages_command->access,
                 'user_id'       => $user_id,
             ];
+
+            if ($service_stuff_enabled)
+            {
+                $is_service = $messages_command->service_stuff === 'service';
+                $message['is_service'] = $is_service ? 't' : 'f';
+                $message['is_stuff'] = $is_service ? 'f' : 't';
+            }
 
             if ($category_enabled)
             {

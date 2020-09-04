@@ -56,14 +56,7 @@ class MessagesAddController extends AbstractController
             $messages_command->expires_at = $expires_at;
         }
 
-        /*
-        'expires_at_switch_enabled'     => false,
-        'expires_at_field_enabled'      => false,
-        'category_id_field_enabled'     => false,
-        'units_field_enabled'           => false,
-        'offer_want_switch_enabled'     => false,
-        'service_stuff_switch_enabled'  => false,
-        */
+        $messages_command->image_files = '[]';
 
         $form_options = [];
         $validation_groups = [];
@@ -73,6 +66,7 @@ class MessagesAddController extends AbstractController
 
         if ($pp->is_admin())
         {
+            $form_options['user_id_field_enabled'] = true;
             $validation_groups[] = 'user_id';
         }
 
@@ -92,15 +86,19 @@ class MessagesAddController extends AbstractController
         {
             $validation_groups[] = 'expires_at';
 
-            if ($expires_at_required)
+            if (!$expires_at_required
+                && $expires_at_switch_enabled)
             {
-                $validation_groups[] = 'expires_at_required';
+                $validation_groups[] = 'expires_at_switch';
+                $form_options['expires_at_switch_enabled'] = true;
             }
             else
             {
-                if ($expires_at_switch_enabled)
+                $form_options['expires_at_field_enabled'] = true;
+
+                if ($expires_at_required)
                 {
-                    $validation_groups[] = 'expires_at_switch';
+                    $validation_groups[] = 'expires_at_required';
                 }
             }
         }
@@ -155,7 +153,7 @@ class MessagesAddController extends AbstractController
                 if (!$expires_at_required
                     && $expires_at_switch_enabled)
                 {
-                    if ($message['expires_at_switch'] === 'temporal')
+                    if ($messages_command->expires_at_switch === 'temporal')
                     {
                         $message['expires_at'] = $messages_command->expires_at;
                     }

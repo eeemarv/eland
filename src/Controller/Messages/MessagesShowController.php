@@ -221,7 +221,7 @@ class MessagesShowController extends AbstractController
             where m.id > ?
             ' . $sql_where . '
             order by m.id asc
-            limit 1', [$id]);
+            limit 1', [$id], 0, [\PDO::PARAM_INT]);
 
         $next = $db->fetchColumn('select m.id
             from ' . $pp->schema() . '.messages m,
@@ -229,7 +229,7 @@ class MessagesShowController extends AbstractController
             where m.id < ?
             ' . $sql_where . '
             order by m.id desc
-            limit 1', [$id]);
+            limit 1', [$id], 0, [\PDO::PARAM_INT]);
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
@@ -576,6 +576,7 @@ class MessagesShowController extends AbstractController
         return $this->render('messages/messages_show.html.twig', [
             'content'       => $out,
             'message'       => $message,
+            'category'      => $category ?? null,
             'show_access'   => $intersystems_service->get_count($pp->schema()) ? true : false,
             'user'          => $user,
             'schema'        => $pp->schema(),
