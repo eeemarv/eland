@@ -137,18 +137,6 @@ contact_form_support:
     contactformulier van %link_open%%system_name%%link_close%.
     Gebruik "Reply" om het eventueel te beantwoorden.
 
-news_review_admin:
-  subject: >-
-    Beoordeel Nieuwsbericht "%name%"
-  title: >-
-    Moderatie Nieuwsbericht
-  message: >-
-    Een nieuwsbericht met titel "%name%"
-    werd ingegeven in het Systeem.
-  action: >-
-    Ga naar het bericht om het (al dan niet)
-    goed te keuren voor publicatie.
-
 password_reset_user:
   subject: >-
     Nieuw Paswoord voor je Account
