@@ -21,9 +21,7 @@ class MessageRepository
 	{
         $message = $this->db->fetchAssoc('select *
             from ' . $schema . '.messages
-            where id = ?', [
-                $id
-            ]);
+            where id = ?', [$id], [\PDO::PARAM_INT]);
 
 		if (!$message)
 		{
@@ -54,7 +52,7 @@ class MessageRepository
 	{
         return $this->db->fetchColumn('select count(*)
             from ' . $schema . '.messages
-            where user_id = ?', [$user_id]);
+            where user_id = ?', [$user_id], 0, [\PDO::PARAM_INT]);
 	}
 
 	public function del_for_user_id(int $user_id, string $schema):void

@@ -12,10 +12,6 @@ use App\Form\Input\Typeahead\TypeaheadActiveUserType;
 
 class MessagesFilterType extends AbstractType
 {
-    public function __construct()
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->setMethod('GET');

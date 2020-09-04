@@ -200,6 +200,11 @@ messages_modules:
   success: >-
     Submodules/velden vraag en aanbod aangepast.
 
+messages_show:
+  success:
+    mail_sent: >-
+      E-mail bericht verzonden naar %to_user%.
+
 news_add:
   success: >-
     Nieuwsbericht teogevoegd.

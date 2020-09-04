@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Support;
+namespace App\Form\Post\SendMessage;
 
 use App\Command\SendMessage\SendMessageCCCommand;
 use Symfony\Component\Form\AbstractType;
@@ -15,7 +15,11 @@ class SendMessageCCType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('message', TextareaType::class)
+            ->add('message', TextareaType::class, [
+                'attr'      => [
+                    'placeholder'   => $options['placeholder'],
+                ],
+            ])
             ->add('cc', CheckboxType::class)
             ->add('submit', SubmitType::class);
     }
@@ -23,6 +27,7 @@ class SendMessageCCType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'placeholder'   => null,
             'data_class'    => SendMessageCCCommand::class,
         ]);
     }
