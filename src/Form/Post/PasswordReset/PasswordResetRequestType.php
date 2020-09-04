@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\PasswordReset;
 
+use App\Command\PasswordReset\PasswordResetRequestCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -20,6 +21,7 @@ class PasswordResetRequestType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => PasswordResetRequestCommand::class,
         ]);
     }
 }

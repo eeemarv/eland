@@ -76,8 +76,8 @@ class LogFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'csrf_protection'   => false,
-            'etoken_enabled'    => false,
+            'csrf_protection'       => false,
+            'form_token_enabled'    => false,
         ]);
     }
 }

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\Support;
+namespace App\Command\SendMessage;
 
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class SupportCommand
+class SendMessageCCCommand
 {
     public $message;
     public $cc;

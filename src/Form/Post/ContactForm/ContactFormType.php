@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\ContactForm;
 
+use App\Command\ContactForm\ContactFormCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -25,6 +26,7 @@ class ContactFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => ContactFormCommand::class,
         ]);
     }
 }

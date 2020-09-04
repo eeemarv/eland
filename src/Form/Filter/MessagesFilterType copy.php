@@ -8,8 +8,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use App\Form\Input\TextAddonType;
+use App\Form\Input\Typeahead\TypeaheadActiveUserType;
 
-class UserFilterType extends AbstractType
+class MessagesFilterType extends AbstractType
 {
     public function __construct()
     {
@@ -17,13 +18,14 @@ class UserFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-			->setMethod('GET')
-			->add('q', TextAddonType::class, [
-                'required' => false,
-            ])
-
-			->add('submit', SubmitType::class);
+        $builder->setMethod('GET');
+		$builder->add('q', TextAddonType::class, [
+            'required' => false,
+        ]);
+        $builder->add('uid', TypeaheadActiveUserType::class, [
+            'required'  => false,
+        ]);
+        $builder->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -32,5 +34,10 @@ class UserFilterType extends AbstractType
             'csrf_protection'       => false,
             'form_token_enabled'    => false,
         ]);
+    }
+
+    public function getBlockPrefix()
+    {
+        return 'f';
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Categories;
 
+use App\Command\Categories\CategoriesNameCommand;
 use App\Form\Input\TextAddonType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +21,7 @@ class CategoriesNameType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => CategoriesNameCommand::class,
         ]);
     }
 }

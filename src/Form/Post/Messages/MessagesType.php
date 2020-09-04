@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Messages;
 
+use App\Command\Messages\MessagesCommand;
 use App\Form\DataTransformer\ValidityDaysTransformer;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\EventSubscriber\CategoryFieldSubscriber;
@@ -109,6 +110,7 @@ class MessagesType extends AbstractType
             'units_field_enabled'           => false,
             'offer_want_switch_enabled'     => false,
             'service_stuff_switch_enabled'  => false,
+            'data_class'                    => MessagesCommand::class,
         ]);
 
         $resolver->setAllowedTypes('user_id_field_enabled', 'bool');

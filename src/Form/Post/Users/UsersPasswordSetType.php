@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Users;
 
+use App\Command\Users\UsersPasswordCommand;
 use App\Form\Input\PasswordResetAddonType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -22,6 +23,7 @@ class UsersPasswordSetType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => UsersPasswordCommand::class,
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Categories;
 
+use App\Command\Categories\CategoriesListCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +21,7 @@ class CategoriesListType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => CategoriesListCommand::class,
         ]);
     }
 }

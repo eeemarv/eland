@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\MessagesModules;
 
+use App\Command\MessagesModules\MessagesModulesCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,6 +24,7 @@ class MessagesModulesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => MessagesModulesCommand::class,
         ]);
     }
 }
