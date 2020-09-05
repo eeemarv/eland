@@ -67,6 +67,8 @@ class MessagesShowController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
@@ -186,6 +188,8 @@ class MessagesShowController extends AbstractController
                 ['id' => $id]);
         }
 
+        $prev_id = $message_repository->get_prev_id($id, $visible_ary, $pp->schema());
+        $next_id = $message_repository->get_next_id($id, $visible_ary, $pp->schema());
 
         $image_files = array_values(json_decode($message['image_files'] ?? '[]', true));
 
@@ -193,36 +197,6 @@ class MessagesShowController extends AbstractController
             'base_url'      => $env_s3_url,
             'files'         => $image_files,
         ];
-
-        $sql_where = [];
-
-        if ($pp->is_guest())
-        {
-            $sql_where[] = 'm.access = \'guest\'';
-        }
-
-        if (!$pp->is_admin())
-        {
-            $sql_where[] = 'u.status in (1, 2)';
-        }
-
-        $sql_where = count($sql_where) ? ' and ' . implode(' and ', $sql_where) : '';
-
-        $prev = $db->fetchColumn('select m.id
-            from ' . $pp->schema() . '.messages m,
-                ' . $pp->schema() . '.users u
-            where m.id > ?
-            ' . $sql_where . '
-            order by m.id asc
-            limit 1', [$id], 0, [\PDO::PARAM_INT]);
-
-        $next = $db->fetchColumn('select m.id
-            from ' . $pp->schema() . '.messages m,
-                ' . $pp->schema() . '.users u
-            where m.id < ?
-            ' . $sql_where . '
-            order by m.id desc
-            limit 1', [$id], 0, [\PDO::PARAM_INT]);
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
@@ -269,8 +243,8 @@ class MessagesShowController extends AbstractController
                 $tus, 'Transactie voor dit aanbod');
         }
 
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
+        $prev_ary = $prev_id ? ['id' => $prev_id] : [];
+        $next_ary = $next_id ? ['id' => $next_id] : [];
 
         $btn_nav_render->nav('messages_show', $pp->ary(),
             $prev_ary, $next_ary, false);

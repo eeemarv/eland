@@ -31,6 +31,46 @@ class MessageRepository
 		return $message;
 	}
 
+	public function get_prev_id(
+		int $ref_id,
+		array $visible_ary,
+		string $schema
+	):int
+	{
+        $stmt = $this->db->executeQuery('select m.id
+            from ' . $schema . '.messages m,
+                ' . $schema . '.users u
+			where m.id > ?
+				and u.status in (1, 2)
+				and m.access in (?)
+            order by m.id asc
+			limit 1',
+			[$ref_id, $visible_ary],
+			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
+
+		return $stmt->fetchColumn() ?: 0;
+	}
+
+	public function get_next_id(
+		int $ref_id,
+		array $visible_ary,
+		string $schema
+	):int
+	{
+        $stmt = $this->db->executeQuery('select m.id
+            from ' . $schema . '.messages m,
+                ' . $schema . '.users u
+			where m.id < ?
+				and u.status in (1, 2)
+				and m.access in (?)
+            order by m.id desc
+			limit 1',
+			[$ref_id, $visible_ary],
+			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
+
+		return $stmt->fetchColumn() ?: 0;
+	}
+
 	public function del(int $id, string $schema):bool
 	{
 		return $this->db->delete($schema . '.messages',
