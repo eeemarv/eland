@@ -16,26 +16,6 @@
 <p>
     {{- msg_content -}}
 </p>
-    {%- block html_from_contacts -%}
-    <hr />
-    <h4>
-        {{- 'private_msg.from_contacts'|trans({
-            '%from_account%': account(from_user.id, from_schema)
-        }) -}}
-    </h4>
-
-    {%- for c in from_contacts -%}
-
-    <p>
-        {{- c.abbrev -}}
-        <br>
-        <strong>
-            {{- c.value -}}
-        </strong>
-    </p>
-
-    {%- endfor -%}
-    {%- endblock html_from_contacts -%}
 <hr />
 {%- endblock html_content -%}
 
@@ -56,18 +36,5 @@
 
 - - - - - -
 
-{% block text_from_contacts %}
-{{ 'private_msg.from_contacts'|trans({
-    '%from_account%': account(from_user.id, from_schema)
-})|underline }}
-
-{% for c in from_contacts %}
-{{ c.abbrev }}
-{{ c.value }}
-
-{% endfor %}
-- - - - - -
-
-{% endblock text_from_contacts %}
 {% endautoescape %}
 {% endblock text_content %}
