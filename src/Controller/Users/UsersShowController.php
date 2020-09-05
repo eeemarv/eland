@@ -132,22 +132,9 @@ class UsersShowController extends AbstractController
 
             if (!count($errors))
             {
-                $stmt = $db->executeQuery('select c.value, tc.abbrev
-                    from ' . $su->schema() . '.contact c, ' .
-                        $su->schema() . '.type_contact tc
-                    where c.access in (?)
-                        and c.user_id = ?
-                        and c.id_type_contact = tc.id',
-                        [$item_access_service->get_visible_ary_for_role($user['role']), $su->id()],
-                        [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
-                    );
-
-                $from_contacts = $stmt->fetchAll();
-
                 $from_user = $user_cache_service->get($su->id(), $su->schema());
 
                 $vars = [
-                    'from_contacts'     => $from_contacts,
                     'from_user'			=> $from_user,
                     'from_schema'		=> $su->schema(),
                     'to_user'			=> $user,

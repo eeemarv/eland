@@ -33,20 +33,19 @@ class ContactRepository
 		return $contact;
 	}
 
-	public function get_all_of_user(
+	public function get_all_for_user(
 		int $user_id,
-		array $access_ary,
 		string $user_schema
 	):array
 	{
-		$stmt = $this->db->executeQuery('select c.value, tc.abbrev
+		$stmt = $this->db->executeQuery('select c.*, tc.abbrev
 			from ' . $user_schema . '.contact c, ' .
 				$user_schema . '.type_contact tc
 			where c.access in (?)
 				and c.user_id = ?
 				and c.id_type_contact = tc.id',
-				[$access_ary, $user_id],
-				[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
+				[$user_id],
+				[\PDO::PARAM_INT]
 		);
 
 		return $stmt->fetchAll();
