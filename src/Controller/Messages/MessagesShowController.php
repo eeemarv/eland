@@ -240,19 +240,6 @@ class MessagesShowController extends AbstractController
 
         $contacts_content = $contacts_response->getContent();
 
-        $assets_service->add([
-            'jssor',
-            'messages_show_images_slider.js',
-        ]);
-
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
-            $assets_service->add([
-                'fileupload',
-                'messages_show_images_upload.js',
-            ]);
-        }
-
         $msg_label_offer_want = $message['is_offer'] ? 'aanbod' : 'vraag';
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
@@ -291,21 +278,6 @@ class MessagesShowController extends AbstractController
         $btn_nav_render->nav_list($vr->get('messages'), $pp->ary(),
             [], 'Lijst', 'newspaper-o');
 
-/*
-        $heading_render->add(ucfirst($message['label']['offer_want']));
-        $heading_render->add(': ' . $message['subject']);
-
-
-        if ($expires_at_enabled
-            && isset($message['expires_at'])
-            && strtotime($message['expires_at'] . ' UTC') < time())
-        {
-            $heading_render->add_raw(' <small><span class="text-danger">Vervallen</span></small>');
-        }
-
-
-        $heading_render->fa('newspaper-o');
-*/
         $out = '';
 
         if ($category_enabled)
