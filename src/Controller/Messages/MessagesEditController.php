@@ -49,7 +49,10 @@ class MessagesEditController extends AbstractController
 
         $messages_command->user_id = $message['user_id'];
         $messages_command->offer_want = $message['is_offer'] ? 'offer' : 'want';
-        $messages_command->service_stuff = $message['is_service'] ? 'service' : 'stuff';
+        if (isset($message['is_service']) && isset($message['is_offer']))
+        {
+            $messages_command->service_stuff = $message['is_service'] ? 'service' : 'stuff';
+        }
         $messages_command->subject = $message['subject'];
         $messages_command->content = $message['content'];
         $messages_command->category_id = $message['category_id'];
