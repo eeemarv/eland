@@ -26,6 +26,15 @@
 		{{- ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
 			'%msg%': msg.subject
 		}) -}}
+		{%- if msg.postcode -%}
+			<br />
+			{{- 'label.postcode'|trans -}}:&nbsp;
+			<strong>
+				<span bgcolor="acacac" title="{{- 'label.postcode'|trans -}}">
+				{{- msg.postcode -}}
+				</span>
+			</strong>
+		{%- endif -%}
 		<br />
 		{%- if i.eland_server -%}
 		{{- 'periodic_overview.intersystem.account'|trans({

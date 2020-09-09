@@ -7,12 +7,32 @@
 
 {%- block html_body -%}
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>{{- block('subject') -}}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
-    <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+    <body bgcolor="#f1f1f1" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" style="font-family: Ubuntu, Roboto, Open Sans, Droid Sans, Arial, Helvetica, sans-serif; font-size: 18px;">
+    <table border="1" cellpadding="0" cellspacing="0" width="100%" >
+    <tr>
+    <td>
+    <table align="center" border="1" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+    <td>
+    <table align="center" border="1" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+    <td>
+        {%- if schema is defined -%}
+            <h1>{{- config_str('system.name', schema) -}}</h1>
+        {%- else -%}
+            &nbsp;
+        {%- endif -%}
+    </td>
+    </tr>
+
+
     {%- block html_pretext -%}{%- endblock -%}
     {%- block html_content -%}{%- endblock -%}
     {%- block html_account_info -%}{%- endblock -%}
@@ -20,17 +40,26 @@
     {%- block html_unsubscribe -%}{%- endblock -%}
     {%- block html_footer -%}
         {%- if schema is defined %}
-            <p>
+            <tr><td>
                 {{- 'b.footer'|trans({
                     '%link_open%': context_url_open(
                         'home', mpp_anon_ary(schema), {}),
                     '%link_close%': '</a>',
                     '%system_name%': config_str('system.name', schema)
                 })|raw -}}
-            </p>
+            </td></tr>
         {%- endif -%}
     {%- endblock html_footer -%}
+    <tr><td>&nbsp;</td></tr>
+    </table>
+    </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
     </body>
+    </html>
 {%- endblock html_body -%}
 
 {% block text_body %}

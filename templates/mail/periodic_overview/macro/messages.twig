@@ -33,6 +33,13 @@
 	<br />
 {%- endif -%}
 {{- msg.content|raw -}}
+{%- if msg.postcode -%}
+	<br />
+	{{- 'label.postcode'|trans -}}:&nbsp;
+	<strong bgcolor="acacac" title="{{- 'label.postcode'|trans -}}">
+		{{- msg.postcode -}}
+	</strong>
+{%- endif -%}
 <br />
 {{- context_url_open('users_show', mpp_ary(c.user_id, c.schema),
 	{'id': msg.user_id})|raw -}}
