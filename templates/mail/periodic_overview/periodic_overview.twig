@@ -15,6 +15,17 @@
 {%- import 'mail/periodic_overview/macro/users.twig' as u -%}
 {%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
 
+{%- embed 'mail/embed/table600.html.twig' -%}
+    {%- trans_default_domain 'mail' -%}
+    {%- block bgcolor_attr -%}{%- endblock -%}
+    {%- block td_align -%}right{%- endblock -%}
+    {%- block td_style %}font-size: 16px;{%- endblock -%}
+    {%- block td_bottom -%}40px{%- endblock -%}
+    {%- block td_content -%}
+    {{- 'periodic_overview.subject'|trans -}}
+    {%- endblock td_content -%}
+{%- endembed -%}
+
 {%- for b in blocks_sorted -%}
     {%- if b == 'messages' -%}
         {{- m.html(_context) -}}

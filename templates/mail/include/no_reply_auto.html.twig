@@ -1,5 +1,11 @@
-<p>
-    <i>
-        {{- 'b.no_reply_auto'|trans({}, 'mail') -}}
-    </i>
-</p>
+{%- embed 'mail/embed/table600.html.twig' -%}
+{%- block bgcolor_attr -%}{%- endblock -%}
+{%- block td_top -%}3px{%- endblock -%}
+{%- block td_bottom -%}3px{%- endblock -%}
+{%- block td_style %}font-size: 14px;{%- endblock -%}
+{%- block td_content -%}
+<i>
+    {{- 'b.no_reply_auto'|trans({}, 'mail') -}}
+</i>
+{%- endblock td_content -%}
+{%- endembed -%}

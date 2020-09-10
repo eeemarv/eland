@@ -404,16 +404,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$docs = $stmt->fetchAll();
 		}
 
-	//   limit items for testing
-		$new_users = array_slice($new_users, 0, 2);
-		$leaving_users = array_slice($leaving_users, 0, 2);
-		$news = array_slice($news, 0, 2);
-		$transactions = array_slice($transactions, 0, 2);
-		$forum = array_slice($forum, 0, 2);
-		$docs = array_slice($docs, 0, 2);
-		$messages = array_slice($messages, 0, 2);
-		$intersystem = array_slice($intersystem, 0, 2);
-	//
+		//
 
 		$vars = [
 			'new_users'				=> $new_users,
