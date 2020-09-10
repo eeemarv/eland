@@ -1,30 +1,64 @@
 {%- trans_default_domain 'mail' -%}
-<h4>
-    {{- 'label.your_account'|trans -}}
-</h4>
 
-<ul>
-<li>
-    <a href="{{- context_url('login', mpp_anon_ary(schema),
-        {'login': account_code(user_id, schema)}) -}}">
-        {{- 'label.login'|trans -}}
-    </a>
-</li>
-<li>
-    {{- 'label.account_code'|trans -}}:&nbsp;
-    <strong>
-        {{- account_code(user_id, schema) -}}
-    </strong>
-</li>
-<li>{{- 'label.username'|trans -}}:&nbsp;
-    <strong>
-        {{- username(user_id, schema) -}}
-    </strong>
-</li>
-<li>{{- 'label.balance'|trans -}}:&nbsp;
-    <strong>
-        {{- account_balance(user_id, schema) -}}
-    </strong>&nbsp;
-    {{- config_str('transactions.currency.name', schema) -}}
-</li>
-</ul>
+{%- embed 'mail/embed/table600.html.twig' -%}
+    {%- trans_default_domain 'mail' -%}
+    {%- block td_top -%}20px{%- endblock -%}
+    {%- block td_bottom -%}20px{%- endblock -%}
+    {%- block bgcolor -%}{{- bgcolor_system_name -}}{%- endblock -%}
+    {%- block td_align -%}left{%- endblock -%}
+    {%- block td_style %}font-size: 16px; color: #ffffff;{%- endblock -%}
+    {%- block td_content -%}
+        {{- 'label.your_account'|trans -}}
+    {%- endblock td_content -%}
+{%- endembed -%}
+
+{%- embed 'mail/embed/table600.html.twig' -%}
+    {%- trans_default_domain 'mail' -%}
+    {%- block td_top -%}20px{%- endblock -%}
+    {%- block td_bottom -%}20px{%- endblock -%}
+    {%- block bgcolor -%}
+        ffffff
+    {%- endblock -%}
+    {%- block td_align -%}left{%- endblock -%}
+    {%- block td_style %}font-size: 14px;{%- endblock -%}
+    {%- block td_content -%}
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td>
+                <a href="{{- context_url('login', mpp_anon_ary(schema),
+                {'login': account_code(user_id, schema)}) -}}">
+                {{- 'label.login'|trans -}}
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{- 'label.account_code'|trans -}}:&nbsp;
+                <strong>
+                    {{- account_code(user_id, schema) -}}
+                </strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{- 'label.username'|trans -}}:&nbsp;
+                <strong>
+                    {{- username(user_id, schema) -}}
+                </strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{- 'label.balance'|trans -}}:&nbsp;
+                <strong>
+                    {{- account_balance(user_id, schema) -}}
+                </strong>&nbsp;
+                {{- config_str('transactions.currency.name', schema) -}}
+            </td>
+        </tr>
+    </table>
+
+    {%- endblock td_content -%}
+{%- endembed -%}
+
+{%- include 'mail/include/bgspacer40.html.twig' -%}

@@ -2,54 +2,114 @@
 
 {%- macro html(c) -%}
 {%- set et = c.et -%}
-<h3>
-{{- 'periodic_overview.news.title'|trans({
-	'%link_open%': context_url_open('news_extended', mpp_ary(c.user_id, c.schema), {}),
-	'%link_close%': '</a>'
-})|raw -}}
-</h3>
 
-{%- if c.news -%}
-<ul>
+{%- embed 'mail/embed/table600.html.twig' -%}
+	{%- trans_default_domain 'mail' -%}
+	{%- block td_top -%}20px{%- endblock -%}
+	{%- block td_bottom -%}20px{%- endblock -%}
+	{%- block bgcolor -%}3600cf{%- endblock -%}
+	{%- block td_align -%}center{%- endblock -%}
+	{%- block td_style %}font-size: 16px;color: #ffffff;{%- endblock -%}
+	{%- block td_content -%}
+		{{- 'periodic_overview.news.title'|trans -}}
+	{%- endblock td_content -%}
+{%- endembed -%}
+
 {%- for n in c.news -%}
-<li>
-<h4>
-{{- context_url_open('news_show', mpp_ary(c.user_id, c.schema), {'id': n.id})|raw -}}
-{{- n.subject -}}
-</a>
-</h4>
-{{- n.content|raw -}}<br />
+{%- embed 'mail/embed/table600.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+{%- block bgcolor -%}
+	{%- if loop.index is even -%}
+		e3d4ff
+	{%- else -%}
+		f0e0ff
+	{%- endif -%}
+{%- endblock -%}
+{%- block td_top -%}20px{%- endblock -%}
+{%- block td_bottom -%}20px{%- endblock -%}
+{%- block td_style -%}font-size: 14px;{%- endblock -%}
+{%- block td_content -%}
+<table style="font-size: 20px; font-weight: bold;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			{{- n.subject -}}
+		</td>
+	</tr>
+</table>
+<table style="font-size: 14px;padding-top: 20px; padding-bottom: 20px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			{{- n.content|raw -}}
+		</td>
+	</tr>
+</table>
 {%- if n.location -%}
-	{{- 'label.location'|trans -}}:
-	&nbsp;<strong>
-	{{- n.location -}}
-	</strong>
-	<br />
+<table style="font-size: 14px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td style="padding-right: 10px;" width="100">
+			{{- 'label.location'|trans -}}
+		</td>
+		<td style="font-weight: bold;">
+			{{- n.location -}}
+		</td>
+	</tr>
+</table>
 {%- endif -%}
 {%- if n.event_at -%}
-	{{- 'label.date'|trans -}}:
-	&nbsp;<strong>
-	{{ n.event_at|date_format('day', c.schema) }}
-	</strong>
-	<br />
+<table style="font-size: 14px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td style="padding-right: 10px;" width="100">
+			{{- 'label.date'|trans -}}
+		</td>
+		<td style="font-weight: bold;">
+			{{ n.event_at|date_format('day', c.schema) }}
+		</td>
+	</tr>
+</table>
 {%- endif -%}
-{{- 'periodic_overview.news.creator'|trans({
-	'%link_open%': context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': n.user_id}),
-	'%link_close%': '</a>',
-	'%account%': account(n.user_id, c.schema)
-})|raw -}}
-</li>
+<table style="font-size: 14px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			{{- 'periodic_overview.news.creator'|trans({
+				'%link_open%': context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': n.user_id}),
+				'%link_close%': '</a>',
+				'%account%': account(n.user_id, c.schema)
+			})|raw -}}
+		</td>
+	</tr>
+</table>
+<table style="font-size: 14px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			({{- context_url_open('news_show', mpp_ary(c.user_id, c.schema), {'id': n.id})|raw -}}
+			{{- 'label.link'|trans -}}
+			</a>)
+		</td>
+	</tr>
+</table>
+{%- endblock td_content -%}
+{%- endembed -%}
 
 {%- endfor -%}
-</ul>
-{%- else -%}
-	<p>
-	{%- if c.block_options.news == 'recent' -%}
-		{{- 'periodic_overview.news.no_recent'|trans -}}
-	{%- else -%}
-		{{- 'periodic_overview.news.none'|trans -}}
-	{%- endif -%}
-	</p>
+
+{%- if not c.news -%}
+
+	{%- embed 'mail/embed/table600.html.twig' -%}
+	{%- trans_default_domain 'mail' -%}
+	{%- block td_top -%}20px{%- endblock -%}
+	{%- block td_bottom -%}20px{%- endblock -%}
+	{%- block bgcolor -%}e3d4ff{%- endblock -%}
+	{%- block td_align -%}center{%- endblock -%}
+	{%- block td_style %}font-size: 14px;{%- endblock -%}
+	{%- block td_content -%}
+		{%- if c.block_options.news == 'recent' -%}
+			{{- 'periodic_overview.news.no_recent'|trans -}}
+		{%- else -%}
+			{{- 'periodic_overview.news.none'|trans -}}
+		{%- endif -%}
+	{%- endblock td_content -%}
+	{%- endembed -%}
+
 {%- endif -%}
 
 {%- endmacro html -%}
