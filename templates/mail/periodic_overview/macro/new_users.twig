@@ -1,0 +1,80 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- macro html(c) -%}
+	{%- set et = c.et -%}
+	{%- embed 'mail/embed/table600.html.twig' -%}
+		{%- trans_default_domain 'mail' -%}
+		{%- block td_top -%}20px{%- endblock -%}
+		{%- block td_bottom -%}20px{%- endblock -%}
+		{%- block bgcolor -%}229922{%- endblock -%}
+		{%- block td_align -%}center{%- endblock -%}
+		{%- block td_style %}font-size: 16px;color: #ffffff;{%- endblock -%}
+		{%- block td_content -%}
+		{{- 'periodic_overview.new_users.title'|trans -}}
+		{%- endblock td_content -%}
+	{%- endembed -%}
+{%- if c.new_users -%}
+	{%- for uid in c.new_users -%}
+		{%- embed 'mail/embed/table600.html.twig' -%}
+		{%- trans_default_domain 'mail' -%}
+		{%- block bgcolor -%}
+			{%- if loop.index is even -%}
+				ddffdd
+			{%- else -%}
+				cceecc
+			{%- endif -%}
+		{%- endblock -%}
+		{%- block td_top -%}10px{%- endblock -%}
+		{%- block td_bottom -%}10px{%- endblock -%}
+		{%- block td_style -%}font-size: 14px;{%- endblock -%}
+		{%- block td_content -%}
+			{{- context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': uid})|raw -}}
+				{{- account(uid, c.schema) -}}
+			</a>
+		{%- endblock td_content -%}
+		{%- endembed -%}
+	{%- endfor -%}
+{%- else -%}
+
+	{%- embed 'mail/embed/table600.html.twig' -%}
+	{%- trans_default_domain 'mail' -%}
+	{%- block td_top -%}20px{%- endblock -%}
+	{%- block td_bottom -%}20px{%- endblock -%}
+	{%- block bgcolor -%}
+		cceecc
+	{%- endblock -%}
+	{%- block td_align -%}center{%- endblock -%}
+	{%- block td_style %}font-size: 14px;{%- endblock -%}
+	{%- block td_content -%}
+		{%- if c.block_options.new_users == 'recent' -%}
+			{{- ('periodic_overview.new_users.no_recent')|trans -}}
+		{%- else -%}
+			{{- ('periodic_overview.new_users.none')|trans -}}
+		{%- endif -%}
+	{%- endblock td_content -%}
+	{%- endembed -%}
+{%- endif -%}
+
+	{%- include 'mail/include/spacer20.html.twig' -%}
+{%- endmacro html -%}
+
+
+{% macro text(c) %}
+{%- set et = c.et -%}
+{% autoescape false %}
+
+{{ ('periodic_overview.new_users.title')|trans|underline }}
+
+{% if c.new_users %}
+{% for uid in c.new_users %}
+* {{ account(uid, c.schema) }} {{ context_url('users_show', mpp_ary(c.user_id, c.schema), {'id': uid}) }}
+{% endfor %}
+{% else %}
+{% if c.block_options.new_users == 'recent' %}
+{{ ('periodic_overview.new_users.no_recent')|trans }}
+{% else %}
+{{ ('periodic_overview.none_users.none')|trans }}
+{% endif %}
+{% endif %}
+{% endautoescape %}
+{% endmacro text %}

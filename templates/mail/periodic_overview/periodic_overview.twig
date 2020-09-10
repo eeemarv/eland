@@ -12,7 +12,8 @@
 {%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
 {%- import 'mail/periodic_overview/macro/news.twig' as n -%}
 {%- import 'mail/periodic_overview/macro/docs.twig' as d -%}
-{%- import 'mail/periodic_overview/macro/users.twig' as u -%}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
 {%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
 
 {%- embed 'mail/embed/table600.html.twig' -%}
@@ -40,9 +41,9 @@
     {%- elseif b == 'docs' -%}
         {{- d.html(_context) -}}
     {%- elseif b == 'new_users' -%}
-        {{- u.html(_context, 'new') -}}
+        {{- nu.html(_context) -}}
     {%- elseif b == 'leaving_users' -%}
-        {{- u.html(_context, 'leaving') -}}
+        {{- lu.html(_context) -}}
     {%- elseif b == 'transactions' -%}
         {{- t.html(_context) -}}
     {%- endif -%}
@@ -57,7 +58,8 @@
 {% import 'mail/periodic_overview/macro/forum.twig' as f %}
 {% import 'mail/periodic_overview/macro/news.twig' as n %}
 {% import 'mail/periodic_overview/macro/docs.twig' as d %}
-{% import 'mail/periodic_overview/macro/users.twig' as u %}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
 {% import 'mail/periodic_overview/macro/transactions.twig' as t %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
@@ -73,9 +75,9 @@
 {% elseif b == 'docs' %}
 {{ d.text(_context) }}
 {% elseif b == 'new_users' %}
-{{ u.text(_context, 'new') }}
+{{ nu.text(_context) }}
 {% elseif b == 'leaving_users' %}
-{{ u.text(_context, 'leaving') }}
+{{ lu.text(_context) }}
 {% elseif b == 'transactions' %}
 {{ t.text(_context) }}
 {% endif %}
