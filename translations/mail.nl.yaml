@@ -89,6 +89,8 @@ reply:
 account_activation:
   subject: >-
     Activatie van je Account bij %system_name%
+  sub_header: >-
+    Activatie account
   welcome: >-
     Welkom bij %link_open%%system_name%%link_close%.
   login: >-
@@ -100,6 +102,8 @@ account_activation:
 account_activation_admin:
   subject: >-
     Activatie Account %account_name%
+  sub_header: >-
+    Activatie Account
   message: >-
     Account %link_open%%account_name%%link_close%
     werd geactiveerd.

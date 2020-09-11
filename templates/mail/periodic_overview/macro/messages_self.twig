@@ -8,13 +8,13 @@
 	} -%}
 
 	{%- if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages_self.max'|trans({
 				'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)}),
 			'bgcolor': 'ffccee'
 		} -%}
 	{%- elseif not c.messages_self -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages_self.none'|trans({
 					'%link_open%': context_url_open('messages_extended',
 						mpp_ary(c.user_id, c.schema), {}),
@@ -64,7 +64,7 @@
 	{%- endfor -%}
 
 	{%- if c.messages_self -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages_self.add'|trans({
 				'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
 				'%link_close%': '</a>'

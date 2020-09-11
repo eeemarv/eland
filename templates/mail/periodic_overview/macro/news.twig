@@ -9,12 +9,12 @@
 
 	{%- if not c.news -%}
 		{%- if c.block_options.news == 'recent' -%}
-			{%- include 'mail/include/info_panel.html.twig' with {
+			{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 				'info': 'periodic_overview.news.no_recent'|trans,
 				'bgcolor': 'e3d4ff'
 			} -%}
 		{%- else -%}
-			{%- include 'mail/include/info_panel.html.twig' with {
+			{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 				'info': 'periodic_overview.news.none'|trans,
 				'bgcolor': 'e3d4ff'
 			} -%}

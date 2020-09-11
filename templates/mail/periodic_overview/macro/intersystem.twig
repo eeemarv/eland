@@ -8,7 +8,7 @@
 	} -%}
 
 	{%- if c.intersystem -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.intersystem.explain'|trans({
 				'%link_open%': context_url_open('login', mpp_anon_ary(c.schema), {}),
 				'%link_close%': '</a>'

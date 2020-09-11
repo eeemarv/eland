@@ -7,6 +7,8 @@
 }) -}}
 {%- endblock subject_line %}
 
+{%- block sub_header -%}account_activation_admin.sub_header{%- endblock -%}
+
 {%- block html_content -%}
 <p>
 {{- 'account_activation_admin.message'|trans({
@@ -24,6 +26,7 @@
 {%- endif -%}
 </p>
 
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}

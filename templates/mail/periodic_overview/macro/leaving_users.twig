@@ -9,12 +9,12 @@
 
 	{%- if not c.leaving_users -%}
 	{%- if c.block_options.leaving_users == 'recent' -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.leaving_users.no_recent'|trans,
 			'bgcolor': 'eedddd'
 		} -%}
 	{%- else -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.leaving_users.none'|trans,
 			'bgcolor': 'eedddd'
 		} -%}

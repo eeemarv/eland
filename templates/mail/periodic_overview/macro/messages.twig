@@ -8,7 +8,7 @@
 	} -%}
 
 	{%- if c.messages -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages.explain'|trans({
 				'%link_open%': context_url_open('messages_extended', mpp_ary(c.user_id, c.schema), {}),
 				'%link_close%': '</a>',
@@ -17,7 +17,7 @@
 			'bgcolor': 'eeeeee'
 		} -%}
 	{%- else -%}
-		{%- include 'mail/include/info_panel.html.twig' with {
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages.none'|trans({
 				'%link_open%': context_url_open('messages_extended',
 					mpp_ary(c.user_id, c.schema), {}),
