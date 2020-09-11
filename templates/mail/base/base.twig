@@ -18,6 +18,10 @@
         {%- endblock -%}
     {%- endset -%}
 
+    {%- set sub_header -%}
+        {%- block sub_header -%}{%- endblock -%}
+    {%- endset -%}
+
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -25,7 +29,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
-    <body topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" style="font-family: Ubuntu, Roboto, Open Sans, Droid Sans, Arial, Helvetica, sans-serif; font-size: 16px;">
+    <body topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" style="font-family: Verdana, Arial, Roboto, Ubuntu, Open Sans; font-size: 16px; line-height: 1.4;">
     <table bgcolor="#{{- bgcolor -}}" border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
     <td>
@@ -35,17 +39,25 @@
 
     {%- block html_pretext -%}{%- endblock -%}
 
-    {%- if schema is defined -%}
-        {%- embed 'mail/embed/table600.html.twig' -%}
-            {%- block bgcolor -%}{{- bgcolor_system_name -}}{%- endblock -%}
-            {%- block td_top -%}30px{%- endblock -%}
-            {%- block td_bottom -%}30px{%- endblock -%}
-            {%- block td_style %}font-size: 24px; color: #ffffff;{%- endblock -%}
-            {%- block td_content -%}
-            {{- config_str('system.name', schema) -}}
-            {%- endblock td_content -%}
-        {%- endembed -%}
-    {%- endif -%}
+    {%- block html_header -%}
+        {%- if schema is defined -%}
+            {%- embed 'mail/embed/table600.html.twig' -%}
+                {%- block bgcolor -%}{{- bgcolor_system_name -}}{%- endblock -%}
+                {%- block td_top -%}30px{%- endblock -%}
+                {%- block td_bottom -%}30px{%- endblock -%}
+                {%- block td_style %}font-size: 24px; color: #ffffff;{%- endblock -%}
+                {%- block td_content -%}
+                {{- config_str('system.name', schema) -}}
+                {%- endblock td_content -%}
+            {%- endembed -%}
+        {%- endif -%}
+    {%- endblock html_header -%}
+
+    {%- block html_sub_header -%}
+        {%- if sub_header is defined and sub_header != '' -%}
+            {%- include 'mail/include/sub_header.html.twig' with {'sub_header': sub_header} -%}
+        {%- endif -%}
+    {%- endblock html_sub_header -%}
 
     {%- block html_content -%}{%- endblock -%}
     {%- block html_account_info -%}{%- endblock -%}
@@ -82,6 +94,8 @@
 
 {% block text_body %}
 {% block text_pretext %}{% endblock %}
+{% block text_header %}{% endblock %}
+{% block text_subheader %}{% endblock %}
 {% block text_content %}{% endblock %}
 {% block text_account_info %}{% endblock %}
 {% block text_support %}{% endblock %}

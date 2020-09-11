@@ -1,40 +1,28 @@
 {%- trans_default_domain 'mail' -%}
 
 {% macro html(c) -%}
-{%- set et = c.et -%}
-	{%- embed 'mail/embed/table600.html.twig' -%}
-		{%- trans_default_domain 'mail' -%}
-		{%- block td_top -%}20px{%- endblock -%}
-		{%- block td_bottom -%}20px{%- endblock -%}
-		{%- block bgcolor -%}990077{%- endblock -%}
-		{%- block td_align -%}center{%- endblock -%}
-		{%- block td_style %}font-size: 16px;color: #ffffff;{%- endblock -%}
-		{%- block td_content -%}
-		{{- 'periodic_overview.messages_self.title'|trans -}}
-		{%- endblock td_content -%}
-	{%- endembed -%}
+	{%- set et = c.et -%}
+	{%- include 'mail/include/p_header.html.twig' with {
+		'p_header': 'periodic_overview.messages_self.title',
+		'p_bgcolor': '990077'
+	} -%}
 
-	{%- embed 'mail/embed/table600.html.twig' -%}
-		{%- trans_default_domain 'mail' -%}
-		{%- block bgcolor -%}ffccee{%- endblock -%}
-		{%- block td_bottom -%}20px{%- endblock -%}
-		{%- block td_style -%}font-size: 14px;{%- endblock -%}
-		{%- block td_content -%}
-			{%- if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) -%}
-				{{- 'periodic_overview.messages_self.max'|trans({
-					'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)
-				}) -}}
-			{%- elseif not c.messages_self -%}
-				{{- 'periodic_overview.messages_self.none'|trans({
+	{%- if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) -%}
+		{%- include 'mail/include/info_panel.html.twig' with {
+			'info': 'periodic_overview.messages_self.max'|trans({
+				'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)}),
+			'bgcolor': 'ffccee'
+		} -%}
+	{%- elseif not c.messages_self -%}
+		{%- include 'mail/include/info_panel.html.twig' with {
+			'info': 'periodic_overview.messages_self.none'|trans({
 					'%link_open%': context_url_open('messages_extended',
 						mpp_ary(c.user_id, c.schema), {}),
 					'%link_close%': '</a>'
-				})|raw -}}
-			{%- else -%}
-				&nbsp;
-			{%- endif -%}
-		{%- endblock td_content -%}
-	{%- endembed -%}
+				})|raw,
+			'bgcolor': 'ffccee'
+		} -%}
+	{%- endif -%}
 
 	{%- for msg in c.messages_self|slice(0, config_int('periodic_mail.user.render.messages_self.max', c.schema)) -%}
 		{%- embed 'mail/embed/table600.html.twig' -%}
@@ -48,37 +36,19 @@
 		{%- endblock -%}
 		{%- block td_top -%}10px{%- endblock -%}
 		{%- block td_bottom -%}10px{%- endblock -%}
-		{%- block td_style -%}font-size: 14px;{%- endblock -%}
+		{%- block td_style -%}font-size: 16px;{%- endblock -%}
 		{%- block td_content -%}
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td width="150" align="left" valign="top">
 					{%- if msg.is_offer -%}
-						{%- embed 'mail/embed/btn.html.twig' -%}
-							{%- trans_default_domain 'mail' -%}
-							{%- block bgcolor -%}ffffff{%- endblock -%}
-							{%- block border_color -%}222222{%- endblock -%}
-							{%- block color -%}222222{%- endblock -%}
-							{%- block label -%}
-								{{- 'label.offer'|trans -}}
-							{%- endblock label -%}
-							{%- block href -%}
-								{{- context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id}) -}}
-							{%- endblock href -%}
-						{%- endembed -%}
+						{%- include 'mail/include/btn_offer.html.twig' with {
+							'href': context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})
+						} -%}
 					{%- else -%}
-						{%- embed 'mail/embed/btn.html.twig' -%}
-							{%- trans_default_domain 'mail' -%}
-							{%- block bgcolor -%}777777{%- endblock -%}
-							{%- block border_color -%}ffffff{%- endblock -%}
-							{%- block color -%}ffffff{%- endblock -%}
-							{%- block label -%}
-								{{- 'label.want'|trans -}}
-							{%- endblock label -%}
-							{%- block href -%}
-								{{- context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id}) -}}
-							{%- endblock href -%}
-						{%- endembed -%}
+						{%- include 'mail/include/btn_want.html.twig' with {
+							'href': context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})
+						} -%}
 					{%- endif -%}
 				</td>
 				<td width="30"></td>
@@ -93,23 +63,15 @@
 		{%- endembed -%}
 	{%- endfor -%}
 
-	{%- embed 'mail/embed/table600.html.twig' -%}
-		{%- trans_default_domain 'mail' -%}
-		{%- block td_top -%}20px{%- endblock -%}
-		{%- block td_bottom -%}20px{%- endblock -%}
-		{%- block bgcolor -%}
-			ffccee
-		{%- endblock -%}
-		{%- block td_align -%}center{%- endblock -%}
-		{%- block td_style %}font-size: 14px;{%- endblock -%}
-		{%- block td_content -%}
-		{{- 'periodic_overview.messages_self.add'|trans({
-			'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
-			'%link_close%': '</a>'
-		})|raw -}}
-		{%- endblock td_content -%}
-	{%- endembed -%}
-
+	{%- if c.messages_self -%}
+		{%- include 'mail/include/info_panel.html.twig' with {
+			'info': 'periodic_overview.messages_self.add'|trans({
+				'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
+				'%link_close%': '</a>'
+			})|raw ,
+			'bgcolor': 'ffccee'
+		} -%}
+	{%- endif -%}
 {%- endmacro html -%}
 
 {% macro text(c) %}

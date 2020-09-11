@@ -395,8 +395,15 @@ periodic_overview:
     title: >-
       Recent InterSysteem Vraag en Aanbod
     explain: >-
-      %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
+      %link_open%Log in%link_close% en ga via
+      het menu "Systeem" in de navigatiebalk
       naar het betreffende InterSysteem.
+    none: >-
+      Er is geen recent interSysteem vraag en aanbod.
+      Om vraag en aanbod in andere systemen te
+      bekijken, %link_open%log in%link_close% en ga
+      via het menu "Systeem" in de navigatiebalk naar
+      andere systemen.
     system_name: >-
       Systeem: %name%
     account: >-

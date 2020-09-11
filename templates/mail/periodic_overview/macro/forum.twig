@@ -1,29 +1,28 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- macro html(c) -%}
-{%- set et = c.et -%}
-	<h3>
-		{{- 'periodic_overview.forum.title'|trans -}}
-	</h3>
+	{%- set et = c.et -%}
+	{%- include 'mail/include/p_header.html.twig' with {
+		'p_header': 'periodic_overview.forum.title',
+		'p_bgcolor': '666600'
+	} -%}
 
-	{%- if c.forum -%}
-	<ul>
+	{%- if not c.forum -%}
+		{%- include 'mail/include/info_panel.html.twig' with {
+			'info': 'periodic_overview.forum.none'|trans({
+				'%link_open%': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
+				'%link_close%': '</a>'
+			})|raw,
+			'bgcolor': 'ffff99'
+		} -%}
+	{%- endif -%}
+
 	{%- for f in c.forum -%}
-	<li>
+
 	{{- context_url_open('forum_topic', mpp_ary(c.user_id, c.schema), {'id': f.id})|raw -}}
 	{{- f.subject -}}
 	</a>
-	</li>
 	{%- endfor -%}
-	</ul>
-	{%- else -%}
-	<p>
-	{{- 'periodic_overview.forum.none'|trans({
-		'%link_open%': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
-		'%link_close%': '</a>'
-	})|raw -}}
-	</p>
-	{%- endif -%}
 
 {%- endmacro html -%}
 
