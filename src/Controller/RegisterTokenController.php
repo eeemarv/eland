@@ -205,7 +205,7 @@ class RegisterTokenController extends AbstractController
             'to' 					=> [$data['email'] => $user['fullname']],
             'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
             'pre_html_template'		=> $pre_html_template,
-            'template'				=> 'skeleton',
+            'template'				=> 'skeleton/user',
             'vars'					=> $vars,
         ], 8500);
 

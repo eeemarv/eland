@@ -4,8 +4,12 @@
     {{- subject|raw -}}
 {%- endblock -%}
 
+{%- block bgcolor_sytem_name -%}3600cf{%- endblock -%}
+
 {%  block html_content -%}
-    {{- html|raw -}}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': html|raw
+    } -%}
 {%- endblock -%}
 
 {%- block text_content %}

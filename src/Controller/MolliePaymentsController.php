@@ -133,7 +133,7 @@ class MolliePaymentsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $filter['code'] = $account_render->str($filter['uid'], $pp->schema());
+            $filter['code'] = $account_render->str((int) $filter['uid'], $pp->schema());
             $params['f']['uid'] = $filter['uid'];
         }
 
@@ -526,7 +526,7 @@ class MolliePaymentsController extends AbstractController
                         'pre_html_template' => $bulk_mail_content,
                         'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
                         'vars'				=> $vars,
-                        'template'			=> 'skeleton',
+                        'template'			=> 'skeleton/user',
                     ], random_int(200, 2000));
                 }
 
@@ -584,7 +584,7 @@ class MolliePaymentsController extends AbstractController
                     $mail_queue->queue([
                         'schema'			=> $pp->schema(),
                         'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
-                        'template'			=> 'skeleton',
+                        'template'			=> 'skeleton/admin',
                         'pre_html_template'	=> $mail_info . $bulk_mail_content,
                         'vars'				=> $vars,
                     ], 8000);
