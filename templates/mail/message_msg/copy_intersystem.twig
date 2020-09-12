@@ -8,6 +8,8 @@
     })|raw -}}
 {%- endblock subject_line %}
 
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+
 {% block html_explain -%}
     {%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
     {{- ('message_msg_copy_intersystem.explain_' ~ offer_want)|trans({

@@ -70,8 +70,13 @@ subscribed:
     adres in de %link_open%instellingen%link_close%.
 
 private_msg:
+  sub_header: >-
+    Persoonlijk bericht
   from_contacts: >-
     Contactgegevens van %from_account%
+private_msg_copy:
+  sub_header: >-
+    Kopie van je bericht
 
 reply:
   user: >-

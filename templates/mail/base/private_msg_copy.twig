@@ -1,18 +1,31 @@
 {% extends 'mail/base/no_reply.twig' %}
 {%- trans_default_domain 'mail' -%}
 
+{%- block sub_header -%}private_msg_copy.sub_header{%- endblock -%}
+{%- block bgcolor_sub_header -%}ffddcc{%- endblock -%}
 {%- block bgcolor_system_name -%}000000{%- endblock -%}
 
 {% block html_content -%}
-<p>
+    {%- set html_explain -%}
     {%- block html_explain -%}{%- endblock -%}
-</p>
-<hr />
-<p>
-    {{- msg_content|nl2br -}}
-</p>
-<hr />
+    {%- endset -%}
 
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': html_explain|raw,
+        'bgcolor': 'ffeedd'
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': 'ffeedd'
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': msg_content|nl2br
+    } -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}

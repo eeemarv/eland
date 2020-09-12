@@ -1,24 +1,46 @@
 {% extends 'mail/base/base.twig' %}
 {%- trans_default_domain 'mail' -%}
 
-{%- block bgcolor_system_name -%}aa3300{%- endblock -%}
+{%- block sub_header -%}private_msg.sub_header{%- endblock -%}
+{%- block bgcolor_sub_header -%}eeddee{%- endblock -%}
+{%- block bgcolor_system_name -%}660066{%- endblock -%}
 
 {% block html_content -%}
-<p>
-    {%- block html_explain -%}{%- endblock -%}
-    {%- block html_reply -%}&nbsp;
-        {{- 'reply.user'|trans({
-            '%from_account%': account(from_user.id, from_schema),
-            '%link_open%': context_url_open('users_show', mpp_ary(to_user.id, to_schema), {'id': from_user.id}),
-            '%link_close%': '</a>'
-        })|raw -}}
-    {%- endblock html_reply -%}
-</p>
-<hr />
-<p>
-    {{- msg_content|nl2br -}}
-</p>
-<hr />
+    {%- set html_explain -%}
+        {%- block html_explain -%}{%- endblock -%}
+    {%- endset -%}
+
+    {%- set html_reply -%}
+        {%- block html_reply -%}
+            {{- 'reply.user'|trans({
+                '%from_account%': account(from_user.id, from_schema),
+                '%link_open%': context_url_open('users_show', mpp_ary(to_user.id, to_schema), {'id': from_user.id}),
+                '%link_close%': '</a>'
+            })|raw -}}
+        {%- endblock html_reply -%}
+    {%- endset -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': html_explain|raw,
+        'bgcolor': 'ffeeff'
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': html_reply|raw,
+        'bgcolor': 'ffeeff'
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': 'ffeeff'
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': msg_content|nl2br
+    } -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}

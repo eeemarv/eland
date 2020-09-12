@@ -22,6 +22,10 @@
         {%- block sub_header -%}{%- endblock -%}
     {%- endset -%}
 
+    {%- set bgcolor_sub_header -%}
+        {%- block bgcolor_sub_header -%}ffffff{%- endblock -%}
+    {%- endset -%}
+
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -55,7 +59,10 @@
 
     {%- block html_sub_header -%}
         {%- if sub_header is defined and sub_header != '' -%}
-            {%- include 'mail/include/sub_header.html.twig' with {'sub_header': sub_header} -%}
+            {%- include 'mail/include/sub_header.html.twig' with {
+                'sub_header': sub_header,
+                'bgcolor': bgcolor_sub_header
+            } -%}
         {%- endif -%}
     {%- endblock html_sub_header -%}
 
