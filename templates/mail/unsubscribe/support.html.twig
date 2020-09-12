@@ -1,9 +1,12 @@
 {%- trans_default_domain 'mail' -%}
-<p>
-    {{- 'subscribed.support'|trans({
-        '%link_open%': context_url_open(
-            'config', mpp_admin_ary(schema),
-            {'tab': 'mail-addr'}),
-        '%link_close%': '</a>',
-    })|raw -}}
-</p>
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'subscribed.support'|trans({
+    '%link_open%': context_url_open(
+        'config', mpp_admin_ary(schema),
+        {'tab': 'mail-addr'}),
+    '%link_close%': '</a>',
+    })|raw
+} -%}
+
+{%- include 'mail/include/bgspacer40.html.twig' -%}

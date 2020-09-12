@@ -3,6 +3,7 @@ label:
   amount: Bedrag
   balance: Saldo
   date: Datum
+  expired: Vervallen
   description: Omschrijving
   destination: Bestemming
   email: E-mail
@@ -62,10 +63,6 @@ subscribed:
   admin: >-
     Je ontvangt dit bericht omdat je E-mail
     adres vermeld staat als Admin E-mail
-    adres in de %link_open%instellingen%link_close%.
-  news_admin: >-
-    Je ontvangt dit bericht omdat je E-mail
-    adres vermeld staat als Nieuws Admin E-mail
     adres in de %link_open%instellingen%link_close%.
   support: >-
     Je ontvangt dit bericht omdat je E-mail

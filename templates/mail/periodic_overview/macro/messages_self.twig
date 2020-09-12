@@ -56,6 +56,10 @@
 					{{- context_url_open('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})|raw -}}
 					{{ msg.subject -}}
 					</a>
+					{%- if msg.is_expired -%}
+					&nbsp;
+					<span style="color: #ff0000">({{- 'label.expired'|trans -}})</span>
+					{%- endif -%}
 				</td>
 			</tr>
 		</table>

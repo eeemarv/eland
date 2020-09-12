@@ -59,6 +59,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		$treshold_time_unix = time() - ($days * 86400);
 		$treshold_time =\DateTimeImmutable::createFromFormat('U', (string) $treshold_time_unix);
 		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
+		$expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema);
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
@@ -180,11 +181,12 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where m.user_id = u.id
 					and u.status in (1, 2)
 					and m.created_at >= ?
-					and (m.expires_at >= timezone(\'utc\', now())
-						or m.expires_at is null)
+					and ((m.expires_at >= timezone(\'utc\', now())
+						or m.expires_at is null) or not ?)
 				order by m.created_at desc');
 
 			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+			$rs->bindValue(2, $expires_at_enabled, \PDO::PARAM_BOOL);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -217,6 +219,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			{
 				$intersystem_msgs = [];
 
+				$expires_at_enabled_intersystem = $this->config_service->get_bool('messages.fields.expires_at.enabled', $sch);
+
 				$rs = $this->db->prepare('select m.id, m.subject,
 						m.content,
 						m.is_offer, m.is_want,
@@ -228,11 +232,12 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						and m.access = \'guest\'
 						and u.status in (1, 2)
 						and m.created_at >= ?
-						and (m.expires_at >= timezone(\'utc\', now())
-							or m.expires_at is null)
+						and ((m.expires_at >= timezone(\'utc\', now())
+							or m.expires_at is null) or not ?)
 					order by m.created_at desc');
 
 				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+				$rs->bindValue(2, $expires_at_enabled_intersystem, \PDO::PARAM_BOOL);
 				$rs->execute();
 
 				while ($row = $rs->fetch())
@@ -445,6 +450,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				while ($row = $rs->fetch())
 				{
+					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at'] < $treshold_time);
 					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
 					$vars['messages_self'][] = $row;
 				}
