@@ -19,7 +19,6 @@ class BulkCnst
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
         'volledige_naam'		=> 'fullname',
-        'saldo'					=> 'balance',
         'account_code'			=> 'code',
     ];
 
