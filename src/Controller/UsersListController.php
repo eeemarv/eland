@@ -447,6 +447,8 @@ class UsersListController extends AbstractController
                 {
                     $vars = [
                         'subject'	=> 'Kopie: ' . $bulk_mail_subject,
+                        'to_users'  => $sent_to_ary,
+                        'user_id'   => $su->id(),
                     ];
 
                     foreach (BulkCnst::USER_TPL_VARS as $key => $trans)
@@ -469,8 +471,8 @@ class UsersListController extends AbstractController
                     $mail_queue->queue([
                         'schema'			=> $pp->schema(),
                         'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
-                        'template'			=> 'skeleton/admin',
-                        'pre_html_template'	=> $mail_users_info . $bulk_mail_content,
+                        'template'			=> 'skeleton/admin_copy',
+                        'pre_html_template'	=> $bulk_mail_content,
                         'vars'				=> $vars,
                     ], 8000);
 

@@ -472,3 +472,8 @@ mollie_is_paid:
     Omschrijving
   amount: >-
     Bedrag
+
+skeleton:
+  admin_copy:
+    to_users: >-
+      Dit bericht werd verzonden naar
