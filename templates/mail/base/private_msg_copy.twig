@@ -6,18 +6,22 @@
 {%- block bgcolor_system_name -%}000000{%- endblock -%}
 
 {% block html_content -%}
+    {%- set bgcolor_panel -%}
+        {%- block bgcolor_panel -%}ffeedd{%- endblock -%}
+    {%- endset -%}
+
     {%- set html_explain -%}
-    {%- block html_explain -%}{%- endblock -%}
+        {%- block html_explain -%}{%- endblock -%}
     {%- endset -%}
 
     {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
         'info': html_explain|raw,
-        'bgcolor': 'ffeedd'
+        'bgcolor': bgcolor_panel
     } -%}
 
     {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
         'info': '',
-        'bgcolor': 'ffeedd'
+        'bgcolor': bgcolor_panel
     } -%}
 
     {%- include 'mail/include/spacer20.html.twig' -%}

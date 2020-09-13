@@ -8,8 +8,6 @@
     })|raw -}}
 {%- endblock subject_line %}
 
-{%- block bgcolor_system_name -%}aa33aa{%- endblock -%}
-
 {% block html_explain -%}
     {{- 'user_msg_intersystem.explain'|trans({
         '%from_account%': account(from_user.id, from_schema),
