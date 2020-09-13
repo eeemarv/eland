@@ -177,19 +177,24 @@ password_reset_confirm:
     zelf hebt een paswoord reset hebt aangevraagd
     bij %link_open%%system_name%%link_close%.
 
+register:
+  sub_header: >-
+    Registratie
+
 register_admin:
   subject: >-
     Nieuwe Inschrijving: %full_name%
-  title: Notificatie Nieuwe Inschrijving
   msg: >-
     De volgende persoon schreef zich
     in via de website
+
 register_confirm:
   subject: >-
     Bevestig je registratie bij %system_name%
+  btn_label: >-
+    Bevestig je registratie
   html_msg: >-
-    %link_open%Klik hier om je registratie
-    te bevestigen.%link_close%
+    Klik om je registratie te bevestigen.
   text_msg: >-
     Klik op de link hieronder om je registratie
     te bevestigen.
