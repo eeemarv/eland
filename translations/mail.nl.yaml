@@ -361,12 +361,12 @@ mass_transaction_many_to_one:
   subject: >-
     Nieuwe Veel naar Eén Massa Transactie
   title: >-
-    Notificatie Massa Transactie "Veel naar Eén"
+    Massa Transactie "Veel naar Eén"
 mass_transaction_one_to_many:
   subject: >-
     Nieuwe Eén naar Veel Massa Transactie
   title: >-
-    Notificatie Massa Transactie "Eén naar Veel"
+    Massa Transactie "Eén naar Veel"
 
 periodic_overview:
   subject: >-
