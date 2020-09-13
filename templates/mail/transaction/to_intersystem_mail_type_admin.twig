@@ -2,10 +2,10 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-{{- 'transaction_to_intersystem_mail_type_admin.subject'|trans({
-    '%system_name%': config_str('system.name', schema),
-    '%remote_system_name%': user_fullname(to_user_id, schema)
-})|raw -}}
+    {{- 'transaction_to_intersystem_mail_type_admin.subject'|trans({
+        '%system_name%': config_str('system.name', schema),
+        '%remote_system_name%': user_fullname(to_user_id, schema)
+    })|raw -}}
 {%- endblock subject_line -%}
 
 {%- block html_pretext -%}
