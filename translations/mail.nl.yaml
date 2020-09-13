@@ -214,6 +214,8 @@ support_copy:
 support:
   subject: >-
     Bericht van het Supportformulier
+  sub_header: >-
+    Supportforumulier
   explain: >-
     Het bericht hieronder werd ingegeven in het
     supportformulier van %link_open%%system_name%%link_close% door

@@ -7,17 +7,37 @@
     }) -}}
 {%- endblock -%}
 
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}support.sub_header{%- endblock -%}
+
 {% block html_content -%}
-    <p>
+    {%- set bgcolor_panel -%}
+        e0ffe0
+    {%- endset -%}
+
+    {%- set info -%}
         {{- 'support_copy.explain'|trans({
             '%system_name%': config_str('system.name', schema)
         }) -}}
-    </p>
-    <hr />
-    <p>
-        {{- message -}}
-    </p>
-    <hr />
+    {%- endset -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': info|raw,
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': message|nl2br
+    } -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock %}
 
 {% block text_content %}
