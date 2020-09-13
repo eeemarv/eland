@@ -1,7 +1,7 @@
 <table cellspacing="0" cellpadding="0">
     <tr>
         <td style="border-radius: 5px;" bgcolor="#{%- block bgcolor -%}ed2939{%- endblock -%}">
-            <a href="{%- block href -%}#{%- endblock -%}" target="_blank" style="padding-top:8px;padding-bottom:8px;padding-left:12px;padding-right:12px; border-width: 1px; border-style:solid; border-color: #{%- block border_color -%}{{- block('bgcolor') -}}{%- endblock -%};border-radius: 5px;font-size: 16px; color: #{%- block color -%}{{- block('border_color') -}}{%- endblock -%};text-decoration: none;font-weight:bold;display: inline-block;">
+            <a href="{%- block href -%}#{%- endblock -%}" target="_blank" style="padding-top:{%- block padding_v -%}8px{%- endblock -%};padding-bottom:{{- block('padding_v') -}};padding-left:{%- block padding_h -%}12px{%- endblock -%};padding-right:{{- block('padding_h') -}}; border-width: 1px; border-style:solid; border-color: #{%- block border_color -%}{{- block('bgcolor') -}}{%- endblock -%};border-radius: 5px;font-size: 16px; color: #{%- block color -%}{{- block('border_color') -}}{%- endblock -%};text-decoration: none;font-weight:bold;display: inline-block;">
                 {%- block label -%}&nbsp;{%- endblock -%}
             </a>
         </td>

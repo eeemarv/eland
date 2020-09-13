@@ -1,12 +1,13 @@
 label:
   account_code: Account Code
+  agent: Agent
   amount: Bedrag
   balance: Saldo
   date: Datum
-  expired: Vervallen
   description: Omschrijving
   destination: Bestemming
   email: E-mail
+  expired: Vervallen
   from: Van
   full_name: Volledige Naam
   hours: Uren
@@ -14,6 +15,7 @@ label:
   location: Plaats
   login: Login
   image: Afbeelding
+  ip: IP
   minutes: Minuten
   offer: Aanbod
   password: Paswoord
@@ -35,9 +37,12 @@ b:
   no_reply_auto: >-
     Dit is een automatische mail. Niet beantwoorden a.u.b.
   sender_info:
-    email: "E-mail: %email%"
-    ip: "IP: %ip%"
-    agent: "Agent: %agent%"
+    email: >-
+      E-mail: %email%
+    ip: >-
+      IP: %ip%
+    agent: >-
+      Agent: %agent%
   support:
     title: Support
     explain: >-
@@ -55,9 +60,9 @@ b:
 
 expiration:
   1_day: >-
-    Deze link blijft 24 uur geldig.
+    De link blijft 24 uur geldig.
   1_week: >-
-    Deze link blijft 1 week geldig.
+    De link blijft 1 week geldig.
 
 subscribed:
   admin: >-
@@ -117,12 +122,18 @@ account_activation_admin:
     de gebruiker omdat geen E-mail adres werd ingesteld
     voor dit account.
 
+contact:
+  sub_header: >-
+    Contactformulier
+
 contact_confirm:
   subject: >-
     Bevestig je bericht aan %system_name%
+  btn_label: >-
+    Bevestig je bericht
   html_msg: >-
-    %link_open%Klik hier om je bericht
-    in het contactformulier te bevestigen.%link_close%
+    Klik om je bericht
+    in het contactformulier te bevestigen.
   text_msg: >-
     Klik op de link hieronder om je bericht in het
     contactformulier te bevestigen.
@@ -154,8 +165,9 @@ password_reset_user:
     voor je account ingesteld.
 password_reset_confirm:
   subject: Paswoord Reset Link
+  btn_label: Reset je paswoord
   html_msg: >-
-    %link_open%Klik hier om je paswoord opnieuw in te stellen
+    Klik om je paswoord opnieuw in te stellen
     voor je account bij %system_name%%link_close%.
   text_msg: >-
     Klik op de link hieronder om je paswoord opnieuw
