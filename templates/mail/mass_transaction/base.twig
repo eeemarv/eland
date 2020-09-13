@@ -6,31 +6,18 @@
 {%- block bgcolor -%}e8eeff{%- endblock -%}
 
 {%- block html_content -%}
-    {#- replaced by sub headeer #}
-    {%- block html_title -%}{%- endblock -%}
 
+    {%- set html_before_many -%}
+        {%- block html_before_many -%}{%- endblock -%}
+    {%- endset -%}
 
-    {%- block html_before_many -%}{%- endblock -%}
+    {%- set html_many_rows -%}
+        {%- block html_many_rows -%}{%- endblock -%}
+    {%- endset -%}
 
-<ul>
-{%- for t in transactions -%}
-    <li>
-    {%- block html_account_many -%}
-    {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': t.id_from})|raw -}}
-    {{- account(t.id_from, schema) -}}
-    {%- endblock -%}
-    </a>:&nbsp;
-    <strong>{{- t.amount -}}</strong>
-    &nbsp;
-    {{- config_str('transactions.currency.name', schema) -}}
-    </li>
-{%- endfor -%}
-</ul>
-
-{%- block html_after_many -%}{%- endblock -%}
-
-
-
+    {%- set html_after_many -%}
+        {%- block html_after_many -%}{%- endblock -%}
+    {%- endset -%}
 
     {%- set info -%}
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -41,24 +28,19 @@
             </td>
         </tr>
 
-        <tr>
-            <td style="font-weight: bold;">
-                {{- html_from|raw -}}
-            </td>
-        </tr>
-        {%- include 'mail/include/row_spacer20.html.twig' -%}
+        {{- html_before_many|raw -}}
+
         <tr>
             <td>
-                {{- 'label.to'|trans -}}
+                <table border="1" bgcolor="#eeeeee" align="center" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                    {{- html_many_rows|raw -}}
+                </table>
             </td>
         </tr>
-        <tr>
-            <td style="font-weight: bold;">
-                {{- html_to|raw -}}
-            </td>
-        </tr>
-
         {%- include 'mail/include/row_spacer20.html.twig' -%}
+
+        {{- html_after_many|raw -}}
+
         <tr>
             <td>
                 {{- 'label.total'|trans -}}
