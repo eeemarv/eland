@@ -99,6 +99,7 @@ class MailQueue implements QueueInterface
 		$text = $template->renderBlock('text_body', $data['vars']);
 		$html = $template->renderBlock('html_body', $data['vars']);
 
+		file_put_contents(__DIR__ . '/../../var/mail_test.html', $html);
 		error_log('test html: ' . $html);
 		error_log('-------------------------------------------');
 		error_log('-------------------------------------------');

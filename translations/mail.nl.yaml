@@ -363,6 +363,8 @@ message_extend:
 message_extend_offer:
   subject: >-
     Je aanbod "%message_subject%" is vervallen
+  sub_header: >-
+    Aanbod verlengen
   explain: >-
     Je aanbod "%link_open%%message_subject%%link_close%"
     is vervallen en zal over %days% dagen van de
@@ -373,9 +375,11 @@ message_extend_offer:
 message_extend_want:
   subject: >-
     Je vraag "%message_subject%" is vervallen
+  sub_header: >-
+    Vraag verlengen
   explain: >-
     Je vraag "%link_open%%message_subject%%link_close%"
-    is vervallen en zal over %days% van de
+    is vervallen en zal over %days% dagen van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.
     Als je niet ingelogd bent, zal je eerst gevraagd

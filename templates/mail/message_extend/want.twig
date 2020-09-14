@@ -7,6 +7,8 @@
     })|raw -}}
 {%- endblock subject_line -%}
 
+{%- block sub_header -%}message_extend_want.sub_header{%- endblock -%}
+
 {%- block html_explain -%}
 {{- 'message_extend_want.explain'|trans({
     '%message_subject%': message.subject,

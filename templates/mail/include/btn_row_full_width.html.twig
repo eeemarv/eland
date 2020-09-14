@@ -1,0 +1,16 @@
+<tr>
+    <td style="padding-top:5px; padding-bottom:5px;">
+        {%- embed 'mail/embed/btn.html.twig' -%}
+            {%- trans_default_domain 'mail' -%}
+            {%- block table_attr %} width="100%"{%- endblock -%}
+            {%- block padding_v -%}25px{%- endblock -%}
+            {%- block padding_h -%}45px{%- endblock -%}
+            {%- block padding_right -%}300px{%- endblock -%}
+            {%- block bgcolor -%}{{- bgcolor -}}{%- endblock -%}
+            {%- block border_color -%}{{- bgcolor -}}{%- endblock -%}
+            {%- block color -%}ffffff{%- endblock -%}
+            {%- block label -%}{{- label -}}{%- endblock -%}
+            {%- block href -%}{{- href|raw -}}{%- endblock -%}
+        {%- endembed -%}
+    </td>
+</tr>
