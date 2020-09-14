@@ -155,20 +155,25 @@ contact_support:
     contactformulier van %link_open%%system_name%%link_close%.
     Gebruik "Reply" om het eventueel te beantwoorden.
 
+password_reset:
+  sub_header: >-
+    Paswoord reset
+
 password_reset_user:
   subject: >-
     Nieuw Paswoord voor je Account
-  title: >-
-    Notificatie Nieuw Paswoord
+  sub_header: >-
+    Nieuw Paswoord
   message: >-
     Er werd een nieuw paswoord
     voor je account ingesteld.
+
 password_reset_confirm:
   subject: Paswoord Reset Link
   btn_label: Reset je paswoord
   html_msg: >-
     Klik om je paswoord opnieuw in te stellen
-    voor je account bij %system_name%%link_close%.
+    voor je account bij %system_name%.
   text_msg: >-
     Klik op de link hieronder om je paswoord opnieuw
     in te stellen voor je account bij %system_name%.

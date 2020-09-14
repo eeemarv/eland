@@ -30,17 +30,33 @@ class PasswordResetController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        $errors = [];
+
         if ($request->isMethod('POST'))
         {
             $email = $request->request->get('email');
 
             if ($error_token = $form_token_service->get_error())
             {
-                $alert_service->error($error_token);
+                $errors[] = $error_token;
             }
-            else if($email)
+
+            if(!$email)
             {
-                $user = $db->fetchAll('select u.id, u.name, u.code
+                $errors[] = 'Geef een E-mail adres op';
+            }
+
+            if (!count($errors))
+            {
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+                {
+                    $errors[] =  $email . ' is geen geldig email adres.';
+                }
+            }
+
+            if (!count($errors))
+            {
+                $users = $db->fetchAll('select u.id, u.name, u.code
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.users u
@@ -50,48 +66,45 @@ class PasswordResetController extends AbstractController
                         and c.user_id = u.id
                         and u.status in (1, 2)', [$email]);
 
-                if (count($user) < 2)
+                if (!count($users))
                 {
-                    $user = $user[0];
-
-                    if ($user['id'])
-                    {
-                        $user_id = $user['id'];
-
-                        $token = $data_token_service->store([
-                            'user_id'	=> $user_id,
-                            'email'		=> $email,
-                        ], 'password_reset', $pp->schema(), 86400);
-
-                        $mail_queue->queue([
-                            'schema'	=> $pp->schema(),
-                            'to' 		=> [$email => $user['code'] . ' ' . $user['name']],
-                            'template'	=> 'password_reset/confirm',
-                            'vars'		=> [
-                                'token'			=> $token,
-                                'user_id'		=> $user_id,
-                            ],
-                        ], 10000);
-
-                        $alert_service->success('Een link om je paswoord te resetten werd
-                            naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
-
-                        $link_render->redirect('login', $pp->ary(), []);
-                    }
-                    else
-                    {
-                        $alert_service->error('E-Mail adres niet bekend');
-                    }
+                    $errors[] = 'E-Mail adres niet bekend';
                 }
-                else
+
+                if (count($users) > 1)
                 {
-                    $alert_service->error('Het E-Mail adres is niet uniek in dit Systeem.');
+                    $errors[] = 'Het E-Mail adres is niet uniek in dit Systeem.';
                 }
             }
-            else
+
+            if (!count($errors))
             {
-                $alert_service->error('Geef een E-mail adres op');
+                $user = reset($users);
+
+                $user_id = $user['id'];
+
+                $token = $data_token_service->store([
+                    'user_id'	=> $user_id,
+                    'email'		=> $email,
+                ], 'password_reset', $pp->schema(), 86400);
+
+                $mail_queue->queue([
+                    'schema'	=> $pp->schema(),
+                    'to' 		=> [$email => $user['code'] . ' ' . $user['name']],
+                    'template'	=> 'password_reset/confirm',
+                    'vars'		=> [
+                        'token'			=> $token,
+                        'user_id'		=> $user_id,
+                    ],
+                ], 10000);
+
+                $alert_service->success('Een link om je paswoord te resetten werd
+                    naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
+
+                $link_render->redirect('login', $pp->ary(), []);
             }
+
+            $alert_service->error($errors);
         }
 
         $heading_render->add('Paswoord vergeten');
