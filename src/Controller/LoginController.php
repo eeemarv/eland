@@ -54,10 +54,9 @@ class LoginController extends AbstractController
             $location = '';
         }
 
-        $login = trim($request->request->get('login', ''));
-
         if ($request->isMethod('POST'))
         {
+            $login = trim($request->request->get('login', ''));
             $lowercase_login = strtolower($login);
             $password = trim($request->request->get('password'));
 
@@ -268,6 +267,11 @@ class LoginController extends AbstractController
         {
             $alert_service->warning('De website is niet beschikbaar
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen');
+        }
+
+        if ($request->isMethod('GET'))
+        {
+            $login = $request->query->get('login', '');
         }
 
         $heading_render->add('Login');
