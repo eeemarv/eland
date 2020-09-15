@@ -337,7 +337,7 @@ class TransactionsAddController extends AbstractController
 
             if (!count($errors) && $group['apimethod'] === 'mail')
             {
-                $transaction['real_to'] = $code_to;
+                $transaction['real_to'] = trim($request->request->get('code_to', ''));
 
                 if ($id = $transaction_service->insert($transaction, $pp->schema()))
                 {

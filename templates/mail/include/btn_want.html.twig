@@ -1,0 +1,12 @@
+{%- embed 'mail/embed/btn.html.twig' -%}
+    {%- trans_default_domain 'mail' -%}
+    {%- block bgcolor -%}777777{%- endblock -%}
+    {%- block border_color -%}ffffff{%- endblock -%}
+    {%- block color -%}ffffff{%- endblock -%}
+    {%- block label -%}
+        {{- 'label.want'|trans -}}
+    {%- endblock label -%}
+    {%- block href -%}
+        {{- href|raw -}}
+    {%- endblock href -%}
+{%- endembed -%}

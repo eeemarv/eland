@@ -1,0 +1,15 @@
+<table {% block bgcolor_attr %}bgcolor="#{%- block bgcolor -%}{{- bgcolor -}}{%- endblock -%}"{%- endblock bgcolor_attr %} align="center" cellpadding="0" width="100%">
+  <tr>
+    <td>
+      <table align="center" cellpadding="0" cellspacing="0" width="600"{%- block table_attr -%}{%- endblock -%}>
+        {%- block table_content -%}
+        <tr>
+          <td align="{%- block td_align -%}left{%- endblock %}" style="padding-top:{%- block td_top -%}5px{%- endblock -%};padding-bottom:{% block td_bottom -%}5px{%- endblock -%};padding-left:{%- block td_left -%}5px{%- endblock %};padding-right:{%- block td_right -%}5px{%- endblock -%};{%- block td_style -%}{%- endblock -%}"{%- block td_attr -%}{%- endblock -%}>
+            {%- block td_content -%}&nbsp;{%- endblock -%}
+          </td>
+        </tr>
+        {%- endblock table_content -%}
+      </table>
+    </td>
+  </tr>
+</table>

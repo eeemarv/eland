@@ -8,66 +8,106 @@
     })|raw -}}
 {%- endblock subject_line -%}
 
+{%- block bgcolor_system_name -%}36a59d{%- endblock -%}
+{%- block sub_header -%}transaction.title{%- endblock -%}
+{%- block bgcolor_sub_header -%}c2fffb{%- endblock -%}
+
 {% block html_content -%}
+    {%- block html_content_explain -%}{%- endblock -%}
 
-<h3>
-    {%- block html_title -%}
-    {{- 'transaction.title'|trans -}}
-    {%- endblock -%}
-</h3>
-
-{%- block html_content_explain -%}{%- endblock -%}
-
-<p>
-    {{- 'label.from'|trans -}}
-    <br />
-    <strong>
+    {%- set html_from -%}
         {%- block html_from -%}
-        {{- account(from_user_id, schema) -}}
-        {%- endblock -%}
-    </strong>
-</p>
+            {{- account(from_user_id, schema) -}}
+        {%- endblock html_from -%}
+    {%- endset -%}
 
-<p>
-    {{- 'label.to'|trans -}}
-    <br />
-    <strong>
+    {%- set html_to -%}
         {%- block html_to -%}
-        {{- account(to_user_id, schema) -}}
-        {%- endblock -%}
-    </strong>
-</p>
+            {{- account(to_user_id, schema) -}}
+        {%- endblock html_to -%}
+    {%- endset -%}
 
-<p>
-    {{- 'label.amount'|trans -}}
-    <br />
-    <strong>
-        {{- transaction.amount -}}&nbsp;
-        {{- config_str('transactions.currency.name', schema) -}}
-    </strong>
-</p>
+    {%- set html_amount_explain -%}
+        {%- block html_amount_explain -%}{%- endblock -%}
+    {%- endset -%}
 
-{%- block html_amount_explain -%}{%- endblock -%}
+    {%- set html_transaction_link -%}
+        {%- block html_transaction_link -%}
+            <tr>
+                <td>
+                    {{- context_url_open('transactions_show', mpp_ary(user_id, schema),
+                        {'id': transaction.id})|raw -}}
+                    {{- 'label.link'|trans -}}
+                    </a>
+                </td>
+            </tr>
+            {%- include 'mail/include/row_spacer20.html.twig' -%}
+        {%- endblock html_transaction_link -%}
+    {%- endset -%}
 
-<p>
-    {{- 'label.description'|trans -}}
-    <br />
-    <strong>
-        {{- transaction.description -}}
-    </strong>
-</p>
+    {%- set html_trans_id -%}
+        {%- block html_trans_id -%}{%- endblock -%}
+    {%- endset -%}
 
-{%- block html_transaction_link -%}
-<p>
-{{- context_url_open('transactions_show', mpp_ary(user_id, schema),
-    {'id': transaction.id})|raw -}}
-{{- 'label.link'|trans -}}
-</a>
-</p>
-{%- endblock html_transaction_link -%}
+    {%- set info -%}
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            {%- include 'mail/include/row_spacer20.html.twig' -%}
+            <tr>
+                <td>
+                    {{- 'label.from'|trans -}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">
+                    {{- html_from|raw -}}
+                </td>
+            </tr>
+            {%- include 'mail/include/row_spacer20.html.twig' -%}
+            <tr>
+                <td>
+                    {{- 'label.to'|trans -}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">
+                    {{- html_to|raw -}}
+                </td>
+            </tr>
+            {%- include 'mail/include/row_spacer20.html.twig' -%}
+            <tr>
+                <td>
+                    {{- 'label.amount'|trans -}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">
+                    {{- transaction.amount -}}&nbsp;
+                    {{- config_str('transactions.currency.name', schema) -}}
+                </td>
+            </tr>
+                {%- include 'mail/include/row_spacer20.html.twig' -%}
+            {{- html_amount_explain|raw -}}
+            <tr>
+                <td>
+                    {{- 'label.description'|trans -}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">
+                    {{- transaction.description -}}&nbsp;
+                </td>
+            </tr>
+            {%- include 'mail/include/row_spacer20.html.twig' -%}
+            {{- html_transaction_link|raw -}}
+            {{- html_trans_id|raw -}}
+        </table>
+    {%- endset -%}
 
-{%- block html_trans_id -%}{%- endblock -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
 
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}

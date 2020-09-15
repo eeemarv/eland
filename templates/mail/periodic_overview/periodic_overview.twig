@@ -5,15 +5,21 @@
     {{- 'periodic_overview.subject'|trans|raw -}}
 {%- endblock subject_line -%}
 
+{%- block sub_header -%}periodic_overview.subject{%- endblock -%}
+
 {% block html_content -%}
+
 {%- import 'mail/periodic_overview/macro/messages.twig' as m -%}
 {%- import 'mail/periodic_overview/macro/messages_self.twig' as ms -%}
 {%- import 'mail/periodic_overview/macro/intersystem.twig' as i -%}
 {%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
 {%- import 'mail/periodic_overview/macro/news.twig' as n -%}
 {%- import 'mail/periodic_overview/macro/docs.twig' as d -%}
-{%- import 'mail/periodic_overview/macro/users.twig' as u -%}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
 {%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
+
+{%- include 'mail/include/bgspacer40.html.twig' -%}
 
 {%- for b in blocks_sorted -%}
     {%- if b == 'messages' -%}
@@ -29,15 +35,33 @@
     {%- elseif b == 'docs' -%}
         {{- d.html(_context) -}}
     {%- elseif b == 'new_users' -%}
-        {{- u.html(_context, 'new') -}}
+        {{- nu.html(_context) -}}
     {%- elseif b == 'leaving_users' -%}
-        {{- u.html(_context, 'leaving') -}}
+        {{- lu.html(_context) -}}
     {%- elseif b == 'transactions' -%}
         {{- t.html(_context) -}}
     {%- endif -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endfor -%}
 
 {%- endblock html_content -%}
+
+{%- block html_unsubscribe -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': 'periodic_overview.unsubscribe'|trans({
+            '%link_open%': context_url_open(
+                'users_show',
+                mpp_ary(user_id, schema),
+                {'id': user_id}),
+            '%link_close%': '</a>'
+        })|raw
+    } -%}
+
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
+
+{%- endblock html_unsubscribe -%}
 
 {% block text_content %}
 {% import 'mail/periodic_overview/macro/messages.twig' as m %}
@@ -46,7 +70,8 @@
 {% import 'mail/periodic_overview/macro/forum.twig' as f %}
 {% import 'mail/periodic_overview/macro/news.twig' as n %}
 {% import 'mail/periodic_overview/macro/docs.twig' as d %}
-{% import 'mail/periodic_overview/macro/users.twig' as u %}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
 {% import 'mail/periodic_overview/macro/transactions.twig' as t %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
@@ -62,26 +87,14 @@
 {% elseif b == 'docs' %}
 {{ d.text(_context) }}
 {% elseif b == 'new_users' %}
-{{ u.text(_context, 'new') }}
+{{ nu.text(_context) }}
 {% elseif b == 'leaving_users' %}
-{{ u.text(_context, 'leaving') }}
+{{ lu.text(_context) }}
 {% elseif b == 'transactions' %}
 {{ t.text(_context) }}
 {% endif %}
 {% endfor %}
 {% endblock text_content %}
-
-{%- block html_unsubscribe -%}
-<p>
-{{- 'periodic_overview.unsubscribe'|trans({
-    '%link_open%': context_url_open(
-        'users_show',
-        mpp_ary(user_id, schema),
-        {'id': user_id}),
-    '%link_close%': '</a>'
-})|raw -}}
-</p>
-{%- endblock html_unsubscribe -%}
 
 {% block text_unsubscribe %}
 {% autoescape false %}

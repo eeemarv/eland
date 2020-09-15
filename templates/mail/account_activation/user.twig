@@ -7,28 +7,65 @@
 }) -}}
 {%- endblock subject_line %}
 
+{%- block bgcolor_system_name -%}009900{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}account_activation.sub_header{%- endblock -%}
+
 {% block html_content -%}
-<p>
-{{- 'account_activation.welcome'|trans({
-    '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
-    '%link_close%': '</a>',
-    '%system_name%': config_str('system.name', schema)
-})|raw -}}
-</p>
-<p>
-{{- 'account_activation.login'|trans({
-    '%login_url%': context_url_open('login', mpp_anon_ary(schema), {}) ~ context_url('login', {'system': system}, {}) ~ '</a>',
-})|raw -}}
-</p>
-<p>
-{{- 'label.login'|trans -}}:&nbsp;<strong>{{- account_code(user_id, schema) -}}</strong>
-</p>
-<p>
-{{- 'label.password'|trans -}}:&nbsp;<strong>{{- password -}}</strong>
-</p>
-<p>
-{{- 'account_activation.change_profile'|trans -}}
-</p>
+{%- set info -%}
+<table border="1" bgcolor="eeeeee" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td width="200" style="padding-left: 10px">
+            {{- 'label.login'|trans -}}
+        </td>
+        <td style="font-style: bold; padding-left: 10px">
+            {{- account_code(user_id, schema) -}}
+        </td>
+    </tr>
+    <tr>
+        <td width="200" style="padding-left: 10px">
+            {{- 'label.password'|trans -}}
+        </td>
+        <td style="font-style: bold; padding-left: 10px">
+            {{- password -}}
+        </td>
+    </tr>
+</table>
+{%- endset -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'account_activation.welcome'|trans({
+        '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
+        '%link_close%': '</a>',
+        '%system_name%': config_str('system.name', schema)
+    })|raw
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'account_activation.login'|trans({
+        '%login_url%': context_url_open('login', mpp_anon_ary(schema), {}) ~ context_url('login', {'system': system}, {}) ~ '</a>',
+    })|raw
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': info|raw
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'account_activation.change_profile'|trans
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+{%- include 'mail/include/bgspacer40.html.twig' -%}
+
 {%- endblock html_content -%}
 
 {% block text_content %}

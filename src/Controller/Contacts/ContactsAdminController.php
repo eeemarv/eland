@@ -155,16 +155,7 @@ class ContactsAdminController extends AbstractController
             $params['f']['ustatus'] = 'all';
         }
 
-        $user_table_sql = '';
-
-        if ($params['f']['ustatus'] !== 'all'
-            || $params['s']['orderby'] === 'u.code')
-        {
-            $user_table_sql = ', ' . $pp->schema() . '.users u ';
-            $sql['where'][]= 'u.id = c.user_id';
-        }
-
-        if (count($where_sql))
+        if (count($sql['where']))
         {
             $sql_where = ' and ' . implode(' and ', $sql['where']) . ' ';
         }
@@ -175,13 +166,17 @@ class ContactsAdminController extends AbstractController
 
         $query = 'select c.*, tc.abbrev
             from ' . $pp->schema() . '.contact c, ' .
-                $pp->schema() . '.type_contact tc' . $user_table_sql . '
-            where c.id_type_contact = tc.id' . $sql_where;
+                $pp->schema() . '.type_contact tc, ' .
+                $pp->schema() . '.users u
+            where c.id_type_contact = tc.id
+                and c.user_id = u.id ' . $sql_where;
 
         $row_count = $db->fetchColumn('select count(c.*)
             from ' . $pp->schema() . '.contact c, ' .
-                $pp->schema() . '.type_contact tc' . $user_table_sql . '
-            where c.id_type_contact = tc.id' . $sql_where,
+                $pp->schema() . '.type_contact tc, ' .
+                $pp->schema() . '.users u
+            where c.id_type_contact = tc.id
+                and c.user_id = u.id ' . $sql_where,
             $sql['params'], 0, $sql['types']);
 
         $query .= ' order by ' . $params['s']['orderby'] . ' ';

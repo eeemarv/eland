@@ -1,43 +1,71 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- macro html(c) -%}
-{%- set et = c.et -%}
-	<h3>
-		{{- context_url_open('transactions', mpp_ary(c.user_id, c.schema), {})|raw -}}
-		{{- 'periodic_overview.transactions.title'|trans -}}
-		</a>
-	</h3>
+	{%- set et = c.et -%}
+	{%- include 'mail/include/p_header.html.twig' with {
+		'p_header': 'periodic_overview.transactions.title',
+		'p_bgcolor': '36a59d'
+	} -%}
 
-	{%- if c.transactions -%}
-	<ul>
-	{%- for tr in c.transactions -%}
-		<li>
-		{{- 'periodic_overview.transactions.amount_from_to'|trans({
-			'%amount%': tr.amount,
-			'%currency%': config_str('transactions.currency.name', c.schema),
-			'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
-				'%account%': tr.real_from,
-				'%system_name%': account(tr.id_from, c.schema)
-			}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_from})
-				~ account(tr.id_from, c.schema)
-				~ '</a>',
-			'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
-				'%account%': tr.real_to,
-				'%system_name%': account(tr.id_to, c.schema)
-			}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_to})
-				~ account(tr.id_to, c.schema)
-				~ '</a>',
-		})|raw -}}
-		<br>
-		{{- tr.description -}}
-		</li>
-	{%- endfor -%}
-	</ul>
-	{%- else -%}
-	<p>
-	{{- 'periodic_overview.transactions.none'|trans -}}
-	</p>
+	{%- if not c.transactions -%}
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+			'info': 'periodic_overview.transactions.none'|trans,
+			'bgcolor': '9ffff9'
+		} -%}
 	{%- endif -%}
+
+	{%- for tr in c.transactions -%}
+	{%- embed 'mail/embed/table600.html.twig' -%}
+		{%- trans_default_domain 'mail' -%}
+		{%- block bgcolor -%}
+			{%- if tr.real_from or tr.real_to -%}
+				{%- if loop.index is even -%}
+					fff3a2
+				{%- else -%}
+					fff8cf
+				{%- endif -%}
+			{%- else -%}
+				{%- if loop.index is even -%}
+					9ffff9
+				{%- else -%}
+					c2fffb
+				{%- endif -%}
+			{%- endif -%}
+		{%- endblock -%}
+		{%- block td_style -%}font-size: 16px;{%- endblock -%}
+		{%- block td_content -%}
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td>
+					{{- 'periodic_overview.transactions.amount_from_to'|trans({
+						'%amount%': tr.amount,
+						'%currency%': config_str('transactions.currency.name', c.schema),
+						'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
+							'%account%': tr.real_from,
+							'%system_name%': account(tr.id_from, c.schema)
+						}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_from})
+							~ account(tr.id_from, c.schema)
+							~ '</a>',
+						'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
+							'%account%': tr.real_to,
+							'%system_name%': account(tr.id_to, c.schema)
+						}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_to})
+							~ account(tr.id_to, c.schema)
+							~ '</a>',
+					})|raw -}}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<i>
+					{{- tr.description -}}
+					</i>
+				</td>
+			</tr>
+		</table>
+		{%- endblock td_content -%}
+	{%- endembed -%}
+	{%- endfor -%}
 
 {%- endmacro html -%}
 

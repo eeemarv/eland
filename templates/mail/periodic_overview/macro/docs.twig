@@ -1,27 +1,39 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- macro html(c) -%}
-{%- set et = c.et -%}
-<h3>
-	{{- 'periodic_overview.docs.title'|trans -}}
-</h3>
+	{%- set et = c.et -%}
+	{%- include 'mail/include/p_header.html.twig' with {
+		'p_header': 'periodic_overview.docs.title',
+		'p_bgcolor': '660066'
+	} -%}
 
-{%- if c.docs -%}
-<ul>
+	{%- if not c.docs -%}
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+			'info': 'periodic_overview.docs.none'|trans,
+			'bgcolor': 'eeddee'
+		} -%}
+	{%- endif -%}
+
 	{%- for d in c.docs -%}
-		<li>
+		{%- embed 'mail/embed/table600.html.twig' -%}
+		{%- trans_default_domain 'mail' -%}
+		{%- block bgcolor -%}
+			{%- if loop.index is even -%}
+				ffeeff
+			{%- else -%}
+				eeddee
+			{%- endif -%}
+		{%- endblock -%}
+		{%- block td_top -%}10px{%- endblock -%}
+		{%- block td_bottom -%}10px{%- endblock -%}
+		{%- block td_style -%}font-size: 16px;{%- endblock -%}
+		{%- block td_content -%}
 			{{- s3_link_open(d.filename)|raw -}}
 				{{- d.name -}}
 			</a>
-		</li>
+		{%- endblock td_content -%}
+		{%- endembed -%}
 	{%- endfor -%}
-</ul>
-{%- else -%}
-<p>
-	{{- 'periodic_overview.docs.none'|trans -}}
-</p>
-{%- endif -%}
-
 {%- endmacro html -%}
 
 {% macro text(c) %}

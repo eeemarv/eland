@@ -5,24 +5,44 @@
     {{- 'password_reset_user.subject'|trans|raw -}}
 {%- endblock %}
 
+{%- block bgcolor_system_name -%}009900{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}password_reset_user.sub_header{%- endblock -%}
+
 {%- block html_content -%}
-<h3>
-    {{- 'password_reset_user.title'|trans -}}
-</h3>
+    {%- set info -%}
+    <table border="1" bgcolor="eeeeee" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td width="200" style="padding-left: 10px">
+                {{- 'label.password'|trans -}}
+            </td>
+            <td style="font-style: bold; padding-left: 10px">
+                {{- password -}}
+            </td>
+        </tr>
+    </table>
+    {%- endset -%}
 
-<p>
-    {{- 'password_reset_user.message'|trans -}}
-</p>
+    {%- include 'mail/include/spacer20.html.twig' -%}
 
-<p>
-    {{- 'label.password'|trans -}}: <strong>{{- password -}}</strong>
-</p>
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': 'password_reset_user.message'|trans
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'password_reset_user.title'|trans|underline }}
+{{ 'password_reset_user.sub_header'|trans|underline }}
 
 {{ 'password_reset_user.message'|trans }}
 

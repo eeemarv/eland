@@ -52,7 +52,12 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 		{
 			$user = $this->user_cache_service->get($message['user_id'], $schema);
 
-			if (!($user['status'] == 1 || $user['status'] == 2))
+			if (!($user['status'] === 1 || $user['status'] === 2))
+			{
+				continue;
+			}
+
+			if (!($user['role'] === 'admin' || $user['role'] === 'user'))
 			{
 				continue;
 			}

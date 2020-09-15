@@ -1,22 +1,74 @@
 {%- extends 'mail/base/user_no_reply_auto.twig' -%}
 {%- trans_default_domain 'mail' -%}
 
+{%- block bgcolor_system_name -%}990000{%- endblock -%}
+{%- block bgcolor_sub_header -%}ffbbbb{%- endblock -%}
 
 {% block html_content -%}
-{%- import 'mail/message_extend/macro.twig' as m -%}
-<p>
-    {%- block html_explain -%}{%- endblock -%}
-</p>
+    {%- set html_explain -%}
+        {%- block html_explain -%}{%- endblock -%}
+    {%- endset -%}
 
-<ul>
-{{- m.html_extend_link(7, '1_week', message, schema, user_id) -}}
-{{- m.html_extend_link(14, '2_weeks', message, schema, user_id) -}}
-{{- m.html_extend_link(28, '4_weeks', message, schema, user_id) -}}
-{{- m.html_extend_link(60, '2_months', message, schema, user_id) -}}
-{{- m.html_extend_link(180, '6_months', message, schema, user_id) -}}
-{{- m.html_extend_link(365, '1_year', message, schema, user_id) -}}
-{{- m.html_extend_link(1825, '5_years', message, schema, user_id) -}}
-</ul>
+    {%- set html_btns -%}
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'ff6666',
+            'label': 'message_extend.1_week'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 7})
+        } -%}
+
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'bb2222',
+            'label': 'message_extend.2_weeks'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 14})
+        } -%}
+
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'ff6666',
+            'label': 'message_extend.4_weeks'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 28})
+        } -%}
+
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'bb2222',
+            'label': 'message_extend.2_months'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 60})
+        } -%}
+
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'ff6666',
+            'label': 'message_extend.6_months'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 180})
+        } -%}
+
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'bb2222',
+            'label': 'message_extend.1_year'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 365})
+        } -%}
+
+        {%- include 'mail/include/btn_row_full_width.html.twig' with {
+            'bgcolor': 'ff6666',
+            'label': 'message_extend.5_years'|trans,
+            'href': context_url('messages_extend', mpp_ary(user_id, schema), {'id': message.id, 'days': 1825})
+        } -%}
+    </table>
+    {%- endset -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': html_explain|raw
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': html_btns|raw
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 
 {%- endblock html_content %}
 

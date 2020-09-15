@@ -1,0 +1,11 @@
+{%- embed 'mail/embed/table600.html.twig' -%}
+    {%- trans_default_domain 'mail' -%}
+    {%- block td_top -%}20px{%- endblock -%}
+    {%- block td_bottom -%}20px{%- endblock -%}
+    {%- block bgcolor -%}{{- p_bgcolor -}}{%- endblock -%}
+    {%- block td_align -%}center{%- endblock -%}
+    {%- block td_style %}font-size: 16px;color: #ffffff;{%- endblock -%}
+    {%- block td_content -%}
+        {{- p_header|trans -}}
+    {%- endblock td_content -%}
+{%- endembed -%}

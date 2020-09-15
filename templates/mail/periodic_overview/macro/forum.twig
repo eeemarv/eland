@@ -1,29 +1,42 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- macro html(c) -%}
-{%- set et = c.et -%}
-	<h3>
-		{{- 'periodic_overview.forum.title'|trans -}}
-	</h3>
+	{%- set et = c.et -%}
+	{%- include 'mail/include/p_header.html.twig' with {
+		'p_header': 'periodic_overview.forum.title',
+		'p_bgcolor': '666600'
+	} -%}
 
-	{%- if c.forum -%}
-	<ul>
-	{%- for f in c.forum -%}
-	<li>
-	{{- context_url_open('forum_topic', mpp_ary(c.user_id, c.schema), {'id': f.id})|raw -}}
-	{{- f.subject -}}
-	</a>
-	</li>
-	{%- endfor -%}
-	</ul>
-	{%- else -%}
-	<p>
-	{{- 'periodic_overview.forum.none'|trans({
-		'%link_open%': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
-		'%link_close%': '</a>'
-	})|raw -}}
-	</p>
+	{%- if not c.forum -%}
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+			'info': 'periodic_overview.forum.none'|trans({
+				'%link_open%': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
+				'%link_close%': '</a>'
+			})|raw,
+			'bgcolor': 'ffff99'
+		} -%}
 	{%- endif -%}
+
+	{%- for f in c.forum -%}
+		{%- embed 'mail/embed/table600.html.twig' -%}
+		{%- trans_default_domain 'mail' -%}
+		{%- block bgcolor -%}
+			{%- if loop.index is even -%}
+				ffeeaa
+			{%- else -%}
+				eedd99
+			{%- endif -%}
+		{%- endblock -%}
+		{%- block td_top -%}10px{%- endblock -%}
+		{%- block td_bottom -%}10px{%- endblock -%}
+		{%- block td_style -%}font-size: 16px;{%- endblock -%}
+		{%- block td_content -%}
+			{{- context_url_open('forum_topic', mpp_ary(c.user_id, c.schema), {'id': f.id})|raw -}}
+				{{- f.subject -}}
+			</a>
+		{%- endblock td_content -%}
+		{%- endembed -%}
+	{%- endfor -%}
 
 {%- endmacro html -%}
 
