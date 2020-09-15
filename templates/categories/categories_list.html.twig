@@ -1,9 +1,73 @@
-{%- extends 'categories/categories_base.html.twig' -%}
+{%- extends 'categories/base/categories_form.html.twig' -%}
+{%- import 'macro/link.html.twig' as l -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
+
+{%- block before_form -%}
+    <p>
+        <ul>
+            <li>{{- 'categories.explain.drag'|trans -}}</li>
+            <li>{{- 'categories.explain.store'|trans -}}</li>
+            <li>{{- 'categories.explain.sub_types'|trans -}}</li>
+            <li>{{- 'categories.explain.allowed_in_sub'|trans -}}</li>
+            <li>{{- 'categories.explain.del'|trans -}}</li>
+        </ul>
+    </p>
+    <div class="list-group mb-2" data-sortable data-sort-base>
+    {%- set open_div = 0 -%}
+    {%- for id, cat in categories -%}
+        {%- set close_div = open_div - ((cat.level - 1) * 2) -%}
+        {%- if close_div -%}
+            {%- for i in range(1, close_div) -%}
+                </div>
+                {%- set open_div = open_div - 1 -%}
+            {%- endfor -%}
+        {%- endif -%}
+        <div class="list-group-item{%- if cat.level == 1 %} list-group-item-info{%- endif -%}" data-id="{{- id -}}"
+        {%- if cat.count > 0 %} data-has-messages{%- endif -%}
+        {%- if cat.right_id > (cat.left_id + 1) %} data-has-categories{%- endif -%}>
+        <strong>
+            {{- cat.name -}}
+            {%- if cat.count > 0 %} (
+                {{- l.pp_link_label('messages'|var_route, {'f': {'cid': cat.id}}, cat.count) -}}
+                )
+            {%- endif -%}
+        </strong>
+        <div class="pull-right">
+            {{- bl.edit('categories_edit', {'id': id}) -}}
+
+            {%- if ((cat.left_id + 1) == cat.right_id) and cat.count == 0 -%}
+                {{- bl.del('categories_del', {'id': id}, {'data-del-btn': ''}) -}}
+            {%- endif -%}
+        </div>
+        <div class="clearfix"></div>
+        {%- if cat.count == 0 -%}
+            <div class="list-group" data-sortable>
+            {%- set open_div = open_div + 2 -%}
+        {%- else -%}
+            </div>
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if open_div -%}
+        {%- for i in range(1, open_div) -%}
+            </div>
+        {%- endfor -%}
+    {%- endif -%}
+    </div>
+{%- endblock before_form -%}
 
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
+    {{- encore_entry_script_tags('sortable') -}}
+    {{- encore_entry_script_tags('categories') -}}
     {{- parent() -}}
 {%- endblock js -%}

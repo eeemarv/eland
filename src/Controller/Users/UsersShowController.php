@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,7 @@ use App\Render\BtnTopRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\UserRepository;
+use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -30,6 +32,7 @@ use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UsersShowController extends AbstractController
 {
@@ -39,6 +42,7 @@ class UsersShowController extends AbstractController
         int $id,
         Db $db,
         UserRepository $user_repository,
+        AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -76,10 +80,25 @@ class UsersShowController extends AbstractController
 
         $user = $user_repository->get($id, $pp->schema());
 
+        if (!$user)
+        {
+            throw new NotFoundHttpException(
+                'De gebruiker met id ' . $id . ' bestaat niet');
+        }
+
         if (!$pp->is_admin() && !in_array($user['status'], [1, 2]))
         {
             throw new AccessDeniedHttpException('Access denied.');
         }
+
+        $min_limit = $account_repository->get_min_limit($id, $pp->schema());
+        $max_limit = $account_repository->get_max_limit($id, $pp->schema());
+        $balance = $account_repository->get_balance($id, $pp->schema());
+
+        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
@@ -113,22 +132,9 @@ class UsersShowController extends AbstractController
 
             if (!count($errors))
             {
-                $stmt = $db->executeQuery('select c.value, tc.abbrev
-                    from ' . $su->schema() . '.contact c, ' .
-                        $su->schema() . '.type_contact tc
-                    where c.access in (?)
-                        and c.user_id = ?
-                        and c.id_type_contact = tc.id',
-                        [$item_access_service->get_visible_ary_for_role($user['role']), $su->id()],
-                        [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
-                    );
-
-                $from_contacts = $stmt->fetchAll();
-
                 $from_user = $user_cache_service->get($su->id(), $su->schema());
 
                 $vars = [
-                    'from_contacts'     => $from_contacts,
                     'from_user'			=> $from_user,
                     'from_schema'		=> $su->schema(),
                     'to_user'			=> $user,
@@ -182,37 +188,37 @@ class UsersShowController extends AbstractController
             where id_from = ?
                 or id_to = ?', [$id, $id]);
 
-        $sql_bind = [$user['code']];
+        $sql_nxt_prv = [
+            'where'     => [],
+            'params'    => [$user['code']],
+            'types'     => [\PDO::PARAM_STR],
+        ];
 
-        if ($status && isset($status_def_ary[$status]))
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
-            $and_status = isset($status_def_ary[$status]['sql'])
-                ? ' and ' . $status_def_ary[$status]['sql']
-                : '';
-
-            if (isset($status_def_ary[$status]['sql_bind']))
+            foreach ($def_sql_ary as $def_val)
             {
-                $sql_bind[] = $status_def_ary[$status]['sql_bind'];
+                $sql_nxt_prv[$st_def_key][] = $def_val;
             }
         }
-        else
-        {
-            $and_status = $pp->is_admin() ? '' : ' and u.status in (1, 2) ';
-        }
+
+        $params['status'] = $status;
+
+        $sql_nxt_prv_where = ' and ' . implode(' and ', $sql_nxt_prv['where']);
 
         $next = $db->fetchColumn('select id
             from ' . $pp->schema() . '.users u
             where u.code > ?
-            ' . $and_status . '
+            ' . $sql_nxt_prv_where . '
             order by u.code asc
-            limit 1', $sql_bind);
+            limit 1', $sql_nxt_prv['params'], 0, $sql_nxt_prv['types']);
 
         $prev = $db->fetchColumn('select id
             from ' . $pp->schema() . '.users u
             where u.code < ?
-            ' . $and_status . '
+            ' . $sql_nxt_prv_where . '
             order by u.code desc
-            limit 1', $sql_bind);
+            limit 1', $sql_nxt_prv['params'], 0, $sql_nxt_prv['types']);
 
         $intersystem_missing = false;
 
@@ -222,7 +228,7 @@ class UsersShowController extends AbstractController
         {
             $intersystem_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?', [$user['code']]);
+                where localletscode = ?', [$user['code']], 0, [\PDO::PARAM_STR]);
 
             if (!$intersystem_id)
             {
@@ -238,7 +244,7 @@ class UsersShowController extends AbstractController
         {
             $last_login = $db->fetchColumn('select max(created_at)
                 from ' . $pp->schema() . '.login
-                where user_id = ?', [$id]);
+                where user_id = ?', [$id], 0, [\PDO::PARAM_INT]);
         }
 
         $contacts_response = $contacts_user_show_inline_controller(
@@ -324,9 +330,12 @@ class UsersShowController extends AbstractController
 
         $status_id = $user['status'];
 
-        if (isset($user['adate']))
+        if (isset($user['adate'])
+            && $status_id === 1
+            && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC')
+        )
         {
-            $status_id = ($config_service->get_new_user_treshold($pp->schema()) < strtotime($user['adate']) && $status_id == 1) ? 3 : $status_id;
+            $status_id = 3;
         }
 
         $h_status_ary = StatusCnst::LABEL_ARY;
@@ -370,9 +379,9 @@ class UsersShowController extends AbstractController
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
 
-        $out .= '<div class="card card-default">';
+        $out .= '<div class="card card-default" data-fileupload-container>';
         $out .= '<div class="card-body text-center ';
-        $out .= 'center-block" id="img_user">';
+        $out .= 'center-block img-upload" id="img_user">';
 
         $show_img = $user['image_file'] ? true : false;
 
@@ -381,7 +390,7 @@ class UsersShowController extends AbstractController
 
         $out .= '<img id="img"';
         $out .= $user_img;
-        $out .= ' class="img-rounded img-responsive center-block" ';
+        $out .= ' class="img-rounded img-responsive center-block w-100" ';
         $out .= 'src="';
 
         if ($user['image_file'])
@@ -400,7 +409,7 @@ class UsersShowController extends AbstractController
         $out .= $no_user_img;
         $out .= '>';
         $out .= '<i class="fa fa-user fa-5x text-muted"></i>';
-        $out .= '<br>Geen profielfoto</div>';
+        $out .= '<br>Geen profielfoto/afbeelding</div>';
 
         $out .= '</div>';
 
@@ -414,9 +423,9 @@ class UsersShowController extends AbstractController
             }
 
             $out .= '<div class="card-footer">';
-            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
-            $out .= '<i class="fa fa-plus" id="img_plus"></i> Foto opladen';
-            $out .= '<input id="fileupload" type="file" name="image" ';
+            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button" data-fileupload-btn>';
+            $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
+            $out .= '<input type="file" name="image" ';
             $out .= 'data-url="';
 
             if ($pp->is_admin())
@@ -429,28 +438,28 @@ class UsersShowController extends AbstractController
                 $out .= $link_render->context_path('users_image_upload', $pp->ary(), []);
             }
 
-            $out .= '" ';
-            $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
-            $out .= 'data-max-file-size="999000" data-image-max-width="400" ';
-            $out .= 'data-image-crop="true" ';
-            $out .= 'data-image-max-height="400"></span>';
+            $out .= '" data-fileupload-btn-input ';
+            $out .= 'data-error-file-type="Bestandstype is niet toegelaten." ';
+            $out .= 'data-error-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-error-min-file-size="Het bestand is te klein." ';
+            $out .= 'data-error-uploaded-bytes="Het bestand is te groot." ';
+            $out .= '></span>';
 
-            $out .= '<p>';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
-            $out .= 'Je kan ook een foto hierheen verslepen.</p>';
+            $out .= '<p class="text-warning">';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
+            $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
 
             if ($pp->is_admin())
             {
                 $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
-                    ['id' => $id], 'Foto verwijderen',
+                    ['id' => $id], 'Afbeelding verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
             else
             {
                 $out .= $link_render->link_fa('users_image_del', $pp->ary(),
-                    [], 'Foto verwijderen',
+                    [], 'Afbeelding verwijderen',
                     array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
                     'times');
             }
@@ -580,20 +589,28 @@ class UsersShowController extends AbstractController
         $out .= '<dt>Saldo</dt>';
         $out .= '<dd>';
         $out .= '<span class="label label-info">';
-        $out .= $user['balance'];
+        $out .= $balance;
         $out .= '</span>&nbsp;';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</dd>';
 
         $out .= '<dt>Minimum limiet</dt>';
         $out .= '<dd>';
 
-        if (isset($user['minlimit']))
+        if (isset($min_limit))
         {
             $out .= '<span class="label label-danger">';
-            $out .= $user['minlimit'];
+            $out .= $min_limit;
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
+        }
+        else if (isset($system_min_limit))
+        {
+            $out .= '<span class="label label-default">';
+            $out .= $system_min_limit;
+            $out .= '</span>&nbsp;';
+            $out .= $currency;
+            $out .= ' (Minimum Systeemslimiet)';
         }
         else
         {
@@ -605,12 +622,20 @@ class UsersShowController extends AbstractController
         $out .= '<dt>Maximum limiet</dt>';
         $out .= '<dd>';
 
-        if (isset($user['maxlimit']))
+        if (isset($max_limit))
         {
             $out .= '<span class="label label-success">';
-            $out .= $user['maxlimit'];
+            $out .= $max_limit;
             $out .= '</span>&nbsp;';
-            $out .= $config_service->get('currency', $pp->schema());
+            $out .= $currency;
+        }
+        else if (isset($system_max_limit))
+        {
+            $out .= '<span class="label label-default">';
+            $out .= $system_max_limit;
+            $out .= '</span>&nbsp;';
+            $out .= $currency;
+            $out .= ' (Maximum Systeemslimiet)';
         }
         else
         {
@@ -647,9 +672,9 @@ class UsersShowController extends AbstractController
         $out .= '<div class="col-md-12">';
 
         $out .= '<h3>Huidig saldo: <span class="label label-info">';
-        $out .= $user['balance'];
+        $out .= $balance;
         $out .= '</span> ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</h3>';
         $out .= '</div></div>';
 
@@ -790,15 +815,14 @@ class UsersShowController extends AbstractController
         $out .= '</textarea>';
         $out .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="user_mail_cc" class="control-label">';
-        $out .= '<input type="checkbox" name="user_mail_cc" ';
-        $out .= 'id="user_mail_cc" value="1"';
-        $out .= $user_mail_cc ? ' checked="checked"' : '';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '> Stuur een kopie naar mijzelf';
-        $out .= '</label>';
-        $out .= '</div>';
+        $user_mail_cc_attr = $user_mail_cc ? ' checked' : '';
+        $user_mail_cc_attr .= $user_mail_disabled ? ' disabled' : '';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'user_mail_cc',
+            '%label%'       => 'Stuur een kopie naar mijzelf',
+            '%attr%'        => $user_mail_cc_attr,
+        ]);
 
         $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';

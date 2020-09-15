@@ -3,7 +3,9 @@
 namespace App\Service;
 
 use Predis\Client as Predis;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ImageTokenService
 {
@@ -11,18 +13,21 @@ class ImageTokenService
     const TTL = 86400; // 1 day
 
 	protected TokenGeneratorService $token_generator_service;
+	protected TranslatorInterface $translator;
 	protected Predis $predis;
 	protected PageParamsService $pp;
 	protected SessionUserService $su;
 
 	public function __construct(
 		TokenGeneratorService $token_generator_service,
+		TranslatorInterface $translator,
 		Predis $predis,
 		PageParamsService $pp,
 		SessionUserService $su
 	)
 	{
 		$this->token_generator_service = $token_generator_service;
+		$this->translator = $translator;
 		$this->predis = $predis;
 		$this->pp = $pp;
 		$this->su = $su;
@@ -47,7 +52,7 @@ class ImageTokenService
 		return $image_token;
 	}
 
-	public function check_and_throw(int $id, string $image_token):void
+	public function get_error_response(int $id, string $image_token):?Response
 	{
         $image_token_key = strtr(self::KEY_TPL, [
             '%route%'    	=> $this->pp->route(),
@@ -58,9 +63,14 @@ class ImageTokenService
 			'%role_short'	=> $this->pp->role_short(),
 		]);
 
-		if (!$this->predis->get($image_token_key))
+		if ($this->predis->get($image_token_key))
 		{
-			throw new BadRequestHttpException('No matching image_token.');
+			return null;
 		}
+
+		return new JsonResponse([
+			'error'	=> $this->translator->trans('image_upload.error.token'),
+			'code'	=> 400,
+		], 400);
 	}
 }

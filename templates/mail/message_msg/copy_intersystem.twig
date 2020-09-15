@@ -2,23 +2,28 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-    {{- ('message_msg_copy.subject_' ~ message.offer_want)|trans({
+    {%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
+    {{- ('message_msg_copy.subject_' ~ offer_want)|trans({
         '%message_subject%': message.subject
     })|raw -}}
 {%- endblock subject_line %}
 
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+
 {% block html_explain -%}
-    {{- ('message_msg_copy_intersystem.explain_' ~ message.offer_want)|trans({
+    {%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
+    {{- ('message_msg_copy_intersystem.explain_' ~ offer_want)|trans({
         '%to_account%': account(to_user.id, to_schema),
-        '%to_system_name%': config('systemname', to_schema),
+        '%to_system_name%': config_str('system.name', to_schema),
         '%message_subject%': message.subject
     })|raw -}}
 {%- endblock html_explain -%}
 
 {% block text_explain %}
-{{ ('message_msg_copy_intersystem.explain_' ~ message.offer_want)|trans({
+{%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
+{{ ('message_msg_copy_intersystem.explain_' ~ offer_want)|trans({
     '%to_account%': account(to_user.id, to_schema),
-    '%to_system_name%': config('systemname', to_schema),
+    '%to_system_name%': config_str('system.name', to_schema),
     '%message_subject%': message.subject
 })|raw }}
 {% endblock text_explain %}

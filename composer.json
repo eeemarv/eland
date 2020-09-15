@@ -24,13 +24,14 @@
 		"geocoder-php/google-maps-provider": "^4.1",
 		"gregwar/captcha-bundle": "^2.1",
 		"imagine/imagine": "^0.6",
+		"intervention/image": "^2.5",
 		"league/html-to-markdown": "^4.4",
 		"minishlink/web-push-bundle": "^5.0",
 		"mollie/mollie-api-php": "^2",
 		"monolog/monolog": "^1",
 		"php-http/guzzle6-adapter": "^1.1",
 		"php-http/message": "^1.6",
-		"predis/predis": "^1.1",
+		"predis/predis": "1.1.4",
 		"sensio/framework-extra-bundle": "^5.4",
 		"swiftmailer/swiftmailer": "~6",
 		"symfony/asset": "^5",
@@ -63,7 +64,8 @@
 		"symfony/var-dumper": "^5",
 		"symfony/webpack-encore-bundle": "^1.7",
 		"symfony/yaml": "^5",
-		"twig/twig": "^3"
+		"twig/twig": "^3",
+		"xemlock/htmlpurifier-html5": "^0.1.11"
 	},
 
     "require-dev": {

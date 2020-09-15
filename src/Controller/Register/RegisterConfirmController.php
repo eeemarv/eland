@@ -11,6 +11,7 @@ use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\StaticContentService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegisterConfirmController extends AbstractController
@@ -20,6 +21,7 @@ class RegisterConfirmController extends AbstractController
         UserRepository $user_repository,
         TranslatorInterface $translator,
         ConfigService $config_service,
+        StaticContentService $static_content_service,
         DataTokenService $data_token_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -91,9 +93,9 @@ class RegisterConfirmController extends AbstractController
             'template'		=> 'register/register_admin',
         ], 8000);
 
-        $registration_success_mail = $config_service->get('registration_success_mail', $pp->schema());
+        $success_mail = $static_content_service->get('register_form_confirm', 'success_mail', $pp->schema());
 
-        if ($registration_success_mail)
+        if ($success_mail)
         {
             $map_template_vars = [
                 'voornaam' 			=> 'first_name',
@@ -114,7 +116,7 @@ class RegisterConfirmController extends AbstractController
                 'schema'				=> $pp->schema(),
                 'to' 					=> [$data['email'] => $user['fullname']],
                 'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
-                'pre_html_template'		=> $config_service->get('registration_success_mail', $pp->schema()),
+                'pre_html_template'		=> $success_mail,
                 'template'				=> 'skeleton',
                 'vars'					=> $vars,
             ], 8500);

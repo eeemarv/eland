@@ -52,7 +52,12 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 		{
 			$user = $this->user_cache_service->get($message['user_id'], $schema);
 
-			if (!($user['status'] == 1 || $user['status'] == 2))
+			if (!($user['status'] === 1 || $user['status'] === 2))
+			{
+				continue;
+			}
+
+			if (!($user['role'] === 'admin' || $user['role'] === 'user'))
 			{
 				continue;
 			}
@@ -85,7 +90,8 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get('msgexpwarnenabled', $schema) ? true : false;
+		return $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema)
+			&& $this->config_service->get_bool('messages.expire.notify', $schema);
 	}
 
 	public function get_interval(string $schema):int

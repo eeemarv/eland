@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Docs;
 
+use App\Command\Docs\DocsMapCommand;
 use App\Form\Input\UniqueTextAddonType;
 use App\Service\TypeaheadService;
 use Symfony\Component\Form\AbstractType;
@@ -42,6 +43,7 @@ class DocsMapType extends AbstractType
     {
         $resolver->setDefaults([
             'initial_value' => '',
+            'data_class'    => DocsMapCommand::class,
         ]);
     }
 }

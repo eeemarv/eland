@@ -2,7 +2,7 @@
 
 namespace App\Command\Docs;
 
-use App\Validator\DocMap\UniqueDocMap;
+use App\Validator\DocMap\DocMapUniqueName;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -14,7 +14,7 @@ class DocsMapCommand
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('name', new NotBlank());
-        $metadata->addConstraint(new UniqueDocMap(['groups' => ['unique']]));
-        $metadata->setGroupSequence(['DocsMapCommand', 'unique']);
+        $metadata->addConstraint(new DocMapUniqueName(['groups' => ['unique_name']]));
+        $metadata->setGroupSequence(['DocsMapCommand', 'unique_name']);
     }
 }

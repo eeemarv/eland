@@ -28,9 +28,59 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
+use Doctrine\DBAL\Types\Types;
 
 class MessagesListController extends AbstractController
 {
+    const COLUMNS_DEF_ARY = [
+        'offer'  => [
+            'lbl'   => 'V/A',
+            'sort'  => ['col' => ['m.is_offer'], 'dir' => 'desc'],
+            'enabled'   => true,
+        ],
+        'subject'   => [
+            'lbl'   => 'Wat',
+            'sort'  => ['col' => ['m.subject'], 'dir' => 'desc'],
+            'enabled'   => true,
+        ],
+        'user'  => [
+            'lbl'       => 'Wie',
+            'sort'      => ['col' => ['u.name'], 'dir' => 'desc'],
+            'hide'      => ['phone', 'tablet'],
+            'enabled'   => true,
+        ],
+        'postcode'  => [
+            'lbl'   => 'Postcode',
+            'sort'  => ['col' => ['u.postcode'], 'dir' => 'desc'],
+            'hide'  => ['phone', 'tablet'],
+            'enabled'   => true,
+        ],
+        'category'  => [
+            'lbl'   => 'Categorie',
+            'sort'  => ['col' => ['cp.name', 'c.name'], 'dir' => 'desc'],
+            'hide'  => ['phone', 'tablet'],
+            'enabled'   => true,
+        ],
+        'expires'   => [
+            'lbl'   => 'Geldig tot',
+            'sort'  => ['col' => ['m.expires_at'], 'dir' => 'desc'],
+            'hide'  => ['phone', 'tablet'],
+            'enabled'   => true,
+        ],
+        'created'   => [
+            'lbl'   => 'Gecreëerd',
+            'sort'  => ['col' => ['m.created_at'], 'dir' => 'desc'],
+            'hide'  => ['phone', 'tablet'],
+            'enabled'   => false,
+        ],
+        'access'    => [
+            'lbl'   => 'Zichtbaar',
+            'hide'  => ['phone', 'tablet'],
+            'sort'  => ['col' => ['m.access'], 'dir' => 'desc'],
+            'enabled'   => true,
+        ],
+    ];
+
     public function __invoke(
         Request $request,
         Db $db,
@@ -56,6 +106,12 @@ class MessagesListController extends AbstractController
     {
         $errors = [];
 
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $intersytem_en = $config_service->get_intersystem_en($pp->schema());
+        $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
+
         $selected_messages = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
@@ -63,21 +119,22 @@ class MessagesListController extends AbstractController
 
         if ($request->isMethod('POST')
             && !$pp->is_guest()
-            && count($bulk_submit))
+            && count($bulk_submit)
+            && $bulk_actions_enabled)
         {
             if (count($bulk_submit) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Meer dan 1 submit.');
+                throw new BadRequestHttpException('Invalid form. More than one submit.');
             }
 
             if (count($bulk_field) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Request voor meer dan één veld.');
+                throw new BadRequestHttpException('Invalid form. More than one bulk field.');
             }
 
             if (count($bulk_verify) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
+                throw new BadRequestHttpException('Invalid form. More than one bulk verify checkbox.');
             }
 
             if ($error_token = $form_token_service->get_error())
@@ -102,18 +159,18 @@ class MessagesListController extends AbstractController
             if (isset($bulk_verify_action)
                 && $bulk_verify_action !== $bulk_submit_action)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Actie nazichtvakje klopt niet.');
+                throw new BadRequestHttpException('Invalid form. Not matching verify checkbox to bulk action.');
             }
 
             if (isset($bulk_field_action)
                 && $bulk_field_action !== $bulk_submit_action)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Actie waardeveld klopt niet.');
+                throw new BadRequestHttpException('Invalid form. Not matching field to bulk action.');
             }
 
             if (!isset($bulk_field_action))
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Waarde veld ontbreekt.');
+                throw new BadRequestHttpException('Invalid form. Missing value.');
             }
 
             $bulk_field_value = $bulk_field[$bulk_field_action];
@@ -136,7 +193,7 @@ class MessagesListController extends AbstractController
             {
                 if (!$pp->is_admin() && !$su->is_owner($row['user_id']))
                 {
-                    throw new AccessDeniedHttpException('Je bent niet de eigenaar van vraag of aanbod ' .
+                    throw new AccessDeniedHttpException('You are not the owner of this message: ' .
                         $row['subject'] . ' ( ' . $row['id'] . ')');
                 }
 
@@ -145,13 +202,18 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'extend' && !count($errors))
             {
+                if (!$expires_at_enabled)
+                {
+                    throw new BadRequestHttpException('Message expiration sub-module not enabled.');
+                }
+
                 foreach ($update_msgs_ary as $id => $row)
                 {
                     $expires_at = $row['expires_at'] ?? gmdate('Y-m-d H:i:s');
                     $expires_at = gmdate('Y-m-d H:i:s', strtotime($expires_at . ' UTC') + (86400 * (int) $bulk_field_value));
 
                     $msg_update = [
-                        'expires_at'		=> $expires_at,
+                        'expires_at'    => $expires_at,
                         'exp_user_warn'	=> 'f',
                     ];
 
@@ -173,6 +235,11 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'access' && !count($errors))
             {
+                if (!$intersytem_en)
+                {
+                    throw new BadRequestHttpException('Bulk access not enabled when intersystem functionality is not enabledd.');
+                }
+
                 $msg_update = [
                     'access'    => $bulk_field_value,
                 ];
@@ -196,17 +263,27 @@ class MessagesListController extends AbstractController
 
             if ($bulk_submit_action === 'category' && !count($errors))
             {
+                if (!$category_enabled)
+                {
+                    throw new BadRequestHttpException('Categories sub-module not enabled.');
+                }
+
                 $to_category_id = (int) $bulk_field_value;
 
-                $test_category_id = $db->fetchColumn('select id
+                $test_category = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.categories
-                    where id_parent <> 0
-                        and leafnote = 1
-                        and id = ?', [$to_category_id]);
+                    where id = ?',
+                    [$to_category_id],
+                    [\PDO::PARAM_INT]);
 
-                if (!$test_category_id)
+                if (!$test_category)
                 {
-                    throw new BadRequestHttpException('Ongeldig categorie id ' . $to_category_id);
+                    throw new BadRequestHttpException('Non existing category. Id: ' . $to_category_id);
+                }
+
+                if (($test_category['left_id'] + 1) !== $test_category['right_id'])
+                {
+                    throw new BadRequestHttpException('A category with sub-categories cannot contain messages. Id: ' . $to_category_id);
                 }
 
                 $msg_update = [
@@ -264,13 +341,11 @@ class MessagesListController extends AbstractController
             'list'
         );
 
-        if ($pp->is_admin())
+        if ($bulk_actions_enabled && $pp->is_admin())
         {
             $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             $btn_nav_render->csv();
         }
-
-        $show_visibility_column = !$pp->is_guest() && $intersystems_service->get_count($pp->schema());
 
         if (!count($messages))
         {
@@ -294,15 +369,50 @@ class MessagesListController extends AbstractController
 
         $th_params = $params;
 
-        $table_header_ary = self::get_table_header_ary($params, $show_visibility_column);
+        $column_ary = self::COLUMNS_DEF_ARY;
 
-        foreach ($table_header_ary as $key_orderby => $data)
+        if (isset($params['f']['uid']))
         {
+            unset($column_ary['user']);
+            unset($column_ary['postcode']);
+        }
+
+        if (isset($params['f']['cid']) || !$category_enabled)
+        {
+            unset($column_ary['category']);
+        }
+
+        if (!$expires_at_enabled)
+        {
+            unset($column_ary['expires']);
+        }
+
+        $show_visibility_column = !$pp->is_guest() && $intersystems_service->get_count($pp->schema());
+
+        if (!$show_visibility_column)
+        {
+            unset($column_ary['access']);
+        }
+
+        foreach ($column_ary as $col => $data)
+        {
+            if (!isset(self::COLUMNS_DEF_ARY[$col]))
+            {
+                continue;
+            }
+
+            if (!$data['enabled'])
+            {
+                continue;
+            }
+
             $out .= '<th';
 
-            if (isset($data['data_hide']))
+            if (isset($data['hide']))
             {
-                $out .= ' data-hide="' . $data['data_hide'] . '"';
+                $out .= ' data-hide="';
+                $out .= implode(',', $data['hide']);
+                $out .= '"';
             }
 
             $out .= '>';
@@ -313,13 +423,22 @@ class MessagesListController extends AbstractController
             }
             else
             {
+                $fa = 'sort';
+                $dir = $data['sort']['dir'];
+
+                if ($col === $params['s']['col'])
+                {
+                    $dir = $params['s']['dir'] === 'asc' ? 'desc' : 'asc';
+                    $fa = $params['s']['dir'] === 'asc' ? 'sort-asc' : 'sort-desc';
+                }
+
                 $th_params['s'] = [
-                    'orderby'	=> $key_orderby,
-                    'asc' 		=> $data['asc'],
+                    'col'	    => $col,
+                    'dir' 		=> $dir,
                 ];
 
                 $out .= $link_render->link_fa($vr->get('messages'), $pp->ary(),
-                    $th_params, $data['lbl'], [], $data['fa']);
+                    $th_params, $data['lbl'], [], $fa);
             }
 
             $out .= '</th>';
@@ -333,12 +452,17 @@ class MessagesListController extends AbstractController
         foreach($messages as $msg)
         {
             $out .= '<tr';
-            $out .= isset($msg['expires_at']) && strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
+
+            if ($expires_at_enabled)
+            {
+                $out .= isset($msg['expires_at']) && strtotime($msg['expires_at']) < time() ? ' class="danger"' : '';
+            }
+
             $out .= '>';
 
             $out .= '<td>';
 
-            if ($pp->is_admin() || $is_owner)
+            if ($bulk_actions_enabled && ($pp->is_admin() || $is_owner))
             {
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
@@ -371,18 +495,32 @@ class MessagesListController extends AbstractController
                 $out .= '</td>';
             }
 
-            if (!($params['f']['cid'] ?? false))
+            if ($category_enabled && !($params['f']['cid'] ?? false))
             {
                 $out .= '<td>';
+
                 $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    $cat_params[$msg['category_id']],
-                    $categories[$msg['category_id']]);
+                    $cat_params[$msg['category_id'] ?? 'null'],
+                    $categories[$msg['category_id'] ?? 'null']);
+
                 $out .= '</td>';
             }
 
-            $out .= '<td>';
-            $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
-            $out .= '</td>';
+            if ($expires_at_enabled)
+            {
+                $out .= '<td>';
+
+                if (isset($msg['expires_at']))
+                {
+                    $out .= $date_format_service->get($msg['expires_at'], 'day', $pp->schema());
+                }
+                else
+                {
+                    $out .= '&nbsp;';
+                }
+
+                $out .= '</td>';
+            }
 
             if ($show_visibility_column)
             {
@@ -401,7 +539,7 @@ class MessagesListController extends AbstractController
 
         $out .= $pagination_render->get();
 
-        if (($pp->is_admin() || $is_owner) && count($messages))
+        if ($bulk_actions_enabled && ($pp->is_admin() || $is_owner) && count($messages))
         {
             $extend_options = [
                 '7'		=> '1 week',
@@ -414,6 +552,35 @@ class MessagesListController extends AbstractController
                 '1825'	=> '5 jaar',
             ];
 
+            $cat_options = '';
+
+            foreach ($categories_move_options as $cat_id => $cat_data)
+            {
+                if (isset($cat_data['children']) && count($cat_data['children']))
+                {
+                    $cat_options .= '<optgroup label="';
+                    $cat_options .= $cat_data['name'];
+                    $cat_options .= '">';
+
+                    foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+                    {
+                        $cat_options .= '<option value="';
+                        $cat_options .= $sub_cat_id;
+                        $cat_options .= '">';
+                        $cat_options .= $sub_cat_data['name'];
+                        $cat_options .= '</option>';
+                    }
+                    $cat_options .= '</optgroup>';
+                    continue;
+                }
+
+                $cat_options .= '<option value="';
+                $cat_options .= $cat_id;
+                $cat_options .= '">';
+                $cat_options .= $cat_data['name'];
+                $cat_options .= '</option>';
+            }
+
             $out .= BulkCnst::TPL_SELECT_BUTTONS;
 
             $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
@@ -423,12 +590,15 @@ class MessagesListController extends AbstractController
 
             $out .= '<ul class="nav nav-tabs mb-2" role="tablist">';
 
-            $out .= '<li class="nav-item">';
-            $out .= '<a href="#extend_tab" ';
-            $out .= 'class="nav-link active" ';
-            $out .= 'data-toggle="tab">Verlengen</a></li>';
+            if ($expires_at_enabled)
+            {
+                $out .= '<li class="nav-item">';
+                $out .= '<a href="#extend_tab" ';
+                $out .= 'class="nav-link active" ';
+                $out .= 'data-toggle="tab">Verlengen</a></li>';
+            }
 
-            if ($config_service->get_intersystem_en($pp->schema()))
+            if ($intersytem_en)
             {
                 $out .= '<li class="nav-item">';
                 $out .= '<a class="nav-link" ';
@@ -436,43 +606,49 @@ class MessagesListController extends AbstractController
                 $out .= 'Zichtbaarheid</a><li>';
             }
 
-            $out .= '<li class="nav-item">';
-            $out .= '<a class="nav-link" href="#category_tab" ';
-            $out .= 'data-toggle="tab">Categorie</a></li>';
+            if ($category_enabled)
+            {
+                $out .= '<li class="nav-item">';
+                $out .= '<a class="nav-link" href="#category_tab" ';
+                $out .= 'data-toggle="tab">Categorie</a></li>';
+            }
 
             $out .= '</ul>';
 
             $out .= '<div class="tab-content">';
 
-            $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
-            $out .= '<h3>Vraag en aanbod verlengen</h3>';
+            if ($expires_at_enabled)
+            {
+                $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
+                $out .= '<h3>Vraag en aanbod verlengen</h3>';
 
-            $out .= '<form method="post">';
+                $out .= '<form method="post">';
 
-            $out .= '<div class="form-group">';
-            $out .= '<label for="buld_field[extend]" class="control-label">';
-            $out .= 'Verlengen met</label>';
-            $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
-            $out .= $select_render->get_options($extend_options, '30');
-            $out .= "</select>";
-            $out .= '</div>';
+                $out .= '<div class="form-group">';
+                $out .= '<label for="buld_field[extend]" class="control-label">';
+                $out .= 'Verlengen met</label>';
+                $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
+                $out .= $select_render->get_options($extend_options, '30');
+                $out .= "</select>";
+                $out .= '</div>';
 
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-                '%name%'    => 'bulk_verify[extend]',
-                '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
-                '%attr%'    => ' required',
-            ]);
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[extend]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
 
-            $out .= '<input type="submit" value="Verlengen" ';
-            $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
+                $out .= '<input type="submit" value="Verlengen" ';
+                $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
 
-            $out .= $form_token_service->get_hidden_input();
+                $out .= $form_token_service->get_hidden_input();
 
-            $out .= '</form>';
+                $out .= '</form>';
 
-            $out .= '</div>';
+                $out .= '</div>';
+            }
 
-            if ($config_service->get_intersystem_en($pp->schema()))
+            if ($intersytem_en)
             {
                 $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
                 $out .= '<h3>Zichtbaarheid instellen</h3>';
@@ -493,30 +669,33 @@ class MessagesListController extends AbstractController
                 $out .= '</div>';
             }
 
-            $out .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
-            $out .= '<h3>Verhuizen naar categorie</h3>';
-            $out .= '<form method="post">';
+            if ($category_enabled)
+            {
+                $out .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
+                $out .= '<h3>Verhuizen naar categorie</h3>';
+                $out .= '<form method="post">';
 
-            $out .= strtr(BulkCnst::TPL_SELECT, [
-                '%options%' => $select_render->get_options($categories_move_options, ''),
-                '%name%'    => 'bulk_field[category]',
-                '%label%'   => 'Categorie',
-                '%attr%'    => ' required',
-                '%fa%'      => 'clone',
-                '%explain%' => '',
-            ]);
+                $out .= strtr(BulkCnst::TPL_SELECT, [
+                    '%options%' => $cat_options,
+                    '%name%'    => 'bulk_field[category]',
+                    '%label%'   => 'Categorie',
+                    '%attr%'    => ' required',
+                    '%fa%'      => 'clone',
+                    '%explain%' => '',
+                ]);
 
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-                '%name%'    => 'bulk_verify[category]',
-                '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
-                '%attr%'    => ' required',
-            ]);
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[category]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
 
-            $out .= '<input type="submit" value="Categorie anpassen" ';
-            $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
-            $out .= $form_token_service->get_hidden_input();
-            $out .= '</form>';
-            $out .= '</div>';
+                $out .= '<input type="submit" value="Categorie anpassen" ';
+                $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
+                $out .= $form_token_service->get_hidden_input();
+                $out .= '</form>';
+                $out .= '</div>';
+            }
 
             $out .= '</div>';
 
@@ -563,19 +742,11 @@ class MessagesListController extends AbstractController
 
         foreach ($checkbox_ary as $key => $label)
         {
-            $id = 'f_' . $filter_id . '_' . $key;
-            $out .= '<div class="custom-control custom-checkbox custom-control-inline">';
-            $out .= '<input type="checkbox" id="' . $id . '" ';
-            $out .= 'class="custom-control-input" ';
-            $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
-            $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
-            $out .= '>&nbsp;';
-            $out .= '<label class="custom-control-label" for="' . $id . '">';
-            $out .= '<span class="btn btn-default border border-secondary-li">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
-            $out .= '</div>';
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                '%name%'    => 'f[' . $filter_id . '][' . $key . ']',
+                '%attr%'    => isset($filter_ary[$filter_id][$key]) ? ' checked' : '',
+                '%label%'   => $label,
+            ]);
         }
 
         return $out;
@@ -595,74 +766,6 @@ class MessagesListController extends AbstractController
             $params, 'Lijst met omschrijvingen', 'th-list', $view === 'extended');
     }
 
-    public static function get_table_header_ary(
-        array $params,
-        bool $show_visibility_column
-    ):array
-    {
-        $asc_preset_ary = [
-            'asc'	=> '0',
-            'fa' 	=> 'sort',
-        ];
-
-        $table_header_ary = [
-            'm.is_offer' => array_merge($asc_preset_ary, [
-                'lbl' => 'V/A']),
-            'm.subject' => array_merge($asc_preset_ary, [
-                'lbl' => 'Wat']),
-        ];
-
-        if (!isset($params['f']['uid']))
-        {
-            $table_header_ary += [
-                'u.name'	=> array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Wie',
-                    'data_hide' => 'phone,tablet',
-                ]),
-                'u.postcode'	=> array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Postcode',
-                    'data_hide'	=> 'phone,tablet',
-                ]),
-            ];
-        }
-
-        if (!($params['f']['cid'] ?? false))
-        {
-            $table_header_ary += [
-                'c.fullname' => array_merge($asc_preset_ary, [
-                    'lbl' 		=> 'Categorie',
-                    'data_hide'	=> 'phone, tablet',
-                ]),
-            ];
-        }
-
-        $table_header_ary += [
-            'm.expires_at' => array_merge($asc_preset_ary, [
-                'lbl' 	=> 'Geldig tot',
-                'data_hide'	=> 'phone, tablet',
-            ]),
-        ];
-
-        if ($show_visibility_column)
-        {
-            $table_header_ary += [
-                'm.access' => array_merge($asc_preset_ary, [
-                    'lbl' 	=> 'Zichtbaarheid',
-                    'data_hide'	=> 'phone, tablet',
-                ]),
-            ];
-        }
-
-        $table_header_ary[$params['s']['orderby']]['asc']
-            = $params['s']['asc'] ? '0' : '1';
-        $table_header_ary[$params['s']['orderby']]['fa']
-            = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
-
-        unset($table_header_ary['m.created_at']);
-
-        return $table_header_ary;
-    }
-
     public static function fetch_and_filter(
         Request $request,
         Db $db,
@@ -679,25 +782,43 @@ class MessagesListController extends AbstractController
         TypeaheadService $typeahead_service
     ):array
     {
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $is_owner = isset($filter['uid'])
-            && $su->is_owner((int) $filter['uid']);
+        $sort_col = $sort['col'] ?? 'created';
+        $sort_col = isset(self::COLUMNS_DEF_ARY[$sort_col]) ? $sort_col : 'created';
+
+        $sort_dir = $sort['dir'] ?? 'desc';
+        $sort_dir = in_array($sort_dir, ['asc', 'desc']) ? $sort_dir : 'desc';
+
+        $pag_start = $pag['start'] ?? 0;
+        $pag_limit = $pag['limit'] ?? 25;
 
         $params = [
             's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'm.created_at',
-                'asc'		=> $sort['asc'] ?? 0,
+                'col'	    => $sort_col,
+                'dir'		=> $sort_dir,
             ],
             'p'	=> [
-                'start'		=> $pag['start'] ?? 0,
-                'limit'		=> $pag['limit'] ?? 25,
+                'start'		=> $pag_start,
+                'limit'		=> $pag_limit,
             ],
         ];
 
-        $params_sql = $where_sql = [];
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
+        $is_owner = isset($filter['uid'])
+            && $su->is_owner((int) $filter['uid']);
 
         if (isset($filter['uid'])
             && $filter['uid']
@@ -714,9 +835,11 @@ class MessagesListController extends AbstractController
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $where_sql[] = '(m.subject ilike ? or m.content ilike ?)';
-            $params_sql[] = '%' . $filter['q'] . '%';
-            $params_sql[] = '%' . $filter['q'] . '%';
+            $sql['where'][] = '(m.subject ilike ? or m.content ilike ?)';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['types'][] = \PDO::PARAM_INT;
+            $sql['types'][] = \PDO::PARAM_INT;
             $params['f']['q'] = $filter['q'];
         }
 
@@ -728,112 +851,182 @@ class MessagesListController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode]);
+                where code = ?', [$fcode], 0, [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
-                $where_sql[] = 'u.id = ?';
-                $params_sql[] = $fuid;
+                $sql['where'][] = 'u.id = ?';
+                $sql['params'][] = $fuid;
+                $sql['types'][] = \PDO::PARAM_INT;
 
                 $fcode = $account_render->str((int) $fuid, $pp->schema());
                 $params['f']['fcode'] = $fcode;
             }
             else
             {
-                $where_sql[] = '1 = 2';
+                $sql['where'][] = '1 = 2';
             }
         }
 
-        $filter_valid = isset($filter['valid'])
+        $filter_valid = $expires_at_enabled
+            && isset($filter['valid'])
             && (isset($filter['valid']['yes']) xor isset($filter['valid']['no']));
 
         if ($filter_valid)
         {
             if (isset($filter['valid']['yes']))
             {
-                $where_sql[] = 'm.expires_at >= now()';
+                $sql['where'][] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
                 $params['f']['valid']['yes'] = 'on';
             }
             else
             {
-                $where_sql[] = 'm.expires_at < now()';
+                $sql['where'][] = 'm.expires_at < timezone(\'utc\', now())';
                 $params['f']['valid']['no'] = 'on';
             }
         }
 
-        $filter_type = isset($filter['type'])
+        $filter_type_ow = isset($filter['type'])
             && (isset($filter['type']['want']) xor isset($filter['type']['offer']));
 
-        if ($filter_type)
+        if ($filter_type_ow)
         {
             if (isset($filter['type']['want']))
             {
-                $where_sql[] = 'm.is_want = \'t\'';
+                $sql['where'][] = 'm.is_want = \'t\'';
                 $params['f']['type']['want'] = 'on';
             }
             else
             {
-                $where_sql[] = 'm.is_offer = \'t\'';
+                $sql['where'][] = 'm.is_offer = \'t\'';
                 $params['f']['type']['offer'] = 'on';
+            }
+        }
+
+        $filter_type_ss = isset($filter['type'])
+            && (isset($filter['type']['service']) xor isset($filter['type']['stuff']));
+
+        if ($filter_type_ss)
+        {
+            if (isset($filter['type']['service']))
+            {
+                $sql['where'][] = 'm.is_service = \'t\'';
+                $params['f']['type']['service'] = 'on';
+            }
+            else
+            {
+                $sql['where'][] = 'm.is_stuff = \'t\'';
+                $params['f']['type']['stuff'] = 'on';
+            }
+        }
+
+        $filter_ustatus = isset($filter['ustatus']) &&
+            !(isset($filter['ustatus']['new'])
+                && isset($filter['ustatus']['leaving'])
+                && isset($filter['ustatus']['active']));
+
+        if ($filter_ustatus)
+        {
+            $ustatus_sql = [];
+
+            if (isset($filter['ustatus']['new']))
+            {
+                $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
+                $sql['params'][] = $new_user_treshold;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $params['f']['ustatus']['new'] = 'on';
+            }
+
+            if (isset($filter['ustatus']['leaving']))
+            {
+                $ustatus_sql[] = 'u.status = 2';
+                $params['f']['ustatus']['leaving'] = 'on';
+            }
+
+            if (isset($filter['ustatus']['active']))
+            {
+                $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
+                $sql['params'][] = $new_user_treshold;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $params['f']['ustatus']['active'] = 'on';
+            }
+
+            if (count($ustatus_sql))
+            {
+                $sql['where'][] = '(' . implode(' or ', $ustatus_sql) . ')';
             }
         }
 
         if ($pp->is_guest())
         {
-            $where_sql[] = 'm.access = \'guest\'';
+            $sql['where'][] = 'm.access = \'guest\'';
         }
 
-        $where_sql[] = 'u.status in (1, 2)';
+        $sql['where'][] = 'u.status in (1, 2)';
 
-        $no_cat_where_sql = $where_sql;
-        $no_cat_params_sql = $params_sql;
+        $omit_cat_sql = $sql;
 
         if (isset($filter['cid'])
-            && $filter['cid'])
+            && $filter['cid']
+            && $category_enabled)
         {
-            $cat_ary = [];
-
-            $st = $db->prepare('select id
-                from ' . $pp->schema() . '.categories
-                where id_parent = ?');
-            $st->bindValue(1, $filter['cid']);
-            $st->execute();
-
-            while ($row = $st->fetch())
+            if ($filter['cid'] === 'null')
             {
-                $cat_ary[] = $row['id'];
-            }
-
-            if (count($cat_ary))
-            {
-                $where_sql[] = 'm.category_id in (' . implode(', ', $cat_ary) . ')';
+                $sql['where'][] = 'm.category_id is null';
             }
             else
             {
-                $where_sql[] = 'm.category_id = ?';
-                $params_sql[] = $filter['cid'];
+                $cat_lr = $db->fetchAssoc('select left_id, right_id
+                    from ' . $pp->schema() . '.categories
+                    where id = ?',
+                    [$filter['cid']],
+                    [\PDO::PARAM_INT]);
+
+                if (!$cat_lr)
+                {
+                    throw new BadRequestHttpException('Category not found, id:' . $filter['cid']);
+                }
+
+                $sql['where'][] = 'c.left_id >= ? and c.right_id <= ?';
+                $sql['params'][] = $cat_lr['left_id'];
+                $sql['params'][] = $cat_lr['right_id'];
+                $sql['types'][] = \PDO::PARAM_INT;
+                $sql['types'][] = \PDO::PARAM_INT;
             }
 
             $params['f']['cid'] = $filter['cid'];
         }
 
-        $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
+        $sql_where = ' and ' . implode(' and ', $sql['where']) . ' ';
 
-        $query = 'select m.*, u.postcode, c.fullname
-            from ' . $pp->schema() . '.messages m, ' .
-                $pp->schema() . '.users u, ' .
-                $pp->schema() . '.categories c
-                where m.user_id = u.id
-                    and m.category_id = c.id' . $where_sql . '
-            order by ' . $params['s']['orderby'] . ' ';
+        $sort_ary = self::COLUMNS_DEF_ARY[$params['s']['col']]['sort'];
+        $order_query = [];
+        foreach ($sort_ary['col'] as $col)
+        {
+            $order_query[] = $col . ' ' . $params['s']['dir'];
+        }
 
-        $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
-        $query .= ' limit ' . $params['p']['limit'];
-        $query .= ' offset ' . $params['p']['start'];
+        $sql_pag = $sql;
+        $sql_pag['params'][] = $params['p']['limit'];
+        $sql_pag['types'][] = \PDO::PARAM_INT;
+        $sql_pag['params'][] = $params['p']['start'];
+        $sql_pag['types'][] = \PDO::PARAM_INT;
+
+        $query = 'select m.*, u.postcode
+            from ' . $pp->schema() . '.messages m
+            inner join ' . $pp->schema() . '.users u
+                on m.user_id = u.id
+            left join ' . $pp->schema() . '.categories c
+                on m.category_id = c.id
+            left join ' . $pp->schema() . '.categories cp
+                on c.parent_id = cp.id
+            where 1 = 1' . $sql_where . '
+            order by ' . implode(', ', $order_query) . '
+            limit ? offset ?';
 
         $messages = [];
 
-        $st = $db->executeQuery($query, $params_sql);
+        $st = $db->executeQuery($query, $sql_pag['params'], $sql_pag['types']);
 
         while ($msg = $st->fetch())
         {
@@ -843,88 +1036,114 @@ class MessagesListController extends AbstractController
             $messages[] = $msg;
         }
 
-        $no_cat_where_sql = ' and ' . implode(' and ', $no_cat_where_sql) . ' ';
+        $omit_cat_sql_where = ' and ' . implode(' and ', $omit_cat_sql['where']) . ' ';
 
         $cat_count_ary = [];
+        $no_cat_count = 0;
 
         $cat_count_query = 'select count(m.*), m.category_id
             from ' . $pp->schema() . '.messages m, ' .
                 $pp->schema() . '.users u
             where m.user_id = u.id
-                ' . $no_cat_where_sql . '
+                ' . $omit_cat_sql_where . '
             group by m.category_id';
 
-        $st = $db->executeQuery($cat_count_query, $no_cat_params_sql);
+        $st = $db->executeQuery($cat_count_query,
+            $omit_cat_sql['params'], $omit_cat_sql['types']);
 
         while($row = $st->fetch())
         {
-            $cat_count_ary[$row['category_id']] = $row['count'];
+            if (isset($row['category_id']))
+            {
+                $cat_count_ary[$row['category_id']] = $row['count'];
+                continue;
+            }
+
+            $no_cat_count = $row['count'];
         }
 
         if (isset($filter['cid'])
-            && $filter['cid'])
+            && $filter['cid']
+            && $category_enabled)
         {
             $row_count = $db->fetchColumn('select count(m.*)
-                from ' . $pp->schema() . '.messages m, ' .
-                    $pp->schema() . '.users u
-                where m.user_id = u.id' . $where_sql, $params_sql);
+                from ' . $pp->schema() . '.messages m
+                inner join ' . $pp->schema() . '.users u
+                    on m.user_id = u.id
+                left join ' . $pp->schema() . '.categories c
+                    on c.id = m.category_id
+                where 1 = 1'. $sql_where,
+                $sql['params'], 0, $sql['types']);
         }
         else
         {
             $row_count = array_sum($cat_count_ary);
+            $row_count += $no_cat_count;
         }
 
         $pagination_render->init($vr->get('messages'), $pp->ary(),
             $row_count, $params);
 
-        $categories_filter_options = ['' => '-- alle categorieën --'];
-        $categories_move_options = ['' => ''];
+        $categories_filter_options = [];
+        $categories_filter_options[''] = '-- alle categorieën --';
 
-        $categories = $cat_params  = [];
+        if ($no_cat_count)
+        {
+            $categories_filter_options['null'] = '-- zonder categorie (' . $no_cat_count . ')-- ';
+        }
 
+        $categories_move_options = ['' => ['name' => '']];
+
+        $categories = [];
+        $cat_params  = [];
         $cat_params_sort = $params;
 
-        if ($params['s']['orderby'] === 'c.fullname')
+        if ($no_cat_count)
+        {
+            $categories['null'] = '** zonder categorie **';
+            $cat_params['null'] = $cat_params_sort;
+            $cat_params['null']['f']['cid'] = 'null';
+        }
+
+        if ($params['s']['col'] === 'category')
         {
             unset($cat_params_sort['s']);
         }
 
-        if (isset($filter['uid']))
-        {
-            $st = $db->executeQuery('select c.*
-                from ' . $pp->schema() . '.categories c, ' .
-                    $pp->schema() . '.messages m
-                where m.category_id = c.id
-                    and m.user_id = ?
-                order by c.fullname', [$filter['uid']]);
-        }
-        else
-        {
-            $st = $db->executeQuery('select *
-                from ' . $pp->schema() . '.categories
-                order by fullname');
-        }
+        $parent_name = '***';
+
+        $st = $db->executeQuery('select *
+            from ' . $pp->schema() . '.categories
+            order by left_id asc');
 
         while ($row = $st->fetch())
         {
-            $categories_filter_options[$row['id']] = $row['id_parent'] ? ' . . ' : '';
-            $categories_filter_options[$row['id']] .= $row['name'];
+            $cat_id = $row['id'];
+            $parent_id = $row['parent_id'];
+            $name = $row['name'];
+            $parent_name = isset($parent_id) ? $parent_name : $name;
+            $cat_ident = isset($parent_id) ? ' . > . ' : '';
+            $count_str = isset($cat_count_ary[$cat_id]) ? ' (' . $cat_count_ary[$cat_id] . ')' : '';
+            $categories_filter_options[$cat_id] = $cat_ident . $name . $count_str;
+            $full_name = isset($parent_id) ? $parent_name . ' > ' : '';
+            $full_name .= $name;
+            $categories[$cat_id] = $full_name;
 
-            $count_msgs = $cat_count_ary[$row['id']] ?? 0;
+            $cat_params[$cat_id] = $cat_params_sort;
+            $cat_params[$cat_id]['f']['cid'] = $cat_id;
 
-            if ($row['id_parent'] && $count_msgs)
+            if (isset($parent_id))
             {
-                $categories_filter_options[$row['id']] .= ' (' . $count_msgs . ')';
+                $categories_move_options[$parent_id]['children'][$cat_id] = [
+                    'name'  => $name . $count_str,
+                ];
             }
-
-            $categories[$row['id']] = $row['fullname'];
-
-            $cat_params[$row['id']] = $cat_params_sort;
-            $cat_params[$row['id']]['f']['cid'] = $row['id'];
-
-            if ($row['id_parent'])
+            else
             {
-                $categories_move_options[$row['id']] = $row['fullname'];
+                $categories_move_options[$cat_id] = [
+                    'name'          => $name . $count_str,
+                    'children'      => [],
+                ];
             }
         }
 
@@ -950,7 +1169,8 @@ class MessagesListController extends AbstractController
         }
 
         $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
-            || $filter_type
+            || $filter_type_ow
+            || $filter_type_ss
             || $filter_valid;
 
         $filtered = ($filter['q'] ?? false) || $filter_panel_open;
@@ -976,9 +1196,16 @@ class MessagesListController extends AbstractController
             $heading_render->add('Vraag en aanbod');
         }
 
-        if (isset($filter['cid']) && $filter['cid'])
+        if (isset($filter['cid']) && $filter['cid'] && $category_enabled)
         {
-            $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
+            if ($filter['cid'] === 'null')
+            {
+                $heading_render->add(', zonder categorie');
+            }
+            else
+            {
+                $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
+            }
         }
 
         $heading_render->add_filtered($filtered);
@@ -991,10 +1218,13 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="row">';
 
-        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="col-sm-';
+        $out .= $category_enabled ? '5' : '10';
+        $out .= '">';
         $out .= '<div class="input-group mb-2">';
         $out .= '<span class="input-group-prepend">';
         $out .= '<span class="input-group-text">';
+
         $out .= '<i class="fa fa-search"></i>';
         $out .= '</span>';
         $out .= '</span>';
@@ -1004,22 +1234,25 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group mb-2">';
-        $out .= '<span class="input-group-prepend">';
-        $out .= '<span class="input-group-text">';
-        $out .= '<i class="fa fa-clone"></i>';
-        $out .= '</span>';
-        $out .= '</span>';
-        $out .= '<select class="form-control" name="f[cid]" data-auto-submit>';
+        if ($category_enabled)
+        {
+            $out .= '<div class="col-sm-5 col-xs-10">';
+            $out .= '<div class="input-group mb-2">';
+            $out .= '<span class="input-group-prepend">';
+            $out .= '<span class="input-group-text">';
+            $out .= '<i class="fa fa-clone"></i>';
+            $out .= '</span>';
+            $out .= '</span>';
+            $out .= '<select class="form-control" id="cid" name="f[cid]" data-auto-submit>';
 
-        $cid = (string) ($filter['cid'] ?? '');
+            $cid = (string) ($filter['cid'] ?? '');
 
-        $out .= $select_render->get_options($categories_filter_options, $cid);
+            $out .= $select_render->get_options($categories_filter_options, $cid);
 
-        $out .= '</select>';
-        $out .= '</div>';
-        $out .= '</div>';
+            $out .= '</select>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $out .= '<div class="col-sm-2 mb-2">';
         $out .= '<button class="btn btn-default btn-block ';
@@ -1051,15 +1284,39 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $valid_options = [
-            'yes'		=> 'Geldig',
-            'no'		=> 'Vervallen',
+        $out .= '</div>';
+
+        if ($expires_at_enabled)
+        {
+            $out .= '<div class="row">';
+
+            $valid_options = [
+                'yes'		=> 'Geldig',
+                'no'		=> 'Vervallen',
+            ];
+
+            $out .= '<div class="col-md-12">';
+            $out .= '<div class="input-group margin-bottom custom-checkbox">';
+
+            $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
+
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
+        $out .= '<div class="row">';
+
+        $user_status_options = [
+            'active'	=> 'Niet in- of uitstappers',
+            'new'		=> 'Instappers',
+            'leaving'	=> 'Uitstappers',
         ];
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group mb-2">';
+        $out .= '<div class="col-md-12">';
+        $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
-        $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
+        $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
@@ -1084,7 +1341,7 @@ class MessagesListController extends AbstractController
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
+                'newuserdays'	=> $new_user_days,
             ]);
 
         $out .= '" ';

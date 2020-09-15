@@ -9,18 +9,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
+use App\Command\SendMessage\SendMessageCCCommand;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\CategoryRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\DistanceService;
-use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
@@ -30,9 +30,9 @@ use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use App\Controller\Contacts\ContactsUserShowInlineController;
-use App\Controller\Users\UsersShowAdminController;
-use App\Controller\Users\UsersShowController;
-use App\Service\ImageTokenService;
+use App\Form\Post\SendMessage\SendMessageCCType;
+use App\Repository\ContactRepository;
+use App\Repository\MessageRepository;
 
 class MessagesShowController extends AbstractController
 {
@@ -40,7 +40,9 @@ class MessagesShowController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        ImageTokenService $image_token_service,
+        MessageRepository $message_repository,
+        CategoryRepository $category_repository,
+        ContactRepository $contact_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -48,8 +50,6 @@ class MessagesShowController extends AbstractController
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -67,121 +67,129 @@ class MessagesShowController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
-        $errors = [];
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
 
-        $message = self::get_message($db, $id, $pp->schema());
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
 
-        $user_mail_content = $request->request->get('user_mail_content', '');
-        $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
-        $user_mail_submit = $request->request->get('user_mail_submit', '') ? true : false;
-
-        $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
+        $message = $message_repository->get($id, $pp->schema());
 
         if ($message['access'] === 'user' && $pp->is_guest())
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
         }
 
-        $user = $user_cache_service->get($message['user_id'], $pp->schema());
+        if ($category_enabled && isset($message['category_id']))
+        {
+            $category = $category_repository->get($message['category_id'], $pp->schema());
+        }
+
+        $user_id = $message['user_id'];
+        $user = $user_cache_service->get($user_id, $pp->schema());
 
         // process mail form
 
-        if ($user_mail_submit && $request->isMethod('POST'))
+        $mail_from_addr = $mail_addr_user_service->get($su->id(), $su->schema());
+        $mail_to_addr = $mail_addr_user_service->get($user_id, $pp->schema());
+
+        $can_reply = count($mail_from_addr) ? true : false;
+
+        $send_message_cc_command = new SendMessageCCCommand();
+        $mail_form_options = [];
+
+        if (!$mail_enabled)
         {
+            $mail_form_options['placeholder'] = 'mail_form.mail_disabled';
+            $mail_form_options['disabled'] = true;
+        }
+        else if ($su->is_master())
+        {
+            $mail_form_options['placeholder'] = 'mail_form.master_not_allowed';
+            $mail_form_options['disabled'] = true;
+        }
+        else if ($su->is_owner($user_id))
+        {
+            $mail_form_options['placeholder'] = 'mail_form.owner_not_allowed';
+            $mail_form_options['disabled'] = true;
+        }
+        else if (!count($mail_to_addr))
+        {
+            $mail_form_options['placeholder'] = 'mail_form.no_to_address';
+            $mail_form_options['disabled'] = true;
+        }
+        else if (!count($mail_from_addr))
+        {
+            $mail_form_options['placeholder'] = 'mail_form.no_from_address';
+            $mail_form_options['disabled'] = true;
+        }
+
+        $mail_form = $this->createForm(SendMessageCCType::class,
+                $send_message_cc_command, $mail_form_options)
+            ->handleRequest($request);
+
+        if ($mail_form->isSubmitted()
+            && $mail_form->isValid()
+            && !isset($mail_form_options['disabled']))
+        {
+            $send_message_cc_command = $mail_form->getData();
+
             $to_user = $user;
 
             if (!$pp->is_admin() && !in_array($to_user['status'], [1, 2]))
             {
-                throw new AccessDeniedHttpException('Je hebt geen rechten om een
-                    bericht naar een niet-actieve gebruiker te sturen');
+                throw new AccessDeniedHttpException('Access Denied');
             }
 
-            if ($su->is_master())
+            $from_user = $user_cache_service->get($su->id(), $su->schema());
+
+            $vars = [
+                'from_user'			=> $from_user,
+                'from_schema'		=> $su->schema(),
+                'is_same_system'	=> $su->is_system_self(),
+                'to_user'			=> $to_user,
+                'to_schema'			=> $pp->schema(),
+                'msg_content'		=> $send_message_cc_command->message,
+                'message'			=> $message,
+            ];
+
+            $mail_template = $su->is_system_self()
+                ? 'message_msg/msg'
+                : 'message_msg/msg_intersystem';
+
+            $mail_queue->queue([
+                'schema'	=> $pp->schema(),
+                'to'		=> $mail_to_addr,
+                'reply_to'	=> $mail_from_addr,
+                'template'	=> $mail_template,
+                'vars'		=> $vars,
+            ], 8500);
+
+            if ($cc = $send_message_cc_command->cc)
             {
-                throw new AccessDeniedHttpException('Het master account
-                    kan geen berichten versturen.');
-            }
-
-            $token_error = $form_token_service->get_error();
-
-            if ($token_error)
-            {
-                $errors[] = $token_error;
-            }
-
-            if (!$user_mail_content)
-            {
-                $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
-            }
-
-            $reply_ary = $mail_addr_user_service->get_active($su->id(), $su->schema());
-
-            if (!count($reply_ary))
-            {
-                $errors[] = 'Fout: Je kan geen berichten naar een andere gebruiker
-                    verzenden als er geen E-mail adres is ingesteld voor je eigen account.';
-            }
-
-            if (!count($errors))
-            {
-                $stmt = $db->executeQuery('select c.value, tc.abbrev
-                    from ' . $su->schema() . '.contact c, ' .
-                        $su->schema() . '.type_contact tc
-                    where c.access in (?)
-                        and c.user_id = ?
-                        and c.id_type_contact = tc.id',
-                        [$item_access_service->get_visible_ary_for_role($user['role']), $su->id()],
-                        [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
-                    );
-
-                $from_contacts = $stmt->fetchAll();
-
-                $from_user = $user_cache_service->get($su->id(), $su->schema());
-
-                $vars = [
-                    'from_contacts'		=> $from_contacts,
-                    'from_user'			=> $from_user,
-                    'from_schema'		=> $su->schema(),
-                    'is_same_system'	=> $su->is_system_self(),
-                    'to_user'			=> $to_user,
-                    'to_schema'			=> $pp->schema(),
-                    'msg_content'		=> $user_mail_content,
-                    'message'			=> $message,
-                ];
-
                 $mail_template = $su->is_system_self()
-                    ? 'message_msg/msg'
-                    : 'message_msg/msg_intersystem';
+                    ? 'message_msg/copy'
+                    : 'message_msg/copy_intersystem';
 
                 $mail_queue->queue([
                     'schema'	=> $pp->schema(),
-                    'to'		=> $mail_addr_user_service->get_active($to_user['id'], $pp->schema()),
-                    'reply_to'	=> $reply_ary,
+                    'to'		=> $mail_from_addr,
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
-                ], 8500);
-
-                if ($user_mail_cc)
-                {
-                    $mail_template = $su->is_system_self()
-                        ? 'message_msg/copy'
-                        : 'message_msg/copy_intersystem';
-
-                    $mail_queue->queue([
-                        'schema'	=> $pp->schema(),
-                        'to'		=> $mail_addr_user_service->get_active($su->id(), $su->schema()),
-                        'template'	=> $mail_template,
-                        'vars'		=> $vars,
-                    ], 8000);
-                }
-
-                $alert_service->success('Mail verzonden.');
-                $link_render->redirect('messages_show', $pp->ary(),
-                    ['id' => $id]);
+                ], 8000);
             }
 
-            $alert_service->error($errors);
+            $alert_service->success('messages_show.success.mail_sent', [
+                '%to_user%'     => $account_render->str($user_id, $pp->schema()),
+            ]);
+            $link_render->redirect('messages_show', $pp->ary(),
+                ['id' => $id]);
         }
+
+        $prev_id = $message_repository->get_prev_id($id, $visible_ary, $pp->schema());
+        $next_id = $message_repository->get_next_id($id, $visible_ary, $pp->schema());
 
         $image_files = array_values(json_decode($message['image_files'] ?? '[]', true));
 
@@ -189,36 +197,6 @@ class MessagesShowController extends AbstractController
             'base_url'      => $env_s3_url,
             'files'         => $image_files,
         ];
-
-        $sql_where = [];
-
-        if ($pp->is_guest())
-        {
-            $sql_where[] = 'm.access = \'guest\'';
-        }
-
-        if (!$pp->is_admin())
-        {
-            $sql_where[] = 'u.status in (1, 2)';
-        }
-
-        $sql_where = count($sql_where) ? ' and ' . implode(' and ', $sql_where) : '';
-
-        $prev = $db->fetchColumn('select m.id
-            from ' . $pp->schema() . '.messages m,
-                ' . $pp->schema() . '.users u
-            where m.id > ?
-            ' . $sql_where . '
-            order by m.id asc
-            limit 1', [$id]);
-
-        $next = $db->fetchColumn('select m.id
-            from ' . $pp->schema() . '.messages m,
-                ' . $pp->schema() . '.users u
-            where m.id < ?
-            ' . $sql_where . '
-            order by m.id desc
-            limit 1', [$id]);
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
@@ -236,26 +214,16 @@ class MessagesShowController extends AbstractController
 
         $contacts_content = $contacts_response->getContent();
 
-        $assets_service->add([
-            'jssor',
-            'messages_show_images_slider.js',
-        ]);
+        $msg_label_offer_want = $message['is_offer'] ? 'aanbod' : 'vraag';
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
-            $assets_service->add([
-                'fileupload',
-                'messages_show_images_upload.js',
-            ]);
-        }
 
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
             $btn_top_render->edit('messages_edit', $pp->ary(),
-                ['id' => $id],	ucfirst($message['label']['offer_want']) . ' aanpassen');
+                ['id' => $id],	ucfirst($msg_label_offer_want) . ' aanpassen');
 
             $btn_top_render->del('messages_del', $pp->ary(),
-                ['id' => $id], ucfirst($message['label']['offer_want']) . ' verwijderen');
+                ['id' => $id], ucfirst($msg_label_offer_want) . ' verwijderen');
         }
 
         if ($message['is_offer']
@@ -275,8 +243,8 @@ class MessagesShowController extends AbstractController
                 $tus, 'Transactie voor dit aanbod');
         }
 
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
+        $prev_ary = $prev_id ? ['id' => $prev_id] : [];
+        $next_ary = $next_id ? ['id' => $next_id] : [];
 
         $btn_nav_render->nav('messages_show', $pp->ary(),
             $prev_ary, $next_ary, false);
@@ -284,23 +252,29 @@ class MessagesShowController extends AbstractController
         $btn_nav_render->nav_list($vr->get('messages'), $pp->ary(),
             [], 'Lijst', 'newspaper-o');
 
-        $heading_render->add(ucfirst($message['label']['offer_want']));
-        $heading_render->add(': ' . $message['subject']);
+        $out = '';
 
-        if (isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time())
+        if ($category_enabled)
         {
-            $heading_render->add_raw(' <small><span class="text-danger">Vervallen</span></small>');
-        }
+            $out .= '<p>Categorie: ';
+            $out .= '<strong><i>';
 
-        $heading_render->fa('newspaper-o');
+            if (isset($category))
+            {
+                $cat_name = $category['parent_name'] ?? '';
+                $cat_name .= isset($category['parent_name']) ? ' > ' : '';
+                $cat_name .= $category['name'];
 
-        if ($message['cid'])
-        {
-            $out = '<p>Categorie: ';
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cid' => $category['id']]], $cat_name);
+            }
+            else
+            {
+                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cid' => 'null']], '** zonder categorie **');
+            }
 
-            $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                ['f' => ['cid' => $message['cid']]], $message['category_name']);
-
+            $out .= '</i></strong>';
             $out .= '</p>';
         }
 
@@ -317,7 +291,7 @@ class MessagesShowController extends AbstractController
         $out .= '>';
         $out .= '<i class="fa fa-image fa-5x"></i> ';
         $out .= '<p>Er zijn geen afbeeldingen voor ';
-        $out .= $message['label']['offer_want_this'] . '</p>';
+//        $out .= $message['label']['offer_want_this'] . '</p>';
         $out .= '</div>';
 
         $out .= '<div id="jssor_1" ';
@@ -382,7 +356,7 @@ class MessagesShowController extends AbstractController
             $out .= '<div class="card-footer">';
             $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $out .= '<input id="fileupload" type="file" name="images[]" ';
+            $out .= '<input type="file" name="images[]" ';
             $out .= 'data-url="';
 
 /*
@@ -391,13 +365,15 @@ class MessagesShowController extends AbstractController
 */
 
             $out .= '" ';
-            $out .= 'data-data-type="json" data-auto-upload="true" ';
-            $out .= 'data-accept-file-types="/(\.|\/)(jpe?g|png|gif)$/i" ';
-            $out .= 'data-max-file-size="999000" ';
+            $out .= 'data-fileupload ';
+            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
+            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
             $out .= 'multiple></span>';
 
-            $out .= '<p>';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif. ';
+            $out .= '<p class="text-warning">';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
             $out .= $link_render->link_fa('messages_images_del', $pp->ary(),
@@ -442,23 +418,27 @@ class MessagesShowController extends AbstractController
         $out .= '<div class="card-body">';
 
         $out .= '<dl>';
-        $out .= '<dt>';
-        $out .= '(Richt)prijs';
-        $out .= '</dt>';
-        $out .= '<dd>';
 
-        if (empty($message['amount']))
+        if ($units_enabled)
         {
-            $out .= 'niet opgegeven.';
-        }
-        else
-        {
-            $out .= $message['amount'] . ' ';
-            $out .= $config_service->get('currency', $pp->schema());
-            $out .= $message['units'] ? ' per ' . $message['units'] : '';
-        }
+            $out .= '<dt>';
+            $out .= 'Richtprijs';
+            $out .= '</dt>';
+            $out .= '<dd>';
 
-        $out .= '</dd>';
+            if (empty($message['amount']))
+            {
+                $out .= 'niet opgegeven.';
+            }
+            else
+            {
+                $out .= $message['amount'] . ' ';
+                $out .= $currency;
+                $out .= $message['units'] ? ' per ' . $message['units'] : '';
+            }
+
+            $out .= '</dd>';
+        }
 
         $out .= '<dt>Van gebruiker: ';
         $out .= '</dt>';
@@ -476,25 +456,31 @@ class MessagesShowController extends AbstractController
         $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
         $out .= '</dd>';
 
-        if (isset($message['expires_at']))
+        if ($expires_at_enabled)
         {
             $out .= '<dt>Geldig tot</dt>';
             $out .= '<dd>';
-            $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-            $out .= '</dd>';
-        }
 
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
-            if ($pp->is_admin() || $su->is_owner($message['user_id']))
+            if (isset($message['expires_at']))
             {
-                $out .= '<dt>Verlengen</dt>';
-                $out .= '<dd>';
-                $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-                $out .= '&nbsp;';
-                $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-                $out .= '&nbsp;';
-                $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
+                $out .= '</dd>';
+
+                if ($pp->is_admin() || $su->is_owner($message['user_id']))
+                {
+                    $out .= '<dt>Verlengen</dt>';
+                    $out .= '<dd>';
+                    $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
+                    $out .= '&nbsp;';
+                    $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
+                    $out .= '&nbsp;';
+                    $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                    $out .= '</dd>';
+                }
+            }
+            else
+            {
+                $out .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
                 $out .= '</dd>';
             }
         }
@@ -515,6 +501,7 @@ class MessagesShowController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
+        /*
         $out .= UsersShowController::get_mail_form(
             $message['user_id'],
             $user_mail_content,
@@ -525,6 +512,7 @@ class MessagesShowController extends AbstractController
             $pp,
             $su
         );
+        */
 
         $out .= $contacts_content;
 
@@ -535,8 +523,10 @@ class MessagesShowController extends AbstractController
         return $this->render('messages/messages_show.html.twig', [
             'content'       => $out,
             'message'       => $message,
+            'category'      => $category ?? null,
             'show_access'   => $intersystems_service->get_count($pp->schema()) ? true : false,
             'user'          => $user,
+            'mail_form'     => $mail_form->createView(),
             'schema'        => $pp->schema(),
         ]);
     }
@@ -559,13 +549,9 @@ class MessagesShowController extends AbstractController
 
     public static function get_message(Db $db, int $id, string $pp_schema):array
     {
-        $message = $db->fetchAssoc('select m.*,
-                c.id as cid,
-                c.fullname as category_name
-            from ' . $pp_schema . '.messages m, ' .
-                $pp_schema . '.categories c
-            where m.id = ?
-                and c.id = m.category_id', [$id]);
+        $message = $db->fetchAssoc('select m.*
+            from ' . $pp_schema . '.messages m
+            where m.id = ?', [$id]);
 
         if (!$message)
         {

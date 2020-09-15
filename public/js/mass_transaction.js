@@ -42,28 +42,28 @@ $(document).ready(function(){
 		$('#selected_users').val(selected_users);
 	});
 
-	var $fill_in_aid = $('#fill_in_aid');
+	var $form_fill_in = $('form[data-fill-in]');
 
-	$fill_in_aid.submit(function(e){
-
+	$form_fill_in.submit(function(e){
+		e.preventDefault();
 		var days = Number($('#var_days').val());
 
 		if (days > 1){
 
-			var var_ex_code_in = $('#var_ex_code_in').val().split(',');
-			var var_ex_code_out = $('#var_ex_code_out').val().split(',');
+			var ex_in = $('#var_ex_code_in').val().split(',');
+			var ex_out = $('#var_ex_code_out').val().split(',');
 
-			$.map(var_ex_code_in, function(s){
+			$.map(ex_in, function(s){
 				return $.trim(s);
 			});
 
-			$.map(var_ex_code_out, function(s){
+			$.map(ex_out, function(s){
 				return $.trim(s);
 			});
 
-			var path_transactions_sum_in = $fill_in_aid.data('transactions-sum-in');
-			var path_transactions_sum_out = $fill_in_aid.data('transactions-sum-out');
-			var path_weighted_balances = $fill_in_aid.data('weighted-balances');
+			var path_transactions_sum_in = $form_fill_in.data('transactions-sum-in');
+			var path_transactions_sum_out = $form_fill_in.data('transactions-sum-out');
+			var path_weighted_balances = $form_fill_in.data('weighted-balances');
 
 			path_transactions_sum_in = path_transactions_sum_in.replace('/365', '/' + days);
 			path_transactions_sum_out = path_transactions_sum_out.replace('/365', '/' + days);
@@ -71,11 +71,10 @@ $(document).ready(function(){
 
 			$.when(
 				$.get(path_weighted_balances),
-				$.get(path_transactions_sum_out, params_out),
-				$.get(path_transactions_sum_in, params_in)
-			).done(function(w_bal, t_out, t_in){
-
-				fill_in(w_bal[0], JSON.parse(t_out[0]), JSON.parse(t_in[0]));
+				$.get(path_transactions_sum_in, {"ex": ex_in}),
+				$.get(path_transactions_sum_out, {"ex": ex_out})
+			).done(function(w_bal, t_in, t_out){
+				fill_in(w_bal[0], t_in[0], t_out[0]);
 			}).fail(function(){
 				alert('Data ophalen mislukt.');
 			});

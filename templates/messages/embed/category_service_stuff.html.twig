@@ -1,0 +1,38 @@
+{%- import 'macro/link.html.twig' as l -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/lbl.html.twig' as lbl -%}
+
+{%- set category_enabled = config_bool('messages.fields.category.enabled', schema) -%}
+{%- set service_stuff_enabled = config_bool('messages.fields.service_stuff.enabled', schema) and (message.is_service or message.is_stuff) -%}
+{%- if  category_enabled or service_stuff_enabled -%}
+    <p>
+    {%- if category_enabled -%}
+        <strong>
+        {%- if category -%}
+            {%- set cat_name = category.name -%}
+            {%- if category.parent_name -%}
+                {%- set cat_name = category.parent_name ~ ' > ' ~ cat_name -%}
+            {%- endif -%}
+            {{- 'messages_show.category'|trans({
+                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': message.category_id}}, cat_name)
+            })|raw -}}
+        {%- else -%}
+            {{- 'messages_show.category'|trans({
+                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': 'null'}}, '*** ' ~ ('messages.without_category'|trans) ~ ' ***')
+            })|raw -}}
+        {%- endif -%}
+        </strong>
+        {%- if service_stuff_enabled -%}
+            &nbsp;&nbsp;
+        {%- endif -%}
+    {%- endif -%}
+
+    {%- if service_stuff_enabled  -%}
+        {%- if message.is_service -%}
+            {{- l.pp_link_label('messages'|var_route, {'f': {'type': {'service': 'on'}}}, lbl.btn('service')) -}}
+        {%- else -%}
+            {{- l.pp_link_label('messages'|var_route, {'f': {'type': {'stuff': 'on'}}}, lbl.btn('stuff')) -}}
+        {%- endif -%}
+    {%- endif -%}
+    </p>
+{%- endif -%}

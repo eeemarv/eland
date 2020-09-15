@@ -1,6 +1,5 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
-{%- import 'macro/link.html.twig' as l -%}
-{%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/object_info.html.twig' as oi -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_show.title.'
@@ -19,20 +18,26 @@
 {%- endblock heading_append -%}
 
 {%- block content -%}
-    {%- if message.category_id -%}
-        <p>
-            {{- 'messages_show.category'|trans({
-                '%category%': l.pp_link_label('messages'|var_route, {'f':{'cid': message.category_id}}, message.category_name)
-            })|raw -}}
-        </p>
-    {%- endif -%}
+    {%- embed 'messages/embed/category_service_stuff.html.twig' -%}
+    {%- endembed -%}
 
-    <div class="row">
+    <div class="row mb-3">
         {%- embed 'messages/embed/images_carousel.html.twig' -%}
         {%- endembed -%}
 
         {%- embed 'messages/embed/message_info.html.twig' -%}
         {%- endembed -%}
+    </div>
+
+    <div class="row mb-3">
+        <dvi class="col">
+            <h2>
+                {{- 'messages_show.mail_form.title'|trans({
+                    '%to_user%': oi.user_link(user.id, schema)
+                })|raw -}}
+            </h2>
+            {%- include 'include/send_message_cc.html.twig' with {'form': mail_form, 'can_reply': true} -%}
+        </dvi>
     </div>
 
 {%- endblock content -%}

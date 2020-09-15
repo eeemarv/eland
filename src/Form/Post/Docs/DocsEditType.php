@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Docs;
 
+use App\Command\Docs\DocsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\Input\TextAddonType;
 use App\Service\TypeaheadService;
@@ -52,6 +53,7 @@ class DocsEditType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => DocsCommand::class,
         ]);
     }
 }

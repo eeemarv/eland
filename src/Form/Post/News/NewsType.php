@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\News;
 
+use App\Command\News\NewsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\Input\Datepicker\DatepickerType;
 use App\Form\Input\Summernote\SummernoteType;
@@ -40,6 +41,7 @@ class NewsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => NewsCommand::class,
         ]);
     }
 }

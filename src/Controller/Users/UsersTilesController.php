@@ -36,23 +36,34 @@ class UsersTilesController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $q = $request->get('q', '');
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
+        $q = $request->get('q', '');
 
         $params = ['status'	=> $status];
 
-        $sql_bind = [];
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
-        if (isset($status_def_ary[$status]['sql_bind']))
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
-            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
+            foreach ($def_sql_ary as $def_val)
+            {
+                $sql[$st_def_key][] = $def_val;
+            }
         }
+
+        $sql_where = ' and ' . implode(' and ', $sql['where']);
 
         $users = $db->fetchAll('select u.*
             from ' . $pp->schema() . '.users u
-            where ' . $status_def_ary[$status]['sql'] . '
-            order by u.code asc', $sql_bind);
+            where 1 = 1 ' . $sql_where . '
+            order by u.code asc', $sql['params'], $sql['types']);
 
         $assets_service->add(['isotope', 'users_tiles.js']);
 
@@ -97,7 +108,7 @@ class UsersTilesController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] == 1
-                && $config_service->get_new_user_treshold($pp->schema()) < strtotime($u['adate']))
+                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
             {
                 $row_stat = 3;
             }

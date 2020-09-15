@@ -165,6 +165,8 @@ class MenuCnst
     ];
 
     const LOCAL_ADMIN_MAIN = [
+        'messages_modules'  => 'messages',
+        'messages_cleanup'  => 'messages',
         'categories'        => 'messages',
         'status'            => 'users',
         'contacts'          => 'users',
@@ -177,10 +179,22 @@ class MenuCnst
 
     const LOCAL_ADMIN = [
         'messages'  => [
+            'messages_modules'   => [
+                'fa'        => 'cog',
+                'label'     => 'Submodules en velden',
+                'route'     => 'messages_modules',
+            ],
             'categories'	 	=> [
                 'fa'        => 'clone',
                 'label'     => 'Categorieën',
                 'route'     => 'categories',
+                'config_en' => 'messages.fields.category.enabled',
+            ],
+            'messages_cleanup'   => [
+                'fa'        => 'trash-o',
+                'label'     => 'Geldigheid en opruiming',
+                'route'     => 'messages_cleanup',
+                'config_en' => 'messages.fields.expires_at.enabled',
             ],
         ],
         'users' => [

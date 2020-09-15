@@ -23,8 +23,8 @@
 
 {%- block page_container -%}
 
-	<div class="container">
-		<div class="row">
+	<div class="container mb-5">
+		<div class="row mb-3">
 
 		{%- if schemas -%}
 			{%- set systems_per_col = (schemas|length / 3)|round(0, 'ceil') -%}
@@ -36,7 +36,7 @@
 						<ul class="list-group">
 				{%- endif -%}
 							<li class="list-group-item">
-								<a href="{{- path('home', {'system': system}) -}}">{{- config('systemname', schema) -}}</a>
+								<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
 							</li>
 				{% if loop.last or not (loop.index % systems_per_col) -%}
 						</ul>
@@ -59,11 +59,10 @@
 
 	</div>
 
-	<br><br>
 {%- endblock page_container -%}
 
 {%- block index_link -%}
-	<p>
+	<p class="mb-3">
 		<a href="{{- path('index_contact_form') -}}">
 			{{- 'index_contact_form.title'|trans -}}
 		</a>

@@ -12,13 +12,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UsersImageUploadController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        string $image_token,
         LoggerInterface $logger,
+        TranslatorInterface $translator,
         ImageUploadService $image_upload_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -28,7 +31,10 @@ class UsersImageUploadController extends AbstractController
     {
         if ($su->id() < 1)
         {
-            throw new AccessDeniedHttpException('Je hebt onvoldoende rechten voor deze actie.');
+            return $this->json([
+                'error' => $translator->trans('upload_image.error.no_permission'),
+                'code'  => 403,
+            ], 403);
         }
 
         return $users_image_upload_admin_controller(

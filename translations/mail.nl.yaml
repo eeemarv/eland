@@ -1,17 +1,21 @@
 label:
   account_code: Account Code
+  agent: Agent
   amount: Bedrag
   balance: Saldo
   date: Datum
   description: Omschrijving
   destination: Bestemming
   email: E-mail
+  expired: Vervallen
   from: Van
   full_name: Volledige Naam
   hours: Uren
   link: Link
   location: Plaats
   login: Login
+  image: Afbeelding
+  ip: IP
   minutes: Minuten
   offer: Aanbod
   password: Paswoord
@@ -33,9 +37,12 @@ b:
   no_reply_auto: >-
     Dit is een automatische mail. Niet beantwoorden a.u.b.
   sender_info:
-    email: "E-mail: %email%"
-    ip: "IP: %ip%"
-    agent: "Agent: %agent%"
+    email: >-
+      E-mail: %email%
+    ip: >-
+      IP: %ip%
+    agent: >-
+      Agent: %agent%
   support:
     title: Support
     explain: >-
@@ -53,18 +60,14 @@ b:
 
 expiration:
   1_day: >-
-    Deze link blijft 24 uur geldig.
+    De link blijft 24 uur geldig.
   1_week: >-
-    Deze link blijft 1 week geldig.
+    De link blijft 1 week geldig.
 
 subscribed:
   admin: >-
     Je ontvangt dit bericht omdat je E-mail
     adres vermeld staat als Admin E-mail
-    adres in de %link_open%instellingen%link_close%.
-  news_admin: >-
-    Je ontvangt dit bericht omdat je E-mail
-    adres vermeld staat als Nieuws Admin E-mail
     adres in de %link_open%instellingen%link_close%.
   support: >-
     Je ontvangt dit bericht omdat je E-mail
@@ -72,8 +75,13 @@ subscribed:
     adres in de %link_open%instellingen%link_close%.
 
 private_msg:
+  sub_header: >-
+    Persoonlijk bericht
   from_contacts: >-
     Contactgegevens van %from_account%
+private_msg_copy:
+  sub_header: >-
+    Kopie van je bericht
 
 reply:
   user: >-
@@ -88,6 +96,8 @@ reply:
 account_activation:
   subject: >-
     Activatie van je Account bij %system_name%
+  sub_header: >-
+    Activatie account
   welcome: >-
     Welkom bij %link_open%%system_name%%link_close%.
   login: >-
@@ -99,6 +109,8 @@ account_activation:
 account_activation_admin:
   subject: >-
     Activatie Account %account_name%
+  sub_header: >-
+    Activatie Account
   message: >-
     Account %link_open%%account_name%%link_close%
     werd geactiveerd.
@@ -110,12 +122,18 @@ account_activation_admin:
     de gebruiker omdat geen E-mail adres werd ingesteld
     voor dit account.
 
+contact_form:
+  sub_header: >-
+    Contactformulier
+
 contact_form_confirm:
   subject: >-
     Bevestig je bericht aan %system_name%
+  btn_label: >-
+    Bevestig je bericht
   html_msg: >-
-    %link_open%Klik hier om je bericht
-    in het contactformulier te bevestigen.%link_close%
+    Klik om je bericht
+    in het contactformulier te bevestigen.
   text_msg: >-
     Klik op de link hieronder om je bericht in het
     contactformulier te bevestigen.
@@ -137,31 +155,25 @@ contact_form_support:
     contactformulier van %link_open%%system_name%%link_close%.
     Gebruik "Reply" om het eventueel te beantwoorden.
 
-news_review_admin:
-  subject: >-
-    Beoordeel Nieuwsbericht "%name%"
-  title: >-
-    Moderatie Nieuwsbericht
-  message: >-
-    Een nieuwsbericht met titel "%name%"
-    werd ingegeven in het Systeem.
-  action: >-
-    Ga naar het bericht om het (al dan niet)
-    goed te keuren voor publicatie.
+password_reset:
+  sub_header: >-
+    Paswoord reset
 
 password_reset_user:
   subject: >-
     Nieuw Paswoord voor je Account
-  title: >-
-    Notificatie Nieuw Paswoord
+  sub_header: >-
+    Nieuw Paswoord
   message: >-
     Er werd een nieuw paswoord
     voor je account ingesteld.
+
 password_reset_confirm:
   subject: Paswoord Reset Link
+  btn_label: Reset je paswoord
   html_msg: >-
-    %link_open%Klik hier om je paswoord opnieuw in te stellen
-    voor je account bij %system_name%%link_close%.
+    Klik om je paswoord opnieuw in te stellen
+    voor je account bij %system_name%.
   text_msg: >-
     Klik op de link hieronder om je paswoord opnieuw
     in te stellen voor je account bij %system_name%.
@@ -170,19 +182,24 @@ password_reset_confirm:
     zelf hebt een paswoord reset hebt aangevraagd
     bij %link_open%%system_name%%link_close%.
 
+register:
+  sub_header: >-
+    Registratie
+
 register_admin:
   subject: >-
     Nieuwe Inschrijving: %full_name%
-  title: Notificatie Nieuwe Inschrijving
   msg: >-
     De volgende persoon schreef zich
     in via de website
+
 register_confirm:
   subject: >-
     Bevestig je registratie bij %system_name%
+  btn_label: >-
+    Bevestig je registratie
   html_msg: >-
-    %link_open%Klik hier om je registratie
-    te bevestigen.%link_close%
+    Klik om je registratie te bevestigen.
   text_msg: >-
     Klik op de link hieronder om je registratie
     te bevestigen.
@@ -202,6 +219,8 @@ support_copy:
 support:
   subject: >-
     Bericht van het Supportformulier
+  sub_header: >-
+    Supportforumulier
   explain: >-
     Het bericht hieronder werd ingegeven in het
     supportformulier van %link_open%%system_name%%link_close% door
@@ -344,6 +363,8 @@ message_extend:
 message_extend_offer:
   subject: >-
     Je aanbod "%message_subject%" is vervallen
+  sub_header: >-
+    Aanbod verlengen
   explain: >-
     Je aanbod "%link_open%%message_subject%%link_close%"
     is vervallen en zal over %days% dagen van de
@@ -354,9 +375,11 @@ message_extend_offer:
 message_extend_want:
   subject: >-
     Je vraag "%message_subject%" is vervallen
+  sub_header: >-
+    Vraag verlengen
   explain: >-
     Je vraag "%link_open%%message_subject%%link_close%"
-    is vervallen en zal over %days% van de
+    is vervallen en zal over %days% dagen van de
     website verwijderd worden. Je kan het verlengen
     door één van de links hieronder te gebruiken.
     Als je niet ingelogd bent, zal je eerst gevraagd
@@ -366,12 +389,12 @@ mass_transaction_many_to_one:
   subject: >-
     Nieuwe Veel naar Eén Massa Transactie
   title: >-
-    Notificatie Massa Transactie "Veel naar Eén"
+    Massa Transactie "Veel naar Eén"
 mass_transaction_one_to_many:
   subject: >-
     Nieuwe Eén naar Veel Massa Transactie
   title: >-
-    Notificatie Massa Transactie "Eén naar Veel"
+    Massa Transactie "Eén naar Veel"
 
 periodic_overview:
   subject: >-
@@ -380,7 +403,7 @@ periodic_overview:
     Je ontvangt deze E-mail omdat de optie
     'Periodieke Overzichts E-mail' aangevinkt
     staat in %link_open%je instellingen%link_close%
-  ads:
+  messages:
     title: >-
       Recent Vraag en Aanbod
     explain: >-
@@ -390,12 +413,31 @@ periodic_overview:
       Er werd geen nieuw vraag of aanbod %link_open%online%link_close% geplaatst.
     add: >-
       %link_open%Geef zelf je eigen Vraag of Aanbod in%link_close%.
+  messages_self:
+    title: >-
+      Je eigen Vraag en Aanbod
+    explain: >-
+      Dit is het vraag en aanbod dat je momenteel online bebt staan.
+    max: >-
+      Dit zijn de %max% meest recente vraag en aanbod
+      berichten die je online hebt geplaatst.
+    none: >-
+      Je hebt momenteel geen berichten online staan.
+    add: >-
+      %link_open%Geef een nieuw vraag of aanbod bericht in%link_close%
   intersystem:
     title: >-
       Recent InterSysteem Vraag en Aanbod
     explain: >-
-      %link_open%Log in%link_close% en ga via het menu "Systeem" in de navigatiebalk
+      %link_open%Log in%link_close% en ga via
+      het menu "Systeem" in de navigatiebalk
       naar het betreffende InterSysteem.
+    none: >-
+      Er is geen recent interSysteem vraag en aanbod.
+      Om vraag en aanbod in andere systemen te
+      bekijken, %link_open%log in%link_close% en ga
+      via het menu "Systeem" in de navigatiebalk naar
+      andere systemen.
     system_name: >-
       Systeem: %name%
     account: >-
@@ -417,7 +459,7 @@ periodic_overview:
       Er zijn geen nieuwe documenten.
   news:
     title: >-
-      %link_open%Nieuws%link_close%
+      Nieuws
     none: >-
       Er zijn momenteel geen nieuwsberichten.
     creator: >-
@@ -460,3 +502,8 @@ mollie_is_paid:
     Omschrijving
   amount: >-
     Bedrag
+
+skeleton:
+  admin_copy:
+    to_users: >-
+      Dit bericht werd verzonden naar

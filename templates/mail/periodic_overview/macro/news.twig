@@ -1,68 +1,116 @@
 {%- trans_default_domain 'mail' -%}
 
-{%- macro html(news, option, user_id, schema) -%}
+{%- macro html(c) -%}
+	{%- set et = c.et -%}
+	{%- include 'mail/include/p_header.html.twig' with {
+		'p_header': 'periodic_overview.news.title',
+		'p_bgcolor': '3600cf'
+	} -%}
 
-<h3>
-{{- 'periodic_overview.news.title'|trans({
-	'%link_open%': context_url_open('news_extended', mpp_ary(user_id, schema), {}),
-	'%link_close%': '</a>'
-})|raw -}}
-</h3>
+	{%- if not c.news -%}
+		{%- if c.block_options.news == 'recent' -%}
+			{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+				'info': 'periodic_overview.news.no_recent'|trans,
+				'bgcolor': 'e3d4ff'
+			} -%}
+		{%- else -%}
+			{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+				'info': 'periodic_overview.news.none'|trans,
+				'bgcolor': 'e3d4ff'
+			} -%}
+		{%- endif -%}
+	{%- endif -%}
 
-{%- if news -%}
-<ul>
-{%- for n in news -%}
-<li>
-<h4>
-{{- context_url_open('news_show', mpp_ary(user_id, schema), {'id': n.id})|raw -}}
-{{- n.subject -}}
-</a>
-</h4>
-{{- n.content|raw -}}<br />
+
+{%- for n in c.news -%}
+{%- embed 'mail/embed/table600.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+{%- block bgcolor -%}
+	{%- if loop.index is even -%}
+		e3d4ff
+	{%- else -%}
+		f0e0ff
+	{%- endif -%}
+{%- endblock -%}
+{%- block td_top -%}20px{%- endblock -%}
+{%- block td_bottom -%}20px{%- endblock -%}
+{%- block td_style -%}font-size: 16px;{%- endblock -%}
+{%- block td_content -%}
+<table style="font-size: 20px; font-weight: bold;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			{{- n.subject -}}
+		</td>
+	</tr>
+</table>
+<table style="font-size: 16px;padding-top: 20px; padding-bottom: 20px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			{{- n.content|raw -}}
+		</td>
+	</tr>
+</table>
 {%- if n.location -%}
-	{{- 'label.location'|trans -}}:
-	&nbsp;<strong>
-	{{- n.location -}}
-	</strong>
-	<br />
+<table style="font-size: 16px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td style="padding-right: 10px;" width="100">
+			{{- 'label.location'|trans -}}
+		</td>
+		<td style="font-weight: bold;">
+			{{- n.location -}}
+		</td>
+	</tr>
+</table>
 {%- endif -%}
-{%- if n.itemdate -%}
-	{{- 'label.date'|trans -}}:
-	&nbsp;<strong>
-	{{ n.itemdate|date_format('day', schema) }}
-	</strong>
-	<br />
+{%- if n.event_at -%}
+<table style="font-size: 16px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td style="padding-right: 10px;" width="100">
+			{{- 'label.date'|trans -}}
+		</td>
+		<td style="font-weight: bold;">
+			{{ n.event_at|date_format('day', c.schema) }}
+		</td>
+	</tr>
+</table>
 {%- endif -%}
-{{- 'periodic_overview.news.creator'|trans({
-	'%link_open%': context_url_open('users_show', mpp_ary(user_id, schema), {'id': n.user_id}),
-	'%link_close%': '</a>',
-	'%account%': account(n.user_id, schema)
-})|raw -}}
-</li>
+<table style="font-size: 16px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			{{- 'periodic_overview.news.creator'|trans({
+				'%link_open%': context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': n.user_id}),
+				'%link_close%': '</a>',
+				'%account%': account(n.user_id, c.schema)
+			})|raw -}}
+		</td>
+	</tr>
+</table>
+<table style="font-size: 16px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+			({{- context_url_open('news_show', mpp_ary(c.user_id, c.schema), {'id': n.id})|raw -}}
+			{{- 'label.link'|trans -}}
+			</a>)
+		</td>
+	</tr>
+</table>
+{%- endblock td_content -%}
+{%- endembed -%}
 
 {%- endfor -%}
-</ul>
-{%- else -%}
-	<p>
-	{%- if option == 'recent' -%}
-		{{- 'periodic_overview.news.no_recent'|trans -}}
-	{%- else -%}
-		{{- 'periodic_overview.news.none'|trans -}}
-	{%- endif -%}
-	</p>
-{%- endif -%}
 
 {%- endmacro html -%}
 
-{% macro text(news, option, user_id, schema) %}
+{% macro text(c) %}
+{%- set et = c.et -%}
 {% autoescape false %}
 
 {{- 'periodic_overview.news.title'|trans({
 	'%link_open%': '',
 	'%link_close%': ''
 })|underline }}
-{% if news %}
-{% for n in news %}
+{% if c.news %}
+{% for n in c.news %}
 
 {{ n.subject|underline('.') }}
 
@@ -71,18 +119,18 @@
 {% if n.location %}
 {{ 'label.location'|trans }}: {{ n.location }}
 {% endif %}
-{% if n.itemdate %}
-{{ 'label.date'|trans }}: {{ n.itemdate|date_format('day', schema) }}
+{% if n.event_at %}
+{{ 'label.date'|trans }}: {{ n.event_at|date_format('day', c.schema) }}
 {% endif %}
 {{ 'periodic_overview.news.creator'|trans({
 	'%link_open%': '',
 	'%link_close%': '',
-	'%account%': account(n.user_id, schema)
+	'%account%': account(n.user_id, c.schema)
 }) }}
 {% endfor %}
 {% else %}
 
-{% if option == 'recent' %}
+{% if c.block_options.news == 'recent' %}
 {{ 'periodic_overview.news.no_recent'|trans }}
 {% else %}
 {{ 'periodic_overview.news.none'|trans }}

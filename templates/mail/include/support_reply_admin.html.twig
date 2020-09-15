@@ -1,10 +1,21 @@
 {%- trans_default_domain 'mail' -%}
-<h3>
-    {{- 'b.support.title'|trans() -}}
-</h3>
 
-<p>
-    {{ 'b.support.reply_admin'|trans({
-        '%system_name%': config('systemname', schema)
-    })|raw }}.
-</p>
+{%- embed 'mail/embed/table600.html.twig' -%}
+    {%- trans_default_domain 'mail' -%}
+    {%- block td_top -%}20px{%- endblock -%}
+    {%- block td_bottom -%}20px{%- endblock -%}
+    {%- block bgcolor -%}{{- bgcolor_system_name -}}{%- endblock -%}
+    {%- block td_align -%}left{%- endblock -%}
+    {%- block td_style %}font-size: 16px; color: #ffffff;{%- endblock -%}
+    {%- block td_content -%}
+        {{- 'b.support.title'|trans() -}}
+    {%- endblock td_content -%}
+{%- endembed -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'b.support.reply_admin'|trans({
+        '%system_name%': config_str('system.name', schema)
+    })|raw
+} -%}
+
+{%- include 'mail/include/bgspacer40.html.twig' -%}

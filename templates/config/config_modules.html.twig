@@ -1,16 +1,16 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
 {%- set form_a -%}
-    {{- form_row(form.forum_en, {
-        'label': 'config_modules.forum_en',
+    {{- form_row(form.forum_enabled, {
+        'label': 'config_modules.forum_enabled',
         'label_attr': {'class': 'checkbox-custom'}
     }) -}}
-    {{- form_row(form.contact_form_en, {
-        'label': 'config_modules.contact_form_en',
+    {{- form_row(form.contact_form_enabled, {
+        'label': 'config_modules.contact_form_enabled',
         'label_attr': {'class': 'checkbox-custom'}
     }) -}}
-    {{- form_row(form.register_en, {
-        'label': 'config_modules.register_en',
+    {{- form_row(form.register_form_enabled, {
+        'label': 'config_modules.register_form_enabled',
         'label_attr': {'class': 'checkbox-custom'}
     }) -}}
 {%- endset -%}

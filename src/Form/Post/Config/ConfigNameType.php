@@ -2,6 +2,7 @@
 
 namespace App\Form\Post\Config;
 
+use App\Command\Config\ConfigNameCommand;
 use App\Form\Input\TextAddonType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,6 +22,7 @@ class ConfigNameType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class'    => ConfigNameCommand::class,
         ]);
     }
 }

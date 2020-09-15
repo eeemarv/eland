@@ -1,10 +1,17 @@
-{%- extends 'categories/categories_base.html.twig' -%}
+{%- extends 'categories/base/categories_form.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'categories_edit.title'|trans({
         '%name%': category.name
     }) -}}
 {%- endblock heading_title -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
 
 {%- block css -%}
     {{- parent() -}}

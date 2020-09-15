@@ -1,0 +1,59 @@
+{% extends 'mail/base/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- subject|raw -}}
+{%- endblock -%}
+
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+{%- block bgcolor -%}e8eeff{%- endblock -%}
+
+{%  block html_content -%}
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': subject|raw,
+        'bgcolor': 'ffddcc'
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': 'skeleton.admin_copy.to_users'|trans,
+        'bgcolor': 'ffddcc'
+    } -%}
+
+    {%- for uid in to_users -%}
+        {%- embed 'mail/embed/table600.html.twig' -%}
+            {%- trans_default_domain 'mail' -%}
+            {%- block bgcolor -%}ffddcc{%- endblock -%}
+            {%- block td_top -%}10px{%- endblock -%}
+            {%- block td_bottom -%}10px{%- endblock -%}
+            {%- block td_style -%}font-size: 16px;{%- endblock -%}
+            {%- block td_content -%}
+                {{- context_url_open('users_show', mpp_ary(user_id, schema), {'id': uid})|raw -}}
+                    {{- account(uid, schema) -}}
+                </a>
+            {%- endblock td_content -%}
+        {%- endembed -%}
+    {%- endfor -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': 'ffddcc'
+    } -%}
+
+	{%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': html|raw
+    } -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
+{%- endblock -%}
+
+{%- block text_content %}
+
+{{ 'skeleton.admin_copy.to_users'|trans }}:
+{% for uid in to_users %}
+{{ account(uid, schema) }}
+{% endfor %}
+----
+
+{{ text|raw }}
+{% endblock -%}

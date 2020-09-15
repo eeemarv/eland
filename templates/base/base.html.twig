@@ -107,19 +107,37 @@
 
 {%- block extra_footer -%}{%- endblock -%}
 
-<footer class="footer">
-	<p>
-		{{- 'index.eland_link'|trans({
-			'%eland_link%': '<a href="https://eland.letsa.net">eLAND</a>'
-		})|raw -}}
-	</p>
-	{%- block index_link -%}
-		<p>
-			<a href="{{- path('index') -}}">
-				{{- 'index.title'|trans -}}
-			</a>
-		</p>
-	{%- endblock index_link -%}
+<footer class="footer h-100">
+	<div class="container">
+		<div class="row">
+			<div class="col mb-5">
+				<p class="mb-1">
+					{{- 'index.eland_link'|trans({
+						'%eland_link%': '<a href="https://eland.letsa.net">eLAND</a>'
+					})|raw -}}
+					{%- if env_git_rev_short -%}
+						&nbsp;
+						{{- 'git_rev.abbrev'|trans -}}.&nbsp;
+						<a href="https://github.com/eeemarv/eland/tree/{{- env_git_rev_short -}}" title="{{- 'git_rev.title'|trans -}}">
+							{{- env_git_rev_short -}}
+						</a>
+					{%- endif -%}
+				</p>
+				<p class="mb-3">
+					<strong>
+						{{- 'index.privacy'|trans -}}
+					</strong>:&nbsp{{- 'index.privacy_cookies'|trans -}}
+				</p>
+				{%- block index_link -%}
+					<p class="mb-3">
+						<a href="{{- path('index') -}}">
+							{{- 'index.title'|trans -}}
+						</a>
+					</p>
+				{%- endblock index_link -%}
+			</div>
+		</div>
+	</div>
 </footer>
 
 {%- block js -%}

@@ -1,7 +1,7 @@
 .fcard {
     border: $card-border-width solid transparent;
 
-    label {
+    label, legend {
         font-weight: $font-weight-bold;
     }
     code {

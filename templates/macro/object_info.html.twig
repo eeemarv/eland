@@ -5,7 +5,7 @@
 
 {%- macro object_info(user_id, created_at, edit_count, schema) -%}
     {%- import _self as oi -%}
-    {{- oi.user_link(user_id, schema) -}}&nbsp;
+    {{- oi.user_link_fa(user_id, schema) -}}&nbsp;
     @{{- created_at|date_format('min', schema) -}}
     {%- if edit_count is defined and edit_count != 0 -%}
         {{- 'object_info.edit_count'|trans({
@@ -14,9 +14,14 @@
     {%- endif -%}
 {%- endmacro object_info -%}
 
-{%- macro user_link(user_id, schema) -%}
+{%- macro user_link_fa(user_id, schema) -%}
+    {%- import _self as oi -%}
     <i class="fa fa-user"></i>&nbsp;
+    {{- oi.user_link(user_id, schema) -}}
+{% endmacro user_link_fa -%}
+
+{%- macro user_link(user_id, schema) -%}
     <a href="{{- path('users_show', pp_ary()|merge({'id': user_id})) -}}">
         {{- account(user_id, schema) -}}
     </a>
-{% endmacro user_link -%}
+{%- endmacro user_link -%}

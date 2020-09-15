@@ -5,29 +5,38 @@
     {{- 'mass_transaction_one_to_many.subject'|trans -}}
 {%- endblock subject_line %}
 
-{%- block html_title -%}
-    {{- 'mass_transaction_one_to_many.title'|trans -}}
-{%- endblock html_title -%}
+{%- block sub_header -%}mass_transaction_one_to_many.title{%- endblock -%}
 
 {%- block html_before_many -%}
-    <p>
-        {{- 'label.from'|trans -}}
-    </p>
-    <p>
-        {{- context_url_open('users_show', mpp_admin_ary(schema), {'id': from_user_id})|raw -}}
-        {{- account(from_user_id, schema) -}}
-        </a>
-    </p>
-    <p>
-        {{- 'label.to'|trans -}}
-    </p>
+    <tr>
+        <td style="font-weight: bold;">
+            {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': from_user_id})|raw -}}
+            {{- account(from_user_id, schema) -}}
+            </a>
+        </td>
+    </tr>
+    {%- include 'mail/include/row_spacer20.html.twig' -%}
+    <tr>
+        <td>
+            {{- 'label.to'|trans -}}
+        </td>
+    </tr>
 {%- endblock html_before_many -%}
 
-{%- block html_account_many -%}
-    {{- context_url_open('users_show', mpp_admin_ary(schema), {'id': t.id_to})|raw -}}
-    {{- account(t.id_to, schema) -}}
-    </a>
-{%- endblock %}
+{%- block html_many_rows -%}
+    {%- for t in transactions -%}
+    <tr>
+        <td style="padding-left: 10px" width="400">
+            {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': t.id_to})|raw -}}
+            {{- account(t.id_to, schema) -}}
+            </a>
+        </td>
+        <td style="font-weight: bold; padding-left: 10px;">
+            {{- t.amount -}}
+        </td>
+    </tr>
+    {%- endfor -%}
+{%- endblock html_many_rows -%}
 
 {% block text_title %}
 {{ 'mass_transaction_many_to_one.title'|trans|underline|raw }}

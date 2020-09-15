@@ -2,6 +2,7 @@
 
 namespace App\Controller\Categories;
 
+use App\Form\Post\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,64 +11,59 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Repository\CategoryRepository;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoriesDelController extends AbstractController
 {
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
+        CategoryRepository $category_repository,
+        ConfigService $config_service,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        if($request->isMethod('POST'))
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
         {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $alert_service->error($error_token);
-                $link_render->redirect('categories', $pp->ary(), []);
-            }
-
-            if ($db->delete($pp->schema() . '.categories', ['id' => $id]))
-            {
-                $alert_service->success('Categorie verwijderd.');
-                $link_render->redirect('categories', $pp->ary(), []);
-            }
-
-            $alert_service->error('Categorie niet verwijderd.');
+            throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        $category = $db->fetchAssoc('select *
-            from ' . $pp->schema() . '.categories
-            where id = ?', [$id]);
+        $category = $category_repository->get_with_messages_count($id, $pp->schema());
 
-        $out = '<div class="card fcard fcard-info">';
-        $out .= '<div class="card-body">';
+        if ($category['count'] !== 0)
+        {
+            throw new ConflictHttpException('A category containing messages cannot be deleted.');
+        }
 
-        $out .= '<p class="text-danger"><strong>Ben je zeker dat deze categorie';
-        $out .= ' moet verwijderd worden?</strong></p>';
-        $out .= '<form method="post">';
+        if (($category['left_id'] + 1) !== $category['right_id'])
+        {
+            throw new ConflictHttpException('A category containing categories cannot be deleted.');
+        }
 
-        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
+        $form = $this->createForm(DelType::class)
+            ->handleRequest($request);
 
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $category_repository->del($id, $pp->schema());
+            $alert_service->success('categories_del.success', [
+                '%name%'    => $category['name'],
+            ]);
+            $link_render->redirect('categories', $pp->ary(), []);
+        }
 
         $menu_service->set('categories');
 
         return $this->render('categories/categories_del.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
             'category'  => $category,
             'schema'    => $pp->schema(),
         ]);

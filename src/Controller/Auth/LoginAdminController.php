@@ -6,12 +6,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
+use App\Service\UserCacheService;
+use App\Service\VarRouteService;
+use Doctrine\DBAL\Connection as Db;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class LoginAdminController extends AbstractController
 {
     public function __invoke(
+        Request $request,
+        Db $db,
+        EncoderFactoryInterface $encoder_factory,
+        AlertService $alert_service,
+        LoggerInterface $logger,
         MenuService $menu_service,
         LinkRender $link_render,
         HeadingRender $heading_render,

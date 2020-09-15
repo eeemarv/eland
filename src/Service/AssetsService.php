@@ -152,7 +152,7 @@ class AssetsService
 		],
 		'sortable' => [
 			'js'	=> [
-				'Sortable/1.6.0/Sortable.min.js',
+				'Sortable/1.10.2/Sortable.min.js',
 			],
 		],
 	];

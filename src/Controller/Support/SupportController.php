@@ -2,8 +2,8 @@
 
 namespace App\Controller\Support;
 
-use App\Command\Support\SupportCommand;
-use App\Form\Post\Support\SupportType;
+use App\Command\SendMessage\SendMessageCCCommand;
+use App\Form\Post\Support\SendMessageCCType;
 use App\Queue\MailQueue;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -39,12 +39,12 @@ class SupportController extends AbstractController
 
         $form_disabled = false;
 
-        if (!$config_service->get('mailenabled', $pp->schema()))
+        if (!$config_service->get_bool('mail.enabled', $pp->schema()))
         {
             $alert_service->warning('email.warning.disabled');
             $form_disabled = true;
         }
-        else if (!$config_service->get('support', $pp->schema()))
+        else if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
         {
             $alert_service->warning('email.warning.no_support_address');
             $form_disabled = true;
@@ -55,21 +55,26 @@ class SupportController extends AbstractController
             $form_disabled = true;
         }
 
-        $support_command = new SupportCommand();
+        $send_message_cc_command = new SendMessageCCCommand();
 
-        $form_options = $form_disabled ? ['disabled' => true] : [];
+        $form_options = [];
 
-        $form = $this->createForm(SupportType::class,
-                $support_command, $form_options)
+        if ($form_disabled)
+        {
+            $form_options['disabled'] = true;
+        }
+
+        $form = $this->createForm(SendMessageCCType::class,
+                $send_message_cc_command, $form_options)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid()
             && !$form_disabled)
         {
-            $support_command = $form->getData();
-            $message = $support_command->message;
-            $cc = $support_command->cc;
+            $send_message_cc_command = $form->getData();
+            $message = $send_message_cc_command->message;
+            $cc = $send_message_cc_command->cc;
 
             $vars = [
                 'user_id'	=> $su->id(),

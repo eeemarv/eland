@@ -133,7 +133,7 @@ class MolliePaymentsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $filter['code'] = $account_render->str($filter['uid'], $pp->schema());
+            $filter['code'] = $account_render->str((int) $filter['uid'], $pp->schema());
             $params['f']['uid'] = $filter['uid'];
         }
 
@@ -526,7 +526,7 @@ class MolliePaymentsController extends AbstractController
                         'pre_html_template' => $bulk_mail_content,
                         'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
                         'vars'				=> $vars,
-                        'template'			=> 'skeleton',
+                        'template'			=> 'skeleton/user',
                     ], random_int(200, 2000));
                 }
 
@@ -571,6 +571,8 @@ class MolliePaymentsController extends AbstractController
                 {
                     $vars = [
                         'subject'	=> 'Kopie: ' . $bulk_mail_subject,
+                        'to_users'  => $sent_to_ary,
+                        'user_id'   => $su->id(),
                     ];
 
                     foreach (BulkCnst::MOLLIE_TPL_VARS as $key => $trans)
@@ -578,16 +580,16 @@ class MolliePaymentsController extends AbstractController
                         $vars[$key] = '{{ ' . $key . ' }}';
                     }
 
-                    $mail_info = implode('<br />', $success);
-                    $mail_info .= '<hr /><br />';
-
                     $mail_queue->queue([
                         'schema'			=> $pp->schema(),
                         'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
-                        'template'			=> 'skeleton',
-                        'pre_html_template'	=> $mail_info . $bulk_mail_content,
+                        'template'			=> 'skeleton/admin_copy',
+                        'pre_html_template'	=> $bulk_mail_content,
                         'vars'				=> $vars,
                     ], 8000);
+
+                    $mail_info = implode('<br />', $success);
+                    $mail_info .= '<hr /><br />';
 
                     $logger->debug('mollie_payments mail:: ' .
                         $mail_info . $bulk_mail_content,
@@ -863,7 +865,7 @@ class MolliePaymentsController extends AbstractController
 
             if (isset($payment['adate'])
                 && $payment['status'] === 1
-                && $new_user_treshold < strtotime($payment['adate']))
+                && $new_user_treshold->getTimestamp() < strtotime($payment['adate'] . ' UTC'))
             {
                 $user_status = 3;
             }

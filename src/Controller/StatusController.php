@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Repository\AccountRepository;
 use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -16,6 +17,7 @@ class StatusController extends AbstractController
 {
     public function __invoke(
         Db $db,
+        AccountRepository $account_repository,
         AccountRender $account_render,
         HeadingRender $heading_render,
         ConfigService $config_service,
@@ -25,6 +27,8 @@ class StatusController extends AbstractController
     ):Response
     {
         $status_msgs = false;
+
+        $balance_ary = $account_repository->get_balance_ary($pp->schema());
 
         $non_unique_mail = $db->fetchAll('select c.value, count(c.*)
             from ' . $pp->schema() . '.contact c, ' .
@@ -156,7 +160,7 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $no_msgs_users = $db->fetchAll('select id, code, name, balance, status
+        $no_msgs_users = $db->fetchAll('select id, code, name, status
             from ' . $pp->schema() . '.users u
             where status in (1, 2)
                 and not exists (select 1
@@ -443,8 +447,8 @@ class StatusController extends AbstractController
                     $out .= '<li>';
                     $out .= $account_render->link($u['id'], $pp->ary());
                     $out .= $u['status'] == 2 ? ' <span class="text-danger">Uitstapper</span>' : '';
-                    $out .= ', balance: ';
-                    $out .= $u['balance'];
+                    $out .= ', saldo: ';
+                    $out .= $balance_ary[$u['id']] ?? 0;
                     $out .= ' ';
                     $out .= $currency;
                     $out .= '</li>';

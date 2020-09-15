@@ -1,16 +1,20 @@
 {% extends 'mail/base/private_msg.twig' %}
 {%- trans_default_domain 'mail' -%}
 
+{%- block bgcolor_system_name -%}aa3300{%- endblock -%}
+{%- block bgcolor_sub_header -%}fff3a2{%- endblock -%}
+{%- block bgcolor_panel -%}fff8cf{%- endblock -%}
+
 {%- block html_reply -%}&nbsp;
     {{- 'reply.user_intersystem'|trans({
         '%from_account%': account(from_user.id, from_schema),
-        '%from_system_name%': config('systemname', from_schema)
+        '%from_system_name%': config_str('system.name', from_schema)
     })|raw -}}
 {%- endblock html_reply -%}
 
 {% block text_reply %}
 {{ 'reply.user_intersystem'|trans({
     '%from_account%': account(from_user.id, from_schema),
-    '%from_system_name%': config('systemname', from_schema)
+    '%from_system_name%': config_str('system.name', from_schema)
 })|raw }}
 {% endblock %}

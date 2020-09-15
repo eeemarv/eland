@@ -3,7 +3,6 @@
 namespace App\Controller\Docs;
 
 use App\Command\Docs\DocsMapCommand;
-use App\Command\Docs\DocsMapEditCommand;
 use App\Form\Post\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,8 +27,6 @@ class DocsMapEditController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $name = trim($request->request->get('name', ''));
-
         $doc_map = $doc_repository->get_map($id, $pp->schema());
 
         $docs_map_command = new DocsMapCommand();

@@ -5,35 +5,67 @@
     {{- 'support.subject'|trans -}}
 {%- endblock -%}
 
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}support.sub_header{%- endblock -%}
+{%- block bgcolor -%}e8eeff{%- endblock -%}
+
 {% block html_content -%}
-<p>
-    {{- 'support.explain'|trans({
-        '%link_open%': context_url_open('home',
-            mpp_anon_ary(schema), {}),
-        '%link_close%': '</a>',
-        '%system_name%': config('systemname', schema),
-        '%account%':  context_url_open('users_show',
-                mpp_ary(user_id, schema), {'id': user_id})
-            ~ account(user_id, schema)
-            ~ '</a>'
-    })|raw -}}
-</p>
-<p>
-{%- if can_reply -%}
-    {{- 'support.explain_reply'|trans -}}
-{%- else -%}
-    {{- 'support.explain_no_reply'|trans({
-        '%link_open%': context_url_open('users_show', mpp_ary(user_id, schema),
-            {'id': user_id}),
-        '%link_close%': '</a>'
-    })|raw -}}
-{%- endif -%}
-</p>
-<hr />
-<p>
-    {{- message -}}
-</p>
-<hr />
+    {%- set bgcolor_panel -%}
+        e0ffe0
+    {%- endset -%}
+
+    {%- set info -%}
+        {{- 'support.explain'|trans({
+            '%link_open%': context_url_open('home',
+                mpp_anon_ary(schema), {}),
+            '%link_close%': '</a>',
+            '%system_name%': config_str('system.name', schema),
+            '%account%':  context_url_open('users_show',
+                    mpp_ary(user_id, schema), {'id': user_id})
+                ~ account(user_id, schema)
+                ~ '</a>'
+        })|raw -}}
+    {%- endset -%}
+
+    {%- set info_reply -%}
+        {%- if can_reply -%}
+            {{- 'support.explain_reply'|trans -}}
+        {%- else -%}
+            {{- 'support.explain_no_reply'|trans({
+                '%link_open%': context_url_open('users_show', mpp_ary(user_id, schema),
+                    {'id': user_id}),
+                '%link_close%': '</a>'
+            })|raw -}}
+        {%- endif -%}
+    {%- endset -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': info|raw,
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': info_reply|raw,
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': message|nl2br
+    } -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}
@@ -42,7 +74,7 @@
 {{ 'support.explain'|trans({
     '%link_open%': '',
     '%link_close%': '',
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%account%': account(user_id, schema)
 }) }}
 {% if can_reply %}

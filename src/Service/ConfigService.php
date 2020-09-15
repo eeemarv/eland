@@ -2,99 +2,268 @@
 
 namespace App\Service;
 
-use App\Service\XdbService;
+use Doctrine\DBAL\Connection as Db;
 use App\Cnst\ConfigCnst;
+use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
+use Symfony\Component\Validator\Exception\LogicException;
 
 class ConfigService
 {
-	protected XdbService $xdb_service;
+	const PREFIX = 'config_';
+	const TTL = 518400; // 60 days
+
+	protected Db $db;
 	protected Predis $predis;
-	protected bool $is_cli;
+	protected bool $local_cache_en = false;
+	protected array $load_ary = [];
+	protected array $local_cache = [];
 
 	public function __construct(
-		XdbService $xdb_service,
+		Db $db,
 		Predis $predis
 	)
 	{
 		$this->predis = $predis;
-		$this->xdb_service = $xdb_service;
-		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
+		$this->db = $db;
+		$this->local_cache_en = php_sapi_name() === 'cli' ? false : true;
 	}
 
-	public function exists(string $name, string $schema):bool
+	protected function is_sequential_ary(array $ary):bool
 	{
-		return 0 < $this->xdb_service->count('setting', $name, $schema);
+		$i = 0;
+		foreach($ary as $k => $v)
+		{
+			if ($k !== $i)
+			{
+				return false;
+			}
+			$i++;
+		}
+		return true;
 	}
 
-	public function get_uncached(string $key, string $schema):string
+	protected function flatten_load_ary(string $prefix, array $ary):void
 	{
-		$row = $this->xdb_service->get('setting', $key, $schema);
-
-		if ($row)
+		foreach($ary as $key => $value)
 		{
-			return $row['data']['value'];
-		}
+			$id = $prefix . '.' . $key;
 
-		return '';
+			if (!is_array($value))
+			{
+				$this->load_ary[$id] = $value;
+				continue;
+			}
+
+			if ($this->is_sequential_ary($value))
+			{
+				$this->load_ary[$id] = $value;
+				continue;
+			}
+
+			$this->flatten_load_ary($id, $value);
+		}
 	}
 
-	public function set(string $name, string $schema, string $value):void
+	public function build_cache_from_db(string $schema):array
 	{
-		$this->xdb_service->set('setting', $name, ['value' => $value], $schema);
-		$this->predis->del($schema . '_config_' . $name);
-
-		// here no update for eLAS database
+		$this->load_ary = [];
+		$stmt = $this->db->executeQuery('select id, data
+			from ' . $schema . '.config');
+		while($row = $stmt->fetch())
+		{
+			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
+		}
+		$key = self::PREFIX . $schema;
+		$this->predis->set($key, json_encode($this->load_ary));
+		$this->predis->expire($key, self::TTL);
+		return $this->load_ary;
 	}
 
-	public function get(string $key, string $schema):string
+	public function read_all(string $schema):array
 	{
-		if (isset($this->local_cache[$schema][$key]) && !$this->is_cli)
+		$key = self::PREFIX . $schema;
+		$data_json = $this->predis->get($key);
+
+		if (isset($data_json))
 		{
-			return $this->local_cache[$schema][$key];
+			$data = json_decode($data_json, true);
+		}
+		else
+		{
+			$data = $this->build_cache_from_db($schema);
 		}
 
-		$redis_key = $schema . '_config_' . $key;
-
-		if ($this->predis->exists($redis_key))
+		if ($this->local_cache_en)
 		{
-			return $this->local_cache[$schema][$key] = $this->predis->get($redis_key);
+			$this->local_cache[$schema] = $data;
 		}
 
-		$row = $this->xdb_service->get('setting', $key, $schema);
+		return $data;
+	}
 
-		if ($row)
+	public function clear_cache(string $schema):void
+	{
+		$key = self::PREFIX . $schema;
+		$this->predis->del($key);
+		unset($this->local_cache[$schema]);
+	}
+
+	public function get_int(string $path, string $schema):?int
+	{
+		if (!isset($this->local_cache[$schema]))
 		{
-			$value = (string) $row['data']['value'];
+			return $this->read_all($schema)[$path];
 		}
-		else if (isset(ConfigCnst::INPUTS[$key]['default']))
+		return  $this->local_cache[$schema][$path];
+	}
+
+	public function get_bool(string $path, string $schema):bool
+	{
+		if (!isset($this->local_cache[$schema]))
 		{
-			$value = ConfigCnst::INPUTS[$key]['default'];
+			return $this->read_all($schema)[$path];
+		}
+		return  $this->local_cache[$schema][$path];
+	}
+
+	public function get_str(string $path, string $schema):string
+	{
+		if (!isset($this->local_cache[$schema]))
+		{
+			return $this->read_all($schema)[$path];
+		}
+		return  $this->local_cache[$schema][$path];
+	}
+
+	public function get_ary(string $path, string $schema):array
+	{
+		if (!isset($this->local_cache[$schema]))
+		{
+			return $this->read_all($schema)[$path];
+		}
+		return  $this->local_cache[$schema][$path];
+	}
+
+	protected function set_val(string $key, $value, string $schema):void
+	{
+		$path_ary = explode('.', $key);
+
+		foreach($path_ary as $p)
+		{
+			if (!preg_match('/^[a-z_]+$/', $p))
+			{
+				throw new LogicException('Unacceptable path');
+			}
+		}
+
+		$id = array_shift($path_ary);
+		$path = implode(',', $path_ary);
+
+		if ($path === '')
+		{
+			throw new LogicException('Config path not set for id ' . $id);
 		}
 
 		if (isset($value))
 		{
-			$this->predis->set($redis_key, $value);
-			$this->predis->expire($redis_key, 2592000);
-			$this->local_cache[$schema][$key] = $value;
+			$this->db->executeUpdate('update ' . $schema . '.config
+				set data = jsonb_set(data, \'{' . $path . '}\',  ?)
+				where id = ?',
+				[$value, $id],
+				[Types::JSON, \PDO::PARAM_STR]
+			);
 		}
 		else
 		{
-			$value = '';
+			$this->db->executeUpdate('update ' . $schema . '.config
+				set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
+				where id = ?',
+				[$id],
+				[\PDO::PARAM_STR]
+			);
 		}
 
-		return $value;
+		$this->clear_cache($schema);
+		return;
+	}
+
+	public function set_int(string $key, ?int $value, string $schema):void
+	{
+		$current_value = $this->get_int($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function set_bool(string $key, bool $value, string $schema):void
+	{
+		$current_value = $this->get_bool($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function set_str(string $key, string $value, string $schema):void
+	{
+		$current_value = $this->get_str($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function set_ary(string $key, array $value, string $schema):void
+	{
+		$current_value = $this->get_ary($key, $schema);
+
+		if ($current_value === $value)
+		{
+			return;
+		}
+
+		$this->set_val($key, $value, $schema);
+	}
+
+	public function get(string $key, string $schema):string
+	{
+		$path = ConfigCnst::INPUTS[$key]['path'];
+
+		if (!isset($this->local_cache[$schema]))
+		{
+			$ret = $this->read_all($schema)[$path];
+		}
+		else
+		{
+			$ret = $this->local_cache[$schema][$path];
+		}
+
+		$ret = (string) $ret;
+
+		return $ret;
 	}
 
 	public function get_intersystem_en(string $schema):bool
 	{
-		return $this->get('template_lets', $schema)
-			&& $this->get('interlets_en', $schema);
+		return $this->get_bool('transactions.currency.timebased_en', $schema)
+			&& $this->get_bool('intersystem.enabled', $schema);
 	}
 
-	public function get_new_user_treshold(string $schema):int
+	public function get_new_user_treshold(string $schema):\DateTimeImmutable
 	{
-		$new_user_days = (int) $this->get('newuserdays', $schema);
-		return time() -  ($new_user_days * 86400);
+		$new_user_days = $this->get_int('users.new.days', $schema);
+		$new_user_treshold = time() -  ($new_user_days * 86400);
+		return \DateTimeImmutable::createFromFormat('U', (string) $new_user_treshold);
 	}
 }

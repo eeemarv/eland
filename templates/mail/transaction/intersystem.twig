@@ -1,8 +1,8 @@
 {%- extends 'mail/transaction/transaction.twig' -%}
 {%- trans_default_domain 'mail' -%}
 
-{%- block html_title -%}
-{{- 'transaction_intersystem.title'|trans -}}
-{%- endblock -%}
+{%- block bgcolor_system_name -%}aa3300{%- endblock -%}
+{%- block sub_header -%}transaction_intersystem.title{%- endblock -%}
+{%- block bgcolor_sub_header -%}fff3a2{%- endblock -%}
 
 {% block text_title %}{{ 'transaction_intersystem.title'|trans|underline|raw }}{% endblock %}

@@ -12,29 +12,7 @@
 
 {%- block content -%}
 
-{%- embed 'form/form_embed.html.twig' -%}
-    {%- import 'macro/link.html.twig' as l -%}
-    {%- block form_content -%}
-
-    {{- form_row(form.message, {
-        'label': 'label.your_message',
-        'attr': {'rows': 5, 'minlength': 10, 'maxlength': 5000}
-    }) -}}
-
-    {{- form_row(form.cc, {
-        'label': can_reply ? 'label.send_cc' : 'label.no_email_no_cc',
-        'disabled': not can_reply,
-        'checked': can_reply,
-        'label_attr': {'class': 'checkbox-custom'}
-    }) -}}
-
-    {{- form_widget(form.submit,{
-        'label': 'btn.send',
-        'attr': {'class': 'btn-info'}
-    }) -}}
-
-    {%- endblock form_content -%}
-{%- endembed -%}
+    {%- include 'include/send_message_cc.html.twig' with {'form': form, 'can_reply' : can_reply} -%}
 
 {%- endblock content -%}
 

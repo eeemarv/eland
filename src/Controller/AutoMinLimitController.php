@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,8 +11,8 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use App\Service\XdbService;
 
 class AutoMinLimitController extends AbstractController
 {
@@ -22,7 +23,7 @@ class AutoMinLimitController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         PageParamsService $pp,
-        XdbService $xdb_service,
+        ConfigService $config_service,
         FormTokenService $form_token_service
     ):Response
     {
@@ -34,35 +35,25 @@ class AutoMinLimitController extends AbstractController
                 $link_render->redirect('autominlimit', $pp->ary(), []);
             }
 
-            $data = [
-                'enabled'			=> $request->request->get('enabled', false),
-                'exclusive'			=> $request->request->get('exclusive', ''),
-                'trans_percentage'	=> $request->request->get('trans_percentage', 100),
-                'trans_exclusive'	=> $request->request->get('trans_exclusive', ''),
-            ];
+            $enabled = $request->request->get('enabled') ? true : false;
+            $percentage = $request->request->get('percentage');
+            $exclude_to = $request->request->get('exclude_to', '');
+            $exclude_from = $request->request->get('exclude_from', '');
 
-            $xdb_service->set('setting', 'autominlimit', $data, $pp->schema());
+            $config_service->set_bool('accounts.limits.auto_min.enabled', $enabled, $pp->schema());
+            $config_service->set_int('accounts.limits.auto_min.percentage', $percentage, $pp->schema());
+            $config_service->set_str('accounts.limits.auto_min.exclude.to', $exclude_to, $pp->schema());
+            $config_service->set_str('accounts.limits.auto_min.exclude.from', $exclude_from, $pp->schema());
 
             $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
             $link_render->redirect('autominlimit', $pp->ary(), []);
         }
         else
         {
-            $row = $xdb_service->get('setting', 'autominlimit', $pp->schema());
-
-            if ($row)
-            {
-                $data = $row['data'];
-            }
-            else
-            {
-                $data = [
-                    'enabled'				=> false,
-                    'exclusive'				=> '',
-                    'trans_percentage'		=> 100,
-                    'trans_exclusive'		=> '',
-                ];
-            }
+            $enabled = $config_service->get_bool('accounts.limits.auto_min.enabled', $pp->schema());
+            $percentage = $config_service->get_int('accounts.limits.auto_min.percentage', $pp->schema());
+            $exclude_to = $config_service->get_str('accounts.limits.auto_min.exclude.to', $pp->schema());
+            $exclude_from = $config_service->get_str('accounts.limits.auto_min.exclude.from', $pp->schema());
         }
 
         $heading_render->add('Automatische minimum limiet');
@@ -90,24 +81,14 @@ class AutoMinLimitController extends AbstractController
         $out .= '<p>Individuele Account Minimum Limieten die ';
         $out .= 'lager zijn dan de algemene Minimum Systeemslimiet ';
         $out .= 'blijven altijd ongewijzigd.</p>';
-        $out .= '<p>Wanneer de Automatische Minimum Limiet systematisch ';
-        $out .= 'voor instappende leden gebruikt wordt, is het ';
-        $out .= 'nuttig de ';
-        $out .= $link_render->link_no_attr('config',
-            $pp->ary(), ['tab' => 'balance'],
-            'Preset Individuele Account Minimum Limiet');
-        $out .= ' ';
-        $out .= 'in te vullen in de instellingen.</p>';
 
         $out .= '<form method="post">';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="enabled" class="control-label">';
-        $out .= '<input type="checkbox" id="enabled" name="enabled" value="1" ';
-        $out .= $data['enabled'] ? ' checked="checked"' : '';
-        $out .= '>';
-        $out .= ' Zet de automatische minimum limiet aan</label>';
-        $out .= '</div>';
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'enabled',
+            '%label%'       => 'Schakel de automatische minimum limiet in',
+            '%attr%'        => $enabled ? ' checked' : '',
+        ]);
 
         $out .= '<hr>';
 
@@ -118,7 +99,7 @@ class AutoMinLimitController extends AbstractController
         $out .= 'worden.</p>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="exclusive" class="control-label">';
+        $out .= '<label for="exclude_to" class="control-label">';
         $out .= 'Exclusief</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
@@ -126,9 +107,9 @@ class AutoMinLimitController extends AbstractController
         $out .= '<span class="fa fa-user"></span>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="text" id="exclusive" name="exclusive" ';
+        $out .= '<input type="text" id="exclude_to" name="exclude_to" ';
         $out .= 'value="';
-        $out .= $data['exclusive'];
+        $out .= $exclude_to;
         $out .= '" ';
         $out .= 'class="form-control">';
         $out .= '</div>';
@@ -152,14 +133,14 @@ class AutoMinLimitController extends AbstractController
         $out .= '</span>';
         $out .= '<input type="number" id="trans_percentage" name="trans_percentage" ';
         $out .= 'value="';
-        $out .= $data['trans_percentage'];
+        $out .= $percentage;
         $out .= '" ';
         $out .= 'class="form-control">';
         $out .= '</div>';
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="trans_exclusive" class="control-label">';
+        $out .= '<label for="exclude_from" class="control-label">';
         $out .= 'Exclusief tegenpartijen</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-prepend">';
@@ -167,9 +148,9 @@ class AutoMinLimitController extends AbstractController
         $out .= '<span class="fa fa-user"></span>';
         $out .= '</span>';
         $out .= '</span>';
-        $out .= '<input type="text" id="trans_exclusive" name="trans_exclusive" ';
+        $out .= '<input type="text" id="exclude_from" name="exclude_from" ';
         $out .= 'value="';
-        $out .= $data['trans_exclusive'];
+        $out .= $exclude_from;
         $out .= '" ';
         $out .= 'class="form-control">';
         $out .= '</div>';

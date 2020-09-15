@@ -33,12 +33,12 @@ class ContactFormController extends AbstractController
     {
         $form_disabled = false;
 
-        if (!$config_service->get('mailenabled', $pp->schema()))
+        if (!$config_service->get_bool('mail.enabled', $pp->schema()))
         {
             $alert_service->warning('email.warning.disabled');
             $form_disabled = true;
         }
-        else if (!$config_service->get('support', $pp->schema()))
+        else if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
         {
             $alert_service->warning('email.warning.no_support_address');
             $form_disabled = true;

@@ -2,22 +2,30 @@
 
 namespace App\Twig;
 
+use App\Repository\AccountRepository;
 use App\Service\UserCacheService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AccountRuntime implements RuntimeExtensionInterface
 {
+	protected AccountRepository $account_repository;
 	protected UserCacheService $user_cache_service;
 
-	public function __construct(UserCacheService $user_cache_service)
+	public function __construct(
+		AccountRepository $account_repository,
+		UserCacheService $user_cache_service
+	)
 	{
+		$this->account_repository = $account_repository;
 		$this->user_cache_service = $user_cache_service;
 	}
 
 	public function get(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return htmlspecialchars($user['code'] . ' ' . $user['name']);
+		$code = $user['code'] ?? '***';
+		$name = $user['name'] ?? '***';
+		return htmlspecialchars($code . ' ' . $name);
 	}
 
 	public function get_fullname(int $id, string $schema):string
@@ -40,17 +48,6 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_balance(int $id, string $schema):int
 	{
-		$user = $this->user_cache_service->get($id, $schema);
-		return $user['balance'];
-	}
-
-	public function get_min(int $id, string $schema):string
-	{
-		return $this->user_cache_service->get($id, $schema)['minlimit'] ?? '';
-	}
-
-	public function get_max(int $id, string $schema):string
-	{
-		return $this->user_cache_service->get($id, $schema)['maxlimit'] ?? '';
+		return $this->account_repository->get_balance($id, $schema);
 	}
 }

@@ -2,7 +2,7 @@
 
 {%- block content -%}
 
-{{- config('contact_form_top_text', schema)|raw -}}
+{{- static_content('contact_form', 'top', schema)|raw -}}
 
 {%- embed 'form/form_embed.html.twig' -%}
     {%- import 'macro/link.html.twig' as l -%}
@@ -32,7 +32,7 @@
     {%- endblock form_content -%}
 {%- endembed -%}
 
-{{- config('contact_form_bottom_text', schema)|raw -}}
+{{- static_content('contact_form', 'bottom', schema)|raw -}}
 
 {%- endblock content -%}
 

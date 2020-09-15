@@ -70,10 +70,10 @@ class LogDbService
 
 			$user_schema = $schema;
 
-			if (isset($extra['org_system'])
-				&& $extra['org_system'])
+			if (isset($extra['os'])
+				&& $extra['os'])
 			{
-				$org_schema = $this->systems_service->get_schema($context['org_system']);
+				$org_schema = $this->systems_service->get_schema($extra['os']);
 
 				if ($org_schema)
 				{

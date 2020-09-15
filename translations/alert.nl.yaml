@@ -2,6 +2,25 @@ error:
   token_not_valid: >-
     Geen geldig token.
 
+categories:
+  success: >-
+    De categorieën zijn aangepast (%count% updates).
+  warning:
+    no_change: >-
+      Geen wijzigingen in de categorieën.
+
+categories_add:
+  success: >-
+    Categorie "%name%" toegevoegd.
+
+categories_edit:
+  success: >-
+    Categorie naam aangepast van "%old_name%" naar "%new_name%".
+
+categories_del:
+  success: >-
+    Categorie "%name%" verwijderd.
+
 config:
   success: >-
     Instellingen aangepast.
@@ -144,6 +163,10 @@ messages_add:
         De vraag "%message_subject%" is toegevoegd
         voor gebruker "%user%".
 
+messages_cleanup:
+  success: >-
+    Geldigheid en opruiming instellingen van vraag en aanbod aangepast.
+
 messages_del:
   error: Het bericht is niet verwijderd.
   success:
@@ -172,6 +195,15 @@ messages_edit:
       admin: >-
         De vraag "%message_subject%" van gebruiker
         "%user%" is aangepast.
+
+messages_modules:
+  success: >-
+    Submodules/velden vraag en aanbod aangepast.
+
+messages_show:
+  success:
+    mail_sent: >-
+      E-mail bericht verzonden naar %to_user%.
 
 news_add:
   success: >-

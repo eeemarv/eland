@@ -3,5 +3,5 @@
 {{ 'b.support.title'|trans|underline|raw }}
 
 {{ 'b.support.reply_admin'|trans({
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 })|raw }}

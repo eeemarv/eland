@@ -3,79 +3,143 @@
 
 {% block subject_line -%}
 {{- 'transaction_to_intersystem_mail_type.subject'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%remote_system_name%': user_fullname(to_user_id, schema)
 })|raw -}}
 {%- endblock subject_line -%}
 
 {%- block html_pretext -%}{%- endblock -%}
-{% block text_pretext %}{% endblock %}
 
 {%- block html_content_explain -%}
-<p>
-{{- 'transaction_to_intersystem_mail_type.explain'|trans({
-    '%system_name%': config('systemname', schema)
-}) -}}
-</p>
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': 'transaction_to_intersystem_mail_type.explain'|trans({
+                '%system_name%': config_str('system.name', schema)
+            }),
+        'bgcolor': 'fff8cf'
+    } -%}
 {%- endblock html_content_explain -%}
-
-{% block text_content_explain %}
-
-{{ 'transaction_to_intersystem_mail_type.explain'|trans({
-    '%system_name%': config('systemname', schema)
-})|raw }}
-
-{% endblock text_content_explain %}
 
 {%- block html_from -%}
 {{- account(from_user_id, schema)
     ~ ' ['
-    ~ config('systemname', schema)
+    ~ config_str('system.name', schema)
     ~ ']' -}}
+{%- endblock html_from -%}
+
+{%- block html_amount_explain -%}
+    {%- block html_amount_time_explain -%}
+    <tr>
+        <td>
+            {{- 'transaction_to_intersystem_mail_type.amount_explain'|trans({
+                '%system_name%': config_str('system.name', schema),
+                '%amount%': transaction.amount,
+                '%currency%': config_str('transactions.currency.name', schema),
+                '%dec_hours%': amount_time.dec_hours,
+                '%to_account%': transaction.real_to
+            }) -}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {{- 'transaction_to_intersystem_mail_type.amount_dec_explain'|trans({
+                '%dec_hours%': amount_time.dec_hours
+            }) -}}
+        </td>
+    </tr>
+    {%- include 'mail/include/row_spacer20.html.twig' -%}
+    {%- endblock html_amount_time_explain -%}
+
+    <tr>
+        <td>
+            <table border="1" bgcolor="#eeeeee" align="center" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                    <td style="padding-left: 10px" width="200">
+                        {{ 'label.hours'|trans }}
+                    </td>
+                    <td style="font-weight: bold; padding-left: 10px;">
+                        {{- amount_time.hours -}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-left: 10px" width="200">
+                        {{ 'label.minutes'|trans }}
+                    </td>
+                    <td style="font-weight: bold; padding-left: 10px;">
+                        {{- amount_time.minutes -}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-left: 10px" width="200">
+                        {{ 'label.seconds'|trans }}
+                    </td>
+                    <td style="font-weight: bold; padding-left: 10px;">
+                        {{- amount_time.seconds -}}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {%- include 'mail/include/row_spacer20.html.twig' -%}
+{%- endblock html_amount_explain -%}
+
+{%- block html_trans_id -%}
+    <tr>
+        <td>
+            {{ 'label.transaction_id'|trans }}
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold;">
+            {{- transaction.transid -}}
+        </td>
+    </tr>
+    {%- include 'mail/include/row_spacer20.html.twig' -%}
+{%- endblock html_trans_id -%}
+
+{%- block html_transaction_link -%}
+    {# No access yet for guests
+    <tr>
+        <td>
+            {{- context_url_open('transactions_show', mpp_guest_ary(schema),
+                {'id': transaction.id})|raw -}}
+            {{- 'label.link'|trans -}}
+            </a>
+        </td>
+    </tr>
+    {%- include 'mail/include/row_spacer20.html.twig' -%}
+    #}
+{%- endblock html_transaction_link -%}
+
+{%- block html_account_info -%}{%- endblock -%}
+
+{%- block html_support -%}
+    {% include 'mail/include/support_reply_admin.html.twig' -%}
 {%- endblock -%}
+
+{% block text_pretext %}{% endblock %}
+
+{% block text_content_explain %}
+
+{{ 'transaction_to_intersystem_mail_type.explain'|trans({
+    '%system_name%': config_str('system.name', schema)
+})|raw }}
+
+{% endblock text_content_explain %}
 
 {% block text_from %}
 {{ (account(from_user_id, schema)
     ~ ' ['
-    ~ config('systemname', schema)
+    ~ config_str('system.name', schema)
     ~ ']')|raw }}
-{% endblock %}
-
-{%- block html_amount_explain -%}
-{%- block html_amount_time_explain -%}
-<p>
-{{- 'transaction_to_intersystem_mail_type.amount_explain'|trans({
-    '%system_name%': config('systemname', schema),
-    '%amount%': transaction.amount,
-    '%currency%': config('currency', schema),
-    '%dec_hours%': amount_time.dec_hours,
-    '%to_account%': transaction.real_to
-}) -}}
-</p>
-<p>
-{{- 'transaction_to_intersystem_mail_type.amount_dec_explain'|trans({
-    '%dec_hours%': amount_time.dec_hours
-}) -}}
-</p>
-{%- endblock html_amount_time_explain -%}
-<p>
-{{ 'label.hours'|trans }}:&nbsp;<strong>{{- amount_time.hours -}}</strong>
-</p>
-<p>
-{{ 'label.minutes'|trans }}:&nbsp;<strong>{{- amount_time.minutes -}}</strong>
-</p>
-<p>
-{{ 'label.seconds'|trans }}:&nbsp;<strong>{{- amount_time.seconds -}}</strong>
-</p>
-{%- endblock html_amount_explain -%}
+{% endblock text_from %}
 
 {% block text_amount_explain %}
 {% block text_amount_time_explain %}
 
 {{ 'transaction_to_intersystem_mail_type.amount_explain'|trans({
-    '%system_name%': config('systemname', schema),
+    '%system_name%': config_str('system.name', schema),
     '%amount%': transaction.amount,
-    '%currency%': config('currency', schema),
+    '%currency%': config_str('transactions.currency.name', schema),
     '%dec_hours%': amount_time.dec_hours,
     '%to_account%': transaction.real_to
 })|raw }}
@@ -91,16 +155,6 @@
 
 {% endblock text_amount_explain %}
 
-{%- block html_trans_id -%}
-<p>
-{{- 'label.transaction_id'|trans -}}
-<br />
-<strong>
-{{- transaction.transid -}}
-</strong>
-</p>
-{%- endblock html_trans_id -%}
-
 {% block text_trans_id %}
 
 {{ 'label.transaction_id'|trans|raw }}
@@ -108,27 +162,12 @@
 
 {% endblock text_trans_id %}
 
-
-{%- block html_transaction_link -%}
-<p>
-{{- context_url_open('transactions_show', mpp_guest_ary(schema),
-    {'id': transaction.id})|raw -}}
-{{- 'label.link'|trans -}}
-</a>
-</p>
-{%- endblock html_transaction_link -%}
-
 {% block text_transaction_link %}
 {{ 'label.link'|trans }}: {{ context_url('transactions_show',
     mpp_guest_ary(schema), {'id': transaction.id}) }}
 {% endblock text_transaction_link %}
 
-{%- block html_account_info -%}{%- endblock -%}
 {% block text_account_info %}{% endblock %}
-
-{%- block html_support -%}
-{% include 'mail/include/support_reply_admin.html.twig' -%}
-{%- endblock -%}
 
 {% block text_support %}
 {% include 'mail/include/support_reply_admin.text.twig' %}

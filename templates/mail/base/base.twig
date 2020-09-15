@@ -1,40 +1,108 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-    {%- if schema is defined -%}[{{- config('systemtag', schema) }}] {% endif -%}
+    {%- if schema is defined -%}[{{- config_str('mail.tag', schema) }}] {% endif -%}
     {%- block subject_line -%}{%- endblock -%}
 {%- endblock subject -%}
 
 {%- block html_body -%}
+    {%- set bgcolor -%}
+        {%- block bgcolor -%}
+            dddddd
+        {%- endblock -%}
+    {%- endset -%}
+
+    {%- set bgcolor_system_name -%}
+        {%- block bgcolor_system_name -%}
+            0099ee
+        {%- endblock -%}
+    {%- endset -%}
+
+    {%- set sub_header -%}
+        {%- block sub_header -%}{%- endblock -%}
+    {%- endset -%}
+
+    {%- set bgcolor_sub_header -%}
+        {%- block bgcolor_sub_header -%}ffffff{%- endblock -%}
+    {%- endset -%}
+
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html>
+    <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>{{- block('subject') -}}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
-    <body bgcolor="#FFFFFF" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+    <body topmargin="0" leftmargin="0" marginheight="0" marginwidth="0" style="font-family: Verdana, Arial, Roboto, Ubuntu, Open Sans; font-size: 16px; line-height: 1.4;">
+    <table bgcolor="#{{- bgcolor -}}" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+    <td>
+    <table bgcolor="#ffffff" align="center" cellpadding="0" cellspacing="0" width="700" style="border-collapse: collapse;">
+    <tr>
+    <td>
+
     {%- block html_pretext -%}{%- endblock -%}
+
+    {%- block html_header -%}
+        {%- if schema is defined -%}
+            {%- embed 'mail/embed/table600.html.twig' -%}
+                {%- block bgcolor -%}{{- bgcolor_system_name -}}{%- endblock -%}
+                {%- block td_top -%}30px{%- endblock -%}
+                {%- block td_bottom -%}30px{%- endblock -%}
+                {%- block td_style %}font-size: 24px; color: #ffffff;{%- endblock -%}
+                {%- block td_content -%}
+                {{- config_str('system.name', schema) -}}
+                {%- endblock td_content -%}
+            {%- endembed -%}
+        {%- endif -%}
+    {%- endblock html_header -%}
+
+    {%- block html_sub_header -%}
+        {%- if sub_header is defined and sub_header != '' -%}
+            {%- include 'mail/include/sub_header.html.twig' with {
+                'sub_header': sub_header,
+                'bgcolor': bgcolor_sub_header
+            } -%}
+        {%- endif -%}
+    {%- endblock html_sub_header -%}
+
     {%- block html_content -%}{%- endblock -%}
     {%- block html_account_info -%}{%- endblock -%}
     {%- block html_support -%}{%- endblock -%}
     {%- block html_unsubscribe -%}{%- endblock -%}
     {%- block html_footer -%}
-        {%- if schema is defined %}
-            <p>
-                {{- 'b.footer'|trans({
-                    '%link_open%': context_url_open(
-                        'home', mpp_anon_ary(schema), {}),
-                    '%link_close%': '</a>',
-                    '%system_name%': config('systemname', schema)
-                })|raw -}}
-            </p>
+        {%- if schema is defined -%}
+            {%- embed 'mail/embed/table600.html.twig' -%}
+                {%- trans_default_domain 'mail' -%}
+                {%- block td_align -%}center{%- endblock -%}
+                {%- block td_top -%}10px{%- endblock -%}
+                {%- block td_bottom -%}40px{%- endblock -%}
+                {%- block td_content -%}
+                    {{- 'b.footer'|trans({
+                        '%link_open%': context_url_open(
+                            'home', mpp_anon_ary(schema), {}),
+                        '%link_close%': '</a>',
+                        '%system_name%': config_str('system.name', schema)
+                    })|raw -}}
+                {%- endblock td_content -%}
+            {%- endembed -%}
         {%- endif -%}
     {%- endblock html_footer -%}
+
+    </td>
+    </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
     </body>
+    </html>
 {%- endblock html_body -%}
 
 {% block text_body %}
 {% block text_pretext %}{% endblock %}
+{% block text_header %}{% endblock %}
+{% block text_subheader %}{% endblock %}
 {% block text_content %}{% endblock %}
 {% block text_account_info %}{% endblock %}
 {% block text_support %}{% endblock %}
@@ -45,7 +113,7 @@
 {{ 'b.footer'|trans({
     '%link_open%': '',
     '%link_close%': '',
-    '%system_name%': config('systemname', schema)
+    '%system_name%': config_str('system.name', schema)
 })|raw }}
 {{ context_url('home', mpp_anon_ary(schema), {})|raw }}
 {% endif %}

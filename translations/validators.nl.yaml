@@ -1,8 +1,12 @@
 category:
   not_exists: De categorie bestaat niet.
+  not_leaf: >-
+    Deze categorie heeft subcategorieën en kan
+    daarom geen berichten bevatten.
+  name_not_unique: Deze naam is niet uniek.
 
 doc_map:
-  not_unique: Deze map naam bestaat reeds.
+  name_not_unique: Deze map naam bestaat reeds.
 
 form:
   form_token:

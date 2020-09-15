@@ -5,15 +5,13 @@ namespace App\Controller\Messages;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Repository\MessageRepository;
 use App\Service\ImageTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessagesShowImagesUploadController extends AbstractController
 {
@@ -23,39 +21,61 @@ class MessagesShowImagesUploadController extends AbstractController
         string $image_token,
         MessageRepository $message_repository,
         ImageTokenService $image_token_service,
+        TranslatorInterface $translator,
         LoggerInterface $logger,
         PageParamsService $pp,
         SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
-        $image_token_service->check_and_throw($id, $image_token);
+        $error_response = $image_token_service->get_error_response($id, $image_token);
+
+        if (isset($error_response))
+        {
+            return $error_response;
+        }
 
         $uploaded_files = $request->files->get('images', []);
 
         if (!count($uploaded_files))
         {
-            throw new BadRequestHttpException('Missing file.');
+            return $this->json([
+                'error' => $translator->trans('image_upload.error.missing'),
+                'code'  => 400,
+            ], 400);
         }
 
         $message = $message_repository->get($id, $pp->schema());
 
         if (!$message)
         {
-            throw new NotFoundHttpException('Message ' . $id . ' not found.');
+            return $this->json([
+                'error' => $translator->trans('image_upload.error.message_not_found'),
+                'code'  => 404,
+            ], 404);
         }
 
         if (!$su->is_owner($message['user_id']) && !$pp->is_admin())
         {
-            throw new AccessDeniedHttpException('Access Denied for image upload.');
+            return $this->json([
+                'error' => $translator->trans('image_upload.error.access_denied'),
+                'code'  => 403,
+            ], 403);
         }
 
         $filename_ary = [];
 
         foreach ($uploaded_files as $uploaded_file)
         {
-            $filename = $image_upload_service->upload($uploaded_file,
-                'm', $id, 400, 400, $pp->schema());
+            $response_ary = $image_upload_service->upload($uploaded_file,
+                'm', $id, 400, 400, false, $pp->schema());
+
+            if (!isset($response_ary['filename']))
+            {
+                return $this->json($response_ary);
+            }
+
+            $filename = $response_ary['filename'];
 
             $message_repository->add_image_file($filename, $id, $pp->schema());
 
@@ -66,6 +86,9 @@ class MessagesShowImagesUploadController extends AbstractController
             $filename_ary[] = $filename;
         }
 
-        return $this->json($filename_ary);
+        return $this->json([
+            'filenames'     => $filename_ary,
+            'code'          => 200,
+        ]);
     }
 }

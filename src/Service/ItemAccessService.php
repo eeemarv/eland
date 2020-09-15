@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Cnst\AccessCnst;
+use App\Cnst\BulkCnst;
 
 class ItemAccessService
 {
@@ -138,7 +139,7 @@ class ItemAccessService
 		$out .= '" class="control-label">';
 		$out .= $label;
 		$out .= '</label>';
-		$out .= '<div';
+		$out .= '<div class="custom-radio"';
 
 		if ($cache_id)
 		{
@@ -155,7 +156,7 @@ class ItemAccessService
 			$out .= '<div class="custom-control custom-radio custom-control-inline">';
 			$out .= '<input type="radio" name="' . $name . '" ';
 			$out .= 'class="custom-control-input" ';
-			$out .= $key === $selected ? 'checked="checked" ' : '';
+			$out .= $key === $selected ? 'checked ' : '';
 			$out .= 'value="' . $key . '" ';
 			$out .= 'id="' . $id . '" ';
 			$out .= 'required> ';

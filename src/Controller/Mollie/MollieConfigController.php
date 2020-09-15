@@ -11,7 +11,6 @@ use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 
 class MollieConfigController extends AbstractController
@@ -24,7 +23,6 @@ class MollieConfigController extends AbstractController
         HeadingRender $heading_render,
         LinkRender $link_render,
         PageParamsService $pp,
-        SessionUserService $su,
         FormTokenService $form_token_service
     ):Response
     {
@@ -57,7 +55,7 @@ class MollieConfigController extends AbstractController
                 $data = json_encode($data);
 
                 $db->update($pp->schema() . '.config',
-                    ['data' => $data, 'user_id' => $su->id()],
+                    ['data' => $data],
                     ['id' => 'mollie']);
 
                 $alert_service->success('De Mollie Apikey is aangepast.');

@@ -42,6 +42,8 @@ class MessagesExtendedController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+
         $fetch_and_filter = MessagesListController::fetch_and_filter(
             $request,
             $db,
@@ -93,12 +95,13 @@ class MessagesExtendedController extends AbstractController
             $sf_owner = $pp->is_user()
                 && $msg['user_id'] === $su->id();
 
-            $exp = isset($msg['expires_at'])
+            $expired = $expires_at_enabled
+                && isset($msg['expires_at'])
                 && strtotime($msg['expires_at'] . ' UTC') < $time;
 
             $out .= '<div class="card printview mb-3">';
             $out .= '<div class="card-body';
-            $out .= $exp ? ' bg-danger-li' : '';
+            $out .= $expired ? ' bg-danger-li' : '';
             $out .= '">';
 
             $out .= '<div class="media">';
@@ -124,7 +127,7 @@ class MessagesExtendedController extends AbstractController
                 ['id' => $msg['id']],
                 ucfirst($msg['label']['offer_want']) . ': ' . $msg['subject']);
 
-            if ($exp)
+            if ($expired)
             {
                 $out .= ' <small><span class="text-danger">';
                 $out .= 'Vervallen</span></small>';

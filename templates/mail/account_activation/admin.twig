@@ -7,23 +7,37 @@
 }) -}}
 {%- endblock subject_line %}
 
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+{%- block bgcolor -%}e8eeff{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}account_activation_admin.sub_header{%- endblock -%}
+
 {%- block html_content -%}
-<p>
-{{- 'account_activation_admin.message'|trans({
-    '%link_open%': context_url_open('users_show', mpp_admin_ary(schema), {'id': user_id}),
-    '%link_close%': '</a>',
-    '%account_name%': account(user_id, schema),
-})|raw -}}
-</p>
 
-<p>
-{%- if user_email -%}
-    {{- 'account_activation_admin.email_sent'|trans -}}
-{%- else -%}
-    {{- 'account_activation_admin.no_email_sent'|trans -}}
-{%- endif -%}
-</p>
+    {%- include 'mail/include/spacer20.html.twig' -%}
 
+    {%- include 'mail/include/info_panel.html.twig' with {
+            'info': 'account_activation_admin.message'|trans({
+            '%link_open%': context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': user_id}),
+            '%link_close%': '</a>',
+            '%account_name%': account(user_id, schema),
+        })|raw}
+    -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- if user_email -%}
+        {%- include 'mail/include/info_panel.html.twig' with {
+            'info': 'account_activation_admin.email_sent'|trans
+        } -%}
+    {%- else -%}
+        {%- include 'mail/include/info_panel.html.twig' with {
+            'info': 'account_activation_admin.no_email_sent'|trans
+        } -%}
+    {%- endif -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock html_content -%}
 
 {% block text_content %}

@@ -25,27 +25,40 @@ $(document).ready(function () {
 		rewrite_image_files_input();
 	});
 
-    $('input[data-fileupload]').bind('fileuploadprocessfail', function (e, data) {
-		var error = (data.files[data.index].error == 'File type not allowed') ? 'Fout bestandstype' : data.files[data.index].error;
-		alert(error);
-		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
-	}).fileupload({
+	$fileupload = $('[data-fileupload]');
+	var messages = {
+		acceptFileTypes: $fileupload.data('message-file-type-not-allowed'),
+		maxFileSize: $fileupload.data('message-max-file-size'),
+		minFileSize: $fileupload.data('message-min-file-size'),
+		uploadedBytes : $fileupload.data('message-uploaded-bytes')
+	};
 
+    $fileupload.bind('fileuploadprocessfail', function (e, data) {
+		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
+		var error = data.files[data.index].error;
+		alert(error);
+	}).fileupload({
+		dataType: 'json',
+		autoUpload: true,
+        acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|svg)$/i,
+		maxFileSize: 999000,
+		minFileSize: 100,
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
 		imageMaxHeight: 400,
-		imageOrientation: true
-
+		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
+		imageOrientation: true,
+		messages: messages
 	}).on('fileuploadadd', function (e, data) {
 		$img_add_btn.removeClass('fa-plus').addClass('fa-spinner fa-spin');
 	}).on('fileuploaddone', function (e, data) {
-
 		$img_add_btn.removeClass('fa-spin fa-spinner').addClass('fa-plus');
 
-        $.each(data.result, function (index, file) {
-
-            if (file) {
+		if (data.result.hasOwnProperty('error')){
+			alert(data.result.error);
+		} else {
+			$.each(data.result.filenames, function (index, file) {
 				var $thumbnail = $model.clone();
 				$thumbnail.removeAttr('id');
 				$thumbnail.attr('data-file', file);
@@ -60,11 +73,8 @@ $(document).ready(function () {
 				$thumbnail.removeClass('hidden');
 				$model.parent().append($thumbnail);
 				rewrite_image_files_input();
-            } else {
-				alert('Fout bij het opladen van de afbeelding.');
-			}
-        });
-
+			});
+		}
      }).prop('disabled', !$.support.fileInput)
         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 });

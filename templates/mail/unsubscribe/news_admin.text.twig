@@ -1,9 +1,0 @@
-{% trans_default_domain 'mail' %}
-
-{{ 'subscribed.news_admin'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-})|raw }}
-
-{{ context_url('config', mpp_admin_ary(schema),
-    {'tab': 'mail-addr'})|raw }}

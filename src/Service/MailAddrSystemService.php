@@ -33,20 +33,14 @@ class MailAddrSystemService
 
 	public function get_support(string $schema):array
 	{
-		$mail_ary = explode(',', $this->config_service->get('support', $schema));
+		$mail_ary = $this->config_service->get_ary('mail.addresses.support', $schema);
 		return $this->get_validated_ary($mail_ary, 'support', $schema);
 	}
 
 	public function get_admin(string $schema):array
 	{
-		$mail_ary = explode(',', $this->config_service->get('admin', $schema));
+		$mail_ary = $this->config_service->get_ary('mail.addresses.admin', $schema);
 		return $this->get_validated_ary($mail_ary, 'admin', $schema);
-	}
-
-	public function get_newsadmin(string $schema):array
-	{
-		$mail_ary = explode(',', $this->config_service->get('newsadmin', $schema));
-		return $this->get_validated_ary($mail_ary, 'newsadmin', $schema);
 	}
 
 	protected function get_validated_ary(

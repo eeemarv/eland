@@ -2,93 +2,82 @@
 
 namespace App\Service;
 
-use App\Service\XdbService;
 use Doctrine\DBAL\Connection as Db;
-use App\Cnst\ConfigCnst;
+use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
-use App\Service\ConfigService;
+use Symfony\Component\Validator\Exception\LogicException;
 
 class StaticContentService
 {
-	protected $xdb_service;
+	const PREFIX = 'static_content_';
+	const TTL= 518400; // 60 days
+
 	protected Db $db;
 	protected Predis $predis;
-	protected ConfigService $config_service;
 
 	public function __construct(
-		XdbService $xdb_service,
 		Db $db,
-		Predis $predis,
-		ConfigService $config_service
+		Predis $predis
 	)
 	{
-		$this->db = $db;
 		$this->predis = $predis;
-		$this->xdb_service = $xdb_service;
-		$this->config_service = $config_service;
+		$this->db = $db;
 	}
 
-	public function exists(string $name, string $schema):bool
+	public function clear_cache(string $schema):void
 	{
-		return 0 < $this->xdb_service->count('setting', $name, $schema);
+		$lang_ary = ['nl'];
+
+		foreach($lang_ary as $lang)
+		{
+			$this->predis->del(self::PREFIX . $lang . '_' . $schema);
+		}
 	}
 
-	public function get_uncached(string $key, string $schema):string
+	public function set(string $id, string $block, string $value, string $schema):void
 	{
-		$row = $this->xdb_service->get('setting', $key, $schema);
+		$lang = 'nl';
 
-		if ($row)
+		if (!preg_match('/^[a-z_]+$/', $block))
 		{
-			return $row['data']['value'];
+			throw new LogicException('Unacceptable block');
 		}
 
-		return '';
+		$this->db->executeUpdate('update ' . $schema . '.static_content
+			set data = jsonb_set(data, \'{' . $block . '}\',  ?)
+			where id = ? and lang = ?',
+			[$value, $id, $lang],
+			[Types::JSON, \PDO::PARAM_STR, \PDO::PARAM_STR]
+		);
+
+		$this->clear_cache($schema);
+		return;
 	}
 
-	public function set(string $name, string $schema, string $value):void
+	public function get(string $id, string $block, string $schema):string
 	{
-		$this->xdb_service->set('setting', $name, ['value' => $value], $schema);
-		$this->predis->del($schema . '_config_' . $name);
+		$lang = 'nl';
+		$key = self::PREFIX . $lang . '_' . $schema;
+		$str = $this->predis->hget($key, $id . '.' . $block);
 
-		// here no update for eLAS database
-	}
-
-	public function get(string $key, string $schema):string
-	{
-		if (isset($this->local_cache[$schema][$key]) && !$this->is_cli)
+		if (isset($str))
 		{
-			return $this->local_cache[$schema][$key];
+			return $str;
 		}
 
-		$redis_key = $schema . '_config_' . $key;
+		$data_json = $this->db->fetchColumn('select data
+			from ' . $schema . '.static_content
+			where id = ? and lang = ?', [$id, $lang]);
 
-		if ($this->predis->exists($redis_key))
+		$data = json_decode($data_json, true);
+
+		foreach($data as $data_block => $data_str)
 		{
-			return $this->local_cache[$schema][$key] = $this->predis->get($redis_key);
+			$this->predis->hset($key, $id . '.' . $data_block, $data_str);
 		}
 
-		$row = $this->xdb_service->get('setting', $key, $schema);
+		$this->predis->expire($key, self::TTL);
 
-		if ($row)
-		{
-			$value = (string) $row['data']['value'];
-		}
-		else if (isset(ConfigCnst::INPUTS[$key]['default']))
-		{
-			$value = ConfigCnst::INPUTS[$key]['default'];
-		}
-
-		if (isset($value))
-		{
-			$this->predis->set($redis_key, $value);
-			$this->predis->expire($redis_key, 2592000);
-			$this->local_cache[$schema][$key] = $value;
-		}
-		else
-		{
-			$value = '';
-		}
-
-		return $value;
+		return $data[$block] ?? '';
 	}
 }

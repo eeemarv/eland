@@ -1,0 +1,9 @@
+<table cellspacing="0" cellpadding="0"{%- block table_attr -%}{%- endblock -%}>
+    <tr>
+        <td style="border-radius: 5px;" bgcolor="#{%- block bgcolor -%}ed2939{%- endblock -%}">
+            <a href="{%- block href -%}#{%- endblock -%}" target="_blank" style="padding-top:{%- block padding_v -%}8px{%- endblock -%};padding-bottom:{{- block('padding_v') -}};padding-left:{%- block padding_h -%}12px{%- endblock -%};padding-right:{%- block padding_right -%}{{- block('padding_h') -}}{%- endblock -%}; border-width: 1px; border-style:solid; border-color: #{%- block border_color -%}{{- block('bgcolor') -}}{%- endblock -%};border-radius: 5px;font-size: 16px; color: #{%- block color -%}{{- block('border_color') -}}{%- endblock -%};text-decoration: none;font-weight:bold;display: inline-block;"{%- block a_attr -%}{%- endblock -%}>
+                {%- block label -%}&nbsp;{%- endblock -%}
+            </a>
+        </td>
+    </tr>
+</table>

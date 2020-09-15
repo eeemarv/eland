@@ -11,6 +11,7 @@ use App\Service\IntersystemsService;
 use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use App\Render\AccountStrRender;
+use Doctrine\DBAL\Types\Types;
 
 class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 {
@@ -54,7 +55,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
-		$treshold_time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('saldofreqdays', $schema) * 86400);
+		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+		$treshold_time_unix = time() - ($days * 86400);
+		$treshold_time =\DateTimeImmutable::createFromFormat('U', (string) $treshold_time_unix);
+		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
+		$expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema);
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
@@ -63,39 +68,45 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// get blocks
 
-		$forum_en = $this->config_service->get('forum_en', $schema) ? true : false;
-		$intersystem_en = $this->config_service->get('interlets_en', $schema) ? true : false;
-		$intersystem_en = $intersystem_en && $this->config_service->get('template_lets', $schema) ? true : false;
+		$forum_en = $this->config_service->get_bool('forum.enabled', $schema);
+		$intersystem_en = $this->config_service->get_intersystem_en($schema);
 
 		$blocks_sorted = $block_options = [];
 
-		$block_ary = $this->config_service->get('periodic_mail_block_ary', $schema);
+		$block_ary = $this->config_service->get_ary('periodic_mail.user.layout', $schema);
 
-		$block_ary = explode(',', ltrim($block_ary, '+'));
-
-		foreach ($block_ary as $v)
+		foreach ($block_ary as $block)
 		{
-			[$block, $option] = explode('.', $v);
-
 			if ($block === 'forum' && !$forum_en)
 			{
 				continue;
 			}
 
-			if ($block === 'interlets' && !$intersystem_en)
+			if ($block === 'intersystem' && !$intersystem_en)
 			{
 				continue;
 			}
 
-			$block_options[$block] = $option;
+			$select = 'recent';
+
+			if (in_array($block, ['news', 'new_users', 'leaving_users']))
+			{
+				$select = $this->config_service->get_str('periodic_mail.user.render.' . $block . '.select', $schema);
+				$select = $select === 'all' ? 'all' : 'recent';
+			}
+
+			$select = $block === 'messages_self' ? 'all' : $select;
+
+			$block_options[$block] = $select;
 			$blocks_sorted[] = $block;
 		}
 
 	// fetch all active users
 
 		$rs = $this->db->prepare('select u.id,
-				u.name, u.balance, u.status,
-				u.code, u.postcode, u.periodic_overview_en
+				u.name, u.status,
+				u.code, u.postcode,
+				u.periodic_overview_en
 			from ' . $schema . '.users u
 			where u.status in (1, 2)');
 
@@ -164,15 +175,18 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					m.subject, m.content,
 					m.user_id,
 					m.is_offer, m.is_want,
-					m.amount, m.units, m.image_files
+					m.image_files
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
 				where m.user_id = u.id
-					and u.status IN (1, 2)
+					and u.status in (1, 2)
 					and m.created_at >= ?
-				order BY m.created_at DESC');
+					and ((m.expires_at >= timezone(\'utc\', now())
+						or m.expires_at is null) or not ?)
+				order by m.created_at desc');
 
-			$rs->bindValue(1, $treshold_time);
+			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+			$rs->bindValue(2, $expires_at_enabled, \PDO::PARAM_BOOL);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -189,6 +203,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$row['mail'] = $mailaddr[$uid] ?? '';
 				$row['addr'] = str_replace(' ', '+', $adr);
 				$row['adr'] = $adr;
+				$row['postcode'] = $users[$uid]['postcode'];
 
 				$messages[] = $row;
 			}
@@ -196,7 +211,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// interSystem messages
 
-		if (isset($block_options['interlets']) && $block_options['interlets'] == 'recent')
+		if (isset($block_options['intersystem']) && $block_options['intersystem'] == 'recent')
 		{
 			$eland_ary = $this->intersystems_service->get_eland($schema);
 
@@ -204,20 +219,25 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			{
 				$intersystem_msgs = [];
 
+				$expires_at_enabled_intersystem = $this->config_service->get_bool('messages.fields.expires_at.enabled', $sch);
+
 				$rs = $this->db->prepare('select m.id, m.subject,
 						m.content,
 						m.is_offer, m.is_want,
 						m.user_id as user_id,
-						m.amount, m.units
+						u.postcode
 					from ' . $sch . '.messages m, ' .
 						$sch . '.users u
 					where m.user_id = u.id
 						and m.access = \'guest\'
 						and u.status in (1, 2)
 						and m.created_at >= ?
+						and ((m.expires_at >= timezone(\'utc\', now())
+							or m.expires_at is null) or not ?)
 					order by m.created_at desc');
 
-				$rs->bindValue(1, $treshold_time);
+				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+				$rs->bindValue(2, $expires_at_enabled_intersystem, \PDO::PARAM_BOOL);
 				$rs->execute();
 
 				while ($row = $rs->fetch())
@@ -249,14 +269,14 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';
 			$query .= 'order by n.event_at ';
-			$query .= $this->config_service->get('news_order_asc', $schema) === '1' ? 'asc' : 'desc';
+			$query .= $this->config_service->get_bool('news.sort.asc', $schema) ? 'asc' : 'desc';
 			$query .= ' nulls last';
 
 			$rs = $this->db->prepare($query);
 
 			if ($block_options['news'] == 'recent')
 			{
-				$rs->bindValue(1, $treshold_time);
+				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			}
 
 			$rs->execute();
@@ -278,10 +298,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where u.status = 1
 					and u.adate > ?');
 
-			$time = gmdate('Y-m-d H:i:s', time() - $this->config_service->get('newuserdays', $schema) * 86400);
-			$time = ($block_options['new_users'] === 'recent') ? $treshold_time: $time;
+			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 
-			$rs->bindValue(1, $time);
+			$rs->bindValue(1, $time, Types::DATETIME_IMMUTABLE);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -307,7 +326,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			if ($block_options['leaving_users'] === 'recent')
 			{
-				$rs->bindValue(1, $treshold_time);
+				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			}
 
 			$rs->execute();
@@ -326,7 +345,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.transactions t
 				where t.created_at > ?');
 
-			$rs->bindValue(1, $treshold_time);
+			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			$rs->execute();
 
 			while ($row = $rs->fetch())
@@ -355,7 +374,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$rows = $this->db->executeQuery('select *
 				from ' . $schema . '.forum_posts
 				where created_at > ?',
-				[$treshold_time]);
+				[$treshold_time], [Types::DATETIME_IMMUTABLE]);
 
 			foreach($rows as $row)
 			{
@@ -364,7 +383,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			foreach($all_visible_forum_topics as $forum_topic)
 			{
-				if ($forum_topic['created_at'] <= $treshold_time
+				$created_at = \DateTimeImmutable::createFromFormat('U', (string) strtotime($forum_topic['created_at'] . ' UTC'));
+
+				if ($created_at->getTimestamp() <= $treshold_time->getTimestamp()
 					&& !isset($new_replies[$forum_topic['id']]))
 				{
 					continue;
@@ -383,12 +404,12 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					filename, created_at
 				from ' . $schema . '.docs
 				where access in (\'user\', \'guest\')
-					and created_at > ?', [$treshold_time]);
+					and created_at > ?', [$treshold_time], [Types::DATETIME_IMMUTABLE]);
 
 			$docs = $stmt->fetchAll();
 		}
 
-	//
+		//
 
 		$vars = [
 			'new_users'				=> $new_users,
@@ -407,14 +428,40 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		$log_to = [];
 
-		foreach ($periodic_overview_ary as $id => $b)
+		foreach ($periodic_overview_ary as $user_id => $b)
 		{
-			$to = $this->mail_addr_user_service->get_active($id, $schema);
+			$vars['user_id'] = $user_id;
+
+			// messages_self
+
+			$vars['messages_self'] = [];
+
+			if (isset($block_options['messages_self']))
+			{
+				$rs = $this->db->prepare('select m.id,
+						m.subject, m.is_offer, m.is_want,
+						m.expires_at, m.created_at
+					from ' . $schema . '.messages m
+					where m.user_id = ?
+					order by m.created_at desc');
+
+				$rs->bindValue(1, $user_id);
+				$rs->execute();
+
+				while ($row = $rs->fetch())
+				{
+					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at'] < $treshold_time);
+					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
+					$vars['messages_self'][] = $row;
+				}
+			}
+
+			$to = $this->mail_addr_user_service->get_active($user_id, $schema);
 
 			if (!count($to))
 			{
 				$this->logger->info('No periodic mail queued for user ' .
-				$this->account_str_render->get_with_id($id, $schema) . ' because no email address.',
+				$this->account_str_render->get_with_id($user_id, $schema) . ' because no email address.',
 				['schema' => $schema]);
 
 				continue;
@@ -424,12 +471,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				'schema'			=> $schema,
 				'to'				=> $to,
 				'template'			=> 'periodic_overview/periodic_overview',
-				'vars'				=> array_merge($vars, [
-					'user_id'		=> $id,
-				]),
+				'vars'				=> $vars,
 			], random_int(0, 5000));
 
-			$log_str = $this->account_str_render->get_with_id($id, $schema);
+			$log_str = $this->account_str_render->get_with_id($user_id, $schema);
 			$log_str .= ' to: ' . json_encode($to) . ' )';
 			$log_to[] = $log_str;
 		}
@@ -450,19 +495,15 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get('saldofreqdays', $schema) ? true : false;
+		return $this->config_service->get_int('periodic_mail.days', $schema) > 0
+			&& $this->config_service->get_bool('periodic_mail.enabled', $schema);
 	}
 
 	public function get_interval(string $schema):int
 	{
-		if (isset($schema))
-		{
-			$days = $this->config_service->get('saldofreqdays', $schema);
-			$days = $days < 1 ? 7 : $days;
+		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+		$days = $days < 1 ? 7 : $days;
 
-			return 86400 * $days;
-		}
-
-		return 86400;
+		return 86400 * $days;
 	}
 }

@@ -65,6 +65,20 @@ datepicker:
     a: (wd)
     A: (weekdag)
 
+error_fileupload:
+  file_type: >-
+    Bestandstype niet toegelaten.
+  max_size: >-
+    Het bestand is te groot.
+  min_size: >-
+    Het bestand is te klein.
+  no_permission: >-
+    Je hebt onvoldoende rechten voor deze actie.
+  uploaded_bytes: >-
+    Het bestand is te groot.
+  general: >-
+    Fout bij het opladen van de afbeelding.
+
 help:
   email_tag: >-
     Deze prefix wordt tussen haken [tag] toegevoegd
@@ -79,7 +93,7 @@ help:
   captcha: >-
     Geef de code in die hieronder getoond wordt.
   images_upload: >-
-    Toegestane formaten: jpg/jpeg, png, gif.
+    Toegestane formaten: jpg/jpeg, png, gif en svg.
     Je kan ook afbeeldingen hierheen verslepen.
   only_in_admin_modus: >-
     Enkel in admin modus
@@ -150,10 +164,6 @@ label:
   modified: Aangepast
   mobile: GSM
   name: Naam
-  no_email_no_cc: >-
-    Een kopie van je bericht naar jezelf sturen
-    is niet mogelijk want er is geen E-mail
-    adres ingesteld voor je gebruikersaccount.
   not_defined: Niet bepaald
   new_password: Nieuw paswoord
   offer: Aanbod
@@ -167,19 +177,23 @@ label:
   per_unit: Per (uur, stuk...)
   period_days: Periode in Dagen
   periodic_mail: Periodieke Overzichts E-mail
+  permanent: Permanent
   phone: Telefoon
   postcode: Postcode
   prolong: Verlengen
   replies: Reacties
   role: Rol
   save_password: Bewaar Paswoord
+  search: Zoeken
   send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
-  search: Zoeken
+  services: Diensten
   split_by_char: Split door Teken
+  stuff: Spullen
   subject: Onderwerp
   suggested_price: Richtprijs
   system_name: Naam van het Systeem
+  temporal: Tijdelijk
   time: Tijdstip
   title: Titel
   to: Naar
@@ -197,6 +211,23 @@ label:
   your_account: Je Account
   your_email: Je E-Mail adres
   your_message: Je Bericht
+
+mail_form:
+  mail_disabled: >-
+    De E-mail functies zijn uitgeschakeld in dit Systeem.
+  master_not_allowed: >-
+    Het master account kan geen berichten versturen.
+  owner_not_allowed: >-
+    Je kan geen berichten naar jezelf versturen.
+  no_to_address: >-
+    Er is geen E-mail adres gekend van deze gebruiker.
+  no_from_address: >-
+    Er moet een E-mail adres voor je eigen gebruikersaccount
+    ingested zijn om berichten naar anderen te kunnen versturen.
+  no_from_address_cc: >-
+    Een kopie van je bericht naar jezelf sturen
+    is niet mogelijk want er is geen E-mail
+    adres ingesteld voor je gebruikersaccount.
 
 object_info:
   edit_count: >-
@@ -233,9 +264,27 @@ calendar_month:
 
 categories:
   title: Vraag en aanbod categorieën
+  explain:
+    drag: >-
+      Versleep categorieën om plaats en volgorde te veranderen..
+    store: >-
+      Wijzigingen worden enkel opgeslagen na het
+      klikken van de "Opslaan" knop onderaan.
+    sub_types: >-
+      Hoofdcategorieën (blauw) kunnen subcategorieën (wit)
+      bevatten ofwel vraag en aanbod berichten, niet beide.
+    allowed_in_sub: >-
+      Subcategoriën (wit) kunnen enkel vraag en aanbod
+      berichten bevatten, geen categorieën.
+    del: >-
+      Enkel lege categorieën (zonder subcategorieën of vraag en aanbod)
+      kunnen verwijderd worden.
 
 categories_add:
   title: Categorie toevoegen
+  explain: >-
+    De nieuwe categorie wordt aan het einde van de lijst
+    toegevoegd en kan nadien verplaatst worden.
 
 categories_edit:
   title: Categorie "%name%" aanpassen
@@ -256,7 +305,7 @@ config_logo:
     no_logo: >-
       Geen logo ingesteld.
     upload: >-
-      Toegestane formaten: jpg, png en gif. Je kan ook een
+      Toegestane formaten: jpg/jpeg, png, gif en svg. Je kan ook een
       afbeelding hierheen verslepen. Gebruik een doorzichtige
       achtergrond voor het beste resultaat.
 
@@ -265,9 +314,9 @@ config_logo_del:
 
 config_modules:
   title: Modules
-  forum_en: Forum
-  contact_form_en: contactformulier
-  register_en: Inschrijvingsformulier
+  forum_enabled: Forum
+  contact_form_enabled: Contactformulier
+  register_form_enabled: Inschrijvingsformulier
 
 config_name:
   title: Systeemsnaam
@@ -357,6 +406,31 @@ forum_topic:
   add_post: >-
     Reactie toevoegen
 
+git_rev:
+  abbrev: Rev
+  title: Actuele versie van de eLAND code
+
+image_upload:
+  error:
+    access_denied: >-
+      Toegang geweigerd om afbeelding op te laden.
+    fail: >-
+      Opladen afbeelding mislukt.
+    file_too_big: >-
+      Het afbeeldingsbestand is te groot.
+    process_fail: >-
+      Proces fout bij opladen van afbeelding.
+    token: >-
+      Fout afbeeldingstoken. Vernieuw pagina en probeer opnieuw.
+    missing: >-
+      Afbeeldingsbestand ontbreekt.
+    message_not_found: >-
+      Bericht niet gevonden voor opladen afbeeldingsbestand.
+    unvalid_file: >-
+      Ongeldig afbeeldingsbestand.
+    unvalid_file_type: >-
+      Ongeldig type bestand.
+
 index_contact_form:
   title: eLAND Contact
   email_explain: >-
@@ -390,6 +464,10 @@ index:
   the_contact_form: het contactformulier
   eland_link: >-
     %eland_link% web app voor gemeenschapsmunten
+  privacy: Privacy
+  privacy_cookies: >-
+    Deze site gebruikt enkel essentiële sessie cookies voor
+    de eigen werking en geen cookies van externe partijen.
 
 login:
   title: Login
@@ -404,15 +482,42 @@ logs:
 
 messages:
   title: Vraag en aanbod
+  without_category: zonder categorie
   image_files:
     help: >-
-      Toegestane formaten: jpg/jpeg, png, gif.
+      Toegestane formaten: jpg/jpeg, png, gif en svg.
       Je kan ook afbeeldingen hierheen verslepen.
       De volgorde kan veranderd worden door te verslepen.
 
 messages_add:
   title: >-
     Vraag of aanbod toevoegen
+
+messages_cleanup:
+  title: >-
+    Geldigheid en opruiming instellingen vraag en aanbod
+  help:
+    expires_at_days_default: >-
+      Bij aanmaak van nieuw vraag of aanbod wordt deze
+      waarde standaard ingevuld in het formulier.
+  expires_at_days_default: >-
+    Standaard geldigheidsduur
+  expires_at_required: >-
+    De geldigheidsduur moet verplicht ingevuld worden bij
+    vraag of aanbod M.a.w. aangemaakt vraag en aanbod vervalt
+    altijd en blijft niet permanent geldig.
+  expires_at_switch_enabled: >-
+    Gebruik een eenvoudige schakelaar permanent/tijdelijk
+    bij aanmaak vraag of aanbod. Hiertoe moet hierboven
+    een standaard geldigheidsduur ingevuld zijn en verplichte
+    geldigheidsduur afgevinkt.
+  cleanup_enabled: >-
+    Ruim vervallen vraag en aanbod op na een periode (zie hieronder)
+  cleanup_after_days: >-
+    Periode alvorens bercihten verwijderd worden.
+  expire_notify: >-
+    Zend een notificatie naar de eigenaar van een vraag of aanbod
+    bericht op het moment dat het vervalt.
 
 messages_del:
   title:
@@ -440,6 +545,16 @@ messages_edit:
       personal: >-
         Je vraag "%subject%" aanpassen
 
+messages_modules:
+  title: >-
+    Submodules en velden vraag en aanbod
+  explain: >-
+    Noot: Uitgeschakelde submodules blijven hun data behouden.
+  service_stuff_enabled: Diensten/spullen schakelaar
+  category_enabled: Categorieën
+  expires_at_enabled: Geldigheid en opruiming
+  units_enabled: Richtprijs
+
 messages_show:
   title:
     offer: >-
@@ -461,6 +576,9 @@ messages_show:
     1_month: 1 maand
     6_months: 6 maanden
     1_year: 1 jaar
+  mail_form:
+    title: >-
+      Stuur een reactie naar %to_user%.
 
 news:
   title: Nieuws

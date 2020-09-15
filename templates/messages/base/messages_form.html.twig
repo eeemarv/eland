@@ -17,9 +17,17 @@
                 </div>
             {%- endif -%}
 
-            {{- form_row(form.offer_want, {
-                'label': false
-            }) -}}
+            {%- if form.offer_want is defined -%}
+                {{- form_row(form.offer_want, {
+                    'label': false
+                }) -}}
+            {%- endif -%}
+
+            {%- if form.service_stuff is defined -%}
+                {{- form_row(form.service_stuff, {
+                    'label': false
+                }) -}}
+            {%- endif -%}
 
             {{- form_row(form.subject, {
                 'label': 'label.title'
@@ -40,13 +48,20 @@
         {%- endblock form_b -%}
 
         {%- block form_c -%}
-            {{- form_row(form.expires_at, {
-                'label': 'label.validity',
-                'addon_label': 'label.days',
-                'attr': {
-                    'min': '1'
-                }
-            }) -}}
+            {%- if form.expires_at is defined -%}
+                {{- form_row(form.expires_at, {
+                    'label': 'label.validity',
+                    'addon_label': 'label.days',
+                    'attr': {
+                        'min': '1'
+                    }
+                }) -}}
+            {%- endif -%}
+            {%- if form.expires_at_switch is defined -%}
+                {{- form_row(form.expires_at_switch, {
+                    'label': 'label.validity'
+                }) -}}
+            {%- endif -%}
         {%- endblock form_c -%}
 
         {%- block form_d -%}

@@ -48,17 +48,28 @@ class UsersMapController extends AbstractController
             $config_service, $pp
         );
 
-        $sql_bind = [];
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
 
-        if (isset($status_def_ary[$status]['sql_bind']))
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
-            $sql_bind[] = $status_def_ary[$status]['sql_bind'];
+            foreach ($def_sql_ary as $def_val)
+            {
+                $sql[$st_def_key][] = $def_val;
+            }
         }
+
+        $sql_where = ' and ' . implode(' and ', $sql['where']);
 
         $users = $db->fetchAll('select u.*
             from ' . $pp->schema() . '.users u
-            where ' . $status_def_ary[$status]['sql'] . '
-            order by u.code asc', $sql_bind);
+            where 1 = 1 ' . $sql_where . '
+            order by u.code asc',
+            $sql['params'],
+            $sql['types']);
 
         $adr_ary = [];
 

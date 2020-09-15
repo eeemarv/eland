@@ -40,9 +40,7 @@ class ConfigLogoDelController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $config_service->set('logo', $pp->schema(), '');
-            $config_service->set('logo_width', $pp->schema(), '0');
-
+            $config_service->set_str('system.logo', '', $pp->schema());
             $alert_service->success('config_logo_del.success');
             $link_render->redirect('config_logo', $pp->ary(), []);
         }
@@ -51,7 +49,7 @@ class ConfigLogoDelController extends AbstractController
 
         $out = '<div class="row">';
         $out .= '<div class="col-xs-6">';
-        $out .= '<div class="thumbnail">';
+        $out .= '<div class="thumbnail img-upload">';
         $out .= '<img src="';
         $out .= $env_s3_url . $logo;
         $out .= '" class="img-rounded">';

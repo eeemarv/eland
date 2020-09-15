@@ -1,0 +1,20 @@
+{% extends 'mail/base/base.twig' %}
+
+{% block subject_line -%}
+    {{- subject|raw -}}
+{%- endblock -%}
+
+{%- block bgcolor_system_name -%}3600cf{%- endblock -%}
+
+{%  block html_content -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': html|raw
+    } -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
+{%- endblock -%}
+
+{%- block text_content %}
+{{ text|raw }}
+{% endblock -%}

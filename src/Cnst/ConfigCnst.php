@@ -25,34 +25,35 @@ class ConfigCnst
     ];
 
     const BLOCK_ARY = [
-        'periodic_mail' => [
-            'messages'		=> [
-                'recent'	=> 'Recent vraag en aanbod',
-            ],
-            'interlets'		=> [
-                'recent'	=> 'Recent interSysteem vraag en aanbod',
-            ],
-            'forum'			=> [
-                'recent'	=> 'Recente forumberichten',
-            ],
-            'news'			=> [
-                'all'		=> 'Alle nieuwsberichten',
-                'recent'	=> 'Recente nieuwsberichten',
-            ],
-            'docs'			=> [
-                'recent'	=> 'Recente documenten',
-            ],
-            'new_users'		=> [
-                'all'		=> 'Alle nieuwe leden',
-                'recent'	=> 'Recente nieuwe leden',
-            ],
-            'leaving_users'	=> [
-                'all'		=> 'Alle uitstappende leden',
-                'recent'	=> 'Recent uitstappende leden',
-            ],
-            'transactions' => [
-                'recent'	=> 'Recente transacties',
-            ],
+        'messages'		=> [
+            'recent'	=> 'Recent vraag en aanbod',
+        ],
+        'intersystem'	=> [
+            'recent'	=> 'Recent interSysteem vraag en aanbod',
+        ],
+        'forum'			=> [
+            'recent'	=> 'Recente forumberichten',
+        ],
+        'news'			=> [
+            'all'		=> 'Alle nieuwsberichten',
+            'recent'	=> 'Recente nieuwsberichten',
+        ],
+        'docs'			=> [
+            'recent'	=> 'Recente documenten',
+        ],
+        'new_users'		=> [
+            'all'		=> 'Alle nieuwe leden',
+            'recent'	=> 'Recente nieuwe leden',
+        ],
+        'leaving_users'	=> [
+            'all'		=> 'Alle uitstappende leden',
+            'recent'	=> 'Recent uitstappende leden',
+        ],
+        'transactions' => [
+            'recent'	=> 'Recente transacties',
+        ],
+        'messages_self' => [
+            'all'       => 'Lijst eigen vraag en aanbod',
         ],
     ];
 
@@ -66,6 +67,7 @@ class ConfigCnst
                 behalve voor die Accounts waarbij een Minimum Account
                 Limiet ingesteld is. Kan leeg gelaten worden.',
             'default'	=> '',
+            'path'  => 'accounts.limits.global.min',
         ],
 
         'maxlimit'	=> [
@@ -76,6 +78,7 @@ class ConfigCnst
                 behalve voor die Accounts waarbij een Maximum Account
                 Limiet ingesteld is. Kan leeg gelaten worden.',
             'default'	=> '',
+            'path'  => 'accounts.limits.global.max',
         ],
 
         'balance_equilibrium'	=> [
@@ -86,32 +89,7 @@ class ConfigCnst
             'explain' 	=> 'Het saldo van leden met status uitstapper
                 kan enkel bewegen in de richting van deze instelling.',
             'default'	=> '0',
-        ],
-
-        'msgs_days_default'	=> [
-            'addon'	=> 'dagen',
-            'lbl'	=> 'Standaard geldigheidsduur',
-            'explain' => 'Bij aanmaak van nieuw vraag of aanbod wordt
-                deze waarde standaard ingevuld in het formulier.',
-            'type'	=> 'number',
-            'attr'	=> ['min' => '1', 'max' => '1460'],
-            'default'	=> '365',
-        ],
-
-        'msgcleanupenabled'	=> [
-            'type'	=> 'checkbox',
-            'default'	=> '0',
-        ],
-
-        'msgexpcleanupdays'	=> [
-            'type'	=> 'number',
-            'attr'	=> ['min' => '1', 'max' => '365'],
-            'default'	=> '30',
-        ],
-
-        'msgexpwarnenabled'	=> [
-            'type'	=> 'checkbox',
-            'default'	=> '1',
+            'path'      => 'accounts.equilibrium',
         ],
 
         'systemname' => [
@@ -119,6 +97,7 @@ class ConfigCnst
             'required'	=> true,
             'addon_fa'	=> 'share-alt',
             'default'	=> '',
+            'path'      => 'system.name',
         ],
 
         'systemtag' => [
@@ -129,10 +108,12 @@ class ConfigCnst
             'addon_fa'	=> 'tag',
             'attr'		=> ['maxlength' => '30'],
             'default'	=> '',
+            'path'      => 'mail.tag',
         ],
 
         'logo'  => [
             'default'   => '',
+            'path'      => 'system.logo',
         ],
 
         'currency'	=> [
@@ -140,6 +121,7 @@ class ConfigCnst
             'required'	=> true,
             'addon_fa'	=> 'money',
             'default'	=> '',
+            'path'      => 'transactions.currency.name',
         ],
 
         'currencyratio'	=> [
@@ -152,6 +134,7 @@ class ConfigCnst
                 Zij is vereist voor eLAND interSysteem-verbindingen zodat de Systemen
                 een gemeenschappelijke tijdbasis hebben.',
             'default'	=> '1',
+            'path'      => 'transactions.currency.per_hour_ratio',
         ],
 
         'admin'	=> [
@@ -164,21 +147,10 @@ class ConfigCnst
             'max_inputs'	=> 5,
             'add_btn_text' 	=> 'Extra E-mail Adres',
             'default'	=> '',
+            'path'      => 'mail.addresses.admin',
+            'is_ary'    => true,
         ],
-/*
-        'newsadmin'	=> [
-            'lbl'	=> 'Nieuws beheerder',
-            'explain_top'	=> 'Krjgt E-mail wanneer een nieuwsbericht,
-                gepost door een gewoon lid, goedgekeurd of
-                verwijderd dient te worden',
-            'attr'	=> ['minlength' => '7'],
-            'type'	=> 'email',
-            'addon_fa'		=> 'envelope-o',
-            'max_inputs'	=> 5,
-            'add_btn_text'	=> 'Extra E-mail Adres',
-            'default'	=> '',
-        ],
-*/
+
         'support'	=> [
             'lbl'	=> 'Support / Helpdesk',
             'explain_top'	=> 'Krjgt E-mail berichten
@@ -189,6 +161,8 @@ class ConfigCnst
             'max_inputs'	=> 5,
             'add_btn_text'	=> 'Extra E-mail Adres',
             'default'	=> '',
+            'path'      => 'mail.addresses.support',
+            'is_ary'    => true,
         ],
 
         'saldofreqdays'	=> [
@@ -196,6 +170,7 @@ class ConfigCnst
             'attr'		=> ['class' => 'sm-size', 'min' => '1', 'max' => '120'],
             'required'	=> true,
             'default'	=> '14',
+            'path'      => 'periodic_mail.days',
         ],
 
         'periodic_mail_block_ary' => [
@@ -209,11 +184,14 @@ class ConfigCnst
             'lbl_inactive'		=> 'Niet gebruikte blokken',
             'block_ary'			=> 'periodic_mail',
             'default'		    => '+messages.recent',
+            'path'              => 'periodic_mail.user.layout',
+            'is_ary'            => true,
         ],
 
         'contact_form_en' => [
             'type' => 'checkbox',
             'default'	=> '0',
+            'path'      => 'contact_form.enabled',
         ],
 
         'contact_form_top_text' => [
@@ -221,6 +199,10 @@ class ConfigCnst
             'type'	=> 'textarea',
             'summernote'	=> true,
             'default'	=> '',
+            'static_content'    => [
+                'id'    => 'contact_form',
+                'block' => 'top',
+            ],
         ],
 
         'contact_form_bottom_text' => [
@@ -228,11 +210,16 @@ class ConfigCnst
             'type'		=> 'textarea',
             'summernote'	=> true,
             'default'	=> '',
+            'static_content'    => [
+                'id'    => 'contact_form',
+                'block' => 'bottom',
+            ],
         ],
 
         'registration_en' => [
             'type' => 'checkbox',
             'default'	=> '0',
+            'path'      => 'register_form.enabled',
         ],
 
         'registration_top_text' => [
@@ -242,6 +229,10 @@ class ConfigCnst
             'explain' => 'Geschikt bijvoorbeeld om nadere uitleg
                 bij de inschrijving te geven.',
             'default'	=> '',
+            'static_content'    => [
+                'id'    => 'register_form',
+                'block' => 'top',
+            ],
         ],
 
         'registration_bottom_text' => [
@@ -250,6 +241,10 @@ class ConfigCnst
             'summernote'	=> true,
             'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
             'default'	=> '',
+            'static_content'    => [
+                'id'    => 'register_form',
+                'block' => 'bottom',
+            ],
         ],
 
         'registration_success_text'	=> [
@@ -261,6 +256,10 @@ class ConfigCnst
                 website heeft, is het nuttig om een link op te nemen
                 om de gebruiker terug te voeren.',
             'default'	=> '',
+            'static_content'    => [
+                'id'    => 'register_form_confirm',
+                'block' => 'success',
+            ],
         ],
 
         'registration_success_mail'	=> [
@@ -271,16 +270,22 @@ class ConfigCnst
                 'data-template-vars' => '%map_template_vars%',
             ],
             'default'	=> '0',
+            'static_content'    => [
+                'id'    => 'register_form_confirm',
+                'block' => 'success_mail',
+            ],
         ],
 
         'news_order_asc'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
+            'path'      => 'news.sort.asc',
         ],
 
         'forum_en'	=> [
             'type'	=> 'checkbox',
             'default'	=> '0',
+            'path'      => 'forum.enabled',
         ],
 
         'newuserdays' => [
@@ -290,38 +295,45 @@ class ConfigCnst
             'attr'		=> ['min' => '0', 'max' => '365'],
             'required'	=> true,
             'default'	=> '7',
+            'path'      => 'users.new.days',
         ],
 
         'users_can_edit_username' => [
             'type'	=> 'checkbox',
             'default'	=> '0',
+            'path'      => 'users.fields.username.self_edit',
         ],
 
         'users_can_edit_fullname' => [
             'type'	=> 'checkbox',
             'default'	=> '0',
+            'path'      => 'users.fields.full_name.self_edit',
         ],
 
         'mailenabled'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
+            'path'      => 'mail.enabled',
         ],
 
         'maintenance'	=> [
             'type'	=> 'checkbox',
             'default'	=> '0',
+            'path'      => 'system.maintenance_en'
         ],
 
         'template_lets'	=> [
             'type'	=> 'checkbox',
             'post_actions'	=> ['clear_eland_intersystem_cache'],
             'default'	=> '1',
+            'path'      => 'transactions.currency.timebased_en',
         ],
 
         'interlets_en'	=> [
             'type'	=> 'checkbox',
             'post_actions'	=> ['clear_eland_intersystem_cache'],
             'default'	=> '0',
+            'path'      => 'intersystem.enabled',
         ],
 
         'default_landing_page'	=> [
@@ -331,6 +343,7 @@ class ConfigCnst
             'required'	=> true,
             'addon_fa'	=> 'plane',
             'default'	=> 'messages',
+            'path'      => 'system.default_landing_page',
         ],
 
         'homepage_url'	=> [
@@ -339,6 +352,7 @@ class ConfigCnst
             'addon_fa'	=> 'link',
             'explain'	=> 'Titel en logo in de navigatiebalk linken naar deze url.',
             'default'	=> '',
+            'path'      => 'system.website_url',
         ],
 
         'date_format'	=> [
@@ -347,6 +361,7 @@ class ConfigCnst
             'options'	=> 'date_format',
             'addon_fa'	=> 'calendar',
             'default'	=> '%e %b %Y, %H:%M:%S',
+            'path'      => 'system.date_format',
         ],
     ];
 
@@ -387,8 +402,7 @@ class ConfigCnst
                 Maak het vakje leeg om een E-mail
                 adres te verwijderen.',
             'inputs'	=> [
-                'admin'	=> true,
-                'newsadmin'	=> true,
+                'admin'	    => true,
                 'support'	=> true,
             ]
         ],
@@ -464,25 +478,6 @@ class ConfigCnst
                 'registration_bottom_text' => true,
                 'registration_success_text'	=> true,
                 'registration_success_mail'	=> true,
-            ],
-        ],
-
-        'messages'		=> [
-            'lbl'		=> 'Vraag en aanbod',
-            'inputs'	=> [
-
-                'msgs_days_default'	=> true,
-
-                'li_1'	=> [
-                    'inline' => '%input(msgcleanupenabled)% Ruim vervallen
-                        vraag en aanbod op na %input(msgexpcleanupdays)% dagen.',
-                ],
-
-                'li_2'	=> [
-                    'inline' => '%input(msgexpwarnenabled)% Mail een notificatie
-                        naar de eigenaar van een vraag of aanbod bericht op
-                        het moment dat het vervalt.',
-                ],
             ],
         ],
 

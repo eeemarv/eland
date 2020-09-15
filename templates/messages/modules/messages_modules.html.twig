@@ -1,0 +1,57 @@
+{%- extends 'messages/base/messages_base.html.twig' -%}
+
+{%- set active_admin_menu = 'messages_modules' -%}
+
+{%- block heading_title -%}
+    {{ 'messages_modules.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+
+    {%- embed 'form/form_embed.html.twig' -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- block form_a -%}
+            {{- form_row(form.service_stuff_enabled, {
+                'label': 'messages_modules.service_stuff_enabled',
+                'label_attr': {'class': 'checkbox-custom'}
+            }) -}}
+            {{- form_row(form.category_enabled, {
+                'label': 'messages_modules.category_enabled',
+                'label_attr': {'class': 'checkbox-custom'}
+            }) -}}
+            {{- form_row(form.expires_at_enabled, {
+                'label': 'messages_modules.expires_at_enabled',
+                'label_attr': {'class': 'checkbox-custom'}
+            }) -}}
+            {{- form_row(form.units_enabled, {
+                'label': 'messages_modules.units_enabled',
+                'label_attr': {'class': 'checkbox-custom'}
+            }) -}}
+
+        {%- endblock form_a -%}
+
+        {%- block form_cancel_btn -%}
+            {{- bl.cancel('messages'|var_route) -}}
+        {%- endblock form_cancel_btn -%}
+
+        {%- block form_submit_btn -%}
+            {{- form_widget(form.submit,{
+                'label': 'btn.edit',
+                'attr': {'class': 'btn-primary'}
+            }) -}}
+        {%- endblock form_submit_btn -%}
+    {%- endembed -%}
+
+    <ul><li>
+        {{- 'messages_modules.explain'|trans -}}
+    </li></ul>
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

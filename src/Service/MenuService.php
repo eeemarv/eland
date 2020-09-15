@@ -49,11 +49,7 @@ class MenuService
 				$disabled_items['intersystems'] = true;
 			}
 
-			$this->btn_nav_render->local_admin(
-				$active_menu,
-				$this->pp->ary(),
-				$disabled_items
-			);
+			$this->btn_nav_render->local_admin($active_menu, $this->pp);
 
 			if (isset(MenuCnst::LOCAL_ADMIN_MAIN[$active_menu]))
 			{

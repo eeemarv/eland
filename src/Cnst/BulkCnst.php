@@ -19,7 +19,6 @@ class BulkCnst
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
         'volledige_naam'		=> 'fullname',
-        'saldo'					=> 'balance',
         'account_code'			=> 'code',
     ];
 
@@ -72,14 +71,14 @@ class BulkCnst
             'string'	=> true,
             'fa'		=> 'comment-o',
         ],
-        'minlimit'			=> [
+        'min_limit'			=> [
             'lbl'		=> 'Minimum Account Limiet',
             'explain'   => 'Tip: laat het veld leeg om de minimum limiet te wissen.
                 Bij accounts zonder individuele minimum limiet is de minimum systeemslimiet van toepassing (wanneer ingesteld).',
             'type'		=> 'number',
             'fa'		=> 'arrow-down',
         ],
-        'maxlimit'			=> [
+        'max_limit'			=> [
             'lbl'		=> 'Maximum Account Limiet',
             'explain'   => 'Tip: laat het veld leeg om de maximum limiet te wissen.
                 Bij accounts zonder individuele maximum limiet is de maximum systeems limiet van toepassing (wanneer ingesteld).',
@@ -108,7 +107,13 @@ class BulkCnst
     </div>
     TPL;
 
-    const TPL_INPUT =  <<<'TPL'
+    const TPL_INLINE_NUMBER_INPUT = <<<'TPL'
+    <input type="number" name="%name%"
+    id="%name%" class="sm-size"
+    value="%value%"%attr%>
+    TPL;
+
+    const TPL_INPUT_FA =  <<<'TPL'
     <div class="form-group">
     <label for="%name%" class="control-label">%label%</label>
     <div class="input-group">
@@ -118,6 +123,18 @@ class BulkCnst
     </span>
     </span>
     <input type="%type%" id="%name%" name="%name%" class="form-control"%attr%>
+    </div>
+    %explain%
+    </div>
+    TPL;
+
+    const TPL_INPUT_ADDON =  <<<'TPL'
+    <div class="form-group">
+    <label for="%name%" class="control-label">%label%</label>
+    <div class="input-group">
+    <span class="input-group-addon">
+    %addon%</span>
+    <input type="%type%" id="%name%" name="%name%" class="form-control" value="%value%"%attr%>
     </div>
     %explain%
     </div>
@@ -166,5 +183,19 @@ class BulkCnst
     value="De-selecteer alle">
     </div>
     </div>
+    TPL;
+
+    const TPL_RADIO_INLINE = <<<'TPL'
+    <label class="radio-inline">
+    <input type="radio" name="%name%"
+    value="%value%"%attr%>
+    <span class="label-text"></span>&nbsp;%label%</label>
+    TPL;
+
+    const TPL_CHECKBOX_BTN_INLINE = <<<'TPL'
+    <label class="checkbox-inline" for="%name%">
+    <input type="checkbox" name="%name%" id="%name%"%attr%>
+    <span class="label-text"></span>&nbsp;
+    <span class="btn btn-default">%label%</span></label>
     TPL;
 }
