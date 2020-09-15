@@ -4,7 +4,7 @@ framework:
     http_method_override: true
 
     session:
-        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
+        handler_id: snc_redis.session.handler
         cookie_secure: auto
         cookie_samesite: strict
         name: eland

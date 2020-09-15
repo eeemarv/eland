@@ -3,4 +3,10 @@ snc_redis:
         default:
             type: phpredis
             alias: default
-            dsn: "%env(REDIS_URL)%"
+            dsn: '%env(REDIS_URL)%'
+            logging: '%kernel.debug%'
+            options:
+                prefix: eland_
+    session:
+        client: default
+        prefix: session_

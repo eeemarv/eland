@@ -78,11 +78,6 @@ services:
             - '%env(REDIS_URL)%'
             - {prefix: eland_}
 
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
-        arguments:
-            - '@Predis\Client'
-            - {prefix: session_, ttl: 864000}
-
     Bramus\Monolog\Formatter\ColoredLineFormatter: ~
 
     App\Monolog\ElandProcessor:
