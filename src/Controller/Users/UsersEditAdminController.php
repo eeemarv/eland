@@ -667,7 +667,7 @@ class UsersEditAdminController extends AbstractController
                 $typeahead_service->clear(TypeaheadService::GROUP_ACCOUNTS);
                 $typeahead_service->clear(TypeaheadService::GROUP_USERS);
 
-                $intersystems_service->clear_cache($su->schema());
+                $intersystems_service->clear_cache();
 
                 $link_render->redirect('users_show',
                     $pp->ary(), ['id' => $id]);

@@ -51,7 +51,7 @@ class IntersystemsDelController extends AbstractController
             {
                 $alert_service->success('InterSysteem verwijderd.');
 
-                $intersystems_service->clear_cache($pp->schema());
+                $intersystems_service->clear_cache();
 
                 $link_render->redirect('intersystems', $pp->ary(), []);
             }

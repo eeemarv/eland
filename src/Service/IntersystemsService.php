@@ -36,7 +36,7 @@ class IntersystemsService
 		$this->config_service = $config_service;
 	}
 
-	public function clear_cache(string $s_schema):void
+	public function clear_cache():void
 	{
 		$this->clear_eland_cache();
 	}

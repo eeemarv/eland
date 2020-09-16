@@ -74,7 +74,7 @@ class UsersDelAdminController extends AbstractController
 
                 $typeahead_service->clear(TypeaheadService::GROUP_ACCOUNTS);
                 $typeahead_service->clear(TypeaheadService::GROUP_USERS);
-                $intersystems_service->clear_cache($pp->schema());
+                $intersystems_service->clear_cache();
 
                 $status = StatusCnst::THUMBPRINT_ARY[$user['status']];
 
