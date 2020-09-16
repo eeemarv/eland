@@ -47,7 +47,12 @@ class LogoutController extends AbstractController
 
         $alert_service->success('Je bent uitgelogd');
 
-        $link_render->redirect('login', ['system' => $pp->system()], []);
+        if ($pp->org_system() === '')
+        {
+            $link_render->redirect('login', ['system' => $pp->system()], []);
+        }
+
+        $link_render->redirect('login', ['system' => $pp->org_system()], []);
 
         return new Response('');
     }
