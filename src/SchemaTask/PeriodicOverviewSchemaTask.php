@@ -55,8 +55,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
+		$now_unix = time();
 		$days = $this->config_service->get_int('periodic_mail.days', $schema);
-		$treshold_time_unix = time() - ($days * 86400);
+		$treshold_time_unix = $now_unix - ($days * 86400);
 		$treshold_time =\DateTimeImmutable::createFromFormat('U', (string) $treshold_time_unix);
 		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
 		$expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema);
@@ -442,6 +443,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			{
 				$rs = $this->db->prepare('select m.id,
 						m.subject, m.is_offer, m.is_want,
+						extract(epoch from coalesce(m.expires_at, now())) as expires_at_unix,
 						m.expires_at, m.created_at
 					from ' . $schema . '.messages m
 					where m.user_id = ?
@@ -452,7 +454,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				while ($row = $rs->fetch())
 				{
-					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at'] < $treshold_time);
+					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at_unix'] < $now_unix);
 					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
 					$vars['messages_self'][] = $row;
 				}
