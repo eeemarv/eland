@@ -429,19 +429,20 @@ periodic_overview:
     title: >-
       Recent InterSysteem Vraag en Aanbod
     explain: >-
-      %link_open%Log in%link_close% en ga via
-      het menu "Systeem" in de navigatiebalk
-      naar het betreffende InterSysteem.
-    none: >-
-      Er is geen recent interSysteem vraag en aanbod.
-      Om vraag en aanbod in andere systemen te
-      bekijken, %link_open%log in%link_close% en ga
-      via het menu "Systeem" in de navigatiebalk naar
-      andere systemen.
+      Gepost in verbonden InterSystemen.
     system_name: >-
       Systeem: %name%
+    system_messages_explain: >-
+      %link_open%Klik hier%link_close% om alles
+      in %system_name% te bekijken.
+    system_messages_none_explain: >-
+      Er werd recent niets gepost in %system_name%.
+      %link_open%Klik hier%link_close% om alles
+      te bekijken.
+    system_messages_none_explain_text:
+      Er werd recent niets gepost in %system_name%.
     account: >-
-      Ingegeven door: %account% [%system_name%]
+      Ingegeven door: %account_link_open%%account%%account_link_close% [%system_link_open%%system_name%%system_link_close%]
     offer: >-
       Aanbod: %msg%
     want: >-

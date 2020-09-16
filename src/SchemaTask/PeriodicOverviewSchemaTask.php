@@ -247,15 +247,17 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					$intersystem_msgs[] = $row;
 				}
 
-				if (count($intersystem_msgs))
-				{
-					$intersystem[] = [
-						'eland_server'	=> true,
-						'elas'			=> false,
-						'schema'		=> $sch,
-						'messages'		=> $intersystem_msgs,
-					];
-				}
+				$intersystem[] = [
+					'eland_server'	=> true,
+					'elas'			=> false,
+					'schema'		=> $sch,
+					'messages'		=> $intersystem_msgs,
+				];
+			}
+
+			if (!count($eland_ary))
+			{
+				unset($block_options['intersystem']);
 			}
 		}
 
