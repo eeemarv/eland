@@ -2,20 +2,17 @@
 
 {%- macro html(c) -%}
 	{%- set et = c.et -%}
+	{%- set org_system = mpp_guest_ary(c.schema).system -%}
+
 	{%- include 'mail/include/p_header.html.twig' with {
 		'p_header': 'periodic_overview.intersystem.title',
 		'p_bgcolor': 'aa3300'
 	} -%}
 
-	{%- if c.intersystem -%}
-		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
-			'info': 'periodic_overview.intersystem.explain'|trans({
-				'%link_open%': context_url_open('login', mpp_anon_ary(c.schema), {}),
-				'%link_close%': '</a>'
-			})|raw,
-			'bgcolor': 'fff3a2'
-		} -%}
-	{%- endif -%}
+	{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+		'info': 'periodic_overview.intersystem.explain'|trans,
+		'bgcolor': 'fff3a2'
+	} -%}
 
 {%- for i in c.intersystem -%}
 	{%- embed 'mail/embed/table600.html.twig' -%}
@@ -25,11 +22,29 @@
 		{%- block td_bottom -%}10px{%- endblock -%}
 		{%- block td_style -%}font-size: 16px;color: #ffffff;{%- endblock -%}
 		{%- block td_content -%}
-			{{- 'periodic_overview.intersystem.system_name'|trans({
-				'%name%': config_str('system.name', i.schema),
-			}) -}}
+			{{- config_str('system.name', i.schema) -}}&nbsp;({{- i.messages|length -}})
 		{%- endblock td_content -%}
 	{%- endembed -%}
+
+	{%- if i.messages -%}
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+			'info': 'periodic_overview.intersystem.system_messages_explain'|trans({
+				'%system_name%': config_str('system.name', i.schema),
+				'%link_open%': context_url_open('messages_extended', mpp_guest_ary(i.schema), {'os': org_system}),
+				'%link_close%': '</a>'
+			})|raw,
+			'bgcolor': 'fee898'
+		} -%}
+	{%- else -%}
+		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+			'info': 'periodic_overview.intersystem.system_messages_none_explain'|trans({
+				'%system_name%': config_str('system.name', i.schema),
+				'%link_open%': context_url_open('messages_extended', mpp_guest_ary(i.schema), {'os': org_system}),
+				'%link_close%': '</a>'
+			})|raw,
+			'bgcolor': 'fee898'
+		} -%}
+	{%- endif -%}
 
 	{%- for msg in i.messages -%}
 	{%- embed 'mail/embed/table600.html.twig' -%}
@@ -47,17 +62,23 @@
 		{%- block td_content -%}
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
-				<td width="100" align="left" valign="top">
+				<td width="150" align="left" valign="top">
 					{%- if msg.is_offer -%}
-						{%- include 'mail/include/lbl_offer.html.twig' -%}
+						{%- include 'mail/include/btn_offer.html.twig' with {
+							'href': context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})
+						} -%}
 					{%- else -%}
-						{%- include 'mail/include/lbl_want.html.twig' -%}
+						{%- include 'mail/include/btn_want.html.twig' with {
+							'href': context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})
+						} -%}
 					{%- endif -%}
 				</td>
 				<td width="30">
 				</td>
 				<td align="left" valign="top">
+					{{- context_url_open('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})|raw -}}
 					{{ msg.subject -}}
+					</a>
 				</td>
 			</tr>
 			<tr>
@@ -81,8 +102,14 @@
 				<td>
 					{{- 'periodic_overview.intersystem.account'|trans({
 						'%account%': account(msg.user_id, i.schema),
-						'%system_name%': config_str('system.name', i.schema)
-					}) -}}
+						'%account_link_open%': context_url_open('users_show', mpp_guest_ary(i.schema),
+								{'id': msg.user_id, 'os': org_system}),
+						'%account_link_close%': '</a>',
+						'%system_name%': config_str('system.name', i.schema),
+						'%system_link_open%': context_url_open('messages_extended', mpp_guest_ary(i.schema),
+							{'os': org_system}),
+						'%system_link_close%': '</a>'
+					})|raw -}}
 				</td>
 			</tr>
 		</table>
@@ -94,6 +121,7 @@
 
 {% macro text(c) %}
 {%- set et = c.et -%}
+{%- set org_system = mpp_guest_ary(c.schema).system -%}
 {% autoescape false %}
 
 {% if c.intersystem %}
@@ -103,26 +131,28 @@
 {% for i in c.intersystem %}
 
 ** {{ 'periodic_overview.intersystem.system_name'|trans({
-			'%name%': i.system_name ?? config_str('system.name', i.schema),
+		'%name%': i.system_name ?? config_str('system.name', i.schema),
 }) }}
 
+{%  if not i.messages %}
+{{ 'periodic_overview.intersystem.system_messages_none_explain_text'|trans({
+	'%system_name%': config_str('system.name', i.schema)
+}) }}
+{% endif %}
 {% for msg in i.messages %}
 
 {{ ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
 	'%msg%': msg.subject
 }) }}
-
-{% if i.eland_server %}
-	{{ 'periodic_overview.intersystem.account'|trans({
+{{ context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system}) }}
+{{ 'periodic_overview.intersystem.account'|trans({
 	'%account%': account(msg.user_id, i.schema),
-	'%system_name%': config_str('system.name', i.schema)
+	'%account_link_open%' : '',
+	'%account_link_close%' : '',
+	'%system_name%': config_str('system.name', i.schema),
+	'%system_link_open%': '',
+	'%system_link_close%': '',
 }) }}
-{% else %}
-	{{ 'periodic_overview.intersystem.account'|trans({
-	'%account%': msg.account,
-	'%system_name%': i.system_name
-}) }}
-{% endif %}
 
 {% endfor %}
 

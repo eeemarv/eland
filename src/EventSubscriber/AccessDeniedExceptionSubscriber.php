@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Render\LinkRender;
+use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -10,15 +11,18 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
 {
+    protected PageParamsService $pp;
     protected LinkRender $link_render;
     protected RequestStack $request_stack;
 
     public function __construct(
         RequestStack $request_stack,
+        PageParamsService $pp,
         LinkRender $link_render
     )
     {
         $this->request_stack = $request_stack;
+        $this->pp = $pp;
         $this->link_render = $link_render;
     }
 
@@ -28,14 +32,21 @@ class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
 
         if ($exception instanceof AccessDeniedException)
         {
-            $request = $this->request_stack->getCurrentRequest();
-
-            $system = $request->attributes->get('system', '');
-
-            if ($system)
+            if ($this->pp->schema() !== '')
             {
+                $request = $this->request_stack->getCurrentRequest();
+
+                if ($this->pp->org_schema() === '')
+                {
+                    $this->link_render->redirect('login', [
+                        'system' => $this->pp->system(),
+                    ], [
+                        'location'  => $request->getRequestUri(),
+                    ]);
+                }
+
                 $this->link_render->redirect('login', [
-                    'system' => $system,
+                    'system' => $this->pp->org_system(),
                 ], [
                     'location'  => $request->getRequestUri(),
                 ]);
