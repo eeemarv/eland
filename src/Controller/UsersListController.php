@@ -259,7 +259,7 @@ class UsersListController extends AbstractController
                     $users_log,
                     ['schema' => $pp->schema()]);
 
-                $intersystems_service->clear_cache($su->schema());
+                $intersystems_service->clear_cache();
 
                 $alert_service->success('Het veld werd aangepast.');
 
@@ -326,7 +326,7 @@ class UsersListController extends AbstractController
                     ' for users ' . $users_log,
                     ['schema' => $pp->schema()]);
 
-                $intersystems_service->clear_cache($pp->schema());
+                $intersystems_service->clear_cache();
 
                 $alert_service->success('Het veld werd aangepast.');
 

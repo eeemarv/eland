@@ -5,6 +5,7 @@ namespace App\Security\Voter;
 use App\Cnst\AccessCnst;
 use App\Cnst\RoleCnst;
 use App\Service\ConfigService;
+use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -14,35 +15,29 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class ElandRoleVoter extends Voter
 {
     protected SessionUserService $su;
+    protected PageParamsService $pp;
     protected RequestStack $request_stack;
     protected string $system;
+    protected string $org_system;
     protected ConfigService $config_service;
     protected SystemsService $systems_service;
 
     public function __construct(
         SessionUserService $su,
-        RequestStack $request_stack,
+        PageParamsService $pp,
         ConfigService $config_service,
         SystemsService $systems_service
     )
     {
         $this->su = $su;
-        $this->request_stack = $request_stack;
+        $this->pp = $pp;
         $this->config_service = $config_service;
         $this->systems_service = $systems_service;
-
-        $this->init();
-    }
-
-    protected function init():void
-    {
-        $request = $this->request_stack->getCurrentRequest();
-        $this->system = $request->attributes->get('system', '');
     }
 
     protected function supports($attribute, $subject):bool
     {
-        if ($this->system === '')
+        if ($this->pp->schema() === '')
         {
             return false;
         }
@@ -54,7 +49,7 @@ class ElandRoleVoter extends Voter
     {
         if ($attribute === 'guest' || $attribute === 'user')
         {
-            $schema = $this->systems_service->get_schema($this->system);
+            $schema = $this->pp->schema();
 
             if ($schema === '')
             {

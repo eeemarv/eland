@@ -68,7 +68,7 @@ class IntersystemsAddController extends AbstractController
 
                     $id = $db->lastInsertId($pp->schema() . '.letsgroups_id_seq');
 
-                    $intersystems_service->clear_cache($pp->schema());
+                    $intersystems_service->clear_cache();
 
                     $link_render->redirect('intersystems_show', $pp->ary(),
                         ['id' => $id]);

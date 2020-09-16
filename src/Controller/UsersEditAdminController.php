@@ -678,7 +678,7 @@ class UsersEditAdminController extends AbstractController
                 $typeahead_service->delete_thumbprint('usernames', $pp->ary(), []);
                 $typeahead_service->delete_thumbprint('postcodes', $pp->ary(), []);
 
-                $intersystems_service->clear_cache($su->schema());
+                $intersystems_service->clear_cache();
 
                 $link_render->redirect($vr->get('users_show'),
                     $pp->ary(), ['id' => $id]);

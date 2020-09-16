@@ -218,6 +218,6 @@ class UsersDelAdminController extends AbstractController
         $thumbprint_status = StatusCnst::THUMBPINT_ARY[$user['status']];
         $thumbprint_accounts_service->delete($thumbprint_status, $pp->ary(), $pp->schema());
 
-        $intersystems_service->clear_cache($pp->schema());
+        $intersystems_service->clear_cache();
     }
 }
