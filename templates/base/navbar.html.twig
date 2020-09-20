@@ -10,8 +10,8 @@
 	<ul class="nav navbar-nav navbar-right">
 
 	{%- block navbar_menu -%}
-		{%- if not pp_role('anonymous') and has_menu_nav_system() -%}
-			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', menu_nav_system()) -}}
+		{%- if has_menu_nav_system() -%}
+			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', menu_nav_system(), false, {}) -}}
 		{%- endif -%}
 
 		{%- if is_s_master() -%}
@@ -20,15 +20,19 @@
 			{%- set account_name =  account(get_s_id(), get_s_schema()) -%}
 		{%- endif -%}
 
-		{%- if pp_role('guest') or is_s_master() -%}
-			{%- if not is_s_system_self() -%}
-				{%- set account_name = account_name ~ ' [' ~ config_str('system.name', get_s_schema()) ~ ']' -%}
-			{%- endif -%}
+		{%- if not is_s_system_self() -%}
+			{%- set account_name = account_name ~ ' [' ~ config_str('system.name', get_s_schema()) ~ ']' -%}
+		{%- endif -%}
 
-			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_logout()) -}}
+		{%- if pp_role('guest') or is_s_master() -%}
+
+			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_logout(), false, {}) -}}
 
 		{%- elseif pp_role('user') or pp_role('admin') -%}
 			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_user()) -}}
+		{%- elseif s_role('user') or s_role('admin') -%}
+			{%- set s_role_short = s_role('user') ? 'u' : 'a' -%}
+			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_user(), false, {'role_short': s_role_short}) -}}
 		{%- endif -%}
 
 		{%- if s_role('admin') and is_s_system_self() -%}
@@ -40,11 +44,3 @@
 	</ul>
 	</div>
 {%- endblock navbar_collapse -%}
-
-{%- block sidebar_menu_append -%}
-{#
-	{%- if pp_role('admin') -%}
-		{{- m.menu_admin_anon(menu_admin_anon('admin_anon')) -}}
-	{%- endif -%}
-#}
-{%- endblock sidebar_menu_append -%}

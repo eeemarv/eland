@@ -20,9 +20,9 @@
 	</button>
 {%- endmacro navbar_toggle_button -%}
 
-{%- macro navbar_menu_dropdown_button(label, fa, menu_items, is_admin) -%}
+{%- macro navbar_menu_dropdown_button(label, fa, menu_items, is_admin_menu, merge_params) -%}
 	<li class="dropdown">
-	<a href="#" class="dropdown-toggle{%- if is_admin|default(false) %} bg-info{%- endif -%}" data-toggle="dropdown" role="button" aria-expanded="false">
+	<a href="#" class="dropdown-toggle{%- if is_admin_menu|default(false) %} bg-info{%- endif -%}" data-toggle="dropdown" role="button" aria-expanded="false">
 		<span class="fa fa-{{- fa -}}"></span>&nbsp;{{- label -}}&nbsp;<span class="caret"></span>
 	</a>
 	<ul class="dropdown-menu" role="menu">
@@ -36,7 +36,7 @@
 					{%- if m.same_route is defined -%}
 						<a href="{{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge(m.params)) -}}">
 					{%- else -%}
-						<a href="{{- path(m.route, pp_ary()|merge(m.params)) -}}">
+						<a href="{{- path(m.route, pp_ary()|merge(m.params))|merge(merge_params|default({})) -}}">
 					{%- endif -%}
 						{%- if m.fa is defined -%}
 							<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
@@ -46,19 +46,12 @@
 				</li>
 			{%- elseif m.route is defined -%}
 				<li{%- if m.active is defined %} class="active"{%- endif -%}>
-					<a href="{{- path(m.route, pp_ary()) -}}">
+					<a href="{{- path(m.route, pp_ary()|merge(merge_params|default({}))) -}}">
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
 						{{- m.label -}}
 					</a>
 				</li>
 			{%- endif -%}
-			{#
-			{%- else -%}
-				<li{%- for k, v in m.attr %} {{ k -}}="{{- v -}}"{%- endfor -%}>
-					<a href="{{- m.link -}}">{{- m.label -}}</a>
-				</li>
-			{%- endif -%}
-			#}
 		{%- endfor -%}
 	</ul>
 	</li>
