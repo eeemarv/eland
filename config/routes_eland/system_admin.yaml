@@ -288,31 +288,6 @@ static_content:
   path: /static-content
   methods: POST
 
-login_admin:
-  path: /login
-  controller: App\Controller\LoginAdminController
-  methods: GET
-
-contact_admin:
-  path: /contact
-  controller: App\Controller\ContactFormAdminController
-  methods: GET
-
-register_admin:
-  path: /register
-  controller: App\Controller\RegisterAdminController
-  methods: GET
-
-password_reset_admin:
-  path: /password-reset
-  controller: App\Controller\PasswordResetAdminController
-  methods: GET
-
-home_admin:
-  path: /
-  controller: App\Controller\HomeAdminController
-  methods: GET
-
 mollie_config:
   path: /mollie/config
   controller: App\Controller\MollieConfigController
