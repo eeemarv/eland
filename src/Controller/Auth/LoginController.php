@@ -137,6 +137,23 @@ class LoginController extends AbstractController
             $alert_service->warning('login.warning.maintenance');
         }
 
+        if ($request->isMethod('GET'))
+        {
+            if ($su->is_user())
+            {
+                if ($location)
+                {
+                    if (stripos($location, $pp->system() . '/a/') === false)
+                    {
+                        header('Location: ' . $location);
+                        exit;
+                    }
+                }
+
+                $link_render->redirect($vr->get('default'), $su->ary(), []);
+            }
+        }
+
         $menu_service->set('login');
 
         return $this->render('auth/login.html.twig', [

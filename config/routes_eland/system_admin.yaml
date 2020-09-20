@@ -402,41 +402,6 @@ static_content:
   defaults:
     module: static_content
 
-login_admin:
-  path: /login
-  controller: App\Controller\Auth\LoginAdminController
-  methods: GET
-  defaults:
-    module: login
-
-contact_form_admin:
-  path: /contact
-  controller: App\Controller\ContactForm\ContactFormAdminController
-  methods: GET
-  defaults:
-    module: contact_form
-
-register_admin:
-  path: /register
-  controller: App\Controller\Register\RegisterAdminController
-  methods: GET
-  defaults:
-    module: register
-
-password_reset_admin:
-  path: /password-reset
-  controller: App\Controller\PasswordReset\PasswordResetAdminController
-  methods: GET
-  defaults:
-    module: password_reset
-
-home_admin:
-  path: /
-  controller: App\Controller\HomeAdminController
-  methods: GET
-  defaults:
-    module: home
-
 mollie_config:
   path: /mollie/config
   controller: App\Controller\Mollie\MollieConfigController

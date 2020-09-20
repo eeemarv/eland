@@ -15,10 +15,8 @@
 {%- block system_link -%}
 	{%- if config_str('system.website_url', schema) -%}
 		{{- config_str('system.website_url', schema) -}}
-	{%- elseif pp_role('anonymous') -%}
-		{{- path('login', pp_ary()) -}}
 	{%- else -%}
-		{{- path(r_default(), pp_ary()) -}}
+		{{- path('home', {'system': pp_ary().system}) -}}
 	{%- endif -%}
 {%- endblock -%}
 
