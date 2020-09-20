@@ -275,8 +275,11 @@ class LoginController extends AbstractController
             {
                 if ($location)
                 {
-                    header('Location: ' . $location);
-                    exit;
+                    if (stripos($location, $pp->system() . '/a/') === false)
+                    {
+                        header('Location: ' . $location);
+                        exit;
+                    }
                 }
 
                 $link_render->redirect($vr->get('default'), $su->ary(), []);
