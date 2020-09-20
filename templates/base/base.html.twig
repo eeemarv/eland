@@ -59,9 +59,29 @@
 {%- block page_container -%}{%- endblock -%}
 
 {%- block extra_footer -%}{%- endblock -%}
-
+{#
+<footer class="alert-warning">
+	<br>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4">
+				Hum
+			</div>
+			<div class="col-md-4">
+				Hum
+			</div>
+			<div class="col-md-4">
+				Hum
+			</div>
+		</div>
+	</div>
+	<br>
+</footer>
+#}
 <footer class="footer">
-	<p>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
 		<a href="https://eland.letsa.net">
 			eLAND
 		</a> web app voor gemeenschapsmunten
@@ -74,11 +94,20 @@
 		{%- endif -%}
 		<br>
 		<strong>Privacy</strong>: deze site gebruikt enkel essentiële sessie cookies voor de eigen werking en geen cookies van externe partijen.
-	</p>
 
 	{%- block index_link -%}
 		<p><a href="{{- path('index') -}}">Index</a></p>
 	{%- endblock index_link -%}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<p>&nbsp;</p>
+				<p>&nbsp;</p>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>
 </footer>
 
 

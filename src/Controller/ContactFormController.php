@@ -206,7 +206,7 @@ class ContactFormController extends AbstractController
 
         $menu_service->set('contact');
 
-        return $this->render('base/sidebar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

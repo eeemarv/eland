@@ -271,6 +271,17 @@ class LoginController extends AbstractController
 
         if ($request->isMethod('GET'))
         {
+            if ($su->is_user())
+            {
+                if ($location)
+                {
+                    header('Location: ' . $location);
+                    exit;
+                }
+
+                $link_render->redirect($vr->get('default'), $su->ary(), []);
+            }
+
             $login = $request->query->get('login', '');
         }
 
@@ -328,7 +339,7 @@ class LoginController extends AbstractController
 
         $menu_service->set('login');
 
-        return $this->render('base/sidebar.html.twig', [
+        return $this->render('base/navbar.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

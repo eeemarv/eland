@@ -10,6 +10,7 @@ class MenuCnst
             'fa'        => 'newspaper-o',
             'label'     => 'Vraag & Aanbod',
             'var_route' => 'r_messages',
+            'config_en' => 'messages.enabled',
         ],
         'users'			=> [
             'access'    => 'guest',
@@ -22,28 +23,32 @@ class MenuCnst
             'access'        => 'guest',
             'fa'            => 'exchange',
             'label'         => 'Transacties',
+            'config_en'     => 'transactions.enabled',
         ],
         'news'			=> [
             'access'        => 'guest',
             'fa'            => 'calendar-o',
             'label'         => 'Nieuws',
             'var_route'     => 'r_news',
+            'config_en'     => 'news.enabled',
         ],
         'docs' 			=> [
             'access'        => 'guest',
             'fa'            => 'files-o',
             'label'         => 'Documenten',
+            'config_en'     => 'docs.enabled',
         ],
         'forum'         => [
             'access'        => 'guest',
             'fa'            => 'comments-o',
             'label'         => 'Forum',
-            'config_en'     => 'forum_en',
+            'config_en'     => 'forum.enabled',
         ],
         'support'       => [
             'access'        => 'user',
             'fa'            => 'ambulance',
             'label'         => 'Probleem melden',
+            'config_en'     => 'support_form.enabled',
         ],
 /*
         'home'      => [
@@ -61,13 +66,13 @@ class MenuCnst
             'access'    => 'anonymous',
             'fa'        => 'comment-o',
             'label'     => 'Contact',
-            'config_en' => 'contact_form_en',
+            'config_en' => 'contact_form.enabled',
         ],
         'register'  => [
             'access'    => 'anonymous',
             'fa'        => 'check-square-o',
             'label'     => 'Inschrijven',
-            'config_en' => 'registration_en',
+            'config_en' => 'register_form.enabled',
         ],
     ];
 

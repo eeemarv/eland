@@ -119,19 +119,16 @@ class MenuService
 
 		foreach (MenuCnst::SIDEBAR as $menu_route => $item)
 		{
-			if (true) //!$this->pp->is_admin())
+			if (!$this->item_access_service->is_visible($item['access']))
 			{
-				if (!$this->item_access_service->is_visible($item['access']))
+				continue;
+			}
+
+			if (isset($item['config_en']))
+			{
+				if (!$this->config_service->get_bool($item['config_en'], $this->pp->schema()))
 				{
 					continue;
-				}
-
-				if (isset($item['config_en']))
-				{
-					if (!$this->config_service->get($item['config_en'], $this->pp->schema()))
-					{
-						continue;
-					}
 				}
 			}
 
