@@ -317,8 +317,7 @@ class UsersListController extends AbstractController
 
                 if ($bulk_field == 'status')
                 {
-                    $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                    $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
+                    $thumbprint_accounts_service->delete($pp->ary(), $pp->schema());
                 }
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .

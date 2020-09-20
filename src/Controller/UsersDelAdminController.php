@@ -215,9 +215,7 @@ class UsersDelAdminController extends AbstractController
 
         $alert_service->success('De gebruiker is verwijderd.');
 
-        $thumbprint_status = StatusCnst::THUMBPINT_ARY[$user['status']];
-        $thumbprint_accounts_service->delete($thumbprint_status, $pp->ary(), $pp->schema());
-
+        $thumbprint_accounts_service->delete($pp->ary(), $pp->schema());
         $intersystems_service->clear_cache();
     }
 }

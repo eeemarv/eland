@@ -668,12 +668,7 @@ class UsersEditAdminController extends AbstractController
                     }
                 }
 
-                $thumbprint_accounts_service->delete('active', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('inactive', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('extern', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('im', $pp->ary(), $pp->schema());
-                $thumbprint_accounts_service->delete('ip', $pp->ary(), $pp->schema());
-
+                $thumbprint_accounts_service->delete($pp->ary(), $pp->schema());
                 $typeahead_service->delete_thumbprint('account_codes', $pp->ary(), []);
                 $typeahead_service->delete_thumbprint('usernames', $pp->ary(), []);
                 $typeahead_service->delete_thumbprint('postcodes', $pp->ary(), []);

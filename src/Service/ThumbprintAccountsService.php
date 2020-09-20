@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cnst\StatusCnst;
 use App\Service\TypeaheadService;
 use App\Service\IntersystemsService;
 
@@ -19,15 +20,12 @@ class ThumbprintAccountsService
 		$this->intersystems_service = $intersystems_service;
 	}
 
-    public function delete(string $status, array $pp_ary, string $pp_schema):void
+    public function delete(array $pp_ary, string $pp_schema):void
     {
-        $this->typeahead_service->delete_thumbprint('accounts', $pp_ary, [
-            'status'	=> $status,
-        ]);
-
-        if ($status !== 'active')
+        foreach (StatusCnst::THUMBPINT_ARY as $status)
         {
-            return;
+            $this->typeahead_service->delete_thumbprint('accounts', $pp_ary, [
+                'status'	=> $status]);
         }
 
         foreach ($this->intersystems_service->get_eland($pp_schema) as $remote_schema => $h)
