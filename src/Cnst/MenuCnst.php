@@ -9,7 +9,6 @@ class MenuCnst
             'access'    => 'guest',
             'fa'        => 'newspaper-o',
             'label'     => 'Vraag & Aanbod',
-            'var_route' => 'r_messages',
             'config_en' => 'messages.enabled',
         ],
         'users'			=> [
@@ -17,7 +16,6 @@ class MenuCnst
             'fa'        => 'users',
             'label'       => 'Leden',
             'label_admin' => 'Gebruikers',
-            'var_route' => 'r_users',
         ],
         'transactions'	=> [
             'access'        => 'guest',
@@ -29,7 +27,6 @@ class MenuCnst
             'access'        => 'guest',
             'fa'            => 'calendar-o',
             'label'         => 'Nieuws',
-            'var_route'     => 'r_news',
             'config_en'     => 'news.enabled',
         ],
         'docs' 			=> [
@@ -78,20 +75,21 @@ class MenuCnst
 
     const NAV_USER = [
         'users_show'    => [
-            'fa'        => 'user',
-            'label'     => 'Mijn gegevens',
-            'params'    => [],
+            'fa'            => 'user',
+            'label'         => 'Mijn gegevens',
+            'params_id'     => true,
         ],
         'messages' => [
-            'fa'        => 'newspaper-o',
-            'label'     => 'Mijn vraag en aanbod',
-            'params'    => ['f' => []],
+            'fa'            => 'newspaper-o',
+            'label'         => 'Mijn vraag en aanbod',
+            'params_filter_uid'    => true,
+            'config_en'     => 'messages.enabled',
         ],
         'transactions' => [
             'fa'        => 'exchange',
             'label'     => 'Mijn transacties',
-            'params'    => ['f' => []],
-            'route'     => 'transactions',
+            'params_filter_uid'     => true,
+            'config_en' => 'transactions.enabled',
         ],
         'divider_1'     => [
             'divider'   => true,
