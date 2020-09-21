@@ -67,11 +67,6 @@ class ConfigController extends AbstractController
             'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
         ];
 
-        $explain_replace_ary = [
-            '%path_register%'	=> $link_render->path('register', ['system' => $pp->system()]),
-            '%path_contact%'	=> $link_render->path('contact', ['system' => $pp->system()]),
-        ];
-
         $addon_replace_ary = [
             '%config_currency%'	=> $config_service->get('currency', $pp->schema()),
         ];
@@ -436,10 +431,22 @@ class ConfigController extends AbstractController
             $out .= '<li role="presentation"';
             $out .= $tab_id === $tab ? ' class="active"' : '';
             $out .= '>';
-            $out .= $link_render->link_no_attr('config',
-                $pp->ary(),
-                ['tab' => $tab_id],
-                $tab_pane_data['lbl']);
+
+            if (isset($tab_pane_data['route']))
+            {
+                $out .= $link_render->link_no_attr($tab_pane_data['route'],
+                    $pp->ary(),
+                    [],
+                    $tab_pane_data['lbl']);
+            }
+            else
+            {
+                $out .= $link_render->link_no_attr('config',
+                    $pp->ary(),
+                    ['tab' => $tab_id],
+                    $tab_pane_data['lbl']);
+            }
+
             $out .= '</li>';
         }
 
@@ -829,7 +836,7 @@ class ConfigController extends AbstractController
             if (isset($input['explain']))
             {
                 $out .= '<p>';
-                $out .= strtr($input['explain'], $explain_replace_ary);
+                $out .= $input['explain'];
                 $out .= '</p>';
             }
 

@@ -1,0 +1,112 @@
+{%- extends 'base/navbar.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- set config_menu = [
+    {'lbl': 'Systeemsnaam', 'tab': 'system-name'},
+    {'lbl': 'Logo', 'tab': 'logo'},
+    {'lbl': 'Modules', 'route': 'config_ext_modules'},
+    {'lbl': 'Munteenheid', 'tab': 'currency'},
+    {'lbl': 'E-Mail Adressen', 'tab': 'mail-addr'},
+    {'lbl': 'Saldo', 'tab': 'balance'},
+    {'lbl': 'Overzichts E-mail', 'tab': 'periodic-mail'},
+    {'lbl': 'Contact', 'tab': 'contact'},
+    {'lbl': 'Inschrijven', 'tab': 'register'},
+    {'lbl': 'Leden', 'tab': 'users'},
+    {'lbl': 'Nieuws', 'tab': 'news'},
+    {'lbl': 'Systeem', 'tab': 'system'},
+] -%}
+
+{%- block content -%}
+
+<ul class="nav nav-pills">
+    {%- for cm in config_menu -%}
+        {%- if cm.tab is defined -%}
+            <li role="presentation">
+                <a href="{{- path('config', pp_ary()|merge({'tab': cm.tab})) -}}">
+                    {{- cm.lbl -}}
+                </a>
+            </li>
+        {%- else -%}
+            <li role="presentation"{%- if app.request.get('_route') == cm.route %} class="active"{%- endif -%}>
+                <a href="{{- path(cm.route, pp_ary()) -}}">
+                    {{- cm.lbl -}}
+                </a>
+            </li>
+        {%- endif -%}
+    {%- endfor -%}
+</ul>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h4>
+            Modules
+        </h4>
+    </div>
+    <div class="panel-heading">
+
+    {{- form_start(form) -}}
+    <div class="custom-checkbox">
+
+    {{- form_row(form.messages_enabled, {
+        'label': 'Vraag en aanbod',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.transactions_enabled, {
+        'label': 'Transacties',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.news_enabled, {
+        'label': 'Nieuws',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.docs_enabled, {
+        'label': 'Documenten',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.forum_enabled, {
+        'label': 'Forum',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.support_form_enabled, {
+        'label': 'Support forumulier',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    <h5>Publieke modules</h5>
+
+    {{- form_row(form.contact_form_enabled, {
+        'label': 'Contact formulier',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.register_form_enabled, {
+        'label': 'Registratie forumulier',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_widget(form.submit, {
+        'label': 'Aanpassen',
+        'attr': {'class': 'btn-primary btn-lg'},
+        'translation_domain': false
+    }) -}}
+
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+    </div>
+    {{- form_end(form) -}}
+
+    </div>
+</div>
+{%- endblock content -%}

@@ -78,6 +78,11 @@ users_contacts_add_admin:
   path: /users/{user_id<%assert.id%>}/contacts/add
   methods: GET|POST
 
+config_ext_modules:
+  controller: App\Controller\ConfigExtModulesController
+  path: /config/modules
+  methods: GET|POST
+
 config:
   controller: App\Controller\ConfigController
   path: /config/{tab<%assert.config_tab%>?system-name}
