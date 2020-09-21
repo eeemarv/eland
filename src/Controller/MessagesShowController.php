@@ -69,6 +69,8 @@ class MessagesShowController extends AbstractController
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+
         $errors = [];
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
@@ -255,6 +257,7 @@ class MessagesShowController extends AbstractController
         }
 
         if ($message['is_offer']
+            && $transactions_enabled
             && ($pp->is_admin()
                 || (!$su->is_owner($message['user_id'])
                     && $user['status'] !== 7
