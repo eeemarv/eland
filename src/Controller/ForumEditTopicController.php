@@ -39,16 +39,16 @@ class ForumEditTopicController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Forum module not enabled.');
+        }
+
         $errors = [];
 
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $access = $request->request->get('access', '');
-
-        if (!$config_service->get('forum_en', $pp->schema()))
-        {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
-        }
 
         $forum_topic = ForumTopicController::get_forum_topic($id, $db, $pp, $item_access_service);
 

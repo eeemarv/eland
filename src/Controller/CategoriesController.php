@@ -43,6 +43,11 @@ class CategoriesController extends AbstractController
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+        }
+
         $categories = [];
         $update_ary = [];
         $stored_categories = [];

@@ -39,6 +39,11 @@ class CategoriesDelController extends AbstractController
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+        }
+
         $message_count = $db->fetchColumn('select count(*)
             from ' . $pp->schema() . '.messages
             where category_id = ?', [$id]);

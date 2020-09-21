@@ -18,6 +18,7 @@ use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsShowController extends AbstractController
 {
@@ -39,6 +40,11 @@ class TransactionsShowController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Transactions module not enabled.');
+        }
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
 

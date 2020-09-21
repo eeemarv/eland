@@ -64,6 +64,11 @@ class MessagesShowController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $errors = [];
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());

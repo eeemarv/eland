@@ -14,6 +14,7 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsListController extends AbstractController
 {
@@ -30,6 +31,11 @@ class NewsListController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('News module not enabled.');
+        }
+
         $news = self::get_data(
             $db,
             $config_service,

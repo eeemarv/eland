@@ -17,6 +17,7 @@ use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use App\Service\StaticContentService;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ContactFormController extends AbstractController
 {
@@ -36,13 +37,12 @@ class ContactFormController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        $errors = [];
-
-        if (!$config_service->get('contact_form_en', $pp->schema()))
+        if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
         {
-            $alert_service->warning('De contactpagina is niet ingeschakeld.');
-            $link_render->redirect('login', $pp->ary(), []);
+            throw new NotFoundHttpException('Contact form module not enabled.');
         }
+
+        $errors = [];
 
         if($request->isMethod('POST'))
         {

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\ConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,6 +12,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesAddImagesUploadController extends AbstractController
 {
@@ -18,6 +20,7 @@ class MessagesAddImagesUploadController extends AbstractController
         Request $request,
         string $form_token,
         Db $db,
+        ConfigService $config_service,
         FormTokenService $form_token_service,
         LoggerInterface $logger,
         PageParamsService $pp,
@@ -27,6 +30,11 @@ class MessagesAddImagesUploadController extends AbstractController
         MessagesShowImagesUploadController $show_upload_controller
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         return $edit_upload_controller(
             $request,
             0,

@@ -10,6 +10,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
@@ -17,12 +18,14 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        ConfigService $config_service,
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -36,6 +39,11 @@ class DocsAddController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Documents module not enabled.');
+        }
+
         $errors = [];
 
         $map_id = $request->query->get('map_id', '');

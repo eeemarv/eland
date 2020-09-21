@@ -22,6 +22,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesDelController extends AbstractController
 {
@@ -45,6 +46,11 @@ class MessagesDelController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());

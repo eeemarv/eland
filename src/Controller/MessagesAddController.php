@@ -23,6 +23,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesAddController extends AbstractController
 {
@@ -49,6 +50,11 @@ class MessagesAddController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $content = MessagesEditController::messages_form(
             $request,
             0,

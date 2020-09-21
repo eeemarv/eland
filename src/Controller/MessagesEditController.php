@@ -29,6 +29,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesEditController extends AbstractController
 {
@@ -56,6 +57,11 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $content = self::messages_form(
             $request,
             $id,
@@ -112,6 +118,11 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):string
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $errors = [];
 
         $edit_mode = $mode === 'edit';

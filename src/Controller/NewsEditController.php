@@ -10,6 +10,7 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -24,6 +25,7 @@ class NewsEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         AssetsService $assets_service,
         DateFormatService $date_format_service,
@@ -36,6 +38,11 @@ class NewsEditController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('News module not enabled.');
+        }
+
         $errors = [];
 
         $news = $db->fetchAssoc('select *

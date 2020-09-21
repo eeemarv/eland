@@ -15,6 +15,7 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocsController extends AbstractController
 {
@@ -33,6 +34,11 @@ class DocsController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Documents module not enabled.');
+        }
+
         $q = $request->query->get('q', '');
 
         $maps = $docs = [];

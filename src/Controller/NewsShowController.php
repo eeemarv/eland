@@ -36,6 +36,11 @@ class NewsShowController extends AbstractController
         VarRouteService $vr
     ):Response
     {
+        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('News module not enabled.');
+        }
+
         $show_access = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();

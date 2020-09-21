@@ -14,6 +14,7 @@ use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesModulesController extends AbstractController
 {
@@ -29,6 +30,11 @@ class MessagesModulesController extends AbstractController
         VarRouteService $vr
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $errors = [];
 
         $category_enabled = $request->request->has('category_enabled');

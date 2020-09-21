@@ -11,6 +11,7 @@ use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ContactFormTokenController extends AbstractController
 {
@@ -25,10 +26,9 @@ class ContactFormTokenController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get('contact_form_en', $pp->schema()))
+        if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
         {
-            $alert_service->warning('De contactpagina is niet ingeschakeld.');
-            $link_render->redirect('login', $pp->ary(), []);
+            throw new NotFoundHttpException('Contact form module not enabled.');
         }
 
         $data = $data_token_service->retrieve($token, 'contact', $pp->schema());

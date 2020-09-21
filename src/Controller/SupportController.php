@@ -18,6 +18,7 @@ use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SupportController extends AbstractController
 {
@@ -37,6 +38,11 @@ class SupportController extends AbstractController
         MailAddrSystemService $mail_addr_system_service
     ):Response
     {
+        if (!$config_service->get_bool('support_form.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Support form not enabled.');
+        }
+
         $errors = [];
 
         if ($su->is_master())

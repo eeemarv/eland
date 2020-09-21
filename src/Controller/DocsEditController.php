@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
@@ -23,6 +24,7 @@ class DocsEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         HeadingRender $heading_render,
         ItemAccessService $item_access_service,
@@ -35,6 +37,11 @@ class DocsEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Documents module not enabled.');
+        }
+
         $errors = [];
 
         $access = $request->request->get('access', '');

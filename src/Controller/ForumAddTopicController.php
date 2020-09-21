@@ -37,12 +37,12 @@ class ForumAddTopicController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
-        $errors = [];
-
-        if (!$config_service->get('forum_en', $pp->schema()))
+        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
+            throw new NotFoundHttpException('Forum module not enabled.');
         }
+
+        $errors = [];
 
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');

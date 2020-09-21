@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RegisterController extends AbstractController
 {
@@ -38,10 +39,9 @@ class RegisterController extends AbstractController
         LinkRender $link_render
     ):Response
     {
-        if (!$config_service->get('registration_en', $pp->schema()))
+        if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
         {
-            $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $link_render->redirect('login', $pp->ary(), []);
+            throw new NotFoundHttpException('Register form not enabled.');
         }
 
         if ($request->isMethod('POST'))

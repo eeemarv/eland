@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -23,6 +24,7 @@ class DocsDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -35,6 +37,11 @@ class DocsDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Documents module not enabled.');
+        }
+
         $errors = [];
 
         $doc = $db->fetchAssoc('select *

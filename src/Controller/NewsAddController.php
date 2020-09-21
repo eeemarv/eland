@@ -10,6 +10,7 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -18,12 +19,14 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsAddController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        ConfigService $config_service,
         DateFormatService $date_format_service,
         HeadingRender $heading_render,
         MenuService $menu_service,
@@ -38,6 +41,11 @@ class NewsAddController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('News module not enabled.');
+        }
+
         $news = [];
         $errors = [];
 

@@ -35,12 +35,12 @@ class ForumDelTopicController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $errors = [];
-
-        if (!$config_service->get('forum_en', $pp->schema()))
+        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
+            throw new NotFoundHttpException('Forum module not enabled.');
         }
+
+        $errors = [];
 
         $forum_topic = ForumTopicController::get_forum_topic($id, $db, $pp, $item_access_service);
 

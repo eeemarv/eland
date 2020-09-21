@@ -6,6 +6,7 @@ use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -16,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsDelController extends AbstractController
 {
@@ -23,6 +25,7 @@ class NewsDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -35,6 +38,11 @@ class NewsDelController extends AbstractController
         VarRouteService $vr
     ):Response
     {
+        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('News module not enabled.');
+        }
+
         if ($request->isMethod('POST'))
         {
             if ($error_token = $form_token_service->get_error())

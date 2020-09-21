@@ -21,6 +21,7 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesExtendedController extends AbstractController
 {
@@ -44,6 +45,11 @@ class MessagesExtendedController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
 
         $fetch_and_filter = MessagesListController::fetch_and_filter(

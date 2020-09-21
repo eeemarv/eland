@@ -34,7 +34,12 @@ class MessagesCleanupController extends AbstractController
     {
         if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('Messages cleanup module not enabled.');
+            throw new NotFoundHttpException('Messages cleanup submodule not enabled.');
+        }
+
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
         $errors = [];

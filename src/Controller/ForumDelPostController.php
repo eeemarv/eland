@@ -35,9 +35,9 @@ class ForumDelPostController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('forum_en', $pp->schema()))
+        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('De forum pagina is niet ingeschakeld in dit systeem.');
+            throw new NotFoundHttpException('Forum module not enabled.');
         }
 
         $forum_post = $db->fetchAssoc('select *

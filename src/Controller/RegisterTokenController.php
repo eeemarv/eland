@@ -14,6 +14,7 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegisterTokenController extends AbstractController
@@ -33,10 +34,9 @@ class RegisterTokenController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        if (!$config_service->get('registration_en', $pp->schema()))
+        if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
         {
-            $alert_service->warning('De inschrijvingspagina is niet ingeschakeld.');
-            $link_render->redirect('login', $pp->ary(), []);
+            throw new NotFoundHttpException('Register form not enabled.');
         }
 
         $data = $data_token_service->retrieve($token, 'register', $pp->schema());

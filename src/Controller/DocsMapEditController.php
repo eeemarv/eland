@@ -10,6 +10,7 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
@@ -21,6 +22,7 @@ class DocsMapEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
@@ -30,6 +32,11 @@ class DocsMapEditController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Documents module not enabled.');
+        }
+
         $errors = [];
 
         $name = trim($request->request->get('name', ''));
