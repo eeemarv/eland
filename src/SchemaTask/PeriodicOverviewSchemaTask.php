@@ -55,6 +55,14 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
+        $messages_enabled = $this->config_service->get_bool('messages.enabled', $schema);
+        $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
+        $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
+        $docs_enabled = $this->config_service->get_bool('docs.enabled', $schema);
+        $forum_enabled = $this->config_service->get_bool('forum.enabled', $schema);
+
+		$intersystem_en = $this->config_service->get_intersystem_en($schema);
+
 		$now_unix = time();
 		$days = $this->config_service->get_int('periodic_mail.days', $schema);
 		$treshold_time_unix = $now_unix - ($days * 86400);
@@ -69,25 +77,12 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// get blocks
 
-		$forum_en = $this->config_service->get_bool('forum.enabled', $schema);
-		$intersystem_en = $this->config_service->get_intersystem_en($schema);
-
-		$blocks_sorted = $block_options = [];
+		$block_options = [];
 
 		$block_ary = $this->config_service->get_ary('periodic_mail.user.layout', $schema);
 
 		foreach ($block_ary as $block)
 		{
-			if ($block === 'forum' && !$forum_en)
-			{
-				continue;
-			}
-
-			if ($block === 'intersystem' && !$intersystem_en)
-			{
-				continue;
-			}
-
 			$select = 'recent';
 
 			if (in_array($block, ['news', 'new_users', 'leaving_users']))
@@ -99,8 +94,41 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$select = $block === 'messages_self' ? 'all' : $select;
 
 			$block_options[$block] = $select;
-			$blocks_sorted[] = $block;
 		}
+
+        if (!$forum_enabled)
+        {
+            unset($block_options['forum']);
+        }
+
+        if (!$transactions_enabled)
+        {
+            unset($block_options['transactions']);
+        }
+
+        if (!$messages_enabled)
+        {
+            unset($block_options['messages']);
+            unset($block_options['messages_self']);
+            unset($block_options['intersystem']);
+        }
+
+        if (!$news_enabled)
+        {
+            unset($block_options['news']);
+        }
+
+        if (!$docs_enabled)
+        {
+            unset($block_options['docs']);
+        }
+
+        if (!$intersystem_en)
+        {
+            unset($block_options['intersystem']);
+		}
+
+		$blocks_sorted = array_keys($block_options);
 
 	// fetch all active users
 
@@ -212,12 +240,17 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// interSystem messages
 
-		if (isset($block_options['intersystem']) && $block_options['intersystem'] == 'recent')
+		if (isset($block_options['intersystem']))
 		{
 			$eland_ary = $this->intersystems_service->get_eland($schema);
 
 			foreach ($eland_ary as $sch => $d)
 			{
+				if (!$this->config_service->get_bool('messages.enabled', $sch))
+				{
+					continue;
+				}
+
 				$intersystem_msgs = [];
 
 				$expires_at_enabled_intersystem = $this->config_service->get_bool('messages.fields.expires_at.enabled', $sch);

@@ -67,15 +67,13 @@
 		{%- endembed -%}
 	{%- endfor -%}
 
-	{%- if c.messages_self -%}
-		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
-			'info': 'periodic_overview.messages_self.add'|trans({
-				'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
-				'%link_close%': '</a>'
-			})|raw ,
-			'bgcolor': 'ffccee'
-		} -%}
-	{%- endif -%}
+	{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+		'info': 'periodic_overview.messages_self.add'|trans({
+			'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
+			'%link_close%': '</a>'
+		})|raw ,
+		'bgcolor': 'ffccee'
+	} -%}
 {%- endmacro html -%}
 
 {% macro text(c) %}

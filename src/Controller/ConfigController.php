@@ -42,6 +42,12 @@ class ConfigController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+        $news_enabled = $config_service->get_bool('news.enabled', $pp->schema());
+        $docs_enabled = $config_service->get_bool('docs.enabled', $pp->schema());
+        $forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
+
         $errors = [];
         $pane = ConfigCnst::TAB_PANES[$tab];
 
@@ -51,9 +57,31 @@ class ConfigController extends AbstractController
 
         $block_ary = ConfigCnst::BLOCK_ARY;
 
-        if (!$config_service->get('forum_en', $pp->schema()))
+        if (!$forum_enabled)
         {
             unset($block_ary['forum']);
+        }
+
+        if (!$transactions_enabled)
+        {
+            unset($block_ary['transactions']);
+        }
+
+        if (!$messages_enabled)
+        {
+            unset($block_ary['messages']);
+            unset($block_ary['messages_self']);
+            unset($block_ary['intersystem']);
+        }
+
+        if (!$news_enabled)
+        {
+            unset($block_ary['news']);
+        }
+
+        if (!$docs_enabled)
+        {
+            unset($block_ary['docs']);
         }
 
         if (!$config_service->get_intersystem_en($pp->schema()))
