@@ -3,6 +3,7 @@
 namespace App\Render;
 
 use App\Render\LinkRender;
+use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -90,14 +91,22 @@ class AccountRender
 	public function inter_link(
 		int $id,
 		string $schema,
-		array $pp_ary_self
+		SessionUserService $su
 	):string
 	{
 		$pp_ary = [
-			'role_short'	=> 'g',
-			'system'		=> $this->systems_service->get_system($schema),
-			'os'			=> $pp_ary_self['system'],
+			'system'	=> $this->systems_service->get_system($schema),
 		];
+
+		if ($su->schema() === $schema)
+		{
+			$pp_ary['role_short'] = $su->role_short();
+		}
+		else
+		{
+			$pp_ary['role_short'] = 'g';
+			$pp_ary['os'] = $su->system();
+		}
 
 		return $this->link_render->link_no_attr('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));

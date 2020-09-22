@@ -66,11 +66,15 @@ class TransactionsShowController extends AbstractController
             $inter_schema = $intersystem_account_schemas[$transaction['id_to']];
         }
 
+        $inter_transactions_enabled = false;
+
         if ($inter_schema)
         {
             $inter_transaction = $db->fetchAssoc('select t.*
                 from ' . $inter_schema . '.transactions t
                 where t.transid = ?', [$transaction['transid']]);
+
+            $inter_transactions_enabled = $config_service->get_bool('transactions.enabled', $inter_schema);
         }
         else
         {
@@ -158,7 +162,7 @@ class TransactionsShowController extends AbstractController
                 if ($s_inter_schema_check[$inter_schema])
                 {
                     $user_from = $account_render->inter_link($inter_transaction['id_from'],
-                        $inter_schema, $pp->ary());
+                        $inter_schema, $su);
                 }
                 else
                 {
@@ -209,7 +213,7 @@ class TransactionsShowController extends AbstractController
                 if ($s_inter_schema_check[$inter_schema])
                 {
                     $user_to = $account_render->inter_link($inter_transaction['id_to'],
-                        $inter_schema, $pp->ary());
+                        $inter_schema, $su);
                 }
                 else
                 {
@@ -319,12 +323,24 @@ class TransactionsShowController extends AbstractController
                 $str .= 'in de eigen tijdmunt.';
 
                 if ($inter_transaction
-                    && isset($eland_intersystem_ary[$inter_schema]))
+                    && isset($eland_intersystem_ary[$inter_schema])
+                    && $inter_transactions_enabled)
                 {
-                    $out .= $link_render->link_no_attr('transactions', [
-                            'system'		=> $systems_service->get_system($inter_schema),
-                            'role_short'	=> 'g',
+                    if ($su->is_system_self())
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                                'system'		=> $systems_service->get_system($inter_schema),
+                                'role_short'	=> 'g',
+                                'os'            => $pp->system(),
+                            ], ['id' => $inter_transaction['id']], $str);
+                    }
+                    else
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                            'system'		=> $su->system(),
+                            'role_short'	=> $su->role_short(),
                         ], ['id' => $inter_transaction['id']], $str);
+                    }
                 }
                 else
                 {
@@ -444,12 +460,24 @@ class TransactionsShowController extends AbstractController
                 $str .= 'met gelijke tijdwaarde als Tr-1.';
 
                 if ($inter_transaction
-                    && isset($eland_intersystem_ary[$inter_schema]))
+                    && isset($eland_intersystem_ary[$inter_schema])
+                    && $inter_transactions_enabled)
                 {
-                    $out .= $link_render->link_no_attr('transactions', [
-                            'system'	=> $systems_service->get_system($inter_schema),
-                            'role_short'	=> 'g',
+                    if ($su->is_system_self())
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                                'system'	=> $systems_service->get_system($inter_schema),
+                                'role_short'	=> 'g',
+                                'os'        => $pp->system(),
+                            ], ['id' => $inter_transaction['id']], $str);
+                    }
+                    else
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                            'system'	    => $su->system(),
+                            'role_short'	=> $su->role_short(),
                         ], ['id' => $inter_transaction['id']], $str);
+                    }
                 }
                 else
                 {
