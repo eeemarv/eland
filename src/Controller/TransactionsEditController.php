@@ -49,8 +49,8 @@ class TransactionsEditController extends AbstractController
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
 
-        $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
-            [$su->schema() => true]);
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+        $su_intersystem_ary[$su->schema()] = true;
 
         $transaction = $db->fetchAssoc('select t.*
             from ' . $pp->schema() . '.transactions t
@@ -187,7 +187,7 @@ class TransactionsEditController extends AbstractController
 
             if ($inter_transaction)
             {
-                if (isset($s_inter_schema_check[$inter_schema]))
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $out .= $account_render->inter_link($inter_transaction['id_from'],
                         $inter_schema, $su);
@@ -235,7 +235,7 @@ class TransactionsEditController extends AbstractController
 
             if ($inter_transaction)
             {
-                if (isset($s_inter_schema_check[$inter_schema]))
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $out .= $account_render->inter_link($inter_transaction['id_to'],
                         $inter_schema, $su);

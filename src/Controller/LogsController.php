@@ -10,6 +10,7 @@ use App\Render\PaginationRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
+use App\Service\IntersystemsService;
 use App\Service\LogDbService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -33,6 +34,7 @@ class LogsController extends AbstractController
         LogDbService $log_db_service,
         BtnNavRender $btn_nav_render,
         AssetsService $assets_service,
+        IntersystemsService $intersystems_service,
         TypeaheadService $typeahead_service,
         AccountRender $account_render,
         ConfigService $config_service,
@@ -42,6 +44,8 @@ class LogsController extends AbstractController
 
     ):Response
     {
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -362,9 +366,13 @@ class LogsController extends AbstractController
                     {
                         $td[] = $account_render->link($row['user_id'], $pp->ary());
                     }
-                    else
+                    else if (isset($su_intersystem_ary[$row['user_schema']]))
                     {
                         $td[] = $account_render->inter_link($row['user_id'], $row['user_schema'], $su);
+                    }
+                    else
+                    {
+                        $td[] = $account_render->str($row['user_id'], $row['user_schema']);
                     }
                 }
                 else

@@ -45,11 +45,13 @@ class TransactionsShowController extends AbstractController
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
 
-        $s_inter_schema_check = array_merge($eland_intersystem_ary,
-            [$su->schema() => true]);
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+        $su_intersystem_ary[$su->schema()] = true;
 
         $transaction = $db->fetchAssoc('select t.*
             from ' . $pp->schema() . '.transactions t
@@ -159,7 +161,7 @@ class TransactionsShowController extends AbstractController
 
             if ($inter_transaction)
             {
-                if ($s_inter_schema_check[$inter_schema])
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $user_from = $account_render->inter_link($inter_transaction['id_from'],
                         $inter_schema, $su);
@@ -210,7 +212,7 @@ class TransactionsShowController extends AbstractController
 
             if ($inter_transaction)
             {
-                if ($s_inter_schema_check[$inter_schema])
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $user_to = $account_render->inter_link($inter_transaction['id_to'],
                         $inter_schema, $su);
@@ -241,7 +243,7 @@ class TransactionsShowController extends AbstractController
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -324,21 +326,22 @@ class TransactionsShowController extends AbstractController
 
                 if ($inter_transaction
                     && isset($eland_intersystem_ary[$inter_schema])
+                    && isset($su_intersystem_ary[$inter_schema])
                     && $inter_transactions_enabled)
                 {
-                    if ($su->is_system_self())
+                    if ($su->schema() === $inter_schema)
                     {
                         $out .= $link_render->link_no_attr('transactions_show', [
-                                'system'		=> $systems_service->get_system($inter_schema),
-                                'role_short'	=> 'g',
-                                'os'            => $pp->system(),
+                                'system'	    => $su->system(),
+                                'role_short'	=> $su->role_short(),
                             ], ['id' => $inter_transaction['id']], $str);
                     }
                     else
                     {
                         $out .= $link_render->link_no_attr('transactions_show', [
-                            'system'		=> $su->system(),
-                            'role_short'	=> $su->role_short(),
+                            'system'	    => $systems_service->get_system($inter_schema),
+                            'role_short'	=> 'g',
+                            'os'            => $su->system(),
                         ], ['id' => $inter_transaction['id']], $str);
                     }
                 }
@@ -355,7 +358,7 @@ class TransactionsShowController extends AbstractController
                 $out .= ' (';
                 $out .= $transaction['amount'];
                 $out .= ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= $currency;
                 $out .= ').';
             }
 
@@ -448,7 +451,7 @@ class TransactionsShowController extends AbstractController
                 $out .= 'in de eigen tijdmunt ';
                 $out .= '(';
                 $out .= $transaction['amount'] . ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= $currency;
                 $out .= ') ';
                 $out .= 'met gelijke tijdwaarde als Tr-1.';
             }
@@ -461,21 +464,22 @@ class TransactionsShowController extends AbstractController
 
                 if ($inter_transaction
                     && isset($eland_intersystem_ary[$inter_schema])
+                    && isset($su_intersystem_ary[$inter_schema])
                     && $inter_transactions_enabled)
                 {
-                    if ($su->is_system_self())
+                    if ($su->schema() === $inter_schema)
                     {
                         $out .= $link_render->link_no_attr('transactions_show', [
-                                'system'	=> $systems_service->get_system($inter_schema),
-                                'role_short'	=> 'g',
-                                'os'        => $pp->system(),
+                                'system'	    => $su->system(),
+                                'role_short'	=> $su->role_short(),
                             ], ['id' => $inter_transaction['id']], $str);
                     }
                     else
                     {
                         $out .= $link_render->link_no_attr('transactions_show', [
-                            'system'	    => $su->system(),
-                            'role_short'	=> $su->role_short(),
+                            'system'	    => $systems_service->get_system($inter_schema),
+                            'role_short'	=> 'g',
+                            'os'            => $su->system(),
                         ], ['id' => $inter_transaction['id']], $str);
                     }
                 }

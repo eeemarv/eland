@@ -56,6 +56,11 @@ class TransactionsController extends AbstractController
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
+        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
+
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+        $su_intersystem_ary[$su->schema()] = true;
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -66,11 +71,6 @@ class TransactionsController extends AbstractController
 
             $balance = $account_repository->get_balance($filter['uid'], $pp->schema());
         }
-
-        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
-
-        $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
-            [$su->schema() => true]);
 
         $is_owner = isset($filter['uid'])
             && $su->is_owner($filter['uid']);
@@ -676,7 +676,7 @@ class TransactionsController extends AbstractController
 
                         if (isset($t['inter_transaction']))
                         {
-                            if ($s_inter_schema_check[$t['inter_schema']])
+                            if (isset($su_intersystem_ary[$t['inter_schema']]))
                             {
                                 $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
                                     $t['inter_schema'], $su);
@@ -708,7 +708,7 @@ class TransactionsController extends AbstractController
 
                         if (isset($t['inter_transaction']))
                         {
-                            if ($s_inter_schema_check[$t['inter_schema']])
+                            if (isset($su_intersystem_ary[$t['inter_schema']]))
                             {
                                 $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
                                     $t['inter_schema'], $su);
@@ -770,7 +770,7 @@ class TransactionsController extends AbstractController
 
                     if (isset($t['inter_transaction']))
                     {
-                        if ($s_inter_schema_check[$t['inter_schema']])
+                        if (isset($su_intersystem_ary[$t['inter_schema']]))
                         {
                             $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
                                 $t['inter_schema'], $su);
@@ -804,7 +804,7 @@ class TransactionsController extends AbstractController
 
                     if (isset($t['inter_transaction']))
                     {
-                        if ($s_inter_schema_check[$t['inter_schema']])
+                        if (isset($su_intersystem_ary[$t['inter_schema']]))
                         {
                             $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
                                 $t['inter_schema'], $su);
