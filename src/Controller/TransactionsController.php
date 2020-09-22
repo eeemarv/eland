@@ -24,6 +24,7 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsController extends AbstractController
@@ -75,8 +76,6 @@ class TransactionsController extends AbstractController
         $is_owner = isset($filter['uid'])
             && $su->is_owner($filter['uid']);
 
-        $params_sql = $where_sql = $where_code_sql = [];
-
         $params = [
             's'	=> [
                 'orderby'	=> $sort['orderby'] ?? 'created_at',
@@ -86,6 +85,12 @@ class TransactionsController extends AbstractController
                 'start'		=> $pag['start'] ?? 0,
                 'limit'		=> $pag['limit'] ?? 25,
             ],
+        ];
+
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
         ];
 
         if (isset($filter['uid']))
@@ -98,10 +103,13 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['q']) && $filter['q'])
         {
-            $where_sql[] = 't.description ilike ?';
-            $params_sql[] = '%' . $filter['q'] . '%';
+            $sql['where'][] = 't.description ilike ?';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
+
+        $sql_where_code = [];
 
         if (isset($filter['fcode']) && $filter['fcode'])
         {
@@ -110,21 +118,22 @@ class TransactionsController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode]);
+                where code = ?', [$fcode], 0, [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
                 $fuid_sql = 't.id_from ';
                 $fuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
                 $fuid_sql .= ' ?';
-                $where_code_sql[] = $fuid_sql;
-                $params_sql[] = $fuid;
+                $sql_where_code[] = $fuid_sql;
+                $sql['params'][] = $fuid;
+                $sql['types'][] = \PDO::PARAM_STR;
 
                 $fcode = $account_render->str($fuid, $pp->schema());
             }
             else if ($filter['andor'] !== 'nor')
             {
-                $where_code_sql[] = '1 = 2';
+                $sql_where_code[] = '1 = 2';
             }
 
             $params['f']['fcode'] = $fcode;
@@ -143,25 +152,29 @@ class TransactionsController extends AbstractController
                 $tuid_sql = 't.id_to ';
                 $tuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
                 $tuid_sql .= ' ?';
-                $where_code_sql[] = $tuid_sql;
-                $params_sql[] = $tuid;
+                $sql_where_code[] = $tuid_sql;
+                $sql['params'][] = $tuid;
+                $sql['types'][] = \PDO::PARAM_STR;
 
                 $tcode = $account_render->str($tuid, $pp->schema());
             }
             else if ($filter['andor'] !== 'nor')
             {
-                $where_code_sql[] = '1 = 2';
+                $sql_where_code[] = '1 = 2';
             }
 
             $params['f']['tcode'] = $tcode;
         }
 
-        if (count($where_code_sql) > 1 && $filter['andor'] === 'or')
+        if (count($sql_where_code) > 1 && $filter['andor'] === 'or')
         {
-            $where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
+            $sql_where_code = [' ( ' . implode(' or ', $sql_where_code) . ' ) '];
         }
 
-        $where_sql = [...$where_sql, ...$where_code_sql];
+        if (count($sql_where_code))
+        {
+            $sql['where'] = [...$sql['where'], ...$sql_where_code];
+        }
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
@@ -173,8 +186,11 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.created_at >= ?';
-                $params_sql[] = $fdate_sql;
+                $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($fdate_sql . ' UTC'));
+
+                $sql['where'][] = 't.created_at >= ?';
+                $sql['params'][] = $fdate_immutable;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
         }
@@ -189,31 +205,34 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.created_at <= ?';
-                $params_sql[] = $tdate_sql;
+                $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($tdate_sql . ' UTC'));
+
+                $sql['where'][] = 't.created_at <= ?';
+                $sql['params'][] = $tdate_immutable;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }
         }
 
-        if (count($where_sql))
+        if (count($sql['where']))
         {
-            $where_sql = ' where ' . implode(' and ', $where_sql) . ' ';
+            $sql_where  = ' and ' . implode(' and ', $sql['where']) . ' ';
             $params['f']['andor'] = $filter['andor'];
         }
         else
         {
-            $where_sql = '';
+            $sql_where = '';
         }
 
         $query = 'select t.*
-            from ' . $pp->schema() . '.transactions t ' .
-            $where_sql . '
+            from ' . $pp->schema() . '.transactions t
+            where 1 = 1 ' . $sql_where . '
             order by t.' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $transactions = $db->fetchAll($query, $params_sql);
+        $transactions = $db->fetchAll($query, $sql['params'], $sql['types']);
 
         foreach ($transactions as $key => $t)
         {
@@ -237,7 +256,7 @@ class TransactionsController extends AbstractController
             {
                 $inter_transaction = $db->fetchAssoc('select t.*
                     from ' . $inter_schema . '.transactions t
-                    where t.transid = ?', [$t['transid']]);
+                    where t.transid = ?', [$t['transid']], [\PDO::PARAM_STR]);
 
                 if ($inter_transaction)
                 {
@@ -248,8 +267,8 @@ class TransactionsController extends AbstractController
         }
 
         $row = $db->fetchAssoc('select count(t.*), sum(t.amount)
-            from ' . $pp->schema() . '.transactions t ' .
-            $where_sql, $params_sql);
+            from ' . $pp->schema() . '.transactions t
+            where 1 = 1 ' . $sql_where, $sql['params'], $sql['types']);
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
