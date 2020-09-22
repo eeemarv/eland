@@ -268,10 +268,16 @@ class MessagesShowController extends AbstractController
             if (!$su->is_system_self())
             {
                 $tus['tus'] = $pp->schema();
+
             }
 
-            $btn_top_render->add_trans('transactions_add', $su->ary(),
-                $tus, 'Transactie voor dit aanbod');
+            $self_transactions_enabled = $this->config_service->get_bool('transactions.enabled', $su->schema());
+
+            if ($self_transactions_enabled)
+            {
+                $btn_top_render->add_trans('transactions_add', $su->ary(),
+                    $tus, 'Transactie voor dit aanbod');
+            }
         }
 
         $prev_ary = $prev ? ['id' => $prev] : [];
