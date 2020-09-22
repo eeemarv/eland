@@ -100,7 +100,7 @@ class TransactionsAddController extends AbstractController
             {
                 $group = $db->fetchAssoc('select *
                     from ' . $pp->schema() . '.letsgroups
-                    where id = ?', [$group_id]);
+                    where id = ?', [$group_id], [\PDO::PARAM_INT]);
 
                 if (!isset($group) || $group === false)
                 {
@@ -129,7 +129,7 @@ class TransactionsAddController extends AbstractController
 
             $to_user = $db->fetchAssoc('select *
                 from ' . $pp->schema() . '.users
-                where code = ?', [$code_to_self]);
+                where code = ?', [$code_to_self], [\PDO::PARAM_STR]);
 
             if(!is_array($from_user))
             {
@@ -395,9 +395,17 @@ class TransactionsAddController extends AbstractController
 
                 $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
+                if (!$config_service->get_bool('transactions.enabled', $remote_schema))
+                {
+                    $errors[] = 'De transactie module is niet actief in het andere systeem.';
+                }
+            }
+
+            if (!count($errors))
+            {
                 $to_remote_user = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
-                    where code = ?', [$code_to]);
+                    where code = ?', [$code_to], [\PDO::PARAM_STR]);
 
                 if (!$to_remote_user)
                 {
@@ -416,7 +424,7 @@ class TransactionsAddController extends AbstractController
 
                 $remote_group = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.letsgroups
-                    where url = ?', [$legacy_eland_origin]);
+                    where url = ?', [$legacy_eland_origin], [\PDO::PARAM_STR]);
 
                 if (!count($errors) && !$remote_group)
                 {
@@ -433,7 +441,7 @@ class TransactionsAddController extends AbstractController
 
                 $from_remote_user = $db->fetchAssoc('select *
                     from ' . $remote_schema . '.users
-                    where code = ?', [$remote_group['localletscode']]);
+                    where code = ?', [$remote_group['localletscode']], [\PDO::PARAM_STR]);
 
                 if (!count($errors) && !$from_remote_user)
                 {
@@ -653,7 +661,8 @@ class TransactionsAddController extends AbstractController
 
                     $group_id = $db->fetchColumn('select id
                         from ' . $pp->schema() . '.letsgroups
-                        where url = ?', [$origin_from_tus]);
+                        where url = ?',
+                        [$origin_from_tus], 0, [\PDO::PARAM_STR]);
 
                     if ($mid)
                     {
@@ -664,7 +673,8 @@ class TransactionsAddController extends AbstractController
                                 '. $tus . '.users u
                             where u.id = m.user_id
                                 and u.status in (1, 2)
-                                and m.id = ?', [$mid]);
+                                and m.id = ?',
+                            [$mid], [\PDO::PARAM_INT]);
 
                         if ($row)
                         {
@@ -700,7 +710,7 @@ class TransactionsAddController extends AbstractController
                     from ' . $pp->schema() . '.messages m,
                         '. $pp->schema() . '.users u
                     where u.id = m.user_id
-                        and m.id = ?', [$mid]);
+                        and m.id = ?', [$mid], [\PDO::PARAM_INT]);
 
                 if ($row)
                 {
@@ -782,6 +792,12 @@ class TransactionsAddController extends AbstractController
             {
                 $sys['eland'] = true;
                 $sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
+
+                if (!$config_service->get_bool('transactions.enabled', $sys['remote_schema']))
+                {
+                    continue;
+                }
+
                 $sys['groupname'] = $config_service->get_str('system.name', $sys['remote_schema']);
                 $systems[] = $sys;
             }
