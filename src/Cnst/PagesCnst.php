@@ -4,12 +4,13 @@ namespace App\Cnst;
 
 class PagesCnst
 {
-    const INTERSYSTEM_LANDING = [
+    const LANDING = [
         'messages'		=> true,
         'users'			=> true,
         'transactions'	=> true,
         'news'			=> true,
         'docs'			=> true,
+        'forum'         => true,
     ];
 
     const DEFAULT_VIEW = [

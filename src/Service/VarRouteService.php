@@ -38,13 +38,13 @@ class VarRouteService
 	{
 		$this->is_admin = $this->pp->is_admin();
 		$request = $this->request_stack->getCurrentRequest();
-		$route = $request->attributes->get('_route');
+		$this->route = $request->attributes->get('_route');
 
 		$view_ary = $this->session->get('view') ?? PagesCnst::DEFAULT_VIEW;
 
-		if (isset(PagesCnst::ROUTE_TO_VIEW[$route]))
+		if (isset(PagesCnst::ROUTE_TO_VIEW[$this->route]))
 		{
-			[$menu, $view] = PagesCnst::ROUTE_TO_VIEW[$route];
+			[$menu, $view] = PagesCnst::ROUTE_TO_VIEW[$this->route];
 
 			if ($view_ary[$menu] !== $view)
 			{
@@ -59,7 +59,13 @@ class VarRouteService
 			'news'			=> 'news_' . $view_ary['news'],
 		];
 
-		$default = $this->config_service->get('default_landing_page', $this->pp->schema());
+		$default = $this->config_service->get_str('system.default_landing_page', $this->pp->schema());
+
+		if (!$this->config_service->get_bool($default . '.enabled', $this->pp->schema()))
+		{
+			$default = 'users';
+		}
+
 		$this->var_route_ary['default'] = $this->get($default);
 	}
 
@@ -68,5 +74,26 @@ class VarRouteService
 		$route = $this->var_route_ary[$menu_route] ?? $menu_route;
 		$route .= isset(PagesCnst::ADMIN_ROUTE[$route]) && $this->is_admin ? '_admin' : '';
 		return $route;
+	}
+
+	public function get_inter(string $menu_route, string $remote_schema):string
+	{
+		if (isset(PagesCnst::LANDING[$menu_route]))
+		{
+			$route_enabled = $this->config_service->get_bool($menu_route . '.enabled', $remote_schema);
+		}
+		else
+		{
+			$route_enabled = false;
+		}
+
+		if (!$route_enabled)
+		{
+			$default_route = $this->config_service->get_str('system.default_landing_page', $remote_schema);
+			$default_enabled = $this->config_service->get_bool($default_route . '.enabled', $remote_schema);
+			$menu_route = $default_enabled ? $default_route : 'users';
+		}
+
+		return $this->var_route_ary[$menu_route] ?? $menu_route;
 	}
 }

@@ -973,7 +973,7 @@ class UsersListController extends AbstractController
 
             if ($group === 'c')
             {
-                $fc1 .= '<h3>Contacten</h3>';
+                $fc2 .= '<h3>Contacten</h3>';
             }
             else if ($group === 'd')
             {

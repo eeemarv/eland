@@ -22,6 +22,8 @@ class ConfigCnst
         'users'			=> 'Leden',
         'transactions'	=> 'Transacties',
         'news'			=> 'Nieuws',
+        'docs'          => 'Documenten',
+        'forum'         => 'Forum',
     ];
 
     const BLOCK_ARY = [
@@ -331,6 +333,8 @@ class ConfigCnst
             'required'	=> true,
             'addon_fa'	=> 'plane',
             'default'	=> 'messages',
+            'explain'   => 'De standaard pagina waar men terecht komt na login.
+                De betreffende module moet ingeschakeld zijn. (Zie "Modules")',
             'path'      => 'system.default_landing_page',
         ],
 

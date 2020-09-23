@@ -179,7 +179,7 @@ password_reset_confirm:
     in te stellen voor je account bij %system_name%.
   explain: >-
     Gelieve deze E-mail te negeren wanneer je niet
-    zelf hebt een paswoord reset hebt aangevraagd
+    zelf een paswoord reset hebt aangevraagd
     bij %link_open%%system_name%%link_close%.
 
 register:
