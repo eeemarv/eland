@@ -18,7 +18,7 @@
 	{%- if config_str('system.website_url', schema) -%}
 		{{- config_str('system.website_url', schema) -}}
 	{%- else -%}
-		{{- path('home', {'system': pp_ary().system}) -}}
+		{{- path('home', pp_ary()) -}}
 	{%- endif -%}
 {%- endblock -%}
 
@@ -44,8 +44,31 @@
 
 	{{- a.alert() -}}
 
+	{%- if pp_ary().edit is defined and s_role('admin') and is_s_system_self() -%}
+
+	<div class="row mt-5p">
+		<div class="col-md-12">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<h4><i class="fa fa-pencil"></i> CMS Edit modus</h4>
+					<p>Inline editing van content blokken.</p>
+					<p class="text-danger" hidden>Er zijn geen content blokken op deze pagina.</p>
+					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'id': app.request.attributes.get('_route')}) -}}">
+						<input type="hidden" name="content" valeu="{}">
+						<input type="hidden" name="form_token" value="">
+						<a href="{{- path(app.request.attributes.get('_route'), pp_ary()| filter((v, k) => k != 'edit')) -}}" class="btn btn-default btn-lg">Annuleren</a>
+						&nbsp;
+						<input type="submit" name="zend" value="Opslaan" class="btn btn-primary btn-lg" data-submit-btn>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{%- endif -%}
+
 	<div class="row">
-	<div class="col-md-12 top-buttons">
+	<div class="col-md-12 top-buttons mt-5p">
 
 	<div class="visible-xs pull-left button-offcanvas menu-button">
 		<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">

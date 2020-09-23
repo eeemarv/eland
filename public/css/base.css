@@ -263,14 +263,17 @@ div.navbar-header ul.nav
   padding-bottom: 150px; /* this needs to be bigger than footer height*/
 }
 
-div.alert
-{
-	margin-top: 5px;
+.mt-5p {
+  margin-top: 5px;
 }
-
-div.top-buttons
-{
-	margin-top: 5px;
+.mb-5p {
+  margin-bottom: 5px;
+}
+.ml-5p {
+  margin-left: 5px;
+}
+.mr-5p {
+  margin-right: 5px;
 }
 
 div.top-buttons a, span.inline-buttons a

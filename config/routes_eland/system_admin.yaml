@@ -23,6 +23,11 @@ categories:
   path: /categories
   methods: GET|POST
 
+cms_edit:
+  controller: App\Controller\CmsEditController
+  path: /cms-edit/{id<%assert.route%>}
+  methods: POST
+
 contact_types_del:
   controller: App\Controller\ContactTypesDelController
   path: /contact-types/{id<%assert.id%>}/del

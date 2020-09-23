@@ -67,7 +67,8 @@ class StaticContentService
 
 		$data_json = $this->db->fetchColumn('select data
 			from ' . $schema . '.static_content
-			where id = ? and lang = ?', [$id, $lang]);
+			where id = ? and lang = ?',
+			[$id, $lang], 0, [\PDO::PARAM_STR, \PDO::PARAM_STR]);
 
 		$data = json_decode($data_json, true);
 

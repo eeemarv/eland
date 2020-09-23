@@ -8,6 +8,7 @@ parameters:
     assert.big_token: '[a-z0-9-]{20}'
     assert.system: '[a-z][a-z0-9]*'
     assert.schema: '[a-z][a-z0-9]*'
+    assert.route: '[a-z_]+'
     assert.role_short.guest: '[gua]'
     assert.role_short.user: '[ua]'
     assert.role_short.admin: 'a'
