@@ -271,7 +271,7 @@ class MessagesShowController extends AbstractController
 
             }
 
-            $self_transactions_enabled = $this->config_service->get_bool('transactions.enabled', $su->schema());
+            $self_transactions_enabled = $config_service->get_bool('transactions.enabled', $su->schema());
 
             if ($self_transactions_enabled)
             {
