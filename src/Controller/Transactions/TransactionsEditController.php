@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsEditController extends AbstractController
 {
@@ -39,12 +40,17 @@ class TransactionsEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Transactions module not enabled.');
+        }
+
         $errors = [];
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
 
-        $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
-            [$su->schema() => true]);
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+        $su_intersystem_ary[$su->schema()] = true;
 
         $transaction = $db->fetchAssoc('select t.*
             from ' . $pp->schema() . '.transactions t
@@ -180,10 +186,10 @@ class TransactionsEditController extends AbstractController
 
             if ($inter_transaction)
             {
-                if (isset($s_inter_schema_check[$inter_schema]))
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $out .= $account_render->inter_link($inter_transaction['id_from'],
-                        $inter_schema, $pp->ary());
+                        $inter_schema, $su);
                 }
                 else
                 {
@@ -228,10 +234,10 @@ class TransactionsEditController extends AbstractController
 
             if ($inter_transaction)
             {
-                if (isset($s_inter_schema_check[$inter_schema]))
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $out .= $account_render->inter_link($inter_transaction['id_to'],
-                        $inter_schema, $pp->ary());
+                        $inter_schema, $su);
                 }
                 else
                 {

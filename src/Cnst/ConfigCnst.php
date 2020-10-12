@@ -22,6 +22,8 @@ class ConfigCnst
         'users'			=> 'Leden',
         'transactions'	=> 'Transacties',
         'news'			=> 'Nieuws',
+        'docs'          => 'Documenten',
+        'forum'         => 'Forum',
     ];
 
     const BLOCK_ARY = [
@@ -188,12 +190,6 @@ class ConfigCnst
             'is_ary'            => true,
         ],
 
-        'contact_form_en' => [
-            'type' => 'checkbox',
-            'default'	=> '0',
-            'path'      => 'contact_form.enabled',
-        ],
-
         'contact_form_top_text' => [
             'lbl'	=> 'Tekst boven het contact formulier',
             'type'	=> 'textarea',
@@ -214,12 +210,6 @@ class ConfigCnst
                 'id'    => 'contact_form',
                 'block' => 'bottom',
             ],
-        ],
-
-        'registration_en' => [
-            'type' => 'checkbox',
-            'default'	=> '0',
-            'path'      => 'register_form.enabled',
         ],
 
         'registration_top_text' => [
@@ -343,6 +333,8 @@ class ConfigCnst
             'required'	=> true,
             'addon_fa'	=> 'plane',
             'default'	=> 'messages',
+            'explain'   => 'De standaard pagina waar men terecht komt na login.
+                De betreffende module moet ingeschakeld zijn. (Zie "Modules")',
             'path'      => 'system.default_landing_page',
         ],
 
@@ -382,6 +374,11 @@ class ConfigCnst
                 'fileupload',
                 'upload_image.js',
             ],
+        ],
+
+        'modules'   => [
+            'route' => 'config_ext_modules',
+            'lbl'   => 'Modules',
         ],
 
         'currency'		=> [
@@ -445,11 +442,6 @@ class ConfigCnst
             'lbl'	=> 'Contact',
             'lbl_pane'	=> 'Contact Formulier',
             'inputs'	=> [
-                'li_1'	=> [
-                    'inline' => '%input(contact_form_en)% contact formulier aan.',
-                    'explain' => 'Het contactformulier kan je terugvinden
-                        op <a href="%path_contact%">%path_contact%</a>.',
-                ],
                 'contact_form_top_text' => true,
                 'contact_form_bottom_text' => true,
             ],
@@ -464,16 +456,6 @@ class ConfigCnst
             'lbl'	=> 'Inschrijven',
             'lbl_pane'	=> 'Inschrijvingsformulier',
             'inputs'	=> [
-                'li_1'	=> [
-                    'inline' => '%input(registration_en)% inschrijvingsformulier aan.',
-                    'explain' => 'Het registratieformulier kan je terugvinden op
-                        <a href="%path_register%">%path_register%</a>. Plaats
-                        deze link op je website.<br>Bij inschrijving wordt een
-                        nieuwe gebruiker zonder code aangemaakt met status
-                        info-pakket.<br>De admin krijgt een notificatie-email
-                        bij elke inschrijving.',
-                ],
-
                 'registration_top_text' => true,
                 'registration_bottom_text' => true,
                 'registration_success_text'	=> true,
@@ -504,15 +486,6 @@ class ConfigCnst
                 'li_1'	=> [
                     'inline' => '%input(news_order_asc)% Sorteer nieuwsberichten
                         chronologisch op agendadatum.',
-                ],
-            ],
-        ],
-
-        'forum'	=> [
-            'lbl'	=> 'Forum',
-            'inputs'	=> [
-                'li_1'	=> [
-                    'inline' => '%input(forum_en)% Forum aan.',
                 ],
             ],
         ],

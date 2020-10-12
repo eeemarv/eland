@@ -12,6 +12,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\StaticContentService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegisterConfirmController extends AbstractController

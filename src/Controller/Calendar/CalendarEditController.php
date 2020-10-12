@@ -10,12 +10,14 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CalendarEditController extends AbstractController
 {
@@ -23,6 +25,7 @@ class CalendarEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         AssetsService $assets_service,
         DateFormatService $date_format_service,
@@ -35,6 +38,11 @@ class CalendarEditController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Calendar module not enabled.');
+        }
+
         $errors = [];
 
         $event_at = trim($request->request->get('event_at', ''));

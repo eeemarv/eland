@@ -12,11 +12,13 @@ use App\Render\LinkRender;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesImagesDelController extends AbstractController
 {
@@ -25,6 +27,7 @@ class MessagesImagesDelController extends AbstractController
         int $id,
         MessageRepository $message_repository,
         Db $db,
+        ConfigService $config_service,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -37,6 +40,11 @@ class MessagesImagesDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $errors = [];
 
         $message = $message_repository->get($id, $pp->schema());

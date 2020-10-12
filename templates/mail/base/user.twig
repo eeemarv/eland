@@ -10,9 +10,13 @@
 {% endblock %}
 
 {%- block html_support -%}
-{%- include 'mail/include/support.html.twig' -%}
+{%- if config_bool('support_form.enabled', schema) -%}
+    {%- include 'mail/include/support.html.twig' -%}
+{%- endif -%}
 {%- endblock -%}
 
 {% block text_support %}
+{% if config_bool('support_form.enabled', schema) %}
 {% include 'mail/include/support.text.twig' %}
+{% endif %}
 {% endblock %}

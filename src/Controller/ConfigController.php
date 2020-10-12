@@ -42,6 +42,12 @@ class ConfigController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+        $news_enabled = $config_service->get_bool('news.enabled', $pp->schema());
+        $docs_enabled = $config_service->get_bool('docs.enabled', $pp->schema());
+        $forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
+
         $errors = [];
         $pane = ConfigCnst::TAB_PANES[$tab];
 
@@ -51,9 +57,31 @@ class ConfigController extends AbstractController
 
         $block_ary = ConfigCnst::BLOCK_ARY;
 
-        if (!$config_service->get('forum_en', $pp->schema()))
+        if (!$forum_enabled)
         {
             unset($block_ary['forum']);
+        }
+
+        if (!$transactions_enabled)
+        {
+            unset($block_ary['transactions']);
+        }
+
+        if (!$messages_enabled)
+        {
+            unset($block_ary['messages']);
+            unset($block_ary['messages_self']);
+            unset($block_ary['intersystem']);
+        }
+
+        if (!$news_enabled)
+        {
+            unset($block_ary['news']);
+        }
+
+        if (!$docs_enabled)
+        {
+            unset($block_ary['docs']);
         }
 
         if (!$config_service->get_intersystem_en($pp->schema()))
@@ -65,11 +93,6 @@ class ConfigController extends AbstractController
         $select_options = [
             'date_format'	=> $date_format_service->get_options(),
             'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
-        ];
-
-        $explain_replace_ary = [
-            '%path_register%'	=> $link_render->path('register', ['system' => $pp->system()]),
-            '%path_contact%'	=> $link_render->path('contact_form', ['system' => $pp->system()]),
         ];
 
         $addon_replace_ary = [
@@ -433,18 +456,25 @@ class ConfigController extends AbstractController
 
         foreach (ConfigCnst::TAB_PANES as $tab_id => $tab_pane_data)
         {
-            $out .= '<li role="presentation" ';
-            $out .= 'class="nav-item">';
+            $out .= '<li role="presentation"';
+            $out .= $tab_id === $tab ? ' class="active"' : '';
+            $out .= '>';
 
-            $class = 'nav-link';
-            $class .= $tab_id === $tab ? ' active' : '';
+            if (isset($tab_pane_data['route']))
+            {
+                $out .= $link_render->link_no_attr($tab_pane_data['route'],
+                    $pp->ary(),
+                    [],
+                    $tab_pane_data['lbl']);
+            }
+            else
+            {
+                $out .= $link_render->link_no_attr('config',
+                    $pp->ary(),
+                    ['tab' => $tab_id],
+                    $tab_pane_data['lbl']);
+            }
 
-            $out .= $link_render->link('config',
-                $pp->ary(),
-                ['tab' => $tab_id],
-                $tab_pane_data['lbl'],
-                ['class' => $class]
-            );
             $out .= '</li>';
         }
 
@@ -838,7 +868,7 @@ class ConfigController extends AbstractController
             if (isset($input['explain']))
             {
                 $out .= '<p>';
-                $out .= strtr($input['explain'], $explain_replace_ary);
+                $out .= $input['explain'];
                 $out .= '</p>';
             }
 

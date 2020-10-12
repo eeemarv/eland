@@ -145,6 +145,11 @@ config_modules:
   defaults:
     module: config
 
+config_ext_modules:
+  controller: App\Controller\ConfigExtModulesController
+  path: /config/modules
+  methods: GET|POST
+
 config:
   controller: App\Controller\ConfigController
   path: /config/{tab<%assert.config_tab%>?system-name}

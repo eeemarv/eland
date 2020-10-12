@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cnst\RoleCnst;
 use App\Service\IntersystemsService;
 use App\Service\SystemsService;
 use App\Service\MenuService;
@@ -16,6 +17,7 @@ class MenuNavSystemService
 	protected ConfigService $config_service;
 	protected UserCacheService $user_cache_service;
 	protected PageParamsService $pp;
+	protected VarRouteService $vr;
 	protected SessionUserService $su;
 
 	public function __construct(
@@ -25,6 +27,7 @@ class MenuNavSystemService
 		ConfigService $config_service,
 		UserCacheService $user_cache_service,
 		PageParamsService $pp,
+		VarRouteService $vr,
 		SessionUserService $su
 	)
 	{
@@ -34,6 +37,7 @@ class MenuNavSystemService
 		$this->config_service = $config_service;
 		$this->user_cache_service = $user_cache_service;
 		$this->pp = $pp;
+		$this->vr = $vr;
 		$this->su = $su;
 	}
 
@@ -60,7 +64,7 @@ class MenuNavSystemService
 			'label'		=> count($this->su->logins()) > 1 ? 'Eigen Systemen' : 'Eigen Systeem',
 		];
 
-		$route = $this->menu_service->get_fallback_route();
+		$active_menu_route = $this->menu_service->get_active();
 
 		foreach ($this->su->logins() as $login_schema => $login_id)
 		{
@@ -72,32 +76,22 @@ class MenuNavSystemService
 			{
 				$role = $this->user_cache_service->get_role($login_id, $login_schema);
 
-				if ($role === 'guest')
-				{
-					$role_short = 'g';
-				}
-				else if ($role === 'user')
-				{
-					$role_short = 'u';
-				}
-				else if ($role === 'admin')
-				{
-					$role_short = 'a';
-				}
-				else
+				if (!isset(RoleCnst::SHORT[$role]))
 				{
 					continue;
 				}
+
+				$role_short = RoleCnst::SHORT[$role];
 			}
 
 			$m_item = [
-				'route'		=> $route,
+				'route'		=> $this->vr->get_inter($active_menu_route, $login_schema),
 				'params'	=> [
 					'system' 		=> $this->systems_service->get_system($login_schema),
 					'role_short'	=> $role_short,
 					'os'			=> '',
 				],
-				'label'		=> $this->config_service->get('systemname', $login_schema),
+				'label'		=> $this->config_service->get_str('system.name', $login_schema),
 			];
 
 			if ($login_schema === $this->su->schema())
@@ -135,17 +129,19 @@ class MenuNavSystemService
 			'label'		=> $this->intersystems_service->get_count($this->su->schema()) > 1 ? 'Gekoppelde interSystemen' : 'Gekoppeld interSysteem',
 		];
 
-		foreach ($this->intersystems_service->get_eland($this->su->schema()) as $eland_schema => $h)
+		$eland_intersystems = $this->intersystems_service->get_eland($this->su->schema());
+
+		foreach ($eland_intersystems as $eland_schema => $h)
 		{
 			$m_item = [
-				'route'		=> $route,
+				'route'		=> $this->vr->get_inter($active_menu_route, $eland_schema),
 				'params'	=> [
 					'os'			=> $this->systems_service->get_system($this->su->schema()),
 					'system' 		=> $this->systems_service->get_system($eland_schema),
 					'role_short'	=> 'g',
 					'welcome'		=> '1',
 				],
-				'label'		=> $this->config_service->get('systemname', $eland_schema),
+				'label'		=> $this->config_service->get_str('system.name', $eland_schema),
 			];
 
 			if ($this->pp->schema() === $eland_schema)

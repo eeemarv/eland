@@ -29,6 +29,7 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessagesListController extends AbstractController
 {
@@ -104,6 +105,11 @@ class MessagesListController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
         $errors = [];
 
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());

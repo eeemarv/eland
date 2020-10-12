@@ -74,6 +74,9 @@ class UsersListController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+
         $errors = [];
 
         $q = $request->get('q', '');
@@ -264,6 +267,7 @@ class UsersListController extends AbstractController
                 $redirect = true;
             }
             else if (!count($errors)
+                && $transactions_enabled
                 && $user_tab_data
                 && in_array($bulk_submit_action, ['min_limit', 'max_limit']))
             {
@@ -590,6 +594,20 @@ class UsersListController extends AbstractController
             ],
         ];
 
+        if (!$transactions_enabled)
+        {
+            unset($columns['u']['balance']);
+            unset($columns['u']['min']);
+            unset($columns['u']['max']);
+            unset($columns['u']['balance_date']);
+            unset($columns['a']);
+        }
+
+        if (!$messages_enabled)
+        {
+            unset($columns['m']);
+        }
+
         $session_users_columns_key = 'users_columns_';
         $session_users_columns_key .= $pp->role();
 
@@ -633,6 +651,20 @@ class UsersListController extends AbstractController
             }
 
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
+        }
+
+        if (!$transactions_enabled)
+        {
+            unset($show_columns['u']['balance']);
+            unset($show_columns['u']['min']);
+            unset($show_columns['u']['max']);
+            unset($show_columns['u']['balance_date']);
+            unset($show_columns['a']);
+        }
+
+        if (!$messages_enabled)
+        {
+            unset($show_columns['m']);
         }
 
         $adr_split = $show_columns['p']['c']['adr_split'] ?? '';
@@ -924,6 +956,10 @@ class UsersListController extends AbstractController
 
         $f_col .= '<div class="row">';
 
+        $fc1 = '';
+        $fc2 = '';
+        $fc3 = '';
+
         foreach ($columns as $group => $ary)
         {
             if ($group === 'p')
@@ -931,51 +967,41 @@ class UsersListController extends AbstractController
                 continue;
             }
 
-            if ($group === 'm' || $group === 'c')
-            {
-                $f_col .= '</div>';
-            }
-
-            if ($group === 'u' || $group === 'c' || $group === 'm')
-            {
-                $f_col .= '<div class="col-md-4">';
-            }
-
             if ($group === 'c')
             {
-                $f_col .= '<h3>Contacten</h3>';
+                $fc2 .= '<h3>Contacten</h3>';
             }
             else if ($group === 'd')
             {
-                $f_col .= '<h3>Afstand</h3>';
-                $f_col .= '<p>Tussen eigen adres en adres van gebruiiker. ';
-                $f_col .= 'De kolom wordt niet getoond wanneer het eigen adres ';
-                $f_col .= 'niet ingesteld is.</p>';
+                $fc2 .= '<h3>Afstand</h3>';
+                $fc2 .= '<p>Tussen eigen adres en adres van gebruiiker. ';
+                $fc2 .= 'De kolom wordt niet getoond wanneer het eigen adres ';
+                $fc2 .= 'niet ingesteld is.</p>';
             }
             else if ($group === 'a')
             {
-                $f_col .= '<h3>Transacties/activiteit</h3>';
+                $fc3 .= '<h3>Transacties/activiteit</h3>';
 
-                $f_col .= '<div class="form-group">';
-                $f_col .= '<label for="p_activity_days" ';
-                $f_col .= 'class="control-label">';
-                $f_col .= 'In periode';
-                $f_col .= '</label>';
-                $f_col .= '<div class="input-group">';
-                $f_col .= '<span class="input-group-prepend">';
-                $f_col .= '<span class="input-group-text">';
-                $f_col .= 'dagen';
-                $f_col .= '</span>';
-                $f_col .= '</span>';
-                $f_col .= '<input type="number" ';
-                $f_col .= 'id="p_activity_days" ';
-                $f_col .= 'name="sh[p][a][days]" ';
-                $f_col .= 'value="';
-                $f_col .= $activity_days;
-                $f_col .= '" ';
-                $f_col .= 'size="4" min="1" class="form-control">';
-                $f_col .= '</div>';
-                $f_col .= '</div>';
+                $fc3 .= '<div class="form-group">';
+                $fc3 .= '<label for="p_activity_days" ';
+                $fc3 .= 'class="control-label">';
+                $fc3 .= 'In periode';
+                $fc3 .= '</label>';
+                $fc3 .= '<div class="input-group">';
+                $fc3 .= '<span class="input-group-prepend">';
+                $fc3 .= '<span class="input-group-text">';
+                $fc3 .= 'dagen';
+                $fc3 .= '</span>';
+                $fc3 .= '</span>';
+                $fc3 .= '<input type="number" ';
+                $fc3 .= 'id="p_activity_days" ';
+                $fc3 .= 'name="sh[p][a][days]" ';
+                $fc3 .= 'value="';
+                $fc3 .= $activity_days;
+                $fc3 .= '" ';
+                $fc3 .= 'size="4" min="1" class="form-control">';
+                $fc3 .= '</div>';
+                $fc3 .= '</div>';
 
                 $typeahead_service->ini()
                     ->add('accounts', ['status' => 'active']);
@@ -992,35 +1018,35 @@ class UsersListController extends AbstractController
                         ->add('accounts', ['status' => 'im']);
                 }
 
-                $f_col .= '<div class="form-group">';
-                $f_col .= '<label for="p_activity_filter_code" ';
-                $f_col .= 'class="control-label">';
-                $f_col .= 'Exclusief tegenpartij';
-                $f_col .= '</label>';
-                $f_col .= '<div class="input-group">';
-                $f_col .= '<span class="input-group-prepend">';
-                $f_col .= '<span class="input-group-text">';
-                $f_col .= '<i class="fa fa-user"></i>';
-                $f_col .= '</span>';
-                $f_col .= '</span>';
-                $f_col .= '<input type="text" ';
-                $f_col .= 'name="sh[p][a][code]" ';
-                $f_col .= 'id="p_activity_filter_code" ';
-                $f_col .= 'value="';
-                $f_col .= $activity_filter_code;
-                $f_col .= '" ';
-                $f_col .= 'placeholder="Account Code" ';
-                $f_col .= 'class="form-control" ';
-                $f_col .= 'data-typeahead="';
+                $fc3 .= '<div class="form-group">';
+                $fc3 .= '<label for="p_activity_filter_code" ';
+                $fc3 .= 'class="control-label">';
+                $fc3 .= 'Exclusief tegenpartij';
+                $fc3 .= '</label>';
+                $fc3 .= '<div class="input-group">';
+                $fc3 .= '<span class="input-group-prepend">';
+                $fc3 .= '<span class="input-group-text">';
+                $fc3 .= '<i class="fa fa-user"></i>';
+                $fc3 .= '</span>';
+                $fc3 .= '</span>';
+                $fc3 .= '<input type="text" ';
+                $fc3 .= 'name="sh[p][a][code]" ';
+                $fc3 .= 'id="p_activity_filter_code" ';
+                $fc3 .= 'value="';
+                $fc3 .= $activity_filter_code;
+                $fc3 .= '" ';
+                $fc3 .= 'placeholder="Account Code" ';
+                $fc3 .= 'class="form-control" ';
+                $fc3 .= 'data-typeahead="';
 
-                $f_col .= $typeahead_service->str([
+                $fc3 .= $typeahead_service->str([
                     'filter'		=> 'accounts',
                     'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
                 ]);
 
-                $f_col .= '">';
-                $f_col .= '</div>';
-                $f_col .= '</div>';
+                $fc3 .= '">';
+                $fc3 .= '</div>';
+                $fc3 .= '</div>';
 
                 foreach ($ary as $a_type => $a_ary)
                 {
@@ -1028,7 +1054,7 @@ class UsersListController extends AbstractController
                     {
                         $checkbox_name = 'sh[' . $group . '][' . $a_type . '][' . $key . ']';
 
-                        $f_col .= strtr(BulkCnst::TPL_CHECKBOX, [
+                        $fc3 .= strtr(BulkCnst::TPL_CHECKBOX, [
                             '%name%'    => $checkbox_name,
                             '%attr%'    => isset($show_columns[$group][$a_type][$key]) ? ' checked' : '',
                             '%label%'   => $lbl,
@@ -1036,13 +1062,11 @@ class UsersListController extends AbstractController
                     }
                 }
 
-                $f_col .= '</div>';
-
                 continue;
             }
             else if ($group === 'm')
             {
-                $f_col .= '<h3>Vraag en aanbod</h3>';
+                $fc3 .= '<h3>Vraag en aanbod</h3>';
             }
 
             foreach ($ary as $key => $lbl)
@@ -1093,12 +1117,49 @@ class UsersListController extends AbstractController
                     $columns['u']['balance_date'] = 'Saldo op ' . $balance_date;
                 }
 
-                $f_col .= strtr(BulkCnst::TPL_CHECKBOX, [
+                $chckbx = strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => $checkbox_name,
                     '%attr%'    => isset($show_columns[$group][$key]) ? ' checked' : '',
                     '%label%'   => $lbl .  $lbl_plus,
                 ]);
+
+                switch ($group)
+                {
+                    case 'u':
+                        $fc1 .= $chckbx;
+                    break;
+                    case 'c':
+                    case 'd':
+                        $fc2 .= $chckbx;
+                    break;
+                    case 'm':
+                    case 'a':
+                        $fc3 .= $chckbx;
+                    break;
+                }
             }
+        }
+
+        if ($fc3 === '')
+        {
+            $f_col .= '<div class="col-md-6">';
+            $f_col .= $fc1;
+            $f_col .= '</div>';
+            $f_col .= '<div class="col-md-6">';
+            $f_col .= $fc2;
+            $f_col .= '</div>';
+        }
+        else
+        {
+            $f_col .= '<div class="col-md-4">';
+            $f_col .= $fc1;
+            $f_col .= '</div>';
+            $f_col .= '<div class="col-md-4">';
+            $f_col .= $fc2;
+            $f_col .= '</div>';
+            $f_col .= '<div class="col-md-4">';
+            $f_col .= $fc3;
+            $f_col .= '</div>';
         }
 
         $f_col .= '</div>';
@@ -1540,6 +1601,11 @@ class UsersListController extends AbstractController
 
             foreach (BulkCnst::USER_TABS as $k => $t)
             {
+                if (!$transactions_enabled && in_array($k, ['min_limit', 'max_limit']))
+                {
+                    continue;
+                }
+
                 $out .= '<a href="#' . $k . '_tab" ';
                 $out .= 'class="dropdown-item" data-toggle="tab">';
                 $out .= $t['lbl'];
@@ -1600,6 +1666,11 @@ class UsersListController extends AbstractController
 
             foreach(BulkCnst::USER_TABS as $k => $t)
             {
+                if (!$transactions_enabled && in_array($k, ['min_limit', 'max_limit']))
+                {
+                    continue;
+                }
+
                 $out .= '<div role="tabpanel" class="tab-pane" id="';
                 $out .= $k;
                 $out .= '_tab"';

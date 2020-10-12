@@ -63,7 +63,7 @@ class PageParamsService
 
 		if ($this->system === '')
 		{
-			throw new NotFoundHttpException('Geen systeem gedefinieerd.');
+			throw new NotFoundHttpException('No system defined.');
 		}
 
 		if (!$this->systems_service->get_schema($this->system))

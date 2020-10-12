@@ -9,13 +9,6 @@ use App\Render\BtnNavRender;
 
 class MenuService
 {
-	const FALLBACK_VAR = [
-		'messages'		=> true,
-		'users'			=> true,
-		'news'			=> true,
-		'transactions'	=> true,
-	];
-
 	protected ConfigService $config_service;
 	protected ItemAccessService $item_access_service;
 	protected BtnNavRender $btn_nav_render;
@@ -61,25 +54,15 @@ class MenuService
 		$this->active_menu = $active_menu;
 	}
 
-	public function get_fallback_route():string
+	public function get_active():string
 	{
-		if (isset(self::FALLBACK_VAR[$this->active_menu]))
-		{
-			$route = $this->active_menu;
-		}
-		else
-		{
-			$route = 'default';
-		}
-
-		return str_replace('_admin', '', $this->vr->get($route));
+		return $this->active_menu;
 	}
 
 	public function get_nav_admin():array
 	{
 		$m_ary = [];
 		$system = $this->pp->system();
-		$fallback_route = $this->get_fallback_route();
 
 		foreach (MenuCnst::NAV_ADMIN as $key => $def)
 		{
@@ -88,7 +71,7 @@ class MenuService
 
 			if (isset($def['fallback_route']))
 			{
-				$m_ary[$key]['route'] = $fallback_route;
+				$m_ary[$key]['route'] = $this->vr->get_inter($this->active_menu, $this->pp->schema());
 			}
 		}
 

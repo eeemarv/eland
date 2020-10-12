@@ -28,6 +28,7 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MassTransactionController extends AbstractController
 {
@@ -108,6 +109,11 @@ class MassTransactionController extends AbstractController
         AssetsService $assets_service
     ):Response
     {
+        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Transactions module not enabled.');
+        }
+
         $errors = [];
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());

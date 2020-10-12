@@ -15,6 +15,7 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CalendarMonthController extends AbstractController
 {
@@ -34,6 +35,11 @@ class CalendarMonthController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Calendar module not enabled.');
+        }
+
         $news = NewsListController::get_data(
             $db,
             $config_service,

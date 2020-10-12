@@ -91,6 +91,8 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('Access denied.');
         }
 
+        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $min_limit = $account_repository->get_min_limit($id, $pp->schema());
         $max_limit = $account_repository->get_max_limit($id, $pp->schema());
         $balance = $account_repository->get_balance($id, $pp->schema());
@@ -301,9 +303,10 @@ class UsersShowController extends AbstractController
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
-        if ($pp->is_admin()
-            || (!$su->is_owner($id) && $user['status'] !== 7
-                && !($pp->is_guest() && $su->is_system_self())))
+        if ($transactions_enabled
+            && ($pp->is_admin()
+                || (!$su->is_owner($id) && $user['status'] !== 7
+                && !($pp->is_guest() && $su->is_system_self()))))
         {
             $tus = ['tuid' => $id];
 
@@ -312,8 +315,13 @@ class UsersShowController extends AbstractController
                 $tus['tus'] = $pp->schema();
             }
 
-            $btn_top_render->add_trans('transactions_add', $su->ary(),
-                $tus, 'Transactie naar ' . $account_render->str($id, $pp->schema()));
+            $self_transactions_enabled = $config_service->get_bool('transactions.enabled', $su->schema());
+
+            if ($self_transactions_enabled)
+            {
+                $btn_top_render->add_trans('transactions_add', $su->ary(),
+                    $tus, 'Transactie naar ' . $account_render->str($id, $pp->schema()));
+            }
         }
 
         $pp_status_ary = $pp->ary();
@@ -586,63 +594,66 @@ class UsersShowController extends AbstractController
             $out .= $this->get_dd($user['admincomment'] ?? '');
         }
 
-        $out .= '<dt>Saldo</dt>';
-        $out .= '<dd>';
-        $out .= '<span class="label label-info">';
-        $out .= $balance;
-        $out .= '</span>&nbsp;';
-        $out .= $currency;
-        $out .= '</dd>';
-
-        $out .= '<dt>Minimum limiet</dt>';
-        $out .= '<dd>';
-
-        if (isset($min_limit))
+        if ($transactions_enabled)
         {
-            $out .= '<span class="label label-danger">';
-            $out .= $min_limit;
+            $out .= '<dt>Saldo</dt>';
+            $out .= '<dd>';
+            $out .= '<span class="label label-info">';
+            $out .= $balance;
             $out .= '</span>&nbsp;';
             $out .= $currency;
-        }
-        else if (isset($system_min_limit))
-        {
-            $out .= '<span class="label label-default">';
-            $out .= $system_min_limit;
-            $out .= '</span>&nbsp;';
-            $out .= $currency;
-            $out .= ' (Minimum Systeemslimiet)';
-        }
-        else
-        {
-            $out .= '<i class="fa fa-times"></i>';
-        }
+            $out .= '</dd>';
 
-        $out .= '</dd>';
+            $out .= '<dt>Minimum limiet</dt>';
+            $out .= '<dd>';
 
-        $out .= '<dt>Maximum limiet</dt>';
-        $out .= '<dd>';
+            if (isset($min_limit))
+            {
+                $out .= '<span class="label label-danger">';
+                $out .= $min_limit;
+                $out .= '</span>&nbsp;';
+                $out .= $currency;
+            }
+            else if (isset($system_min_limit))
+            {
+                $out .= '<span class="label label-default">';
+                $out .= $system_min_limit;
+                $out .= '</span>&nbsp;';
+                $out .= $currency;
+                $out .= ' (Minimum Systeemslimiet)';
+            }
+            else
+            {
+                $out .= '<i class="fa fa-times"></i>';
+            }
 
-        if (isset($max_limit))
-        {
-            $out .= '<span class="label label-success">';
-            $out .= $max_limit;
-            $out .= '</span>&nbsp;';
-            $out .= $currency;
-        }
-        else if (isset($system_max_limit))
-        {
-            $out .= '<span class="label label-default">';
-            $out .= $system_max_limit;
-            $out .= '</span>&nbsp;';
-            $out .= $currency;
-            $out .= ' (Maximum Systeemslimiet)';
-        }
-        else
-        {
-            $out .= '<i class="fa fa-times"></i>';
-        }
+            $out .= '</dd>';
 
-        $out .= '</dd>';
+            $out .= '<dt>Maximum limiet</dt>';
+            $out .= '<dd>';
+
+            if (isset($max_limit))
+            {
+                $out .= '<span class="label label-success">';
+                $out .= $max_limit;
+                $out .= '</span>&nbsp;';
+                $out .= $currency;
+            }
+            else if (isset($system_max_limit))
+            {
+                $out .= '<span class="label label-default">';
+                $out .= $system_max_limit;
+                $out .= '</span>&nbsp;';
+                $out .= $currency;
+                $out .= ' (Maximum Systeemslimiet)';
+            }
+            else
+            {
+                $out .= '<i class="fa fa-times"></i>';
+            }
+
+            $out .= '</dd>';
+        }
 
         if ($pp->is_admin() || $su->is_owner($id))
         {
@@ -668,77 +679,90 @@ class UsersShowController extends AbstractController
 
         $out .= $contacts_content;
 
-        $out .= '<div class="row">';
-        $out .= '<div class="col-md-12">';
-
-        $out .= '<h3>Huidig saldo: <span class="label label-info">';
-        $out .= $balance;
-        $out .= '</span> ';
-        $out .= $currency;
-        $out .= '</h3>';
-        $out .= '</div></div>';
-
-        $out .= '<div class="row print-hide">';
-        $out .= '<div class="col-md-6">';
-        $out .= '<div id="chartdiv" data-height="480px" data-width="960px" ';
-
-        $out .= 'data-plot-user-transactions="';
-        $out .= htmlspecialchars($link_render->context_path('plot_user_transactions',
-            $pp->ary(), ['user_id' => $id, 'days' => $tdays]));
-
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="col-md-6">';
-        $out .= '<div id="donutdiv" data-height="480px" ';
-        $out .= 'data-width="960px"></div>';
-        $out .= '<h4>Interacties laatste jaar</h4>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="row">';
-        $out .= '<div class="col-md-12">';
-
-        $out .= '<div class="card card-default">';
-        $out .= '<div class="card-body">';
-
-        $account_str = $account_render->str($id, $pp->schema());
-
-        $attr_link_messages = $attr_link_transactions = [
-            'class'     => 'btn btn-default btn-lg btn-block border border-secondary',
-            'disabled'  => 'disabled',
-        ];
-
-        if ($count_messages)
+        if ($transactions_enabled)
         {
-            unset($attr_link_messages['disabled']);
+            $out .= '<div class="row">';
+            $out .= '<div class="col-md-12">';
+
+            $out .= '<h3>Huidig saldo: <span class="label label-info">';
+            $out .= $balance;
+            $out .= '</span> ';
+            $out .= $currency;
+            $out .= '</h3>';
+            $out .= '</div></div>';
+
+            $out .= '<div class="row print-hide">';
+            $out .= '<div class="col-md-6">';
+            $out .= '<div id="chartdiv" data-height="480px" data-width="960px" ';
+
+            $out .= 'data-plot-user-transactions="';
+            $out .= htmlspecialchars($link_render->context_path('plot_user_transactions',
+                $pp->ary(), ['user_id' => $id, 'days' => $tdays]));
+
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '</div>';
+
+            $out .= '<div class="col-md-6">';
+            $out .= '<div id="donutdiv" data-height="480px" ';
+            $out .= 'data-width="960px"></div>';
+            $out .= '<h4>Interacties laatste jaar</h4>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
 
-        if ($count_transactions)
+        if ($messages_enabled || $transactions_enabled)
         {
-            unset($attr_link_transactions['disabled']);
+            $out .= '<div class="row">';
+            $out .= '<div class="col-md-12">';
+
+            $out .= '<div class="card card-default">';
+            $out .= '<div class="card-body">';
+
+            $account_str = $account_render->str($id, $pp->schema());
+
+            $attr_link_messages = $attr_link_transactions = [
+                'class'     => 'btn btn-default btn-lg btn-block border border-secondary',
+                'disabled'  => 'disabled',
+            ];
+
+            if ($count_messages)
+            {
+                unset($attr_link_messages['disabled']);
+            }
+
+            if ($count_transactions)
+            {
+                unset($attr_link_transactions['disabled']);
+            }
+
+            if ($messages_enabled)
+            {
+                $out .= $link_render->link_fa($vr->get('messages'),
+                    $pp->ary(),
+                    ['f' => ['uid' => $id]],
+                    'Vraag en aanbod van ' . $account_str .
+                    ' (' . $count_messages . ')',
+                    $attr_link_messages,
+                    'newspaper-o');
+            }
+
+            if ($transactions_enabled)
+            {
+                $out .= $link_render->link_fa('transactions',
+                    $pp->ary(),
+                    ['f' => ['uid' => $id]],
+                    'Transacties van ' . $account_str .
+                    ' (' . $count_transactions . ')',
+                    $attr_link_transactions,
+                    'exchange');
+            }
+
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
         }
-
-        $out .= $link_render->link_fa($vr->get('messages'),
-            $pp->ary(),
-            ['f' => ['uid' => $id]],
-            'Vraag en aanbod van ' . $account_str .
-            ' (' . $count_messages . ')',
-            $attr_link_messages,
-            'newspaper-o');
-
-        $out .= $link_render->link_fa('transactions',
-            $pp->ary(),
-            ['f' => ['uid' => $id]],
-            'Transacties van ' . $account_str .
-            ' (' . $count_transactions . ')',
-            $attr_link_transactions,
-            'exchange');
-
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
 
         $menu_service->set('users');
 

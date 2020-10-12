@@ -10,6 +10,7 @@ use App\Render\LinkRender;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ContactFormConfirmController extends AbstractController
 {

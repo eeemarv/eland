@@ -11,10 +11,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class WelcomeGuestSubscriber implements EventSubscriberInterface
 {
-    const MSG = <<<'TPL'
+    const MSG_WELCOME = <<<'TPL'
     <strong>Welkom bij %system_name%</strong><br>
+    TPL;
+    const MSG_CURRENCY = <<<'TPL'
     Waardering bij %system_name% gebeurt met '%currency%'.
-    %currency_ratio% %currency% stemt overeen met 1 uur.<br>
+    %currency_ratio% %per_hour_ratio% stemt overeen met 1 uur.<br>
+    TPL;
+    const MSG_BACK = <<<'TPL'
     Je kan steeds terug naar je eigen Systeem via het menu <strong>Systeem</strong>
     boven in de navigatiebalk.
     TPL;
@@ -70,15 +74,26 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $system_name = $this->config_service->get('systemname', $schema);
-        $currency = $this->config_service->get('currency', $schema);
-        $currency_ratio = $this->config_service->get('currencyratio', $schema);
+        $system_name = $this->config_service->get_str('system.name', $schema);
+        $currency = $this->config_service->get_str('transactions.currency.name', $schema);
+        $per_hour_ratio = $this->config_service->get_int('transactions.currency.per_hour_ratio', $schema);
+        $timebased_enabled = $this->config_service->get_bool('transactions.currency.timebased_en', $schema);
+        $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
 
-        $msg = strtr(self::MSG, [
+        $msg = strtr(self::MSG_WELCOME, [
             '%system_name%'     => $system_name,
-            '%currency%'        => $currency,
-            '%currency_ratio%'  => $currency_ratio,
         ]);
+
+        if ($transactions_enabled && $timebased_enabled)
+        {
+            $msg .= strtr(self::MSG_CURRENCY, [
+                '%system_name%'         => $system_name,
+                '%currency%'            => $currency,
+                '%per_hour_ratio%'      => $per_hour_ratio,
+            ]);
+        }
+
+        $msg .= self::MSG_BACK;
 
         $this->alert_service->info($msg);
     }

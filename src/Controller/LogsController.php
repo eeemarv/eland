@@ -10,6 +10,7 @@ use App\Render\PaginationRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
+use App\Service\IntersystemsService;
 use App\Service\LogDbService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -19,6 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 
 class LogsController extends AbstractController
 {
@@ -32,6 +34,7 @@ class LogsController extends AbstractController
         LogDbService $log_db_service,
         BtnNavRender $btn_nav_render,
         AssetsService $assets_service,
+        IntersystemsService $intersystems_service,
         TypeaheadService $typeahead_service,
         AccountRender $account_render,
         ConfigService $config_service,
@@ -41,6 +44,8 @@ class LogsController extends AbstractController
 
     ):Response
     {
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -58,9 +63,11 @@ class LogsController extends AbstractController
             ],
         ];
 
-        $params_sql = $where_sql = [];
-
-        $params_sql[] = $pp->schema();
+        $sql = [
+            'where'     => ['schema = ?'],
+            'params'    => [$pp->schema()],
+            'types'     => [\PDO::PARAM_STR],
+        ];
 
         if (isset($filter['code'])
             && $filter['code'])
@@ -69,13 +76,15 @@ class LogsController extends AbstractController
 
             $filter_user_id = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$filter_code]);
+                where code = ?', [$filter_code], 0, [\PDO::PARAM_STR]);
 
             if ($filter_user_id)
             {
-                $where_sql[] = 'user_id = ? and user_schema = ?';
-                $params_sql[] = $filter_user_id;
-                $params_sql[] = $pp->schema();
+                $sql['where'][] = 'user_id = ? and user_schema = ?';
+                $sql['params'][] = $filter_user_id;
+                $sql['params'][] = $pp->schema();
+                $sql['types'][] = \PDO::PARAM_INT;
+                $sql['types'][] = \PDO::PARAM_STR;
                 $params['f']['code'] = $filter['code'];
             }
         }
@@ -83,58 +92,58 @@ class LogsController extends AbstractController
         if (isset($filter['type'])
             && $filter['type'])
         {
-            $where_sql[] = 'type ilike ?';
-            $params_sql[] = strtolower($filter['type']);
+            $sql['where'][] = 'type ilike ?';
+            $sql['params'][] = strtolower($filter['type']);
+            $sql['types'][] = \PDO::PARAM_STR;
             $params['f']['type'] = $filter['type'];
         }
 
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $where_sql[] = 'event ilike ?';
-            $params_sql[] = '%' . $filter['q'] . '%';
+            $sql['where'][] = 'event ilike ?';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
 
         if (isset($filter['fdate'])
             && $filter['fdate'])
         {
-            $where_sql[] = 'ts >= ?';
-            $params_sql[] = $filter['fdate'];
+            $fdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['fdate'] . ' UTC'));
+
+            $sql['where'][] = 'ts >= ?';
+            $sql['params'][] = $fdate;
+            $sql['types'][] = Types::DATETIME_IMMUTABLE;
             $params['f']['fdate'] = $filter['fdate'];
         }
 
         if (isset($filter['tdate'])
             && $filter['tdate'])
         {
-            $where_sql[] = 'ts <= ?';
-            $params_sql[] = $filter['tdate'];
+            $tdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['tdate'] . ' UTC'));
+
+            $sql['where'][] = 'ts <= ?';
+            $sql['params'][] = $tdate;
+            $sql['types'][] = Types::DATETIME_IMMUTABLE;
             $params['f']['tdate'] = $filter['tdate'];
         }
 
-        if (count($where_sql))
-        {
-            $where_sql = ' and ' . implode(' and ', $where_sql) . ' ';
-        }
-        else
-        {
-            $where_sql = '';
-        }
-
-        $query = 'select *
-            from xdb.logs
-                where schema = ?' . $where_sql . '
-            order by ' . $params['s']['orderby'] . ' ';
+        $sql_where = ' and ' . implode(' and ', $sql['where']);
 
         $row_count = $db->fetchColumn('select count(*)
             from xdb.logs
-            where schema = ?' . $where_sql, $params_sql);
+            where 1 = 1' . $sql_where, $sql['params'], 0, $sql['types']);
 
+        $query = 'select *
+            from xdb.logs
+            where 1 = 1' . $sql_where;
+        $query .= ' order by ' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $rows = $db->fetchAll($query, $params_sql);
+        $rows = $db->fetchAll($query, $sql['params'], $sql['types']);
 
         $pagination_render->init('logs', $pp->ary(),
             $row_count, $params);
@@ -364,9 +373,13 @@ class LogsController extends AbstractController
                     {
                         $td[] = $account_render->link($row['user_id'], $pp->ary());
                     }
+                    else if (isset($su_intersystem_ary[$row['user_schema']]))
+                    {
+                        $td[] = $account_render->inter_link($row['user_id'], $row['user_schema'], $su);
+                    }
                     else
                     {
-                        $td[] = $account_render->inter_link($row['user_id'], $row['user_schema'], $pp->ary());
+                        $td[] = $account_render->str($row['user_id'], $row['user_schema']);
                     }
                 }
                 else

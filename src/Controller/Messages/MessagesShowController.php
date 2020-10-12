@@ -69,6 +69,13 @@ class MessagesShowController extends AbstractController
     {
         $visible_ary = $item_access_service->get_visible_ary_for_page();
 
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
@@ -227,6 +234,7 @@ class MessagesShowController extends AbstractController
         }
 
         if ($message['is_offer']
+            && $transactions_enabled
             && ($pp->is_admin()
                 || (!$su->is_owner($message['user_id'])
                     && $user['status'] !== 7
@@ -237,10 +245,16 @@ class MessagesShowController extends AbstractController
             if (!$su->is_system_self())
             {
                 $tus['tus'] = $pp->schema();
+
             }
 
-            $btn_top_render->add_trans('transactions_add', $su->ary(),
-                $tus, 'Transactie voor dit aanbod');
+            $self_transactions_enabled = $config_service->get_bool('transactions.enabled', $su->schema());
+
+            if ($self_transactions_enabled)
+            {
+                $btn_top_render->add_trans('transactions_add', $su->ary(),
+                    $tus, 'Transactie voor dit aanbod');
+            }
         }
 
         $prev_ary = $prev_id ? ['id' => $prev_id] : [];

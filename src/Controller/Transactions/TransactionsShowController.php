@@ -18,6 +18,7 @@ use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsShowController extends AbstractController
 {
@@ -39,11 +40,18 @@ class TransactionsShowController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Transactions module not enabled.');
+        }
+
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
 
-        $s_inter_schema_check = array_merge($eland_intersystem_ary,
-            [$su->schema() => true]);
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+        $su_intersystem_ary[$su->schema()] = true;
 
         $transaction = $db->fetchAssoc('select t.*
             from ' . $pp->schema() . '.transactions t
@@ -60,11 +68,15 @@ class TransactionsShowController extends AbstractController
             $inter_schema = $intersystem_account_schemas[$transaction['id_to']];
         }
 
+        $inter_transactions_enabled = false;
+
         if ($inter_schema)
         {
             $inter_transaction = $db->fetchAssoc('select t.*
                 from ' . $inter_schema . '.transactions t
                 where t.transid = ?', [$transaction['transid']]);
+
+            $inter_transactions_enabled = $config_service->get_bool('transactions.enabled', $inter_schema);
         }
         else
         {
@@ -149,10 +161,10 @@ class TransactionsShowController extends AbstractController
 
             if ($inter_transaction)
             {
-                if ($s_inter_schema_check[$inter_schema])
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $user_from = $account_render->inter_link($inter_transaction['id_from'],
-                        $inter_schema, $pp->ary());
+                        $inter_schema, $su);
                 }
                 else
                 {
@@ -200,10 +212,10 @@ class TransactionsShowController extends AbstractController
 
             if ($inter_transaction)
             {
-                if ($s_inter_schema_check[$inter_schema])
+                if (isset($su_intersystem_ary[$inter_schema]))
                 {
                     $user_to = $account_render->inter_link($inter_transaction['id_to'],
-                        $inter_schema, $pp->ary());
+                        $inter_schema, $su);
                 }
                 else
                 {
@@ -231,7 +243,7 @@ class TransactionsShowController extends AbstractController
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';
@@ -313,12 +325,25 @@ class TransactionsShowController extends AbstractController
                 $str .= 'in de eigen tijdmunt.';
 
                 if ($inter_transaction
-                    && isset($eland_intersystem_ary[$inter_schema]))
+                    && isset($eland_intersystem_ary[$inter_schema])
+                    && isset($su_intersystem_ary[$inter_schema])
+                    && $inter_transactions_enabled)
                 {
-                    $out .= $link_render->link_no_attr('transactions', [
-                            'system'		=> $systems_service->get_system($inter_schema),
+                    if ($su->schema() === $inter_schema)
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                                'system'	    => $su->system(),
+                                'role_short'	=> $su->role_short(),
+                            ], ['id' => $inter_transaction['id']], $str);
+                    }
+                    else
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                            'system'	    => $systems_service->get_system($inter_schema),
                             'role_short'	=> 'g',
+                            'os'            => $su->system(),
                         ], ['id' => $inter_transaction['id']], $str);
+                    }
                 }
                 else
                 {
@@ -333,7 +358,7 @@ class TransactionsShowController extends AbstractController
                 $out .= ' (';
                 $out .= $transaction['amount'];
                 $out .= ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= $currency;
                 $out .= ').';
             }
 
@@ -426,7 +451,7 @@ class TransactionsShowController extends AbstractController
                 $out .= 'in de eigen tijdmunt ';
                 $out .= '(';
                 $out .= $transaction['amount'] . ' ';
-                $out .= $config_service->get('currency', $pp->schema());
+                $out .= $currency;
                 $out .= ') ';
                 $out .= 'met gelijke tijdwaarde als Tr-1.';
             }
@@ -438,12 +463,25 @@ class TransactionsShowController extends AbstractController
                 $str .= 'met gelijke tijdwaarde als Tr-1.';
 
                 if ($inter_transaction
-                    && isset($eland_intersystem_ary[$inter_schema]))
+                    && isset($eland_intersystem_ary[$inter_schema])
+                    && isset($su_intersystem_ary[$inter_schema])
+                    && $inter_transactions_enabled)
                 {
-                    $out .= $link_render->link_no_attr('transactions', [
-                            'system'	=> $systems_service->get_system($inter_schema),
+                    if ($su->schema() === $inter_schema)
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                                'system'	    => $su->system(),
+                                'role_short'	=> $su->role_short(),
+                            ], ['id' => $inter_transaction['id']], $str);
+                    }
+                    else
+                    {
+                        $out .= $link_render->link_no_attr('transactions_show', [
+                            'system'	    => $systems_service->get_system($inter_schema),
                             'role_short'	=> 'g',
+                            'os'            => $su->system(),
                         ], ['id' => $inter_transaction['id']], $str);
+                    }
                 }
                 else
                 {

@@ -23,6 +23,8 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsController extends AbstractController
 {
@@ -48,6 +50,16 @@ class TransactionsController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Transactions module not enabled.');
+        }
+
+        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
+
+        $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+        $su_intersystem_ary[$su->schema()] = true;
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -59,15 +71,8 @@ class TransactionsController extends AbstractController
             $balance = $account_repository->get_balance($filter['uid'], $pp->schema());
         }
 
-        $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
-
-        $s_inter_schema_check = array_merge($intersystems_service->get_eland($pp->schema()),
-            [$su->schema() => true]);
-
         $is_owner = isset($filter['uid'])
             && $su->is_owner($filter['uid']);
-
-        $params_sql = $where_sql = $where_code_sql = [];
 
         $params = [
             's'	=> [
@@ -80,6 +85,12 @@ class TransactionsController extends AbstractController
             ],
         ];
 
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
         if (isset($filter['uid']))
         {
             $filter['fcode'] = $account_render->str($filter['uid'], $pp->schema());
@@ -90,10 +101,13 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['q']) && $filter['q'])
         {
-            $where_sql[] = 't.description ilike ?';
-            $params_sql[] = '%' . $filter['q'] . '%';
+            $sql['where'][] = 't.description ilike ?';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
+
+        $sql_where_code = [];
 
         if (isset($filter['fcode']) && $filter['fcode'])
         {
@@ -102,21 +116,22 @@ class TransactionsController extends AbstractController
 
             $fuid = $db->fetchColumn('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode]);
+                where code = ?', [$fcode], 0, [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
                 $fuid_sql = 't.id_from ';
                 $fuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
                 $fuid_sql .= ' ?';
-                $where_code_sql[] = $fuid_sql;
-                $params_sql[] = $fuid;
+                $sql_where_code[] = $fuid_sql;
+                $sql['params'][] = $fuid;
+                $sql['types'][] = \PDO::PARAM_STR;
 
                 $fcode = $account_render->str($fuid, $pp->schema());
             }
             else if ($filter['andor'] !== 'nor')
             {
-                $where_code_sql[] = '1 = 2';
+                $sql_where_code[] = '1 = 2';
             }
 
             $params['f']['fcode'] = $fcode;
@@ -135,25 +150,29 @@ class TransactionsController extends AbstractController
                 $tuid_sql = 't.id_to ';
                 $tuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
                 $tuid_sql .= ' ?';
-                $where_code_sql[] = $tuid_sql;
-                $params_sql[] = $tuid;
+                $sql_where_code[] = $tuid_sql;
+                $sql['params'][] = $tuid;
+                $sql['types'][] = \PDO::PARAM_STR;
 
                 $tcode = $account_render->str($tuid, $pp->schema());
             }
             else if ($filter['andor'] !== 'nor')
             {
-                $where_code_sql[] = '1 = 2';
+                $sql_where_code[] = '1 = 2';
             }
 
             $params['f']['tcode'] = $tcode;
         }
 
-        if (count($where_code_sql) > 1 && $filter['andor'] === 'or')
+        if (count($sql_where_code) > 1 && $filter['andor'] === 'or')
         {
-            $where_code_sql = [' ( ' . implode(' or ', $where_code_sql) . ' ) '];
+            $sql_where_code = [' ( ' . implode(' or ', $sql_where_code) . ' ) '];
         }
 
-        $where_sql = [...$where_sql, ...$where_code_sql];
+        if (count($sql_where_code))
+        {
+            $sql['where'] = [...$sql['where'], ...$sql_where_code];
+        }
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
@@ -165,8 +184,11 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.created_at >= ?';
-                $params_sql[] = $fdate_sql;
+                $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($fdate_sql . ' UTC'));
+
+                $sql['where'][] = 't.created_at >= ?';
+                $sql['params'][] = $fdate_immutable;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
         }
@@ -181,31 +203,34 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $where_sql[] = 't.created_at <= ?';
-                $params_sql[] = $tdate_sql;
+                $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($tdate_sql . ' UTC'));
+
+                $sql['where'][] = 't.created_at <= ?';
+                $sql['params'][] = $tdate_immutable;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }
         }
 
-        if (count($where_sql))
+        if (count($sql['where']))
         {
-            $where_sql = ' where ' . implode(' and ', $where_sql) . ' ';
+            $sql_where  = ' and ' . implode(' and ', $sql['where']) . ' ';
             $params['f']['andor'] = $filter['andor'];
         }
         else
         {
-            $where_sql = '';
+            $sql_where = '';
         }
 
         $query = 'select t.*
-            from ' . $pp->schema() . '.transactions t ' .
-            $where_sql . '
+            from ' . $pp->schema() . '.transactions t
+            where 1 = 1 ' . $sql_where . '
             order by t.' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $transactions = $db->fetchAll($query, $params_sql);
+        $transactions = $db->fetchAll($query, $sql['params'], $sql['types']);
 
         foreach ($transactions as $key => $t)
         {
@@ -229,7 +254,7 @@ class TransactionsController extends AbstractController
             {
                 $inter_transaction = $db->fetchAssoc('select t.*
                     from ' . $inter_schema . '.transactions t
-                    where t.transid = ?', [$t['transid']]);
+                    where t.transid = ?', [$t['transid']], [\PDO::PARAM_STR]);
 
                 if ($inter_transaction)
                 {
@@ -240,8 +265,8 @@ class TransactionsController extends AbstractController
         }
 
         $row = $db->fetchAssoc('select count(t.*), sum(t.amount)
-            from ' . $pp->schema() . '.transactions t ' .
-            $where_sql, $params_sql);
+            from ' . $pp->schema() . '.transactions t
+            where 1 = 1 ' . $sql_where, $sql['params'], $sql['types']);
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
@@ -680,10 +705,10 @@ class TransactionsController extends AbstractController
 
                         if (isset($t['inter_transaction']))
                         {
-                            if ($s_inter_schema_check[$t['inter_schema']])
+                            if (isset($su_intersystem_ary[$t['inter_schema']]))
                             {
                                 $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
-                                    $t['inter_schema'], $pp->ary());
+                                    $t['inter_schema'], $su);
                             }
                             else
                             {
@@ -712,10 +737,10 @@ class TransactionsController extends AbstractController
 
                         if (isset($t['inter_transaction']))
                         {
-                            if ($s_inter_schema_check[$t['inter_schema']])
+                            if (isset($su_intersystem_ary[$t['inter_schema']]))
                             {
                                 $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
-                                    $t['inter_schema'], $pp->ary());
+                                    $t['inter_schema'], $su);
                             }
                             else
                             {
@@ -774,10 +799,10 @@ class TransactionsController extends AbstractController
 
                     if (isset($t['inter_transaction']))
                     {
-                        if ($s_inter_schema_check[$t['inter_schema']])
+                        if (isset($su_intersystem_ary[$t['inter_schema']]))
                         {
                             $out .= $account_render->inter_link($t['inter_transaction']['id_from'],
-                                $t['inter_schema'], $pp->ary());
+                                $t['inter_schema'], $su);
                         }
                         else
                         {
@@ -808,10 +833,10 @@ class TransactionsController extends AbstractController
 
                     if (isset($t['inter_transaction']))
                     {
-                        if ($s_inter_schema_check[$t['inter_schema']])
+                        if (isset($su_intersystem_ary[$t['inter_schema']]))
                         {
                             $out .= $account_render->inter_link($t['inter_transaction']['id_to'],
-                                $t['inter_schema'], $pp->ary());
+                                $t['inter_schema'], $su);
                         }
                         else
                         {
