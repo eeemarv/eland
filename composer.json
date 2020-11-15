@@ -27,6 +27,7 @@
 		"league/html-to-markdown": "^4.4",
 		"mollie/mollie-api-php": "^2",
 		"monolog/monolog": "^1",
+		"ocramius/proxy-manager": "2.8.*",
 		"php-http/guzzle6-adapter": "^1.1",
 		"php-http/message": "^1.6",
 		"predis/predis": "1.1.4",
@@ -100,9 +101,9 @@
 
     "scripts": {
         "auto-scripts": {
-            "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
-        },
+			"cache:clear": "symfony-cmd",
+			"assets:install %PUBLIC_DIR%": "symfony-cmd"
+		},
         "post-install-cmd": [
             "@auto-scripts"
         ],
