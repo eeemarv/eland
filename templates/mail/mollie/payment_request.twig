@@ -1,0 +1,84 @@
+{% extends 'mail/base/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- subject|raw -}}
+{%- endblock -%}
+
+{%- block bgcolor_system_name -%}
+    {%- if is_payed -%}
+        009900
+    {%- elseif is_canceled -%}
+        444444
+    {%- else -%}
+        330077
+    {%- endif -%}
+{%- endblock -%}
+
+{%- block bgcolor_sub_header -%}
+    {%- if is_payed -%}
+        eeffee
+    {%- elseif is_canceled -%}
+        eeeeee
+    {%- else -%}
+        eeccff
+    {%- endif -%}
+{%- endblock -%}
+
+{%- block sub_header -%}
+    {%- if is_payed -%}
+        mollie.payment_request.sub_header_is_payed
+    {%- elseif is_canceled -%}
+        mollie.payment_request.sub_header_is_canceled
+    {%- else -%}
+        mollie.payment_request.sub_header
+    {%- endif -%}
+{%- endblock -%}
+
+{%  block html_content -%}
+    {%- set info -%}
+        {%- include 'mail/mollie/include/payment_info.html.twig' -%}
+
+        {%- if not is_payed and not is_canceled -%}
+            <tr>
+                <td align="center">
+                    {%- include 'mail/include/btn.html.twig' with {
+                        'bgcolor': '220099',
+                        'label': 'mollie.payment_request.btn_label'|trans,
+                        'href': context_url('mollie_checkout_anonymous', mpp_anon_ary(schema), {'token': token})
+                    } -%}
+                </td>
+            </tr>
+        {%- endif -%}
+
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+
+        <td>
+            {{- html|raw -}}
+        </td>
+
+    {%- endset -%}
+
+	{%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
+{%- endblock -%}
+
+{%- block text_content %}
+{{ 'mollie.payment_request.link'|trans }}
+{{ context_url('mollie_checkout_anonymous', mpp_anon_ary(schema), {'token': token}) }}
+
+{{ 'label.amount'|trans }}
+{{ amount }}
+
+{{ 'label.description'|trans }}
+{{ description }}
+
+{{ text|raw }}
+{% endblock -%}

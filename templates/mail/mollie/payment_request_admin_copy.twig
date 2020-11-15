@@ -1,0 +1,141 @@
+{% extends 'mail/base/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- subject|raw -}}
+{%- endblock -%}
+
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+{%- block bgcolor -%}e8eeff{%- endblock -%}
+{%- block sub_header -%}mollie.payment_request_admin_copy.sub_header{%- endblock -%}
+{%- block bgcolor_sub_header -%}ffddcc{%- endblock -%}
+
+{%  block html_content -%}
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': subject|raw,
+        'bgcolor': 'ffeedd'
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': 'skeleton.admin_copy.to_users'|trans,
+        'bgcolor': 'ffeedd'
+    } -%}
+
+    {%- for ps in payments_sent -%}
+        {%- embed 'mail/embed/table600.html.twig' -%}
+            {%- trans_default_domain 'mail' -%}
+            {%- block bgcolor -%}ffeedd{%- endblock -%}
+            {%- block td_top -%}10px{%- endblock -%}
+            {%- block td_bottom -%}10px{%- endblock -%}
+            {%- block td_style -%}font-size: 16px;{%- endblock -%}
+            {%- block td_content -%}
+                {{- context_url_open('users_show', mpp_ary(user_id, schema), {'id': ps.user_id})|raw -}}
+                    {{- account(ps.user_id, schema) -}}
+                </a>
+                {{ ps.amount }} EUR{%- if ps.is_payed %} [{{ 'label.is_payed'|trans }}]{%- elseif ps.is_canceled %} [{{ 'label.is_canceled'|trans }}]{%- endif -%}
+            {%- endblock td_content -%}
+        {%- endembed -%}
+    {%- endfor -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': 'ffeedd'
+    } -%}
+
+    {%- if payments_not_sent -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': 'skeleton.admin_copy.omitted_to_users'|trans,
+        'bgcolor': 'ffdddd'
+    } -%}
+
+    {%- for pns in payments_not_sent -%}
+        {%- embed 'mail/embed/table600.html.twig' -%}
+            {%- trans_default_domain 'mail' -%}
+            {%- block bgcolor -%}ffdddd{%- endblock -%}
+            {%- block td_top -%}10px{%- endblock -%}
+            {%- block td_bottom -%}10px{%- endblock -%}
+            {%- block td_style -%}font-size: 16px;{%- endblock -%}
+            {%- block td_content -%}
+                {{- context_url_open('users_show', mpp_ary(user_id, schema), {'id': pns.user_id})|raw -}}
+                    {{- account(pns.user_id, schema) -}}
+                </a>
+                {{ pns.amount }} EUR{%- if pns.is_payed %} [{{ 'label.is_payed'|trans }}]{%- elseif pns.is_canceled %} [{{ 'label.is_canceled'|trans }}]{%- endif -%}
+            {%- endblock td_content -%}
+        {%- endembed -%}
+    {%- endfor -%}
+
+    {%- endif -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': 'ffeedd'
+    } -%}
+
+    {%- set amount = '{{ bedrag }}' -%}
+    {%- set description = '{{ omschrijving }}' -%}
+
+    {%- set info -%}
+        {%- include 'mail/mollie/include/payment_info.html.twig' -%}
+
+        <tr>
+            <td align="center">
+                {%- include 'mail/include/btn.html.twig' with {
+                    'bgcolor': '220099',
+                    'label': 'mollie.payment_request_admin_copy.btn_label'|trans,
+                    'href': context_url('index', mpp_anon_ary(schema), {})
+                } -%}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                **{{- 'mollie.payment_request_admin_copy.link_explain'|trans -}}**
+            </td>
+        </tr>
+
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+
+        <tr>
+            <td>
+                {{- html|raw -}}
+            </td>
+        </tr>
+
+    {%- endset -%}
+
+	{%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
+{%- endblock -%}
+
+{%- block text_content %}
+
+{{ 'skeleton.admin_copy.to_users'|trans }}:
+{% for ps in payments_sent %}
+{{ account(ps.user_id, schema) }}
+{% endfor %}
+{% if payments_not_sent %}
+
+{{ 'skeleton.admin_copy.omitted_to_users'|trans }}:
+{% for pns in payments_not_sent %}
+{{ account(pns.user_id, schema) }}
+{% endfor %}
+{% endif %}
+----
+{{ 'mollie.payment_request.link'|trans }}
+*** {{ 'mollie.payment_request_admin_copy.link_explain'|trans }} ***
+
+{{ 'label.amount'|trans }}
+{{ '{{' }} bedrag {{ '}}' }}
+
+{{ 'label.description'|trans }}
+{{ '{{' }} omschrijving {{ '}}' }}
+
+
+{{ text|raw }}
+{% endblock -%}

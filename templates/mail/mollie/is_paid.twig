@@ -2,37 +2,34 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-    {{- 'mollie_is_paid.subject'|trans -}}
+    {{- 'mollie.is_paid.subject'|trans -}}
 {%- endblock -%}
 
+{%- block bgcolor_system_name -%}007700{%- endblock -%}
+{%- block bgcolor_sub_header -%}bbffbb{%- endblock -%}
+{%- block sub_header -%}mollie.is_paid.subject{%- endblock -%}
+
 {% block html_content -%}
-    <p>
-        {{- 'mollie_is_paid.message'|trans -}}
-    </p>
-    <dl>
-        <dt>
-            {{- 'mollie_is_paid.amount'|trans -}}
-        </dt>
-        <dd>
-            {{- amount -}}&nbsp;EUR
-        </dd>
-        <dt>
-            {{- 'mollie_is_paid.description'|trans -}}
-        </dt>
-        <dd>
-            {{- description -}}
-        </dd>
-    </dl>
-{%- endblock %}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': 'mollie.is_paid.message'|trans
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/mollie/include/payment_info.html.twig' -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- endblock html_content %}
 
 {% block text_content %}
 {% autoescape false %}
 
-{{ 'mollie_is_paid.message'|trans }}
+{{ 'mollie.is_paid.message'|trans }}
 
-{{ 'mollie_is_paid.amount'|trans }}: {{ amount }} EUR
+{{ 'label.amount'|trans }}: {{ amount }} EUR
 
-{{ 'mollie_is_paid.description'|trans }}: {{ description }}
+{{ 'label.description'|trans }}: {{ description }}
 
 {% endautoescape %}
 {% endblock -%}

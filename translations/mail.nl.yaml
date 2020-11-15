@@ -16,6 +16,8 @@ label:
   login: Login
   image: Afbeelding
   ip: IP
+  is_canceled: Geannuleerd
+  is_payed: Betaald
   minutes: Minuten
   offer: Aanbod
   password: Paswoord
@@ -154,6 +156,24 @@ contact_support:
     Dit bericht werd ingegeven in het
     contactformulier van %link_open%%system_name%%link_close%.
     Gebruik "Reply" om het eventueel te beantwoorden.
+
+mollie:
+  is_paid:
+    subject: >-
+      Betaling ontvangen
+    message: >-
+      We hebben je betaling goed ontvangen! Dank je wel.
+  payment_request:
+    sub_header: Betalingsverzoek
+    sub_header_is_payed: Betaling voldaan
+    sub_header_is_canceled: Betaling geannuleerd
+    btn_label: Online betalen
+    link: Link voor online betalen
+  payment_request_admin_copy:
+    sub_header: Betalingsverzoek admin info
+    btn_label: Online betalen (dummy knop)
+    link_explain: >-
+      Een betaallink wordt alleen getoond bij openstaande betaalverzoeken
 
 password_reset:
   sub_header: >-
@@ -494,17 +514,9 @@ periodic_overview:
     none: >-
       Er zijn geen recente transacties.
 
-mollie_is_paid:
-  subject: >-
-    Betaling ontvangen
-  message: >-
-    We hebben je betaling goed ontvangen! Dank je wel.
-  description: >-
-    Omschrijving
-  amount: >-
-    Bedrag
-
 skeleton:
   admin_copy:
     to_users: >-
       Dit bericht werd verzonden naar
+    omitted_to_users: >-
+      Dit bericht kon niet verzonden worden naar

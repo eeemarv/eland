@@ -53,9 +53,9 @@ class MolliePaymentsAddController extends AbstractController
 
 //---------
 
-        $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
+        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
-            where id = \'mollie\'');
+            where id = \'mollie\'', [], []);
 
         if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -122,7 +122,7 @@ class MolliePaymentsAddController extends AbstractController
             where 1 = 1 ' . $sql_where . '
             order by u.code asc', $sql['params'], $sql['types']);
 
-        while($row = $stmt->fetch())
+        while(($row = $stmt->fetch()) !== false)
         {
             $users[$row['id']] = $row;
         }

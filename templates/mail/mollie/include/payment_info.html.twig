@@ -1,0 +1,22 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+<table border="1" bgcolor="eeeeee" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td width="300" style="padding-left: 10px">
+            {{- 'label.amount'|trans -}}
+        </td>
+        <td style="font-style: bold; padding-left: 10px">
+            {{- amount }} EUR
+        </td>
+    </tr>
+    <tr>
+        <td width="300" style="padding-left: 10px">
+            {{- 'label.description'|trans -}}
+        </td>
+        <td style="font-style: bold; padding-left: 10px">
+            {{- description -}}
+        </td>
+    </tr>
+</table>
+{%- include 'mail/include/spacer20.html.twig' -%}

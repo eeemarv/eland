@@ -88,9 +88,9 @@ class MolliePaymentsController extends AbstractController
 
 //----------
 
-        $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
+        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
-            where id = \'mollie\'');
+            where id = \'mollie\'', [], []);
 
         if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -149,9 +149,9 @@ class MolliePaymentsController extends AbstractController
             [$code] = explode(' ', trim($filter['code']));
             $code = trim($code);
 
-            $uid = $db->fetchColumn('select id
+            $uid = $db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$code]);
+                where code = ?', [$code], [\PDO::PARAM_STR]);
 
             $where_sql[] = 'u.id = ?';
             $params_sql[] = $uid ?: 0;
@@ -240,8 +240,9 @@ class MolliePaymentsController extends AbstractController
 
         $payments = [];
 
-        $rs = $db->executeQuery('select p.*, r.description,
-            u.code, u.name, u.status, u.adate,
+        $stmt = $db->executeQuery('select p.*, r.description,
+            u.code, u.name, u.fullname,
+            u.status, u.adate,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
@@ -260,7 +261,7 @@ class MolliePaymentsController extends AbstractController
             offset ' . $params['p']['start'],
         $params_sql);
 
-        while ($row = $rs->fetch())
+        while (($row = $stmt->fetch()) !== false)
         {
             if (!isset($payments[$row['id']]))
             {
@@ -273,7 +274,7 @@ class MolliePaymentsController extends AbstractController
             }
         }
 
-        $row = $db->fetchAssoc('select count(p.*), sum(p.amount)
+        $row = $db->fetchAssociative('select count(p.*), sum(p.amount)
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
                 ' . $pp->schema() . '.users u
@@ -364,17 +365,17 @@ class MolliePaymentsController extends AbstractController
 
             if (!count($errors))
             {
-                $db->executeUpdate('update ' . $pp->schema() . '.mollie_payments
+                $db->executeStatement('update ' . $pp->schema() . '.mollie_payments
                     set canceled_by = ? where id in (?)',
                     [$su->id(), $cancel_ary],
                     [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY]);
 
-                $db->executeUpdate('update ' . $pp->schema() . '.users u
+                $db->executeStatement('update ' . $pp->schema() . '.users u
                     set has_open_mollie_payment = \'f\'::bool
                     where u.id not in (select p.user_id
                         from ' . $pp->schema() . '.mollie_payments p
                         where p.is_canceled = \'f\'::bool
-                            and p.is_payed = \'f\'::bool)');
+                            and p.is_payed = \'f\'::bool)', [], []);
 
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {
@@ -449,15 +450,20 @@ class MolliePaymentsController extends AbstractController
                 $errors[] = 'De E-mail is leeg.';
             }
 
+            $payments_sent = [];
+            $payments_not_sent = [];
+
             foreach ($selected as $payment_id => $dummy_value)
             {
                 if (isset($payments[$payment_id]['has_email']))
                 {
                     $sent_to_ary[] = (int) $payments[$payment_id]['user_id'];
+                    $payments_sent[] = $payments[$payment_id];
                 }
                 else
                 {
                     $not_sent_ary[] = (int) $payments[$payment_id]['user_id'];
+                    $payments_not_sent[] = $payments[$payment_id];
                 }
             }
 
@@ -508,7 +514,12 @@ class MolliePaymentsController extends AbstractController
                     $payment['amount'] = strtr($payment['amount'], '.', ',');
 
                     $vars = [
-                        'subject'	=> $bulk_mail_subject,
+                        'subject'	    => $bulk_mail_subject,
+                        'amount'        => $payment['amount'],
+                        'description'   => $payment['description'],
+                        'is_payed'      => $payment['is_payed'],
+                        'is_canceled'   => $payment['is_canceled'],
+                        'token'         => $payment['token'],
                     ];
 
                     foreach (BulkCnst::MOLLIE_TPL_VARS as $key => $val)
@@ -526,7 +537,7 @@ class MolliePaymentsController extends AbstractController
                         'pre_html_template' => $bulk_mail_content,
                         'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
                         'vars'				=> $vars,
-                        'template'			=> 'skeleton/user',
+                        'template'			=> 'mollie/payment_request',
                     ], random_int(200, 2000));
                 }
 
@@ -570,9 +581,10 @@ class MolliePaymentsController extends AbstractController
                 if ($bulk_mail_cc)
                 {
                     $vars = [
-                        'subject'	=> 'Kopie: ' . $bulk_mail_subject,
-                        'to_users'  => $sent_to_ary,
-                        'user_id'   => $su->id(),
+                        'subject'	        => 'Kopie: ' . $bulk_mail_subject,
+                        'payments_sent'     => $payments_sent,
+                        'payments_not_sent' => $payments_not_sent,
+                        'user_id'           => $su->id(),
                     ];
 
                     foreach (BulkCnst::MOLLIE_TPL_VARS as $key => $trans)
@@ -583,7 +595,7 @@ class MolliePaymentsController extends AbstractController
                     $mail_queue->queue([
                         'schema'			=> $pp->schema(),
                         'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
-                        'template'			=> 'skeleton/admin_copy',
+                        'template'			=> 'mollie/payment_request_admin_copy',
                         'pre_html_template'	=> $bulk_mail_content,
                         'vars'				=> $vars,
                     ], 8000);
@@ -982,6 +994,11 @@ class MolliePaymentsController extends AbstractController
         $out .= 'required>';
         $out .= $bulk_mail_content;
         $out .= '</textarea>';
+        $out .= '<ul><li>Een betaalknop wordt toegevoegd boven je eigen bericht ';
+        $out .= 'bij openstaande betaalverzoeken.';
+        $out .= '</li>';
+        $out .= '<li>Bedrag en omschrijving van betaalverzoeken worden altijd ';
+        $out .= 'bovenaan weergegeven in de verzonden e-mails.</li></ul>';
         $out .= '</div>';
 
         $out .= strtr(BulkCnst::TPL_CHECKBOX, [

@@ -8,12 +8,12 @@ use App\Cnst\StatusCnst;
 class BulkCnst
 {
     const MOLLIE_TPL_VARS = [
-        'betaal_link'           => 'payment_link',
-        'bedrag'                => 'amount',
-        'omschrijving'          => 'description',
         'naam' 					=> 'name',
         'volledige_naam'		=> 'fullname',
         'account_code'			=> 'code',
+        'betaal_link'           => 'payment_link',
+        'bedrag'                => 'amount',
+        'omschrijving'          => 'description',
     ];
 
     const USER_TPL_VARS = [
