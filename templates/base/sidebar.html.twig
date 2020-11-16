@@ -55,8 +55,10 @@
 					<p class="text-danger" hidden>Er zijn geen content blokken op deze pagina.</p>
 					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'id': app.request.attributes.get('_route')}) -}}">
 						<input type="hidden" name="content" valeu="{}">
-						<input type="hidden" name="form_token" value="">
-						<a href="{{- path(app.request.attributes.get('_route'), pp_ary()| filter((v, k) => k != 'edit')) -}}" class="btn btn-default btn-lg">Annuleren</a>
+						<input type="hidden" name="cms_edit_form_token" value="">
+						<a href="{{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|filter((v, k) => k != 'edit')) -}}" class="btn btn-default btn-lg">
+							Annuleren
+						</a>
 						&nbsp;
 						<input type="submit" name="zend" value="Opslaan" class="btn btn-primary btn-lg" data-submit-btn>
 					</form>
