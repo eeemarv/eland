@@ -70,12 +70,13 @@ class RegisterController extends AbstractController
             {
                 $alert_service->error('Geen geldig E-mail adres.');
             }
-            else if ($db->fetchColumn('select c.user_id
+            else if ($db->fetchOne('select c.user_id
                 from ' . $pp->schema() . '.contact c, ' .
                     $pp->schema() . '.type_contact tc
                 where c. value = ?
                     AND tc.id = c.id_type_contact
-                    AND tc.abbrev = \'mail\'', [$reg['email']]))
+                    AND tc.abbrev = \'mail\'',
+                    [$reg['email']], [\PDO::PARAM_STR]))
             {
                 $alert_service->error('Er bestaat reeds een inschrijving
                     met dit E-mail adres.');

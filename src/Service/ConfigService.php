@@ -167,7 +167,7 @@ class ConfigService
 
 		if (isset($value))
 		{
-			$this->db->executeUpdate('update ' . $schema . '.config
+			$this->db->executeStatement('update ' . $schema . '.config
 				set data = jsonb_set(data, \'{' . $path . '}\',  ?)
 				where id = ?',
 				[$value, $id],
@@ -176,7 +176,7 @@ class ConfigService
 		}
 		else
 		{
-			$this->db->executeUpdate('update ' . $schema . '.config
+			$this->db->executeStatement('update ' . $schema . '.config
 				set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
 				where id = ?',
 				[$id],

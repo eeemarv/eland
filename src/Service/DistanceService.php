@@ -37,11 +37,12 @@ class DistanceService
 
 		if ($s_id && $s_schema)
 		{
-			$adr = $this->db->fetchColumn('select c.value
+			$adr = $this->db->fetchOne('select c.value
 				from ' . $s_schema . '.contact c, ' . $s_schema . '.type_contact tc
 				where c.user_id = ?
 					and c.id_type_contact = tc.id
-					and tc.abbrev = \'adr\'', [$s_id]);
+					and tc.abbrev = \'adr\'',
+				[$s_id], [\PDO::PARAM_STR]);
 		}
 
 		if (!$adr)

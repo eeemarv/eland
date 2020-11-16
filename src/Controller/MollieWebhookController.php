@@ -24,9 +24,9 @@ class MollieWebhookController extends AbstractController
     {
         $id = $request->request->get('id', '');
 
-        $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
+        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
-            where id = \'mollie\'');
+            where id = \'mollie\'', [], []);
 
         $mollie = new MollieApiClient();
         $mollie->setApiKey($mollie_apikey);
@@ -34,13 +34,14 @@ class MollieWebhookController extends AbstractController
         $payment = $mollie->payments->get($id);
         $token = $payment->metadata->token;
 
-        $mollie_payment = $db->fetchAssoc('select p.*, r.description, u.code
+        $mollie_payment = $db->fetchAssociative('select p.*, r.description, u.code
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
                 ' . $pp->schema() . '.users u
             where p.request_id = r.id
                 and u.id = p.user_id
-                and p.token = ?', [$token]);
+                and p.token = ?',
+            [$token], [\PDO::PARAM_INT]);
 
         if (!$mollie_payment)
         {

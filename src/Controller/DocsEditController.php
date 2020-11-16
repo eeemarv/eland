@@ -48,9 +48,10 @@ class DocsEditController extends AbstractController
         $name = trim($request->request->get('name', ''));
         $map_name = trim($request->request->get('map_name', ''));
 
-        $doc = $db->fetchAssoc('select *
+        $doc = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.docs
-            where id = ?', [$id]);
+            where id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         if (!$doc)
         {
@@ -78,9 +79,10 @@ class DocsEditController extends AbstractController
             {
                 if (isset($doc['map_id']))
                 {
-                    $map_doc_count = $db->fetchColumn('select count(*)
+                    $map_doc_count = $db->fetchOne('select count(*)
                         from ' . $pp->schema() . '.docs
-                        where map_id = ?', [$doc['map_id']]);
+                        where map_id = ?',
+                        [$doc['map_id']], [\PDO::PARAM_INT]);
                 }
                 else
                 {
@@ -89,9 +91,12 @@ class DocsEditController extends AbstractController
 
                 if (strlen($map_name))
                 {
-                    $map_id = $db->fetchColumn('select id
+                    $map_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.doc_maps
-                        where lower(name) = ?', [strtolower($map_name)]);
+                        where lower(name) = ?',
+                        [strtolower($map_name)],
+                        [\PDO::PARAM_STR]
+                    );
 
                     if (!$map_id)
                     {
@@ -149,9 +154,12 @@ class DocsEditController extends AbstractController
         {
             if (isset($doc['map_id']))
             {
-                $map_name = $db->fetchColumn('select name
+                $map_name = $db->fetchOne('select name
                     from ' . $pp->schema() . '.doc_maps
-                    where id = ?', [$doc['map_id']]);
+                    where id = ?',
+                    [$doc['map_id']],
+                    [\PDO::PARAM_INT]
+                );
             }
 
             $name = $doc['name'] ?? '';

@@ -43,7 +43,7 @@ class StaticContentService
 			throw new LogicException('Unacceptable block');
 		}
 
-		$this->db->executeUpdate('update ' . $schema . '.static_content
+		$this->db->executeStatement('update ' . $schema . '.static_content
 			set data = jsonb_set(data, \'{' . $block . '}\',  ?)
 			where id = ? and lang = ?',
 			[$value, $id, $lang],
@@ -65,10 +65,11 @@ class StaticContentService
 			return $str;
 		}
 
-		$data_json = $this->db->fetchColumn('select data
+		$data_json = $this->db->fetchOne('select data
 			from ' . $schema . '.static_content
 			where id = ? and lang = ?',
-			[$id, $lang], 0, [\PDO::PARAM_STR, \PDO::PARAM_STR]);
+			[$id, $lang],
+			[\PDO::PARAM_STR, \PDO::PARAM_STR]);
 
 		$data = json_decode($data_json, true);
 

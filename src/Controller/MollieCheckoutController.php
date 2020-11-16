@@ -38,11 +38,12 @@ class MollieCheckoutController extends AbstractController
     {
         $errors = [];
 
-        $mollie_payment = $db->fetchAssoc('select p.*, r.description
+        $mollie_payment = $db->fetchAssociative('select p.*, r.description
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
-                and p.id = ?', [$id]);
+                and p.id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         if (!$mollie_payment)
         {
@@ -54,9 +55,9 @@ class MollieCheckoutController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt geen toegang tot deze pagina.');
         }
 
-        $mollie_apikey = $db->fetchColumn('select data->>\'apikey\'
+        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
-            where id = \'mollie\'');
+            where id = \'mollie\'', [], []);
 
         if ((!$mollie_payment['is_payed'] || !$mollie_payment['is_canceled']))
         {

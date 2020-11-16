@@ -202,21 +202,23 @@ class MessagesShowController extends AbstractController
 
         $sql_where = count($sql_where) ? ' and ' . implode(' and ', $sql_where) : '';
 
-        $prev = $db->fetchColumn('select m.id
+        $prev = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.messages m,
                 ' . $pp->schema() . '.users u
             where m.id > ?
             ' . $sql_where . '
             order by m.id asc
-            limit 1', [$id]);
+            limit 1',
+            [$id], [\PDO::PARAM_INT]);
 
-        $next = $db->fetchColumn('select m.id
+        $next = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.messages m,
                 ' . $pp->schema() . '.users u
             where m.id < ?
             ' . $sql_where . '
             order by m.id desc
-            limit 1', [$id]);
+            limit 1',
+            [$id], [\PDO::PARAM_INT]);
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
@@ -534,9 +536,9 @@ class MessagesShowController extends AbstractController
 
     public static function get_message(Db $db, int $id, string $pp_schema):array
     {
-        $message = $db->fetchAssoc('select m.*
+        $message = $db->fetchAssociative('select m.*
             from ' . $pp_schema . '.messages m
-            where m.id = ?', [$id]);
+            where m.id = ?', [$id], [\PDO::PARAM_INT]);
 
         if (!$message)
         {

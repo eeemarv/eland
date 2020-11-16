@@ -92,11 +92,11 @@ class QueueService
 	{
 		if ($topic)
 		{
-			return $this->db->fetchColumn('select count(*)
+			return $this->db->fetchOne('select count(*)
 				from xdb.queue
-				where topic = ?', [$topic]);
+				where topic = ?', [$topic], [\PDO::PARAM_STR]);
 		}
 
-		return $this->db->fetchColumn('select count(*) from xdb.queue');
+		return $this->db->fetchOne('select count(*) from xdb.queue');
 	}
 }

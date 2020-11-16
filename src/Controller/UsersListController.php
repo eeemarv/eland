@@ -223,11 +223,11 @@ class UsersListController extends AbstractController
             {
                 $abbrev = $user_tab_data['contact_abbrev'];
 
-                $id_type_contact = $db->fetchColumn('select id
+                $id_type_contact = $db->fetchOne('select id
                     from ' . $pp->schema() . '.type_contact
-                    where abbrev = ?', [$abbrev]);
+                    where abbrev = ?', [$abbrev], [\PDO::PARAM_STR]);
 
-                $db->executeUpdate('update ' . $pp->schema() . '.contact
+                $db->executeStatement('update ' . $pp->schema() . '.contact
                     set access = ?
                     where user_id in (?) and id_type_contact = ?',
                         [$bulk_field_value, $user_ids, $id_type_contact],
@@ -244,7 +244,7 @@ class UsersListController extends AbstractController
             else if (!count($errors)
                 && $bulk_submit_action === 'periodic_overview_en')
             {
-                $db->executeUpdate('update ' . $pp->schema() . '.users
+                $db->executeStatement('update ' . $pp->schema() . '.users
                     set periodic_overview_en = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
@@ -309,7 +309,7 @@ class UsersListController extends AbstractController
 
                 $field_type = isset($user_tab_data['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
 
-                $db->executeUpdate('update ' . $pp->schema() . '.users
+                $db->executeStatement('update ' . $pp->schema() . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
                     [$store_value, $user_ids],
                     [$field_type, Db::PARAM_INT_ARRAY]);
@@ -520,8 +520,8 @@ class UsersListController extends AbstractController
 
         $ref_geo = [];
 
-        $type_contact = $db->fetchAll('select id, abbrev, name
-            from ' . $pp->schema() . '.type_contact');
+        $type_contact = $db->fetchAllAssociative('select id, abbrev, name
+            from ' . $pp->schema() . '.type_contact', [], []);
 
         $columns = [
             'u'		=> [
@@ -760,7 +760,7 @@ class UsersListController extends AbstractController
 
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
         {
-            $c_ary = $db->fetchAll('select tc.abbrev,
+            $c_ary = $db->fetchAllAssociative('select tc.abbrev,
                     c.user_id, c.value, c.access
                 from ' . $pp->schema() . '.contact c, ' .
                     $pp->schema() . '.type_contact tc, ' .
@@ -786,12 +786,13 @@ class UsersListController extends AbstractController
             if (($pp->is_guest() && $su->schema())
                 || !isset($contacts[$su->id()]['adr']))
             {
-                $my_adr = $db->fetchColumn('select c.value
+                $my_adr = $db->fetchOne('select c.value
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
                     where c.user_id = ?
                         and c.id_type_contact = tc.id
-                        and tc.abbrev = \'adr\'', [$su->id()]);
+                        and tc.abbrev = \'adr\'',
+                        [$su->id()], [\PDO::PARAM_INT]);
             }
             else if (!$pp->is_guest()
                 && isset($contacts[$su->id()]['adr'][0]['value']))
@@ -811,7 +812,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['offers']))
             {
-                $ary = $db->fetchAll('select count(m.id), m.user_id
+                $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.is_offer = \'t\'
@@ -827,7 +828,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['wants']))
             {
-                $ary = $db->fetchAll('select count(m.id), m.user_id
+                $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.is_want = \'t\'
@@ -843,7 +844,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['total']))
             {
-                $ary = $db->fetchAll('select count(m.id), m.user_id
+                $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.user_id = u.id
@@ -861,8 +862,13 @@ class UsersListController extends AbstractController
         {
             $activity = [];
 
-            $ts = gmdate('Y-m-d H:i:s', time() - ($activity_days * 86400));
-            $sql_bind = [$ts];
+            $sql_a = [];
+
+            $ref_unix = time() - ($activity_days * 86400);
+            $ref_datetime = \DateTimeImmutable::createFromFormat('U', (string) $ref_unix);
+
+            $sql_a['params'] = [$ref_datetime];
+            $sql_a['types'] = [Types::DATETIME_IMMUTABLE];
 
             $activity_filter_code = trim($activity_filter_code);
 
@@ -870,28 +876,31 @@ class UsersListController extends AbstractController
             {
                 [$code_only_activity_filter_code] = explode(' ', $activity_filter_code);
                 $and = ' and u.code <> ? ';
-                $sql_bind[] = trim($code_only_activity_filter_code);
+                $sql_a['params'][] = trim($code_only_activity_filter_code);
+                $sql_a['types'][] = \PDO::PARAM_STR;
             }
             else
             {
                 $and = ' and 1 = 1 ';
             }
 
-            $trans_in_ary = $db->fetchAll('select sum(t.amount),
+            $trans_in_ary = $db->fetchAllAssociative('select sum(t.amount),
                     count(t.id), t.id_to
                 from ' . $pp->schema() . '.transactions t, ' .
                     $pp->schema() . '.users u
                 where t.id_from = u.id
                     and t.created_at > ?' . $and . '
-                group by t.id_to', $sql_bind);
+                group by t.id_to',
+                $sql_a['params'], $sql_a['types']);
 
-            $trans_out_ary = $db->fetchAll('select sum(t.amount),
+            $trans_out_ary = $db->fetchAllAssociative('select sum(t.amount),
                     count(t.id), t.id_from
                 from ' . $pp->schema() . '.transactions t, ' .
                     $pp->schema() . '.users u
                 where t.id_to = u.id
                     and t.created_at > ?' . $and . '
-                group by t.id_from', $sql_bind);
+                group by t.id_from',
+                $sql_a['params'], $sql_a['types']);
 
             foreach ($trans_in_ary as $trans_in)
             {

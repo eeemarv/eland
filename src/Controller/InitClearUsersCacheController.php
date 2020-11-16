@@ -37,8 +37,8 @@ class InitClearUsersCacheController extends AbstractController
 
         foreach($schemas as $schema)
         {
-            $users = $db->fetchAll('select id
-                from ' . $schema . '.users');
+            $users = $db->fetchAllAssociative('select id
+                from ' . $schema . '.users', [], []);
 
             foreach ($users as $u)
             {

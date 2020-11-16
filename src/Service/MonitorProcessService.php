@@ -133,8 +133,8 @@ class MonitorProcessService
 	{
 		try
 		{
-			$this->db->fetchColumn('select schema_name
-				from information_schema.schemata');
+			$this->db->fetchOne('select schema_name
+				from information_schema.schemata', [], []);
 		}
 		catch(\Exception $e)
 		{

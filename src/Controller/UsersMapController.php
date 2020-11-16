@@ -64,7 +64,7 @@ class UsersMapController extends AbstractController
 
         $sql_where = ' and ' . implode(' and ', $sql['where']);
 
-        $users = $db->fetchAll('select u.*
+        $users = $db->fetchAllAssociative('select u.*
             from ' . $pp->schema() . '.users u
             where 1 = 1 ' . $sql_where . '
             order by u.code asc',
@@ -91,12 +91,13 @@ class UsersMapController extends AbstractController
         {
             if ($pp->is_guest() && !$su->is_system_self())
             {
-                $my_adr = $db->fetchColumn('select c.value
+                $my_adr = $db->fetchOne('select c.value
                     from ' . $su->schema() . '.contact c, ' .
                         $su->schema() . '.type_contact tc
                     where c.user_id = ?
                         and c.id_type_contact = tc.id
-                        and tc.abbrev = \'adr\'', [$su->id()]);
+                        and tc.abbrev = \'adr\'',
+                        [$su->id()], [\PDO::PARAM_INT]);
             }
             else if (!$pp->is_guest())
             {

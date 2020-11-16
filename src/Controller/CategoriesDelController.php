@@ -44,18 +44,19 @@ class CategoriesDelController extends AbstractController
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
         }
 
-        $message_count = $db->fetchColumn('select count(*)
+        $message_count = $db->fetchOne('select count(*)
             from ' . $pp->schema() . '.messages
-            where category_id = ?', [$id]);
+            where category_id = ?', [$id], [\PDO::PARAM_INT]);
 
         if ($message_count !== 0)
         {
             throw new ConflictHttpException('A category containing messages cannot be deleted.');
         }
 
-        $category = $db->fetchAssoc('select name, left_id, right_id
+        $category = $db->fetchAssociative('select name, left_id, right_id
             from ' . $pp->schema() . '.categories
-            where id = ?', [$id]);
+            where id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         if ($category === false)
         {
@@ -81,10 +82,10 @@ class CategoriesDelController extends AbstractController
             if (!count($errors))
             {
                 $db->beginTransaction();
-                $db->executeUpdate('update ' . $pp->schema() . '.categories
+                $db->executeStatement('update ' . $pp->schema() . '.categories
                     set left_id = left_id - 2
                     where left_id > ?', [$left_id], [\PDO::PARAM_INT]);
-                $db->executeUpdate('update ' . $pp->schema() . '.categories
+                $db->executeStatement('update ' . $pp->schema() . '.categories
                     set right_id = right_id - 2
                     where right_id > ?', [$right_id], [\PDO::PARAM_INT]);
                 $db->delete($pp->schema() . '.categories', ['id' => $id]);

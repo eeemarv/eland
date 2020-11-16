@@ -44,9 +44,9 @@ class DocsDelController extends AbstractController
 
         $errors = [];
 
-        $doc = $db->fetchAssoc('select *
+        $doc = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.docs
-            where id = ?', [$id]);
+            where id = ?', [$id], [\PDO::PARAM_INT]);
 
         if (!$doc)
         {
@@ -72,9 +72,10 @@ class DocsDelController extends AbstractController
 
                 if (isset($doc['map_id']))
                 {
-                    $doc_count = $db->fetchColumn('select count(*)
+                    $doc_count = $db->fetchOne('select count(*)
                         from ' . $pp->schema() . '.docs
-                        where map_id = ?', [$doc['map_id']]);
+                        where map_id = ?',
+                        [$doc['map_id']], [\PDO::PARAM_INT]);
 
                     if ($doc_count < 2)
                     {

@@ -61,10 +61,11 @@ class UsersTilesController extends AbstractController
 
         $sql_where = ' and ' . implode(' and ', $sql['where']);
 
-        $users = $db->fetchAll('select u.*
+        $users = $db->fetchAllAssociative('select u.*
             from ' . $pp->schema() . '.users u
             where 1 = 1 ' . $sql_where . '
-            order by u.code asc', $sql['params'], $sql['types']);
+            order by u.code asc',
+            $sql['params'], $sql['types']);
 
         $assets_service->add(['isotope', 'users_tiles.js']);
 

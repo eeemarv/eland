@@ -71,11 +71,12 @@ class ForumDelTopicController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $forum_post_content = $db->fetchColumn('select content
+        $forum_post_content = $db->fetchOne('select content
             from ' . $pp->schema() . '.forum_posts
             where topic_id = ?
             order by created_at asc
-            limit 1', [$id]);
+            limit 1',
+            [$id], [\PDO::PARAM_INT]);
 
         $heading_render->add('Forum onderwerp ');
         $heading_render->add_raw($link_render->link_no_attr('forum_topic', $pp->ary(),

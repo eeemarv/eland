@@ -87,9 +87,10 @@ class RegisterTokenController extends AbstractController
                 }
             }
 
-            if (!$db->fetchColumn('select name
+            if ($db->fetchOne('select name
                 from ' . $pp->schema() . '.users
-                where name = ?', [$name]))
+                where name = ?',
+                [$name], [\PDO::PARAM_STR]) === false)
             {
                 break;
             }

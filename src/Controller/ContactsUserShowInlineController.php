@@ -29,11 +29,12 @@ class ContactsUserShowInlineController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
-        $contacts = $db->fetchAll('select c.*, tc.abbrev
+        $contacts = $db->fetchAllAssociative('select c.*, tc.abbrev
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
-                and c.user_id = ?', [$uid]);
+                and c.user_id = ?',
+            [$uid], [\PDO::PARAM_INT]);
 
         $assets_service->add([
             'leaflet',

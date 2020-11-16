@@ -44,9 +44,10 @@ class DocsMapController extends AbstractController
 
         $docs = [];
 
-        $name = $db->fetchColumn('select name
+        $name = $db->fetchOne('select name
             from ' . $pp->schema() . '.doc_maps
-            where id = ?', [$id]);
+            where id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         if (!$name)
         {
@@ -66,7 +67,7 @@ class DocsMapController extends AbstractController
             $docs[] = $row;
         }
 
-        $stmt_prev = $db->executeQuery('select m.id
+        $prev = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.doc_maps m
             inner join ' . $pp->schema() . '.docs d
                 on d.map_id = m.id
@@ -77,9 +78,7 @@ class DocsMapController extends AbstractController
         [$item_access_service->get_visible_ary_for_page(), $name],
         [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
 
-        $prev = $stmt_prev->fetchColumn();
-
-        $stmt_next = $db->executeQuery('select m.id
+        $next = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.doc_maps m
             inner join ' . $pp->schema() . '.docs d
                 on d.map_id = m.id
@@ -89,8 +88,6 @@ class DocsMapController extends AbstractController
             limit 1',
         [$item_access_service->get_visible_ary_for_page(), $name],
         [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
-
-        $next = $stmt_next->fetchColumn();
 
         if ($pp->is_admin())
         {

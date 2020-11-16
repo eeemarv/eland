@@ -45,17 +45,19 @@ class IntersystemsAddController extends AbstractController
 
             if ($group['url'] !== '')
             {
-                if ($db->fetchColumn('select id
+                if ($db->fetchOne('select id
                     from ' . $pp->schema() . '.letsgroups
-                    where url = ?', [$group['url']]))
+                    where url = ?',
+                    [$group['url']],
+                    [\PDO::PARAM_STR]))
                 {
                     $errors[] = 'Er bestaat al een interSysteem met deze URL.';
                 }
             }
 
-            if ($db->fetchColumn('select id
+            if ($db->fetchOne('select id
                 from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?', [$group['localletscode']]))
+                where localletscode = ?', [$group['localletscode']], [\PDO::PARAM_STR]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
             }

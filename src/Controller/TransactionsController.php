@@ -70,11 +70,11 @@ class TransactionsController extends AbstractController
         {
             $filter['uid'] = (int) $filter['uid'];
 
-            $balance = $account_repository->get_balance($filter['uid'], $pp->schema());
+            $balance = $account_repository->get_balance((int) $filter['uid'], $pp->schema());
         }
 
         $is_owner = isset($filter['uid'])
-            && $su->is_owner($filter['uid']);
+            && $su->is_owner((int) $filter['uid']);
 
         $params = [
             's'	=> [
@@ -95,7 +95,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $filter['fcode'] = $account_render->str($filter['uid'], $pp->schema());
+            $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
             $filter['tcode'] = $filter['fcode'];
             $filter['andor'] = 'or';
             $params['f']['uid'] = $filter['uid'];
@@ -116,9 +116,9 @@ class TransactionsController extends AbstractController
             [$fcode] = explode(' ', trim($filter['fcode']));
             $fcode = trim($fcode);
 
-            $fuid = $db->fetchColumn('select id
+            $fuid = $db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode], 0, [\PDO::PARAM_STR]);
+                where code = ?', [$fcode], [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
@@ -143,9 +143,10 @@ class TransactionsController extends AbstractController
         {
             [$tcode] = explode(' ', trim($filter['tcode']));
 
-            $tuid = $db->fetchColumn('select id
+            $tuid = $db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where code = \'' . $tcode . '\'');
+                where code = ?',
+                [$tcode], [\PDO::PARAM_STR]);
 
             if ($tuid)
             {
@@ -232,7 +233,7 @@ class TransactionsController extends AbstractController
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $transactions = $db->fetchAll($query, $sql['params'], $sql['types']);
+        $transactions = $db->fetchAllAssociative($query, $sql['params'], $sql['types']);
 
         foreach ($transactions as $key => $t)
         {
@@ -254,9 +255,10 @@ class TransactionsController extends AbstractController
 
             if ($inter_schema)
             {
-                $inter_transaction = $db->fetchAssoc('select t.*
+                $inter_transaction = $db->fetchAssociative('select t.*
                     from ' . $inter_schema . '.transactions t
-                    where t.transid = ?', [$t['transid']], [\PDO::PARAM_STR]);
+                    where t.transid = ?',
+                    [$t['transid']], [\PDO::PARAM_STR]);
 
                 if ($inter_transaction)
                 {
@@ -266,9 +268,10 @@ class TransactionsController extends AbstractController
             }
         }
 
-        $row = $db->fetchAssoc('select count(t.*), sum(t.amount)
+        $row = $db->fetchAssociative('select count(t.*), sum(t.amount)
             from ' . $pp->schema() . '.transactions t
-            where 1 = 1 ' . $sql_where, $sql['params'], $sql['types']);
+            where 1 = 1 ' . $sql_where,
+            $sql['params'], $sql['types']);
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
@@ -322,7 +325,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['uid']))
         {
-            $user = $user_cache_service->get($filter['uid'], $pp->schema());
+            $user = $user_cache_service->get((int) $filter['uid'], $pp->schema());
             $user_str = $account_render->str($user['id'], $pp->schema());
         }
 
@@ -373,7 +376,7 @@ class TransactionsController extends AbstractController
             else
             {
                 $heading_render->add('Transacties van ');
-                $heading_render->add_raw($account_render->link($filter['uid'], $pp->ary()));
+                $heading_render->add_raw($account_render->link((int) $filter['uid'], $pp->ary()));
             }
 
             $heading_render->add_sub_raw('Huidig saldo: <span class="label label-info">');

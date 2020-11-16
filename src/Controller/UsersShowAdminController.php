@@ -179,14 +179,16 @@ class UsersShowAdminController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $count_messages = $db->fetchColumn('select count(*)
+        $count_messages = $db->fetchOne('select count(*)
             from ' . $pp->schema() . '.messages
-            where user_id = ?', [$id]);
+            where user_id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
-        $count_transactions = $db->fetchColumn('select count(*)
+        $count_transactions = $db->fetchOne('select count(*)
             from ' . $pp->schema() . '.transactions
             where id_from = ?
-                or id_to = ?', [$id, $id]);
+                or id_to = ?',
+                [$id, $id], [\PDO::PARAM_INT, \PDO::PARAM_INT]);
 
         $sql_nxt_prv = [
             'where'     => [],
@@ -206,19 +208,23 @@ class UsersShowAdminController extends AbstractController
 
         $sql_nxt_prv_where = ' and ' . implode(' and ', $sql_nxt_prv['where']);
 
-        $next = $db->fetchColumn('select id
+        $next = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
             where u.code > ?
             ' . $sql_nxt_prv_where . '
             order by u.code asc
-            limit 1', $sql_nxt_prv['params'], 0, $sql_nxt_prv['types']);
+            limit 1',
+            $sql_nxt_prv['params'],
+            $sql_nxt_prv['types']);
 
-        $prev = $db->fetchColumn('select id
+        $prev = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
             where u.code < ?
             ' . $sql_nxt_prv_where . '
             order by u.code desc
-            limit 1', $sql_nxt_prv['params'], 0, $sql_nxt_prv['types']);
+            limit 1',
+            $sql_nxt_prv['params'],
+            $sql_nxt_prv['types']);
 
         $intersystem_missing = false;
 
@@ -226,9 +232,11 @@ class UsersShowAdminController extends AbstractController
             && $user['role'] === 'guest'
             && $config_service->get_intersystem_en($pp->schema()))
         {
-            $intersystem_id = $db->fetchColumn('select id
+            $intersystem_id = $db->fetchOne('select id
                 from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?', [$user['code']], 0, [\PDO::PARAM_STR]);
+                where localletscode = ?',
+                [$user['code']],
+                [\PDO::PARAM_STR]);
 
             if (!$intersystem_id)
             {
@@ -242,9 +250,11 @@ class UsersShowAdminController extends AbstractController
 
         if ($pp->is_admin())
         {
-            $last_login = $db->fetchColumn('select max(created_at)
+            $last_login = $db->fetchOne('select max(created_at)
                 from ' . $pp->schema() . '.login
-                where user_id = ?', [$id], 0, [\PDO::PARAM_INT]);
+                where user_id = ?',
+                [$id],
+                [\PDO::PARAM_INT]);
         }
 
         $contacts_response = $contacts_user_show_inline_controller(

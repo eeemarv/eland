@@ -46,9 +46,9 @@ class MollieConfigController extends AbstractController
 
             if (!count($errors))
             {
-                $data = $db->fetchColumn('select data
+                $data = $db->fetchOne('select data
                     from ' . $pp->schema() . '.config
-                    where id = \'mollie\'');
+                    where id = \'mollie\'', [], []);
 
                 $data = json_decode($data, true);
                 $data['apikey'] = $apikey;
@@ -66,9 +66,9 @@ class MollieConfigController extends AbstractController
         }
         else
         {
-            $apikey = $db->fetchColumn('select data->>\'apikey\'
+            $apikey = $db->fetchOne('select data->>\'apikey\'
                 from ' . $pp->schema() . '.config
-                where id = \'mollie\'');
+                where id = \'mollie\'', [], []);
 
             if ($apikey === false)
             {

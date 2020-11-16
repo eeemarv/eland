@@ -52,9 +52,10 @@ class UsersDelAdminController extends AbstractController
                 'Je kan je eigen account niet verwijderen.');
         }
 
-        if ($db->fetchColumn('select id
+        if ($db->fetchOne('select id
             from ' . $pp->schema() . '.transactions
-            where id_to = ? or id_from = ?', [$id, $id]))
+            where id_to = ? or id_from = ?',
+            [$id, $id], [\PDO::PARAM_INT, \PDO::PARAM_INT]))
         {
             throw new AccessDeniedHttpException('Een gebruiker met transacties
                 kan niet worden verwijderd.');

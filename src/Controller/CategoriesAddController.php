@@ -66,7 +66,7 @@ class CategoriesAddController extends AbstractController
             {
                 $created_by = $su->is_master() ? null : $su->id();
 
-                $db->executeUpdate('insert into ' . $pp->schema() . '.categories (name, created_by, level, left_id, right_id)
+                $db->executeStatement('insert into ' . $pp->schema() . '.categories (name, created_by, level, left_id, right_id)
                     select ?, ?, 1, coalesce(max(right_id), 0) + 1, coalesce(max(right_id), 0) + 2
                     from ' . $pp->schema() . '.categories',
                     [$name, $created_by],

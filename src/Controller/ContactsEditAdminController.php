@@ -145,9 +145,9 @@ class ContactsEditAdminController extends AbstractController
                 $errors[] = 'Vul een zichtbaarheid in!';
             }
 
-            $abbrev_type = $db->fetchColumn('select abbrev
+            $abbrev_type = $db->fetchOne('select abbrev
                 from ' . $pp->schema() . '.type_contact
-                where id = ?', [$id_type_contact]);
+                where id = ?', [$id_type_contact], [\PDO::PARAM_INT]);
 
             if ($abbrev_type === 'mail'
                 && !filter_var($value, FILTER_VALIDATE_EMAIL))
@@ -175,21 +175,25 @@ class ContactsEditAdminController extends AbstractController
                 $errors[] = 'Contact type bestaat niet!';
             }
 
-            $mail_type_id = $db->fetchColumn('select id
+            $mail_type_id = $db->fetchOne('select id
                 from ' . $pp->schema() . '.type_contact
-                where abbrev = \'mail\'');
+                where abbrev = \'mail\'', [], []);
 
-            $count_mail = $db->fetchColumn('select count(*)
+            $count_mail = $db->fetchOne('select count(*)
                 from ' . $pp->schema() . '.contact
                 where user_id = ?
                     and id_type_contact = ?',
-                [$user_id, $mail_type_id]);
+                [$user_id, $mail_type_id],
+                [\PDO::PARAM_INT, \PDO::PARAM_INT]
+            );
 
-            $mail_id = $db->fetchColumn('select id
+            $mail_id = $db->fetchOne('select id
                 from ' . $pp->schema() . '.contact
                 where user_id = ?
                     and id_type_contact = ?',
-                [$user_id, $mail_type_id]);
+                [$user_id, $mail_type_id],
+                [\PDO::PARAM_INT, \PDO::PARAM_INT]
+            );
 
             if ($id === $mail_id
                 && $count_mail === 1
@@ -203,7 +207,7 @@ class ContactsEditAdminController extends AbstractController
             {
                 $mailadr = $value;
 
-                $mail_count = $db->fetchColumn('select count(c.*)
+                $mail_count = $db->fetchOne('select count(c.*)
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.users u
@@ -212,7 +216,10 @@ class ContactsEditAdminController extends AbstractController
                         and c.user_id = u.id
                         and u.status in (1, 2)
                         and u.id <> ?
-                        and c.value = ?', [$user_id, $mailadr]);
+                        and c.value = ?',
+                        [$user_id, $mailadr],
+                        [\PDO::PARAM_INT, \PDO::PARAM_STR]
+                    );
 
                 if ($mail_count && $pp->is_admin())
                 {
@@ -405,11 +412,12 @@ class ContactsEditAdminController extends AbstractController
         string $schema
     ):array
     {
-        $contact = $db->fetchAssoc('select c.*, tc.abbrev
+        $contact = $db->fetchAssociative('select c.*, tc.abbrev
             from ' . $schema . '.contact c,
                 ' . $schema . '.type_contact tc
             where c.id = ?
-                and tc.id = c.id_type_contact', [$contact_id]);
+                and tc.id = c.id_type_contact',
+            [$contact_id], [\PDO::PARAM_INT]);
 
         if (!$contact)
         {

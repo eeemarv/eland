@@ -242,10 +242,11 @@ class MessagesEditController extends AbstractController
                 {
                     [$account_code_expl] = explode(' ', trim($account_code));
                     $account_code_expl = trim($account_code_expl);
-                    $user_id = $db->fetchColumn('select id
+                    $user_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.users
                         where code = ?
-                            and status in (1, 2)', [$account_code_expl]);
+                            and status in (1, 2)',
+                        [$account_code_expl], [\PDO::PARAM_STR]);
 
                     if (!$user_id)
                     {
@@ -291,7 +292,7 @@ class MessagesEditController extends AbstractController
                 }
                 else
                 {
-                    $category = $db->fetchAssoc('select *
+                    $category = $db->fetchAssociative('select *
                         from ' . $pp->schema() . '.categories
                         where id = ?',
                         [$category_id],
@@ -331,9 +332,10 @@ class MessagesEditController extends AbstractController
                 $errors[] = '"Per (uur, stuk, ...)" mag maximaal 15 tekens lang zijn.';
             }
 
-            if(!($db->fetchColumn('select id
+            if(!($db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where id = ? and status in (1, 2)', [$user_id])))
+                where id = ? and status in (1, 2)',
+                [$user_id], [\PDO::PARAM_INT])))
             {
                 $errors[] = 'Gebruiker bestaat niet of is niet actief.';
             }

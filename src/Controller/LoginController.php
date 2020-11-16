@@ -98,7 +98,7 @@ class LoginController extends AbstractController
 
             if (!count($errors) && filter_var($lowercase_login, FILTER_VALIDATE_EMAIL))
             {
-                $count_email = $db->fetchColumn('select count(c.*)
+                $count_email = $db->fetchOne('select count(c.*)
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.users u
@@ -106,11 +106,14 @@ class LoginController extends AbstractController
                         and tc.abbrev = \'mail\'
                         and c.user_id = u.id
                         and u.status in (1, 2)
-                        and lower(c.value) = ?', [$lowercase_login]);
+                        and lower(c.value) = ?',
+                        [$lowercase_login],
+                        [\PDO::PARAM_STR]
+                    );
 
                 if ($count_email == 1)
                 {
-                    $user_id = $db->fetchColumn('select u.id
+                    $user_id = $db->fetchOne('select u.id
                         from ' . $pp->schema() . '.contact c, ' .
                             $pp->schema() . '.type_contact tc, ' .
                             $pp->schema() . '.users u
@@ -118,7 +121,10 @@ class LoginController extends AbstractController
                             and tc.abbrev = \'mail\'
                             and c.user_id = u.id
                             and u.status in (1, 2)
-                            and lower(c.value) = ?', [$lowercase_login]);
+                            and lower(c.value) = ?',
+                            [$lowercase_login],
+                            [\PDO::PARAM_STR]
+                        );
                 }
                 else
                 {
@@ -132,9 +138,12 @@ class LoginController extends AbstractController
 
             if (!$user_id && !count($errors))
             {
-                $count_code = $db->fetchColumn('select count(u.*)
+                $count_code = $db->fetchOne('select count(u.*)
                     from ' . $pp->schema() . '.users u
-                    where lower(code) = ?', [$lowercase_login]);
+                    where lower(code) = ?',
+                    [$lowercase_login],
+                    [\PDO::PARAM_STR]
+                );
 
                 if ($count_code > 1)
                 {
@@ -146,17 +155,23 @@ class LoginController extends AbstractController
                 }
                 else if ($count_code == 1)
                 {
-                    $user_id = $db->fetchColumn('select id
+                    $user_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.users
-                        where lower(code) = ?', [$lowercase_login]);
+                        where lower(code) = ?',
+                        [$lowercase_login],
+                        [\PDO::PARAM_STR]
+                    );
                 }
             }
 
             if (!$user_id && !count($errors))
             {
-                $count_name = $db->fetchColumn('select count(u.*)
+                $count_name = $db->fetchOne('select count(u.*)
                     from ' . $pp->schema() . '.users u
-                    where lower(name) = ?', [$lowercase_login]);
+                    where lower(name) = ?',
+                    [$lowercase_login],
+                    [\PDO::PARAM_STR]
+                );
 
                 if ($count_name > 1)
                 {
@@ -168,9 +183,12 @@ class LoginController extends AbstractController
                 }
                 else if ($count_name == 1)
                 {
-                    $user_id = $db->fetchColumn('select id
+                    $user_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.users
-                        where lower(name) = ?', [$lowercase_login]);
+                        where lower(name) = ?',
+                        [$lowercase_login],
+                        [\PDO::PARAM_STR]
+                    );
                 }
             }
 

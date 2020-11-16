@@ -30,7 +30,7 @@ class IntersystemsController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $intersystems = $db->fetchAll('select *
+        $intersystems = $db->fetchAllAssociative('select *
             from ' . $pp->schema() . '.letsgroups');
 
         $codes = [];
@@ -48,15 +48,15 @@ class IntersystemsController extends AbstractController
                 $intersystems[$key]['eland'] = true;
                 $intersystems[$key]['schema'] = $sys_schema;
 
-                $intersystems[$key]['user_count'] = $db->fetchColumn('select count(*)
+                $intersystems[$key]['user_count'] = $db->fetchOne('select count(*)
                     from ' . $sys_schema . '.users
-                    where status in (1, 2)');
+                    where status in (1, 2)', [], []);
             }
             else if ($sys['apimethod'] == 'internal')
             {
-                $intersystems[$key]['user_count'] = $db->fetchColumn('select count(*)
+                $intersystems[$key]['user_count'] = $db->fetchOne('select count(*)
                     from ' . $pp->schema() . '.users
-                    where status in (1, 2)');
+                    where status in (1, 2)', [], []);
             }
             else
             {
@@ -308,13 +308,16 @@ class IntersystemsController extends AbstractController
 
         foreach ($systems_service->get_schemas() as $rem_schema)
         {
-            $rem_group = $db->fetchAssoc('select localletscode, url, id
+            $rem_group = $db->fetchAssociative('select localletscode, url, id
                 from ' . $rem_schema . '.letsgroups
-                where url = ?', [$systems_service->get_legacy_eland_origin($rem_schema)]);
+                where url = ?',
+                [$systems_service->get_legacy_eland_origin($rem_schema)],
+                [\PDO::PARAM_STR]
+            );
 
-            $group_user_count_ary[$rem_schema] = $db->fetchColumn('select count(*)
+            $group_user_count_ary[$rem_schema] = $db->fetchOne('select count(*)
                 from ' . $rem_schema . '.users
-                where status in (1, 2)');
+                where status in (1, 2)', [], []);
 
             if ($rem_group)
             {
@@ -324,8 +327,11 @@ class IntersystemsController extends AbstractController
 
                 if ($rem_group['localletscode'])
                 {
-                    $rem_account = $db->fetchAssoc('select id, code, status, role
-                        from ' . $rem_schema . '.users where code = ?', [$rem_group['localletscode']]);
+                    $rem_account = $db->fetchAssociative('select id, code, status, role
+                        from ' . $rem_schema . '.users where code = ?',
+                        [$rem_group['localletscode']],
+                        [\PDO::PARAM_STR]
+                    );
 
                     if ($rem_account)
                     {

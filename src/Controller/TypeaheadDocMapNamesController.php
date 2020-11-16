@@ -18,11 +18,12 @@ class TypeaheadDocMapNamesController extends AbstractController
     {
         $map_names = [];
 
-        $st = $db->executeQuery('select name
+        $stmt = $db->prepare('select name
             from ' . $pp->schema() . '.doc_maps
             order by name asc');
+        $stmt->execute();
 
-        while ($name = $st->fetchColumn())
+        while ($name = $stmt->fetchOne())
         {
             $map_names[] = $name;
         }

@@ -30,7 +30,7 @@ class StatusController extends AbstractController
 
         $balance_ary = $account_repository->get_balance_ary($pp->schema());
 
-        $non_unique_mail = $db->fetchAll('select c.value, count(c.*)
+        $non_unique_mail = $db->fetchAllAssociative('select c.value, count(c.*)
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc, ' .
                 $pp->schema() . '.users u
@@ -39,7 +39,7 @@ class StatusController extends AbstractController
                 and c.user_id = u.id
                 and u.status in (1, 2)
             group by value
-            having count(*) > 1');
+            having count(*) > 1', [], []);
 
         if (count($non_unique_mail))
         {
@@ -63,11 +63,11 @@ class StatusController extends AbstractController
 
         //
 
-        $non_unique_code = $db->fetchAll('select code, count(*)
+        $non_unique_code = $db->fetchAllAssociative('select code, count(*)
             from ' . $pp->schema() . '.users
             where code <> \'\'
             group by code
-            having count(*) > 1');
+            having count(*) > 1', [], []);
 
         if (count($non_unique_code))
         {
@@ -91,11 +91,11 @@ class StatusController extends AbstractController
 
         //
 
-        $non_unique_name = $db->fetchAll('select name, count(*)
+        $non_unique_name = $db->fetchAllAssociative('select name, count(*)
             from ' . $pp->schema() . '.users
             where name <> \'\'
             group by name
-            having count(*) > 1');
+            having count(*) > 1', [], []);
 
         if (count($non_unique_name))
         {
@@ -119,12 +119,12 @@ class StatusController extends AbstractController
 
         //
 
-        $unvalid_mail = $db->fetchAll('select c.id, c.value, c.user_id
+        $unvalid_mail = $db->fetchAllAssociative('select c.id, c.value, c.user_id
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
                 and tc.abbrev = \'mail\'
-                and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'');
+                and c.value !~ \'^[A-Za-z0-9!#$%&*+/=?^_`{|}~.-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$\'', [], []);
 
         //
         $no_mail = array();
@@ -147,25 +147,25 @@ class StatusController extends AbstractController
             $status_msgs = true;
         }
 
-        $empty_code = $db->fetchAll('select id
+        $empty_code = $db->fetchAllAssociative('select id
             from ' . $pp->schema() . '.users
-            where status in (1, 2) and code = \'\'');
+            where status in (1, 2) and code = \'\'', [], []);
 
-        $empty_name = $db->fetchAll('select id
+        $empty_name = $db->fetchAllAssociative('select id
             from ' . $pp->schema() . '.users
-            where name = \'\'');
+            where name = \'\'', [], []);
 
         if ($unvalid_mail || $empty_code || $empty_name)
         {
             $status_msgs = true;
         }
 
-        $no_msgs_users = $db->fetchAll('select id, code, name, status
+        $no_msgs_users = $db->fetchAllAssociative('select id, code, name, status
             from ' . $pp->schema() . '.users u
             where status in (1, 2)
                 and not exists (select 1
                     from ' . $pp->schema() . '.messages m
-                    where m.user_id = u.id)');
+                    where m.user_id = u.id)', [], []);
 
         if (count($no_msgs_users))
         {

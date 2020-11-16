@@ -24,8 +24,8 @@ class ContactTypesController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $types = $db->fetchAll('select *
-            from ' . $pp->schema() . '.type_contact tc');
+        $types = $db->fetchAllAssociative('select *
+            from ' . $pp->schema() . '.type_contact tc', [], []);
 
         $contact_count = [];
 

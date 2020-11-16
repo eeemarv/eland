@@ -98,9 +98,10 @@ class TransactionsAddController extends AbstractController
 
             if ($group_id != 'self')
             {
-                $group = $db->fetchAssoc('select *
+                $group = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.letsgroups
-                    where id = ?', [$group_id], [\PDO::PARAM_INT]);
+                    where id = ?',
+                [$group_id], [\PDO::PARAM_INT]);
 
                 if (!isset($group) || $group === false)
                 {
@@ -114,22 +115,25 @@ class TransactionsAddController extends AbstractController
 
             if ($pp->is_user() && !$su->is_master())
             {
-                $from_user = $db->fetchAssoc('select *
+                $from_user = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.users
-                    where id = ?', [$su->id()]);
+                    where id = ?',
+                    [$su->id()], [\PDO::PARAM_INT]);
             }
             else
             {
-                $from_user = $db->fetchAssoc('select *
+                $from_user = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.users
-                    where code = ?', [$code_from]);
+                    where code = ?',
+                    [$code_from], [\PDO::PARAM_STR]);
             }
 
             $code_to_self = $group_id == 'self' ? $code_to : $group['localletscode'];
 
-            $to_user = $db->fetchAssoc('select *
+            $to_user = $db->fetchAssociative('select *
                 from ' . $pp->schema() . '.users
-                where code = ?', [$code_to_self], [\PDO::PARAM_STR]);
+                where code = ?',
+                [$code_to_self], [\PDO::PARAM_STR]);
 
             if(!is_array($from_user))
             {
@@ -403,9 +407,10 @@ class TransactionsAddController extends AbstractController
 
             if (!count($errors))
             {
-                $to_remote_user = $db->fetchAssoc('select *
+                $to_remote_user = $db->fetchAssociative('select *
                     from ' . $remote_schema . '.users
-                    where code = ?', [$code_to], [\PDO::PARAM_STR]);
+                    where code = ?',
+                    [$code_to], [\PDO::PARAM_STR]);
 
                 if (!$to_remote_user)
                 {
@@ -422,9 +427,10 @@ class TransactionsAddController extends AbstractController
 
                 $legacy_eland_origin = $systems_service->get_legacy_eland_origin($pp->schema());
 
-                $remote_group = $db->fetchAssoc('select *
+                $remote_group = $db->fetchAssociative('select *
                     from ' . $remote_schema . '.letsgroups
-                    where url = ?', [$legacy_eland_origin], [\PDO::PARAM_STR]);
+                    where url = ?',
+                    [$legacy_eland_origin], [\PDO::PARAM_STR]);
 
                 if (!count($errors) && !$remote_group)
                 {
@@ -439,9 +445,10 @@ class TransactionsAddController extends AbstractController
                     $errors[] = 'Er is geen interSysteem Account gedefiniëerd in het andere Systeem.';
                 }
 
-                $from_remote_user = $db->fetchAssoc('select *
+                $from_remote_user = $db->fetchAssociative('select *
                     from ' . $remote_schema . '.users
-                    where code = ?', [$remote_group['localletscode']], [\PDO::PARAM_STR]);
+                    where code = ?',
+                    [$remote_group['localletscode']], [\PDO::PARAM_STR]);
 
                 if (!count($errors) && !$from_remote_user)
                 {
@@ -659,14 +666,14 @@ class TransactionsAddController extends AbstractController
                 {
                     $origin_from_tus = $systems_service->get_legacy_eland_origin($tus);
 
-                    $group_id = $db->fetchColumn('select id
+                    $group_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.letsgroups
                         where url = ?',
-                        [$origin_from_tus], 0, [\PDO::PARAM_STR]);
+                        [$origin_from_tus], [\PDO::PARAM_STR]);
 
                     if ($mid)
                     {
-                        $row = $db->fetchAssoc('select
+                        $row = $db->fetchAssociative('select
                                 m.subject, m.amount, m.user_id,
                                 u.code, u.name
                             from ' . $tus . '.messages m,
@@ -704,13 +711,14 @@ class TransactionsAddController extends AbstractController
             }
             else if ($mid)
             {
-                $row = $db->fetchAssoc('select
+                $row = $db->fetchAssociative('select
                         m.subject, m.amount, m.user_id,
                         u.code, u.name, u.status
                     from ' . $pp->schema() . '.messages m,
                         '. $pp->schema() . '.users u
                     where u.id = m.user_id
-                        and m.id = ?', [$mid], [\PDO::PARAM_INT]);
+                        and m.id = ?',
+                    [$mid], [\PDO::PARAM_INT]);
 
                 if ($row)
                 {

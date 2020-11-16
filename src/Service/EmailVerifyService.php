@@ -70,8 +70,8 @@ class EmailVerifyService
 
 	public function is_verified(string $email, string $schema):bool
 	{
-		return $this->db->fetchColumn('select id
+		return $this->db->fetchOne('select id
 			form ' . $schema . '.email_verify
-			where email = ?', [$email]) ? true : false;
+			where email = ?', [$email], [\PDO::PARAM_STR]) ? true : false;
 	}
 }

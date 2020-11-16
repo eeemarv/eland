@@ -107,9 +107,9 @@ class ContactsAddAdminController extends AbstractController
             {
                [$code] = explode(' ', trim($account_code));
 
-                $user_id = $db->fetchColumn('select id
+                $user_id = $db->fetchOne('select id
                     from ' . $pp->schema() . '.users
-                    where code = ?', [$code]);
+                    where code = ?', [$code], [\PDO::PARAM_STR]);
 
                 if (!$user_id)
                 {
@@ -132,9 +132,10 @@ class ContactsAddAdminController extends AbstractController
                 throw new BadRequestHttpException('Ongeldige waarde zichtbaarheid');
             }
 
-            $abbrev_type = $db->fetchColumn('select abbrev
+            $abbrev_type = $db->fetchOne('select abbrev
                 from ' . $pp->schema() . '.type_contact
-                where id = ?', [$id_type_contact]);
+                where id = ?',
+                [$id_type_contact], [\PDO::PARAM_INT]);
 
             if(!$abbrev_type)
             {
@@ -157,15 +158,15 @@ class ContactsAddAdminController extends AbstractController
                 $errors[] = 'Commentaar mag maximaal 50 tekens lang zijn.';
             }
 
-            $mail_type_id = $db->fetchColumn('select id
+            $mail_type_id = $db->fetchOne('select id
                 from ' . $pp->schema() . '.type_contact
-                where abbrev = \'mail\'');
+                where abbrev = \'mail\'', [], []);
 
             if ($id_type_contact === $mail_type_id)
             {
                 $mailadr = $value;
 
-                $mail_count = $db->fetchColumn('select count(c.*)
+                $mail_count = $db->fetchOne('select count(c.*)
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.users u
@@ -174,7 +175,10 @@ class ContactsAddAdminController extends AbstractController
                         and c.user_id = u.id
                         and u.status in (1, 2)
                         and u.id <> ?
-                        and c.value = ?', [$user_id, $mailadr]);
+                        and c.value = ?',
+                        [$user_id, $mailadr],
+                        [\PDO::PARAM_INT, \PDO::PARAM_STR]
+                    );
 
                 if ($mail_count && $pp->is_admin())
                 {

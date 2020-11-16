@@ -44,7 +44,7 @@ class ExportController extends AbstractController
         $stmt->bindValue(1, $pp->schema());
         $stmt->execute();
 
-        while($table_name = $stmt->fetchColumn(0))
+        while($table_name = $stmt->fetchOne())
         {
             $table_ary[] = $table_name;
 

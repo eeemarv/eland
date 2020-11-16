@@ -28,9 +28,10 @@ class ContactTypesDelController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $ct = $db->fetchAssoc('select *
+        $ct = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.type_contact
-            where id = ?', [$id]);
+            where id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         if (in_array($ct['abbrev'], ContactTypesController::PROTECTED))
         {
@@ -38,9 +39,12 @@ class ContactTypesDelController extends AbstractController
             $link_render->redirect('contact_types', $pp->ary(), []);
         }
 
-        if ($db->fetchColumn('select id
+        $hos_contact = $db->fetchOne('select id
             from ' . $pp->schema() . '.contact
-            where id_type_contact = ?', [$id]))
+            where id_type_contact = ?',
+            [$id], [\PDO::PARAM_INT]) !== false;
+
+        if ($hos_contact)
         {
             $alert_service->warning('Er is ten minste één contact
                 van dit contact type, dus kan het contact type

@@ -54,8 +54,8 @@ class MessagesShowImagesUploadController extends AbstractController
         }
         else
         {
-            $id = $db->fetchColumn('select max(id)
-                from ' . $pp->schema() . '.messages');
+            $id = $db->fetchOne('select max(id)
+                from ' . $pp->schema() . '.messages', [], []);
             $id++;
         }
 
@@ -93,7 +93,7 @@ class MessagesShowImagesUploadController extends AbstractController
 
         if ($update_db)
         {
-            $db->executeUpdate('update ' . $pp->schema() . '.messages
+            $db->executeStatement('update ' . $pp->schema() . '.messages
                 set image_files = image_files || ?
                 where id = ?',
                 [$filename_ary, $id],

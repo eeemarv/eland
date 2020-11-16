@@ -80,7 +80,7 @@ class PlotUserTransactionsController extends AbstractController
                 and t.created_at <= ?
             order by t.created_at asc';
 
-        $fetched_transactions = $db->fetchAll($query,
+        $fetched_transactions = $db->fetchAllAssociative($query,
             [$user_id, $user_id, $user_id, $begin_datetime, $end_datetime],
             [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT,
             Types::DATETIME_IMMUTABLE, Types::DATETIME_IMMUTABLE]

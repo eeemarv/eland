@@ -92,12 +92,13 @@ class UsersPasswordAdminController extends AbstractController
                     if (($user['status'] === 1 || $user['status'] === 2)
                         && $notify)
                     {
-                        $to = $db->fetchColumn('select c.value
+                        $to = $db->fetchOne('select c.value
                             from ' . $pp->schema() . '.contact c, ' .
                                 $pp->schema() . '.type_contact tc
                             where tc.id = c.id_type_contact
                                 and tc.abbrev = \'mail\'
-                                and c.user_id = ?', [$id]);
+                                and c.user_id = ?',
+                                [$id], [\PDO::PARAM_INT]);
 
                         if ($to)
                         {

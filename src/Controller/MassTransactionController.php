@@ -208,9 +208,10 @@ class MassTransactionController extends AbstractController
                 $to_one = $to_code ? true : false;
                 $code = $to_one ? $to_code : $from_code;
 
-                $one_uid = $db->fetchColumn('select id
+                $one_uid = $db->fetchOne('select id
                     from ' . $pp->schema() . '.users
-                    where code = ?', [$code]);
+                    where code = ?',
+                    [$code], [\PDO::PARAM_STR]);
 
                 if (!$one_uid)
                 {
@@ -430,9 +431,10 @@ class MassTransactionController extends AbstractController
 
         if ($to_code)
         {
-            if ($to_name = $db->fetchColumn('select name
+            if ($to_name = $db->fetchOne('select name
                 from ' . $pp->schema() . '.users
-                where code = ?', [$to_code]))
+                where code = ?',
+                [$to_code], [\PDO::PARAM_STR]))
             {
                 $to_code .= ' ' . $to_name;
             }
@@ -440,9 +442,10 @@ class MassTransactionController extends AbstractController
 
         if ($from_code)
         {
-            if ($from_name = $db->fetchColumn('select name
+            if ($from_name = $db->fetchOne('select name
                 from ' . $pp->schema() . '.users
-                where code = ?', [$from_code]))
+                where code = ?',
+                [$from_code], [\PDO::PARAM_STR]))
             {
                 $from_code .= ' ' . $from_name;
             }

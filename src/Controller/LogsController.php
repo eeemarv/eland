@@ -74,9 +74,10 @@ class LogsController extends AbstractController
         {
             [$filter_code] = explode(' ', $filter['code']);
 
-            $filter_user_id = $db->fetchColumn('select id
+            $filter_user_id = $db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$filter_code], 0, [\PDO::PARAM_STR]);
+                where code = ?',
+                [$filter_code], [\PDO::PARAM_STR]);
 
             if ($filter_user_id)
             {
@@ -131,9 +132,10 @@ class LogsController extends AbstractController
 
         $sql_where = ' and ' . implode(' and ', $sql['where']);
 
-        $row_count = $db->fetchColumn('select count(*)
+        $row_count = $db->fetchOne('select count(*)
             from xdb.logs
-            where 1 = 1' . $sql_where, $sql['params'], 0, $sql['types']);
+            where 1 = 1' . $sql_where,
+            $sql['params'], $sql['types']);
 
         $query = 'select *
             from xdb.logs
@@ -143,7 +145,7 @@ class LogsController extends AbstractController
         $query .= ' limit ' . $params['p']['limit'];
         $query .= ' offset ' . $params['p']['start'];
 
-        $rows = $db->fetchAll($query, $sql['params'], $sql['types']);
+        $rows = $db->fetchAllAssociative($query, $sql['params'], $sql['types']);
 
         $pagination_render->init('logs', $pp->ary(),
             $row_count, $params);

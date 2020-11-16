@@ -41,9 +41,9 @@ class DocsMapEditController extends AbstractController
 
         $name = trim($request->request->get('name', ''));
 
-        $map = $db->fetchAssoc('select *
+        $map = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.doc_maps
-            where id = ?', [$id]);
+            where id = ?', [$id], [\PDO::PARAM_INT]);
 
         if (!$map)
         {
@@ -64,11 +64,13 @@ class DocsMapEditController extends AbstractController
 
             if (!count($errors))
             {
-                $test_name = $db->fetchColumn('select id
+                $test_name = $db->fetchOne('select id
                     from ' . $pp->schema() . '.doc_maps
                     where id <> ?
                         and lower(name) = ?',
-                    [$id, strtolower($name)]);
+                    [$id, strtolower($name)],
+                    [\PDO::PARAM_INT, \PDO::PARAM_STR]
+                );
 
                 if ($test_name)
                 {

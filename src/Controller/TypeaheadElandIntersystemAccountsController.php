@@ -32,14 +32,14 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             return $this->json([], 404);
         }
 
-        $fetched_users = $db->fetchAll(
+        $fetched_users = $db->fetchAllAssociative(
             'select code as c,
                 name as n,
                 extract(epoch from adate) as a,
                 status as s
             from ' . $remote_schema . '.users
             where status in (1, 2)
-            order by id asc'
+            order by id asc', [], []
         );
 
         $accounts = [];

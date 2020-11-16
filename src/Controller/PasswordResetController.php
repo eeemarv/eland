@@ -56,7 +56,7 @@ class PasswordResetController extends AbstractController
 
             if (!count($errors))
             {
-                $users = $db->fetchAll('select u.id, u.name, u.code
+                $users = $db->fetchAllAssociative('select u.id, u.name, u.code
                     from ' . $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.users u
@@ -64,7 +64,8 @@ class PasswordResetController extends AbstractController
                         and tc.id = c.id_type_contact
                         and tc.abbrev = \'mail\'
                         and c.user_id = u.id
-                        and u.status in (1, 2)', [$email]);
+                        and u.status in (1, 2)',
+                    [$email], [\PDO::PARAM_STR]);
 
                 if (!count($users))
                 {

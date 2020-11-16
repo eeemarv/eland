@@ -51,14 +51,14 @@ class TypeaheadAccountsController extends AbstractController
                 break;
         }
 
-        $fetched_users = $db->fetchAll(
+        $fetched_users = $db->fetchAllAssociative(
             'select code as c,
                 name as n,
                 extract(epoch from adate) as a,
                 status as s
             from ' . $pp->schema() . '.users
             where status ' . $status_sql . '
-            order by id asc'
+            order by id asc', [], []
         );
 
         $accounts = [];

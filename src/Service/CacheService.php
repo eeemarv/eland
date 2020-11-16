@@ -65,9 +65,9 @@ class CacheService
 
 		$this->db->beginTransaction();
 
-		if ($this->db->fetchColumn('select id
+		if ($this->db->fetchOne('select id
 			from xdb.cache
-			where id = ?', [$id]))
+			where id = ?', [$id], [\PDO::PARAM_STR]))
 		{
 			$this->db->update('xdb.cache',
 				['data' => $data],
@@ -100,11 +100,12 @@ class CacheService
 			return $data;
 		}
 
-		$row = $this->db->fetchAssoc('select data, expires
+		$row = $this->db->fetchAssociative('select data, expires
 			from xdb.cache
 			where id = ?
 				and (expires < timezone(\'utc\', now())
-					or expires is null)', [$id]);
+					or expires is null)',
+			[$id], [\PDO::PARAM_STR]);
 
 		if ($row)
 		{
@@ -136,11 +137,12 @@ class CacheService
 			return true;
 		}
 
-		$exists = $this->db->fetchColumn('select id
+		$exists = $this->db->fetchOne('select id
 			from xdb.cache
 			where id = ?
 				and (expires < timezone(\'utc\', now())
-					or expires is null)', [$id]);
+					or expires is null)',
+			[$id], [\PDO::PARAM_STR]);
 
 		if ($exists)
 		{

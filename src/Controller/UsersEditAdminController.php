@@ -307,29 +307,39 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            $code_sql = 'select code
+            $code_sql = [];
+            $name_sql = [];
+            $fullname_sql = [];
+
+            $code_sql['query'] = 'select code
                 from ' . $pp->schema() . '.users
                 where code = ?';
-            $code_sql_params = [$code];
+            $code_sql['params'] = [$code];
+            $code_sql['types'] = [\PDO::PARAM_STR];
 
-            $name_sql = 'select name
+            $name_sql['query'] = 'select name
                 from ' . $pp->schema() . '.users
                 where name = ?';
-            $name_sql_params = [$name];
+            $name_sql['params'] = [$name];
+            $name_sql['types'] = [\PDO::PARAM_STR];
 
-            $fullname_sql = 'select fullname
+            $fullname_sql['query'] = 'select fullname
                 from ' . $pp->schema() . '.users
                 where fullname = ?';
-            $fullname_sql_params = [$fullname];
+            $fullname_sql['params'] = [$fullname];
+            $fullname_sql['types'] = [\PDO::PARAM_STR];
 
             if ($is_edit)
             {
-                $code_sql .= ' and id <> ?';
-                $code_sql_params[] = $id;
-                $name_sql .= 'and id <> ?';
-                $name_sql_params[] = $id;
-                $fullname_sql .= 'and id <> ?';
-                $fullname_sql_params[] = $id;
+                $code_sql['query'] .= ' and id <> ?';
+                $code_sql['params'][] = $id;
+                $code_sql['types'][] = \PDO::PARAM_INT;
+                $name_sql['query'] .= 'and id <> ?';
+                $name_sql['params'][] = $id;
+                $name_sql['types'][] = \PDO::PARAM_INT;
+                $fullname_sql['query'] .= 'and id <> ?';
+                $fullname_sql['params'][] = $id;
+                $fullname_sql['types'][] = \PDO::PARAM_INT;
             }
 
             if (!$fullname_access)
@@ -343,7 +353,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Vul gebruikersnaam in!';
                 }
-                else if ($db->fetchColumn($name_sql, $name_sql_params))
+                else if ($db->fetchOne($name_sql['query'], $name_sql['params'], $name_sql['types']) !== false)
                 {
                     $errors[] = 'Deze gebruikersnaam is al in gebruik!';
                 }
@@ -359,7 +369,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Vul de Volledige Naam in!';
                 }
-                else if ($db->fetchColumn($fullname_sql, $fullname_sql_params))
+                else if ($db->fetchOne($fullname_sql['query'], $fullname_sql['params'], $fullname_sql['types']) !== false)
                 {
                     $errors[] = 'Deze Volledige Naam is al in gebruik!';
                 }
@@ -375,7 +385,7 @@ class UsersEditAdminController extends AbstractController
                 {
                     $errors[] = 'Vul een Account Code in!';
                 }
-                else if ($db->fetchColumn($code_sql, $code_sql_params))
+                else if ($db->fetchOne($code_sql['query'], $code_sql['params'], $code_sql['types']) !== false)
                 {
                     $errors[] = 'De Account Code bestaat al!';
                 }
@@ -708,17 +718,18 @@ class UsersEditAdminController extends AbstractController
             $max_limit = '';
             $periodic_overview_en	= true;
 
-            $contact = $db->fetchAll('select name, abbrev,
+            $contact = $db->fetchAllAssociative('select name, abbrev,
                 \'\' as value, 0 as id
                 from ' . $pp->schema() . '.type_contact
                 where abbrev in (\'mail\', \'adr\', \'tel\', \'gsm\')');
 
             if ($is_add && $intersystem_code)
             {
-                if ($group = $db->fetchAssoc('select *
+                if ($group = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.letsgroups
                     where localletscode = ?
-                        and apimethod <> \'internal\'', [$intersystem_code]))
+                        and apimethod <> \'internal\'',
+                        [$intersystem_code], [\PDO::PARAM_STR]))
                 {
                     $name = $fullname = $group['groupname'];
 

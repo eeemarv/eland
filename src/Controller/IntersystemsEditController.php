@@ -44,18 +44,20 @@ class IntersystemsEditController extends AbstractController
                 $form_token_service
             );
 
-            if ($db->fetchColumn('select id
+            if ($db->fetchOne('select id
                 from ' . $pp->schema() . '.letsgroups
                 where url = ?
-                    and id <> ?', [$group['url'], $id]))
+                    and id <> ?',
+                    [$group['url'], $id],
+                    [\PDO::PARAM_STR, \PDO::PARAM_INT]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze url.';
             }
 
-            if ($db->fetchColumn('select id
+            if ($db->fetchOne('select id
                 from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?
-                    and id <> ?', [$group['localletscode'], $id]))
+                    and id <> ?', [$group['localletscode'], $id], [\PDO::PARAM_STR, \PDO::PARAM_INT]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
             }
@@ -83,9 +85,10 @@ class IntersystemsEditController extends AbstractController
         }
         else
         {
-            $group = $db->fetchAssoc('select *
+            $group = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.letsgroups
-            where id = ?', [$id]);
+            where id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
             if (!$group)
             {

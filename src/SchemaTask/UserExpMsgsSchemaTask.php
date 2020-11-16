@@ -7,6 +7,7 @@ use App\Queue\MailQueue;
 use App\Service\ConfigService;
 use App\Service\UserCacheService;
 use App\Service\MailAddrUserService;
+use Doctrine\DBAL\Types\Types;
 
 class UserExpMsgsSchemaTask implements SchemaTaskInterface
 {
@@ -38,15 +39,16 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
-		$now = gmdate('Y-m-d H:i:s');
+		$now = \DateTimeImmutable::createFromFormat('U', (string) time());
 
-		$warn_messages  = $this->db->fetchAll('select m.*
+		$warn_messages  = $this->db->fetchAllAssociative('select m.*
 			from ' . $schema . '.messages m, ' .
 				$schema . '.users u
 			where m.exp_user_warn = \'f\'
 				and u.id = m.user_id
 				and u.status in (1, 2)
-				and m.expires_at < ?', [$now]);
+				and m.expires_at < ?',
+				[$now], [Types::DATETIME_IMMUTABLE]);
 
 		foreach ($warn_messages as $message)
 		{
@@ -82,9 +84,10 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 		if ($update)
 		{
-			$this->db->executeUpdate('update ' . $schema . '.messages
+			$this->db->executeStatement('update ' . $schema . '.messages
 				set exp_user_warn = \'t\'
-				where expires_at < ?', [$now]);
+				where expires_at < ?',
+				[$now], [Types::DATETIME_IMMUTABLE]);
 		}
 	}
 

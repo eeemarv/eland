@@ -43,9 +43,9 @@ class CategoriesEditController extends AbstractController
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
         }
 
-        $name = $db->fetchColumn('select name
+        $name = $db->fetchOne('select name
             from ' . $pp->schema() . '.categories
-            where id = ?', [$id]);
+            where id = ?', [$id], [\PDO::PARAM_INT]);
 
         if ($name === false)
         {

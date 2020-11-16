@@ -278,7 +278,7 @@ class MessagesListController extends AbstractController
 
                 $to_category_id = (int) $bulk_field_value;
 
-                $test_category = $db->fetchAssoc('select *
+                $test_category = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.categories
                     where id = ?',
                     [$to_category_id],
@@ -860,9 +860,10 @@ class MessagesListController extends AbstractController
             [$fcode] = explode(' ', trim($filter['fcode']));
             $fcode = trim($fcode);
 
-            $fuid = $db->fetchColumn('select id
+            $fuid = $db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where code = ?', [$fcode], 0, [\PDO::PARAM_STR]);
+                where code = ?',
+                [$fcode], [\PDO::PARAM_STR]);
 
             if ($fuid)
             {
@@ -970,7 +971,7 @@ class MessagesListController extends AbstractController
             }
             else
             {
-                $cat_lr = $db->fetchAssoc('select left_id, right_id
+                $cat_lr = $db->fetchAssociative('select left_id, right_id
                     from ' . $pp->schema() . '.categories
                     where id = ?',
                     [$filter['cid']],
@@ -1060,14 +1061,14 @@ class MessagesListController extends AbstractController
             && $filter['cid']
             && $category_enabled)
         {
-            $row_count = $db->fetchColumn('select count(m.*)
+            $row_count = $db->fetchOne('select count(m.*)
                 from ' . $pp->schema() . '.messages m
                 inner join ' . $pp->schema() . '.users u
                     on m.user_id = u.id
                 left join ' . $pp->schema() . '.categories c
                     on c.id = m.category_id
                 where 1 = 1'. $sql_where,
-                $sql['params'], 0, $sql['types']);
+                $sql['params'], $sql['types']);
         }
         else
         {

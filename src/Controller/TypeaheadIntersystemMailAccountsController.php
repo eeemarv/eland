@@ -21,7 +21,7 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
             return $this->json(['error' => 'No access.'], 403);
         }
 
-        $accounts = $db->fetchAll(
+        $accounts = $db->fetchAllAssociative(
             'select u.code as c,
                 u.name as n,
                 extract(epoch from u.adate) as a,
@@ -32,7 +32,7 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
             where u.status = 7
                 and l.apimethod = \'mail\'
                 and l.localletscode = u.code
-            order by u.id asc'
+            order by u.id asc', [], []
         );
 
         $crc = (string) crc32(json_encode($accounts));

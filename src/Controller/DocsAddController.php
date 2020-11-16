@@ -111,9 +111,12 @@ class DocsAddController extends AbstractController
 
                 if (strlen($map_name))
                 {
-                    $map_id = $db->fetchColumn('select id
+                    $map_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.doc_maps
-                        where lower(name) = ?', [strtolower($map_name)]);
+                        where lower(name) = ?',
+                        [strtolower($map_name)],
+                        [\PDO::PARAM_STR]
+                    );
 
                     if (!$map_id)
                     {
@@ -149,9 +152,11 @@ class DocsAddController extends AbstractController
 
         if ($map_id)
         {
-            $map_name = $db->fetchColumn('select name
+            $map_name = $db->fetchOne('select name
                 from ' . $pp->schema() . '.doc_maps
-                where id = ?', [$map_id]) ?? '';
+                where id = ?',
+                [$map_id], [\PDO::PARAM_STR]);
+            $map_name = $map_name ?: '';
         }
 
         $heading_render->add('Nieuw document opladen');

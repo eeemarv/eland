@@ -53,9 +53,10 @@ class TransactionsShowController extends AbstractController
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
 
-        $transaction = $db->fetchAssoc('select t.*
+        $transaction = $db->fetchAssociative('select t.*
             from ' . $pp->schema() . '.transactions t
-            where t.id = ?', [$id]);
+            where t.id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         $inter_schema = false;
 
@@ -72,9 +73,10 @@ class TransactionsShowController extends AbstractController
 
         if ($inter_schema)
         {
-            $inter_transaction = $db->fetchAssoc('select t.*
+            $inter_transaction = $db->fetchAssociative('select t.*
                 from ' . $inter_schema . '.transactions t
-                where t.transid = ?', [$transaction['transid']]);
+                where t.transid = ?',
+                [$transaction['transid']], [\PDO::PARAM_STR]);
 
             $inter_transactions_enabled = $config_service->get_bool('transactions.enabled', $inter_schema);
         }
@@ -83,17 +85,19 @@ class TransactionsShowController extends AbstractController
             $inter_transaction = false;
         }
 
-        $next = $db->fetchColumn('select id
+        $next = $db->fetchOne('select id
             from ' . $pp->schema() . '.transactions
             where id > ?
             order by id asc
-            limit 1', [$id]);
+            limit 1',
+            [$id], [\PDO::PARAM_INT]);
 
-        $prev = $db->fetchColumn('select id
+        $prev = $db->fetchOne('select id
             from ' . $pp->schema() . '.transactions
             where id < ?
             order by id desc
-            limit 1', [$id]);
+            limit 1',
+            [$id], [\PDO::PARAM_INT]);
 
         if ($pp->is_admin()
             && ($inter_transaction

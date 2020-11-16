@@ -65,7 +65,7 @@ class ForumTopicController extends AbstractController
         $s_topic_owner = $forum_topic['user_id'] === $su->id()
             && $su->is_system_self() && !$pp->is_guest();
 
-        $forum_posts = $db->fetchAll('select *
+        $forum_posts = $db->fetchAllAssociative('select *
             from ' . $pp->schema() . '.forum_posts
             where topic_id = ?
             order by created_at asc', [$id]);
@@ -107,7 +107,7 @@ class ForumTopicController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $stmt_prev = $db->executeQuery('select id
+        $prev = $db->fetchOne('select id
             from ' . $pp->schema() . '.forum_topics
             where last_edit_at > ?
                 and access in (?)
@@ -120,9 +120,7 @@ class ForumTopicController extends AbstractController
                 Db::PARAM_STR_ARRAY,
             ]);
 
-        $prev = $stmt_prev->fetchColumn();
-
-        $stmt_next = $db->executeQuery('select id
+        $next = $db->fetchOne('select id
             from ' . $pp->schema() . '.forum_topics
             where last_edit_at < ?
                 and access in (?)
@@ -134,8 +132,6 @@ class ForumTopicController extends AbstractController
                 \PDO::PARAM_STR,
                 Db::PARAM_STR_ARRAY,
             ]);
-
-        $next = $stmt_next->fetchColumn();
 
         if ($pp->is_admin() || $s_topic_owner)
         {
@@ -270,9 +266,9 @@ class ForumTopicController extends AbstractController
         ItemAccessService $item_access_service
     ):array
     {
-        $forum_topic = $db->fetchAssoc('select *
+        $forum_topic = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.forum_topics
-            where id = ?', [$id]);
+            where id = ?', [$id], [\PDO::PARAM_INT]);
 
         if (!isset($forum_topic) || !$forum_topic)
         {

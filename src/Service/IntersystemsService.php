@@ -150,7 +150,7 @@ class IntersystemsService
 		{
 			$interschema = $this->systems_service->get_schema($intersystem);
 
-			$url = $this->db->fetchColumn('select g.url
+			$url = $this->db->fetchOne('select g.url
 				from ' . $interschema . '.letsgroups g, ' .
 					$interschema . '.users u
 				where g.apimethod = \'elassoap\'
@@ -158,7 +158,8 @@ class IntersystemsService
 					and u.code <> \'\'
 					and u.status in (1, 2, 7)
 					and u.role = \'guest\'
-					and g.url = ?', [$s_url]);
+					and g.url = ?',
+				[$s_url], [\PDO::PARAM_STR]);
 
 			if (!$url)
 			{

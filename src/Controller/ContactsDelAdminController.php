@@ -92,12 +92,13 @@ class ContactsDelAdminController extends AbstractController
             if ($contact['abbrev'] === 'mail'
                 && $user_cache_service->is_active_user($user_id, $pp->schema()))
             {
-                $count_mail = $db->fetchColumn('select count(c.*)
+                $count_mail = $db->fetchOne('select count(c.*)
                     from ' . $pp->schema() . '.contact c
                     where c.id_type_contact = ?
                         and c.user_id = ?', [
                             $contact['id_type_contact'],
-                            $user_id]);
+                            $user_id],
+                            [\PDO::PARAM_INT, \PDO::PARAM_INT]);
 
                 if ($count_mail === 1)
                 {
@@ -210,10 +211,5 @@ class ContactsDelAdminController extends AbstractController
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
         return $out;
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
-        ]);
     }
 }

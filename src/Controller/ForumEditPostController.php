@@ -48,9 +48,9 @@ class ForumEditPostController extends AbstractController
 
         $content = $request->request->get('content', '');
 
-        $forum_post = $db->fetchAssoc('select *
+        $forum_post = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.forum_posts
-            where id = ?', [$id]);
+            where id = ?', [$id], [\PDO::PARAM_INT]);
 
         if (!isset($forum_post) || !$forum_post)
         {
@@ -67,11 +67,11 @@ class ForumEditPostController extends AbstractController
 
         $forum_topic = ForumTopicController::get_forum_topic($forum_post['topic_id'], $db, $pp, $item_access_service);
 
-        $first_post_id = $db->fetchColumn('select id
+        $first_post_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.forum_posts
             where topic_id = ?
             order by created_at asc
-            limit 1', [$forum_topic['id']]);
+            limit 1', [$forum_topic['id']], [\PDO::PARAM_INT]);
 
         if ($first_post_id === $id)
         {

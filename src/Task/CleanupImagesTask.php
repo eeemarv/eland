@@ -99,9 +99,9 @@ class CleanupImagesTask
 
 		if ($type == 'u' && ctype_digit((string) $id))
 		{
-			$user = $this->db->fetchAssoc('select id, image_file
+			$user = $this->db->fetchAssociative('select id, image_file
 				from ' . $sch . '.users
-				where id = ?', [$id]);
+				where id = ?', [$id], [\PDO::PARAM_INT]);
 
 			if (!$user)
 			{
@@ -119,9 +119,9 @@ class CleanupImagesTask
 		}
 		else if ($type === 'm' && ctype_digit((string) $id))
 		{
-			$image_files = $this->db->fetchColumn('select image_files
+			$image_files = $this->db->fetchOne('select image_files
 				from ' . $sch . '.messages
-				where id = ?', [$id]);
+				where id = ?', [$id], [\PDO::PARAM_INT]);
 
 			$image_files = $image_files ?? '[]';
 			$image_files = $image_files === false ? '[]' : $image_files;
@@ -152,11 +152,13 @@ class CleanupImagesTask
 
 	protected function table_exists(string $table, string $schema):bool
 	{
-		return $this->db->fetchColumn('select 1
+		return $this->db->fetchOne('select 1
 			from pg_catalog.pg_class c
 				join pg_catalog.pg_namespace n on n.oid = c.relnamespace
-			where n.nspname = \'' . $schema . '\'
-				and c.relname = \'' . $table . '\'
-				and c.relkind = \'r\'') ? true : false;
+			where n.nspname = ?
+				and c.relname = ?
+				and c.relkind = \'r\'',
+				[$schema, $table],
+				[\PDO::PARAM_STR, \PDO::PARAM_STR]) ? true : false;
 	}
 }
