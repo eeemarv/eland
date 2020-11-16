@@ -253,7 +253,6 @@ div.navbar-header ul.nav
   background-color: #f5f5f5;
 }
 
-
 #wrap {
   min-height: 100%;
 }
@@ -402,34 +401,19 @@ li.active-group a:visited, li.active-group a:hover
   background-color: #FFC765;
 }
 
-/* extra labels */
+/* extra btn default */
 
-.label-offer {
-    background-color: #f8f8f8;
-    color:#666;
-    border: 1px solid #bbb;
+.btn-default-2 {
+  background-color: #888;
+  color: white;
 }
-
-.label-want {
-    background-color: #888;
-    color:#fff;
-    border: 1px solid #888;
+.btn-default-2:hover {
+  background-color: #666;
+  color: white;
 }
 
 .label-sm {
   font-size: 12px;
-}
-
-.label-good {
-    background-color: #ddd;
-    color:#555;
-    border: 1px solid #ddd;
-}
-
-.label-service {
-    background-color: #ddd;
-    color:#555;
-    border: 1px solid #ddd;
 }
 
 /***for inputs of horizontal form******/

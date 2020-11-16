@@ -48,7 +48,7 @@ class AssetsService
 		],
 		'jssor'		=> [
 			'js'	=> [
-				'jssor-slider/27.5.0/jssor.slider.min.js',
+				'jssor-slider/28.0.0/jssor.slider.min.js',
 			],
 		],
 		'jqplot'	=> [
@@ -64,7 +64,7 @@ class AssetsService
 		],
 		'jquery'	=> [
 			'js'	=> [
-				'jquery/3.4.1/jquery.min.js',
+				'jquery/3.5.1/jquery.min.js',
 			],
 		],
 		'fileupload'	=> [
@@ -89,11 +89,11 @@ class AssetsService
 		],
 		'datepicker'	=> [
 			'js'	=>	[
-				'bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js',
-				'bootstrap-datepicker/1.8.0/locales/bootstrap-datepicker.nl.min.js',
+				'bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js',
+				'bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.nl.min.js',
 			],
 			'css'	=> [
-				'bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.standalone.min.css',
+				'bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css',
 			],
 		],
 		'isotope'	=> [
@@ -104,40 +104,40 @@ class AssetsService
 		],
 		'leaflet'	=> [
 			'js'	=> [
-				'leaflet/1.6.0/leaflet.js',
+				'leaflet/1.7.1/leaflet.js',
 			],
 			'css'	=> [
-				'leaflet/1.6.0/leaflet.css',
+				'leaflet/1.7.1/leaflet.css',
 			]
 		],
 		'summernote' => [
 			'js'	=> [
-				'summernote/0.8.11/summernote.min.js',
-				'summernote/0.8.12/lang/summernote-nl-NL.min.js',
+				'summernote/0.8.18/summernote.min.js',
+				'summernote/0.8.18/lang/summernote-nl-NL.min.js',
 			],
 			'css'	=> [
-				'summernote/0.8.12/summernote.css',
+				'summernote/0.8.18/summernote.css',
 			],
 		],
 		'codemirror' => [
 			'js'	=> [
-				'codemirror/5.48.4/codemirror.min.js',
-				'codemirror/5.48.4/addon/dialog/dialog.min.js',
-				'codemirror/5.48.4/mode/xml/xml.min.js',
-				'codemirror/5.48.4/addon/fold/xml-fold.min.js',
-				'codemirror/5.48.4/addon/hint/xml-hint.min.js',
-				'codemirror/5.48.4/addon/selection/active-line.min.js',
-				'codemirror/5.48.4/addon/search/searchcursor.min.js',
-				'codemirror/5.48.4/addon/search/jump-to-line.min.js',
-				'codemirror/5.48.4/addon/search/search.min.js',
-				'codemirror/5.48.4/addon/edit/matchbrackets.min.js',
-				'codemirror/5.48.4/addon/edit/matchtags.min.js',
-				'codemirror/5.48.4/addon/edit/trailingspace.min.js',
+				'codemirror/5.58.2/codemirror.min.js',
+				'codemirror/5.58.2/addon/dialog/dialog.min.js',
+				'codemirror/5.58.2/mode/xml/xml.min.js',
+				'codemirror/5.58.2/addon/fold/xml-fold.min.js',
+				'codemirror/5.58.2/addon/hint/xml-hint.min.js',
+				'codemirror/5.58.2/addon/selection/active-line.min.js',
+				'codemirror/5.58.2/addon/search/searchcursor.min.js',
+				'codemirror/5.58.2/addon/search/jump-to-line.min.js',
+				'codemirror/5.58.2/addon/search/search.min.js',
+				'codemirror/5.58.2/addon/edit/matchbrackets.min.js',
+				'codemirror/5.58.2/addon/edit/matchtags.min.js',
+				'codemirror/5.58.2/addon/edit/trailingspace.min.js',
 			],
 			'css'	=> [
-				'codemirror/5.48.4/codemirror.css',
-				'codemirror/5.48.4/theme/monokai.css',
-				'codemirror/5.48.4/addon/dialog/dialog.css',
+				'codemirror/5.58.2/codemirror.css',
+				'codemirror/5.58.2/theme/monokai.css',
+				'codemirror/5.58.2/addon/dialog/dialog.css',
 			],
 		],
 		'sortable' => [

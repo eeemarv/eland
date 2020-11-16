@@ -614,11 +614,13 @@ class MessagesEditController extends AbstractController
         $out .= '<div class="custom-radio">';
         foreach ($offer_want_tpl_ary as $val => $lbl)
         {
+            $class = 'btn btn-default';
+            $class .= $val === 'want' ? '-2' : '';
             $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                 '%name%'    => 'offer_want',
                 '%value%'   => $val,
                 '%attr%'    => ' required' . ($offer_want === $val ? ' checked' : ''),
-                '%label%'    => '<span class="btn btn-default">' . $lbl . '</span>',
+                '%label%'    => '<span class="' . $class . '">' . $lbl . '</span>',
             ]);
         }
         $out .= '</div>';
@@ -711,11 +713,14 @@ class MessagesEditController extends AbstractController
                 $out .= '<div class="custom-radio">';
                 foreach ($expires_at_switch_tpl_ary as $val => $lbl)
                 {
+                    $class = 'btn btn-default';
+                    $class .= $val === 'permanent' ? '-2' : '';
+
                     $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                         '%name%'    => 'expires_at_switch',
                         '%value%'   => $val,
                         '%attr%'    => ' required' . ($expires_at_switch === $val ? ' checked' : ''),
-                        '%label%'    => '<span class="btn btn-default">' . $lbl . '</span>',
+                        '%label%'    => '<span class="' . $class . '">' . $lbl . '</span>',
                     ]);
                 }
                 $out .= '</div>';
