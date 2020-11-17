@@ -620,7 +620,7 @@ class MessagesEditController extends AbstractController
                 '%name%'    => 'offer_want',
                 '%value%'   => $val,
                 '%attr%'    => ' required' . ($offer_want === $val ? ' checked' : ''),
-                '%label%'    => '<span class="' . $class . '">' . $lbl . '</span>',
+                '%label%'   => '<span class="' . $class . '">' . $lbl . '</span>',
             ]);
         }
         $out .= '</div>';
@@ -909,7 +909,7 @@ class MessagesEditController extends AbstractController
                 '%name%'    => $name,
                 '%value%'   => $value,
                 '%attr%'    => $attr,
-                '%label%'    => '<span class="btn btn-default">' . $label . '</span>',
+                '%label%'   => '<span class="btn btn-default">' . $label . '</span>',
             ]);
         }
 

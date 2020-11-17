@@ -49,7 +49,7 @@ class FormTokenService
 
 	public function get_hidden_input():string
 	{
-		return '<input type="hidden" name="form_token" value="' . $this->get() . '">';
+		return '<input type="hidden" name="' . self::NAME . '" value="' . $this->get() . '">';
 	}
 
 	public function get_error(bool $incr = true):string
