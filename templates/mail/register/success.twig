@@ -1,0 +1,25 @@
+{% extends 'mail/base/base.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+    {{- 'register_success.subject'|trans({
+        '%system_name%': config_str('system.name', schema)
+    }) -}}
+{%- endblock -%}
+
+{%- block bgcolor_system_name -%}3600cf{%- endblock -%}
+{%- block bgcolor_sub_header -%}ddddff{%- endblock -%}
+{%- block sub_header -%}register_success.sub_header{%- endblock -%}
+
+{%  block html_content -%}
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': html|raw
+    } -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
+{%- endblock -%}
+
+{%- block text_content %}
+{{ text|raw }}
+{% endblock -%}

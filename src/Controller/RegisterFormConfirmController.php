@@ -15,14 +15,12 @@ use App\Service\PageParamsService;
 use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegisterFormConfirmController extends AbstractController
 {
     public function __invoke(
         string $token,
         Db $db,
-        TranslatorInterface $translator,
         ConfigService $config_service,
         StaticContentService $static_content_service,
         AlertService $alert_service,
@@ -195,10 +193,6 @@ class RegisterFormConfirmController extends AbstractController
             $vars[$k] = $data[$v];
         }
 
-        $vars['subject'] = $translator->trans('register_success.subject', [
-            '%system_name%'	=> $config_service->get('systemname', $pp->schema()),
-        ], 'mail');
-
         $pre_html_template = $static_content_service->get('register_form_confirm', 'success_mail', $pp->schema());
 
         $mail_queue->queue([
@@ -206,7 +200,7 @@ class RegisterFormConfirmController extends AbstractController
             'to' 					=> [$data['email'] => $user['fullname']],
             'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
             'pre_html_template'		=> $pre_html_template,
-            'template'				=> 'skeleton/user',
+            'template'				=> 'register/success',
             'vars'					=> $vars,
         ], 8500);
 
