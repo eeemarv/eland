@@ -13,7 +13,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ContactFormTokenController extends AbstractController
+class ContactFormConfirmController extends AbstractController
 {
     public function __invoke(
         string $token,
@@ -31,12 +31,12 @@ class ContactFormTokenController extends AbstractController
             throw new NotFoundHttpException('Contact form module not enabled.');
         }
 
-        $data = $data_token_service->retrieve($token, 'contact', $pp->schema());
+        $data = $data_token_service->retrieve($token, 'contact_form', $pp->schema());
 
         if (!$data)
         {
             $alert_service->error('Ongeldig of verlopen token.');
-            $link_render->redirect('contact', $pp->ary(), []);
+            $link_render->redirect('contact_form', $pp->ary(), []);
         }
 
         $vars = [
@@ -61,10 +61,10 @@ class ContactFormTokenController extends AbstractController
             'reply_to'	=> [$data['email']],
         ], 8000);
 
-        $data_token_service->del($token, 'contact', $pp->schema());
+        $data_token_service->del($token, 'contact_form', $pp->schema());
 
         $alert_service->success('Je bericht werd succesvol verzonden.');
-        $link_render->redirect('contact', $pp->ary(), []);
+        $link_render->redirect('contact_form', $pp->ary(), []);
 
         return new Response();
     }

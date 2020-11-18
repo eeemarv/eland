@@ -19,7 +19,7 @@
                 {%- include 'mail/include/btn.html.twig' with {
                     'bgcolor': '008800',
                     'label': 'contact_confirm.btn_label'|trans,
-                    'href': context_url('contact_token', mpp_anon_ary(schema), {'token': token})
+                    'href': context_url('contact_form_confirm', mpp_anon_ary(schema), {'token': token})
                 } -%}
             </td>
         </tr>
@@ -40,7 +40,7 @@
                 {{- 'contact_confirm.explain'|trans({
                     '%system_name%': config_str('system.name', schema),
                     '%link_open%': context_url_open(
-                        'contact', mpp_anon_ary(schema), {}),
+                        'contact_form', mpp_anon_ary(schema), {}),
                     '%link_close%': '</a>'
                 })|raw -}}
             </td>
@@ -64,7 +64,7 @@
 
 {{ 'contact_confirm.text_msg'|trans }}
 
-{{ context_url('contact_token', mpp_anon_ary(schema), {'token': token}) }}
+{{ context_url('contact_form_confirm', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'expiration.1_day'|trans }}
 
@@ -74,7 +74,7 @@
     '%link_close%': ''
 }) }}
 
-{{ context_url('contact', mpp_anon_ary(schema), {}) }}
+{{ context_url('contact_form', mpp_anon_ary(schema), {}) }}
 
 {% endautoescape %}
 {% endblock text_content %}

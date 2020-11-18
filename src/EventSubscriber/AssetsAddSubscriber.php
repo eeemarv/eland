@@ -4,6 +4,7 @@ namespace App\EventSubscriber;
 
 use App\Service\AssetsService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -12,14 +13,17 @@ class AssetsAddSubscriber implements EventSubscriberInterface
 {
     protected AssetsService $assets_service;
     protected PageParamsService $pp;
+    protected SessionUserService $su;
 
     public function __construct(
         AssetsService $assets_service,
-        PageParamsService $pp
+        PageParamsService $pp,
+        SessionUserService $su
     )
     {
         $this->assets_service = $assets_service;
         $this->pp = $pp;
+        $this->su = $su;
     }
 
     public function onKernelController(ControllerEvent $event)
@@ -58,7 +62,7 @@ class AssetsAddSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$this->pp->is_admin())
+        if (!$this->su->is_admin())
         {
             return;
         }

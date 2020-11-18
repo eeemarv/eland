@@ -20,7 +20,7 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class RegisterController extends AbstractController
+class RegisterFormController extends AbstractController
 {
     public function __invoke(
         Request $request,
@@ -100,7 +100,7 @@ class RegisterController extends AbstractController
             else
             {
                 $token = $data_token_service->store($reg,
-                    'register', $pp->schema(), 604800); // 1 week
+                    'register_form', $pp->schema(), 604800); // 1 week
 
                 $mail_queue->queue([
                     'schema'	=> $pp->schema(),
@@ -217,7 +217,7 @@ class RegisterController extends AbstractController
 
         $out .= $static_content_service->get('register_form', 'bottom', $pp->schema());
 
-        $menu_service->set('register');
+        $menu_service->set('register_form');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
-class PasswordResetTokenController extends AbstractController
+class PasswordResetConfirmController extends AbstractController
 {
     public function __invoke(
         Request $request,

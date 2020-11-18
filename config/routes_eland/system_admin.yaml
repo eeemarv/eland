@@ -25,7 +25,7 @@ categories:
 
 cms_edit:
   controller: App\Controller\CmsEditController
-  path: /cms-edit/{id<%assert.route%>}
+  path: /cms-edit/{route<%assert.route%>}/{form_token<%assert.token%>}
   methods: POST
 
 contact_types_del:

@@ -3,24 +3,24 @@ login:
   controller: App\Controller\LoginController
   methods: GET|POST
 
-contact:
+contact_form:
   path: /contact
   controller: App\Controller\ContactFormController
   methods: GET|POST
 
-contact_token:
+contact_form_confirm:
   path: /contact/{token<%assert.token%>}
-  controller: App\Controller\ContactFormTokenController
+  controller: App\Controller\ContactFormConfirmController
   methods: GET
 
-register:
+register_form:
   path: /register
-  controller: App\Controller\RegisterController
+  controller: App\Controller\RegisterFormController
   methods: GET|POST
 
-register_token:
+register_form_confirm:
   path: /register/{token<%assert.token%>}
-  controller: App\Controller\RegisterTokenController
+  controller: App\Controller\RegisterFormConfirmController
   methods: GET
 
 password_reset:
@@ -28,9 +28,9 @@ password_reset:
   controller: App\Controller\PasswordResetController
   methods: GET|POST
 
-password_reset_token:
+password_reset_confirm:
   path: /password-reset/{token<%assert.token%>}
-  controller: App\Controller\PasswordResetTokenController
+  controller: App\Controller\PasswordResetConfirmController
   methods: GET|POST
 
 mollie_webhook:

@@ -204,7 +204,7 @@ password_reset_confirm:
 
 register:
   sub_header: >-
-    Registratie
+    Inschrijving
 
 register_admin:
   subject: >-
@@ -215,20 +215,22 @@ register_admin:
 
 register_confirm:
   subject: >-
-    Bevestig je registratie bij %system_name%
+    Bevestig je inschrijving bij %system_name%
   btn_label: >-
-    Bevestig je registratie
+    Bevestig je inschrijving
   html_msg: >-
     Klik om je registratie te bevestigen.
   text_msg: >-
-    Klik op de link hieronder om je registratie
+    Klik op de link hieronder om je inschrijving
     te bevestigen.
   explain: >-
     Gelieve deze mail te negeren wanneer je niet
-    zelf %link_open%het registratieformulier
+    zelf %link_open%het inschrijvingsformulier
     van %system_name%%link_close% hebt ingevuld.
 register_success:
-  subject: Je inschrijving bij %system_name%
+  subject: >-
+    Je inschrijving bij %system_name%
+  sub_header: Inschrijving geslaagd
 
 support_copy:
   subject: >-

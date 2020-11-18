@@ -89,7 +89,7 @@ class ContactFormController extends AbstractController
                 ];
 
                 $token = $data_token_service->store($contact,
-                    'contact', $pp->schema(), 86400);
+                    'contact_form', $pp->schema(), 86400);
 
                 $logger->info('Contact form filled in with address ' .
                     $email . ' ' .
@@ -111,7 +111,7 @@ class ContactFormController extends AbstractController
                     de link aan die we je zonden om je
                     bericht te bevestigen.');
 
-                $link_render->redirect('contact', $pp->ary(), []);
+                $link_render->redirect('contact_form', $pp->ary(), []);
             }
             else
             {
@@ -204,7 +204,7 @@ class ContactFormController extends AbstractController
         $out .= 'aanvragen met je E-mail adres ';
         $out .= 'vanuit de login-pagina!</i></p>';
 
-        $menu_service->set('contact');
+        $menu_service->set('contact_form');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

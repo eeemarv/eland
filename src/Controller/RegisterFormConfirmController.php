@@ -17,7 +17,7 @@ use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class RegisterTokenController extends AbstractController
+class RegisterFormConfirmController extends AbstractController
 {
     public function __invoke(
         string $token,
@@ -39,7 +39,7 @@ class RegisterTokenController extends AbstractController
             throw new NotFoundHttpException('Register form not enabled.');
         }
 
-        $data = $data_token_service->retrieve($token, 'register', $pp->schema());
+        $data = $data_token_service->retrieve($token, 'register_form', $pp->schema());
 
         if (!$data)
         {
@@ -53,13 +53,13 @@ class RegisterTokenController extends AbstractController
             $out .= '</div>';
             $out .= '<div class="panel-body">';
 
-            $out .= $link_render->link('register', $pp->ary(),
+            $out .= $link_render->link('register_form', $pp->ary(),
                 [], 'Opnieuw proberen', ['class' => 'btn btn-default']);
 
             $out .= '</div>';
             $out .= '</div>';
 
-            $menu_service->set('register');
+            $menu_service->set('register_form');
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
@@ -67,7 +67,7 @@ class RegisterTokenController extends AbstractController
             ]);
         }
 
-        $data_token_service->del($token, 'register', $pp->schema());
+        $data_token_service->del($token, 'register_form', $pp->schema());
 
         for ($i = 0; $i < 20; $i++)
         {
@@ -214,7 +214,7 @@ class RegisterTokenController extends AbstractController
 
         $success_content = $static_content_service->get('register_form_confirm', 'success', $pp->schema());
 
-        $menu_service->set('register');
+        $menu_service->set('register_form');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $success_content,

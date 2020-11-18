@@ -19,7 +19,7 @@
                 {%- include 'mail/include/btn.html.twig' with {
                     'bgcolor': '008800',
                     'label': 'register_confirm.btn_label'|trans,
-                    'href': context_url('register_token', mpp_anon_ary(schema), {'token': token})
+                    'href': context_url('register_form_confirm', mpp_anon_ary(schema), {'token': token})
                 } -%}
             </td>
         </tr>
@@ -39,7 +39,7 @@
             <td>
                 {{- 'register_confirm.explain'|trans({
                     '%system_name%': config_str('system.name', schema),
-                    '%link_open%': context_url_open('register', mpp_anon_ary(schema), {}),
+                    '%link_open%': context_url_open('register_form', mpp_anon_ary(schema), {}),
                     '%link_close%': '</a>'
                 })|raw -}}
             </td>
@@ -63,7 +63,7 @@
 
 {{ 'register_confirm.text_msg'|trans }}
 
-{{ context_url('register_token', mpp_anon_ary(schema), {'token': token}) }}
+{{ context_url('register_form_confirm', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'expiration.1_week'|trans }}
 
@@ -73,7 +73,7 @@
     '%link_close%': ''
 }) }}
 
-{{ context_url('register', mpp_anon_ary(schema), {}) }}
+{{ context_url('register_form', mpp_anon_ary(schema), {}) }}
 
 {% endautoescape %}
 {% endblock text_content %}
