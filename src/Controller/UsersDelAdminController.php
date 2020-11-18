@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -123,14 +124,14 @@ class UsersDelAdminController extends AbstractController
 
         $out .= '<form method="post"">';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="id_verify">';
-        $out .= '<input type="checkbox" name="verify"';
-        $out .= ' value="1" id="id_verify"> ';
-        $out .= ' Ik ben wis en waarachtig zeker dat ';
-        $out .= 'ik deze gebruiker wil verwijderen.';
-        $out .= '</label>';
-        $out .= '</div>';
+        $verify_lbl = 'Ik ben wis en waarachtig zeker dat ';
+        $verify_lbl .= 'ik deze gebruiker wil verwijderen.';
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'        => 'verify',
+            '%label%'       => $verify_lbl,
+            '%attr%'        => '',
+        ]);
 
         $out .= $link_render->btn_cancel($vr->get('users_show'),
             $pp->ary(), ['id' => $id]);
