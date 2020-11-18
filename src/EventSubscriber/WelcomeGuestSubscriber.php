@@ -16,7 +16,7 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
     TPL;
     const MSG_CURRENCY = <<<'TPL'
     Waardering bij %system_name% gebeurt met '%currency%'.
-    %currency_ratio% %per_hour_ratio% stemt overeen met 1 uur.<br>
+    %per_hour_ratio% %currency% stemt overeen met 1 uur.<br>
     TPL;
     const MSG_BACK = <<<'TPL'
     Je kan steeds terug naar je eigen Systeem via het menu <strong>Systeem</strong>
