@@ -85,6 +85,12 @@
 
     <h5>Publieke modules</h5>
 
+    {{- form_row(form.home_menu_enabled, {
+        'label': 'Home pagina (Blijft altijd bereikbaar. Hiermee schakel je enkel het menu item in of uit.)',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
     {{- form_row(form.contact_form_enabled, {
         'label': 'Contact formulier',
         'translation_domain': false,

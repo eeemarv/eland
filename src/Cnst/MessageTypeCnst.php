@@ -4,16 +4,6 @@ namespace App\Cnst;
 
 class MessageTypeCnst
 {
-    const TO_DB = [
-        'offer'     => 1,
-        'want'      => 0,
-    ];
-
-    const FROM_DB = [
-        0   => 'want',
-        1   => 'offer',
-    ];
-
     const TO_LABEL = [
         'offer'     => 'aanbod',
         'want'      => 'vraag',

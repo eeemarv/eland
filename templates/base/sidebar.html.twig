@@ -45,7 +45,22 @@
 	{{- a.alert() -}}
 
 	{%- if pp_ary().edit is defined and s_role('admin') and is_s_system_self() -%}
-
+	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}
+	{%- set route = app.request.attributes.get('_route') -%}
+	{%- set cms_linked = {
+		'password_reset': {
+			'password_reset_confirm': {
+				'lbl': 'Nieuw paswoord ingeven',
+				'params': {'token': cms_token},
+			}
+		},
+		'register_form': {
+			'register_form_confirm': {
+				'lbl': 'Inschrijving voltooid',
+				'params': {'token': cms_token}
+			}
+		}
+	} -%}
 	<div class="row mt-5p">
 		<div class="col-md-12">
 			<div class="panel panel-info">
@@ -53,21 +68,34 @@
 					<h4><i class="fa fa-pencil"></i> CMS Edit modus</h4>
 					<p>Inline editing van content blokken.</p>
 					<p class="text-danger" hidden>Er zijn geen content blokken op deze pagina.</p>
-					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'route': app.request.attributes.get('_route'), 'form_token': cms_edit_form_token()}) -}}">
+					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'route': route, 'form_token': cms_edit_form_token()}) -}}">
 						<input type="hidden" name="content" valeu="{}">
 						<input type="hidden" name="route_params" value="{{- app.request.attributes.get('_route_params')|json_encode -}}">
 						<input type="hidden" name="query" value="{{- app.request.query.all()|json_encode -}}">
-						<a href="{{- path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all())|filter((v, k) => k != 'edit')) -}}" class="btn btn-default btn-lg">
+						<a href="{{- path(route|replace({'_confirm': ''}), app.request.attributes.get('_route_params')|merge(app.request.query.all())|filter((v, k) => k != 'edit' and k != 'token')) -}}" class="btn btn-default btn-lg">
 							Annuleren
 						</a>
 						&nbsp;
 						<input type="submit" name="zend" value="Opslaan" class="btn btn-primary btn-lg" data-submit-btn>
 					</form>
 				</div>
+				{%- if cms_linked[route] is defined -%}
+				<div class="panel-heading">
+				<h3>Verwante pagina's</h3>
+				</div>
+				<ul class="list-group">
+					{%- for rout, rary in cms_linked[route] -%}
+						<li class="list-group-item bg-info">
+							<a href="{{- path(rout, pp_ary()|merge(rary.params)) -}}">
+								{{- rary.lbl -}}
+							</a>
+						</li>
+					{%- endfor -%}
+				</ul>
+				{%- endif -%}
 			</div>
 		</div>
 	</div>
-
 	{%- endif -%}
 
 	<div class="row">

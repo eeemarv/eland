@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Cnst\PagesCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Queue\MailQueue;
+use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -12,6 +14,7 @@ use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -21,6 +24,7 @@ class RegisterFormConfirmController extends AbstractController
     public function __invoke(
         string $token,
         Db $db,
+        HeadingRender $heading_render,
         ConfigService $config_service,
         StaticContentService $static_content_service,
         AlertService $alert_service,
@@ -29,12 +33,30 @@ class RegisterFormConfirmController extends AbstractController
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
         PageParamsService $pp,
+        SessionUserService $su,
         MenuService $menu_service
     ):Response
     {
         if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Register form not enabled.');
+        }
+
+        $heading_render->add('Inschrijving voltooid');
+        $heading_render->fa('check-square-o');
+
+        if ($pp->edit_enabled()
+            && $token === PagesCnst::CMS_TOKEN
+            && $su->is_admin())
+        {
+            $success_content = $static_content_service->get('register_form_confirm', 'success', $pp->schema());
+
+            $menu_service->set('register_form');
+
+            return $this->render('base/navbar.html.twig', [
+                'content'   => $success_content,
+                'schema'    => $pp->schema(),
+            ]);
         }
 
         $data = $data_token_service->retrieve($token, 'register_form', $pp->schema());
@@ -46,7 +68,7 @@ class RegisterFormConfirmController extends AbstractController
             $out = '<div class="panel panel-danger">';
             $out .= '<div class="panel-heading">';
 
-            $out .= '<h2>Registratie niet gelukt</h2>';
+            $out .= '<h2>Inschrijven niet gelukt</h2>';
 
             $out .= '</div>';
             $out .= '<div class="panel-body">';
@@ -203,8 +225,6 @@ class RegisterFormConfirmController extends AbstractController
             'template'				=> 'register/success',
             'vars'					=> $vars,
         ], 8500);
-
-        $alert_service->success('Inschrijving voltooid.');
 
         $success_content = $static_content_service->get('register_form_confirm', 'success', $pp->schema());
 

@@ -24,6 +24,7 @@ class ConfigExtModulesController extends AbstractController
         'docs.enabled',
         'forum.enabled',
         'support_form.enabled',
+        'home.menu.enabled',
         'contact_form.enabled',
         'register_form.enabled',
     ];

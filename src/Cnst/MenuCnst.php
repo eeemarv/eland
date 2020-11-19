@@ -47,13 +47,12 @@ class MenuCnst
             'label'         => 'Probleem melden',
             'config_en'     => 'support_form.enabled',
         ],
-/*
         'home'      => [
             'access'    => 'anonymous',
             'fa'        => 'home',
             'label'     => 'Home',
+            'config_en' => 'home.menu.enabled',
         ],
-*/
         'login'     => [
             'access'    => 'anonymous',
             'fa'        => 'sign-in',

@@ -11,6 +11,7 @@ use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ContactFormConfirmController extends AbstractController
