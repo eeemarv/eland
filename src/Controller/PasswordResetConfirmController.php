@@ -47,7 +47,7 @@ class PasswordResetConfirmController extends AbstractController
     {
         $password = $request->request->get('password', '');
 
-        if ($pp->edit_enabled()
+        if ($pp->edit_en()
             && $token === PagesCnst::CMS_TOKEN
             && $su->is_admin())
         {
@@ -115,10 +115,10 @@ class PasswordResetConfirmController extends AbstractController
 
         $out .= '<form method="post" role="form">';
         $out .= '<fieldset';
-        $out .= $pp->edit_enabled() ? ' disabled' : '';
+        $out .= $pp->edit_en() ? ' disabled' : '';
         $out .= '>';
 
-        $out .= $pp->edit_enabled() ? '<p class="text-danger">Het formulier is niet actief in CMS Edit Mdous.</p>' : '';
+        $out .= $pp->edit_en() ? '<p class="text-danger">Het formulier is niet actief in CMS Edit Mdous.</p>' : '';
 
         $out .= '<div class="form-group">';
         $out .= '<label for="password">Nieuw paswoord</label>';

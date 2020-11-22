@@ -1,0 +1,19 @@
+{%- extends 'base/navbar.html.twig' -%}
+
+{%- block cms_edit_extra -%}
+    {%- if pp_ary().edit is defined and s_role('admin') and is_s_system_self() -%}
+        {{- static_content_local('mail') -}}
+    {%- endif -%}
+{%- endblock cms_edit_extra -%}
+
+{%- block content_top -%}
+{%- endblock -%}
+
+{%- block content -%}
+    {%- embed 'embed/static_content_local.html.twig' -%}
+        {%- block content_block_name -%}mid{%- endblock -%}
+    {%- endembed -%}
+{%- endblock content -%}
+
+{%- block content_bottom -%}
+{%- endblock -%}

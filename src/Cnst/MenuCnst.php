@@ -137,7 +137,8 @@ class MenuCnst
             'label'         => 'CMS Edit modus',
             'same_route'    => true,
             'params'        => [
-                'edit'      => '1',
+                'edit'      => 'local',
+                'editor'    => 'inline',
             ],
         ],
         'divider_2' => [

@@ -87,10 +87,11 @@ class MenuService
 
 		$m_ary[$this->pp->role() . '_mode']['active_group'] = true;
 
-		if ($this->pp->edit_enabled())
+		if ($this->pp->edit_en())
 		{
 			$m_ary['edit_mode']['active_group'] = true;
 			$m_ary['edit_mode']['params']['edit'] = '';
+			$m_ary['edit_mode']['params']['editor'] = '';
 		}
 
 		return $m_ary;

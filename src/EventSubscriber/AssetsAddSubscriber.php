@@ -57,7 +57,7 @@ class AssetsAddSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$this->pp->edit_enabled())
+        if (!$this->pp->edit_en())
         {
             return;
         }

@@ -1,0 +1,21 @@
+{%- extends 'base/navbar.html.twig' -%}
+
+{%- block heading -%}
+    <div class="jumbotron">
+        <h1>
+            {{- config_str('system.name', schema) -}}
+        </h1>
+    </div>
+{%- endblock heading -%}
+
+{%- block content_top -%}
+{%- endblock content_top -%}
+
+{%- block content -%}
+    {%- embed 'embed/static_content_local.html.twig' -%}
+        {%- block content_block_name -%}mid{%- endblock -%}
+    {%- endembed -%}
+{%- endblock content -%}
+
+{%- block content_bottom -%}
+{%- endblock content_bottom -%}

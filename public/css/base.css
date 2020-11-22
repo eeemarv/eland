@@ -913,3 +913,9 @@ element {
 .list-group{
   margin-bottom: 0;
 }
+
+/** cms-edit **/
+
+.cms-edit-inline {
+  border: 3px dashed #888;
+}

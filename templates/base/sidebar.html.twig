@@ -2,9 +2,15 @@
 {%- import 'macro/alert.html.twig' as a -%}
 {%- import 'macro/menu.html.twig' as m -%}
 
-{%- block title -%}{{- config_str('system.name', schema) -}}{%- endblock -%}
+{%- block title -%}
+	{{- config_str('system.name', schema) -}}
+{%- endblock -%}
 
-{%- block body_attr %} class="body-navbar{%- if pp_role('admin') %} admin{%- elseif pp_role('guest') %} guest{%- endif -%}"{%- endblock body_attr -%}
+{%- block body_attr %} class="body-navbar
+	{%- if pp_role('admin') %} admin
+	{%- elseif pp_role('guest') %} guest
+	{%- endif -%}"
+{%- endblock body_attr -%}
 
 {%- block logo -%}
 	{%- if config_str('system.logo', schema) -%}
@@ -47,6 +53,8 @@
 	{%- if pp_ary().edit is defined and s_role('admin') and is_s_system_self() -%}
 	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}
 	{%- set route = app.request.attributes.get('_route') -%}
+	{%- set route_params = app.request.attributes.get('_route_params') -%}
+	{%- set query_params = app.request.query.all() -%}
 	{%- set cms_linked = {
 		'password_reset': {
 			'password_reset_confirm': {
@@ -61,18 +69,99 @@
 			}
 		}
 	} -%}
+	{#}
+	{%- set cms_edit_block_types_menu = {
+		'local-by-role': {
+			'lbl': 'Lokaal per rol',
+			'title': 'Blokken die eigen zijn aan een pagina en de rol modus van de pagina.'
+		},
+		'local': {
+			'lbl': 'Lokaal',
+			'title': 'Blokken die eigen zijn aan een pagina'
+		},
+		'global-by-role': {
+			'lbl': 'Globaal per rol',
+			'title': 'Blokken die op alle pagina\'s getoond worden, maar eigen zijn aan de rol modus'
+		},
+		'global': {
+			'lbl': 'Globaal',
+			'title': 'Blokken die op alle pagina\'s getoond worden.'
+		}
+	} -%}
+	#}
+	{%- set cms_edit_block_types_menu = {
+		'local': {
+			'lbl': 'Lokaal',
+			'title': 'Blokken die eigen zijn aan een pagina'
+		},
+		'global': {
+			'lbl': 'Globaal',
+			'title': 'Blokken die op alle pagina\'s getoond worden.'
+		}
+	} -%}
+	{%- set cms_editor_style = {
+		'inline': 'Inline',
+		'normal': 'Normaal'
+	} -%}
 	<div class="row mt-5p">
 		<div class="col-md-12">
 			<div class="panel panel-info">
 				<div class="panel-heading">
-					<h4><i class="fa fa-pencil"></i> CMS Edit modus</h4>
-					<p>Inline editing van content blokken.</p>
+					<div>
+					<iiv class="pull-left">
+						<h4>
+							<i class="fa fa-pencil"></i>
+							CMS Edit modus
+						</h4>
+					</iiv>
+					<div class="pull-right">
+
+					<span class="dropdown">
+						<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="cms_edit_style" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Editor stijl">
+							{{ cms_editor_style[pp_ary().editor ?? 'inline'] -}}&nbsp;
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="cms_edit_style">
+							<li class="dropdown-header">Editor stijl</li>
+							{%- for es, lbl in cms_editor_style -%}
+								<li{%- if es == (pp_ary().editor ?? 'inline') %} class="active"{%- endif -%}>
+									<a href="{{- path(route, route_params|merge(query_params)|merge({'editor': es})) -}}">
+										{{- lbl -}}
+									</a>
+								</li>
+							{%- endfor -%}
+						</ul>
+					</span>
+
+					<span class="dropdown">
+						<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="cms_edit_block_type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="{{ cms_edit_block_types_menu[pp_ary().edit].title -}}">
+						  {{ cms_edit_block_types_menu[pp_ary().edit].lbl -}}&nbsp;
+						  <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="cms_edit_block_type">
+							<li class="dropdown-header">Blok type</li>
+							{%- for er, l in cms_edit_block_types_menu -%}
+								<li{%- if er == pp_ary().edit %} class="active"{%- endif -%}>
+									<a href="{{- path(route, route_params|merge(query_params)|merge({'edit': er})) -}}" title="{{- l.title -}}">
+										{{- l.lbl -}}
+									</a>
+								</li>
+							{%- endfor -%}
+						</ul>
+					</span>
+
+					</div>
+					<div class="clearfix"></div>
+					</div>
+					<p>
+						Editing van content blokken.
+					</p>
 					<p class="text-danger" hidden>Er zijn geen content blokken op deze pagina.</p>
 					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'route': route, 'form_token': cms_edit_form_token()}) -}}">
 						<input type="hidden" name="content" valeu="{}">
-						<input type="hidden" name="route_params" value="{{- app.request.attributes.get('_route_params')|json_encode -}}">
-						<input type="hidden" name="query" value="{{- app.request.query.all()|json_encode -}}">
-						<a href="{{- path(route|replace({'_confirm': ''}), app.request.attributes.get('_route_params')|merge(app.request.query.all())|filter((v, k) => k != 'edit' and k != 'token')) -}}" class="btn btn-default btn-lg">
+						<input type="hidden" name="route_params" value="{{- route_params|json_encode -}}">
+						<input type="hidden" name="query" value="{{- query_params|json_encode -}}">
+						<a href="{{- path(route|replace({'_confirm': ''}), route_params|merge(query_params)|filter((v, k) => k != 'edit' and k != 'token' and k != 'editor')) -}}" class="btn btn-default btn-lg">
 							Annuleren
 						</a>
 						&nbsp;
@@ -97,6 +186,8 @@
 		</div>
 	</div>
 	{%- endif -%}
+
+	{%- block cms_edit_extra -%}{%- endblock -%}
 
 	<div class="row">
 	<div class="col-md-12 top-buttons mt-5p">
@@ -123,11 +214,39 @@
 		{{- heading_sub() -}}
 	{%- endblock heading -%}
 
+	{%- block content_top -%}
+		{%- embed 'embed/static_content_local.html.twig' -%}
+			{%- block content_block_name -%}top{%- endblock -%}
+		{%- endembed -%}
+	{%- endblock content_top -%}
+
 	{%- block content -%}
 		{{- content|raw -}}
 	{%- endblock content -%}
+
+	{%- block content_bottom -%}
+		{%- embed 'embed/static_content_local.html.twig' -%}
+			{%- block content_block_name -%}bottom{%- endblock -%}
+		{%- endembed -%}
+	{%- endblock content_bottom -%}
 
 	</div>
 	</div>
 	</div>
 {%- endblock page_container -%}
+
+{%- block footer_system -%}
+	{%- if static_content_has_global('footer') -%}
+	<footer class="alert-info">
+		<br>
+		<div class="container">
+			<div class="row">
+				<div class="col cms-edit-inline" data-cms-edit="{\"block\": \"footer\"}">
+					{{- static_content_global('footer') -}}
+				</div>
+			</div>
+		</div>
+		<br>
+	</footer>
+	{%- endif -%}
+{%- endblock footer_system -%}

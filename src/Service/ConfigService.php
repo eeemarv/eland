@@ -26,7 +26,7 @@ class ConfigService
 	{
 		$this->predis = $predis;
 		$this->db = $db;
-		$this->local_cache_en = php_sapi_name() === 'cli' ? false : true;
+		$this->local_cache_en = php_sapi_name() !== 'cli';
 	}
 
 	protected function is_sequential_ary(array $ary):bool

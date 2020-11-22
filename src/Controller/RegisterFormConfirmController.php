@@ -45,16 +45,13 @@ class RegisterFormConfirmController extends AbstractController
         $heading_render->add('Inschrijving voltooid');
         $heading_render->fa('check-square-o');
 
-        if ($pp->edit_enabled()
+        if ($pp->edit_en()
             && $token === PagesCnst::CMS_TOKEN
             && $su->is_admin())
         {
-            $success_content = $static_content_service->get('register_form_confirm', 'success', $pp->schema());
-
             $menu_service->set('register_form');
 
-            return $this->render('base/navbar.html.twig', [
-                'content'   => $success_content,
+            return $this->render('register_form/register_form_confirm.html.twig', [
                 'schema'    => $pp->schema(),
             ]);
         }
@@ -215,7 +212,7 @@ class RegisterFormConfirmController extends AbstractController
             $vars[$k] = $data[$v];
         }
 
-        $pre_html_template = $static_content_service->get('register_form_confirm', 'success_mail', $pp->schema());
+        $pre_html_template = $static_content_service->get('', 'register_form_confirm', 'mail', $pp->schema());
 
         $mail_queue->queue([
             'schema'				=> $pp->schema(),
@@ -226,12 +223,9 @@ class RegisterFormConfirmController extends AbstractController
             'vars'					=> $vars,
         ], 8500);
 
-        $success_content = $static_content_service->get('register_form_confirm', 'success', $pp->schema());
-
         $menu_service->set('register_form');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $success_content,
+        return $this->render('register_form/register_form_confirm.html.twig', [
             'schema'    => $pp->schema(),
         ]);
     }

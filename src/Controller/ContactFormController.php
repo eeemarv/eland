@@ -15,7 +15,6 @@ use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
-use App\Service\StaticContentService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -28,7 +27,6 @@ class ContactFormController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         ConfigService $config_service,
-        StaticContentService $static_content_service,
         CaptchaService $captcha_service,
         DataTokenService $data_token_service,
         LinkRender $link_render,
@@ -146,9 +144,7 @@ class ContactFormController extends AbstractController
         $heading_render->add('Contact');
         $heading_render->fa('comment-o');
 
-        $out = $static_content_service->get('contact_form', 'top', $pp->schema());
-
-        $out .= '<div class="panel panel-info">';
+        $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';
@@ -195,14 +191,14 @@ class ContactFormController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $static_content_service->get('contact_form', 'bottom', $pp->schema());
-
+        /*
         $out .= '<p>Leden: indien mogelijk, login en ';
         $out .= 'gebruik het Support formulier. ';
         $out .= '<i>Als je je paswoord kwijt bent ';
         $out .= 'kan je altijd zelf een nieuw paswoord ';
         $out .= 'aanvragen met je E-mail adres ';
         $out .= 'vanuit de login-pagina!</i></p>';
+        */
 
         $menu_service->set('contact_form');
 

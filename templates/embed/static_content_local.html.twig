@@ -1,0 +1,13 @@
+{%- if static_content_has_local(block('content_block_name')) -%}
+    <div class="row">
+        {%- if pp_ary().edit is defined and pp_ary().edit == 'local' -%}
+            <div class="col-md-12 cms-edit-inline" data-cms-edit-block="{% block content_block_name %}{% endblock %}">
+                {{- static_content_local(block('content_block_name')) -}}
+            </div>
+        {%- else -%}
+            <div class="col-md-12">
+                {{- static_content_local(block('content_block_name')) -}}
+            </div>
+        {%- endif -%}
+    </div>
+{%- endif -%}

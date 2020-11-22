@@ -12,7 +12,6 @@ use App\Service\DataTokenService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\StaticContentService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +32,6 @@ class RegisterFormController extends AbstractController
         DataTokenService $data_token_service,
         CaptchaService $captcha_service,
         ConfigService $config_service,
-        StaticContentService $static_content_service,
         AlertService $alert_service,
         PageParamsService $pp,
         LinkRender $link_render
@@ -120,9 +118,7 @@ class RegisterFormController extends AbstractController
         $heading_render->add('Inschrijven');
         $heading_render->fa('check-square-o');
 
-        $out = $static_content_service->get('register_form', 'top', $pp->schema());
-
-        $out .= '<div class="panel panel-info">';
+        $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form method="post">';
@@ -214,8 +210,6 @@ class RegisterFormController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $out .= $static_content_service->get('register_form', 'bottom', $pp->schema());
 
         $menu_service->set('register_form');
 
