@@ -1,4 +1,4 @@
-$(document).ready(function() {
+jQuery(function(){
 	$('table').footable().bind({
 		'footable_filtered': function(e) {
 			var sum = 0;
@@ -12,5 +12,5 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#q').keyup();
+	$('#q').trigger('keyup');
 });

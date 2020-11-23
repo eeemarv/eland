@@ -1,6 +1,6 @@
-$(document).ready(function(){
+jQuery(function(){
 
-	$('table input[type="number"]').keyup(function(){
+	$('table input[type="number"]').on('keyup', function(){
 		recalc_sum();
 	});
 
@@ -26,7 +26,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$('form[method="post"]').submit(function(event) {
+	$('form[method="post"]').on('submit', function(event) {
 		var selected_users = '';
 		$('table > tbody > tr:visible').each(function(){
 			selected_users += '.' + $(this).attr('data-user-id');
@@ -36,19 +36,17 @@ $(document).ready(function(){
 
 	var $fill_in_aid = $('#fill_in_aid');
 
-	$fill_in_aid.submit(function(e){
+	$fill_in_aid.on('submit', function(e){
 		fill_in();
 		e.preventDefault();
 	});
 
 	function fill_in(w_bal, t_in, t_out){
-
 		var fixed = Number($('#fixed').val());
 		var omit_new = $('#omit_new').prop('checked');
 		var omit_leaving = $('#omit_leaving').prop('checked');
 
 		$('table input[type="number"]:visible').each(function() {
-
 			if (fixed === 0){
 				$(this).val('');
 				return;

@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 	var now = Math.floor(new Date().getTime() / 1000);
 	var $data_text_inputs = $('form input[type="text"][data-typeahead]');
 	var $data_options = $('form select option[data-typeahead]');
@@ -95,7 +95,7 @@ $(document).ready(function(){
 					});
 				}
 
-				$this_input.keyup(render_exists);
+				$this_input.on('keyup', render_exists);
 
 				window.setTimeout(render_exists, 800);
 

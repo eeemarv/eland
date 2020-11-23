@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	$('input[data-max-inputs]').each(function(){
 
@@ -8,7 +8,7 @@ $(document).ready(function(){
 		var $li = $(this).parent();
 		var data_input = $(this);
 
-		$(this).closest('form').submit(function(){
+		$(this).closest('form').on('submit', function(){
 
 			var out = [];
 
@@ -39,7 +39,7 @@ $(document).ready(function(){
 		if (value_ary.length < max_inputs){
 
 			$add_input.removeClass('hidden');
-			$add_input.find('span.btn').click(function(){
+			$add_input.find('span.btn').on('click', function(){
 
 				var $cloned_group = $form_group.clone();
 
@@ -85,9 +85,7 @@ $(document).ready(function(){
 			$cloned_group.insertBefore($add_input);
 
 			console.log(name + '_' + i);
-
 		}
-
 	});
 
 	var list_active = document.getElementById('list_active');
@@ -107,7 +105,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$('a[data-o]').click(function(e){
+	$('a[data-o]').on('click', function(e){
 		e.preventDefault();
 		var option = $(this).data('o');
 		console.log(option);
@@ -117,7 +115,7 @@ $(document).ready(function(){
 		li_el.attr('data-option', option);
 	});
 
-	$('form[method="post"]').submit(function(event) {
+	$('form[method="post"]').on('submit', function(event) {
 
 		var l = $('ul#list_active');
 		var p_string = '';

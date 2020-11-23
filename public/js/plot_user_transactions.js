@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');

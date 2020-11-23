@@ -1,10 +1,8 @@
-$(document).ready(function(){
-
+jQuery(function(){
 	var system_minlimit = $('table').data('minlimit');
-
 	var has_system_minlimit = system_minlimit === '' ? false : true;
 
-	$('table input[type="number"]').keyup(function(){
+	$('table input[type="number"]').on('keyup', function(){
 		recalc_sum();
 	});
 
@@ -16,13 +14,13 @@ $(document).ready(function(){
 		$('input#total').val(sum);
 	}
 
-	$('#to_code').bind('typeahead:selected', function(ev, data) {
+	$('#to_code').on('typeahead:selected', function(ev, data) {
 		$('#from_code').val('');
 		$('table input[data-code="' + data.code + '"]').val('');
 		recalc_sum();
 	});
 
-	$('#from_code').bind('typeahead:selected', function(ev, data) {
+	$('#from_code').on('typeahead:selected', function(ev, data) {
 		$('#to_code').val('');
 		$('table input[data-code="' + data.code + '"]').val('');
 		recalc_sum();
@@ -34,7 +32,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$('form[method="post"]').submit(function(event) {
+	$('form[method="post"]').on('submit', function(event) {
 		var selected_users = '';
 		$('table > tbody > tr:visible').each(function(){
 			selected_users += '.' + $(this).attr('data-user-id');
@@ -44,12 +42,11 @@ $(document).ready(function(){
 
 	var $form_fill_in = $('form[data-fill-in]');
 
-	$form_fill_in.submit(function(e){
+	$form_fill_in.on('submit', function(e){
 		e.preventDefault();
 		var days = Number($('#var_days').val());
 
 		if (days > 1){
-
 			var ex_in = $('#var_ex_code_in').val().split(',');
 			var ex_out = $('#var_ex_code_out').val().split(',');
 

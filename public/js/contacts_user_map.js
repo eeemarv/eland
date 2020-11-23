@@ -1,8 +1,12 @@
-$(document).ready(function(){
+jQuery(function(){
 	var $map = $('#map');
 	var data = $map.data('map');
 	var lat = 0;
 	var lng = 0;
+
+	if (typeof data === 'undefined'){
+		return;
+	}
 
 	if (!data.markers){
 		return;

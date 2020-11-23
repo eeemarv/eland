@@ -1,5 +1,5 @@
-$(document).ready(function() {
-	$('ul#nav-tabs li a').click(function(e){
+jQuery(function(){
+	$('ul#nav-tabs li a').on('click', function(e){
 		var li = $(this).parent();
 		li.siblings('li').removeClass('active');
 		li.addClass('active');
@@ -9,7 +9,7 @@ $(document).ready(function() {
 		e.preventDefault();
 	});
 
-	$('#q').keyup(function(e){
+	$('#q').on('keyup', function(e){
 		syncCombined();
 	});
 
@@ -18,13 +18,13 @@ $(document).ready(function() {
 		var hsh = $('input[type="hidden"][name="hsh"]').val();
 		hsh = (hsh.length > 0) ? ' ' + hsh : '';
 		cf.val($('#q').val() + hsh);
-		cf.keyup();
-		$('table tr > td > input[type="number"]').eq(0).keyup();
+		cf.trigger('keyup');
+		$('table tr > td > input[type="number"]').eq(0).trigger('keyup');
 	}
 
 	syncCombined();
 
-	$('form[method!="post"]').submit(function(e) {
+	$('form[method!="post"]').on('submit', function(e){
 		e.preventDefault();
-	});	
+	});
 });

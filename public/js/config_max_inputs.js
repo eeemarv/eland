@@ -1,5 +1,4 @@
-$(document).ready(function(){
-
+jQuery(function(){
 	$('input[data-max-inputs]').each(function(){
 
 		var max_inputs = $(this).data('max-inputs');
@@ -8,7 +7,7 @@ $(document).ready(function(){
 		var $li = $(this).parent();
 		var data_input = $(this);
 
-		$(this).closest('form').submit(function(){
+		$(this).closest('form').on('submit', function(){
 
 			var out = [];
 
@@ -83,10 +82,7 @@ $(document).ready(function(){
 			}
 
 			$cloned_group.insertBefore($add_input);
-
 			console.log(name + '_' + i);
-
 		}
-
 	});
 });

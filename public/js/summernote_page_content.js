@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	var $summernote = $('textarea.summernote');
 	var image_upload = $summernote.data('image-upload');
@@ -56,7 +56,7 @@ $(document).ready(function(){
 			}
 		});
 
-		$('form').submit(function(){
+		$('form').on('submit', function(){
 			$self.html($self.summernote('code'));
 		});
 	});

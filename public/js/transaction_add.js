@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	var $form = $('form');
 
@@ -94,7 +94,7 @@ $(document).ready(function(){
 	if ($select.length){
 		select_change();
 
-		$select.change(function(){
+		$select.on('change', function(){
 			select_change();
 		});
 	}

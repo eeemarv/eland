@@ -1,4 +1,4 @@
-$(document).ready(function() {
+jQuery(function() {
 	var $map = $('#map');
 	var data = $map.data('map');
 

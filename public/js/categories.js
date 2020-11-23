@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 	var sortable_categories = [].slice.call(document.querySelectorAll('[data-sortable]'));
 	for (var i = 0; i < sortable_categories.length; i++) {
 		new Sortable(sortable_categories[i], {
@@ -32,7 +32,7 @@ $(document).ready(function(){
 		});
 	}
 
-	$('form[method="post"]').submit(function(event) {
+	$('form[method="post"]').on('submit', function(event) {
 		var $base = $('[data-sort-base]');
 		function serialize($sort){
 			var ary = [];

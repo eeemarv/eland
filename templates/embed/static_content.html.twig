@@ -1,0 +1,21 @@
+{%- if static_content_has(with_role, with_route, block('block_name')) -%}
+    <div class="row">
+        <div class="col-md-12">
+            {%- if pp_ary().edit is defined -%}
+                {%- set pp_role_en = pp_ary().edit.role is defined -%}
+                {%- set pp_route_en = pp_ary().edit.route is defined -%}
+                {%- set edit_role_match = (pp_role_en and with_role) or (not pp_role_en and not with_role) -%}
+                {%- set edit_route_match = (pp_route_en and with_route) or (not pp_route_en and not with_route) -%}
+                {%- if edit_role_match and edit_route_match -%}
+                    <div data-cms-edit="{% block block_name %}{% endblock %}" {%- block attr -%}{%- endblock attr -%}>
+                {%- endif -%}
+                    {{- static_content(with_role, with_route, block('block_name')) -}}
+                {%- if edit_role_match and edit_route_match -%}
+                    </div>
+                {%- endif -%}
+            {%- else -%}
+                {{- static_content(with_role, with_route, block('block_name')) -}}
+            {%- endif -%}
+        </div>
+    </div>
+{%- endif -%}

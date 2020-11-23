@@ -1,5 +1,4 @@
-$(document).ready(function() {
-
+jQuery(function() {
 	var $input_switch = $('input[name="expires_at_switch_enabled"]');
 	var $input_days_default = $('input[name="expires_at_days_default"]');
 	var $input_required = $('input[name="expires_at_required"]');

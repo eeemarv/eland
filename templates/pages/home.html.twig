@@ -12,8 +12,11 @@
 {%- endblock content_top -%}
 
 {%- block content -%}
-    {%- embed 'embed/static_content_local.html.twig' -%}
-        {%- block content_block_name -%}mid{%- endblock -%}
+    {%- embed 'embed/static_content.html.twig' with {
+        'with_role': false,
+        'with_route': true
+    } -%}
+        {%- block block_name -%}mid{%- endblock -%}
     {%- endembed -%}
 {%- endblock content -%}
 

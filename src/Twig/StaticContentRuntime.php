@@ -20,33 +20,38 @@ class StaticContentRuntime implements RuntimeExtensionInterface
 		$this->static_content_service = $static_content_service;
 	}
 
-	public function has_local(string $block):bool
+	public function has(bool $with_role, bool $with_route, string $block):bool
 	{
-		if ($this->static_content_service->get('', $this->pp->route(), $block, $this->pp->schema()) !== '')
+		if ($this->static_content_service->get($with_role ? $this->pp->role() : '', $with_route ? $this->pp->route() : '', $block, $this->pp->schema()) !== '')
 		{
 			return true;
 		}
 
-		return $this->pp->edit_local_en();
-	}
-
-	public function get_local(string $block):string
-	{
-		return $this->static_content_service->get('', $this->pp->route(),$block, $this->pp->schema());
-	}
-
-	public function has_global(string $block):bool
-	{
-		if ($this->static_content_service->get('', '', $block, $this->pp->schema()) !== '')
+		if (!$this->pp->edit_en())
 		{
-			return true;
+			return false;
 		}
 
-		return $this->pp->edit_global_en();
+		if ($this->pp->edit_role_en() xor $with_role)
+		{
+			return false;
+		}
+
+		if ($this->pp->edit_route_en() xor $with_route)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
-	public function get_global(string $block):string
+	public function get(bool $with_role, bool $with_route, string $block):string
 	{
-		return $this->static_content_service->get('', '', $block, $this->pp->schema());
+		return $this->static_content_service->get(
+			$with_role ? $this->pp->role() : '',
+			$with_route ? $this->pp->route() : '',
+			$block,
+			$this->pp->schema()
+		);
 	}
 }

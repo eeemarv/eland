@@ -1,5 +1,4 @@
-$(document).ready(function(){
-
+jQuery(function(){
 	var $btn = $('button[data-generate-password]');
 	var $input = $btn.parent().prev('input');
 
@@ -70,9 +69,8 @@ $(document).ready(function(){
 	sym.acc.full = sym.acc.full.split('.');
 	sym.acc.mid = sym.acc.mid.split('.');
 
-	$btn.click(function(e){
-
-		var pw = '',  sym_end = '', acc = [], ran = 0, num = 0, i = 0;
+	$btn.on('click', function(e){
+		var pw = '', acc = [], num = 0, i = 0;
 		var sym_next = false;
 		var acc_next = true;
 		var acc_mid = false;
@@ -188,6 +186,6 @@ $(document).ready(function(){
 	});
 
 	if ($btn.data('generate-password') === 'onload'){
-		$btn.click();
+		$btn.trigger('click');
 	}
 });

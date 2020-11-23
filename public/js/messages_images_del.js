@@ -1,13 +1,8 @@
-$(document).ready(function () {
-
-	$('span[data-img]').click(function(){
-
+jQuery(function(){
+	$('span[data-img]').on('click', function(){
 		var btn = $(this);
-
 		btn.find('i').removeClass('fa-times').addClass('fa-spin fa-spinner');
-
 		$.post(btn.data('url'), {}, function(data) {
-
 			if (data.success)
 			{
 				btn.parent().parent().parent().remove();

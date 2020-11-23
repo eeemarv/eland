@@ -1,8 +1,29 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- block cms_edit_extra -%}
-    {%- if pp_ary().edit is defined and s_role('admin') and is_s_system_self() -%}
-        {{- static_content_local('mail') -}}
+    {%- if pp_ary().edit is defined
+        and s_role('admin')
+        and is_s_system_self()
+        and pp_ary().edit.role is not defined
+        and pp_ary().edit.route is defined -%}
+        <div class="panel panel-info">
+        <div class="panel-heading">
+        <h3>Bevestigings E-mail</h3>
+        <p>
+            Deze E-mail wordt verzonden naar degene die zich inschrijft
+            na een geslaagde inschrijving.
+            Indien dit veld leeg is,
+            wordt er geen E-mail verstuurd.
+        </p>
+        {%- embed 'embed/static_content.html.twig' with {
+            'with_role': false,
+            'with_route': true
+        } -%}
+            {%- block block_name -%}mail{%- endblock -%}
+            {%- block attr %} data-cms-edit-email data-cms-edit-tpl-vars="voornaam,achternaam,postcode"{%- endblock -%}
+        {%- endembed -%}
+        </div>
+        </div>
     {%- endif -%}
 {%- endblock cms_edit_extra -%}
 
@@ -10,8 +31,11 @@
 {%- endblock -%}
 
 {%- block content -%}
-    {%- embed 'embed/static_content_local.html.twig' -%}
-        {%- block content_block_name -%}mid{%- endblock -%}
+    {%- embed 'embed/static_content.html.twig' with {
+        'with_role': false,
+        'with_route': true
+    } -%}
+        {%- block block_name -%}mid{%- endblock -%}
     {%- endembed -%}
 {%- endblock content -%}
 

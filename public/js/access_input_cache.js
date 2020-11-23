@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery.ready(function(){
 	$access_div = $('div[data-access-cache-id]');
 
 	$access_div.each(function(){
@@ -15,7 +15,7 @@ $(document).ready(function(){
 			}
 		}
 
-		$(this).change(function(){
+		$(this).on('change', function(){
 			sessionStorage.setItem(cache_id, $(this).find(':checked').val());
 		});
 	});

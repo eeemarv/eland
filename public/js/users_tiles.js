@@ -1,9 +1,7 @@
-$(document).ready(function() {
-
+jQuery(function() {
 	var $grid = $('.tiles');
 
 	$grid.isotope({
-
 		itemSelector: '.tile',
 		filter: function(){
 			var str = $(this).find('.caption').text().toLowerCase();
@@ -57,7 +55,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#q').keyup(function(){
+	$('#q').on('keyup', function(){
 		var q = $(this).val().toLowerCase();
 
 		$grid.isotope({

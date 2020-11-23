@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	var template_vars_button = function (context) {
 
@@ -54,20 +54,7 @@ $(document).ready(function(){
 
 		var $self = $(this);
 
-		var hint_ary = [];
-		var hint_match = /\$/;
-		var hint_prefix = '';
-		var hint_suffix = '';
-
 		var template_vars = $self.data('template-vars');
-
-		if (template_vars){
-
-			hint_ary = template_vars.split(',');
-			hint_match = /\B{{(\w*)$/;
-			hint_prefix = '{{ ';
-			hint_suffix = ' }}';
-		}
 
 		$self.summernote({
 			minHeight: 200,
@@ -102,7 +89,7 @@ $(document).ready(function(){
 			}
 		});
 
-		$('form').submit(function(){
+		$('form').on('submit', function(){
 			$self.html($self.summernote('code'));
 		});
 	});

@@ -9,30 +9,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PageParamsService
 {
-	const EDIT_TYPES = [
-		'local-by-role'		=> [
-			'local'		=> true,
-			'by_role'	=> true,
-		],
-		'local' 			=> [
-			'local'			=> true,
-			'not_by_role'	=> true,
-		],
-		'global-by-role'	=> [
-			'global'	=> true,
-			'by_role'	=> true,
-		],
-		'global'			=> [
-			'global'		=> true,
-			'not_by_role'	=> true,
-		],
-	];
-
-	const EDITOR_TYPES = [
-		'inline'	=> true,
-		'normal'	=> true,
-	];
-
 	protected RequestStack $request_stack;
 	protected SystemsService $systems_service;
 	protected string $env_app_system_redirects;
@@ -42,8 +18,7 @@ class PageParamsService
 	protected string $role;
 	protected string $system;
 	protected string $schema;
-	protected string $edit;
-	protected string $editor;
+	protected array $edit;
 	protected array $ary;
 
 	protected bool $is_admin;
@@ -71,7 +46,6 @@ class PageParamsService
 	{
 		$this->request = $this->request_stack->getCurrentRequest();
 		$this->route = $this->request->attributes->get('_route');
-		$edit = $this->request->query->get('edit', '');
 		$this->role_short = $this->request->attributes->get('role_short', '');
 		$this->role = RoleCnst::LONG[$this->role_short] ?? 'anonymous';
 
@@ -128,18 +102,27 @@ class PageParamsService
 			{
 				$this->ary['os'] = $this->org_system;
 			}
-			else if ($edit !== '' && isset(self::EDIT_TYPES[$edit]))
+			else
 			{
-				$this->edit = $edit;
-				$this->ary['edit'] = $edit;
+				$edit = $this->request->query->get('edit', []);
 
-				$editor = $this->request->query->get('editor', 'inline');
-				if (!isset(self::EDITOR_TYPES[$editor]))
+				if ($edit && isset($edit['en']) && $edit['en'] === '1')
 				{
-					$editor = 'inline';
+					$this->edit['en'] = '1';
+					if (isset($edit['route']) && $edit['route'] === '1')
+					{
+						$this->edit['route'] = '1';
+					}
+					if (isset($edit['role']) && $edit['role'] === '1')
+					{
+						$this->edit['role'] = '1';
+					}
+					if (isset($edit['inline']) && $edit['inline'] === '1')
+					{
+						$this->edit['inline'] = '1';
+					}
+					$this->ary['edit'] = $this->edit;
 				}
-				$this->editor = $editor;
-				$this->ary['editor'] = $editor;
 			}
 
 			if ($this->role_short !== '')
@@ -184,43 +167,29 @@ class PageParamsService
 		return $this->is_anonymous;
 	}
 
-	public function editor():string
+	public function edit():array
 	{
-		return $this->editor ?? '';
-	}
-
-	public function edit():string
-	{
-		return $this->edit ?? '';
+		return $this->edit;
 	}
 
 	public function edit_en():bool
 	{
-		return isset($this->edit);
+		return isset($this->edit['en']);
 	}
 
-	public function edit_local_en():bool
+	public function edit_route_en():bool
 	{
-		return isset($this->edit)
-			&& isset(self::EDIT_TYPES[$this->edit]['local']);
+		return isset($this->edit['route']);
 	}
 
-	public function edit_global_en():bool
+	public function edit_role_en():bool
 	{
-		return isset($this->edit)
-			&& isset(self::EDIT_TYPES[$this->edit]['global']);
+		return isset($this->edit['role']);
 	}
 
-	public function edit_by_role_en():bool
+	public function edit_inline_en():bool
 	{
-		return isset($this->edit)
-			&& isset(self::EDIT_TYPES[$this->edit]['by_role']);
-	}
-
-	public function edit_not_by_role_en():bool
-	{
-		return isset($this->edit)
-			&& isset(self::EDIT_TYPES[$this->edit]['not_by_role']);
+		return isset($this->edit['inline']);
 	}
 
 	public function system():string

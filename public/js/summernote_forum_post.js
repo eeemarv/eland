@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	var $summernote = $('textarea.summernote');
 
@@ -15,10 +15,10 @@ $(document).ready(function(){
 				['para', ['ul', 'ol', 'paragraph']],
 				['insert', ['hr', 'link']]
 			],
-			fontSizes: ['10', '11', '12', '14', '18', '24'],
+			fontSizes: ['10', '11', '12', '14', '18', '24']
 		});
 
-		$('form').submit(function(){
+		$('form').on('submit', function(){
 			$self.html($self.summernote('code'));
 		});
 	});

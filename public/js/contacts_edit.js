@@ -1,5 +1,4 @@
-$(document).ready(function(){
-
+jQuery(function(){
 	$('body').delay(100, function(){
 		$('input').prop('disabled', false);
 	});
@@ -45,10 +44,9 @@ $(document).ready(function(){
 		}
 	}
 
-	$select.change(function(){
+	$select.on('change', function(){
 		select_change();
 	});
 
 	select_change();
-
 });

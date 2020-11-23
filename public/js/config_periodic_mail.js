@@ -1,4 +1,4 @@
-$(document).ready(function(){
+jQuery(function(){
 
 	var list_active = document.getElementById('list_active');
 	var list_inactive = document.getElementById('list_inactive');
@@ -19,7 +19,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$('a[data-o]').click(function(e){
+	$('a[data-o]').on('click', function(e){
 		e.preventDefault();
 		var option = $(this).data('o');
 		console.log(option);
@@ -29,7 +29,7 @@ $(document).ready(function(){
 		li_el.attr('data-option', option);
 	});
 
-	$('form[method="post"]').submit(function(event) {
+	$('form[method="post"]').on('submit', function(event) {
 		var blocks = [];
 		$('ul#list_active > li[data-block]').each(function(){
 			var ul_el = $(this);

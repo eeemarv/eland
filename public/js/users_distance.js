@@ -1,12 +1,10 @@
-$(document).ready(function() {
+jQuery(function() {
 	var lat_1 = $('table').data('lat');
 	var lng_1 = $('table').data('lng');
 
 	if (lat_1 && lng_1){
-
 		lat_1 = Math.PI * lat_1 / 180;
 		lng_1 = Math.PI * lng_1 / 180;
-
 		$('table tr td[data-lng]').each(function() {
 
 			var lat_2 = $(this).data('lat');

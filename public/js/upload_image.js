@@ -1,16 +1,15 @@
-$(document).ready(function () {
+jQuery(function(){
 	var btn_remove = $('#btn_remove');
 	var img = $('#img');
 	var no_img = $('#no_img');
-
-	$fileupload = $('[data-fileupload]');
+	var $fileupload = $('[data-fileupload]');
 	var messages = {
 		acceptFileTypes: $fileupload.data('message-file-type-not-allowed'),
 		maxFileSize: $fileupload.data('message-max-file-size'),
 		minFileSize: $fileupload.data('message-min-file-size'),
 		uploadedBytes : $fileupload.data('message-uploaded-bytes')
 	};
-	$fileupload.bind('fileuploadprocessfail', function (e, data) {
+	$fileupload.on('fileuploadprocessfail', function (e, data) {
 		var error = data.files[data.index].error;
 		alert(error);
 		$('#img_plus').removeClass('fa-spin fa-spinner').addClass('fa-plus');
@@ -49,6 +48,5 @@ $(document).ready(function () {
 				$('div.navbar-header').prepend(html_logo);
 			}
 		}
-	}).prop('disabled', !$.support.fileInput)
-        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+	});
 });

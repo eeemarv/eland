@@ -1,4 +1,4 @@
-$(document).ready(function () {
+jQuery(function () {
 	var $form = $('form');
 	var $img_add_btn = $form.find('#img_plus');
 	var $model = $form.find('#thumbnail_model');
