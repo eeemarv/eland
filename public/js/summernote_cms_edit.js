@@ -2,13 +2,13 @@ jQuery(function(){
 	var $form = $('[data-cms-edit-form');
 	var airmode_en = $form.data('cms-edit-style') === 'inline';
 
-	var tpl_vars_button = function (context) {
-		$div = context.layoutInfo.note;
-		var template_vars = $div.data('cms-edit-tpl-vars');
-		if (template_vars){
-			template_vars = template_vars.split(',');
-			$.each(template_vars, function(index, value){
-				template_vars[index] = '{{ ' + value + ' }}';
+	var tpl_vars_btn = function(context){
+		var $edit_div = context.layoutInfo.note;
+		var tpl_vars = $edit_div.data('cms-edit-tpl-vars');
+		if (typeof tpl_vars !== 'undefined' && tpl_vars !== ''){
+			tpl_vars = tpl_vars.split(',');
+			$.each(tpl_vars, function(index, value){
+				tpl_vars[index] = '{{ ' + value + ' }}';
 			})
 		} else {
 			return false;
@@ -24,9 +24,9 @@ jQuery(function(){
 				}
 			}),
 			ui.dropdown({
-				items: template_vars,
+				items: tpl_vars,
 				callback: function (items) {
-					$(items).find('li a').click(function(e){
+					$(items).find('li a').on('click', function(e){
 						context.invoke('editor.insertText', $(this).text());
 						e.preventDefault();
 					});
@@ -35,57 +35,54 @@ jQuery(function(){
 		]);
 		return event.render();   // return button as jquery object
 	}
-
 	var $summernote = $('[data-cms-edit]');
-
 	$summernote.each(function(){
-
 		var $self = $(this);
-		var email_en = $self.filter('[data-cms-edit-email]').length > 0;
-		var tpl_vars_en = $self.filter('[data-cms-edit-tpl-vars]').length > 0;
-		var fullmode_en = email_en || !airmode_en;
-
 		var options = {};
-
-		if (fullmode_en){
-			options = {
-				minHeight: 200,
-				lang: 'nl-NL',
-				toolbar: [
-					['style', ['bold', 'italic', 'underline', 'clear']],
-					['fontsize', ['fontsize']],
-					['para', ['ul', 'ol', 'paragraph']],
-					['insert', ['hr', 'link']],
-					['misc', ['fullscreen', 'codeview']]
-				],
-				styleTags: ['p', 'quote', 'h1', 'h2', 'h3', 'h4', 'h5'],
-				codemirror: {
-					theme: 'monokai',
-					lineNumbers: true,
-					indentWithTabs: false,
-					matchBrackets: true,
-					autoCloseBrackets: true,
-					matchTags: true,
-					showTrailingSpace: true,
-					autoCloseTags: true,
-					newlineAndIndentContinueMarkdownList: true,
-					foldGutter: true,
-					styleActiveLine: true,
-					colorpicker: true
-				}
-			};
+		var toolbar = [
+			['style_1', ['style']],
+			['style_2', ['bold', 'italic', 'underline', 'clear']],
+			['fontsize', ['fontsize']],
+			['color', ['color']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['insert', ['hr', 'link']]
+		];
+		if (!airmode_en){
+			toolbar.push(['misc', ['fullscreen', 'codeview']]);
 		}
-
-		if (!fullmode_en){
-			options = {
-				airMode: true
-			};
-
+		toolbar.push(['tpl', ['tpl_vars']]);
+		var options = {
+			airMode: airmode_en,
+			minHeight: 200,
+			lang: 'nl-NL',
+			popover: {
+				air: toolbar,
+			},
+			toolbar: toolbar,
+			styleTags: ['p', 'h1', 'h2', 'h3', 'h4', 'h5'],
+			fontSizes: ['12', '14', '16', '18', '24', '36'],
+			codemirror: {
+				theme: 'monokai',
+				mode: 'htmlmixed',
+				lineNumbers: true,
+				indentWithTabs: false,
+				matchBrackets: true,
+				autoCloseBrackets: true,
+				matchTags: true,
+				showTrailingSpace: true,
+				autoCloseTags: true,
+				newlineAndIndentContinueMarkdownList: true,
+				foldGutter: true,
+				styleActiveLine: true
+			},
+			buttons: {
+				tpl_vars: tpl_vars_btn
+			}
+		};
+		if (airmode_en){
 			$self.addClass('cms-edit-inline');
 		}
-
 		$self.summernote(options);
-
 		$('form').on('submit', function(){
 			$self.html($self.summernote('code'));
 		});

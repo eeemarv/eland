@@ -10,12 +10,12 @@ jQuery(function(){
 			minHeight: 200,
 			lang: 'nl-NL',
 			toolbar: [
-				['style', ['bold', 'italic', 'underline', 'clear']],
+				['style_2', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['insert', ['hr', 'link']]
 			],
-			fontSizes: ['10', '11', '12', '14', '18', '24']
+			fontSizes: ['12', '14', '16', '18', '24']
 		});
 
 		$('form').on('submit', function(){

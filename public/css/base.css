@@ -919,3 +919,10 @@ element {
 .note-airframe .note-editing-area {
   border: 3px dashed #888;
 }
+
+.bg-white {
+  background-color: white;
+}
+.bg-lightgrey {
+  background-color: lightgrey;
+}

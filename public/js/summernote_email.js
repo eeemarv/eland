@@ -1,27 +1,18 @@
 jQuery(function(){
-
-	var template_vars_button = function (context) {
-
+	var tpl_vars_btn = function (context) {
 		$textarea = context.layoutInfo.note;
-
-		var template_vars = $textarea.data('template-vars');
-
-		if (template_vars){
-
-			template_vars = template_vars.split(',');
-
-			$.each(template_vars, function(index, value){
-				template_vars[index] = '{{ ' + value + ' }}';
+		var tpl_vars = $textarea.data('template-vars');
+		if (typeof tpl_vars !== 'undefined' && tpl_vars !== ''){
+			tpl_vars = tpl_vars.split(',');
+			$.each(tpl_vars, function(index, value){
+				tpl_vars[index] = '{{ ' + value + ' }}';
 			})
 
 		} else {
 			return false;
 		}
-
 		var ui = $.summernote.ui;
-
 		var event = ui.buttonGroup([
-
 			ui.button({
 				className: 'dropdown-toggle',
 				contents: 'Variabelen <i class="fa fa-caret-down" aria-hidden="true"></i>',
@@ -32,12 +23,9 @@ jQuery(function(){
 			}),
 
 			ui.dropdown({
-
-				items: template_vars,
-
+				items: tpl_vars,
 				callback: function (items) {
-
-					$(items).find('li a').click(function(e){
+					$(items).find('li a').on('click', function(e){
 						context.invoke('editor.insertText', $(this).text());
 						e.preventDefault();
 					});
@@ -51,30 +39,24 @@ jQuery(function(){
 	var $summernote = $('textarea.summernote');
 
 	$summernote.each(function(){
-
 		var $self = $(this);
-
-		var template_vars = $self.data('template-vars');
-
 		$self.summernote({
 			minHeight: 200,
 			lang: 'nl-NL',
-
-			 toolbar: [
-				['style', ['bold', 'italic', 'underline', 'clear']],
+			toolbar: [
+				['style_2', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['insert', ['hr', 'link']],
 				['misc', ['fullscreen', 'codeview']],
 				['tpl',['tpl_vars']]
 			],
-
 			buttons: {
-				tpl_vars: template_vars_button,
+				tpl_vars: tpl_vars_btn
 			},
-
 			codemirror: {
 				theme: 'monokai',
+				mode: 'htmlmixed',
 				lineNumbers: true,
 				indentWithTabs: false,
 				matchBrackets: true,
