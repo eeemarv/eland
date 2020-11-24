@@ -143,6 +143,7 @@ class ImageUploadService
         ImageManagerStatic::configure(['driver' => 'imagick']);
         $image = ImageManagerStatic::make($tmp_upload_path);
 
+        /*
         switch ($orientation)
         {
             case 2:
@@ -166,6 +167,7 @@ class ImageUploadService
             default:
                 break;
         }
+        */
 
         $h = $image->height();
         $w = $image->width();
