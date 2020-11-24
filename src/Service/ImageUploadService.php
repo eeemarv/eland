@@ -134,6 +134,8 @@ class ImageUploadService
         {
             $exif = exif_read_data($tmp_upload_path);
             $orientation = $exif['COMPUTED']['Orientation'] ?? 1;
+
+            $this->logger->info('exif: ' . json_encode($exif), ['schema' => $schema]);
         }
         else
         {
@@ -143,7 +145,6 @@ class ImageUploadService
         ImageManagerStatic::configure(['driver' => 'imagick']);
         $image = ImageManagerStatic::make($tmp_upload_path);
 
-        /*
         switch ($orientation)
         {
             case 2:
@@ -167,7 +168,6 @@ class ImageUploadService
             default:
                 break;
         }
-        */
 
         $h = $image->height();
         $w = $image->width();
