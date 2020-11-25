@@ -117,55 +117,20 @@ class ImageUploadService
             return $this->upload_svg($tmp_upload_path, $filename, $crop_to_square, $schema);
         }
 
-        return $this->upload_bitmap($tmp_upload_path, $filename, $ext, $width, $height, $crop_to_square, $schema);
+        return $this->upload_bitmap($tmp_upload_path, $filename, $width, $height, $crop_to_square, $schema);
     }
 
     protected function upload_bitmap(
         string $tmp_upload_path,
         string $filename,
-        string $ext,
         int $width,
         int $height,
         bool $crop_to_square,
         string $schema
     ):array
     {
-        if ($ext === 'jpg')
-        {
-            $exif = exif_read_data($tmp_upload_path);
-            $orientation = $exif['COMPUTED']['Orientation'] ?? 1;
-        }
-        else
-        {
-            $orientation = 1;
-        }
-
         ImageManagerStatic::configure(['driver' => 'imagick']);
-        $image = ImageManagerStatic::make($tmp_upload_path);
-
-        switch ($orientation)
-        {
-            case 2:
-                $image->flip();
-                break;
-            case 4:
-                $image->flip();
-            case 3:
-                $image->rotate(180);
-                break;
-            case 5:
-                $image->flip();
-            case 6:
-                $image->rotate(270);
-                break;
-            case 7:
-                $image->flip();
-            case 8:
-                $image->rotate(90);
-                break;
-            default:
-                break;
-        }
+        $image = ImageManagerStatic::make($tmp_upload_path)->orientate();
 
         $h = $image->height();
         $w = $image->width();

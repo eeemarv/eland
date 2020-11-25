@@ -65,7 +65,11 @@ jQuery(function () {
 				var $img = $thumbnail.find('img');
 				$img.attr('src', s3_url + file);
 
-				$thumbnail.find('span.img-delete').click(function(){
+				var $del_btn = $thumbnail.find('span.img-delete');
+				$del_btn.on('mouseup', function(e){
+					e.stopPropagation();
+				});
+				$del_btn.on('click', function(){
 					$thumbnail.remove();
 					rewrite_image_files_input();
 				});
