@@ -47,7 +47,7 @@ jQuery(function(){
 				['style_2', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
-				['insert', ['hr', 'link']],
+				['insert', ['link']],
 				['misc', ['fullscreen', 'codeview']],
 				['tpl',['tpl_vars']]
 			],

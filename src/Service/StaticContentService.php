@@ -42,6 +42,10 @@ class StaticContentService
 				'lang = ?',
 				'block = ?',
 			],
+			'columns'	=> [
+				'lang',
+				'block',
+			],
 			'params' => [
 				$lang,
 				$block,
@@ -59,6 +63,7 @@ class StaticContentService
 		else
 		{
 			$sql['where'][] = 'role = ?';
+			$sql['columns'][] = 'role';
 			$sql['params'][] = $role;
 			$sql['types'][] = \PDO::PARAM_STR;
 		}
@@ -70,6 +75,7 @@ class StaticContentService
 		else
 		{
 			$sql['where'][] = 'route = ?';
+			$sql['columns'][] = 'route';
 			$sql['params'][] = $route;
 			$sql['types'][] = \PDO::PARAM_STR;
 		}
@@ -108,12 +114,21 @@ class StaticContentService
 			$sql_params = [$content, ...$sql['params']];
 			$sql_types = [\PDO::PARAM_STR, ...$sql['types']];
 
-			$this->db->executeStatement('update ' . $schema . '.s_content
+			$affected_rows = $this->db->executeStatement('update ' . $schema . '.s_content
 				set content = ?
-				from ' . $schema . '.s_content
 				where ' . $sql_where,
 				$sql_params, $sql_types
 			);
+
+			if ($affected_rows === 0)
+			{
+				$sql_columns = ['content', ...$sql['columns']];
+
+				$this->db->insert($schema . '.s_content',
+					array_combine($sql_columns, $sql_params),
+					$sql_types
+				);
+			}
 		}
 
 		$key = self::PREFIX . $schema;

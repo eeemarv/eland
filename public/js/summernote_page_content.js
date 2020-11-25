@@ -12,11 +12,12 @@ jQuery(function(){
 			lang: 'nl-NL',
 
 			 toolbar: [
-				['style', ['bold', 'italic', 'underline', 'clear']],
+				['style_1', ['style']],
+				['style_2', ['bold', 'italic', 'underline', 'clear']],
 				['fontsize', ['fontsize']],
 				['para', ['ul', 'ol', 'paragraph']],
 				['table', ['table']],
-				['insert', ['hr', 'link', 'picture']],
+				['insert', ['link', 'picture']],
 				['misc', ['fullscreen', 'codeview']]
 			],
 

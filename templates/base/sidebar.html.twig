@@ -169,16 +169,17 @@
 					<p>
 						Editing van content blokken.
 					</p>
-					<p class="text-danger" hidden>Er zijn geen content blokken op deze pagina.</p>
+					<p class="text-danger" hidden data-cms-edit-no-blocks-notice>Er zijn geen content blokken van het gekozen type op deze pagina.</p>
+
 					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'route': route, 'form_token': cms_edit_form_token()}) -}}" data-cms-edit-form data-cms-edit-style="{{- cms_edit_style_active -}}">
 						<input type="hidden" name="content" valeu="{}">
 						<input type="hidden" name="route_params" value="{{- route_params|json_encode -}}">
-						<input type="hidden" name="query" value="{{- query_params|json_encode -}}">
+						<input type="hidden" name="query_params" value="{{- query_params|json_encode -}}">
 						<a href="{{- path(route|replace({'_confirm': ''}), route_params|merge(query_params)|filter((v, k) => k != 'edit' and k != 'token')) -}}" class="btn btn-default btn-lg">
 							Annuleren
 						</a>
 						&nbsp;
-						<input type="submit" name="zend" value="Opslaan" class="btn btn-primary btn-lg" data-submit-btn>
+						<input type="submit" name="submit" value="Opslaan" class="btn btn-primary btn-lg" data-submit-btn>
 					</form>
 				</div>
 				{%- if cms_linked[route] is defined -%}
@@ -259,11 +260,12 @@
 	<footer class="alert-info">
 		<br>
 		<div class="container">
-			<div class="row">
-				<div class="col-md-12" data-cms-edit="footer">
-					{{- static_content(false, false, 'footer') -}}
-				</div>
-			</div>
+			{%- embed 'embed/static_content.html.twig' with {
+				'with_role': false,
+				'with_route': false
+			} -%}
+				{%- block block_name -%}footer{%- endblock -%}
+			{%- endembed -%}
 		</div>
 		<br>
 	</footer>

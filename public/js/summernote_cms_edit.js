@@ -1,7 +1,6 @@
 jQuery(function(){
 	var $form = $('[data-cms-edit-form');
 	var airmode_en = $form.data('cms-edit-style') === 'inline';
-
 	var tpl_vars_btn = function(context){
 		var $edit_div = context.layoutInfo.note;
 		var tpl_vars = $edit_div.data('cms-edit-tpl-vars');
@@ -45,7 +44,7 @@ jQuery(function(){
 			['fontsize', ['fontsize']],
 			['color', ['color']],
 			['para', ['ul', 'ol', 'paragraph']],
-			['insert', ['hr', 'link']]
+			['insert', ['link']]
 		];
 		if (!airmode_en){
 			toolbar.push(['misc', ['fullscreen', 'codeview']]);
@@ -87,8 +86,16 @@ jQuery(function(){
 			$self.html($self.summernote('code'));
 		});
 	});
-
-	$('[data-cms-edit-form]').on('submit', function(){
-		console.log('submit');
+	var $cms_edit_form = $('[data-cms-edit-form]');
+	$cms_edit_form.on('submit', function(){
+		var content = {};
+		$summernote.each(function(){
+			var block_name = $(this).data('cms-edit');
+			content[block_name] = $(this).summernote('code');
+		});
+		$cms_edit_form.find('input[name="content"]').val(JSON.stringify(content));
 	});
+	if ($summernote.length === 0){
+		$cms_edit_form.find('[data-cms-edit-no-blocks-notice]').removeAttr('hidden');
+	}
 });
