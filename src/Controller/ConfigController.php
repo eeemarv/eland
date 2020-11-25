@@ -19,7 +19,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
-use App\Service\StaticContentService;
 
 class ConfigController extends AbstractController
 {
@@ -33,7 +32,6 @@ class ConfigController extends AbstractController
         AssetsService $assets_service,
         HeadingRender $heading_render,
         ConfigService $config_service,
-        StaticContentService $static_content_service,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         SelectRender $select_render,
@@ -121,25 +119,16 @@ class ConfigController extends AbstractController
 
             $input_field_cnf = ConfigCnst::INPUTS[$input_name];
 
-            if (isset($input_field_cnf['static_content']))
+            $path = $input_field_cnf['path'];
+
+            if (isset($input_field_cnf['is_ary']))
             {
-                $st_id = $input_field_cnf['static_content']['id'];
-                $st_block = $input_field_cnf['static_content']['block'];
-                $config[$input_name] = $static_content_service->get($st_id, $st_block, $pp->schema());
+                $ary_value = $config_service->get_ary($path, $pp->schema());
+                $config[$input_name] = implode(',', $ary_value);
             }
             else
             {
-                $path = $input_field_cnf['path'];
-
-                if (isset($input_field_cnf['is_ary']))
-                {
-                    $ary_value = $config_service->get_ary($path, $pp->schema());
-                    $config[$input_name] = implode(',', $ary_value);
-                }
-                else
-                {
-                    $config[$input_name] = $config_service->get($input_name, $pp->schema());
-                }
+                $config[$input_name] = $config_service->get($input_name, $pp->schema());
             }
         }
 
@@ -351,7 +340,6 @@ class ConfigController extends AbstractController
             {
                 $input_cnf = ConfigCnst::INPUTS[$input_name];
                 $path = $input_cnf['path'] ?? '';
-                $static_content_cnf = $input_cnf['static_content'] ?? [];
 
                 if (isset($input_cnf['is_ary']))
                 {
@@ -380,12 +368,6 @@ class ConfigController extends AbstractController
                     }
 
                     $config_service->set_ary($path, $posted_ary, $pp->schema());
-                }
-                else if (count($static_content_cnf))
-                {
-                    $st_id = $static_content_cnf['id'];
-                    $st_block = $static_content_cnf['block'];
-                    $static_content_service->set($st_id, $st_block, (string) $posted_value, $pp->schema());
                 }
                 else if (isset($input_cnf['type']))
                 {

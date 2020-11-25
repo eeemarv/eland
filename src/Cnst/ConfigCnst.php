@@ -190,82 +190,6 @@ class ConfigCnst
             'is_ary'            => true,
         ],
 
-        'contact_form_top_text' => [
-            'lbl'	=> 'Tekst boven het contact formulier',
-            'type'	=> 'textarea',
-            'summernote'	=> true,
-            'default'	=> '',
-            'static_content'    => [
-                'id'    => 'contact_form',
-                'block' => 'top',
-            ],
-        ],
-
-        'contact_form_bottom_text' => [
-            'lbl'		=> 'Tekst onder het contact formulier',
-            'type'		=> 'textarea',
-            'summernote'	=> true,
-            'default'	=> '',
-            'static_content'    => [
-                'id'    => 'contact_form',
-                'block' => 'bottom',
-            ],
-        ],
-
-        'registration_top_text' => [
-            'lbl'	=> 'Tekst boven het inschrijvingsformulier',
-            'type'	=> 'textarea',
-            'summernote'	=> true,
-            'explain' => 'Geschikt bijvoorbeeld om nadere uitleg
-                bij de inschrijving te geven.',
-            'default'	=> '',
-            'static_content'    => [
-                'id'    => 'register_form',
-                'block' => 'top',
-            ],
-        ],
-
-        'registration_bottom_text' => [
-            'lbl'		=> 'Tekst onder het inschrijvingsformulier',
-            'type'		=> 'textarea',
-            'summernote'	=> true,
-            'explain'	=> 'Geschikt bijvoorbeeld om privacybeleid toe te lichten.',
-            'default'	=> '',
-            'static_content'    => [
-                'id'    => 'register_form',
-                'block' => 'bottom',
-            ],
-        ],
-
-        'registration_success_text'	=> [
-            'lbl'	=> 'Tekst na succesvol indienen formulier.',
-            'type'	=> 'textarea',
-            'summernote'	=> true,
-            'explain'	=> 'Hier kan je aan de gebruiker uitleggen
-                wat er verder gaat gebeuren. <br>Als je Systeem een
-                website heeft, is het nuttig om een link op te nemen
-                om de gebruiker terug te voeren.',
-            'default'	=> '',
-            'static_content'    => [
-                'id'    => 'register_form_confirm',
-                'block' => 'success',
-            ],
-        ],
-
-        'registration_success_mail'	=> [
-            'lbl'		=> 'Verstuur E-mail naar gebruiker bij succesvol indienen formulier',
-            'type'		=> 'textarea',
-            'summernote'	=> true,
-            'attr'		=> [
-                'data-template-vars' => '%map_template_vars%',
-            ],
-            'default'	=> '0',
-            'static_content'    => [
-                'id'    => 'register_form_confirm',
-                'block' => 'success_mail',
-            ],
-        ],
-
         'news_order_asc'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
@@ -430,36 +354,6 @@ class ConfigCnst
                 ],
 
                 'periodic_mail_block_ary' => true,
-            ],
-        ],
-
-        'contact'	=> [
-            'assets'    => [
-                'codemirror',
-                'summernote',
-                'summernote_email.js',
-            ],
-            'lbl'	=> 'Contact',
-            'lbl_pane'	=> 'Contact Formulier',
-            'inputs'	=> [
-                'contact_form_top_text' => true,
-                'contact_form_bottom_text' => true,
-            ],
-        ],
-
-        'register'	=> [
-            'assets'    => [
-                'codemirror',
-                'summernote',
-                'summernote_email.js',
-            ],
-            'lbl'	=> 'Inschrijven',
-            'lbl_pane'	=> 'Inschrijvingsformulier',
-            'inputs'	=> [
-                'registration_top_text' => true,
-                'registration_bottom_text' => true,
-                'registration_success_text'	=> true,
-                'registration_success_mail'	=> true,
             ],
         ],
 

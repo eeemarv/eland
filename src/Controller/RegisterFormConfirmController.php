@@ -214,14 +214,18 @@ class RegisterFormConfirmController extends AbstractController
 
         $pre_html_template = $static_content_service->get('', 'register_form_confirm', 'mail', $pp->schema());
 
-        $mail_queue->queue([
-            'schema'				=> $pp->schema(),
-            'to' 					=> [$data['email'] => $user['fullname']],
-            'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
-            'pre_html_template'		=> $pre_html_template,
-            'template'				=> 'register/success',
-            'vars'					=> $vars,
-        ], 8500);
+        if ($pre_html_template !== '')
+        {
+            $mail_queue->queue([
+                'schema'				=> $pp->schema(),
+                'to' 					=> [$data['email'] => $user['fullname']],
+                'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
+                'pre_html_template'		=> $pre_html_template,
+                'template'				=> 'register/success',
+                'vars'					=> $vars,
+            ], 8500);
+        }
+
 
         $menu_service->set('register_form');
 

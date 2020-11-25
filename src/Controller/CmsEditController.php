@@ -16,6 +16,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CmsEditController extends AbstractController
 {
+    const EMPTY_ARTEFACTS = [
+        '<p><br></p>'   => true,
+        '<br>'          => true,
+        '<br/>'         => true,
+        '<p></p>'       => true,
+    ];
+
     public function __invoke(
         string $route,
         string $form_token,
@@ -65,7 +72,8 @@ class CmsEditController extends AbstractController
 
         foreach($content_ary as $block => $content)
         {
-            $set = trim($content) === '<p><br></p>' ? '' : $html_purifier->purify($content);
+            $no_space_content = trim(preg_replace('/\s+/', '', $content));
+            $set = isset(self::EMPTY_ARTEFACTS[$no_space_content]) ? '' : $html_purifier->purify($content);
             $get = $static_content_service->get($sel_role, $sel_route, $block, $pp->schema());
             if($get !== $set)
             {
