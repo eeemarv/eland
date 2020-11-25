@@ -130,7 +130,7 @@ class ImageUploadService
     ):array
     {
         ImageManagerStatic::configure(['driver' => 'imagick']);
-        $image = ImageManagerStatic::make($tmp_upload_path); //->orientate();
+        $image = ImageManagerStatic::make($tmp_upload_path)->orientate();
 
         $h = $image->height();
         $w = $image->width();

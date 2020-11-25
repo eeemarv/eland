@@ -48,7 +48,7 @@ $(document).ready(function () {
 		imageMaxWidth: 400,
 		imageMaxHeight: 400,
 		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
-//		imageOrientation: true,
+		imageOrientation: true,
 		messages: messages
 	}).on('fileuploadadd', function (e, data) {
 		$img_add_btn.removeClass('fa-plus').addClass('fa-spinner fa-spin');

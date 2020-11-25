@@ -69,17 +69,17 @@ class AssetsService
 		],
 		'fileupload'	=> [
 			'js'	=>	[
-				'blueimp-file-upload/9.25.1/js/vendor/jquery.ui.widget.min.js',
-				'blueimp-file-upload/9.25.1/js/jquery.iframe-transport.min.js',
-				'blueimp-load-image/2.12.2/load-image.all.min.js',
-				'javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js',
-				'blueimp-file-upload/9.25.1/js/jquery.fileupload.min.js',
-				'blueimp-file-upload/9.25.1/js/jquery.fileupload-process.min.js',
-				'blueimp-file-upload/9.25.1/js/jquery.fileupload-image.min.js',
-				'blueimp-file-upload/9.25.1/js/jquery.fileupload-validate.min.js',
+				'blueimp-file-upload/10.31.0/js/vendor/jquery.ui.widget.min.js',
+				'blueimp-file-upload/10.31.0/js/jquery.iframe-transport.min.js',
+				'blueimp-load-image/5.14.0/load-image.all.min.js',
+				'javascript-canvas-to-blob/3.28.0/js/canvas-to-blob.min.js',
+				'blueimp-file-upload/10.31.0/js/jquery.fileupload.min.js',
+				'blueimp-file-upload/10.31.0/js/jquery.fileupload-process.min.js',
+				'blueimp-file-upload/10.31.0/js/jquery.fileupload-image.min.js',
+				'blueimp-file-upload/10.31.0/js/jquery.fileupload-validate.min.js',
 			],
 			'css'	=> [
-				'blueimp-file-upload/9.25.1/css/jquery.fileupload.min.css',
+				'blueimp-file-upload/10.31.0/css/jquery.fileupload.min.css',
 			],
 		],
 		'typeahead'		=> [
