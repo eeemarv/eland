@@ -72,7 +72,7 @@ class MollieCheckoutController extends AbstractController
             {
                 if ($request->isMethod('GET'))
                 {
-                    $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.');
+                    $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.', false);
                 }
             }
         }

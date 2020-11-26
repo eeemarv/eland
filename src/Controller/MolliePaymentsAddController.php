@@ -65,7 +65,7 @@ class MolliePaymentsAddController extends AbstractController
             {
                 $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
                     er is geen Mollie apikey ingesteld in de ' .
-                    $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []));
+                    $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []), false);
 
             }
 
@@ -77,7 +77,7 @@ class MolliePaymentsAddController extends AbstractController
             {
                 $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
                     $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
-                    '. Betalingen kunnen niet uitgevoerd worden!');
+                    '. Betalingen kunnen niet uitgevoerd worden!', false);
             }
         }
 
