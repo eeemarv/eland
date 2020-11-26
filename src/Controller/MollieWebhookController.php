@@ -45,7 +45,7 @@ class MollieWebhookController extends AbstractController
             where p.request_id = r.id
                 and u.id = p.user_id
                 and p.token = ?',
-            [$token], [\PDO::PARAM_INT]);
+            [$token], [\PDO::PARAM_STR]);
 
         if (!$mollie_payment)
         {
