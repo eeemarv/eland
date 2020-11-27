@@ -21,7 +21,9 @@
             'with_route': true
         } -%}
             {%- block block_name -%}mail{%- endblock -%}
-            {%- block attr %} data-cms-edit-tpl-vars="voornaam,achternaam,postcode"{%- endblock -%}
+            {%- block attr %}
+                data-cms-edit-tpl-vars="voornaam,achternaam,postcode" data-cms-edit-mail
+            {%- endblock attr -%}
         {%- endembed -%}
         </div>
         </div>

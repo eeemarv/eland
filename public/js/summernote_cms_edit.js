@@ -37,15 +37,19 @@ jQuery(function(){
 	var $summernote = $('[data-cms-edit]');
 	$summernote.each(function(){
 		var $self = $(this);
+		var mail_en = $self.is('[data-cms-edit-mail]');
 		var options = {};
-		var toolbar = [
-			['style_1', ['style']],
-			['style_2', ['bold', 'italic', 'underline', 'clear']],
-			['fontsize', ['fontsize']],
-			['color', ['color']],
-			['para', ['ul', 'ol', 'paragraph']],
-			['insert', ['link']]
-		];
+		var toolbar = [];
+		if (!mail_en){
+			toolbar.push(['style_1', ['style']]);
+		};
+		toolbar.push(['style_2', ['bold', 'italic', 'underline', 'clear']]);
+		toolbar.push(['fontsize', ['fontsize']]);
+		if (!mail_en){
+			toolbar.push(['color', ['color']]);
+		}
+		toolbar.push(['para', ['ul', 'ol', 'paragraph']]);
+		toolbar.push(['insert', ['link']]);
 		if (!airmode_en){
 			toolbar.push(['misc', ['fullscreen', 'codeview']]);
 		}
