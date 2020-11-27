@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 
 class MolliePaymentsController extends AbstractController
@@ -116,9 +117,11 @@ class MolliePaymentsController extends AbstractController
         }
 
 //-------------
-
-        $where_sql = [];
-        $params_sql = [];
+        $sql = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
 
         $params = [
             's'	=> [
@@ -139,8 +142,9 @@ class MolliePaymentsController extends AbstractController
 
         if (isset($filter['q']) && $filter['q'])
         {
-            $where_sql[] = 'r.description ilike ?';
-            $params_sql[] = '%' . $filter['q'] . '%';
+            $sql['where'][] = 'r.description ilike ?';
+            $sql['params'][] = '%' . $filter['q'] . '%';
+            $sql['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
 
@@ -153,8 +157,9 @@ class MolliePaymentsController extends AbstractController
                 from ' . $pp->schema() . '.users
                 where code = ?', [$code], [\PDO::PARAM_STR]);
 
-            $where_sql[] = 'u.id = ?';
-            $params_sql[] = $uid ?: 0;
+            $sql['where'][] = 'u.id = ?';
+            $sql['params'][] = $uid ?: 0;
+            $sql['types'][] = \PDO::PARAM_INT;
 
             if ($uid)
             {
@@ -171,71 +176,77 @@ class MolliePaymentsController extends AbstractController
 
         if ($filter_status)
         {
-            $where_status_sql = [];
+            $sql_where_status = [];
 
             if (isset($filter['status']['open']))
             {
-                $where_status_sql[] = '(p.is_payed = \'f\'::bool and p.is_canceled = \'f\'::bool)';
+                $sql_where_status[] = '(p.is_payed = \'f\'::bool and p.is_canceled = \'f\'::bool)';
                 $params['f']['status']['open'] = 'on';
             }
 
             if (isset($filter['status']['payed']))
             {
-                $where_status_sql[] = 'p.is_payed = \'t\'::bool';
+                $sql_where_status[] = 'p.is_payed = \'t\'::bool';
                 $params['f']['status']['payed'] = 'on';
             }
 
             if (isset($filter['status']['canceled']))
             {
-                $where_status_sql[] = 'p.is_canceled = \'t\'::bool';
+                $sql_where_status[] = 'p.is_canceled = \'t\'::bool';
                 $params['f']['status']['canceled'] = 'on';
             }
 
-            if (count($where_status_sql))
+            if (count($sql_where_status))
             {
-                $where_sql[] = '(' . implode(' or ', $where_status_sql) . ')';
+                $sql['where'][] = '(' . implode(' or ', $sql_where_status) . ')';
             }
         }
 
         if (isset($filter['fdate']) && $filter['fdate'])
         {
-            $fdate_sql = $date_format_service->reverse($filter['fdate'], $pp->schema());
+            $sql_fdate = $date_format_service->reverse($filter['fdate'], $pp->schema());
 
-            if ($fdate_sql === '')
+            if ($sql_fdate === '')
             {
                 $alert_service->warning('De begindatum is fout geformateerd.');
             }
             else
             {
-                $where_sql[] = 'p.created_at >= ?';
-                $params_sql[] = $fdate_sql;
+                $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($sql_fdate . ' UTC'));
+
+                $sql['where'][] = 'p.created_at >= ?';
+                $sql['params'][] = $fdate_immutable;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
         }
 
         if (isset($filter['tdate']) && $filter['tdate'])
         {
-            $tdate_sql = $date_format_service->reverse($filter['tdate'], $pp->schema());
+            $sql_tdate = $date_format_service->reverse($filter['tdate'], $pp->schema());
 
-            if ($tdate_sql === '')
+            if ($sql_tdate === '')
             {
                 $alert_service->warning('De einddatum is fout geformateerd.');
             }
             else
             {
-                $where_sql[] = 'p.created_at <= ?';
-                $params_sql[] = $tdate_sql;
+                $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($sql_tdate . ' UTC'));
+
+                $sql['where'][] = 'p.created_at <= ?';
+                $sql['params'][] = $tdate_immutable;
+                $sql['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }
         }
 
-        if (count($where_sql))
+        if (count($sql['where']))
         {
-            $where_sql = ' and ' . implode(' and ', $where_sql);
+            $sql_where = ' and ' . implode(' and ', $sql['where']);
         }
         else
         {
-            $where_sql = '';
+            $sql_where = '';
         }
 
         $payments = [];
@@ -254,12 +265,12 @@ class MolliePaymentsController extends AbstractController
                         where t.abbrev = \'mail\')
             where p.request_id = r.id
                 and p.user_id = u.id
-                ' . $where_sql . '
+                ' . $sql_where . '
             order by ' . $params['s']['orderby'] . '
             ' . ($params['s']['asc'] ? 'asc' : 'desc') . '
             limit ' . $params['p']['limit'] . '
             offset ' . $params['p']['start'],
-        $params_sql);
+            $sql['params'], $sql['types']);
 
         while (($row = $stmt->fetch()) !== false)
         {
@@ -280,7 +291,7 @@ class MolliePaymentsController extends AbstractController
                 ' . $pp->schema() . '.users u
             where p.request_id = r.id
                 and p.user_id = u.id
-                ' . $where_sql, $params_sql);
+                ' . $sql_where, $sql['params'], $sql['types']);
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
