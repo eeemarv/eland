@@ -1,11 +1,3 @@
-legacy_register:
-  path: /register.php
-  controller: App\Controller\LegacyController::register
-
-
-
-
-
 
 index_contact:
   path: /contact
