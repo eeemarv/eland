@@ -38,9 +38,9 @@ mollie_webhook:
   controller: App\Controller\MollieWebhookController
   methods: POST
 
-mollie_checkout_anonymous:
+mollie_checkout:
   path: /mollie/checkout/{token<%assert.big_token%>}
-  controller: App\Controller\MollieCheckoutAnonymousController
+  controller: App\Controller\MollieCheckoutController
   methods: GET|POST
 
 system_admin:

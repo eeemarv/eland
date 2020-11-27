@@ -9,6 +9,7 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,11 +19,11 @@ use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class MollieCheckoutAnonymousController extends AbstractController
+class MollieCheckout__Controller extends AbstractController
 {
     public function __invoke(
         Request $request,
-        string $token,
+        int $id,
         Db $db,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
@@ -31,7 +32,8 @@ class MollieCheckoutAnonymousController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         HeadingRender $heading_render,
-        PageParamsService $pp
+        PageParamsService $pp,
+        SessionUserService $su
     ):Response
     {
         $errors = [];
@@ -40,19 +42,24 @@ class MollieCheckoutAnonymousController extends AbstractController
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
-                and p.token = ?',
-                [$token], [\PDO::PARAM_STR]);
+                and p.id = ?',
+            [$id], [\PDO::PARAM_INT]);
 
         if (!$mollie_payment)
         {
-            throw new NotFoundHttpException('Betaling niet gevonden.');
+            throw new NotFoundHttpException('Payment not found.');
+        }
+
+        if (!$su->is_owner($mollie_payment['user_id']))
+        {
+            throw new AccessDeniedHttpException('You have no access to this page.');
         }
 
         $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
             from ' . $pp->schema() . '.config
             where id = \'mollie\'', [], []);
 
-        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        if ((!$mollie_payment['is_payed'] || !$mollie_payment['is_canceled']))
         {
             if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -95,16 +102,16 @@ class MollieCheckoutAnonymousController extends AbstractController
                     ],
                     'locale'        => 'nl_BE',
                     'description' => $description,
-                    'redirectUrl' => $link_render->context_url('mollie_checkout_anonymous', $pp->ary(), ['token' => $token]),
+                    'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['id' => $id]),
                     'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
-                    'metadata' => [
+                    'metadata'      => [
                         'token' => $mollie_payment['token'],
                     ],
                 ]);
 
                 $db->update($pp->schema() . '.mollie_payments', [
                     'mollie_payment_id' => $payment->id,
-                ], ['token' => $token]);
+                ], ['id' => $id]);
 
                 header('Location: ' . $payment->getCheckoutUrl(), true, 303);
                 exit;
@@ -114,6 +121,7 @@ class MollieCheckoutAnonymousController extends AbstractController
         }
 
         $heading_render->fa('eur');
+
         $out = '<div class="panel panel-';
 
         if ($mollie_payment['is_canceled'])
@@ -123,7 +131,7 @@ class MollieCheckoutAnonymousController extends AbstractController
         }
         else if ($mollie_payment['is_payed'])
         {
-            $heading_render->add('Betaling geslaagd');
+            $heading_render->add('Betaling geslaagd!');
             $out .= 'success';
         }
         else

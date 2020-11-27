@@ -47,10 +47,23 @@ class MollieWebhookController extends AbstractController
                 and p.token = ?',
             [$token], [\PDO::PARAM_STR]);
 
-        if (!$mollie_payment)
+        error_log('mollie_payment: ' . json_encode($mollie_payment));
+
+        if ($mollie_payment === false)
         {
             throw new NotFoundHttpException('Payment request not found');
         }
+
+        error_log('MOLLIE_PAYMENT (db)');
+        error_log(print_r($mollie_payment, true));
+        error_log('PAYMENT (api)');
+        error_log(print_r($payment));
+        error_log('PAYMENT is_payed()');
+        error_log($payment->isPaid() ? 'TRUE' : 'FALSE');
+        error_log('PAYMENT is_canceled()');
+        error_log($payment->isCanceled() ? 'TRUE' : 'FALSE');
+        error_log('PAYMENT STATUS');
+        error_log($payment->status);
 
         if ($payment->isPaid())
         {

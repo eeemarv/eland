@@ -45,7 +45,7 @@
                     {%- include 'mail/include/btn.html.twig' with {
                         'bgcolor': '220099',
                         'label': 'mollie.payment_request.btn_label'|trans,
-                        'href': context_url('mollie_checkout_anonymous', mpp_anon_ary(schema), {'token': token})
+                        'href': context_url('mollie_checkout', mpp_anon_ary(schema), {'token': token})
                     } -%}
                 </td>
             </tr>
@@ -72,7 +72,7 @@
 
 {%- block text_content %}
 {{ 'mollie.payment_request.link'|trans }}
-{{ context_url('mollie_checkout_anonymous', mpp_anon_ary(schema), {'token': token}) }}
+{{ context_url('mollie_checkout', mpp_anon_ary(schema), {'token': token}) }}
 
 {{ 'label.amount'|trans }}
 {{ amount }}

@@ -96,7 +96,7 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $payments = $this->db->fetchAllAssociative('select p.*, r.description
+        $payments = $this->db->fetchAllAssociative('select p.amount, p.token, r.description
             from ' . $this->pp->schema() . '.mollie_payments p,
                 ' . $this->pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
@@ -125,7 +125,8 @@ class MollieSubscriber implements EventSubscriberInterface
             $description = $this->su->code() . ' ' . $payment['description'];
             $info[] = strtr(self::PAYMENT_REQUEST,[
                 '%link%'            => $this->link_render->context_path('mollie_checkout',
-                    $this->pp->ary(), ['id' => $payment['id']]),
+                    ['system' => $this->pp->system()],
+                    ['token' => $payment['token']]),
                 '%description%'     => htmlspecialchars($description, ENT_QUOTES),
                 '%amount%'          => strtr($payment['amount'], '.', ','),
             ]);

@@ -502,7 +502,7 @@ class MolliePaymentsController extends AbstractController
                         'emails_sent'   => json_encode($emails_sent),
                     ], ['id' => $payment_id]);
 
-                    $payment_url = $link_render->context_url('mollie_checkout_anonymous',
+                    $payment_url = $link_render->context_url('mollie_checkout',
                         ['system' => $pp->system()], ['token' => $payment['token']]);
                     $payment_link = '<a href="';
                     $payment_link .= $payment_url;
