@@ -91,6 +91,11 @@ class StaticContentService
 		string $schema
 	):void
 	{
+		if (substr($route, -6) === '_admin')
+		{
+			$route = substr($route, 0, strlen($route) - 6);
+		}
+
 		$current_content = $this->get($role, $route, $block, $schema);
 
 		if ($current_content === $content)
@@ -151,6 +156,11 @@ class StaticContentService
 	):string
 	{
 		$lang = 'nl';
+
+		if (substr($route, -6) === '_admin')
+		{
+			$route = substr($route, 0, strlen($route) - 6);
+		}
 
 		$key = self::PREFIX . $schema;
 		$field = $lang;
