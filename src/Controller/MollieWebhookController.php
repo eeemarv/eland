@@ -47,8 +47,6 @@ class MollieWebhookController extends AbstractController
                 and p.token = ?',
             [$token], [\PDO::PARAM_STR]);
 
-        error_log('mollie_payment: ' . json_encode($mollie_payment));
-
         if ($mollie_payment === false)
         {
             throw new NotFoundHttpException('Payment request not found');
@@ -71,6 +69,7 @@ class MollieWebhookController extends AbstractController
         {
             error_log('is_paid');
 
+            /*
             $amount = strtr($mollie_payment['amount'], '.', ',');
             $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
@@ -86,12 +85,13 @@ class MollieWebhookController extends AbstractController
                 'vars'		=> $vars,
                 'to'		=> $mail_addr_user_service->get($mollie_payment['user_id'], $pp->schema()),
             ], 8500);
+            */
         }
 
         $db->update($pp->schema() . '.mollie_payments',[
             'mollie_status'     => $payment->status,
             'is_paid'           => $payment->isPaid() ? 't' : 'f',
-        ], ['token' => $token]);
+        ], ['token' => $token], [\PDO::PARAM_STR]);
 
         return new Response('');
     }
