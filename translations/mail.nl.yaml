@@ -17,7 +17,7 @@ label:
   image: Afbeelding
   ip: IP
   is_canceled: Geannuleerd
-  is_payed: Betaald
+  is_paid: Betaald
   minutes: Minuten
   offer: Aanbod
   password: Paswoord
@@ -165,7 +165,7 @@ mollie:
       We hebben je betaling goed ontvangen! Dank je wel.
   payment_request:
     sub_header: Betalingsverzoek
-    sub_header_is_payed: Betaling voldaan
+    sub_header_is_paid: Betaling voldaan
     sub_header_is_canceled: Betaling geannuleerd
     btn_label: Online betalen
     link: Link voor online betalen

@@ -54,7 +54,7 @@ class MollieCheckoutController extends AbstractController
             from ' . $pp->schema() . '.config
             where id = \'mollie\'', [], []);
 
-        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
         {
             if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0
@@ -123,7 +123,7 @@ class MollieCheckoutController extends AbstractController
             $heading_render->add('Deze betaling is geannuleerd');
             $out .= 'default';
         }
-        else if ($mollie_payment['is_payed'])
+        else if ($mollie_payment['is_paid'])
         {
             $heading_render->add('Betaling geslaagd');
             $out .= 'success';
@@ -137,7 +137,7 @@ class MollieCheckoutController extends AbstractController
         $out .= '">';
         $out .= '<div class="panel-heading">';
 
-        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
         {
             $out .= '<form method="post">';
             $out .= '<p>Je kreeg het volgende verzoek tot betaling:</p>';
@@ -170,7 +170,7 @@ class MollieCheckoutController extends AbstractController
         $out .= '</dd>';
         $out .= '</dd>';
 
-        if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
+        if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
         {
             $out .= '<br>';
 

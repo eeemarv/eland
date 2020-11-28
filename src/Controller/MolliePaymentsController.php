@@ -37,7 +37,7 @@ class MolliePaymentsController extends AbstractController
             'label'     => 'open',
             'class'     => 'warning',
         ],
-        'payed'     => [
+        'paid'     => [
             'label'     => 'betaald',
             'class'     => 'success',
         ],
@@ -171,7 +171,7 @@ class MolliePaymentsController extends AbstractController
 
         $filter_status = isset($filter['status']) &&
             !(isset($filter['status']['open'])
-                && isset($filter['status']['payed'])
+                && isset($filter['status']['paid'])
                 && isset($filter['status']['canceled']));
 
         if ($filter_status)
@@ -180,14 +180,14 @@ class MolliePaymentsController extends AbstractController
 
             if (isset($filter['status']['open']))
             {
-                $sql_where_status[] = '(p.is_payed = \'f\'::bool and p.is_canceled = \'f\'::bool)';
+                $sql_where_status[] = '(p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool)';
                 $params['f']['status']['open'] = 'on';
             }
 
-            if (isset($filter['status']['payed']))
+            if (isset($filter['status']['paid']))
             {
-                $sql_where_status[] = 'p.is_payed = \'t\'::bool';
-                $params['f']['status']['payed'] = 'on';
+                $sql_where_status[] = 'p.is_paid = \'t\'::bool';
+                $params['f']['status']['paid'] = 'on';
             }
 
             if (isset($filter['status']['canceled']))
@@ -362,7 +362,7 @@ class MolliePaymentsController extends AbstractController
             {
                 $payment = $payments[$payment_id];
 
-                if (!$payment['is_payed'] && !$payment['is_canceled'])
+                if (!$payment['is_paid'] && !$payment['is_canceled'])
                 {
                     $cancel_ary[] = (int) $payment_id;
                     $users_cancel_ary[$payment['user_id']] = true;
@@ -386,7 +386,7 @@ class MolliePaymentsController extends AbstractController
                     where u.id not in (select p.user_id
                         from ' . $pp->schema() . '.mollie_payments p
                         where p.is_canceled = \'f\'::bool
-                            and p.is_payed = \'f\'::bool)', [], []);
+                            and p.is_paid = \'f\'::bool)', [], []);
 
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {
@@ -528,7 +528,7 @@ class MolliePaymentsController extends AbstractController
                         'subject'	    => $bulk_mail_subject,
                         'amount'        => $payment['amount'],
                         'description'   => $payment['description'],
-                        'is_payed'      => $payment['is_payed'],
+                        'is_paid'      => $payment['is_paid'],
                         'is_canceled'   => $payment['is_canceled'],
                         'token'         => $payment['token'],
                     ];
@@ -915,7 +915,7 @@ class MolliePaymentsController extends AbstractController
             {
                 $status_label .= 'default">geannuleerd';
             }
-            else if ($payment['is_payed'])
+            else if ($payment['is_paid'])
             {
                 $status_label .= 'success">betaald';
             }

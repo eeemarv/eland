@@ -96,13 +96,15 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
+        return; // rename column
+
         $payments = $this->db->fetchAllAssociative('select p.amount, p.token, r.description
             from ' . $this->pp->schema() . '.mollie_payments p,
                 ' . $this->pp->schema() . '.mollie_payment_requests r
             where p.request_id = r.id
                 and user_id = ?
                 and is_canceled = \'f\'::bool
-                and is_payed = \'f\'::bool',
+                and is_paid = \'f\'::bool',
             [$this->su->id()], [\PDO::PARAM_INT]);
 
         if (!$payments)

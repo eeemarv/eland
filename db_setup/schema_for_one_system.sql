@@ -54,14 +54,14 @@ CREATE FUNCTION x.trigger_set_last_edit_at() RETURNS trigger
 
 
 --
--- Name: trigger_set_payed_at(); Type: FUNCTION; Schema: x; Owner: -
+-- Name: trigger_set_paid_at(); Type: FUNCTION; Schema: x; Owner: -
 --
 
-CREATE FUNCTION x.trigger_set_payed_at() RETURNS trigger
+CREATE FUNCTION x.trigger_set_paid_at() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
      BEGIN
-     NEW.payed_at := timezone('utc'::text, NOW());
+     NEW.paid_at := timezone('utc'::text, NOW());
      RETURN NEW;
      END;
      $$;
@@ -513,8 +513,8 @@ CREATE TABLE x.mollie_payments (
     is_canceled boolean DEFAULT false NOT NULL,
     canceled_at timestamp without time zone,
     canceled_by integer,
-    is_payed boolean DEFAULT false NOT NULL,
-    payed_at timestamp without time zone,
+    is_paid boolean DEFAULT false NOT NULL,
+    paid_at timestamp without time zone,
     created_by integer NOT NULL,
     created_at timestamp without time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
     last_edit_at timestamp without time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -1128,13 +1128,12 @@ CREATE TRIGGER set_last_edit_at BEFORE UPDATE ON x.users FOR EACH ROW EXECUTE PR
 
 
 --
--- Name: mollie_payments set_payed_at; Type: TRIGGER; Schema: x; Owner: -
+-- Name: mollie_payments set_paid_at; Type: TRIGGER; Schema: x; Owner: -
 --
 
-CREATE TRIGGER set_payed_at BEFORE UPDATE OF is_payed ON x.mollie_payments FOR EACH ROW EXECUTE PROCEDURE x.trigger_set_payed_at();
+CREATE TRIGGER set_paid_at BEFORE UPDATE OF is_paid ON x.mollie_payments FOR EACH ROW EXECUTE PROCEDURE x.trigger_set_paid_at();
 
 
 --
 -- PostgreSQL database dump complete
 --
-

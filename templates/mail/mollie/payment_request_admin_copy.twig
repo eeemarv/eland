@@ -32,7 +32,7 @@
                 {{- context_url_open('users_show', mpp_ary(user_id, schema), {'id': ps.user_id})|raw -}}
                     {{- account(ps.user_id, schema) -}}
                 </a>
-                {{ ps.amount }} EUR{%- if ps.is_payed %} [{{ 'label.is_payed'|trans }}]{%- elseif ps.is_canceled %} [{{ 'label.is_canceled'|trans }}]{%- endif -%}
+                {{ ps.amount }} EUR{%- if ps.is_paid %} [{{ 'label.is_paid'|trans }}]{%- elseif ps.is_canceled %} [{{ 'label.is_canceled'|trans }}]{%- endif -%}
             {%- endblock td_content -%}
         {%- endembed -%}
     {%- endfor -%}
@@ -60,7 +60,7 @@
                 {{- context_url_open('users_show', mpp_ary(user_id, schema), {'id': pns.user_id})|raw -}}
                     {{- account(pns.user_id, schema) -}}
                 </a>
-                {{ pns.amount }} EUR{%- if pns.is_payed %} [{{ 'label.is_payed'|trans }}]{%- elseif pns.is_canceled %} [{{ 'label.is_canceled'|trans }}]{%- endif -%}
+                {{ pns.amount }} EUR{%- if pns.is_paid %} [{{ 'label.is_paid'|trans }}]{%- elseif pns.is_canceled %} [{{ 'label.is_canceled'|trans }}]{%- endif -%}
             {%- endblock td_content -%}
         {%- endembed -%}
     {%- endfor -%}

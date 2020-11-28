@@ -108,7 +108,7 @@ class MolliePaymentsAddController extends AbstractController
         $stmt = $db->executeQuery(
             'select u.id, u.name, u.fullname, u.code,
                 u.role, u.status, u.adate,
-                p1.is_payed, p1.is_canceled, p1.created_at as last_created_at,
+                p1.is_paid, p1.is_canceled, p1.created_at as last_created_at,
                 p1.amount, p1.description
             from ' . $pp->schema() . '.users u
             left join lateral (select p.*, r.description
@@ -420,7 +420,7 @@ class MolliePaymentsAddController extends AbstractController
                 {
                     $payment_str .= 'default">geannuleerd';
                 }
-                else if ($user['is_payed'])
+                else if ($user['is_paid'])
                 {
                     $payment_str .= 'success">betaald';
                 }
