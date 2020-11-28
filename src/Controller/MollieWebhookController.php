@@ -56,12 +56,14 @@ class MollieWebhookController extends AbstractController
 
         error_log('MOLLIE_PAYMENT (db)');
         error_log(print_r($mollie_payment, true));
-        error_log('PAYMENT (api)');
-        error_log(print_r($payment));
-        error_log('PAYMENT is_payed()');
+        error_log('PAYMENT isPaid()');
         error_log($payment->isPaid() ? 'TRUE' : 'FALSE');
-        error_log('PAYMENT is_canceled()');
+        error_log('PAYMENT isCanceled()');
         error_log($payment->isCanceled() ? 'TRUE' : 'FALSE');
+        error_log('PAYMENT isPending()');
+        error_log($payment->isPending() ? 'TRUE' : 'FALSE');
+        error_log('PAYMENT isOpen()');
+        error_log($payment->isOpen() ? 'TRUE' : 'FALSE');
         error_log('PAYMENT STATUS');
         error_log($payment->status);
 

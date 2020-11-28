@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -25,6 +26,7 @@ class MollieCheckoutController extends AbstractController
         string $token,
         Db $db,
         AlertService $alert_service,
+        AccountRender $account_render,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
@@ -138,12 +140,22 @@ class MollieCheckoutController extends AbstractController
         if (!($mollie_payment['is_payed'] || $mollie_payment['is_canceled']))
         {
             $out .= '<form method="post">';
-
-            $out .= '<p>Je kreeg van <strong>' . $config_service->get('systemname', $pp->schema());
-            $out .= '</strong> het volgende verzoek tot betaling:</p>';
+            $out .= '<p>Je kreeg het volgende verzoek tot betaling:</p>';
         }
 
         $out .= '<dl>';
+        $out .= '<dt>';
+        $out .= 'Van';
+        $out .= '</dt>';
+        $out .= '<dd>';
+        $out .= $account_render->str($mollie_payment['user_id'], $pp->schema());
+        $out .= '</dd>';
+        $out .= '<dt>';
+        $out .= 'Aan';
+        $out .= '</dt>';
+        $out .= '<dd>';
+        $out .= $config_service->get_str('system.name', $pp->schema());
+        $out .= '</dd>';
         $out .= '<dt>';
         $out .= 'Bedrag';
         $out .= '</dt>';
