@@ -12,13 +12,28 @@
 {% block html_content -%}
     {%- include 'mail/include/spacer20.html.twig' -%}
 
-    {%- include 'mail/include/info_panel.html.twig' with {
-        'info': 'mollie.is_paid.message'|trans
-    } -%}
+    {%- set info -%}
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
 
-    {%- include 'mail/include/spacer20.html.twig' -%}
-    {%- include 'mail/mollie/include/payment_info.html.twig' -%}
-    {%- include 'mail/include/spacer20.html.twig' -%}
+        <tr>
+            <td>
+                {{- 'mollie.is_paid.message'|trans -}}
+            </td>
+        </tr>
+
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+
+        {%- include 'mail/mollie/include/payment_info.html.twig' -%}
+    {%- endset -%}
+
+	{%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/bgspacer40.html.twig' -%}
 
 {%- endblock html_content %}
 

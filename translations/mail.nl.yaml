@@ -162,7 +162,7 @@ mollie:
     subject: >-
       Betaling ontvangen
     message: >-
-      We hebben je betaling goed ontvangen! Dank je wel.
+      We hebben je betaling goed ontvangen!
   payment_request:
     sub_header: Betalingsverzoek
     sub_header_is_paid: Betaling voldaan
