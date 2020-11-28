@@ -69,7 +69,9 @@ class MollieWebhookController extends AbstractController
 
         if ($payment->isPaid())
         {
-            $amount = strtr($mollie_payment['a'], '.', ',');
+            error_log('is_paid');
+
+            $amount = strtr($mollie_payment['amount'], '.', ',');
             $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
             $vars = [
@@ -88,7 +90,7 @@ class MollieWebhookController extends AbstractController
 
         $db->update($pp->schema() . '.mollie_payments',[
             'mollie_status'     => $payment->status,
-            'is_paid'           => $payment->isPaid(),
+            'is_paid'           => $payment->isPaid() ? 't' : 'f',
         ], ['token' => $token]);
 
         return new Response('');
