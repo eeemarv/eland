@@ -715,21 +715,27 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '<div class="col-md-12">';
         $out .= '<div class="input-group margin-bottom">';
+        $out .= '<div class="custom-checkbox">';
 
         foreach (self::STATUS_RENDER as $key => $render)
         {
             $name = 'f[status][' . $key . ']';
-            $out .= '<label class="checkbox-inline" for="' . $name . '">';
-            $out .= '<input type="checkbox" id="' . $name . '" ';
-            $out .= 'name="' . $name . '"';
-            $out .= isset($filter['status'][$key]) ? ' checked' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="label label-' . $render['class'] . '">';
-            $out .= $render['label'];
-            $out .= '</span>';
-            $out .= '</label>';
+
+            $attr = isset($filter['status'][$key]) ? ' checked' : '';
+
+            $label = '<span class="label label-' . $render['class'] . '">';
+            $label .= $render['label'];
+            $label .= '</span>';
+            $label .= '</label>';
+
+			$out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
+				'%name%'	=> $name,
+				'%attr%'	=> $attr,
+				'%label%'	=> $label,
+			]);
         }
 
+        $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
 
