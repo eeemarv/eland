@@ -96,8 +96,6 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
-        return; // rename column
-
         $payments = $this->db->fetchAllAssociative('select p.amount, p.token, r.description
             from ' . $this->pp->schema() . '.mollie_payments p,
                 ' . $this->pp->schema() . '.mollie_payment_requests r
