@@ -527,8 +527,8 @@ class MolliePaymentsController extends AbstractController
                     $vars = [
                         'subject'	    => $bulk_mail_subject,
                         'amount'        => $payment['amount'],
-                        'description'   => $payment['description'],
-                        'is_paid'      => $payment['is_paid'],
+                        'description'   => $payment['code'] . ' ' . $payment['description'],
+                        'is_paid'       => $payment['is_paid'],
                         'is_canceled'   => $payment['is_canceled'],
                         'token'         => $payment['token'],
                     ];

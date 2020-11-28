@@ -60,7 +60,7 @@ class MollieWebhookController extends AbstractController
             $vars = [
                 'amount'        => $amount,
                 'description'   => $description,
-                'user_id'       => $payment['user_id'],
+                'user_id'       => $mollie_payment['user_id'],
             ];
 
             $mail_queue->queue([
