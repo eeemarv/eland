@@ -77,7 +77,7 @@
 
     {%- set info -%}
         {%- include 'mail/mollie/include/payment_info.html.twig' -%}
-
+        <table cellpadding="0" cellspacing="0" width="100%">
         <tr>
             <td align="center">
                 {%- include 'mail/include/btn.html.twig' with {
@@ -101,6 +101,7 @@
                 {{- html|raw -}}
             </td>
         </tr>
+        </table>
 
     {%- endset -%}
 
@@ -109,7 +110,7 @@
         'info': info|raw
     } -%}
 	{%- include 'mail/include/spacer20.html.twig' -%}
-	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer40.html.twig' -%}
 	{%- include 'mail/include/bgspacer40.html.twig' -%}
 {%- endblock -%}
 

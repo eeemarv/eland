@@ -10,27 +10,18 @@
 {%- block sub_header -%}mollie.is_paid.subject{%- endblock -%}
 
 {% block html_content -%}
-    {%- include 'mail/include/spacer20.html.twig' -%}
-
-    {%- set info -%}
-        {%- include 'mail/include/row_spacer20.html.twig' -%}
-
-        <tr>
-            <td>
-                {{- 'mollie.is_paid.message'|trans -}}
-            </td>
-        </tr>
-
-        {%- include 'mail/include/row_spacer20.html.twig' -%}
-
+    {%- set payment_info -%}
         {%- include 'mail/mollie/include/payment_info.html.twig' -%}
     {%- endset -%}
 
 	{%- include 'mail/include/spacer20.html.twig' -%}
     {%- include 'mail/include/info_panel.html.twig' with {
-        'info': info|raw
+        'info': 'mollie.is_paid_message'
     } -%}
 	{%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': payment_info|raw
+    } -%}
 	{%- include 'mail/include/spacer20.html.twig' -%}
 	{%- include 'mail/include/spacer20.html.twig' -%}
 	{%- include 'mail/include/bgspacer40.html.twig' -%}

@@ -38,7 +38,7 @@
 {%  block html_content -%}
     {%- set info -%}
         {%- include 'mail/mollie/include/payment_info.html.twig' -%}
-
+        <table cellpadding="0" cellspacing="0" width="100%"></table>
         {%- if not is_paid and not is_canceled -%}
             <tr>
                 <td align="center">
@@ -58,18 +58,18 @@
                 {{- html|raw -}}
             </td>
         </tr>
-
+        </table>
+        {%- include 'mail/include/spacer20.html.twig' -%}
+        {%- include 'mail/include/spacer40.html.twig' -%}
     {%- endset -%}
 
 	{%- include 'mail/include/spacer20.html.twig' -%}
     {%- include 'mail/include/info_panel.html.twig' with {
         'info': info|raw
     } -%}
-	{%- include 'mail/include/spacer20.html.twig' -%}
-	{%- include 'mail/include/spacer20.html.twig' -%}
-	{%- include 'mail/include/spacer20.html.twig' -%}
+	{%- include 'mail/include/spacer40.html.twig' -%}
 	{%- include 'mail/include/bgspacer40.html.twig' -%}
-{%- endblock -%}
+{%- endblock html_content -%}
 
 {%- block text_content %}
 {{ 'mollie.payment_request.link'|trans }}

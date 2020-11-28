@@ -523,11 +523,12 @@ class MolliePaymentsController extends AbstractController
 
                     $payment['payment_link'] = $payment_link;
                     $payment['amount'] = strtr($payment['amount'], '.', ',');
+                    $payment['description'] = $payment['code'] . ' ' . $payment['description'];
 
                     $vars = [
                         'subject'	    => $bulk_mail_subject,
                         'amount'        => $payment['amount'],
-                        'description'   => $payment['code'] . ' ' . $payment['description'],
+                        'description'   => $payment['description'],
                         'is_paid'       => $payment['is_paid'],
                         'is_canceled'   => $payment['is_canceled'],
                         'token'         => $payment['token'],
