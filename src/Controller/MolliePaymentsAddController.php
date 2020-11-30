@@ -205,10 +205,6 @@ class MolliePaymentsAddController extends AbstractController
                         'created_by'    => $su->id(),
                     ]);
 
-                    $db->update($pp->schema() . '.users', [
-                        'has_open_mollie_payment'   => 't',
-                    ], ['id' => $user_id]);
-
                     $user_cache_service->clear($user_id, $pp->schema());
                 }
 

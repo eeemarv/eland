@@ -20,13 +20,10 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -101,7 +98,6 @@ class MassTransactionController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         AutoMinLimitService $autominlimit_service,
         TransactionService $transaction_service,
-        UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
         AssetsService $assets_service
@@ -331,23 +327,6 @@ class MassTransactionController extends AbstractController
                 foreach($transactions as $t)
                 {
                     $autominlimit_service->process((int) $t['id_from'], (int) $t['id_to'], (int) $t['amount']);
-                }
-
-                $user_cache_service->clear((int) $one_uid, $pp->schema());
-
-                if ($to_one)
-                {
-                    foreach ($transactions as $t)
-                    {
-                        $user_cache_service->clear((int) $t['id_from'], $pp->schema());
-                    }
-                }
-                else
-                {
-                    foreach ($transactions as $t)
-                    {
-                        $user_cache_service->clear((int) $t['id_to'], $pp->schema());
-                    }
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';

@@ -107,12 +107,7 @@ class MollieSubscriber implements EventSubscriberInterface
 
         if (!$payments)
         {
-            error_log('User sync no payments in subscriber. ++');
-
-            $this->db->update($this->pp->schema() . '.users', [
-                'has_open_mollie_payment' => 'f',
-            ], ['id' => $this->su->id()]);
-
+            error_log('User sync no payments in subscriber. Clear cache ++');
             $this->user_cache_service->clear($this->su->id(), $this->pp->schema());
             return;
         }

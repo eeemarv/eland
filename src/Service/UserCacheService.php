@@ -34,10 +34,20 @@ class UserCacheService
 			return;
 		}
 
-		$redis_key = $schema . '_user_' . $id;
+		$redis_key = self::KEY_PREFIX . $schema;
+		$this->predis->hdel($redis_key, (string) $id);
 
-		$this->predis->del($redis_key);
 		unset($this->local[$schema][$id]);
+
+		return;
+	}
+
+	public function clear_all(string $schema):void
+	{
+		$redis_key = self::KEY_PREFIX . $schema;
+		$this->predis->del($redis_key);
+
+		unset($this->local[$schema]);
 
 		return;
 	}
@@ -60,23 +70,24 @@ class UserCacheService
 			return [];
 		}
 
-		$redis_key = $schema . '_user_' . $id;
-
 		if (isset($this->local[$schema][$id]) && !$this->is_cli)
 		{
 			return $this->local[$schema][$id];
 		}
 
-		if ($this->predis->exists($redis_key))
+		$redis_key = self::KEY_PREFIX . $schema;
+		$redis_field = (string) $id;
+
+		if ($this->predis->hexists($redis_key, $redis_field))
 		{
-			return $this->local[$schema][$id] = unserialize($this->predis->get($redis_key));
+			return $this->local[$schema][$id] = json_decode($this->predis->hget($redis_key, $redis_field), true);
 		}
 
 		$user = $this->read_from_db($id, $schema);
 
-		if (isset($user))
+		if (count($user))
 		{
-			$this->predis->set($redis_key, serialize($user));
+			$this->predis->hset($redis_key, $redis_field, json_encode($user));
 			$this->predis->expire($redis_key, self::TTL);
 			$this->local[$schema][$id] = $user;
 		}
@@ -86,9 +97,17 @@ class UserCacheService
 
 	protected function read_from_db(int $id, string $schema):array
 	{
-		$user = $this->db->fetchAssociative('select *
-			from ' . $schema . '.users
-			where id = ?', [$id]);
+		$user = $this->db->fetchAssociative('select u.*,
+				case when mp.id is null
+					then \'f\'::bool
+					else \'t\'::bool
+					end has_open_mollie_payment
+			from ' . $schema . '.users u
+			left join ' . $schema . '.mollie_payments mp
+				on (u.id = mp.user_id
+					and mp.is_paid = \'f\'::bool
+					and mp.is_canceled = \'f\'::bool)
+			where u.id = ?', [$id], [\PDO::PARAM_INT]);
 
 		if ($user === false)
 		{
@@ -110,19 +129,20 @@ class UserCacheService
 			return;
 		}
 
-		$user = serialize($user);
+		$user = json_encode($user);
 
-		$redis_key = $schema . '_user_' . $id;
+		$redis_key = self::KEY_PREFIX . $schema;
+		$redis_field = (string) $id;
 
-		if ($this->predis->exists($redis_key))
+		if ($this->predis->hexists($redis_key, $redis_field))
 		{
-			if ($this->predis->get($redis_key) === $user)
+			if ($this->predis->hget($redis_key, $redis_field) === $user)
 			{
 				return;
 			}
 		}
 
-		$this->predis->set($redis_key, $user);
+		$this->predis->hset($redis_key, $redis_field, $user);
 		$this->predis->expire($redis_key, self::TTL);
 		unset($this->local[$schema][$id]);
 	}

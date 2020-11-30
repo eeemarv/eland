@@ -9,14 +9,12 @@ use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class InitClearUsersCacheController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        Db $db,
         PageParamsService $pp,
         LinkRender $link_render,
         SystemsService $systems_service,
@@ -37,13 +35,7 @@ class InitClearUsersCacheController extends AbstractController
 
         foreach($schemas as $schema)
         {
-            $users = $db->fetchAllAssociative('select id
-                from ' . $schema . '.users', [], []);
-
-            foreach ($users as $u)
-            {
-                $user_cache_service->clear($u['id'], $schema);
-            }
+            $user_cache_service->clear_all($schema);
         }
 
         $link_render->redirect('init', $pp->ary(),

@@ -379,13 +379,6 @@ class MolliePaymentsController extends AbstractController
                     [$su->id(), $cancel_ary],
                     [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY]);
 
-                $db->executeStatement('update ' . $pp->schema() . '.users u
-                    set has_open_mollie_payment = \'f\'::bool
-                    where u.id not in (select p.user_id
-                        from ' . $pp->schema() . '.mollie_payments p
-                        where p.is_canceled = \'f\'::bool
-                            and p.is_paid = \'f\'::bool)', [], []);
-
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {
                     $user_cache_service->clear((int) $user_id, $pp->schema());

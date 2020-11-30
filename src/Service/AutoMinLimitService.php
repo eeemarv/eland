@@ -3,17 +3,15 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use Doctrine\DBAL\Connection as Db;
 use App\Service\ConfigService;
-use App\Service\UserCacheService;
 use App\Render\AccountRender;
+use App\Repository\AccountRepository;
 
 class AutoMinLimitService
 {
 	protected LoggerInterface $logger;
-	protected Db $db;
+	protected AccountRepository $account_repository;
 	protected ConfigService $config_service;
-	protected UserCacheService $user_cache_service;
 	protected AccountRender $account_render;
 	protected SessionUserService $su;
 
@@ -26,16 +24,14 @@ class AutoMinLimitService
 
 	public function __construct(
 		LoggerInterface $logger,
-		Db $db,
+		AccountRepository $account_repository,
 		ConfigService $config_service,
-		UserCacheService $user_cache_service,
 		SessionUserService $su,
 		AccountRender $account_render
 	)
 	{
 		$this->logger = $logger;
-		$this->db = $db;
-		$this->user_cache_service = $user_cache_service;
+		$this->account_repository = $account_repository;
 		$this->config_service = $config_service;
 		$this->su = $su;
 		$this->account_render = $account_render;
@@ -104,24 +100,24 @@ class AutoMinLimitService
 			return;
 		}
 
-		$user = $this->user_cache_service->get($to_id, $this->schema);
+		$to_user = $this->user_cache_service->get($to_id, $this->schema);
 
-		if (!$user || !is_array($user))
+		if (!$to_user)
 		{
 			$this->logger->debug('autominlimit: to user not found',
 				['schema' => $this->schema]);
 			return;
 		}
 
-		if ($user['status'] != 1)
+		if ($to_user['status'] != 1)
 		{
 			$this->logger->debug('autominlimit: to user not active. ' .
-				$this->account_render->str_id($user['id'], $this->schema),
+				$this->account_render->str_id($to_id, $this->schema),
 				['schema' => $this->schema]);
 			return;
 		}
 
-		if (isset($this->exclude_to[strtolower($user['code'])]))
+		if (isset($this->exclude_to[strtolower($to_user['code'])]))
 		{
 			$this->logger->debug('autominlimit: to user is excluded ' .
 				$this->account_render->str_id($to_id, $this->schema),
@@ -129,19 +125,21 @@ class AutoMinLimitService
 			return;
 		}
 
-		if (!isset($user['minlimit']))
+		$min_limit = $this->account_repository->get_min_limit($to_id, $this->schema);
+
+		if (!isset($min_limit))
 		{
 			$this->logger->debug('autominlimit: to user has no minlimit. ' .
-				$this->account_render->str_id($user['id'], $this->schema),
+				$this->account_render->str_id($to_id, $this->schema),
 				['schema' => $this->schema]);
 			return;
 		}
 
 		if (isset($this->global_min_limit)
-			&& $user['minlimit'] < $this->global_min_limit)
+			&& $min_limit < $this->global_min_limit)
 		{
 			$this->logger->debug('autominlimit: to user minlimit is lower than global system min limit. ' .
-				$this->account_render->str_id($user['id'], $this->schema),
+				$this->account_render->str_id($to_id, $this->schema),
 				['schema' => $this->schema]);
 			return;
 		}
@@ -176,12 +174,12 @@ class AutoMinLimitService
 		{
 			$debug = 'autominlimit: (extract = 0) ';
 			$debug .= 'no new minlimit for user ';
-			$debug .= $this->account_render->str_id($user['id'], $this->schema);
+			$debug .= $this->account_render->str_id($to_id, $this->schema);
 			$this->logger->debug($debug, ['schema' => $this->schema]);
 			return;
 		}
 
-		$new_minlimit = $user['minlimit'] - $extract;
+		$new_min_limit = $min_limit - $extract;
 
 		$insert = [
 			'account_id'	=> $to_id,
@@ -190,35 +188,25 @@ class AutoMinLimitService
 		];
 
 		if (isset($this->global_min_limit)
-			&& $new_minlimit <= $this->global_min_limit)
+			&& $new_min_limit <= $this->global_min_limit)
 		{
 			$insert['min_limit'] = null;
 
-			$this->db->update($this->schema . '.users', [
-				'minlimit'		=> null,
-			], ['id' => $to_id]);
-
-			$debug = 'autominlimit: minlimit reached global min limit, ';
+			$debug = 'autominlimit: min limit reached global min limit, ';
 			$debug .= 'individual min limit erased for user ';
-			$debug .= $this->account_render->str_id($user['id'], $this->schema);
+			$debug .= $this->account_render->str_id($to_id, $this->schema);
 			$this->logger->debug($debug, ['schema' => $this->schema]);
 		}
 		else
 		{
-			$insert['min_limit'] = $new_minlimit;
-
-			$this->db->update($this->schema . '.users',
-				['minlimit' => $new_minlimit],
-				['id' => $to_id]);
+			$insert['min_limit'] = $new_min_limit;
 
 			$this->logger->info('autominlimit: new minlimit : ' .
-				$new_minlimit .
+				$new_min_limit .
 				' for user ' .
-				$this->account_render->str_id($user['id'], $this->schema),
+				$this->account_render->str_id($to_id, $this->schema),
 				['schema' => $this->schema]);
 		}
-
-		$this->user_cache_service->clear($to_id, $this->schema);
 
 		$this->db->insert($this->schema . '.min_limit', $insert);
 
