@@ -33,7 +33,7 @@ class IntersystemsShowController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $group = $db->fetchAssoc('select *
+        $group = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);
 
@@ -49,7 +49,7 @@ class IntersystemsShowController extends AbstractController
         }
         else
         {
-            $user = $db->fetchAssoc('select *
+            $user = $db->fetchAssociative('select *
                 from ' . $pp->schema() . '.users
                 where code = ?', [$group['localletscode']]);
         }

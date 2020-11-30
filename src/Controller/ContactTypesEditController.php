@@ -28,7 +28,7 @@ class ContactTypesEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $tc_prefetch = $db->fetchAssoc('select *
+        $tc_prefetch = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.type_contact
             where id = ?', [$id]);
 

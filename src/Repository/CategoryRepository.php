@@ -16,7 +16,7 @@ class CategoryRepository
 
     public function get(int $id, string $schema):array
     {
-        $category = $this->db->fetchAssoc('select c.*, cp.name as parent_name
+        $category = $this->db->fetchAssociative('select c.*, cp.name as parent_name
             from ' . $schema . '.categories c
             left join ' . $schema . '.categories cp
                 on c.parent_id = cp.id

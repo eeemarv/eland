@@ -62,7 +62,7 @@ class CalendarDelController extends AbstractController
             $alert_service->error('Nieuwsbericht niet verwijderd.');
         }
 
-        $news = $db->fetchAssoc('select n.*
+        $news = $db->fetchAssociative('select n.*
             from ' . $pp->schema() . '.news n
             where n.id = ?', [$id]);
 

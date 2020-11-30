@@ -29,7 +29,7 @@ class IntersystemsDelController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $group = $db->fetchAssoc('select *
+        $group = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);
 

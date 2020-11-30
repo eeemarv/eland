@@ -45,7 +45,7 @@ class NewsEditController extends AbstractController
 
         $errors = [];
 
-        $news = $db->fetchAssoc('select *
+        $news = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.news
             where id = ?', [$id]);
 

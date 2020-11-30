@@ -7,6 +7,7 @@ use Predis\Client as Predis;
 
 class UserCacheService
 {
+	const KEY_PREFIX = 'users_';
 	const TTL = 2592000;
 
 	protected Db $db;
@@ -85,11 +86,11 @@ class UserCacheService
 
 	protected function read_from_db(int $id, string $schema):array
 	{
-		$user = $this->db->fetchAssoc('select *
+		$user = $this->db->fetchAssociative('select *
 			from ' . $schema . '.users
 			where id = ?', [$id]);
 
-		if (!is_array($user))
+		if ($user === false)
 		{
 			return [];
 		}

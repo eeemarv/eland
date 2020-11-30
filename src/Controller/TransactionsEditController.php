@@ -52,7 +52,7 @@ class TransactionsEditController extends AbstractController
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
 
-        $transaction = $db->fetchAssoc('select t.*
+        $transaction = $db->fetchAssociative('select t.*
             from ' . $pp->schema() . '.transactions t
             where t.id = ?', [$id]);
 
@@ -69,7 +69,7 @@ class TransactionsEditController extends AbstractController
 
         if ($inter_schema)
         {
-            $inter_transaction = $db->fetchAssoc('select t.*
+            $inter_transaction = $db->fetchAssociative('select t.*
                 from ' . $inter_schema . '.transactions t
                 where t.transid = ?', [$transaction['transid']]);
         }

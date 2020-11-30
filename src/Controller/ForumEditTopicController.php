@@ -60,7 +60,7 @@ class ForumEditTopicController extends AbstractController
             throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om dit topic aan te passen.');
         }
 
-        $forum_post = $db->fetchAssoc('select *
+        $forum_post = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.forum_posts
             where topic_id = ?
             order by created_at asc
