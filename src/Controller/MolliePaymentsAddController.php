@@ -53,9 +53,7 @@ class MolliePaymentsAddController extends AbstractController
 
 //---------
 
-        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
-            from ' . $pp->schema() . '.config
-            where id = \'mollie\'', [], []);
+        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
 
         if (!$mollie_apikey ||
             !(strpos($mollie_apikey, 'test_') === 0

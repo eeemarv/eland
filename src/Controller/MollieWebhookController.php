@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Queue\MailQueue;
+use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,7 @@ class MollieWebhookController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        ConfigService $config_service,
         PageParamsService $pp,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service
@@ -24,19 +26,13 @@ class MollieWebhookController extends AbstractController
     {
         $id = $request->request->get('id', '');
 
-        error_log('id: ' . $id);
-
-        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
-            from ' . $pp->schema() . '.config
-            where id = \'mollie\'', [], []);
+        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
 
         $mollie = new MollieApiClient();
         $mollie->setApiKey($mollie_apikey);
 
         $payment = $mollie->payments->get($id);
         $token = $payment->metadata->token;
-
-        error_log('token: ' . $token);
 
         $mollie_payment = $db->fetchAssociative('select p.*, r.description, u.code
             from ' . $pp->schema() . '.mollie_payments p,

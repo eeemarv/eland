@@ -10,14 +10,14 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
 
 class MollieConfigController extends AbstractController
 {
     public function __invoke(
         Request $request,
-        Db $db,
+        ConfigService $config_service,
         AlertService $alert_service,
         MenuService $menu_service,
         HeadingRender $heading_render,
@@ -28,7 +28,9 @@ class MollieConfigController extends AbstractController
     {
         $errors = [];
 
-        $apikey = $request->request->get('apikey', '');
+        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+
+        $posted_apikey = $request->request->get('apikey', '');
 
         if ($request->isMethod('POST'))
         {
@@ -37,43 +39,23 @@ class MollieConfigController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            if ($apikey !== ''
-                && strpos($apikey, 'live_') !== 0
-                && strpos($apikey, 'test_') !== 0)
+            if ($posted_apikey !== ''
+                && strpos($posted_apikey, 'live_') !== 0
+                && strpos($posted_apikey, 'test_') !== 0)
             {
                 $errors[] = 'De Mollie apikey moet beginnen met <code>live_</code> of <code>test_</code>';
             }
 
             if (!count($errors))
             {
-                $data = $db->fetchOne('select data
-                    from ' . $pp->schema() . '.config
-                    where id = \'mollie\'', [], []);
-
-                $data = json_decode($data, true);
-                $data['apikey'] = $apikey;
-                $data = json_encode($data);
-
-                $db->update($pp->schema() . '.config',
-                    ['data' => $data],
-                    ['id' => 'mollie']);
+                $config_service->set_str('mollie.apikey', $posted_apikey, $pp->schema());
 
                 $alert_service->success('De Mollie Apikey is aangepast.');
                 $link_render->redirect('mollie_payments', $pp->ary(), []);
             }
 
             $alert_service->error($errors);
-        }
-        else
-        {
-            $apikey = $db->fetchOne('select data->>\'apikey\'
-                from ' . $pp->schema() . '.config
-                where id = \'mollie\'', [], []);
-
-            if ($apikey === false)
-            {
-                $apikey = '';
-            }
+            $mollie_apikey = $posted_apikey;
         }
 
         $heading_render->add('Mollie configuratie');
@@ -96,7 +78,7 @@ class MollieConfigController extends AbstractController
         $out .= '<span class="fa fa-key"></span></span>';
         $out .= '<input type="text" name="apikey" ';
         $out .= 'value="';
-        $out .= $apikey ?? '';
+        $out .= $mollie_apikey ?? '';
         $out .= '" ';
         $out .= 'class="form-control">';
         $out .= '</div>';

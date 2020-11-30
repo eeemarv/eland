@@ -50,9 +50,7 @@ class MollieCheckoutController extends AbstractController
             throw new NotFoundHttpException('Payment request not found.');
         }
 
-        $mollie_apikey = $db->fetchOne('select data->>\'apikey\'
-            from ' . $pp->schema() . '.config
-            where id = \'mollie\'', [], []);
+        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
 
         if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
         {
