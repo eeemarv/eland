@@ -4,12 +4,14 @@ namespace App\Service;
 
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
+use App\Service\UserCacheService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 
 class AutoMinLimitService
 {
 	protected LoggerInterface $logger;
+	protected UserCacheService $user_cache_service;
 	protected AccountRepository $account_repository;
 	protected ConfigService $config_service;
 	protected AccountRender $account_render;
@@ -24,6 +26,7 @@ class AutoMinLimitService
 
 	public function __construct(
 		LoggerInterface $logger,
+		UserCacheService $user_cache_service,
 		AccountRepository $account_repository,
 		ConfigService $config_service,
 		SessionUserService $su,
@@ -31,6 +34,7 @@ class AutoMinLimitService
 	)
 	{
 		$this->logger = $logger;
+		$this->user_cache_service = $user_cache_service;
 		$this->account_repository = $account_repository;
 		$this->config_service = $config_service;
 		$this->su = $su;
