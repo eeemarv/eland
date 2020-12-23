@@ -24,6 +24,7 @@
 		"doctrine/orm": "^2.8",
 		"ezyang/htmlpurifier": "^4.8",
 		"fabpot/goutte": "^3",
+		"geocoder-php/google-maps-provider": "^4.6",
 		"gregwar/captcha": "^1.1",
 		"imagine/imagine": "^0.6",
 		"intervention/image": "^2.5",
