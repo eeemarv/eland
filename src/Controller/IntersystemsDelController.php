@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
+use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\MenuService;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class IntersystemsDelController extends AbstractController
 {
@@ -20,6 +22,7 @@ class IntersystemsDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ConfigService $config_service,
         HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
@@ -29,6 +32,11 @@ class IntersystemsDelController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+        }
+
         $group = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);

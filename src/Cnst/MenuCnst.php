@@ -178,6 +178,7 @@ class MenuCnst
         'messages_modules'  => 'messages',
         'messages_cleanup'  => 'messages',
         'categories'        => 'messages',
+        'users_modules'     => 'users',
         'status'            => 'users',
         'contacts'          => 'users',
         'contact_types'     => 'users',
@@ -208,6 +209,11 @@ class MenuCnst
             ],
         ],
         'users' => [
+            'users_modules' => [
+                'fa'        => 'cogs',
+                'label'     => 'Submodules en velden',
+                'route'     => 'users_modules',
+            ],
             'status'			=> [
                 'fa'        => 'exclamation-triangle',
                 'label'     => 'Status',
@@ -227,7 +233,7 @@ class MenuCnst
                 'fa'        => 'share-alt',
                 'label'     => 'InterSysteem',
                 'route'     => 'intersystems',
-                'config.en' => 'intersystem.enabled',
+                'config_en' => 'intersystem.enabled',
             ],
             'mollie_payments' => [
                 'fa'        => 'eur',

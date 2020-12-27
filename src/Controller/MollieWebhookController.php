@@ -24,6 +24,11 @@ class MollieWebhookController extends AbstractController
         MailAddrUserService $mail_addr_user_service
     ):Response
     {
+        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
+        }
+
         $id = $request->request->get('id', '');
 
         $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());

@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class IntersystemsEditController extends AbstractController
 {
@@ -37,6 +38,11 @@ class IntersystemsEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+        }
+
         if ($request->isMethod('POST'))
         {
             [$group, $errors] = self::get_post_errors(

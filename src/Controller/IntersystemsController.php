@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class IntersystemsController extends AbstractController
 {
@@ -30,6 +31,11 @@ class IntersystemsController extends AbstractController
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+        }
+
         $intersystems = $db->fetchAllAssociative('select *
             from ' . $pp->schema() . '.letsgroups');
 

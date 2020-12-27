@@ -193,6 +193,11 @@ users_list_admin:
   path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
 
+users_modules:
+  controller: App\Controller\UsersModulesController
+  path: /users/modules
+  methods: GET|POST
+
 transactions_edit:
   controller: App\Controller\TransactionsEditController
   path: /transactions/{id<%assert.id%>}/edit

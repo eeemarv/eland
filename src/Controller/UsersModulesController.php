@@ -16,12 +16,13 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class MessagesModulesController extends AbstractController
+class UsersModulesController extends AbstractController
 {
-    const MESSAGES_MODULES = [
-        'messages.fields.category.enabled',
-        'messages.fields.expires_at.enabled',
-        'messages.fields.units.enabled',
+    const USERS_MODULES = [
+        'users.new.enabled',
+        'users.leaving.enabled',
+        'intersystem.enabled',
+        'mollie.enabled',
     ];
 
     public function __invoke(
@@ -35,15 +36,10 @@ class MessagesModulesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
-        }
-
         $errors = [];
         $form_data = [];
 
-        foreach (self::MESSAGES_MODULES as $key)
+        foreach (self::USERS_MODULES as $key)
         {
             $name = strtr($key, '.', '_');
             $form_data[$name] = $config_service->get_bool($key, $pp->schema());
@@ -51,7 +47,7 @@ class MessagesModulesController extends AbstractController
 
         $builder = $this->createFormBuilder($form_data);
 
-        foreach (self::MESSAGES_MODULES as $key)
+        foreach (self::USERS_MODULES as $key)
         {
             $name = strtr($key, '.', '_');
             $builder->add($name, CheckboxType::class);
@@ -81,21 +77,21 @@ class MessagesModulesController extends AbstractController
         {
             $form_data = $form->getData();
 
-            foreach (self::MESSAGES_MODULES as $key)
+            foreach (self::USERS_MODULES as $key)
             {
                 $name = strtr($key, '.', '_');
                 $config_service->set_bool($key, $form_data[$name], $pp->schema());
             }
 
             $alert_service->success('Submodules/velden vraag en aanbod aangepast');
-            $link_render->redirect('messages_modules', $pp->ary(), []);
+            $link_render->redirect('users_modules', $pp->ary(), []);
         }
 
-        $heading_render->fa('newspaper-o');
-        $heading_render->add('Vraag en aanbod submodules en velden');
-        $menu_service->set('messages_modules');
+        $heading_render->fa('users');
+        $heading_render->add('Leden submodules en velden');
+        $menu_service->set('users_modules');
 
-        return $this->render('messages/messages_modules.html.twig', [
+        return $this->render('users/users_modules.html.twig', [
             'form'          => $form->createView(),
             'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),

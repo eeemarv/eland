@@ -36,6 +36,11 @@ class MollieCheckoutController extends AbstractController
         PageParamsService $pp
     ):Response
     {
+        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
+        }
+
         $errors = [];
 
         $mollie_payment = $db->fetchAssociative('select p.*, r.description

@@ -11,10 +11,10 @@ use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class IntersystemsShowController extends AbstractController
 {
@@ -29,10 +29,14 @@ class IntersystemsShowController extends AbstractController
         HeadingRender $heading_render,
         SystemsService $systems_service,
         PageParamsService $pp,
-        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
+        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+        }
+
         $group = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.letsgroups
             where id = ?', [$id]);

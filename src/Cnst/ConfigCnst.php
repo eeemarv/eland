@@ -132,7 +132,8 @@ class ConfigCnst
             'attr'		=> ['max' => '240', 'min' => '1'],
             'type'		=> 'number',
             'addon_fa'	=> 'clock-o',
-            'explain'	=> 'Deze instelling heeft enkel betrekking op Tijdbanken.
+            'explain'	=> 'Deze instelling heeft enkel betrekking op systemen met een
+                tijd-gebaseerde munt.
                 Zij is vereist voor eLAND interSysteem-verbindingen zodat de Systemen
                 een gemeenschappelijke tijdbasis hebben.',
             'default'	=> '1',
@@ -241,13 +242,6 @@ class ConfigCnst
             'post_actions'	=> ['clear_eland_intersystem_cache'],
             'default'	=> '1',
             'path'      => 'transactions.currency.timebased_en',
-        ],
-
-        'interlets_en'	=> [
-            'type'	=> 'checkbox',
-            'post_actions'	=> ['clear_eland_intersystem_cache'],
-            'default'	=> '0',
-            'path'      => 'intersystem.enabled',
         ],
 
         'default_landing_page'	=> [
@@ -399,16 +393,8 @@ class ConfigCnst
                 ],
 
                 'li_3' => [
-                    'inline'	=> '%input(template_lets)% Dit Systeem is
-                        een Tijdbank (munt met tijdbasis).',
-                ],
-
-                'li_4'	=> [
-                    'inline'	=> '%input(interlets_en)% Gebruik eLAND
-                        interSysteem. Deze instelling is enkel geldig wanneer
-                        hierboven "Tijdbank" geselecteerd is. eLAND
-                        interSysteem is enkel mogelijk met
-                        munten met gemeenschappelijke tijdbasis.',
+                    'inline'	=> '%input(template_lets)% Dit Systeem heeft
+                        een munt met tijdbasis.',
                 ],
 
                 'default_landing_page'	=> true,

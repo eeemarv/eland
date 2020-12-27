@@ -29,6 +29,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MolliePaymentsController extends AbstractController
 {
@@ -72,6 +73,11 @@ class MolliePaymentsController extends AbstractController
         AssetsService $assets_service
     ):Response
     {
+        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
+        }
+
         $errors = [];
 
         $filter = $request->query->get('f', []);

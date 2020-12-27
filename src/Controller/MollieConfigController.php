@@ -12,6 +12,7 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MollieConfigController extends AbstractController
 {
@@ -26,6 +27,11 @@ class MollieConfigController extends AbstractController
         FormTokenService $form_token_service
     ):Response
     {
+        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
+        }
+
         $errors = [];
 
         $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
