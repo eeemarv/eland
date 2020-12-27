@@ -227,11 +227,13 @@ class MenuCnst
                 'fa'        => 'share-alt',
                 'label'     => 'InterSysteem',
                 'route'     => 'intersystems',
+                'config.en' => 'intersystem.enabled',
             ],
             'mollie_payments' => [
                 'fa'        => 'eur',
                 'label'     => 'Mollie betaalverzoeken',
                 'route'     => 'mollie_payments',
+                'config_en' => 'mollie.enabled',
             ],
         ],
         'transactions' => [

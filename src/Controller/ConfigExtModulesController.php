@@ -17,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class ConfigExtModulesController extends AbstractController
 {
-    const CONFIG_MODILES =[
+    const CONFIG_MODULES =[
         'messages.enabled',
         'transactions.enabled',
         'news.enabled',
@@ -43,7 +43,7 @@ class ConfigExtModulesController extends AbstractController
         $errors = [];
         $form_data = [];
 
-        foreach (self::CONFIG_MODILES as $key)
+        foreach (self::CONFIG_MODULES as $key)
         {
             $name = strtr($key, '.', '_');
             $form_data[$name] = $config_service->get_bool($key, $pp->schema());
@@ -51,7 +51,7 @@ class ConfigExtModulesController extends AbstractController
 
         $builder = $this->createFormBuilder($form_data);
 
-        foreach (self::CONFIG_MODILES as $key)
+        foreach (self::CONFIG_MODULES as $key)
         {
             $name = strtr($key, '.', '_');
             $builder->add($name, CheckboxType::class);
@@ -81,7 +81,7 @@ class ConfigExtModulesController extends AbstractController
         {
             $form_data = $form->getData();
 
-            foreach (self::CONFIG_MODILES as $key)
+            foreach (self::CONFIG_MODULES as $key)
             {
                 $name = strtr($key, '.', '_');
                 $config_service->set_bool($key, $form_data[$name], $pp->schema());

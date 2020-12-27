@@ -84,6 +84,11 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if (!($this->config_service->get_bool('mollie.enabled', $this->pp->schema())))
+        {
+            return;
+        }
+
         if (!$this->su->has_open_mollie_payment())
         {
             return;
