@@ -42,6 +42,8 @@ class RegisterFormConfirmController extends AbstractController
             throw new NotFoundHttpException('Register form not enabled.');
         }
 
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+
         $heading_render->add('Inschrijving voltooid');
         $heading_render->fa('check-square-o');
 
@@ -115,13 +117,17 @@ class RegisterFormConfirmController extends AbstractController
 
         $user = [
             'name'			        => $name,
-            'full_name'		        => $data['first_name'] . ' ' . $data['last_name'],
-            'postcode'		        => $data['postcode'],
+            'full_name'		        => $data['full_name'],
             'status'		        => 5,
             'role'	                => 'user',
             'periodic_overview_en'	=> 't',
-            'hobbies'		        => '',
         ];
+
+        if (isset($data['postcode'])
+            && $postcode_enabled)
+        {
+            $user['postcode'] = $data['postcode'];
+        }
 
         $db->beginTransaction();
 
@@ -190,9 +196,13 @@ class RegisterFormConfirmController extends AbstractController
 
         $vars = [
             'user_id'		=> $user_id,
-            'postcode'		=> $user['postcode'],
             'email'			=> $data['email'],
         ];
+
+        if ($postcode_enabled)
+        {
+            $vars['postcode'] = $user['postcode'];
+        }
 
         $mail_queue->queue([
             'schema'		=> $pp->schema(),
