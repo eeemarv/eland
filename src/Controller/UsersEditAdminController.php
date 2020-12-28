@@ -150,6 +150,7 @@ class UsersEditAdminController extends AbstractController
         $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
         $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
+        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
 
         $is_add = !$is_edit;
         $errors = [];
@@ -350,7 +351,7 @@ class UsersEditAdminController extends AbstractController
                 $full_name_sql['types'][] = \PDO::PARAM_INT;
             }
 
-            if (!$full_name_access)
+            if (!$full_name_access && $full_name_enabled)
             {
                 $errors[] = 'Vul een zichtbaarheid in voor de volledige naam.';
             }
@@ -371,7 +372,7 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if ($full_name_edit_en)
+            if ($full_name_edit_en && $full_name_enabled)
             {
                 if (!$full_name)
                 {
@@ -427,7 +428,7 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if ($birthday)
+            if ($birthday && $birthday_enabled)
             {
                 $birthday = $date_format_service->reverse($birthday, $pp->schema());
 
@@ -437,18 +438,18 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if (strlen($comments) > 100)
+            if ((strlen($comments) > 100) && $comments_enabled)
             {
                 $errors[] = 'Het veld Commentaar mag maximaal
                     100 tekens lang zijn.';
             }
 
-            if (strlen($postcode) > 6)
+            if ((strlen($postcode) > 6) && $postcode_enabled)
             {
                 $errors[] = 'De postcode mag maximaal 6 tekens lang zijn.';
             }
 
-            if (strlen($hobbies) > 500)
+            if ((strlen($hobbies) > 500) && $hobbies_enabled)
             {
                 $errors[] = 'Het veld hobbies en interesses mag
                     maximaal 500 tekens lang zijn.';
@@ -470,14 +471,37 @@ class UsersEditAdminController extends AbstractController
 
             if (!count($errors))
             {
-                $post_user = [
-                    'full_name_access'       => $full_name_access,
-                    'postcode'		        => $postcode,
-                    'birthday'		        => $birthday === '' ? null : $birthday,
-                    'hobbies'		        => $hobbies,
-                    'comments'		        => $comments,
-                    'periodic_overview_en'  => $periodic_overview_en ? 1 : 0,
-                ];
+                $post_user = [];
+
+                if ($periodic_mail_enabled)
+                {
+                    $post_user['periodic_overview_en'] = $periodic_overview_en ? 1 : 0;
+                }
+
+                if ($full_name_enabled)
+                {
+                    $post_user['full_name_access'] = $full_name_access;
+                }
+
+                if ($postcode_enabled)
+                {
+                    $post_user['postcode'] = $postcode;
+                }
+
+                if ($birthday_enabled)
+                {
+                    $post_user['birthday'] = $birthday === '' ? null : $birthday;
+                }
+
+                if ($hobbies_enabled)
+                {
+                    $post_user['hobbies'] = $hobbies;
+                }
+
+                if ($comments_enabled)
+                {
+                    $post_user['comments'] = $comments;
+                }
 
                 if ($is_add && !$su->is_master())
                 {
@@ -502,7 +526,7 @@ class UsersEditAdminController extends AbstractController
                     $post_user['name'] = $name;
                 }
 
-                if ($full_name_edit_en)
+                if ($full_name_edit_en && $full_name_enabled)
                 {
                     $post_user['full_name'] = $full_name;
                 }
@@ -512,7 +536,11 @@ class UsersEditAdminController extends AbstractController
                     $post_user['code'] = $code;
                     $post_user['role'] = $role;
                     $post_user['status'] = (int) $status;
-                    $post_user['admin_comments'] = $admin_comments;
+
+                    if ($admin_comments_enabled)
+                    {
+                        $post_user['admin_comments'] = $admin_comments;
+                    }
                 }
 
                 if ($is_add)
@@ -924,7 +952,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        if ($full_name_edit_en)
+        if ($full_name_edit_en && $full_name_enabled)
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="full_name" class="control-label">';
@@ -944,93 +972,108 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        $out .= $item_access_service->get_radio_buttons(
-            'full_name_access',
-            $full_name_access,
-            'full_name_access',
-            false,
-            'Zichtbaarheid Volledige Naam'
-        );
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="postcode" class="control-label">';
-        $out .= 'Postcode</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-map-marker"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="postcode" name="postcode" ';
-        $out .= 'value="';
-        $out .= self::esc($postcode);
-        $out .= '" ';
-        $out .= 'required maxlength="6" ';
-        $out .= 'data-typeahead="';
-
-        $out .= $typeahead_service->ini($pp->ary())
-            ->add('postcodes', [])
-            ->str();
-
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="birthday" class="control-label">';
-        $out .= 'Geboortedatum</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="birthday" name="birthday" ';
-        $out .= 'value="';
-
-        if ($birthday)
+        if ($full_name_enabled)
         {
-            $out .= $date_format_service->get($birthday, 'day', $pp->schema());
+            $out .= $item_access_service->get_radio_buttons(
+                'full_name_access',
+                $full_name_access,
+                'full_name_access',
+                false,
+                'Zichtbaarheid Volledige Naam'
+            );
         }
 
-        $out .= '" ';
-        $out .= 'data-provide="datepicker" ';
-        $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($pp->schema());
-        $out .= '" ';
-        $out .= 'data-date-default-view="2" ';
-        $out .= 'data-date-end-date="';
-        $out .= $date_format_service->get('', 'day', $pp->schema());
-        $out .= '" ';
-        $out .= 'data-date-language="nl" ';
-        $out .= 'data-date-start-view="2" ';
-        $out .= 'data-date-today-highlight="true" ';
-        $out .= 'data-date-autoclose="true" ';
-        $out .= 'data-date-immediate-updates="true" ';
-        $out .= 'data-date-orientation="bottom" ';
-        $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        if ($postcode_enabled)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<label for="postcode" class="control-label">';
+            $out .= 'Postcode</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-map-marker"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="postcode" name="postcode" ';
+            $out .= 'value="';
+            $out .= self::esc($postcode);
+            $out .= '" ';
+            $out .= 'maxlength="6" ';
+            $out .= 'data-typeahead="';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="hobbies" class="control-label">';
-        $out .= 'Hobbies, interesses</label>';
-        $out .= '<textarea name="hobbies" id="hobbies" ';
-        $out .= 'class="form-control" maxlength="500">';
-        $out .= self::esc($hobbies);
-        $out .= '</textarea>';
-        $out .= '</div>';
+            $out .= $typeahead_service->ini($pp->ary())
+                ->add('postcodes', [])
+                ->str();
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="comments" class="control-label">Commentaar</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-comment-o"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="comments" name="comments" ';
-        $out .= 'value="';
-        $out .= self::esc($comments);
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
+        if ($birthday_enabled)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<label for="birthday" class="control-label">';
+            $out .= 'Geboortedatum</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-calendar"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="birthday" name="birthday" ';
+            $out .= 'value="';
+
+            if ($birthday)
+            {
+                $out .= $date_format_service->get($birthday, 'day', $pp->schema());
+            }
+
+            $out .= '" ';
+            $out .= 'data-provide="datepicker" ';
+            $out .= 'data-date-format="';
+            $out .= $date_format_service->datepicker_format($pp->schema());
+            $out .= '" ';
+            $out .= 'data-date-default-view="2" ';
+            $out .= 'data-date-end-date="';
+            $out .= $date_format_service->get('', 'day', $pp->schema());
+            $out .= '" ';
+            $out .= 'data-date-language="nl" ';
+            $out .= 'data-date-start-view="2" ';
+            $out .= 'data-date-today-highlight="true" ';
+            $out .= 'data-date-autoclose="true" ';
+            $out .= 'data-date-immediate-updates="true" ';
+            $out .= 'data-date-orientation="bottom" ';
+            $out .= 'placeholder="';
+            $out .= $date_format_service->datepicker_placeholder($pp->schema());
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
+        if ($hobbies_enabled)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<label for="hobbies" class="control-label">';
+            $out .= 'Hobbies, interesses</label>';
+            $out .= '<textarea name="hobbies" id="hobbies" ';
+            $out .= 'class="form-control" maxlength="500">';
+            $out .= self::esc($hobbies);
+            $out .= '</textarea>';
+            $out .= '</div>';
+        }
+
+        if ($comments_enabled)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<label for="comments" class="control-label">Commentaar</label>';
+            $out .= '<div class="input-group">';
+            $out .= '<span class="input-group-addon">';
+            $out .= '<span class="fa fa-comment-o"></span></span>';
+            $out .= '<input type="text" class="form-control" ';
+            $out .= 'id="comments" name="comments" ';
+            $out .= 'value="';
+            $out .= self::esc($comments);
+            $out .= '">';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         if ($pp->is_admin())
         {
@@ -1098,15 +1141,18 @@ class UsersEditAdminController extends AbstractController
                 $out .= '</div>';
             }
 
-            $out .= '<div class="form-group">';
-            $out .= '<label for="admin_comments" class="control-label">';
-            $out .= 'Commentaar van de admin</label>';
-            $out .= '<textarea name="admin_comments" id="admin_comments" ';
-            $out .= 'class="form-control" maxlength="200">';
-            $out .= self::esc($admin_comments);
-            $out .= '</textarea>';
-            $out .= 'Deze informatie is enkel zichtbaar voor de admins';
-            $out .= '</div>';
+            if ($admin_comments_enabled)
+            {
+                $out .= '<div class="form-group">';
+                $out .= '<label for="admin_comments" class="control-label">';
+                $out .= 'Commentaar van de admin</label>';
+                $out .= '<textarea name="admin_comments" id="admin_comments" ';
+                $out .= 'class="form-control" maxlength="200">';
+                $out .= self::esc($admin_comments);
+                $out .= '</textarea>';
+                $out .= 'Deze informatie is enkel zichtbaar voor de admins';
+                $out .= '</div>';
+            }
 
             if ($transactions_enabled)
             {
@@ -1294,11 +1340,14 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'        => 'periodic_overview_en',
-            '%label%'       => 'Periodieke Overzichts E-mail',
-            '%attr%'        => $periodic_overview_en ? ' checked' : '',
-        ]);
+        if ($periodic_mail_enabled)
+        {
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                '%name%'        => 'periodic_overview_en',
+                '%label%'       => 'Periodieke Overzichts E-mail',
+                '%attr%'        => $periodic_overview_en ? ' checked' : '',
+            ]);
+        }
 
         if ($is_edit)
         {

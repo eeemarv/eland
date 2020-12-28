@@ -66,6 +66,20 @@ class UsersShowAdminController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
+        if (!$pp->is_admin()
+            && !in_array($status, ['active', 'new', 'leaving']))
+        {
+            throw new AccessDeniedHttpException('No access for this user status');
+        }
+
+        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
+        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
+        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
+        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
+
         $errors = [];
 
         $tdays = $request->query->get('tdays', '365');
@@ -86,7 +100,7 @@ class UsersShowAdminController extends AbstractController
 
         if (!$pp->is_admin() && !in_array($user['status'], [1, 2]))
         {
-            throw new AccessDeniedHttpException('Je hebt geen toegang tot deze gebruiker.');
+            throw new AccessDeniedHttpException('You have no access to this user account.');
         }
 
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
@@ -108,8 +122,7 @@ class UsersShowAdminController extends AbstractController
         {
             if ($su->is_master())
             {
-                throw new AccessDeniedHttpException('Het master account kan
-                    geen E-mail berichten versturen.');
+                throw new AccessDeniedHttpException('The master account can not send emails');
             }
 
             if ($error_token = $form_token_service->get_error())
@@ -491,66 +504,81 @@ class UsersShowAdminController extends AbstractController
         $out .= '<div class="panel-heading">';
         $out .= '<dl>';
 
-        $full_name_access = $user['full_name_access'] ?: 'admin';
-
-        $out .= '<dt>';
-        $out .= 'Volledige naam';
-        $out .= '</dt>';
-
-        if ($pp->is_admin()
-            || $su->is_owner($id)
-            || $item_access_service->is_visible($full_name_access))
+        if ($full_name_enabled)
         {
-            $out .= $this->get_dd($user['full_name'] ?? '');
-        }
-        else
-        {
-            $out .= '<dd>';
-            $out .= '<span class="btn btn-default">';
-            $out .= 'verborgen</span>';
-            $out .= '</dd>';
-        }
+            $full_name_access = $user['full_name_access'] ?: 'admin';
 
-        if ($pp->is_admin() || $su->is_owner($id))
-        {
             $out .= '<dt>';
-            $out .= 'Zichtbaarheid Volledige Naam';
-            $out .= '</dt>';
-            $out .= '<dd>';
-            $out .= $item_access_service->get_label($full_name_access);
-            $out .= '</dd>';
-        }
-
-        $out .= '<dt>';
-        $out .= 'Postcode';
-        $out .= '</dt>';
-        $out .= $this->get_dd($user['postcode'] ?? '');
-
-        if ($pp->is_admin() || $su->is_owner($id))
-        {
-            $out .= '<dt>';
-            $out .= 'Geboortedatum';
+            $out .= 'Volledige naam';
             $out .= '</dt>';
 
-            if (isset($user['birthday']))
+            if ($pp->is_admin()
+                || $su->is_owner($id)
+                || $item_access_service->is_visible($full_name_access))
             {
-                $out .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
+                $out .= $this->get_dd($user['full_name'] ?? '');
             }
             else
             {
-                $out .= '<dd><i class="fa fa-times"></i></dd>';
+                $out .= '<dd>';
+                $out .= '<span class="btn btn-default">';
+                $out .= 'verborgen</span>';
+                $out .= '</dd>';
+            }
+
+            if ($pp->is_admin() || $su->is_owner($id))
+            {
+                $out .= '<dt>';
+                $out .= 'Zichtbaarheid Volledige Naam';
+                $out .= '</dt>';
+                $out .= '<dd>';
+                $out .= $item_access_service->get_label($full_name_access);
+                $out .= '</dd>';
             }
         }
 
-        $out .= '<dt>';
-        $out .= 'Hobbies / Interesses';
-        $out .= '</dt>';
-        $out .= $this->get_dd($user['hobbies'] ?? '');
+        if ($postcode_enabled)
+        {
+            $out .= '<dt>';
+            $out .= 'Postcode';
+            $out .= '</dt>';
+            $out .= $this->get_dd($user['postcode'] ?? '');
+        }
 
-        $out .= '<dt>';
-        $out .= 'Commentaar';
-        $out .= '</dt>';
-        $out .= $this->get_dd($user['comments'] ?? '');
+        if ($birthday_enabled)
+        {
+            if ($pp->is_admin() || $su->is_owner($id))
+            {
+                $out .= '<dt>';
+                $out .= 'Geboortedatum';
+                $out .= '</dt>';
+
+                if (isset($user['birthday']))
+                {
+                    $out .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
+                }
+                else
+                {
+                    $out .= '<dd><i class="fa fa-times"></i></dd>';
+                }
+            }
+        }
+
+        if ($hobbies_enabled)
+        {
+            $out .= '<dt>';
+            $out .= 'Hobbies / Interesses';
+            $out .= '</dt>';
+            $out .= $this->get_dd($user['hobbies'] ?? '');
+        }
+
+        if ($comments_enabled)
+        {
+            $out .= '<dt>';
+            $out .= 'Commentaar';
+            $out .= '</dt>';
+            $out .= $this->get_dd($user['comments'] ?? '');
+        }
 
         if ($pp->is_admin())
         {
@@ -596,10 +624,13 @@ class UsersShowAdminController extends AbstractController
             $out .= '</dt>';
             $out .= $this->get_dd(StatusCnst::LABEL_ARY[$user['status']]);
 
-            $out .= '<dt>';
-            $out .= 'Commentaar van de admin';
-            $out .= '</dt>';
-            $out .= $this->get_dd($user['admin_comments'] ?? '');
+            if ($admin_comments_enabled)
+            {
+                $out .= '<dt>';
+                $out .= 'Commentaar van de admin';
+                $out .= '</dt>';
+                $out .= $this->get_dd($user['admin_comments'] ?? '');
+            }
         }
 
         if ($transactions_enabled)
@@ -663,7 +694,8 @@ class UsersShowAdminController extends AbstractController
             $out .= '</dd>';
         }
 
-        if ($pp->is_admin() || $su->is_owner($id))
+        if ($periodic_mail_enabled
+            && ($pp->is_admin() || $su->is_owner($id)))
         {
             $out .= '<dt>';
             $out .= 'Periodieke Overzichts E-mail';

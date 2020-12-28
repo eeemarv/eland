@@ -28,6 +28,7 @@ class UsersModulesController extends AbstractController
         'users.fields.hobbies.enabled',
         'users.fields.comments.enabled',
         'users.fields.admin_comments.enabled',
+        'periodic_mail.enabled',
         'intersystem.enabled',
         'mollie.enabled',
     ];

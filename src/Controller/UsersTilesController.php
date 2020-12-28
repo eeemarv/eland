@@ -37,6 +37,8 @@ class UsersTilesController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $q = $request->get('q', '');
@@ -96,9 +98,14 @@ class UsersTilesController extends AbstractController
         $out .= '<button class="btn btn-default" data-sort-by="name">';
         $out .= 'Naam ';
         $out .= '<i class="fa fa-sort"></i></button>';
-        $out .= '<button class="btn btn-default" data-sort-by="postcode">';
-        $out .= 'Postcode ';
-        $out .= '<i class="fa fa-sort"></i></button>';
+
+        if ($postcode_enabled)
+        {
+            $out .= '<button class="btn btn-default" data-sort-by="postcode">';
+            $out .= 'Postcode ';
+            $out .= '<i class="fa fa-sort"></i></button>';
+        }
+
         $out .= '</span>';
         $out .= '</p>';
 
@@ -150,7 +157,12 @@ class UsersTilesController extends AbstractController
             $out .= '<span class="code">' . $u['code'] . '</span> ';
             $out .= '<span class="name">' . $u['name'] . '</span>';
             $out .= '</a>';
-            $out .= '<br><span class="postcode">' . $u['postcode'] . '</span>';
+
+            if ($postcode_enabled)
+            {
+                $out .= '<br><span class="postcode">' . $u['postcode'] . '</span>';
+            }
+
             $out .= '</div>';
             $out .= '</div>';
             $out .= '</div>';

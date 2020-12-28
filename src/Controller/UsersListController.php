@@ -76,6 +76,14 @@ class UsersListController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
+        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
+        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
+        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
+
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
 
@@ -542,6 +550,7 @@ class UsersListController extends AbstractController
         if ($pp->is_admin())
         {
             $columns['u'] += [
+                'birthday'              => 'Geboortedatum',
                 'admin_comments'	    => 'Admin commentaar',
                 'periodic_overview_en'	=> 'Periodieke Overzichts E-mail',
                 'created_at'	        => 'Gecreëerd',
@@ -597,6 +606,41 @@ class UsersListController extends AbstractController
                 'balance_date'	=> '.',
             ],
         ];
+
+        if (!$full_name_enabled)
+        {
+            unset($columns['u']['full_name']);
+        }
+
+        if (!$postcode_enabled)
+        {
+            unset($columns['u']['postcode']);
+        }
+
+        if (!$comments_enabled)
+        {
+            unset($columns['u']['comments']);
+        }
+
+        if (!$hobbies_enabled)
+        {
+            unset($columns['u']['hobbies']);
+        }
+
+        if (!$birthday_enabled)
+        {
+            unset($columns['u']['birthday']);
+        }
+
+        if (!$admin_comments_enabled)
+        {
+            unset($columns['u']['admin_comments']);
+        }
+
+        if (!$periodic_mail_enabled)
+        {
+            unset($columns['u']['periodic_overview_en']);
+        }
 
         if (!$transactions_enabled)
         {
@@ -656,6 +700,42 @@ class UsersListController extends AbstractController
 
             $show_columns = $session->get($session_users_columns_key) ?? $preset_columns;
         }
+
+        if (!$full_name_enabled)
+        {
+            unset($show_columns['u']['full_name']);
+        }
+
+        if (!$postcode_enabled)
+        {
+            unset($show_columns['u']['postcode']);
+        }
+
+        if (!$comments_enabled)
+        {
+            unset($show_columns['u']['comments']);
+        }
+
+        if (!$hobbies_enabled)
+        {
+            unset($show_columns['u']['hobbies']);
+        }
+
+        if (!$birthday_enabled)
+        {
+            unset($show_columns['u']['birthday']);
+        }
+
+        if (!$admin_comments_enabled)
+        {
+            unset($show_columns['u']['admin_comments']);
+        }
+
+        if (!$periodic_mail_enabled)
+        {
+            unset($show_columns['u']['periodic_overview_en']);
+        }
+
 
         if (!$transactions_enabled)
         {
@@ -1219,6 +1299,7 @@ class UsersListController extends AbstractController
         ];
 
         $date_keys = [
+            'birthday'      => true,
             'created_at'    => true,
             'last_edit_at'	=> true,
             'adate'			=> true,
