@@ -59,7 +59,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
         $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
         $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
         $docs_enabled = $this->config_service->get_bool('docs.enabled', $schema);
-        $forum_enabled = $this->config_service->get_bool('forum.enabled', $schema);
+		$forum_enabled = $this->config_service->get_bool('forum.enabled', $schema);
+
+        $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $schema);
 
 		$intersystem_en = $this->config_service->get_intersystem_en($schema);
 
@@ -232,7 +234,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$row['mail'] = $mailaddr[$uid] ?? '';
 				$row['addr'] = str_replace(' ', '+', $adr);
 				$row['adr'] = $adr;
-				$row['postcode'] = $users[$uid]['postcode'];
+
+				if ($postcode_enabled)
+				{
+					$row['postcode'] = $users[$uid]['postcode'];
+				}
 
 				$messages[] = $row;
 			}
@@ -246,6 +252,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			foreach ($eland_ary as $sch => $d)
 			{
+				$intersystem_postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $sch);
+
 				if (!$this->config_service->get_bool('messages.enabled', $sch))
 				{
 					continue;
@@ -277,6 +285,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				while ($row = $rs->fetch())
 				{
 					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
+
+					if (!$intersystem_postcode_enabled)
+					{
+						unset($row['postcode']);
+					}
 
 					$intersystem_msgs[] = $row;
 				}
