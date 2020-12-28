@@ -9,6 +9,8 @@
     {{- form_start(form) -}}
     <div class="custom-checkbox">
 
+    {#
+
     {{- form_row(form.users_new_enabled, {
         'label': 'Instappers',
         'translation_domain': false,
@@ -17,6 +19,44 @@
 
     {{- form_row(form.users_leaving_enabled, {
         'label': 'Uitstappers',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    #}
+
+    {{- form_row(form.users_fields_full_name_enabled, {
+        'label': 'Volledige naam',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.users_fields_postcode_enabled, {
+        'label': 'Postcode',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.users_fields_birthday_enabled, {
+        'label': 'Geboortedatum',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.users_fields_hobbies_enabled, {
+        'label': 'Hobbies',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.users_fields_comments_enabled, {
+        'label': 'Commentaar',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.users_fields_admin_comments_enabled, {
+        'label': 'Commentaar van de admin',
         'translation_domain': false,
         'required': false
     }) -}}

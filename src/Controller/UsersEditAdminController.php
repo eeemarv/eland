@@ -144,11 +144,18 @@ class UsersEditAdminController extends AbstractController
         MenuService $menu_service
     ):string
     {
+        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
+        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
+        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
+
         $is_add = !$is_edit;
         $errors = [];
         $contact = [];
         $username_edit_en = false;
-        $fullname_edit_en = false;
+        $full_name_edit_en = false;
         $is_activated = false;
 
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
@@ -178,8 +185,8 @@ class UsersEditAdminController extends AbstractController
 
         $code = trim($request->request->get('code', ''));
         $name = trim($request->request->get('name', ''));
-        $fullname = trim($request->request->get('fullname', ''));
-        $fullname_access = $request->request->get('fullname_access', '');
+        $full_name = trim($request->request->get('full_name', ''));
+        $full_name_access = $request->request->get('full_name_access', '');
         $postcode = trim($request->request->get('postcode', ''));
         $birthday = trim($request->request->get('birthday', ''));
         $hobbies = trim($request->request->get('hobbies', ''));
@@ -188,7 +195,7 @@ class UsersEditAdminController extends AbstractController
         $status = $request->request->get('status', '');
         $password = trim($request->request->get('password', ''));
         $password_notify = $request->request->has('password_notify');
-        $admincomment = trim($request->request->get('admincomment', ''));
+        $admin_comments = trim($request->request->get('admin_comments', ''));
         $min_limit = trim($request->request->get('min_limit', ''));
         $max_limit = trim($request->request->get('max_limit', ''));
         $periodic_overview_en = $request->request->has('periodic_overview_en');
@@ -199,12 +206,13 @@ class UsersEditAdminController extends AbstractController
 
         if ($pp->is_admin())
         {
-            $username_edit_en = $fullname_edit_en = true;
+            $username_edit_en = true;
+            $full_name_edit_en = true;
         }
         else if ($is_owner)
         {
             $username_edit_en = $config_service->get_bool('users.fields.username.self_edit', $pp->schema());
-            $fullname_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
+            $full_name_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
         }
 
         if ($request->isMethod('POST'))
@@ -309,7 +317,7 @@ class UsersEditAdminController extends AbstractController
 
             $code_sql = [];
             $name_sql = [];
-            $fullname_sql = [];
+            $full_name_sql = [];
 
             $code_sql['query'] = 'select code
                 from ' . $pp->schema() . '.users
@@ -323,11 +331,11 @@ class UsersEditAdminController extends AbstractController
             $name_sql['params'] = [$name];
             $name_sql['types'] = [\PDO::PARAM_STR];
 
-            $fullname_sql['query'] = 'select fullname
+            $full_name_sql['query'] = 'select full_name
                 from ' . $pp->schema() . '.users
-                where fullname = ?';
-            $fullname_sql['params'] = [$fullname];
-            $fullname_sql['types'] = [\PDO::PARAM_STR];
+                where full_name = ?';
+            $full_name_sql['params'] = [$full_name];
+            $full_name_sql['types'] = [\PDO::PARAM_STR];
 
             if ($is_edit)
             {
@@ -337,12 +345,12 @@ class UsersEditAdminController extends AbstractController
                 $name_sql['query'] .= 'and id <> ?';
                 $name_sql['params'][] = $id;
                 $name_sql['types'][] = \PDO::PARAM_INT;
-                $fullname_sql['query'] .= 'and id <> ?';
-                $fullname_sql['params'][] = $id;
-                $fullname_sql['types'][] = \PDO::PARAM_INT;
+                $full_name_sql['query'] .= 'and id <> ?';
+                $full_name_sql['params'][] = $id;
+                $full_name_sql['types'][] = \PDO::PARAM_INT;
             }
 
-            if (!$fullname_access)
+            if (!$full_name_access)
             {
                 $errors[] = 'Vul een zichtbaarheid in voor de volledige naam.';
             }
@@ -363,17 +371,17 @@ class UsersEditAdminController extends AbstractController
                 }
             }
 
-            if ($fullname_edit_en)
+            if ($full_name_edit_en)
             {
-                if (!$fullname)
+                if (!$full_name)
                 {
                     $errors[] = 'Vul de Volledige Naam in!';
                 }
-                else if ($db->fetchOne($fullname_sql['query'], $fullname_sql['params'], $fullname_sql['types']) !== false)
+                else if ($db->fetchOne($full_name_sql['query'], $full_name_sql['params'], $full_name_sql['types']) !== false)
                 {
                     $errors[] = 'Deze Volledige Naam is al in gebruik!';
                 }
-                else if (strlen($fullname) > 100)
+                else if (strlen($full_name) > 100)
                 {
                     $errors[] = 'De Volledige Naam mag maximaal 100 tekens lang zijn.';
                 }
@@ -463,7 +471,7 @@ class UsersEditAdminController extends AbstractController
             if (!count($errors))
             {
                 $post_user = [
-                    'fullname_access'       => $fullname_access,
+                    'full_name_access'       => $full_name_access,
                     'postcode'		        => $postcode,
                     'birthday'		        => $birthday === '' ? null : $birthday,
                     'hobbies'		        => $hobbies,
@@ -494,9 +502,9 @@ class UsersEditAdminController extends AbstractController
                     $post_user['name'] = $name;
                 }
 
-                if ($fullname_edit_en)
+                if ($full_name_edit_en)
                 {
-                    $post_user['fullname'] = $fullname;
+                    $post_user['full_name'] = $full_name;
                 }
 
                 if ($pp->is_admin())
@@ -504,7 +512,7 @@ class UsersEditAdminController extends AbstractController
                     $post_user['code'] = $code;
                     $post_user['role'] = $role;
                     $post_user['status'] = (int) $status;
-                    $post_user['admincomment'] = $admincomment;
+                    $post_user['admin_comments'] = $admin_comments;
                 }
 
                 if ($is_add)
@@ -705,15 +713,15 @@ class UsersEditAdminController extends AbstractController
         {
             $code = '';
             $name = '';
-            $fullname = '';
-            $fullname_access = '';
+            $full_name = '';
+            $full_name_access = '';
             $postcode = '';
             $birthday = '';
             $hobbies = '';
             $comments = '';
             $role = 'user';
             $status = '1';
-            $admincomment = '';
+            $admin_comments = '';
             $min_limit = '';
             $max_limit = '';
             $periodic_overview_en	= true;
@@ -731,7 +739,7 @@ class UsersEditAdminController extends AbstractController
                         and apimethod <> \'internal\'',
                         [$intersystem_code], [\PDO::PARAM_STR]))
                 {
-                    $name = $fullname = $group['groupname'];
+                    $name = $full_name = $group['groupname'];
 
                     if ($group['url']
                         && ($systems_service->get_schema_from_legacy_eland_origin($group['url'])))
@@ -750,7 +758,7 @@ class UsersEditAdminController extends AbstractController
                         }
 
                         // name from source is preferable
-                        $name = $fullname = $config_service->get_str('system.name', $remote_schema);
+                        $name = $full_name = $config_service->get_str('system.name', $remote_schema);
                     }
                 }
 
@@ -764,15 +772,15 @@ class UsersEditAdminController extends AbstractController
             {
                 $code = $stored_user['code'] ?? '';
                 $name = $stored_user['name'] ?? '';
-                $fullname = $stored_user['fullname'] ?? '';
-                $fullname_access = $stored_user['fullname_access'] ?? 'admin';
+                $full_name = $stored_user['full_name'] ?? '';
+                $full_name_access = $stored_user['full_name_access'] ?? 'admin';
                 $postcode = $stored_user['postcode'] ?? '';
                 $birthday = $stored_user['birthday'] ?? '';
                 $hobbies = $stored_user['hobbies'] ?? '';
                 $comments = $stored_user['comments'] ?? '';
                 $role = $stored_user['role'] ?? 'user';
                 $status = (string) ($stored_user['status'] ?? '1');
-                $admincomment = $stored_user['admincomment'] ?? '';
+                $admin_comments = $stored_user['admin_comments'] ?? '';
                 $min_limit = $stored_min_limit ?? '';
                 $max_limit = $stored_max_limit ?? '';
                 $periodic_overview_en = $stored_user['periodic_overview_en'] ?? false;
@@ -916,18 +924,18 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
         }
 
-        if ($fullname_edit_en)
+        if ($full_name_edit_en)
         {
             $out .= '<div class="form-group">';
-            $out .= '<label for="fullname" class="control-label">';
+            $out .= '<label for="full_name" class="control-label">';
             $out .= 'Volledige Naam</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-user"></span></span>';
             $out .= '<input type="text" class="form-control" ';
-            $out .= 'id="fullname" name="fullname" ';
+            $out .= 'id="full_name" name="full_name" ';
             $out .= 'value="';
-            $out .= self::esc($fullname);
+            $out .= self::esc($full_name);
             $out .= '" maxlength="100">';
             $out .= '</div>';
             $out .= '<p>';
@@ -937,9 +945,9 @@ class UsersEditAdminController extends AbstractController
         }
 
         $out .= $item_access_service->get_radio_buttons(
-            'fullname_access',
-            $fullname_access,
-            'fullname_access',
+            'full_name_access',
+            $full_name_access,
+            'full_name_access',
             false,
             'Zichtbaarheid Volledige Naam'
         );
@@ -1091,11 +1099,11 @@ class UsersEditAdminController extends AbstractController
             }
 
             $out .= '<div class="form-group">';
-            $out .= '<label for="admincomment" class="control-label">';
+            $out .= '<label for="admin_comments" class="control-label">';
             $out .= 'Commentaar van de admin</label>';
-            $out .= '<textarea name="admincomment" id="admincomment" ';
+            $out .= '<textarea name="admin_comments" id="admin_comments" ';
             $out .= 'class="form-control" maxlength="200">';
-            $out .= self::esc($admincomment);
+            $out .= self::esc($admin_comments);
             $out .= '</textarea>';
             $out .= 'Deze informatie is enkel zichtbaar voor de admins';
             $out .= '</div>';

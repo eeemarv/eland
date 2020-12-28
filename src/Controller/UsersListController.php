@@ -527,7 +527,7 @@ class UsersListController extends AbstractController
             'u'		=> [
                 'code'		    => 'Code',
                 'name'			=> 'Naam',
-                'fullname'		=> 'Volledige naam',
+                'full_name'		=> 'Volledige naam',
                 'postcode'		=> 'Postcode',
                 'role'	        => 'Rol',
                 'balance'		=> 'Saldo',
@@ -542,7 +542,7 @@ class UsersListController extends AbstractController
         if ($pp->is_admin())
         {
             $columns['u'] += [
-                'admincomment'	        => 'Admin commentaar',
+                'admin_comments'	    => 'Admin commentaar',
                 'periodic_overview_en'	=> 'Periodieke Overzichts E-mail',
                 'created_at'	        => 'Gecreëerd',
                 'last_edit_at'	        => 'Aangepast',
@@ -1381,18 +1381,18 @@ class UsersListController extends AbstractController
                             $td .= '&nbsp;';
                         }
                     }
-                    else if ($key === 'fullname')
+                    else if ($key === 'full_name')
                     {
-                        if ($item_access_service->is_visible($u['fullname_access']))
+                        if ($item_access_service->is_visible($u['full_name_access']))
                         {
                             if ($can_link)
                             {
                                 $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
-                                    ['id' => $u['id'], 'status' => $status], $u['fullname']);
+                                    ['id' => $u['id'], 'status' => $status], $u['full_name']);
                             }
                             else
                             {
-                                $td .= htmlspecialchars($u['fullname'], ENT_QUOTES);
+                                $td .= htmlspecialchars($u['full_name'], ENT_QUOTES);
                             }
                         }
                         else

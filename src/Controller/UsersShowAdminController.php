@@ -491,7 +491,7 @@ class UsersShowAdminController extends AbstractController
         $out .= '<div class="panel-heading">';
         $out .= '<dl>';
 
-        $fullname_access = $user['fullname_access'] ?: 'admin';
+        $full_name_access = $user['full_name_access'] ?: 'admin';
 
         $out .= '<dt>';
         $out .= 'Volledige naam';
@@ -499,9 +499,9 @@ class UsersShowAdminController extends AbstractController
 
         if ($pp->is_admin()
             || $su->is_owner($id)
-            || $item_access_service->is_visible($fullname_access))
+            || $item_access_service->is_visible($full_name_access))
         {
-            $out .= $this->get_dd($user['fullname'] ?? '');
+            $out .= $this->get_dd($user['full_name'] ?? '');
         }
         else
         {
@@ -517,7 +517,7 @@ class UsersShowAdminController extends AbstractController
             $out .= 'Zichtbaarheid Volledige Naam';
             $out .= '</dt>';
             $out .= '<dd>';
-            $out .= $item_access_service->get_label($fullname_access);
+            $out .= $item_access_service->get_label($full_name_access);
             $out .= '</dd>';
         }
 
@@ -599,7 +599,7 @@ class UsersShowAdminController extends AbstractController
             $out .= '<dt>';
             $out .= 'Commentaar van de admin';
             $out .= '</dt>';
-            $out .= $this->get_dd($user['admincomment'] ?? '');
+            $out .= $this->get_dd($user['admin_comments'] ?? '');
         }
 
         if ($transactions_enabled)

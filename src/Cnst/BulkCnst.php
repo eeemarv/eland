@@ -9,7 +9,7 @@ class BulkCnst
 {
     const MOLLIE_TPL_VARS = [
         'naam' 					=> 'name',
-        'volledige_naam'		=> 'fullname',
+        'volledige_naam'		=> 'full_name',
         'account_code'			=> 'code',
         'betaal_link'           => 'payment_link',
         'bedrag'                => 'amount',
@@ -18,13 +18,13 @@ class BulkCnst
 
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
-        'volledige_naam'		=> 'fullname',
+        'volledige_naam'		=> 'full_name',
         'account_code'			=> 'code',
     ];
 
     const USER_TABS = [
-        'fullname_access'	=> [
-            'lbl'				=> 'Zichtbaarheid Volledige Naam',
+        'full_name_access'	=> [
+            'lbl'			=> 'Zichtbaarheid Volledige Naam',
             'string'        => true,
             'item_access'	=> true,
         ],
@@ -65,7 +65,7 @@ class BulkCnst
             'options'	=> StatusCnst::LABEL_ARY,
             'fa'		=> 'star-o',
         ],
-        'admincomment'		=> [
+        'admin_comments'		=> [
             'lbl'		=> 'Commentaar van de Admin',
             'type'		=> 'text',
             'string'	=> true,

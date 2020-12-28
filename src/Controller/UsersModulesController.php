@@ -14,13 +14,20 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UsersModulesController extends AbstractController
 {
     const USERS_MODULES = [
+/*
         'users.new.enabled',
         'users.leaving.enabled',
+*/
+        'users.fields.full_name.enabled',
+        'users.fields.postcode.enabled',
+        'users.fields.birthday.enabled',
+        'users.fields.hobbies.enabled',
+        'users.fields.comments.enabled',
+        'users.fields.admin_comments.enabled',
         'intersystem.enabled',
         'mollie.enabled',
     ];

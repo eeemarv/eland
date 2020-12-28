@@ -6,7 +6,7 @@
         '%from_account%': account(from_user_id, schema),
         '%to_account%': transaction.real_to
             ~ ' ['
-            ~ user_fullname(to_user_id, schema)
+            ~ user_full_name(to_user_id, schema)
             ~ ']'
     })|raw -}}
 {%- endblock subject_line -%}
@@ -14,13 +14,13 @@
 {%- block html_to -%}
 {{- transaction.real_to
     ~ ' ['
-    ~ user_fullname(to_user_id, schema)
+    ~ user_full_name(to_user_id, schema)
     ~ ']' -}}
 {%- endblock -%}
 
 {% block text_to %}
 {{ (transaction.real_to
     ~ ' ['
-    ~ user_fullname(to_user_id, schema)
+    ~ user_full_name(to_user_id, schema)
     ~ ']')|raw }}
 {% endblock %}

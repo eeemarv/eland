@@ -110,7 +110,7 @@ class MolliePaymentsAddController extends AbstractController
         $users = [];
 
         $stmt = $db->executeQuery(
-            'select u.id, u.name, u.fullname, u.code,
+            'select u.id, u.name, u.full_name, u.code,
                 u.role, u.status, u.adate,
                 p1.is_paid, p1.is_canceled, p1.created_at as last_created_at,
                 p1.amount, p1.description

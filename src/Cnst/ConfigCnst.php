@@ -219,7 +219,7 @@ class ConfigCnst
             'path'      => 'users.fields.username.self_edit',
         ],
 
-        'users_can_edit_fullname' => [
+        'users_can_edit_full_name' => [
             'type'	=> 'checkbox',
             'default'	=> '0',
             'path'      => 'users.fields.full_name.self_edit',
@@ -362,7 +362,7 @@ class ConfigCnst
                 ],
 
                 'li_3' => [
-                    'inline' => '%input(users_can_edit_fullname)% Leden
+                    'inline' => '%input(users_can_edit_full_name)% Leden
                         kunnen zelf hun Volledige Naam aanpassen.',
                 ],
             ],

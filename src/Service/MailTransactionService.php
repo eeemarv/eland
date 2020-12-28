@@ -117,7 +117,7 @@ class MailTransactionService
 				'template'	=> $tpl,
 				'vars'		=> array_merge($vars, [
 					'user_id' 		=> $from_user_id,
-					'to_fullname'	=> $to_user['fullname'],
+					'to_full_name'	=> $to_user['full_name'],
 				]),
 			], 9000);
 		}
@@ -135,7 +135,7 @@ class MailTransactionService
 				'template'	=> $tpl,
 				'vars'		=> array_merge($vars, [
 					'user_id'		=> $to_user_id,
-					'from_fullname'	=> $from_user['fullname'],
+					'from_full_name'	=> $from_user['full_name'],
 				]),
 			], 9000);
 		}

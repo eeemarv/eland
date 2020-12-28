@@ -115,7 +115,7 @@ class RegisterFormConfirmController extends AbstractController
 
         $user = [
             'name'			        => $name,
-            'fullname'		        => $data['first_name'] . ' ' . $data['last_name'],
+            'full_name'		        => $data['first_name'] . ' ' . $data['last_name'],
             'postcode'		        => $data['postcode'],
             'status'		        => 5,
             'role'	                => 'user',
@@ -218,7 +218,7 @@ class RegisterFormConfirmController extends AbstractController
         {
             $mail_queue->queue([
                 'schema'				=> $pp->schema(),
-                'to' 					=> [$data['email'] => $user['fullname']],
+                'to' 					=> [$data['email'] => $user['full_name']],
                 'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
                 'pre_html_template'		=> $pre_html_template,
                 'template'				=> 'register/success',

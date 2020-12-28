@@ -256,7 +256,7 @@ class MolliePaymentsController extends AbstractController
         $payments = [];
 
         $stmt = $db->executeQuery('select p.*, r.description,
-            u.code, u.name, u.fullname,
+            u.code, u.name, u.full_name,
             u.status, u.adate,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p,

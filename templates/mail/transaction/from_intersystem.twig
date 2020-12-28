@@ -5,7 +5,7 @@
     {{- 'transaction_intersystem.subject'|trans({
         '%from_account%': transaction.real_from
             ~ ' ['
-            ~ user_fullname(from_user_id, schema)
+            ~ user_full_name(from_user_id, schema)
             ~ ']',
         '%to_account%': account(to_user_id, schema)
     })|raw -}}
@@ -14,13 +14,13 @@
 {%- block html_from -%}
 {{- transaction.real_from
     ~ ' ['
-    ~ user_fullname(from_user_id, schema)
+    ~ user_full_name(from_user_id, schema)
     ~ ']' -}}
 {%- endblock -%}
 
 {% block text_from %}
 {{ (transaction.real_from
     ~ ' ['
-    ~ user_fullname(from_user_id, schema)
+    ~ user_full_name(from_user_id, schema)
     ~ ']')|raw }}
 {% endblock %}

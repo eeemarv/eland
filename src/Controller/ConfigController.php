@@ -396,8 +396,6 @@ class ConfigController extends AbstractController
                     $config_service->set_str($path, (string) $posted_value, $pp->schema());
                 }
 
- //               $config_service->set($input_name, $pp->schema(), $posted_value);
-
                 $post_actions = ConfigCnst::INPUTS[$input_name]['post_actions'] ?? [];
 
                 foreach($post_actions as $post_action)
