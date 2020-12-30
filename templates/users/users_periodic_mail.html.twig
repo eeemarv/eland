@@ -11,8 +11,12 @@
     {{- form_row(form.days, {
         'label': 'Interval tot volgende overzichts e-mail',
         'translation_domain': false,
-        'required': false,
-        'min': 1
+        'attr': {
+            'min': 1
+        },
+        'pre_addon': {
+            'text': 'dagen'
+        }
     }) -}}
 
     <p>

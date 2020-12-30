@@ -24,3 +24,33 @@
         </label>
     {%- endif -%}
 {%- endblock checkbox_radio_label %}
+
+{% block form_widget_simple -%}
+    {%- if pre_addon is defined or post_addon is defined -%}
+        <div class="input-group{{ group_class|default('') }}">
+            {%- if pre_addon is defined -%}
+                <span class="input-group-addon">
+                    {%- if pre_addon.fa is defined -%}
+                        <i class="fa fa-{{- pre_addon.fa -}}"></i>
+                        {%- if pre_addon.text is defined -%}
+                            &nbsp;
+                        {%- endif -%}
+                    {%- endif -%}
+                    {%- if pre_addon.text is defined -%}
+                        {{- pre_addon.text -}}
+                    {%- endif -%}
+                </span>
+            {% endif %}
+            {{- parent() -}}
+            {%- if post_addon is defined -%}
+                <span class="input-group-addon">
+                {%- if post_addon.text is defined -%}
+                    {{- post_addon.text -}}
+                {%- endif -%}
+                </span>
+            {%- endif -%}
+        </div>
+    {%- else -%}
+        {{- parent() -}}
+    {%- endif -%}
+{%- endblock form_widget_simple %}

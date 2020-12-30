@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.171.7",
+            "version": "3.171.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "6c32f57bc381b46c783f70a20060fde1a95f4ab5"
+                "reference": "1f7f7c1db844f6c988c93008f902b352c7616da8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6c32f57bc381b46c783f70a20060fde1a95f4ab5",
-                "reference": "6c32f57bc381b46c783f70a20060fde1a95f4ab5",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/1f7f7c1db844f6c988c93008f902b352c7616da8",
+                "reference": "1f7f7c1db844f6c988c93008f902b352c7616da8",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.171.7"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.171.8"
             },
-            "time": "2020-12-28T19:12:41+00:00"
+            "time": "2020-12-29T19:11:15+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -1718,16 +1718,16 @@
         },
         {
             "name": "egulias/email-validator",
-            "version": "2.1.24",
+            "version": "2.1.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "ca90a3291eee1538cd48ff25163240695bd95448"
+                "reference": "0dbf5d78455d4d6a41d186da50adc1122ec066f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/ca90a3291eee1538cd48ff25163240695bd95448",
-                "reference": "ca90a3291eee1538cd48ff25163240695bd95448",
+                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/0dbf5d78455d4d6a41d186da50adc1122ec066f4",
+                "reference": "0dbf5d78455d4d6a41d186da50adc1122ec066f4",
                 "shasum": ""
             },
             "require": {
@@ -1774,7 +1774,7 @@
             ],
             "support": {
                 "issues": "https://github.com/egulias/EmailValidator/issues",
-                "source": "https://github.com/egulias/EmailValidator/tree/2.1.24"
+                "source": "https://github.com/egulias/EmailValidator/tree/2.1.25"
             },
             "funding": [
                 {
@@ -1782,7 +1782,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-14T15:56:27+00:00"
+            "time": "2020-12-29T14:50:06+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -2940,16 +2940,16 @@
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "2.10.0",
+            "version": "2.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "f65ae0f9dcbdd9d6ad3abb721a9e09c3d7d868a4"
+                "reference": "8e85357b800125dea30b7083a6bf1800801ad98b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/f65ae0f9dcbdd9d6ad3abb721a9e09c3d7d868a4",
-                "reference": "f65ae0f9dcbdd9d6ad3abb721a9e09c3d7d868a4",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/8e85357b800125dea30b7083a6bf1800801ad98b",
+                "reference": "8e85357b800125dea30b7083a6bf1800801ad98b",
                 "shasum": ""
             },
             "require": {
@@ -3014,7 +3014,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Ocramius/ProxyManager/issues",
-                "source": "https://github.com/Ocramius/ProxyManager/tree/2.10.0"
+                "source": "https://github.com/Ocramius/ProxyManager/tree/2.10.1"
             },
             "funding": [
                 {
@@ -3026,7 +3026,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-12T17:04:46+00:00"
+            "time": "2020-12-30T14:27:27+00:00"
         },
         {
             "name": "php-http/discovery",
