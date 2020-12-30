@@ -7,7 +7,7 @@
 	"keywords": ["community", "currencies", "app"],
 
     "require": {
-		"php": "^8",
+		"php": "^7.4",
 		"ext-ctype": "*",
 		"ext-exif": "*",
 		"ext-gd": "*",
