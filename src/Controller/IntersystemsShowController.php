@@ -83,14 +83,14 @@ class IntersystemsShowController extends AbstractController
         {
             $out .= '<dd><span class="btn btn-info">eLAND server</span>';
 
-            if (!$config_service->get('template_lets', $group_schema))
+            if (!$config_service->get_bool('transactions.currency.timebased_en', $group_schema))
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
                 $out .= 'Niet geconfigureerd als Tijdbank</span>';
             }
 
-            if (!$config_service->get('interlets_en', $group_schema))
+            if (!$config_service->get_bool('intersystem.enabled', $group_schema))
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';

@@ -40,53 +40,12 @@ class ConfigController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-        $news_enabled = $config_service->get_bool('news.enabled', $pp->schema());
-        $docs_enabled = $config_service->get_bool('docs.enabled', $pp->schema());
-        $forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
-
         $errors = [];
         $pane = ConfigCnst::TAB_PANES[$tab];
 
         $cond_ary = [
             'config_template_lets'	=> true,
         ];
-
-        $block_ary = ConfigCnst::BLOCK_ARY;
-
-        if (!$forum_enabled)
-        {
-            unset($block_ary['forum']);
-        }
-
-        if (!$transactions_enabled)
-        {
-            unset($block_ary['transactions']);
-        }
-
-        if (!$messages_enabled)
-        {
-            unset($block_ary['messages']);
-            unset($block_ary['messages_self']);
-            unset($block_ary['intersystem']);
-        }
-
-        if (!$news_enabled)
-        {
-            unset($block_ary['news']);
-        }
-
-        if (!$docs_enabled)
-        {
-            unset($block_ary['docs']);
-        }
-
-        if (!$config_service->get_intersystem_en($pp->schema()))
-        {
-            unset($block_ary['intersystem']);
-            unset($cond_ary['config_template_lets']);
-        }
 
         $select_options = [
             'date_format'	=> $date_format_service->get_options(),
@@ -344,29 +303,6 @@ class ConfigController extends AbstractController
                 if (isset($input_cnf['is_ary']))
                 {
                     $posted_ary  = $posted_value === '' ? [] : explode(',', $posted_value);
-
-                    if ($input_name === 'periodic_mail_block_ary')
-                    {
-                        $p_ary = $posted_ary;
-                        $posted_ary = [];
-
-                        foreach ($p_ary as $p)
-                        {
-                            [$block, $select] = explode('.', $p);
-
-                            if (isset($block_ary[$block]) && count($block_ary[$block]) > 1)
-                            {
-                                $select = $select === 'all' ? 'all' : 'recent';
-                                $config_service->set_str('periodic_mail.user.render.' . $block . '.select', $select, $pp->schema());
-                            }
-
-                            if (isset($block_ary[$block]))
-                            {
-                                $posted_ary[] = $block;
-                            }
-                        }
-                    }
-
                     $config_service->set_ary($path, $posted_ary, $pp->schema());
                 }
                 else if (isset($input_cnf['type']))
@@ -605,119 +541,6 @@ class ConfigController extends AbstractController
 
                 $out .= '</p>';
             }
-            else if (isset($input['type'])
-                && $input['type'] === 'sortable'
-                && $input_name === 'periodic_mail_block_ary'
-                && isset($input['is_ary']))
-            {
-                $v_options = $v_input = $active = $inactive = [];
-
-                foreach ($ary_value as $block)
-                {
-                    if (!$block)
-                    {
-                        continue;
-                    }
-
-                    $v_options[$block] = 'recent';
-
-                    if (isset($block_ary[$block]) && count($block_ary[$block]) > 1)
-                    {
-                        $select = $config_service->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
-                        if ($select === 'all')
-                        {
-                            $v_options[$block] = 'all';
-                        }
-                    }
-
-                    $active[] = $block;
-                    $v_input[] = $block . '.' . $v_options[$block];
-                }
-
-                foreach ($block_ary as $block => $options)
-                {
-                    if (isset($v_options[$block]))
-                    {
-                        continue;
-                    }
-
-                    $inactive[] = $block;
-                }
-
-                $out .= isset($input['lbl']) ? '<h4>' . $input['lbl'] . '</h4>' : '';
-
-                if (isset($input['explain_top']))
-                {
-                    $out .= '<p>';
-                    $out .= $input['explain_top'];
-                    $out .= '</p>';
-                }
-
-                $out .= '<div class="row">';
-
-                $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
-
-                if (isset($input['lbl_active']))
-                {
-                    $out .= '<h5>';
-                    $out .= $input['lbl_active'];
-                    $out .= '</h5>';
-                }
-
-                $out .= '</div>';
-                $out .= '<div class="panel-body">';
-                $out .= '<ul id="list_active" class="list-group">';
-
-                $out .= $this->get_sortable_items_str(
-                    $block_ary,
-                    $v_options,
-                    $active,
-                    'bg-success');
-
-                $out .= '</ul>';
-                $out .= '</div>';
-                $out .= '</div>';
-                $out .= '</div>'; // col
-
-                $out .= '<div class="col-md-6">';
-                $out .= '<div class="panel panel-default">';
-                $out .= '<div class="panel-heading">';
-
-                if (isset($input['lbl_inactive']))
-                {
-                    $out .= '<h5>';
-                    $out .= $input['lbl_inactive'];
-                    $out .= '</h5>';
-                }
-
-                $out .= '</div>';
-                $out .= '<div class="panel-body">';
-                $out .= '<ul id="list_inactive" class="list-group">';
-
-                $out .= $this->get_sortable_items_str(
-                    $block_ary,
-                    $v_options,
-                    $inactive,
-                    'bg-danger');
-
-                $out .= '</ul';
-                $out .= '</div>';
-                $out .= '</div>';
-                $out .= '</div>'; // col
-
-                $out .= '</div>'; // row
-
-                $out .= '<input type="hidden" name="';
-                $out .= $input_name;
-                $out .= '" ';
-                $out .= 'value="';
-                $out .= implode(',', $v_input);
-                $out .= '" id="';
-                $out .= $input_name;
-                $out .= '">';
-            }
             else
             {
                 $out .= '<div class="form-group">';
@@ -915,101 +738,6 @@ class ConfigController extends AbstractController
         while ($start < strlen($line));
 
         return $return_ary;
-    }
-
-    private function get_sortable_items_str(
-        array $input_ary,
-        array $v_options,
-        array $items,
-        string $class
-    ):string
-    {
-        $out = '';
-
-        foreach ($items as $a)
-        {
-            if (!isset($input_ary[$a]))
-            {
-                continue;
-            }
-
-            $options = $input_ary[$a];
-
-            if (!count($options))
-            {
-                continue;
-            }
-            else if (count($options) === 1)
-            {
-                $lbl = reset($options);
-                $option = key($options);
-                $out .= '<li class="list-group-item ';
-                $out .= $class;
-                $out .= '" ';
-                $out .= 'data-block="';
-                $out .= $a;
-                $out .= '" ';
-                $out .= 'data-option="';
-                $out .= $option;
-                $out .= '" >';
-                $out .= '<span class="lbl">';
-                $out .= $lbl;
-                $out .= '</span>';
-                $out .= '</li>';
-
-                continue;
-            }
-
-            if (isset($v_options[$a]))
-            {
-                $option = $v_options[$a];
-                $lbl = $options[$option];
-            }
-            else
-            {
-                $lbl = reset($options);
-                $option = key($options);
-            }
-
-            $out .= '<li class="list-group-item ';
-            $out .= $class;
-            $out .= '" ';
-            $out .= 'data-block="';
-            $out .= $a;
-            $out .= '" ';
-            $out .= 'data-option="';
-            $out .= $option;
-            $out .= '">';
-            $out .= '<span class="lbl">';
-            $out .= $lbl;
-            $out .= '</span>';
-            $out .= '&nbsp;&nbsp;';
-            $out .= '<button type="button" class="btn btn-default ';
-            $out .= 'dropdown-toggle" ';
-            $out .= 'data-toggle="dropdown" aria-haspopup="true" ';
-            $out .= 'aria-expanded="false">';
-            $out .= ' <span class="caret"></span>';
-            $out .= '</button>';
-            $out .= '<ul class="dropdown-menu">';
-
-            foreach ($options as $k => $lbl)
-            {
-                $out .= '<li><a href="#" data-o="';
-                $out .= $k;
-                $out .= '">';
-                $out .= $lbl;
-                $out .= '</a></li>';
-            }
-
-            $out .= '</ul></li>';
-        }
-
-        for ($i = 0; $i < 5; $i++)
-        {
-            $out .= '<li class="list-group-item"></li>';
-        }
-
-        return $out;
     }
 
     static function render_logo(

@@ -121,6 +121,8 @@ class ItemAccessService
 
 		$out = '<span class="btn btn-';
 		$out .= AccessCnst::LABEL[$access]['class'];
+		$out .= '" title="';
+		$out .= AccessCnst::LABEL[$access]['title'];
 		$out .= '">';
 		$out .= AccessCnst::LABEL[$access]['lbl'];
 		$out .= '</span>';

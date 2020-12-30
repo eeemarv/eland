@@ -175,17 +175,18 @@ class MenuCnst
     ];
 
     const LOCAL_ADMIN_MAIN = [
-        'messages_modules'  => 'messages',
-        'messages_cleanup'  => 'messages',
-        'categories'        => 'messages',
-        'users_modules'     => 'users',
-        'status'            => 'users',
-        'contacts'          => 'users',
-        'contact_types'     => 'users',
-        'intersystems'      => 'users',
-        'mollie_payments'   => 'users',
-        'autominlimit'      => 'transactions',
-        'mass_transaction'  => 'transactions',
+        'messages_modules'      => 'messages',
+        'messages_cleanup'      => 'messages',
+        'categories'            => 'messages',
+        'users_modules'         => 'users',
+        'status'                => 'users',
+        'contacts'              => 'users',
+        'contact_types'         => 'users',
+        'users_periodic_mail'   => 'users',
+        'intersystems'          => 'users',
+        'mollie_payments'       => 'users',
+        'autominlimit'          => 'transactions',
+        'mass_transaction'      => 'transactions',
     ];
 
     const LOCAL_ADMIN = [
@@ -228,6 +229,12 @@ class MenuCnst
                 'fa'        => 'circle-o-notch',
                 'label'     => 'Contact Types',
                 'route'     => 'contact_types',
+            ],
+            'users_periodic_mail'   => [
+                'fa'        => 'envelope-o',
+                'label'     => 'Periodiek Overzicht',
+                'route'     => 'users_periodic_mail',
+                'config_en' => 'periodic_mail.enabled',
             ],
             'intersystems'		=> [
                 'fa'        => 'share-alt',

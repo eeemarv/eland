@@ -198,6 +198,11 @@ users_modules:
   path: /users/modules
   methods: GET|POST
 
+users_periodic_mail:
+  controller: App\Controller\UsersPeriodicMailController
+  path: /users/periodic-mail
+  methods: GET|POST
+
 transactions_edit:
   controller: App\Controller\TransactionsEditController
   path: /transactions/{id<%assert.id%>}/edit

@@ -36,7 +36,7 @@
 		"php-http/message": "^1.6",
 		"predis/predis": "1.1.4",
 		"sensio/framework-extra-bundle": "^5.4",
-		"swiftmailer/swiftmailer": "~6",
+		"swiftmailer/swiftmailer": "^6",
 		"symfony/asset": "^5",
 		"symfony/cache": "^5",
 		"symfony/config": "^5",
@@ -63,8 +63,7 @@
 		"symfony/validator": "^5",
 		"symfony/var-dumper": "^5",
 		"symfony/yaml": "^5",
-		"twig/extensions": "^1.5",
-		"twig/twig": "^2",
+		"twig/twig": "^3",
 		"xemlock/htmlpurifier-html5": "^0.1.11"
 	},
 

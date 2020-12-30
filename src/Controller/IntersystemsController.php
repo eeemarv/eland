@@ -184,7 +184,7 @@ class IntersystemsController extends AbstractController
                     $out .= ' <span class="btn btn-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
                     $out .= 'eLAND</span>';
 
-                    if (!$config_service->get('template_lets', $sys['schema']))
+                    if (!$config_service->get_bool('transactions.currency.timebased_en', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdbank.">';
@@ -192,7 +192,7 @@ class IntersystemsController extends AbstractController
                         $out .= 'geen Tijdbank</span>';
                     }
 
-                    if (!$config_service->get('interlets_en', $sys['schema']))
+                    if (!$config_service->get_bool('intersystem.enabled', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="InterSysteem-mogelijkheid is niet ';
@@ -375,8 +375,7 @@ class IntersystemsController extends AbstractController
 
             $out .= '<tr';
 
-            if (!$config_service->get('template_lets', $rem_schema)
-                || !$config_service->get('interlets_en', $rem_schema))
+            if (!$config_service->get_intersystem_en($rem_schema))
             {
                 $out .= ' class="danger"';
 
@@ -388,7 +387,7 @@ class IntersystemsController extends AbstractController
             $out .= '<td>';
             $out .= $config_service->get('systemname', $rem_schema);
 
-            if (!$config_service->get('template_lets', $rem_schema))
+            if (!$config_service->get_bool('transactions.currency.timebased_en', $rem_schema))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="Dit Systeem is niet ';
@@ -397,7 +396,7 @@ class IntersystemsController extends AbstractController
                 $out .= '</i></span>';
             }
 
-            if (!$config_service->get('interlets_en', $rem_schema))
+            if (!$config_service->get_bool('intersystem.enabled', $rem_schema))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="interSysteem is niet ';
@@ -437,8 +436,7 @@ class IntersystemsController extends AbstractController
                 }
                 else
                 {
-                    if ($config_service->get('template_lets', $rem_schema)
-                        && $config_service->get('interlets_en', $rem_schema))
+                    if ($config_service->get_intersystem_en($rem_schema))
                     {
                         $out .= $link_render->link('intersystems_add', $pp->ary(),
                             ['add_schema' => $rem_schema], 'Creëer',

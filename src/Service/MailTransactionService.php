@@ -36,7 +36,7 @@ class MailTransactionService
 		string $schema
 	):void
 	{
-		$dec_hours = $transaction['amount'] / $this->config_service->get('currencyratio', $schema);
+		$dec_hours = $transaction['amount'] / $this->config_service->get_int('transactions.currency.per_hour_ratio', $schema);
 		$seconds = $dec_hours * 3600;
 		$hours = floor($dec_hours);
 		$seconds -= $hours * 3600;

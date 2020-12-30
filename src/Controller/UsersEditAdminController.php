@@ -1063,15 +1063,10 @@ class UsersEditAdminController extends AbstractController
         {
             $out .= '<div class="form-group">';
             $out .= '<label for="comments" class="control-label">Commentaar</label>';
-            $out .= '<div class="input-group">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<span class="fa fa-comment-o"></span></span>';
-            $out .= '<input type="text" class="form-control" ';
-            $out .= 'id="comments" name="comments" ';
-            $out .= 'value="';
+            $out .= '<textarea class="form-control" ';
+            $out .= 'id="comments" name="comments">';
             $out .= self::esc($comments);
-            $out .= '">';
-            $out .= '</div>';
+            $out .= '</textarea>';
             $out .= '</div>';
         }
 
@@ -1102,7 +1097,7 @@ class UsersEditAdminController extends AbstractController
             $out .= '</div>';
             $out .= '</div>';
 
-            if ($pp->is_admin() &&!$is_activated)
+            if (!$is_activated)
             {
                 $out .= '<div id="activate" class="bg-success pan-sub">';
 

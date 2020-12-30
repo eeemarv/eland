@@ -8,14 +8,17 @@ class AccessCnst
         'admin'		=> [
             'lbl'   => 'admin',
             'class' => 'info',
+            'title' => 'Alleen de eigenaar en admins kunnen dit zien',
         ],
         'user'		=> [
             'lbl'   => 'leden',
-            'class' => 'default'
+            'class' => 'default',
+            'title' => 'Alle leden van dit systeem kunnen dit zien',
         ],
         'guest'	    => [
             'lbl'   => 'interSysteem',
             'class' => 'warning',
+            'title' => 'Alle leden van dit systeem en alle leden van verbonden interSystemen kunnen dit zien',
         ],
     ];
 

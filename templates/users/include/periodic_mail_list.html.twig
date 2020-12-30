@@ -1,0 +1,34 @@
+<div class="col-md-6">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {{- heading -}}
+        </div>
+        <div class="panel-body">
+            <ul class="list-group"{{- list_attr -}}>
+                {%- for b in block_list -%}
+                    <li class="list-group-item {{ item_class -}}" data-block="{{- b -}}"
+                    {%- if block_ary[b]|length > 1 %} data-option="{{- block_select_options[b] -}}"{%- endif -%}>
+                        <span data-lbl>
+                        {{- block_ary[b][block_select_options[b]] -}}
+                        </span>
+                        {%- if block_ary[b]|length > 1 -%}
+                        &nbsp;&nbsp;
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                        {%- for k, lbl in block_ary[b] -%}
+                            <li>
+                                <a href="#" data-o="{{- k -}}">
+                                    {{- lbl -}}
+                                </a>
+                            </li>
+                        {%- endfor -%}
+                        </ul>
+                        {%- endif -%}
+                    </li>
+                {%- endfor -%}
+            </ul>
+        </div>
+    </div>
+</div>

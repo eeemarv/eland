@@ -1,0 +1,73 @@
+{%- extends 'base/navbar.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- block content -%}
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+
+    {{- form_start(form) -}}
+
+    {{- form_row(form.days, {
+        'label': 'Interval tot volgende overzichts e-mail',
+        'translation_domain': false,
+        'required': false,
+        'min': 1
+    }) -}}
+
+    <p>
+        Noot: Leden kunnen steeds ontvangst
+        van de Periodieke Overzichts E-mail
+        aan- of afzetten in hun profielinstellingen.
+    </p>
+
+    <h2>
+        E-mail opmaak (versleep blokken)
+    </h2>
+
+    <p>
+        Verslepen gaat met muis of touchpad, maar
+        misschien niet met touch-screen. "Recent"
+        betekent "sinds de laatste periodieke
+        overzichtsmail".
+    </p>
+
+    <div class="row">
+        {%- include 'users/include/periodic_mail_list.html.twig' with {
+            'heading': 'Inhoud',
+            'list_attr': ' data-active-blocks',
+            'block_list': block_layout,
+            'item_class': 'bg-success'
+        } -%}
+        {%- include 'users/include/periodic_mail_list.html.twig' with {
+            'heading': 'Ongebruikte blokken',
+            'list_attr': ' data-inactive-blocks',
+            'block_list': block_inactive_layout,
+            'item_class': 'bg-danger'
+        } -%}
+    </div>
+
+    {{- form_row(form.block_layout, {
+        'attr': {
+            'data-block-layout': '1'
+        }
+    }) -}}
+
+    {{- form_row(form.block_select_options, {
+        'attr': {
+            'data-block-select-options': '1'
+        }
+    }) -}}
+
+    {{- form_widget(form.submit, {
+        'label': 'Aanpassen',
+        'attr': {'class': 'btn-primary btn-lg'},
+        'translation_domain': false
+    }) -}}
+
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+    {{- form_end(form) -}}
+
+    </div>
+</div>
+{%- endblock content -%}

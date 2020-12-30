@@ -884,11 +884,11 @@ class TransactionsController extends AbstractController
     {
         $out = '';
 
-        if ($config_service->get('template_lets', $schema)
-            && $config_service->get('currencyratio', $schema) > 0)
+        if ($config_service->get_bool('transactions.currency.timebased_en', $schema)
+            && $config_service->get_int('transactions.currency.per_hour_ratio', $schema) > 0)
         {
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
-            $out .= $config_service->get('currencyratio', $schema);
+            $out .= $config_service->get_int('transactions.currency.per_hour_ratio', $schema);
             $out .= '</span> ';
             $out .= $config_service->get('currency', $schema);
             $out .= ' per uur</li>';

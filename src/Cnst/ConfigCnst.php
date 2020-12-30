@@ -168,39 +168,10 @@ class ConfigCnst
             'is_ary'    => true,
         ],
 
-        'saldofreqdays'	=> [
-            'type'		=> 'number',
-            'attr'		=> ['class' => 'sm-size', 'min' => '1', 'max' => '120'],
-            'required'	=> true,
-            'default'	=> '14',
-            'path'      => 'periodic_mail.days',
-        ],
-
-        'periodic_mail_block_ary' => [
-            'lbl'				=> 'E-mail opmaak (versleep blokken)',
-            'type'				=> 'sortable',
-            'explain_top'		=> 'Verslepen gaat met
-                muis of touchpad, maar misschien niet met touch-screen.
-                "Recent" betekent "sinds
-                de laatste periodieke overzichtsmail".',
-            'lbl_active' 		=> 'Inhoud',
-            'lbl_inactive'		=> 'Niet gebruikte blokken',
-            'block_ary'			=> 'periodic_mail',
-            'default'		    => '+messages.recent',
-            'path'              => 'periodic_mail.user.layout',
-            'is_ary'            => true,
-        ],
-
         'news_order_asc'	=> [
             'type'	=> 'checkbox',
             'default'	=> '1',
             'path'      => 'news.sort.asc',
-        ],
-
-        'forum_en'	=> [
-            'type'	=> 'checkbox',
-            'default'	=> '0',
-            'path'      => 'forum.enabled',
         ],
 
         'newuserdays' => [
@@ -328,26 +299,6 @@ class ConfigCnst
                 'minlimit'	=> true,
                 'maxlimit'	=> true,
                 'balance_equilibrium'	=> true,
-            ],
-        ],
-
-        'periodic-mail'		=> [
-            'assets'    => [
-                'sortable',
-                'config_periodic_mail.js',
-            ],
-            'lbl'	=> 'Overzichts E-mail',
-            'lbl_pane'	=> 'Periodieke Overzichts E-mail',
-            'inputs' => [
-                'li_1'	=> [
-                    'inline' => 'Verstuur de Periodieke Overzichts E-mail
-                        om de %input(saldofreqdays)% dagen',
-                    'explain' => 'Noot: Leden kunnen steeds ontvangst
-                        van de Periodieke Overzichts E-mail aan- of afzetten
-                        in hun profielinstellingen.',
-                ],
-
-                'periodic_mail_block_ary' => true,
             ],
         ],
 
