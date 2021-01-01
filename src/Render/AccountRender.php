@@ -28,8 +28,13 @@ class AccountRender
 		$this->vr = $vr;
 	}
 
-	public function get_str(int $id, string $schema):string
+	public function get_str(?int $id, string $schema):string
 	{
+		if (!isset($id) || !$id)
+		{
+			return '*** (leeg) ***';
+		}
+
 		$user = $this->user_cache_service->get($id, $schema);
 
 		$code = $user['code'] ?? '';
@@ -41,36 +46,41 @@ class AccountRender
 	}
 
 	public function str(
-		int $id,
+		?int $id,
 		string $schema
 	):string
 	{
-		if ($id === 0)
+		if (!isset($id) || !$id)
 		{
-			return '** (id: 0) **';
+			return '** (leeg) **';
 		}
 
 		return $this->get_str($id, $schema);
 	}
 
 	public function str_id(
-		int $id,
+		?int $id,
 		string $schema
 	):string
 	{
-		if ($id === 0)
+		if (!isset($id) || !$id)
 		{
-			return '** (id: 0) **';
+			return '** (leeg) **';
 		}
 
 		return $this->str($id, $schema) . ' (' . $id . ')';
 	}
 
 	public function link(
-		int $id,
+		?int $id,
 		array $pp_ary
 	):string
 	{
+		if (!isset($id) || !$id)
+		{
+			return '*** leeg ***';
+		}
+
 		$schema = $this->systems_service->get_schema($pp_ary['system']);
 
 		return $this->link_render->link_no_attr($this->vr->get('users_show'), $pp_ary,
