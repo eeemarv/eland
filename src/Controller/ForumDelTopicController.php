@@ -62,7 +62,6 @@ class ForumDelTopicController extends AbstractController
             if (!count($errors))
             {
                 $db->delete($pp->schema() . '.forum_topics', ['id' => $id]);
-                $db->delete($pp->schema() . '.forum_posts', ['topic_id' => $id]);
 
                 $alert_service->success('Het forum onderwerp is verwijderd.');
                 $link_render->redirect('forum', $pp->ary(), []);

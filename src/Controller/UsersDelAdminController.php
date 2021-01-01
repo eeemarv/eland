@@ -22,7 +22,6 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
-use Psr\Log\LoggerInterface;
 
 class UsersDelAdminController extends AbstractController
 {
@@ -30,7 +29,6 @@ class UsersDelAdminController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        LoggerInterface $logger,
         FormTokenService $form_token_service,
         AlertService $alert_service,
         AccountRender $account_render,
@@ -94,7 +92,6 @@ class UsersDelAdminController extends AbstractController
                 $this->remove_user(
                     $id,
                     $db,
-                    $logger,
                     $alert_service,
                     $intersystems_service,
                     $thumbprint_accounts_service,
@@ -157,7 +154,6 @@ class UsersDelAdminController extends AbstractController
     private function remove_user(
         int $id,
         Db $db,
-        LoggerInterface $logger,
         AlertService $alert_service,
         IntersystemsService $intersystems_service,
         ThumbprintAccountsService $thumbprint_accounts_service,
@@ -165,48 +161,10 @@ class UsersDelAdminController extends AbstractController
         PageParamsService $pp
     ):void
     {
-        $user = $user_cache_service->get($id, $pp->schema());
-
-        // remove messages
-
-        $usr = $user['code'] . ' ' . $user['name'] . ' [id:' . $id . ']';
-        $msgs = '';
-
-        $st = $db->prepare('select id, subject
-            from ' . $pp->schema() . '.messages
-            where user_id = ?');
-
-        $st->bindValue(1, $id);
-        $st->execute();
-
-        while ($row = $st->fetch())
-        {
-            $msgs .= $row['id'] . ': ' . $row['subject'] . ', ';
-        }
-
-        $msgs = trim($msgs, '\n\r\t ,;:');
-
-        if ($msgs)
-        {
-            $logger->info('Delete user ' . $usr .
-                ', deleted Messages ' . $msgs,
-                ['schema' => $pp->schema()]);
-
-            $db->delete($pp->schema() . '.messages',
-                ['user_id' => $id]);
-        }
-
         //delete contacts
 
         $db->delete($pp->schema() . '.contact',
             ['user_id' => $id]);
-
-        // del min/max
-
-        $db->delete($pp->schema() . '.min_limit',
-            ['account_id' => $id]);
-        $db->delete($pp->schema() . '.max_limit',
-            ['account_id' => $id]);
 
         //the user
 

@@ -1262,7 +1262,7 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="row">';
 
-        $offerwant_options = [
+        $offer_want_options = [
             'want'		=> 'Vraag',
             'offer'		=> 'Aanbod',
         ];
@@ -1270,7 +1270,7 @@ class MessagesListController extends AbstractController
         $out .= '<div class="col-md-12">';
         $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
-        $out .= self::get_checkbox_filter($offerwant_options, 'type', $filter);
+        $out .= self::get_checkbox_filter($offer_want_options, 'type', $filter);
 
         $out .= '</div>';
         $out .= '</div>';
