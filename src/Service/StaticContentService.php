@@ -88,6 +88,7 @@ class StaticContentService
 		string $route,
 		string $block,
 		string $content,
+		SessionUserService $su,
 		string $schema
 	):void
 	{
@@ -116,21 +117,24 @@ class StaticContentService
 		}
 		else
 		{
-			$sql_params = [$content, ...$sql['params']];
-			$sql_types = [\PDO::PARAM_STR, ...$sql['types']];
+			$sql_params = [$content, $su->id(), ...$sql['params']];
+			$sql_types = [\PDO::PARAM_STR, \PDO::PARAM_INT, ...$sql['types']];
 
 			$affected_rows = $this->db->executeStatement('update ' . $schema . '.s_content
-				set content = ?
+				set content = ?, last_edit_by = ?
 				where ' . $sql_where,
 				$sql_params, $sql_types
 			);
 
 			if ($affected_rows === 0)
 			{
-				$sql_columns = ['content', ...$sql['columns']];
+				$sql_columns = ['content', 'last_edit_by', ...$sql['columns']];
+				$insert_ary = array_combine($sql_columns, $sql_params);
+				$insert_ary['created_by'] = $su->id();
+				$sql_types[] = \PDO::PARAM_INT;
 
 				$this->db->insert($schema . '.s_content',
-					array_combine($sql_columns, $sql_params),
+					$insert_ary,
 					$sql_types
 				);
 			}

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\CmsEditFormTokenService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,7 @@ class CmsEditController extends AbstractController
         CmsEditFormTokenService $cms_edit_form_token_service,
         HtmlPurifier $html_purifier,
         AlertService $alert_service,
+        SessionUserService $su,
         PageParamsService $pp
     ):Response
     {
@@ -77,7 +79,7 @@ class CmsEditController extends AbstractController
             $get = $static_content_service->get($sel_role, $sel_route, $block, $pp->schema());
             if($get !== $set)
             {
-                $static_content_service->set($sel_role, $sel_route, $block, $set, $pp->schema());
+                $static_content_service->set($sel_role, $sel_route, $block, $set, $su, $pp->schema());
                 $count_updated++;
             }
         }
