@@ -56,15 +56,11 @@
 				{%- else -%}
 					<td width="100" align="left" valign="top">
 				{%- endif -%}
-					{%- if msg.is_offer -%}
-						{%- include 'mail/include/btn_offer.html.twig' with {
-							'href': context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})
-						} -%}
-					{%- else -%}
-						{%- include 'mail/include/btn_want.html.twig' with {
-							'href': context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})
-						} -%}
-					{%- endif -%}
+
+				{%- include 'mail/include/btn_' ~ msg.offer_want ~ '.html.twig' with {
+					'href': context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})
+				} -%}
+
 				{%- if msg.image_file -%}
 					<table style="padding-top: 5px;" border="0" cellpadding="0" cellspacing="0" width="100%">
 						<tr>
@@ -164,11 +160,7 @@
 }) }}
 {% for msg in c.messages %}
 
-{% if msg.is_offer -%}
-	{{- 'label.offer'|trans -}}
-{%- else -%}
-	{{- 'label.want'|trans -}}
-{%- endif -%}: {{ msg.subject }}
+{{ ('label.' ~ msg.offer_want)|trans }}: {{ msg.subject }}
 {{ context_url('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id}) }}
 {{ account(msg.user_id, c.schema) }}
 

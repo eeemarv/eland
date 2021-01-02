@@ -345,8 +345,7 @@ class MessagesEditController extends AbstractController
                 $post_message = [
                     'subject'           => $subject,
                     'content'           => $content,
-                    'is_offer'          => $offer_want === 'offer' ? 't' : 'f',
-                    'is_want'           => $offer_want === 'want' ? 't' : 'f',
+                    'offer_want'        => $offer_want,
                     'user_id'           => $user_id,
                     'access'            => $access,
                     'image_files'       => $image_files,
@@ -475,7 +474,7 @@ class MessagesEditController extends AbstractController
                 $amount = $message['amount'] ?? '';
                 $units = $message['units'] ?? '';
                 $category_id = $message['category_id'] ?? '';
-                $offer_want = $message['is_offer'] ? 'offer' : 'want';
+                $offer_want = $message['offer_want'] ?? '';
                 $access = $message['access'];
                 $image_files = $message['image_files'];
 

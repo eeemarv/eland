@@ -37,7 +37,7 @@ class MessagesListController extends AbstractController
     const COLUMNS_DEF_ARY = [
         'offer'  => [
             'lbl'   => 'V/A',
-            'sort'  => ['col' => ['m.is_offer'], 'dir' => 'desc'],
+            'sort'  => ['col' => ['m.offer_want'], 'dir' => 'desc'],
             'enabled'   => true,
         ],
         'subject'   => [
@@ -905,12 +905,12 @@ class MessagesListController extends AbstractController
         {
             if (isset($filter['type']['want']))
             {
-                $sql['where'][] = 'm.is_want = \'t\'';
+                $sql['where'][] = 'm.offer_want = \'want\'';
                 $params['f']['type']['want'] = 'on';
             }
             else
             {
-                $sql['where'][] = 'm.is_offer = \'t\'';
+                $sql['where'][] = 'm.offer_want = \'offer\'';
                 $params['f']['type']['offer'] = 'on';
             }
         }
@@ -1025,9 +1025,7 @@ class MessagesListController extends AbstractController
 
         while ($msg = $st->fetch())
         {
-            $msg['type'] = $msg['is_offer'] ? 'offer' : 'want';
-            $msg['label'] = MessagesShowController::get_label($msg['type']);
-
+            $msg['label'] = MessagesShowController::get_label($msg['offer_want']);
             $messages[] = $msg;
         }
 

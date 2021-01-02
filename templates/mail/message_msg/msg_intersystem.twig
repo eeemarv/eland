@@ -2,15 +2,13 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject_line -%}
-    {%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
-    {{- ('message_msg.subject_' ~ offer_want)|trans({
+    {{- ('message_msg.subject_' ~ message.offer_want)|trans({
         '%message_subject%': message.subject
     })|raw -}}
 {%- endblock subject_line %}
 
 {% block html_explain -%}
-    {%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
-    {{- ('message_msg_intersystem.explain_' ~ offer_want)|trans({
+    {{- ('message_msg_intersystem.explain_' ~ message.offer_want)|trans({
         '%from_account%': account(from_user.id, from_schema),
         '%from_system_name%': config_str('system.name', from_schema),
         '%message_subject%': message.subject,
@@ -20,8 +18,7 @@
 {%- endblock html_explain -%}
 
 {% block text_explain %}
-{%- set offer_want = message.is_offer ? 'offer' : 'want' -%}
-{{ ('message_msg_intersystem.explain_' ~ offer_want)|trans({
+{{ ('message_msg_intersystem.explain_' ~ message.offer_want)|trans({
     '%from_account%': account(from_user.id, from_schema),
     '%from_system_name%': config_str('system.name', from_schema),
     '%message_subject%': message.subject,

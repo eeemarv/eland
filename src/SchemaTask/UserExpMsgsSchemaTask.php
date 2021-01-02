@@ -64,15 +64,12 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			$message['offer_want'] = $message['is_offer'] ? 'offer' : 'want';
-
 			$vars = [
 				'message' 		=> $message,
 				'user_id'		=> $user['id'],
 			];
 
-			$mail_template = 'message_extend/';
-			$mail_template .= $message['is_offer'] ? 'offer' : 'want';
+			$mail_template = 'message_extend/' . $message['offer_want'];
 
 			$this->mail_queue->queue([
 				'to' 				=> $this->mail_addr_user_service->get_active((int) $message['user_id'], $schema),

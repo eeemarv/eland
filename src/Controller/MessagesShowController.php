@@ -258,7 +258,7 @@ class MessagesShowController extends AbstractController
                 ['id' => $id], ucfirst($message['label']['offer_want']) . ' verwijderen');
         }
 
-        if ($message['is_offer']
+        if ($message['offer_want'] === 'offer'
             && $transactions_enabled
             && ($pp->is_admin()
                 || (!$su->is_owner($message['user_id'])
@@ -545,7 +545,6 @@ class MessagesShowController extends AbstractController
             throw new NotFoundHttpException('Dit bericht bestaat niet of werd verwijderd.');
         }
 
-        $message['offer_want'] = $message['is_offer'] ? 'offer' : 'want';
         $message['label'] = self::get_label($message['offer_want']);
 
         return $message;

@@ -205,7 +205,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$rs = $this->db->prepare('select m.id,
 					m.subject, m.content,
 					m.user_id,
-					m.is_offer, m.is_want,
+					m.offer_want,
 					m.image_files
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
@@ -229,7 +229,6 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$image_file = count($image_file_ary) ? $image_file_ary[0] : '';
 
 				$row['content_plain_text'] = $this->html_to_markdown_converter->convert($row['content']);
-				$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
 				$row['image_file'] = $image_file;
 				$row['mail'] = $mailaddr[$uid] ?? '';
 				$row['addr'] = str_replace(' ', '+', $adr);
@@ -265,7 +264,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				$rs = $this->db->prepare('select m.id, m.subject,
 						m.content,
-						m.is_offer, m.is_want,
+						m.offer_want,
 						m.user_id as user_id,
 						u.postcode
 					from ' . $sch . '.messages m, ' .
@@ -284,8 +283,6 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				while ($row = $rs->fetch())
 				{
-					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
-
 					if (!$intersystem_postcode_enabled)
 					{
 						unset($row['postcode']);
@@ -488,7 +485,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			if (isset($block_options['messages_self']))
 			{
 				$rs = $this->db->prepare('select m.id,
-						m.subject, m.is_offer, m.is_want,
+						m.subject, m.offer_want,
 						extract(epoch from coalesce(m.expires_at, now())) as expires_at_unix,
 						m.expires_at, m.created_at
 					from ' . $schema . '.messages m
@@ -501,7 +498,6 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				while ($row = $rs->fetch())
 				{
 					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at_unix'] < $now_unix);
-					$row['offer_want'] = $row['is_offer'] ? 'offer' : 'want';
 					$vars['messages_self'][] = $row;
 				}
 			}

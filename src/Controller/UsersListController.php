@@ -895,7 +895,7 @@ class UsersListController extends AbstractController
                 $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
-                    where m.is_offer = \'t\'
+                    where m.offer_want = \'offer\'
                         and m.user_id = u.id
                         and 1 = 1 ' . $sql_where . '
                     group by m.user_id', $sql['params'], $sql['types']);
@@ -911,7 +911,7 @@ class UsersListController extends AbstractController
                 $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
-                    where m.is_want = \'t\'
+                    where m.offer_want = \'want\'
                         and m.user_id = u.id
                         and 1 = 1 ' . $sql_where . '
                     group by m.user_id', $sql['params'], $sql['types']);

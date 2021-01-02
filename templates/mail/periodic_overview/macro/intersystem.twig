@@ -63,15 +63,9 @@
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 				<td width="150" align="left" valign="top">
-					{%- if msg.is_offer -%}
-						{%- include 'mail/include/btn_offer.html.twig' with {
-							'href': context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})
-						} -%}
-					{%- else -%}
-						{%- include 'mail/include/btn_want.html.twig' with {
-							'href': context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})
-						} -%}
-					{%- endif -%}
+					{%- include 'mail/include/btn_' ~ msg.offer_want ~ '.html.twig' with {
+						'href': context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})
+					} -%}
 				</td>
 				<td width="30">
 				</td>
