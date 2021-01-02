@@ -208,6 +208,11 @@ transactions_edit:
   path: /transactions/{id<%assert.id%>}/edit
   methods: GET|POST
 
+transactions_modules:
+  controller: App\Controller\TransactionsModulesController
+  path: /transactions/modules
+  methods: GET|POST
+
 news_add:
   controller: App\Controller\NewsAddController
   path: /news/add

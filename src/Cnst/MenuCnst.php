@@ -185,6 +185,7 @@ class MenuCnst
         'users_periodic_mail'   => 'users',
         'intersystems'          => 'users',
         'mollie_payments'       => 'users',
+        'transactions_modules'  => 'transactions',
         'autominlimit'          => 'transactions',
         'mass_transaction'      => 'transactions',
     ];
@@ -211,7 +212,7 @@ class MenuCnst
         ],
         'users' => [
             'users_modules' => [
-                'fa'        => 'cogs',
+                'fa'        => 'cog',
                 'label'     => 'Submodules en velden',
                 'route'     => 'users_modules',
             ],
@@ -250,15 +251,22 @@ class MenuCnst
             ],
         ],
         'transactions' => [
+            'transactions_modules'  => [
+                'fa'    => 'cog',
+                'label' => 'Submodules en velden',
+                'route' => 'transactions_modules',
+            ],
             'autominlimit'		=> [
                 'fa'        => 'arrows-v',
                 'label'     => 'Auto Min Limiet',
                 'route'     => 'autominlimit',
+                'config_en' => 'accounts.limits.auto_min.enabled',
             ],
             'mass_transaction'	=> [
                 'fa'        => 'exchange',
                 'label'     => 'Massa-Transactie',
                 'route'     => 'mass_transaction',
+                'config_en' => 'transactions.mass.enabled',
             ],
         ],
     ];

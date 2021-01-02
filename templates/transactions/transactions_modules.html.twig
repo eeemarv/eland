@@ -1,0 +1,36 @@
+{%- extends 'base/navbar.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- block content -%}
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+
+    {{- form_start(form) -}}
+    <div class="custom-checkbox">
+
+    {{- form_row(form.accounts_limits_auto_min_enabled, {
+        'label': 'Auto min limiet',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.transactions_mass_enabled, {
+        'label': 'Massa-transactie',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_widget(form.submit, {
+        'label': 'Aanpassen',
+        'attr': {'class': 'btn-primary btn-lg'},
+        'translation_domain': false
+    }) -}}
+
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+    </div>
+    {{- form_end(form) -}}
+
+    </div>
+</div>
+{%- endblock content -%}

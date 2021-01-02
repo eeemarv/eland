@@ -33,6 +33,11 @@ class AutoMinLimitController extends AbstractController
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
+        if (!$config_service->get_bool('accounts.limits.auto_min.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Submodule auto min limit not enabled.');
+        }
+
         if ($request->isMethod('POST'))
         {
             if ($error_token = $form_token_service->get_error())
@@ -41,12 +46,10 @@ class AutoMinLimitController extends AbstractController
                 $link_render->redirect('autominlimit', $pp->ary(), []);
             }
 
-            $enabled = $request->request->get('enabled') ? true : false;
             $percentage = $request->request->get('percentage');
             $exclude_to = $request->request->get('exclude_to', '');
             $exclude_from = $request->request->get('exclude_from', '');
 
-            $config_service->set_bool('accounts.limits.auto_min.enabled', $enabled, $pp->schema());
             $config_service->set_int('accounts.limits.auto_min.percentage', $percentage, $pp->schema());
             $config_service->set_str('accounts.limits.auto_min.exclude.to', $exclude_to, $pp->schema());
             $config_service->set_str('accounts.limits.auto_min.exclude.from', $exclude_from, $pp->schema());
@@ -56,7 +59,6 @@ class AutoMinLimitController extends AbstractController
         }
         else
         {
-            $enabled = $config_service->get_bool('accounts.limits.auto_min.enabled', $pp->schema());
             $percentage = $config_service->get_int('accounts.limits.auto_min.percentage', $pp->schema());
             $exclude_to = $config_service->get_str('accounts.limits.auto_min.exclude.to', $pp->schema());
             $exclude_from = $config_service->get_str('accounts.limits.auto_min.exclude.from', $pp->schema());
@@ -88,14 +90,6 @@ class AutoMinLimitController extends AbstractController
         $out .= 'blijven altijd ongewijzigd.</p>';
 
         $out .= '<form method="post">';
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'        => 'enabled',
-            '%label%'       => 'Schakel de automatische minimum limiet in',
-            '%attr%'        => $enabled ? ' checked' : '',
-        ]);
-
-        $out .= '<hr>';
 
         $out .= '<h3>Voor accounts</h3>';
         $out .= '<p>De automatische minimum limiet is enkel van toepassing op actieve accounts die ';

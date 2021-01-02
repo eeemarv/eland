@@ -15,22 +15,13 @@ use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class UsersModulesController extends AbstractController
+class TransactionsModulesController extends AbstractController
 {
-    const USERS_MODULES = [
-/*
-        'users.new.enabled',
-        'users.leaving.enabled',
-*/
-        'users.fields.full_name.enabled',
-        'users.fields.postcode.enabled',
-        'users.fields.birthday.enabled',
-        'users.fields.hobbies.enabled',
-        'users.fields.comments.enabled',
-        'users.fields.admin_comments.enabled',
-        'periodic_mail.enabled',
-        'intersystem.enabled',
-        'mollie.enabled',
+    const TRANSACTIONS_MODULES = [
+
+
+        'accounts.limits.auto_min.enabled',
+        'transactions.mass.enabled',
     ];
 
     public function __invoke(
@@ -47,7 +38,7 @@ class UsersModulesController extends AbstractController
         $errors = [];
         $form_data = [];
 
-        foreach (self::USERS_MODULES as $key)
+        foreach (self::TRANSACTIONS_MODULES as $key)
         {
             $name = strtr($key, '.', '_');
             $form_data[$name] = $config_service->get_bool($key, $pp->schema());
@@ -55,7 +46,7 @@ class UsersModulesController extends AbstractController
 
         $builder = $this->createFormBuilder($form_data);
 
-        foreach (self::USERS_MODULES as $key)
+        foreach (self::TRANSACTIONS_MODULES as $key)
         {
             $name = strtr($key, '.', '_');
             $builder->add($name, CheckboxType::class);
@@ -85,21 +76,21 @@ class UsersModulesController extends AbstractController
         {
             $form_data = $form->getData();
 
-            foreach (self::USERS_MODULES as $key)
+            foreach (self::TRANSACTIONS_MODULES as $key)
             {
                 $name = strtr($key, '.', '_');
                 $config_service->set_bool($key, $form_data[$name], $pp->schema());
             }
 
-            $alert_service->success('Submodules/velden leden aangepast');
-            $link_render->redirect('users_modules', $pp->ary(), []);
+            $alert_service->success('Submodules/velden transacties aangepast');
+            $link_render->redirect('transactions_modules', $pp->ary(), []);
         }
 
-        $heading_render->fa('users');
-        $heading_render->add('Leden submodules en velden');
-        $menu_service->set('users_modules');
+        $heading_render->fa('exchange');
+        $heading_render->add('Transacties submodules en velden');
+        $menu_service->set('transactions_modules');
 
-        return $this->render('users/users_modules.html.twig', [
+        return $this->render('transactions/transactions_modules.html.twig', [
             'form'          => $form->createView(),
             'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),

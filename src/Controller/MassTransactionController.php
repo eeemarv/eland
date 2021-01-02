@@ -108,6 +108,11 @@ class MassTransactionController extends AbstractController
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
+        if (!$config_service->get_bool('transactions.mass.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Submodule mass-transaction not enabled.');
+        }
+
         $errors = [];
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
