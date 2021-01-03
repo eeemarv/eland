@@ -118,13 +118,22 @@ class LinkRender
 		string $route,
 		array $params_context,
 		array $params,
-		string $label
+		?string $label
 	):string
 	{
 		$out = '<a href="';
 		$out .= $this->context_path($route, $params_context, $params);
 		$out .= '">';
-		$out .= htmlspecialchars($label, ENT_QUOTES);
+
+		if (isset($label) && $label !== '')
+		{
+			$out .= htmlspecialchars($label, ENT_QUOTES);
+		}
+		else
+		{
+			$out .= '*** leeg ***';
+		}
+
 		$out .= '</a>';
 
 		return $out;
