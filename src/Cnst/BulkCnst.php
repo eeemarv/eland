@@ -193,9 +193,9 @@ class BulkCnst
 
     const TPL_CHECKBOX_BTN_INLINE = <<<'TPL'
     <label class="checkbox-inline" for="%name%">
-    <input type="checkbox" name="%name%" id="%name%"%attr%>
+    <input type="checkbox" name="%name%" value="1" id="%name%"%attr%>
     <span class="label-text"></span>&nbsp;
-    <span class="btn btn-default">%label%</span></label>
+    <span class="btn btn-%btn_class%">%label%</span></label>
     TPL;
 
     const TPL_CHECKBOX_INLINE = <<<'TPL'

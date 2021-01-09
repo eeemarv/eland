@@ -132,6 +132,7 @@ class MessagesEditController extends AbstractController
         $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
@@ -143,6 +144,7 @@ class MessagesEditController extends AbstractController
         $subject = $request->request->get('subject', '');
         $content = $request->request->get('content', '');
         $offer_want = $request->request->get('offer_want', '');
+        $service_stuff = $request->request->get('service_stuff', '');
         $category_id = (int) $request->request->get('category_id', '');
         $amount = $request->request->get('amount', '');
         $units = $request->request->get('units', '');
@@ -284,6 +286,19 @@ class MessagesEditController extends AbstractController
                 $errors[] = $err;
             }
 
+            if ($service_stuff_enabled)
+            {
+                if (!$service_stuff)
+                {
+                    $errors[] = 'Kies "diensten" of "spullen".';
+                }
+
+                if (!in_array($service_stuff, ['service', 'stuff']))
+                {
+                    throw new BadRequestHttpException('Unvalid service_stuff selection');
+                }
+            }
+
             if ($category_enabled)
             {
                 if (!$category_id)
@@ -309,7 +324,6 @@ class MessagesEditController extends AbstractController
                         throw new BadRequestException('A category containing sub-categories can not contain messages. (id: ' . $category_id . ')');
                     }
                 }
-
             }
 
             if (!$subject)
@@ -350,6 +364,11 @@ class MessagesEditController extends AbstractController
                     'access'            => $access,
                     'image_files'       => $image_files,
                 ];
+
+                if ($service_stuff_enabled)
+                {
+                    $post_message['service_stuff'] = $service_stuff;
+                }
 
                 if ($category_enabled)
                 {
@@ -475,6 +494,7 @@ class MessagesEditController extends AbstractController
                 $units = $message['units'] ?? '';
                 $category_id = $message['category_id'] ?? '';
                 $offer_want = $message['offer_want'] ?? '';
+                $service_stuff = $message['service_stuff'] ?? '';
                 $access = $message['access'];
                 $image_files = $message['image_files'];
 
@@ -624,6 +644,30 @@ class MessagesEditController extends AbstractController
         }
         $out .= '</div>';
         $out .= '</div>';
+
+        if ($service_stuff_enabled)
+        {
+            $service_stuff_tpl_ary = [
+                'service'   => 'Diensten',
+                'stuff'     => 'Spullen',
+            ];
+
+            $out .= '<div class="form-group">';
+            $out .= '<div class="custom-radio">';
+            foreach ($service_stuff_tpl_ary as $val => $lbl)
+            {
+                $class = 'btn btn-default';
+                $class .= $val === 'stuff' ? '-2' : '';
+                $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                    '%name%'    => 'service_stuff',
+                    '%value%'   => $val,
+                    '%attr%'    => ' required' . ($service_stuff === $val ? ' checked' : ''),
+                    '%label%'   => '<span class="' . $class . '">' . $lbl . '</span>',
+                ]);
+            }
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $out .= '<div class="form-group">';
         $out .= '<label for="subject" class="control-label">';

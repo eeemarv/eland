@@ -9,6 +9,12 @@
     {{- form_start(form) -}}
     <div class="custom-checkbox">
 
+    {{- form_row(form.messages_fields_service_stuff_enabled, {
+        'label': 'Diensten/spullen schakelaar',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
     {{- form_row(form.messages_fields_category_enabled, {
         'label': 'Categorieën',
         'translation_domain': false,

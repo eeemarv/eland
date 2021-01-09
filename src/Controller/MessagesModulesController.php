@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MessagesModulesController extends AbstractController
 {
     const MESSAGES_MODULES = [
+        'messages.fields.service_stuff.enabled',
         'messages.fields.category.enabled',
         'messages.fields.expires_at.enabled',
         'messages.fields.units.enabled',

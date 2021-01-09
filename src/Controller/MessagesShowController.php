@@ -74,6 +74,7 @@ class MessagesShowController extends AbstractController
         $errors = [];
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
@@ -479,6 +480,24 @@ class MessagesShowController extends AbstractController
                 $out .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
                 $out .= '</dd>';
             }
+        }
+
+        if ($service_stuff_enabled)
+        {
+            $out .= '<dt>Diensten / spullen</dt>';
+            $out .= '<dd>';
+            if (isset($message['service_stuff']))
+            {
+                $se_st = MessageTypeCnst::SERVICE_STUFF_TPL_ARY[$message['service_stuff']];
+                $out .= '<span class="btn btn-' . $se_st['btn_class'] . '">';
+                $out .= $se_st['label'];
+                $out .= '</span>';
+            }
+            else
+            {
+                $out .= '<i>onbepaald</i>';
+            }
+            $out .= '</dd>';
         }
 
         if ($intersystems_service->get_count($pp->schema()))

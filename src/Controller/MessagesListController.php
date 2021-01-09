@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\BulkCnst;
+use App\Cnst\MenuCnst;
+use App\Cnst\MessageTypeCnst;
 use App\Controller\MessagesShowController;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -793,6 +795,7 @@ class MessagesListController extends AbstractController
         TypeaheadService $typeahead_service
     ):array
     {
+        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
@@ -880,70 +883,84 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $filter_valid = $expires_at_enabled
-            && isset($filter['valid'])
-            && (isset($filter['valid']['yes']) xor isset($filter['valid']['no']));
+        $filter_valid_expired = $expires_at_enabled
+            && (isset($filter['valid']) xor isset($filter['expired']));
 
-        if ($filter_valid)
+        if ($filter_valid_expired)
         {
-            if (isset($filter['valid']['yes']))
+            if (isset($filter['valid']))
             {
                 $sql['where'][] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
-                $params['f']['valid']['yes'] = 'on';
+                $params['f']['valid'] = '1';
             }
             else
             {
                 $sql['where'][] = 'm.expires_at < timezone(\'utc\', now())';
-                $params['f']['valid']['no'] = 'on';
+                $params['f']['expired'] = '1';
             }
         }
 
-        $filter_type = isset($filter['type'])
-            && (isset($filter['type']['want']) xor isset($filter['type']['offer']));
+        $filter_offer_want = isset($filter['want']) xor isset($filter['offer']);
 
-        if ($filter_type)
+        if ($filter_offer_want)
         {
-            if (isset($filter['type']['want']))
+            if (isset($filter['want']))
             {
                 $sql['where'][] = 'm.offer_want = \'want\'';
-                $params['f']['type']['want'] = 'on';
+                $params['f']['want'] = '1';
             }
             else
             {
                 $sql['where'][] = 'm.offer_want = \'offer\'';
-                $params['f']['type']['offer'] = 'on';
+                $params['f']['offer'] = '1';
             }
         }
 
-        $filter_ustatus = isset($filter['ustatus']) &&
-            !(isset($filter['ustatus']['new'])
-                && isset($filter['ustatus']['leaving'])
-                && isset($filter['ustatus']['active']));
+        $filter_service_stuff = $service_stuff_enabled
+            && (isset($filter['service']) xor isset($filter['stuff']));
 
-        if ($filter_ustatus)
+        if ($filter_service_stuff)
+        {
+            if (isset($filter['service']))
+            {
+                $sql['where'][] = 'm.service_stuff = \'service\'';
+                $params['f']['service'] = '1';
+            }
+            else
+            {
+                $sql['where'][] = 'm.service_stuff = \'stuff\'';
+                $params['f']['stuff'] = '1';
+            }
+        }
+
+        $filter_user_status = isset($filter['u-new'])
+            || isset($filter['u-leaving'])
+            || isset($filter['u-active']);
+
+        if ($filter_user_status)
         {
             $ustatus_sql = [];
 
-            if (isset($filter['ustatus']['new']))
+            if (isset($filter['u-new']))
             {
                 $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
                 $sql['params'][] = $new_user_treshold;
                 $sql['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['ustatus']['new'] = 'on';
+                $params['f']['u-new'] = '1';
             }
 
-            if (isset($filter['ustatus']['leaving']))
+            if (isset($filter['u-leaving']))
             {
                 $ustatus_sql[] = 'u.status = 2';
-                $params['f']['ustatus']['leaving'] = 'on';
+                $params['f']['u-leaving'] = '1';
             }
 
-            if (isset($filter['ustatus']['active']))
+            if (isset($filter['u-active']))
             {
                 $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
                 $sql['params'][] = $new_user_treshold;
                 $sql['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['ustatus']['active'] = 'on';
+                $params['f']['u-active'] = '1';
             }
 
             if (count($ustatus_sql))
@@ -1164,9 +1181,10 @@ class MessagesListController extends AbstractController
         $assets_service->add(['messages_filter.js']);
 
         $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
-            || $filter_type
-            || $filter_valid
-            || $filter_ustatus;
+            || $filter_offer_want
+            || $filter_valid_expired
+            || $filter_service_stuff
+            || $filter_user_status;
 
         $filtered = ($filter['q'] ?? false) || $filter_panel_open;
 
@@ -1259,57 +1277,78 @@ class MessagesListController extends AbstractController
         $out .= '>';
 
         $out .= '<div class="row">';
-
-        $offer_want_options = [
-            'want'		=> 'Vraag',
-            'offer'		=> 'Aanbod',
-        ];
-
-        $out .= '<div class="col-md-12">';
+        $out .= '<div class="col-sm-4">';
         $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
-        $out .= self::get_checkbox_filter($offer_want_options, 'type', $filter);
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-
-        if ($expires_at_enabled)
+        foreach (MessageTypeCnst::OFFER_WANT_TPL_ARY as $key => $d)
         {
-            $out .= '<div class="row">';
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                '%name%'        => 'f[' . $key . ']',
+                '%attr%'        => isset($filter[$key]) ? ' checked' : '',
+                '%label%'       => $d['label'],
+                '%btn_class%'   => $d['btn_class']
+            ]);
+        }
 
-            $valid_options = [
-                'yes'		=> 'Geldig',
-                'no'		=> 'Vervallen',
-            ];
+        $out .= '</div>';
+        $out .= '</div>';
 
-            $out .= '<div class="col-md-12">';
+        if ($service_stuff_enabled)
+        {
+            $out .= '<div class="col-sm-4">';
             $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
-            $out .= self::get_checkbox_filter($valid_options, 'valid', $filter);
+            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
+            {
+                $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                    '%name%'        => 'f[' . $key . ']',
+                    '%attr%'        => isset($filter[$key]) ? ' checked' : '',
+                    '%label%'       => $d['label'],
+                    '%btn_class%'   => $d['btn_class']
+                ]);
+            }
 
-            $out .= '</div>';
             $out .= '</div>';
             $out .= '</div>';
         }
 
+        if ($expires_at_enabled)
+        {
+            $out .= '<div class="col-sm-4">';
+            $out .= '<div class="input-group margin-bottom custom-checkbox">';
+
+            foreach (MessageTypeCnst::VALID_EXPIRED_TPL_ARY as $key => $d)
+            {
+                $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                    '%name%'        => 'f[' . $key . ']',
+                    '%attr%'        => isset($filter[$key]) ? ' checked' : '',
+                    '%label%'       => $d['label'],
+                    '%btn_class%'   => $d['btn_class']
+                ]);
+            }
+
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
+        $out .= '</div>';
+
         $out .= '<div class="row">';
-
-        $user_status_options = [
-            'active'	=> 'Niet in- of uitstappers',
-            'new'		=> 'Instappers',
-            'leaving'	=> 'Uitstappers',
-        ];
-
-        $out .= '<div class="col-md-12">';
+        $out .= '<div class="col-sm-12">';
         $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
-        $out .= self::get_checkbox_filter($user_status_options, 'ustatus', $filter);
+        foreach (MessageTypeCnst::USERS_TPL_ARY as $key => $d)
+        {
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                '%name%'        => 'f[' . $key . ']',
+                '%attr%'        => isset($filter[$key]) ? ' checked' : '',
+                '%label%'       => $d['label'],
+                '%btn_class%'   => $d['btn_class']
+            ]);
+        }
 
         $out .= '</div>';
         $out .= '</div>';
-
         $out .= '</div>';
 
         $out .= '<div class="row">';

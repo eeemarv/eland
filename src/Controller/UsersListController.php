@@ -578,7 +578,7 @@ class UsersListController extends AbstractController
         $message_type_filter = [
             'wants'		=> ['want' => 'on'],
             'offers'	=> ['offer' => 'on'],
-            'total'		=> '',
+            'total'		=> [],
         ];
 
         $columns['a'] = [
@@ -1598,12 +1598,10 @@ class UsersListController extends AbstractController
 
                     if (isset($msgs_count[$id][$key]))
                     {
-                        $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                            [
-                                'f'	=> [
+                        $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(), [
+                                'f'	=> array_merge([
                                     'uid' 	=> $id,
-                                    'type' 	=> $message_type_filter[$key],
-                                ],
+                                ], $message_type_filter[$key]),
                             ],
                             (string) $msgs_count[$id][$key]);
                     }
