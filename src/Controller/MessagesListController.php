@@ -116,9 +116,9 @@ class MessagesListController extends AbstractController
 
         $errors = [];
 
+        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
         $intersytem_en = $config_service->get_intersystem_en($pp->schema());
         $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
 
@@ -243,15 +243,20 @@ class MessagesListController extends AbstractController
                 $link_render->redirect($vr->get('messages'), $pp->ary(), []);
             }
 
-            if ($bulk_submit_action === 'access' && !count($errors))
+            if ($bulk_submit_action === 'service_stuff' && !count($errors))
             {
-                if (!$intersytem_en)
+                if (!$service_stuff_enabled)
                 {
-                    throw new BadRequestHttpException('Bulk access not enabled when intersystem functionality is not enabledd.');
+                    throw new BadRequestHttpException('Service/stuff sub-module not enabled.');
+                }
+
+                if (!in_array($bulk_field_value, ['service', 'stuff']))
+                {
+                    throw new BadRequestHttpException('Unvalid value: ' . $bulk_field_value);
                 }
 
                 $msg_update = [
-                    'access'    => $bulk_field_value,
+                    'service_stuff'   => $bulk_field_value,
                 ];
 
                 foreach ($update_msgs_ary as $id => $row)
@@ -261,11 +266,11 @@ class MessagesListController extends AbstractController
 
                 if (count($selected_messages) > 1)
                 {
-                    $alert_service->success('De zichtbaarheid van de berichten is aangepast.');
+                    $alert_service->success('De berichten zijn aangepast.');
                 }
                 else
                 {
-                    $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
+                    $alert_service->success('Het bericht is aangepast.');
                 }
 
                 $link_render->redirect($vr->get('messages'), $pp->ary(), []);
@@ -312,6 +317,34 @@ class MessagesListController extends AbstractController
                 else
                 {
                     $alert_service->success('De categorie van het bericht is aangepast.');
+                }
+
+                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
+            }
+
+            if ($bulk_submit_action === 'access' && !count($errors))
+            {
+                if (!$intersytem_en)
+                {
+                    throw new BadRequestHttpException('Bulk access not enabled when intersystem functionality is not enabledd.');
+                }
+
+                $msg_update = [
+                    'access'    => $bulk_field_value,
+                ];
+
+                foreach ($update_msgs_ary as $id => $row)
+                {
+                    $db->update($pp->schema() . '.messages', $msg_update, ['id' => $id]);
+                }
+
+                if (count($selected_messages) > 1)
+                {
+                    $alert_service->success('De zichtbaarheid van de berichten is aangepast.');
+                }
+                else
+                {
+                    $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
                 }
 
                 $link_render->redirect($vr->get('messages'), $pp->ary(), []);
@@ -612,17 +645,23 @@ class MessagesListController extends AbstractController
                 $out .= 'data-toggle="tab">Verlengen</a></li>';
             }
 
-            if ($intersytem_en)
+            if ($service_stuff_enabled)
             {
-                $out .= '<li>';
-                $out .= '<a href="#access_tab" data-toggle="tab">';
-                $out .= 'Zichtbaarheid</a><li>';
+                $out .= '<li><a href="#service_stuff_tab" ';
+                $out .= 'data-toggle="tab">Diensten / Spullen</a></li>';
             }
 
             if ($category_enabled)
             {
                 $out .= '<li><a href="#category_tab" ';
                 $out .= 'data-toggle="tab">Categorie</a></li>';
+            }
+
+            if ($intersytem_en)
+            {
+                $out .= '<li>';
+                $out .= '<a href="#access_tab" data-toggle="tab">';
+                $out .= 'Zichtbaarheid</a><li>';
             }
 
             $out .= '</ul>';
@@ -660,22 +699,36 @@ class MessagesListController extends AbstractController
                 $out .= '</div>';
             }
 
-            if ($intersytem_en)
+            if ($service_stuff_enabled)
             {
-                $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
-                $out .= '<h3>Zichtbaarheid instellen</h3>';
+                $out .= '<div role="tabpanel" class="tab-pane" id="service_stuff_tab">';
+                $out .= '<h3>Diensten of spullen</h3>';
                 $out .= '<form method="post">';
 
-                $out .= $item_access_service->get_radio_buttons('bulk_field[access]', '', '', true);
+                $out .= '<div class="form-group">';
+                $out .= '<div class="custom-radio">';
+
+                foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
+                {
+                    $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                        '%name%'    => 'bulk_field[service_stuff]',
+                        '%value%'   => $key,
+                        '%attr%'    => ' required',
+                        '%label%'   => '<span class="btn btn-' . $render_data['btn_class'] . '">' . $render_data['label'] . '</span>',
+                    ]);
+                }
+
+                $out .= '</div>';
+                $out .= '</div>';
 
                 $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-                    '%name%'    => 'bulk_verify[access]',
+                    '%name%'    => 'bulk_verify[service_stuff]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
                 $out .= '<input type="submit" value="Aanpassen" ';
-                $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
+                $out .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
                 $out .= $form_token_service->get_hidden_input();
                 $out .= '</form>';
                 $out .= '</div>';
@@ -702,8 +755,29 @@ class MessagesListController extends AbstractController
                     '%attr%'    => ' required',
                 ]);
 
-                $out .= '<input type="submit" value="Categorie anpassen" ';
+                $out .= '<input type="submit" value="Categorie aanpassen" ';
                 $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
+                $out .= $form_token_service->get_hidden_input();
+                $out .= '</form>';
+                $out .= '</div>';
+            }
+
+            if ($intersytem_en)
+            {
+                $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
+                $out .= '<h3>Zichtbaarheid instellen</h3>';
+                $out .= '<form method="post">';
+
+                $out .= $item_access_service->get_radio_buttons('bulk_field[access]', '', '', true);
+
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[access]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
+
+                $out .= '<input type="submit" value="Aanpassen" ';
+                $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
                 $out .= $form_token_service->get_hidden_input();
                 $out .= '</form>';
                 $out .= '</div>';
@@ -740,26 +814,6 @@ class MessagesListController extends AbstractController
         $out .= $pagination_render->get();
 
         $menu_service->set('messages');
-
-        return $out;
-    }
-
-    public static function get_checkbox_filter(
-        array $checkbox_ary,
-        string $filter_id,
-        array $filter_ary
-    ):string
-    {
-        $out = '';
-
-        foreach ($checkbox_ary as $key => $label)
-        {
-            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
-                '%name%'    => 'f[' . $filter_id . '][' . $key . ']',
-                '%attr%'    => isset($filter_ary[$filter_id][$key]) ? ' checked' : '',
-                '%label%'   => $label,
-            ]);
-        }
 
         return $out;
     }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Cnst\BulkCnst;
+use App\Cnst\MessageTypeCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -624,47 +625,37 @@ class MessagesEditController extends AbstractController
             $out .= '</div>';
         }
 
-        $offer_want_tpl_ary = [
-            'offer'     => 'Aanbod',
-            'want'      => 'Vraag',
-        ];
-
         $out .= '<div class="form-group">';
         $out .= '<div class="custom-radio">';
-        foreach ($offer_want_tpl_ary as $val => $lbl)
+
+        foreach (MessageTypeCnst::OFFER_WANT_TPL_ARY as $key => $render_data)
         {
-            $class = 'btn btn-default';
-            $class .= $val === 'want' ? '-2' : '';
             $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                 '%name%'    => 'offer_want',
-                '%value%'   => $val,
-                '%attr%'    => ' required' . ($offer_want === $val ? ' checked' : ''),
-                '%label%'   => '<span class="' . $class . '">' . $lbl . '</span>',
+                '%value%'   => $key,
+                '%attr%'    => ' required' . ($offer_want === $key ? ' checked' : ''),
+                '%label%'   => '<span class="btn btn-' . $render_data['btn_class'] . '">' . $render_data['label'] . '</span>',
             ]);
         }
+
         $out .= '</div>';
         $out .= '</div>';
 
         if ($service_stuff_enabled)
         {
-            $service_stuff_tpl_ary = [
-                'service'   => 'Diensten',
-                'stuff'     => 'Spullen',
-            ];
-
             $out .= '<div class="form-group">';
             $out .= '<div class="custom-radio">';
-            foreach ($service_stuff_tpl_ary as $val => $lbl)
+
+            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
             {
-                $class = 'btn btn-default';
-                $class .= $val === 'stuff' ? '-2' : '';
                 $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                     '%name%'    => 'service_stuff',
-                    '%value%'   => $val,
-                    '%attr%'    => ' required' . ($service_stuff === $val ? ' checked' : ''),
-                    '%label%'   => '<span class="' . $class . '">' . $lbl . '</span>',
+                    '%value%'   => $key,
+                    '%attr%'    => ' required' . ($service_stuff === $key ? ' checked' : ''),
+                    '%label%'   => '<span class="btn btn-' . $render_data['btn_class'] . '">' . $render_data['label'] . '</span>',
                 ]);
             }
+
             $out .= '</div>';
             $out .= '</div>';
         }

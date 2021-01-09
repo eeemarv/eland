@@ -486,6 +486,7 @@ class MessagesShowController extends AbstractController
         {
             $out .= '<dt>Diensten / spullen</dt>';
             $out .= '<dd>';
+
             if (isset($message['service_stuff']))
             {
                 $se_st = MessageTypeCnst::SERVICE_STUFF_TPL_ARY[$message['service_stuff']];
@@ -495,8 +496,9 @@ class MessagesShowController extends AbstractController
             }
             else
             {
-                $out .= '<i>onbepaald</i>';
+                $out .= '<span class="text-danger"><b><em>* Onbepaald *</em></b></span>';
             }
+
             $out .= '</dd>';
         }
 
