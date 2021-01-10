@@ -39,6 +39,11 @@ class MessageTypeCnst
             'label'     => 'Spullen',
             'btn_class' => 'default-2',
         ],
+        'null-service-stuff' => [
+            'label'     => 'D/S onbepaald',
+            'btn_class' => 'danger',
+            'title'     => 'Diensten of spullen onbepaald',
+        ],
     ];
 
     const VALID_EXPIRED_TPL_ARY = [
@@ -54,16 +59,19 @@ class MessageTypeCnst
 
     const USERS_TPL_ARY = [
         'u-active' => [
-            'label'     => 'Niet in- of uitstappers',
+            'label'     => 'Actief',
             'btn_class' => 'default',
+            'title'     => 'Van actieve gebruikers, niet in- of uitstappend'
         ],
         'u-new'   => [
             'label'     => 'Instappers',
             'btn_class' => 'success',
+            'title'     => 'Van nieuwe gebruikers',
         ],
         'u-leaving' => [
             'label'     => 'Uitstappers',
             'btn_class' => 'danger',
+            'title'     => 'Van uitstappende gebruikers',
         ],
     ];
 }

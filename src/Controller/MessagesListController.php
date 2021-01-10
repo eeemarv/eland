@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\BulkCnst;
-use App\Cnst\MenuCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Controller\MessagesShowController;
 use App\Render\AccountRender;
@@ -250,9 +249,14 @@ class MessagesListController extends AbstractController
                     throw new BadRequestHttpException('Service/stuff sub-module not enabled.');
                 }
 
-                if (!in_array($bulk_field_value, ['service', 'stuff']))
+                if (!in_array($bulk_field_value, ['service', 'stuff', 'null-service-stuff']))
                 {
                     throw new BadRequestHttpException('Unvalid value: ' . $bulk_field_value);
+                }
+
+                if ($bulk_field_value === 'null-service-stuff')
+                {
+                    $bulk_field_value = null;
                 }
 
                 $msg_update = [
@@ -710,11 +714,24 @@ class MessagesListController extends AbstractController
 
                 foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
                 {
+                    $label = '<span class="btn btn-';
+                    $label .= $render_data['btn_class'];
+                    $label .= '"';
+
+                    if (isset($render_data['title']))
+                    {
+                        $label .= ' title="' . $render_data['title'] . '"';
+                    }
+
+                    $label .= '>';
+                    $label .= $render_data['label'];
+                    $label .= '</span>';
+
                     $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                         '%name%'    => 'bulk_field[service_stuff]',
                         '%value%'   => $key,
                         '%attr%'    => ' required',
-                        '%label%'   => '<span class="btn btn-' . $render_data['btn_class'] . '">' . $render_data['label'] . '</span>',
+                        '%label%'   => $label,
                     ]);
                 }
 
@@ -879,10 +896,14 @@ class MessagesListController extends AbstractController
             ],
         ];
 
-        $sql = [
+        $sql_map = [
             'where'     => [],
             'params'    => [],
             'types'     => [],
+        ];
+
+        $sql = [
+            'common'   => $sql_map,
         ];
 
         $is_owner = isset($filter['uid'])
@@ -903,11 +924,12 @@ class MessagesListController extends AbstractController
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $sql['where'][] = '(m.subject ilike ? or m.content ilike ?)';
-            $sql['params'][] = '%' . $filter['q'] . '%';
-            $sql['params'][] = '%' . $filter['q'] . '%';
-            $sql['types'][] = \PDO::PARAM_INT;
-            $sql['types'][] = \PDO::PARAM_INT;
+            $sql['q'] = $sql_map;
+            $sql['q']['where'][] = '(m.subject ilike ? or m.content ilike ?)';
+            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['types'][] = \PDO::PARAM_INT;
+            $sql['q']['types'][] = \PDO::PARAM_INT;
             $params['f']['q'] = $filter['q'];
         }
 
@@ -922,18 +944,20 @@ class MessagesListController extends AbstractController
                 where code = ?',
                 [$fcode], [\PDO::PARAM_STR]);
 
+            $sql['fcode'] = $sql_map;
+
             if ($fuid)
             {
-                $sql['where'][] = 'u.id = ?';
-                $sql['params'][] = $fuid;
-                $sql['types'][] = \PDO::PARAM_INT;
+                $sql['fcode']['where'][] = 'u.id = ?';
+                $sql['fcode']['params'][] = $fuid;
+                $sql['fcode']['types'][] = \PDO::PARAM_INT;
 
                 $fcode = $account_render->str((int) $fuid, $pp->schema());
                 $params['f']['fcode'] = $fcode;
             }
             else
             {
-                $sql['where'][] = '1 = 2';
+                $sql['fcode']['where'][] = '1 = 2';
             }
         }
 
@@ -942,48 +966,84 @@ class MessagesListController extends AbstractController
 
         if ($filter_valid_expired)
         {
+            $sql_valid_expired_where = [];
+            $sql['valid_expired'] = $sql_map;
+
             if (isset($filter['valid']))
             {
-                $sql['where'][] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
+                $sql_valid_expired_where[] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
                 $params['f']['valid'] = '1';
             }
-            else
+
+            if (isset($filter['expired']))
             {
-                $sql['where'][] = 'm.expires_at < timezone(\'utc\', now())';
+                $sql_valid_expired_where[] = 'm.expires_at < timezone(\'utc\', now())';
                 $params['f']['expired'] = '1';
+            }
+
+            if (count($sql_valid_expired_where))
+            {
+                $sql['valid_expired']['where'][] = ' (' . implode(' or ', $sql_valid_expired_where) . ') ';
             }
         }
 
-        $filter_offer_want = isset($filter['want']) xor isset($filter['offer']);
+        $filter_offer_want = isset($filter['want']) || isset($filter['offer']);
 
         if ($filter_offer_want)
         {
+            $sql_offer_want_where = [];
+            $sql['offer_want'] = $sql_map;
+
             if (isset($filter['want']))
             {
-                $sql['where'][] = 'm.offer_want = \'want\'';
+                $sql_offer_want_where[] = 'm.offer_want = \'want\'';
                 $params['f']['want'] = '1';
             }
-            else
+
+            if (isset($filter['offer']))
             {
-                $sql['where'][] = 'm.offer_want = \'offer\'';
+                $sql_offer_want_where[] = 'm.offer_want = \'offer\'';
                 $params['f']['offer'] = '1';
+            }
+
+            if (count($sql_offer_want_where))
+            {
+                $sql['offer_want']['where'][] = ' (' . implode(' or ', $sql_offer_want_where) . ') ';
             }
         }
 
         $filter_service_stuff = $service_stuff_enabled
-            && (isset($filter['service']) xor isset($filter['stuff']));
+            && (isset($filter['service'])
+                || isset($filter['stuff'])
+                || isset($filter['null-service-stuff'])
+            );
 
         if ($filter_service_stuff)
         {
+            $sql_service_stuff_where = [];
+            $sql['service_stuff'] = $sql_map;
+
             if (isset($filter['service']))
             {
-                $sql['where'][] = 'm.service_stuff = \'service\'';
+                $sql_service_stuff_where[] = 'm.service_stuff = \'service\'';
                 $params['f']['service'] = '1';
             }
-            else
+
+            if (isset($filter['stuff']))
             {
-                $sql['where'][] = 'm.service_stuff = \'stuff\'';
+                $sql_service_stuff_where[] = 'm.service_stuff = \'stuff\'';
                 $params['f']['stuff'] = '1';
+            }
+
+            if (isset($filter['null-service-stuff']))
+            {
+                $sql_service_stuff_where[] = 'm.service_stuff is null';
+                $params['f']['null-service-stuff'] = '1';
+            }
+
+            if (count($sql_service_stuff_where))
+            {
+                $sql['service_stuff']['where'][] = '(' . implode(' or ', $sql_service_stuff_where) . ')';
             }
         }
 
@@ -993,52 +1053,54 @@ class MessagesListController extends AbstractController
 
         if ($filter_user_status)
         {
-            $ustatus_sql = [];
+            $sql_user_status_where = [];
+            $sql['user_status'] = $sql_map;
 
             if (isset($filter['u-new']))
             {
-                $ustatus_sql[] = '(u.adate > ? and u.status = 1)';
-                $sql['params'][] = $new_user_treshold;
-                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $sql_user_status_where[] = '(u.adate > ? and u.status = 1)';
+                $sql['user_status']['params'][] = $new_user_treshold;
+                $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['u-new'] = '1';
             }
 
             if (isset($filter['u-leaving']))
             {
-                $ustatus_sql[] = 'u.status = 2';
+                $sql_user_status_where[] = 'u.status = 2';
                 $params['f']['u-leaving'] = '1';
             }
 
             if (isset($filter['u-active']))
             {
-                $ustatus_sql[] = '(u.adate <= ? and u.status = 1)';
-                $sql['params'][] = $new_user_treshold;
-                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $sql_user_status_where[] = '(u.adate <= ? and u.status = 1)';
+                $sql['user_status']['params'][] = $new_user_treshold;
+                $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['u-active'] = '1';
             }
 
-            if (count($ustatus_sql))
+            if (count($sql_user_status_where))
             {
-                $sql['where'][] = '(' . implode(' or ', $ustatus_sql) . ')';
+                $sql['user_status']['where'][] = '(' . implode(' or ', $sql_user_status_where) . ')';
             }
         }
 
         if ($pp->is_guest())
         {
-            $sql['where'][] = 'm.access = \'guest\'';
+            $sql['is_guest'] = $sql_map;
+            $sql['is_guest']['where'][] = 'm.access = \'guest\'';
         }
 
-        $sql['where'][] = 'u.status in (1, 2)';
-
-        $omit_cat_sql = $sql;
+        $sql['common']['where'][] = 'u.status in (1, 2)';
 
         if (isset($filter['cid'])
             && $filter['cid']
             && $category_enabled)
         {
+            $sql['category'] = $sql_map;
+
             if ($filter['cid'] === 'null')
             {
-                $sql['where'][] = 'm.category_id is null';
+                $sql['category']['where'][] = 'm.category_id is null';
             }
             else
             {
@@ -1053,17 +1115,25 @@ class MessagesListController extends AbstractController
                     throw new BadRequestHttpException('Category not found, id:' . $filter['cid']);
                 }
 
-                $sql['where'][] = 'c.left_id >= ? and c.right_id <= ?';
-                $sql['params'][] = $cat_lr['left_id'];
-                $sql['params'][] = $cat_lr['right_id'];
-                $sql['types'][] = \PDO::PARAM_INT;
-                $sql['types'][] = \PDO::PARAM_INT;
+                $sql['category']['where'][] = 'c.left_id >= ? and c.right_id <= ?';
+                $sql['category']['params'][] = $cat_lr['left_id'];
+                $sql['category']['params'][] = $cat_lr['right_id'];
+                $sql['category']['types'][] = \PDO::PARAM_INT;
+                $sql['category']['types'][] = \PDO::PARAM_INT;
             }
 
             $params['f']['cid'] = $filter['cid'];
         }
 
-        $sql_where = ' and ' . implode(' and ', $sql['where']) . ' ';
+        $sql['pagination'] = $sql_map;
+        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+
+        $sql_where = ' and ';
+        $sql_where .= implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_where .= ' ';
 
         $sort_ary = self::COLUMNS_DEF_ARY[$params['s']['col']]['sort'];
         $order_query = [];
@@ -1071,12 +1141,6 @@ class MessagesListController extends AbstractController
         {
             $order_query[] = $col . ' ' . $params['s']['dir'];
         }
-
-        $sql_pag = $sql;
-        $sql_pag['params'][] = $params['p']['limit'];
-        $sql_pag['types'][] = \PDO::PARAM_INT;
-        $sql_pag['params'][] = $params['p']['start'];
-        $sql_pag['types'][] = \PDO::PARAM_INT;
 
         $query = 'select m.*, u.postcode
             from ' . $pp->schema() . '.messages m
@@ -1092,7 +1156,9 @@ class MessagesListController extends AbstractController
 
         $messages = [];
 
-        $st = $db->executeQuery($query, $sql_pag['params'], $sql_pag['types']);
+        $st = $db->executeQuery($query,
+            array_merge(...array_column($sql, 'params')),
+            array_merge(...array_column($sql, 'types')));
 
         while ($msg = $st->fetch())
         {
@@ -1100,22 +1166,156 @@ class MessagesListController extends AbstractController
             $messages[] = $msg;
         }
 
-        $omit_cat_sql_where = ' and ' . implode(' and ', $omit_cat_sql['where']) . ' ';
+        $count_ary = [
+            'offer'                 => 0,
+            'want'                  => 0,
+            'service'               => 0,
+            'stuff'                 => 0,
+            'null-service-stuff'    => 0,
+            'valid'                 => 0,
+            'expired'               => 0,
+            'u-active'              => 0,
+            'u-new'                 => 0,
+            'u-leaving'             => 0,
+        ];
+
+        $sql_omit_pagination = $sql;
+        unset($sql_omit_pagination['pagination']);
+
+        $sql_omit_offer_want = $sql_omit_pagination;
+        unset($sql_omit_offer_want['offer_want']);
+
+        $sql_omit_offer_want_where = ' and ';
+        $sql_omit_offer_want_where .= implode(' and ', array_merge(...array_column($sql_omit_offer_want, 'where')));
+        $sql_omit_offer_want_where .= ' ';
+
+        $count_offer_want_query = 'select count(m.*), m.offer_want
+            from ' . $pp->schema() . '.messages m
+            inner join ' . $pp->schema() . '.users u
+                on m.user_id = u.id
+            left join ' . $pp->schema() . '.categories c
+                on c.id = m.category_id
+            where 1 = 1'. $sql_omit_offer_want_where . '
+            group by m.offer_want';
+
+        $stmt = $db->executeQuery($count_offer_want_query,
+            array_merge(...array_column($sql_omit_offer_want, 'params')),
+            array_merge(...array_column($sql_omit_offer_want, 'types')));
+
+        while($row = $stmt->fetch())
+        {
+            $count_ary[$row['offer_want']] = $row['count'];
+        }
+
+        if ($service_stuff_enabled)
+        {
+            $sql_omit_service_stuff = $sql_omit_pagination;
+            unset($sql_omit_service_stuff['service_stuff']);
+
+            $sql_omit_service_stuff_where = ' and ';
+            $sql_omit_service_stuff_where .= implode(' and ', array_merge(...array_column($sql_omit_service_stuff, 'where')));
+            $sql_omit_service_stuff_where .= ' ';
+
+            $count_service_stuff_query = 'select count(m.*), m.service_stuff
+                from ' . $pp->schema() . '.messages m
+                inner join ' . $pp->schema() . '.users u
+                    on m.user_id = u.id
+                left join ' . $pp->schema() . '.categories c
+                    on c.id = m.category_id
+                where 1 = 1'. $sql_omit_service_stuff_where . '
+                group by m.service_stuff';
+
+            $stmt = $db->executeQuery($count_service_stuff_query,
+                array_merge(...array_column($sql_omit_service_stuff, 'params')),
+                array_merge(...array_column($sql_omit_service_stuff, 'types')));
+
+            while($row = $stmt->fetch())
+            {
+                $count_ary[$row['service_stuff'] ?? 'null-service-stuff'] = $row['count'];
+            }
+        }
+
+        if ($expires_at_enabled)
+        {
+            $sql_omit_valid_expired = $sql_omit_pagination;
+            unset($sql_omit_valid_expired['valid_expired']);
+
+            $sql_omit_valid_expired_where = ' and ';
+            $sql_omit_valid_expired_where .= implode(' and ', array_merge(...array_column($sql_omit_valid_expired, 'where')));
+            $sql_omit_valid_expired_where .= ' ';
+
+            $count_valid_expired_query = 'select count(m.*),
+                    (m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null) as valid
+                from ' . $pp->schema() . '.messages m
+                inner join ' . $pp->schema() . '.users u
+                    on m.user_id = u.id
+                left join ' . $pp->schema() . '.categories c
+                    on c.id = m.category_id
+                where 1 = 1'. $sql_omit_valid_expired_where . '
+                group by valid';
+
+            $stmt = $db->executeQuery($count_valid_expired_query,
+                array_merge(...array_column($sql_omit_valid_expired, 'params')),
+                array_merge(...array_column($sql_omit_valid_expired, 'types')));
+
+            while($row = $stmt->fetch())
+            {
+                $count_ary[$row['valid'] ? 'valid' : 'expired'] = $row['count'];
+            }
+        }
+
+        $sql_omit_user_status = $sql_omit_pagination;
+        unset($sql_omit_user_status['user_status']);
+
+        $sql_omit_user_status_where = ' and ';
+        $sql_omit_user_status_where .= implode(' and ', array_merge(...array_column($sql_omit_user_status, 'where')));
+        $sql_omit_user_status_where .= ' ';
+
+        $count_user_status_query = 'select count(m.*),
+                (case
+                    when u.status = 2 then \'u-leaving\'
+                    when u.status = 1 and u.adate > ? then \'u-new\'
+                    when u.status = 1 then \'u-active\'
+                    else \'inactive\'
+                end) as u_status
+            from ' . $pp->schema() . '.messages m
+            inner join ' . $pp->schema() . '.users u
+                on m.user_id = u.id
+            left join ' . $pp->schema() . '.categories c
+                on c.id = m.category_id
+            where 1 = 1'. $sql_omit_user_status_where . '
+            group by u_status';
+
+        $stmt = $db->executeQuery($count_user_status_query,
+            array_merge([$new_user_treshold], ...array_column($sql_omit_user_status, 'params')),
+            array_merge([Types::DATETIME_IMMUTABLE], ...array_column($sql_omit_user_status, 'types')));
+
+        while($row = $stmt->fetch())
+        {
+            $count_ary[$row['u_status']] = $row['count'];
+        }
+
+        $sql_omit_category = $sql_omit_pagination;
+        unset($sql_omit_category['category']);
+        $sql_omit_category_where = ' and ';
+        $sql_omit_category_where .= implode(' and ', array_merge(...array_column($sql_omit_category, 'where')));
+        $sql_omit_category_where .= ' ';
 
         $cat_count_ary = [];
         $no_cat_count = 0;
 
-        $cat_count_query = 'select count(m.*), m.category_id
+        $count_category_query = 'select count(m.*), m.category_id
             from ' . $pp->schema() . '.messages m, ' .
                 $pp->schema() . '.users u
             where m.user_id = u.id
-                ' . $omit_cat_sql_where . '
+                ' . $sql_omit_category_where . '
             group by m.category_id';
 
-        $st = $db->executeQuery($cat_count_query,
-            $omit_cat_sql['params'], $omit_cat_sql['types']);
+        $stmt = $db->executeQuery($count_category_query,
+            array_merge(...array_column($sql_omit_category, 'params')),
+            array_merge(...array_column($sql_omit_category, 'types')));
 
-        while($row = $st->fetch())
+        while($row = $stmt->fetch())
         {
             if (isset($row['category_id']))
             {
@@ -1137,7 +1337,8 @@ class MessagesListController extends AbstractController
                 left join ' . $pp->schema() . '.categories c
                     on c.id = m.category_id
                 where 1 = 1'. $sql_where,
-                $sql['params'], $sql['types']);
+                array_merge(...array_column($sql_omit_pagination, 'params')),
+                array_merge(...array_column($sql_omit_pagination, 'types')));
         }
         else
         {
@@ -1330,8 +1531,20 @@ class MessagesListController extends AbstractController
         $out .= $filter_panel_open ? '' : ' class="collapse"';
         $out .= '>';
 
+        $col_w = 12;
+
+        if ($service_stuff_enabled || $expires_at_enabled)
+        {
+            $col_w = 6;
+
+            if ($service_stuff_enabled && $expires_at_enabled)
+            {
+                $col_w = 4;
+            }
+        }
+
         $out .= '<div class="row">';
-        $out .= '<div class="col-sm-4">';
+        $out .= '<div class="col-sm-' . $col_w . '">';
         $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
         foreach (MessageTypeCnst::OFFER_WANT_TPL_ARY as $key => $d)
@@ -1339,7 +1552,7 @@ class MessagesListController extends AbstractController
             $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
                 '%name%'        => 'f[' . $key . ']',
                 '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                '%label%'       => $d['label'],
+                '%label%'       => $d['label'] . ' (' . $count_ary[$key] . ')',
                 '%btn_class%'   => $d['btn_class']
             ]);
         }
@@ -1349,16 +1562,35 @@ class MessagesListController extends AbstractController
 
         if ($service_stuff_enabled)
         {
-            $out .= '<div class="col-sm-4">';
+            $out .= '<div class="col-sm-' . $col_w . '">';
             $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
             foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
             {
-                $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+                if ($key === 'null-service-stuff' && !$count_ary['null-service-stuff'])
+                {
+                    continue;
+                }
+
+                $label = '<span class="btn btn-';
+                $label .= $d['btn_class'];
+                $label .= '"';
+
+                if (isset($d['title']))
+                {
+                    $label .= ' title="' . $d['title'] . '"';
+                }
+
+                $label .= '>';
+                $label .= $d['label'];
+                $label .= ' (';
+                $label .= $count_ary[$key];
+                $label .= ')</span>';
+
+                $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
                     '%name%'        => 'f[' . $key . ']',
                     '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                    '%label%'       => $d['label'],
-                    '%btn_class%'   => $d['btn_class']
+                    '%label%'       => $label,
                 ]);
             }
 
@@ -1368,7 +1600,7 @@ class MessagesListController extends AbstractController
 
         if ($expires_at_enabled)
         {
-            $out .= '<div class="col-sm-4">';
+            $out .= '<div class="col-sm-' . $col_w . '">';
             $out .= '<div class="input-group margin-bottom custom-checkbox">';
 
             foreach (MessageTypeCnst::VALID_EXPIRED_TPL_ARY as $key => $d)
@@ -1376,8 +1608,8 @@ class MessagesListController extends AbstractController
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
                     '%name%'        => 'f[' . $key . ']',
                     '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                    '%label%'       => $d['label'],
-                    '%btn_class%'   => $d['btn_class']
+                    '%label%'       => $d['label'] . ' (' . $count_ary[$key] . ')',
+                    '%btn_class%'   => $d['btn_class'],
                 ]);
             }
 
@@ -1393,11 +1625,25 @@ class MessagesListController extends AbstractController
 
         foreach (MessageTypeCnst::USERS_TPL_ARY as $key => $d)
         {
-            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
+            $label = '<span class="btn btn-';
+            $label .= $d['btn_class'];
+            $label .= '"';
+
+            if (isset($d['title']))
+            {
+                $label .= ' title="' . $d['title'] . '"';
+            }
+
+            $label .= '>';
+            $label .= $d['label'];
+            $label .= ' (';
+            $label .= $count_ary[$key];
+            $label .= ')</span>';
+
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
                 '%name%'        => 'f[' . $key . ']',
                 '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                '%label%'       => $d['label'],
-                '%btn_class%'   => $d['btn_class']
+                '%label%'       => $label,
             ]);
         }
 

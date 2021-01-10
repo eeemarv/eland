@@ -648,6 +648,11 @@ class MessagesEditController extends AbstractController
 
             foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
             {
+                if ($key === 'null-service-stuff')
+                {
+                    continue;
+                }
+
                 $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                     '%name%'    => 'service_stuff',
                     '%value%'   => $key,
