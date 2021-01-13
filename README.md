@@ -13,4 +13,4 @@ eLAND is a fork of [eLAS 3.1.17 (2015)](http://www.elasproject.org/)
 
 GNU Affero General Public License v3.0
 
-See [license.txt](licence.txt) for details
+See [license.txt](LICENSE) for details

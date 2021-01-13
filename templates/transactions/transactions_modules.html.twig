@@ -9,6 +9,12 @@
     {{- form_start(form) -}}
     <div class="custom-checkbox">
 
+    {{- form_row(form.transactions_fields_service_stuff_enabled, {
+        'label': 'Diensten/spullen schakelaar',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
     {{- form_row(form.accounts_limits_auto_min_enabled, {
         'label': 'Auto min limiet',
         'translation_domain': false,

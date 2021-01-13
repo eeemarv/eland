@@ -118,6 +118,7 @@ class MessagesListController extends AbstractController
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
         $intersytem_en = $config_service->get_intersystem_en($pp->schema());
         $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
 
@@ -423,7 +424,7 @@ class MessagesListController extends AbstractController
 
         $column_ary = self::COLUMNS_DEF_ARY;
 
-        if (isset($params['f']['uid']))
+        if (isset($params['f']['uid']) || !$postcode_enabled)
         {
             unset($column_ary['user']);
             unset($column_ary['postcode']);
@@ -542,9 +543,12 @@ class MessagesListController extends AbstractController
                 $out .= $account_render->link($msg['user_id'], $pp->ary());
                 $out .= '</td>';
 
-                $out .= '<td>';
-                $out .= $msg['postcode'] ?? '';
-                $out .= '</td>';
+                if (!$postcode_enabled)
+                {
+                    $out .= '<td>';
+                    $out .= $msg['postcode'] ?? '';
+                    $out .= '</td>';
+                }
             }
 
             if ($category_enabled && !($params['f']['cid'] ?? false))
@@ -869,6 +873,7 @@ class MessagesListController extends AbstractController
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 

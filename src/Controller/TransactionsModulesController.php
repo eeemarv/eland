@@ -18,8 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 class TransactionsModulesController extends AbstractController
 {
     const TRANSACTIONS_MODULES = [
-
-
+        'transactions.fields.service_stuff.enabled',
         'accounts.limits.auto_min.enabled',
         'transactions.mass.enabled',
     ];
