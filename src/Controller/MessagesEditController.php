@@ -404,6 +404,8 @@ class MessagesEditController extends AbstractController
 
                 $id = (int) $db->lastInsertId($pp->schema() . '.messages_id_seq');
 
+                $logger->debug('#msg add message with id ' . $id . ' ' . json_encode($post_message), ['schema' => $pp->schema()]);
+
                 $images = array_values(json_decode($image_files, true) ?? []);
                 $new_image_files = [];
                 $update_image_files = false;
@@ -473,6 +475,7 @@ class MessagesEditController extends AbstractController
             else if ($edit_mode && !count($errors))
             {
                 $db->update($pp->schema() . '.messages', $post_message, ['id' => $id]);
+                $logger->debug('#msg update message with id ' . $id . ' ' . json_encode($post_message), ['schema' => $pp->schema()]);
 
                 $alert_service->success('Vraag/aanbod aangepast');
                 $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);

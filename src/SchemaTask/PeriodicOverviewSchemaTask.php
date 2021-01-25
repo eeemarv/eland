@@ -470,6 +470,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			'blocks_sorted'			=> $blocks_sorted,
 		];
 
+		$this->logger->debug('#periodic mail vars ' . json_encode($vars), ['schema' => $schema]);
+
 	// queue mail
 
 		$log_to = [];
