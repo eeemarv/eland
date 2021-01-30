@@ -38,7 +38,7 @@
 {%  block html_content -%}
     {%- set info -%}
         {%- include 'mail/mollie/include/payment_info.html.twig' -%}
-        <table cellpadding="0" cellspacing="0" width="100%"></table>
+        <table cellpadding="0" cellspacing="0" width="100%">
         {%- if not is_paid and not is_canceled -%}
             <tr>
                 <td align="center">

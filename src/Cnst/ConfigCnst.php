@@ -57,6 +57,10 @@ class ConfigCnst
         'messages_self' => [
             'all'       => 'Lijst eigen vraag en aanbod',
         ],
+        'mollie'    => [
+            'all'       => 'Openstaande Mollie betalingsverzoeken (EUR).
+                - Alleen getoond bij openstaande betalingsverzoeken.',
+        ],
     ];
 
     const INPUTS = [

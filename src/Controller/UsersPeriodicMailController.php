@@ -38,6 +38,7 @@ class UsersPeriodicMailController extends AbstractController
             throw new NotFoundHttpException('Periodic mail module not enabled');
         }
 
+        $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $news_enabled = $config_service->get_bool('news.enabled', $pp->schema());
@@ -45,6 +46,11 @@ class UsersPeriodicMailController extends AbstractController
         $forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
 
         $block_ary = ConfigCnst::BLOCK_ARY;
+
+        if (!$mollie_enabled)
+        {
+            unset($block_ary['mollie']);
+        }
 
         if (!$forum_enabled)
         {

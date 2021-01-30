@@ -515,6 +515,11 @@ periodic_overview:
       %account% [%system_name%]
     none: >-
       Er zijn geen recente transacties.
+  mollie:
+    title: >-
+      Betaalverzoek (EUR)
+    title_multi: >-
+      Betaalverzoeken (EUR)
 
 skeleton:
   admin_copy:

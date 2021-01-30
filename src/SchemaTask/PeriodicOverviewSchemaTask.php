@@ -55,6 +55,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
+        $mollie_enabled = $this->config_service->get_bool('mollie.enabled', $schema);
         $messages_enabled = $this->config_service->get_bool('messages.enabled', $schema);
         $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
         $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
@@ -93,10 +94,18 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$select = $select === 'all' ? 'all' : 'recent';
 			}
 
-			$select = $block === 'messages_self' ? 'all' : $select;
+			if (in_array($block, ['messages_self', 'mollie']))
+			{
+				$select = 'all';
+			}
 
 			$block_options[$block] = $select;
 		}
+
+        if (!$mollie_enabled)
+        {
+            unset($block_options['mollie']);
+        }
 
         if (!$forum_enabled)
         {
@@ -486,7 +495,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			if (isset($block_options['messages_self']))
 			{
-				$rs = $this->db->prepare('select m.id,
+				$stmt = $this->db->prepare('select m.id,
 						m.subject, m.offer_want,
 						extract(epoch from coalesce(m.expires_at, now())) as expires_at_unix,
 						m.expires_at, m.created_at
@@ -494,15 +503,40 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					where m.user_id = ?
 					order by m.created_at desc');
 
-				$rs->bindValue(1, $user_id);
-				$rs->execute();
+				$stmt->bindValue(1, $user_id, \PDO::PARAM_INT);
+				$stmt->execute();
 
-				while ($row = $rs->fetch())
+				while ($row = $stmt->fetch())
 				{
 					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at_unix'] < $now_unix);
 					$vars['messages_self'][] = $row;
 				}
 			}
+
+			// mollie
+
+			$vars['mollie'] = [];
+
+			if ($mollie_enabled)
+			{
+				$stmt = $this->db->prepare('select p.amount, p.token, r.description
+					from ' . $schema . '.mollie_payments p,
+						' . $schema . '.mollie_payment_requests r
+					where p.request_id = r.id
+						and user_id = ?
+						and is_canceled = \'f\'::bool
+						and is_paid = \'f\'::bool');
+
+				$stmt->bindValue(1, $user_id, \PDO::PARAM_INT);
+				$stmt->execute();
+
+				while ($row = $stmt->fetch())
+				{
+					$vars['mollie'][] = $row;
+				}
+			}
+
+			//
 
 			$to = $this->mail_addr_user_service->get_active($user_id, $schema);
 

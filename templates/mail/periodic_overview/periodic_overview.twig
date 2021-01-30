@@ -9,40 +9,46 @@
 
 {% block html_content -%}
 
-{%- import 'mail/periodic_overview/macro/messages.twig' as m -%}
-{%- import 'mail/periodic_overview/macro/messages_self.twig' as ms -%}
-{%- import 'mail/periodic_overview/macro/intersystem.twig' as i -%}
-{%- import 'mail/periodic_overview/macro/forum.twig' as f -%}
-{%- import 'mail/periodic_overview/macro/news.twig' as n -%}
-{%- import 'mail/periodic_overview/macro/docs.twig' as d -%}
-{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
-{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
-{%- import 'mail/periodic_overview/macro/transactions.twig' as t -%}
+{%- import 'mail/periodic_overview/macro/messages.twig' as i_messages -%}
+{%- import 'mail/periodic_overview/macro/messages_self.twig' as i_messages_self -%}
+{%- import 'mail/periodic_overview/macro/intersystem.twig' as i_intersystem -%}
+{%- import 'mail/periodic_overview/macro/forum.twig' as i_forum -%}
+{%- import 'mail/periodic_overview/macro/news.twig' as i_news -%}
+{%- import 'mail/periodic_overview/macro/docs.twig' as i_docs -%}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as i_new_users -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as i_leaving_users -%}
+{%- import 'mail/periodic_overview/macro/transactions.twig' as i_transactions -%}
+{%- import 'mail/periodic_overview/macro/mollie.twig' as i_mollie -%}
 
 {%- include 'mail/include/bgspacer40.html.twig' -%}
 
 {%- for b in blocks_sorted -%}
     {%- if b == 'messages' -%}
-        {{- m.html(_context) -}}
+        {{- i_messages.html(_context) -}}
     {%- elseif b == 'messages_self' -%}
-        {{- ms.html(_context) -}}
+        {{- i_messages_self.html(_context) -}}
     {%- elseif b == 'intersystem' -%}
-        {{- i.html(_context) -}}
+        {{- i_intersystem.html(_context) -}}
     {%- elseif b == 'forum' -%}
-        {{- f.html(_context) -}}
+        {{- i_forum.html(_context) -}}
     {%- elseif b == 'news' -%}
-        {{- n.html(_context) -}}
+        {{- i_news.html(_context) -}}
     {%- elseif b == 'docs' -%}
-        {{- d.html(_context) -}}
+        {{- i_docs.html(_context) -}}
     {%- elseif b == 'new_users' -%}
-        {{- nu.html(_context) -}}
+        {{- i_new_users.html(_context) -}}
     {%- elseif b == 'leaving_users' -%}
-        {{- lu.html(_context) -}}
+        {{- i_leaving_users.html(_context) -}}
     {%- elseif b == 'transactions' -%}
-        {{- t.html(_context) -}}
+        {{- i_transactions.html(_context) -}}
+    {%- elseif b == 'mollie' and mollie|length -%}
+        {{- i_mollie.html(_context) -}}
     {%- endif -%}
-	{%- include 'mail/include/spacer20.html.twig' -%}
-	{%- include 'mail/include/bgspacer40.html.twig' -%}
+
+    {%- if b != 'mollie' or mollie|length -%}
+        {%- include 'mail/include/spacer20.html.twig' -%}
+        {%- include 'mail/include/bgspacer40.html.twig' -%}
+    {%- endif -%}
 {%- endfor -%}
 
 {%- endblock html_content -%}
@@ -64,34 +70,37 @@
 {%- endblock html_unsubscribe -%}
 
 {% block text_content %}
-{% import 'mail/periodic_overview/macro/messages.twig' as m %}
-{% import 'mail/periodic_overview/macro/messages_self.twig' as ms %}
-{% import 'mail/periodic_overview/macro/intersystem.twig' as i %}
-{% import 'mail/periodic_overview/macro/forum.twig' as f %}
-{% import 'mail/periodic_overview/macro/news.twig' as n %}
-{% import 'mail/periodic_overview/macro/docs.twig' as d %}
-{%- import 'mail/periodic_overview/macro/new_users.twig' as nu -%}
-{%- import 'mail/periodic_overview/macro/leaving_users.twig' as lu -%}
-{% import 'mail/periodic_overview/macro/transactions.twig' as t %}
+{% import 'mail/periodic_overview/macro/messages.twig' as i_messages %}
+{% import 'mail/periodic_overview/macro/messages_self.twig' as i_messages_self %}
+{% import 'mail/periodic_overview/macro/intersystem.twig' as i_intersystem %}
+{% import 'mail/periodic_overview/macro/forum.twig' as i_forum %}
+{% import 'mail/periodic_overview/macro/news.twig' as i_news %}
+{% import 'mail/periodic_overview/macro/docs.twig' as i_docs %}
+{%- import 'mail/periodic_overview/macro/new_users.twig' as i_new_users -%}
+{%- import 'mail/periodic_overview/macro/leaving_users.twig' as i_leaving_users -%}
+{% import 'mail/periodic_overview/macro/transactions.twig' as i_transactions %}
+{% import 'mail/periodic_overview/macro/mollie.twig' as i_mollie %}
 {% for b in blocks_sorted %}
 {% if b == 'messages' %}
-{{ m.text(_context) }}
+{{ i_messages.text(_context) }}
 {% elseif b == 'messages_self' %}
-{{ ms.text(_context) }}
+{{ i_messages_self.text(_context) }}
 {% elseif b == 'intersystem' %}
-{{ i.text(_context) }}
+{{ i_intersystem.text(_context) }}
 {% elseif b == 'forum' %}
-{{ f.text(_context) }}
+{{ i_forum.text(_context) }}
 {% elseif b == 'news' %}
-{{ n.text(_context) }}
+{{ i_news.text(_context) }}
 {% elseif b == 'docs' %}
-{{ d.text(_context) }}
+{{ i_docs.text(_context) }}
 {% elseif b == 'new_users' %}
-{{ nu.text(_context) }}
+{{ i_new_users.text(_context) }}
 {% elseif b == 'leaving_users' %}
-{{ lu.text(_context) }}
+{{ i_leaving_users.text(_context) }}
 {% elseif b == 'transactions' %}
-{{ t.text(_context) }}
+{{ i_transactions.text(_context) }}
+{% elseif b == 'mollie' and mollie|length %}
+{{ i_mollie.text(_context) }}
 {% endif %}
 {% endfor %}
 {% endblock text_content %}
