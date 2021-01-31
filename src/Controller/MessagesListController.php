@@ -873,7 +873,6 @@ class MessagesListController extends AbstractController
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 

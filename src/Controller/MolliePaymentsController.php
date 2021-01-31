@@ -289,7 +289,7 @@ class MolliePaymentsController extends AbstractController
             }
         }
 
-        $row = $db->fetchAssociative('select count(p.*), sum(p.amount)
+        $row = $db->fetchAssociative('select count(p.*)
             from ' . $pp->schema() . '.mollie_payments p,
                 ' . $pp->schema() . '.mollie_payment_requests r,
                 ' . $pp->schema() . '.users u
@@ -298,7 +298,6 @@ class MolliePaymentsController extends AbstractController
                 ' . $sql_where, $sql['params'], $sql['types']);
 
         $row_count = $row['count'];
-        $amount_sum = $row['sum'];
 
         $pagination_render->init('mollie_payments', $pp->ary(),
             $row_count, $params);
@@ -1075,30 +1074,5 @@ class MolliePaymentsController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
-    }
-
-    public static function get_checkbox_filter(
-        array $checkbox_ary,
-        string $filter_id,
-        array $filter_ary
-    ):string
-    {
-        $out = '';
-
-        foreach ($checkbox_ary as $key => $label)
-        {
-            $id = 'f_' . $filter_id . '_' . $key;
-            $out .= '<label class="checkbox-inline" for="' . $id . '">';
-            $out .= '<input type="checkbox" id="' . $id . '" ';
-            $out .= 'name="f[' . $filter_id . '][' . $key . ']"';
-            $out .= isset($filter_ary[$filter_id][$key]) ? ' checked' : '';
-            $out .= '>&nbsp;';
-            $out .= '<span class="btn btn-default">';
-            $out .= $label;
-            $out .= '</span>';
-            $out .= '</label>';
-        }
-
-        return $out;
     }
 }

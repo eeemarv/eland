@@ -84,6 +84,7 @@ class UsersListController extends AbstractController
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
         $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
 
+        $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
 
@@ -508,6 +509,10 @@ class UsersListController extends AbstractController
          * End bulk POST
          */
 
+        /**
+         * Fetch columns list
+         */
+
         $sql = [
             'where'     => [],
             'params'    => [],
@@ -568,6 +573,13 @@ class UsersListController extends AbstractController
         $columns['d'] = [
             'distance'	=> 'Afstand',
         ];
+
+        if ($pp->is_admin())
+        {
+            $columns['mollie'] = [
+                'mollie'    => 'Mollie',
+            ];
+        }
 
         $columns['m'] = [
             'wants'		=> 'Vraag',
@@ -640,6 +652,11 @@ class UsersListController extends AbstractController
         if (!$periodic_mail_enabled)
         {
             unset($columns['u']['periodic_overview_en']);
+        }
+
+        if (!$mollie_enabled)
+        {
+            unset($columns['mollie']);
         }
 
         if (!$transactions_enabled)
@@ -736,6 +753,10 @@ class UsersListController extends AbstractController
             unset($show_columns['u']['periodic_overview_en']);
         }
 
+        if (!$mollie_enabled)
+        {
+            unset($show_columns['mollie']);
+        }
 
         if (!$transactions_enabled)
         {
@@ -883,6 +904,28 @@ class UsersListController extends AbstractController
             if (isset($my_adr))
             {
                 $ref_geo = $cache_service->get('geo_' . $my_adr);
+            }
+        }
+
+        if (isset($show_columns['mollie']) && $pp->is_admin())
+        {
+            $mollie_ary = [];
+
+            $stmt = $db->executeQuery('select distinct on (u.id)
+                u.id, p.is_paid, p.is_canceled,
+                p.created_at, p.amount, r.description
+                from ' . $pp->schema() . '.users u
+                inner join ' . $pp->schema() . '.mollie_payments p
+                    on u.id = p.user_id
+                inner join ' . $pp->schema() . '.mollie_payment_requests r
+                    on r.id = p.request_id
+                where 1 = 1 ' . $sql_where . '
+                order by u.id asc, p.created_at desc',
+                $sql['params'], $sql['types']);
+
+            while (($row = $stmt->fetch()) !== false)
+            {
+                $mollie_ary[$row['id']] = $row;
             }
         }
 
@@ -1071,6 +1114,11 @@ class UsersListController extends AbstractController
                 $fc2 .= 'De kolom wordt niet getoond wanneer het eigen adres ';
                 $fc2 .= 'niet ingesteld is.</p>';
             }
+            else if ($group === 'mollie')
+            {
+                $fc2 .= '<h3>Mollie (EUR)</h3>';
+                $fc2 .= '<p>Status van het laatste betaalverzoek.</p>';
+            }
             else if ($group === 'a')
             {
                 $fc3 .= '<h3>Transacties/activiteit</h3>';
@@ -1217,6 +1265,7 @@ class UsersListController extends AbstractController
                     break;
                     case 'c':
                     case 'd':
+                    case 'mollie':
                         $fc2 .= $chckbx;
                     break;
                     case 'm':
@@ -1344,6 +1393,15 @@ class UsersListController extends AbstractController
                 }
 
                 continue;
+            }
+            else if ($group === 'mollie')
+            {
+                foreach($ary as $key => $one)
+                {
+                    $out .= '<th>';
+                    $out .= $columns[$group][$key];
+                    $out .= '</th>';
+                }
             }
             else if ($group === 'c')
             {
@@ -1588,6 +1646,48 @@ class UsersListController extends AbstractController
                 }
 
                 $out .= '</td>';
+            }
+
+            if (isset($show_columns['mollie']))
+            {
+                foreach ($show_columns['mollie'] as $key => $one)
+                {
+                    $out .= '<td>';
+
+                    if (isset($mollie_ary[$id]))
+                    {
+                        $out .= '<span title="';
+                        $out .= htmlspecialchars($mollie_ary[$id]['description'], ENT_QUOTES);
+                        $out .= "\n";
+                        $out .= 'EUR ' . strtr($mollie_ary[$id]['amount'], '.', ',');
+                        $out .= "\n";
+                        $out .= ' @';
+                        $out .= $date_format_service->get($mollie_ary[$id]['created_at'], 'day', $pp->schema());
+                        $out .= '" ';
+                        $out .= 'class="label label-';
+
+                        if ($mollie_ary[$id]['is_canceled'])
+                        {
+                            $out .= 'default">geannuleerd';
+                        }
+                        else if ($mollie_ary[$id]['is_paid'])
+                        {
+                            $out .= 'success">betaald';
+                        }
+                        else
+                        {
+                            $out .= 'warning">open';
+                        }
+
+                        $out . '</span>';
+                    }
+                    else
+                    {
+                        $out .= '&nbsp;';
+                    }
+
+                    $out .= '</td>';
+                }
             }
 
             if (isset($show_columns['m']))
