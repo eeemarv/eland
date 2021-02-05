@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -46,6 +47,7 @@ class TransactionsShowController extends AbstractController
         }
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
@@ -254,6 +256,26 @@ class TransactionsShowController extends AbstractController
         $out .= '<dd>';
         $out .= htmlspecialchars($transaction['description'], ENT_QUOTES);
         $out .= '</dd>';
+
+        if ($service_stuff_enabled)
+        {
+            $out .= '<dt>Diensten / spullen</dt>';
+            $out .= '<dd>';
+
+            if (isset($transaction['service_stuff']))
+            {
+                $se_st = MessageTypeCnst::SERVICE_STUFF_TPL_ARY[$transaction['service_stuff']];
+                $out .= '<span class="btn btn-' . $se_st['btn_class'] . '">';
+                $out .= $se_st['label'];
+                $out .= '</span>';
+            }
+            else
+            {
+                $out .= '<span class="text-danger"><b><em>* Onbepaald *</em></b></span>';
+            }
+
+            $out .= '</dd>';
+        }
 
         $out .= '</dl>';
 

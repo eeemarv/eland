@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
+use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -25,6 +27,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsAddController extends AbstractController
@@ -71,6 +75,7 @@ class TransactionsAddController extends AbstractController
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
+        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
         $new_user_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
 
         if ($request->isMethod('POST'))
@@ -83,6 +88,7 @@ class TransactionsAddController extends AbstractController
             $transid = $transaction_service->generate_transid($su->id(), $pp->system());
             $description = trim($request->request->get('description', ''));
             $real_from = $request->request->get('real_from');
+            $service_stuff = $request->request->get('service_stuff', '');
 
             [$code_from] = explode(' ', trim($request->request->get('code_from', '')));
             [$code_to] = explode(' ', trim($request->request->get('code_to', '')));
@@ -189,6 +195,18 @@ class TransactionsAddController extends AbstractController
             if (!$description)
             {
                 $errors[]= 'De omschrijving is niet ingevuld';
+            }
+
+            if ($service_stuff_enabled)
+            {
+                if (!$service_stuff)
+                {
+                    $errors[] = 'Selecteer diensten of spullen';
+                }
+                else if (!in_array($service_stuff, ['service', 'stuff']))
+                {
+                    throw new BadRequestHttpException('Wrong value for service_stuff: ' . $service_stuff);
+                }
             }
 
             if (!$amount)
@@ -323,6 +341,11 @@ class TransactionsAddController extends AbstractController
                 if (!$su->is_master())
                 {
                     $transaction['created_by'] = $su->id();
+                }
+
+                if ($service_stuff_enabled)
+                {
+                    $transaction['service_stuff'] = $service_stuff;
                 }
 
                 if (isset($real_from) && $real_from !== '')
@@ -615,6 +638,11 @@ class TransactionsAddController extends AbstractController
                         'transid'       => $transid,
                     ];
 
+                    if ($service_stuff_enabled)
+                    {
+                        $remote_transaction['service_stuff'] = $service_stuff;
+                    }
+
                     $db->insert($remote_schema . '.transactions', $remote_transaction);
                     $remote_id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
                     $remote_transaction['id'] = $remote_id;
@@ -659,6 +687,7 @@ class TransactionsAddController extends AbstractController
         {
             $code_from = $su->is_master() ? '' : $account_render->str($su->id(), $pp->schema());
             $group_id = 'self';
+            $service_stuff = null;
 
             if ($tus)
             {
@@ -675,6 +704,7 @@ class TransactionsAddController extends AbstractController
                     {
                         $row = $db->fetchAssociative('select
                                 m.subject, m.amount, m.user_id,
+                                m.service_stuff,
                                 u.code, u.name
                             from ' . $tus . '.messages m,
                                 '. $tus . '.users u
@@ -685,7 +715,7 @@ class TransactionsAddController extends AbstractController
 
                         if ($row)
                         {
-                            $tus_currency_ratio = $config_service->get_int('ransactions.tcurrency.per_hour_ratio', $tus);
+                            $tus_currency_ratio = $config_service->get_int('transactions.currency.per_hour_ratio', $tus);
 
                             $code_to = $row['code'] . ' ' . $row['name'];
                             $description =  substr($row['subject'], 0, 60);
@@ -695,6 +725,13 @@ class TransactionsAddController extends AbstractController
                                 $amount = $row['amount'];
                                 $amount = ($currency_ratio * $amount) / $tus_currency_ratio;
                                 $amount = (int) round($amount);
+                            }
+
+                            $tus_messages_service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $tus);
+
+                            if ($tus_messages_service_stuff_enabled)
+                            {
+                                $service_stuff = $row['service_stuff'];
                             }
                         }
                     }
@@ -713,6 +750,7 @@ class TransactionsAddController extends AbstractController
             {
                 $row = $db->fetchAssociative('select
                         m.subject, m.amount, m.user_id,
+                        m.service_stuff,
                         u.code, u.name, u.status
                     from ' . $pp->schema() . '.messages m,
                         '. $pp->schema() . '.users u
@@ -722,11 +760,18 @@ class TransactionsAddController extends AbstractController
 
                 if ($row)
                 {
+                    $messages_service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
+
                     if ($row['status'] === 1 || $row['status'] === 2)
                     {
                         $code_to = $row['code'] . ' ' . $row['name'];
                         $description =  substr($row['subject'], 0, 60);
                         $amount = $row['amount'];
+
+                        if ($messages_service_stuff_enabled)
+                        {
+                            $service_stuff = $row['service_stuff'];
+                        }
                     }
 
                     if ($su->id() === $row['user_id'])
@@ -1157,6 +1202,31 @@ class TransactionsAddController extends AbstractController
         $out .= '" required maxlength="60">';
         $out .= '</div>';
         $out .= '</div>';
+
+
+        if ($service_stuff_enabled)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<div class="custom-radio">';
+
+            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
+            {
+                if ($key === 'null-service-stuff')
+                {
+                    continue;
+                }
+
+                $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                    '%name%'    => 'service_stuff',
+                    '%value%'   => $key,
+                    '%attr%'    => ' required' . ($service_stuff === $key ? ' checked' : ''),
+                    '%label%'   => '<span class="btn btn-' . $render_data['btn_class'] . '">' . $render_data['label'] . '</span>',
+                ]);
+            }
+
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $out .= $link_render->btn_cancel('transactions', $pp->ary(), []);
 
