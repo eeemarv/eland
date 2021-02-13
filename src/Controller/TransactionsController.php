@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
+use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -25,6 +26,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsController extends AbstractController
@@ -36,6 +38,7 @@ class TransactionsController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
+        FormTokenService $form_token_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
@@ -58,9 +61,85 @@ class TransactionsController extends AbstractController
         }
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
-
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
+
+        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $bulk_actions_enabled = $service_stuff_enabled;
+
+        $selected_transactions = $request->request->get('sel', []);
+        $bulk_field = $request->request->get('bulk_field', []);
+        $bulk_verify = $request->request->get('bulk_verify', []);
+        $bulk_submit = $request->request->get('bulk_submit', []);
+
+        if ($request->isMethod('POST')
+            && !$pp->is_admin()
+            && count($bulk_submit)
+            && $bulk_actions_enabled)
+        {
+            $errors = [];
+
+            if (count($bulk_submit) > 1)
+            {
+                throw new BadRequestHttpException('Invalid form. More than one submit.');
+            }
+
+            if (count($bulk_field) > 1)
+            {
+                throw new BadRequestHttpException('Invalid form. More than one bulk field.');
+            }
+
+            if (count($bulk_verify) > 1)
+            {
+                throw new BadRequestHttpException('Invalid form. More than one bulk verify checkbox.');
+            }
+
+            if ($error_token = $form_token_service->get_error())
+            {
+                $errors[] = $error_token;
+            }
+
+            if (!count($selected_transactions))
+            {
+                $errors[] = 'Selecteer ten minste één transactie voor deze actie.';
+            }
+
+            if (count($bulk_verify) !== 1)
+            {
+                $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
+            }
+
+            $bulk_submit_action = array_key_first($bulk_submit);
+            $bulk_verify_action = array_key_first($bulk_verify);
+            $bulk_field_action = array_key_first($bulk_field);
+
+            if (isset($bulk_verify_action)
+                && $bulk_verify_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Invalid form. Not matching verify checkbox to bulk action.');
+            }
+
+            if (isset($bulk_field_action)
+                && $bulk_field_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Invalid form. Not matching field to bulk action.');
+            }
+
+            if (!isset($bulk_field_action))
+            {
+                throw new BadRequestHttpException('Invalid form. Missing value.');
+            }
+
+            $bulk_field_value = $bulk_field[$bulk_field_action];
+
+            if (!isset($bulk_field_value) || !$bulk_field_value)
+            {
+                $errors[] = 'Bulk actie waarde-veld niet ingevuld.';
+            }
+
+
+
+        }
 
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -93,6 +172,20 @@ class TransactionsController extends AbstractController
             'types'     => [],
         ];
 
+        $sql_map = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
+        $sql = [
+            'common'    => [
+                'where'     => ['1 = 1'],
+                'params'    => [],
+                'types'     => [],
+            ],
+        ];
+
         if (isset($filter['uid']))
         {
             $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
@@ -103,13 +196,14 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['q']) && $filter['q'])
         {
-            $sql['where'][] = 't.description ilike ?';
-            $sql['params'][] = '%' . $filter['q'] . '%';
-            $sql['types'][] = \PDO::PARAM_STR;
+            $sql['q']['where'][] = 't.description ilike ?';
+            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
 
-        $sql_where_code = [];
+        $key_code_where_or = 'where';
+        $key_code_where_or .= isset($filter['andor']) && $filter['andor'] === 'or' ? '_or' : '';
 
         if (isset($filter['fcode']) && $filter['fcode'])
         {
@@ -125,15 +219,16 @@ class TransactionsController extends AbstractController
                 $fuid_sql = 't.id_from ';
                 $fuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
                 $fuid_sql .= ' ?';
-                $sql_where_code[] = $fuid_sql;
-                $sql['params'][] = $fuid;
-                $sql['types'][] = \PDO::PARAM_STR;
+
+                $sql['code'][$key_code_where_or][] = $fuid_sql;
+                $sql['code']['params'][] = $fuid;
+                $sql['code']['types'][] = \PDO::PARAM_STR;
 
                 $fcode = $account_render->str($fuid, $pp->schema());
             }
             else if ($filter['andor'] !== 'nor')
             {
-                $sql_where_code[] = '1 = 2';
+                $sql['code'][$key_code_where_or][] = '1 = 2';
             }
 
             $params['f']['fcode'] = $fcode;
@@ -153,28 +248,28 @@ class TransactionsController extends AbstractController
                 $tuid_sql = 't.id_to ';
                 $tuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
                 $tuid_sql .= ' ?';
-                $sql_where_code[] = $tuid_sql;
-                $sql['params'][] = $tuid;
-                $sql['types'][] = \PDO::PARAM_STR;
+                $sql['code'][$key_code_where_or][] = $tuid_sql;
+                $sql['code']['params'][] = $tuid;
+                $sql['code']['types'][] = \PDO::PARAM_STR;
 
                 $tcode = $account_render->str($tuid, $pp->schema());
             }
             else if ($filter['andor'] !== 'nor')
             {
-                $sql_where_code[] = '1 = 2';
+                $sql['code'][$key_code_where_or][] = '1 = 2';
             }
 
             $params['f']['tcode'] = $tcode;
         }
 
-        if (count($sql_where_code) > 1 && $filter['andor'] === 'or')
+        if (isset($params['f']['fcode']) || isset($params['f']['tcode']))
         {
-            $sql_where_code = [' ( ' . implode(' or ', $sql_where_code) . ' ) '];
+            $params['f']['andor'] = $filter['andor'];
         }
 
-        if (count($sql_where_code))
+        if (count($sql['code']['where_or'] ?? []))
         {
-            $sql['where'] = [...$sql['where'], ...$sql_where_code];
+            $sql['code']['where'] = [' ( ' . implode(' or ', $sql['code']['where_or']) . ' ) '];
         }
 
         if (isset($filter['fdate']) && $filter['fdate'])
@@ -189,9 +284,9 @@ class TransactionsController extends AbstractController
             {
                 $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($fdate_sql . ' UTC'));
 
-                $sql['where'][] = 't.created_at >= ?';
-                $sql['params'][] = $fdate_immutable;
-                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $sql['fdate']['where'][] = 't.created_at >= ?';
+                $sql['fdate']['params'][] = $fdate_immutable;
+                $sql['fdate']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
         }
@@ -208,70 +303,81 @@ class TransactionsController extends AbstractController
             {
                 $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($tdate_sql . ' UTC'));
 
-                $sql['where'][] = 't.created_at <= ?';
-                $sql['params'][] = $tdate_immutable;
-                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $sql['tdate']['where'][] = 't.created_at <= ?';
+                $sql['tdate']['params'][] = $tdate_immutable;
+                $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }
         }
 
-        if (count($sql['where']))
-        {
-            $sql_where  = ' and ' . implode(' and ', $sql['where']) . ' ';
-            $params['f']['andor'] = $filter['andor'];
-        }
-        else
-        {
-            $sql_where = '';
-        }
+        $sql['pagination'] = $sql_map;
+        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
 
         $query = 'select t.*
             from ' . $pp->schema() . '.transactions t
-            where 1 = 1 ' . $sql_where . '
+            where ' . $sql_where . '
             order by t.' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
-        $query .= ' limit ' . $params['p']['limit'];
-        $query .= ' offset ' . $params['p']['start'];
+        $query .= ' limit ? ';
+        $query .= ' offset ? ';
 
-        $transactions = $db->fetchAllAssociative($query, $sql['params'], $sql['types']);
+        $stmt = $db->executeQuery($query,
+            array_merge(...array_column($sql, 'params')),
+            array_merge(...array_column($sql, 'types')));
 
-        foreach ($transactions as $key => $t)
+        $transactions = [];
+        $inter_fetch = [];
+
+        while ($row = $stmt->fetch())
         {
-            if (!($t['real_from'] || $t['real_to']))
+            if ($row['real_from'] || $row['real_to'])
             {
-                continue;
-            }
-
-            $inter_schema = false;
-
-            if (isset($intersystem_account_schemas[$t['id_from']]))
-            {
-                $inter_schema = $intersystem_account_schemas[$t['id_from']];
-            }
-            else if (isset($intersystem_account_schemas[$t['id_to']]))
-            {
-                $inter_schema = $intersystem_account_schemas[$t['id_to']];
-            }
-
-            if ($inter_schema)
-            {
-                $inter_transaction = $db->fetchAssociative('select t.*
-                    from ' . $inter_schema . '.transactions t
-                    where t.transid = ?',
-                    [$t['transid']], [\PDO::PARAM_STR]);
-
-                if ($inter_transaction)
+                if (isset($intersystem_account_schemas[$row['id_from']]))
                 {
-                    $transactions[$key]['inter_schema'] = $inter_schema;
-                    $transactions[$key]['inter_transaction'] = $inter_transaction;
+                    $row['inter_schema'] = $intersystem_account_schemas[$row['id_from']];
+
                 }
+                else if (isset($intersystem_account_schemas[$row['id_to']]))
+                {
+                    $row['inter_schema'] = $intersystem_account_schemas[$row['id_to']];
+                }
+
+                if (isset($row['inter_schema']))
+                {
+                    $inter_fetch[$row['transid']] = $row['inter_schema'];
+                }
+            }
+
+            $transactions[$row['transid']] = $row;
+        }
+
+        foreach ($inter_fetch as $transid => $inter_schema)
+        {
+            $inter_transaction = $db->fetchAssociative('select t.*
+                from ' . $inter_schema . '.transactions t
+                where t.transid = ?',
+                [$transid], [\PDO::PARAM_STR]);
+
+            if ($inter_transaction)
+            {
+                $transactions[$transid]['inter_transaction'] = $inter_transaction;
             }
         }
 
+        $sql_omit_pagination = $sql;
+        unset($sql_omit_pagination['pagination']);
+        $sql_omit_pagination_where = implode(' and ', array_merge(...array_column($sql_omit_pagination, 'where')));
+
         $row = $db->fetchAssociative('select count(t.*), sum(t.amount)
             from ' . $pp->schema() . '.transactions t
-            where 1 = 1 ' . $sql_where,
-            $sql['params'], $sql['types']);
+            where ' . $sql_omit_pagination_where,
+            array_merge(...array_column($sql_omit_pagination, 'params')),
+            array_merge(...array_column($sql_omit_pagination, 'types')));
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
@@ -286,12 +392,15 @@ class TransactionsController extends AbstractController
 
         $tableheader_ary = [
             'description' => array_merge($asc_preset_ary, [
-                'lbl' => 'Omschrijving']),
+                'lbl' => 'Omschrijving',
+            ]),
             'amount' => array_merge($asc_preset_ary, [
-                'lbl' => $config_service->get('currency', $pp->schema())]),
+                'lbl' => $config_service->get('currency', $pp->schema()),
+            ]),
             'created_at'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Tijdstip',
-                'data_hide' => 'phone'])
+                'data_hide' => 'phone',
+            ])
         ];
 
         if (isset($filter['uid']))
@@ -868,6 +977,10 @@ class TransactionsController extends AbstractController
         $out .= '</li>';
         $out .= self::get_valuation($config_service, $pp->schema());
         $out .= '</ul>';
+
+
+
+
 
         $menu_service->set('transactions');
 

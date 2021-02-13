@@ -1160,11 +1160,11 @@ class MessagesListController extends AbstractController
 
         $messages = [];
 
-        $st = $db->executeQuery($query,
+        $stmt = $db->executeQuery($query,
             array_merge(...array_column($sql, 'params')),
             array_merge(...array_column($sql, 'types')));
 
-        while ($msg = $st->fetch())
+        while ($msg = $stmt->fetch())
         {
             $msg['label'] = MessagesShowController::get_label($msg['offer_want']);
             $messages[] = $msg;
