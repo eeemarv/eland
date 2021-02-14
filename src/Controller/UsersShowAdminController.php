@@ -95,7 +95,7 @@ class UsersShowAdminController extends AbstractController
         if (!$user)
         {
             throw new NotFoundHttpException(
-                'De gebruiker met id ' . $id . ' bestaat niet');
+                'The user with id ' . $id . ' not found');
         }
 
         if (!$pp->is_admin() && !in_array($user['status'], [1, 2]))
@@ -506,7 +506,7 @@ class UsersShowAdminController extends AbstractController
 
         if ($full_name_enabled)
         {
-            $full_name_access = $user['full_name_access'] ?: 'admin';
+            $full_name_access = $user['full_name_access'] ?? 'admin';
 
             $out .= '<dt>';
             $out .= 'Volledige naam';

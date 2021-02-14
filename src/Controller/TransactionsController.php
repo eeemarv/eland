@@ -166,25 +166,18 @@ class TransactionsController extends AbstractController
             ],
         ];
 
-        $sql = [
-            'where'     => [],
-            'params'    => [],
-            'types'     => [],
-        ];
-
         $sql_map = [
             'where'     => [],
+            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
 
         $sql = [
-            'common'    => [
-                'where'     => ['1 = 1'],
-                'params'    => [],
-                'types'     => [],
-            ],
+            'common'    => $sql_map,
         ];
+
+        $sql['common']['where'][] = '1 = 1';
 
         if (isset($filter['uid']))
         {
@@ -196,6 +189,7 @@ class TransactionsController extends AbstractController
 
         if (isset($filter['q']) && $filter['q'])
         {
+            $sql['q'] = $sql_map;
             $sql['q']['where'][] = 't.description ilike ?';
             $sql['q']['params'][] = '%' . $filter['q'] . '%';
             $sql['q']['types'][] = \PDO::PARAM_STR;
@@ -204,6 +198,7 @@ class TransactionsController extends AbstractController
 
         $key_code_where_or = 'where';
         $key_code_where_or .= isset($filter['andor']) && $filter['andor'] === 'or' ? '_or' : '';
+        $sql['code'] = $sql_map;
 
         if (isset($filter['fcode']) && $filter['fcode'])
         {
@@ -267,7 +262,7 @@ class TransactionsController extends AbstractController
             $params['f']['andor'] = $filter['andor'];
         }
 
-        if (count($sql['code']['where_or'] ?? []))
+        if (count($sql['code']['where_or']))
         {
             $sql['code']['where'] = [' ( ' . implode(' or ', $sql['code']['where_or']) . ' ) '];
         }
@@ -282,6 +277,8 @@ class TransactionsController extends AbstractController
             }
             else
             {
+                $sql['fdate'] = $sql_map;
+
                 $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($fdate_sql . ' UTC'));
 
                 $sql['fdate']['where'][] = 't.created_at >= ?';
@@ -301,12 +298,48 @@ class TransactionsController extends AbstractController
             }
             else
             {
+                $sql['tdate'] = $sql_map;
+
                 $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($tdate_sql . ' UTC'));
 
                 $sql['tdate']['where'][] = 't.created_at <= ?';
                 $sql['tdate']['params'][] = $tdate_immutable;
                 $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
+            }
+        }
+
+        $filter_service_stuff = $service_stuff_enabled
+            && (isset($filter['service'])
+                || isset($filter['stuff'])
+                || isset($filter['null-service-stuff'])
+            );
+
+        if ($filter_service_stuff)
+        {
+            $sql['service_stuff'] = $sql_map;
+
+            if (isset($filter['service']))
+            {
+                $sql['service_stuff']['where_or'][] = 't.service_stuff = \'service\'';
+                $params['f']['service'] = '1';
+            }
+
+            if (isset($filter['stuff']))
+            {
+                $sql['service_stuff']['where_or'][] = 't.service_stuff = \'stuff\'';
+                $params['f']['stuff'] = '1';
+            }
+
+            if (isset($filter['null-service-stuff']))
+            {
+                $sql['service_stuff']['where_or'][] = 't.service_stuff is null';
+                $params['f']['null-service-stuff'] = '1';
+            }
+
+            if (count($sql['service_stuff']['where_or']))
+            {
+                $sql['service_stuff']['where'][] = '(' . implode(' or ', $sql['service_stuff']['where_or']) . ')';
             }
         }
 

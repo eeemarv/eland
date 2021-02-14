@@ -902,6 +902,7 @@ class MessagesListController extends AbstractController
 
         $sql_map = [
             'where'     => [],
+            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
@@ -909,6 +910,8 @@ class MessagesListController extends AbstractController
         $sql = [
             'common'   => $sql_map,
         ];
+
+        $sql['common']['where'][] = '1 = 1';
 
         $is_owner = isset($filter['uid'])
             && $su->is_owner((int) $filter['uid']);
@@ -970,24 +973,23 @@ class MessagesListController extends AbstractController
 
         if ($filter_valid_expired)
         {
-            $sql_valid_expired_where = [];
             $sql['valid_expired'] = $sql_map;
 
             if (isset($filter['valid']))
             {
-                $sql_valid_expired_where[] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
+                $sql['valid_expired']['where_or'][] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
                 $params['f']['valid'] = '1';
             }
 
             if (isset($filter['expired']))
             {
-                $sql_valid_expired_where[] = 'm.expires_at < timezone(\'utc\', now())';
+                $sql['valid_expired']['where_or'][] = 'm.expires_at < timezone(\'utc\', now())';
                 $params['f']['expired'] = '1';
             }
 
-            if (count($sql_valid_expired_where))
+            if (count($sql['valid_expired']['where_or']))
             {
-                $sql['valid_expired']['where'][] = ' (' . implode(' or ', $sql_valid_expired_where) . ') ';
+                $sql['valid_expired']['where'][] = ' (' . implode(' or ', $sql['valid_expired']['where_or']) . ') ';
             }
         }
 
@@ -995,24 +997,23 @@ class MessagesListController extends AbstractController
 
         if ($filter_offer_want)
         {
-            $sql_offer_want_where = [];
             $sql['offer_want'] = $sql_map;
 
             if (isset($filter['want']))
             {
-                $sql_offer_want_where[] = 'm.offer_want = \'want\'';
+                $sql['offer_want']['where_or'][] = 'm.offer_want = \'want\'';
                 $params['f']['want'] = '1';
             }
 
             if (isset($filter['offer']))
             {
-                $sql_offer_want_where[] = 'm.offer_want = \'offer\'';
+                $sql['offer_want']['where_or'][] = 'm.offer_want = \'offer\'';
                 $params['f']['offer'] = '1';
             }
 
-            if (count($sql_offer_want_where))
+            if (count($sql['offer_want']['where_or']))
             {
-                $sql['offer_want']['where'][] = ' (' . implode(' or ', $sql_offer_want_where) . ') ';
+                $sql['offer_want']['where'][] = ' (' . implode(' or ', $sql['offer_want']['where_or']) . ') ';
             }
         }
 
@@ -1024,30 +1025,29 @@ class MessagesListController extends AbstractController
 
         if ($filter_service_stuff)
         {
-            $sql_service_stuff_where = [];
             $sql['service_stuff'] = $sql_map;
 
             if (isset($filter['service']))
             {
-                $sql_service_stuff_where[] = 'm.service_stuff = \'service\'';
+                $sql['service_stuff']['where_or'][] = 'm.service_stuff = \'service\'';
                 $params['f']['service'] = '1';
             }
 
             if (isset($filter['stuff']))
             {
-                $sql_service_stuff_where[] = 'm.service_stuff = \'stuff\'';
+                $sql['service_stuff']['where_or'][] = 'm.service_stuff = \'stuff\'';
                 $params['f']['stuff'] = '1';
             }
 
             if (isset($filter['null-service-stuff']))
             {
-                $sql_service_stuff_where[] = 'm.service_stuff is null';
+                $sql['service_stuff']['where_or'][] = 'm.service_stuff is null';
                 $params['f']['null-service-stuff'] = '1';
             }
 
-            if (count($sql_service_stuff_where))
+            if (count($sql['service_stuff']['where_or']))
             {
-                $sql['service_stuff']['where'][] = '(' . implode(' or ', $sql_service_stuff_where) . ')';
+                $sql['service_stuff']['where'][] = '(' . implode(' or ', $sql['service_stuff']['where_or']) . ')';
             }
         }
 
@@ -1135,9 +1135,7 @@ class MessagesListController extends AbstractController
         $sql['pagination']['params'][] = $params['p']['start'];
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
 
-        $sql_where = ' and ';
-        $sql_where .= implode(' and ', array_merge(...array_column($sql, 'where')));
-        $sql_where .= ' ';
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
 
         $sort_ary = self::COLUMNS_DEF_ARY[$params['s']['col']]['sort'];
         $order_query = [];
@@ -1154,7 +1152,7 @@ class MessagesListController extends AbstractController
                 on m.category_id = c.id
             left join ' . $pp->schema() . '.categories cp
                 on c.parent_id = cp.id
-            where 1 = 1' . $sql_where . '
+            where ' . $sql_where . '
             order by ' . implode(', ', $order_query) . '
             limit ? offset ?';
 
@@ -1189,9 +1187,7 @@ class MessagesListController extends AbstractController
         $sql_omit_offer_want = $sql_omit_pagination;
         unset($sql_omit_offer_want['offer_want']);
 
-        $sql_omit_offer_want_where = ' and ';
-        $sql_omit_offer_want_where .= implode(' and ', array_merge(...array_column($sql_omit_offer_want, 'where')));
-        $sql_omit_offer_want_where .= ' ';
+        $sql_omit_offer_want_where = implode(' and ', array_merge(...array_column($sql_omit_offer_want, 'where')));
 
         $count_offer_want_query = 'select count(m.*), m.offer_want
             from ' . $pp->schema() . '.messages m
@@ -1199,7 +1195,7 @@ class MessagesListController extends AbstractController
                 on m.user_id = u.id
             left join ' . $pp->schema() . '.categories c
                 on c.id = m.category_id
-            where 1 = 1'. $sql_omit_offer_want_where . '
+            where ' . $sql_omit_offer_want_where . '
             group by m.offer_want';
 
         $stmt = $db->executeQuery($count_offer_want_query,
@@ -1216,9 +1212,7 @@ class MessagesListController extends AbstractController
             $sql_omit_service_stuff = $sql_omit_pagination;
             unset($sql_omit_service_stuff['service_stuff']);
 
-            $sql_omit_service_stuff_where = ' and ';
-            $sql_omit_service_stuff_where .= implode(' and ', array_merge(...array_column($sql_omit_service_stuff, 'where')));
-            $sql_omit_service_stuff_where .= ' ';
+            $sql_omit_service_stuff_where = implode(' and ', array_merge(...array_column($sql_omit_service_stuff, 'where')));
 
             $count_service_stuff_query = 'select count(m.*), m.service_stuff
                 from ' . $pp->schema() . '.messages m
@@ -1226,7 +1220,7 @@ class MessagesListController extends AbstractController
                     on m.user_id = u.id
                 left join ' . $pp->schema() . '.categories c
                     on c.id = m.category_id
-                where 1 = 1'. $sql_omit_service_stuff_where . '
+                where ' . $sql_omit_service_stuff_where . '
                 group by m.service_stuff';
 
             $stmt = $db->executeQuery($count_service_stuff_query,
@@ -1244,9 +1238,7 @@ class MessagesListController extends AbstractController
             $sql_omit_valid_expired = $sql_omit_pagination;
             unset($sql_omit_valid_expired['valid_expired']);
 
-            $sql_omit_valid_expired_where = ' and ';
-            $sql_omit_valid_expired_where .= implode(' and ', array_merge(...array_column($sql_omit_valid_expired, 'where')));
-            $sql_omit_valid_expired_where .= ' ';
+            $sql_omit_valid_expired_where = implode(' and ', array_merge(...array_column($sql_omit_valid_expired, 'where')));
 
             $count_valid_expired_query = 'select count(m.*),
                     (m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null) as valid
@@ -1255,7 +1247,7 @@ class MessagesListController extends AbstractController
                     on m.user_id = u.id
                 left join ' . $pp->schema() . '.categories c
                     on c.id = m.category_id
-                where 1 = 1'. $sql_omit_valid_expired_where . '
+                where ' . $sql_omit_valid_expired_where . '
                 group by valid';
 
             $stmt = $db->executeQuery($count_valid_expired_query,
@@ -1271,9 +1263,7 @@ class MessagesListController extends AbstractController
         $sql_omit_user_status = $sql_omit_pagination;
         unset($sql_omit_user_status['user_status']);
 
-        $sql_omit_user_status_where = ' and ';
-        $sql_omit_user_status_where .= implode(' and ', array_merge(...array_column($sql_omit_user_status, 'where')));
-        $sql_omit_user_status_where .= ' ';
+        $sql_omit_user_status_where = implode(' and ', array_merge(...array_column($sql_omit_user_status, 'where')));
 
         $count_user_status_query = 'select count(m.*),
                 (case
@@ -1287,7 +1277,7 @@ class MessagesListController extends AbstractController
                 on m.user_id = u.id
             left join ' . $pp->schema() . '.categories c
                 on c.id = m.category_id
-            where 1 = 1'. $sql_omit_user_status_where . '
+            where ' . $sql_omit_user_status_where . '
             group by u_status';
 
         $stmt = $db->executeQuery($count_user_status_query,
@@ -1301,18 +1291,17 @@ class MessagesListController extends AbstractController
 
         $sql_omit_category = $sql_omit_pagination;
         unset($sql_omit_category['category']);
-        $sql_omit_category_where = ' and ';
-        $sql_omit_category_where .= implode(' and ', array_merge(...array_column($sql_omit_category, 'where')));
-        $sql_omit_category_where .= ' ';
+
+        $sql_omit_category_where = implode(' and ', array_merge(...array_column($sql_omit_category, 'where')));
 
         $cat_count_ary = [];
         $no_cat_count = 0;
 
         $count_category_query = 'select count(m.*), m.category_id
-            from ' . $pp->schema() . '.messages m, ' .
-                $pp->schema() . '.users u
-            where m.user_id = u.id
-                ' . $sql_omit_category_where . '
+            from ' . $pp->schema() . '.messages m
+            inner join ' .  $pp->schema() . '.users u
+                on m.user_id = u.id
+            where ' . $sql_omit_category_where . '
             group by m.category_id';
 
         $stmt = $db->executeQuery($count_category_query,
@@ -1340,7 +1329,7 @@ class MessagesListController extends AbstractController
                     on m.user_id = u.id
                 left join ' . $pp->schema() . '.categories c
                     on c.id = m.category_id
-                where 1 = 1'. $sql_where,
+                where ' . $sql_where,
                 array_merge(...array_column($sql_omit_pagination, 'params')),
                 array_merge(...array_column($sql_omit_pagination, 'types')));
         }
