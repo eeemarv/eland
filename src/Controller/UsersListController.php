@@ -513,19 +513,26 @@ class UsersListController extends AbstractController
          * Fetch columns list
          */
 
-        $sql = [
+        $sql_map = [
             'where'     => [],
+            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
 
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = '1 = 1';
+
         $status_def_ary = self::get_status_def_ary($config_service, $pp);
+
+        $sql['status'] = $sql_map;
 
         foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
             foreach ($def_sql_ary as $def_val)
             {
-                $sql[$st_def_key][] = $def_val;
+                $sql['status'][$st_def_key][] = $def_val;
             }
         }
 
@@ -781,12 +788,16 @@ class UsersListController extends AbstractController
 
         $users = [];
 
-        $sql_where = ' and ' . implode(' and ', $sql['where']);
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
-        $stmt = $db->executeQuery('select u.*
+        $query = 'select u.*
             from ' . $pp->schema() . '.users u
-            where 1 = 1 ' . $sql_where . '
-            order by u.code asc', $sql['params'], $sql['types']);
+            where ' . $sql_where . '
+            order by u.code asc';
+
+        $stmt = $db->executeQuery($query, $sql_params, $sql_types);
 
         while($row = $stmt->fetch())
         {
@@ -855,13 +866,14 @@ class UsersListController extends AbstractController
                 {
                     continue;
                 }
+
                 $users[$row['user_id']]['last_login'] = $row['last_login'];
             }
         }
 
         if (isset($show_columns['c']) || (isset($show_columns['d']) && !$su->is_master()))
         {
-            $c_ary = $db->fetchAllAssociative('select tc.abbrev,
+            $contacts_query = 'select tc.abbrev,
                     c.user_id, c.value, c.access
                 from ' . $pp->schema() . '.contact c, ' .
                     $pp->schema() . '.type_contact tc, ' .
@@ -869,15 +881,17 @@ class UsersListController extends AbstractController
                 where tc.id = c.id_type_contact ' .
                     (isset($show_columns['c']) ? '' : 'and tc.abbrev = \'adr\' ') .
                     'and c.user_id = u.id
-                    and 1 = 1 ' . $sql_where, $sql['params'], $sql['types']);
+                    and ' . $sql_where;
+
+            $stmt = $db->executeQuery($contacts_query, $sql_params, $sql_types);
 
             $contacts = [];
 
-            foreach ($c_ary as $c)
+            while ($row = $stmt->fetch())
             {
-                $contacts[$c['user_id']][$c['abbrev']][] = [
-                    'value'         => $c['value'],
-                    'access'        => $c['access'],
+                $contacts[$row['user_id']][$row['abbrev']][] = [
+                    'value'         => $row['value'],
+                    'access'        => $row['access'],
                 ];
             }
         }
@@ -919,9 +933,9 @@ class UsersListController extends AbstractController
                     on u.id = p.user_id
                 inner join ' . $pp->schema() . '.mollie_payment_requests r
                     on r.id = p.request_id
-                where 1 = 1 ' . $sql_where . '
+                where ' . $sql_where . '
                 order by u.id asc, p.created_at desc',
-                $sql['params'], $sql['types']);
+                $sql_params, $sql_types);
 
             while (($row = $stmt->fetch()) !== false)
             {
@@ -935,48 +949,48 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['offers']))
             {
-                $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
+                $stmt = $db->executeQuery('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.offer_want = \'offer\'
                         and m.user_id = u.id
-                        and 1 = 1 ' . $sql_where . '
-                    group by m.user_id', $sql['params'], $sql['types']);
+                        and ' . $sql_where . '
+                    group by m.user_id', $sql_params, $sql_types);
 
-                foreach ($ary as $a)
+                while ($row = $stmt->fetch())
                 {
-                    $msgs_count[$a['user_id']]['offers'] = $a['count'];
+                    $msgs_count[$row['user_id']]['offers'] = $row['count'];
                 }
             }
 
             if (isset($show_columns['m']['wants']))
             {
-                $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
+                $stmt = $db->executeQuery('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.offer_want = \'want\'
                         and m.user_id = u.id
-                        and 1 = 1 ' . $sql_where . '
-                    group by m.user_id', $sql['params'], $sql['types']);
+                        and ' . $sql_where . '
+                    group by m.user_id', $sql_params, $sql_types);
 
-                foreach ($ary as $a)
+                while ($row = $stmt->fetch())
                 {
-                    $msgs_count[$a['user_id']]['wants'] = $a['count'];
+                    $msgs_count[$row['user_id']]['wants'] = $row['count'];
                 }
             }
 
             if (isset($show_columns['m']['total']))
             {
-                $ary = $db->fetchAllAssociative('select count(m.id), m.user_id
+                $stmt = $db->executeQuery('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.user_id = u.id
-                        and 1 = 1 ' . $sql_where . '
-                    group by m.user_id', $sql['params'], $sql['types']);
+                        and ' . $sql_where . '
+                    group by m.user_id', $sql_params, $sql_types);
 
-                foreach ($ary as $a)
+                while ($row = $stmt->fetch())
                 {
-                    $msgs_count[$a['user_id']]['total'] = $a['count'];
+                    $msgs_count[$row['user_id']]['total'] = $row['count'];
                 }
             }
         }
@@ -1965,8 +1979,6 @@ class UsersListController extends AbstractController
                 'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
                 'sql'	=> [
                     'where'     => ['u.status in (1, 2)'],
-                    'params'    => [],
-                    'types'     => [],
                 ],
                 'st'	=> [1, 2],
             ],
@@ -1984,8 +1996,6 @@ class UsersListController extends AbstractController
                 'lbl'	=> 'Uitstappers',
                 'sql'	=> [
                     'where'     => ['u.status = 2'],
-                    'params'    => [],
-                    'types'     => [],
                 ],
                 'cl'	=> 'danger',
                 'st'	=> 2,
@@ -1999,8 +2009,6 @@ class UsersListController extends AbstractController
                     'lbl'	=> 'Inactief',
                     'sql'	=> [
                         'where'     => ['u.status = 0'],
-                        'params'    => [],
-                        'types'     => [],
                     ],
                     'cl'	=> 'inactive',
                     'st'	=> 0,
@@ -2009,8 +2017,6 @@ class UsersListController extends AbstractController
                     'lbl'	=> 'Info-pakket',
                     'sql'	=> [
                         'where'     => ['u.status = 5'],
-                        'params'    => [],
-                        'types'     => [],
                     ],
                     'cl'	=> 'warning',
                     'st'	=> 5,
@@ -2019,8 +2025,6 @@ class UsersListController extends AbstractController
                     'lbl'	=> 'Info-moment',
                     'sql'	=> [
                         'where'     => ['u.status = 6'],
-                        'params'    => [],
-                        'types'     => [],
                     ],
                     'cl'	=> 'info',
                     'st'	=> 6
@@ -2029,19 +2033,13 @@ class UsersListController extends AbstractController
                     'lbl'	=> 'Extern',
                     'sql'	=> [
                         'where'     => ['u.status = 7'],
-                        'params'    => [],
-                        'types'     => [],
                     ],
                     'cl'	=> 'extern',
                     'st'	=> 7,
                 ],
                 'all'		=> [
                     'lbl'	=> 'Alle',
-                    'sql'	=> [
-                        'where'     => ['1 = 1'],
-                        'params'    => [],
-                        'types'     => [],
-                    ],
+                    'sql'	=> [],
                 ],
             ];
         }

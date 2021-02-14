@@ -70,6 +70,7 @@ class LogsController extends AbstractController
             'types'     => [],
         ];
 
+        $sql = [];
         $sql['schema'] = $sql_map;
         $sql['schema']['where'][] = 'schema = ?';
         $sql['schema']['params'][] = $pp->schema();
