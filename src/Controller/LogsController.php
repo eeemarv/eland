@@ -63,11 +63,17 @@ class LogsController extends AbstractController
             ],
         ];
 
-        $sql = [
-            'where'     => ['schema = ?'],
-            'params'    => [$pp->schema()],
-            'types'     => [\PDO::PARAM_STR],
+        $sql_map = [
+            'where'     => [],
+            'where_or'  => [],
+            'params'    => [],
+            'types'     => [],
         ];
+
+        $sql['schema'] = $sql_map;
+        $sql['schema']['where'][] = 'schema = ?';
+        $sql['schema']['params'][] = $pp->schema();
+        $sql['schema']['types'][] = \PDO::PARAM_STR;
 
         if (isset($filter['code'])
             && $filter['code'])
@@ -81,11 +87,12 @@ class LogsController extends AbstractController
 
             if ($filter_user_id)
             {
-                $sql['where'][] = 'user_id = ? and user_schema = ?';
-                $sql['params'][] = $filter_user_id;
-                $sql['params'][] = $pp->schema();
-                $sql['types'][] = \PDO::PARAM_INT;
-                $sql['types'][] = \PDO::PARAM_STR;
+                $sql['code'] = $sql_map;
+                $sql['code']['where'][] = 'user_id = ? and user_schema = ?';
+                $sql['code']['params'][] = $filter_user_id;
+                $sql['code']['params'][] = $pp->schema();
+                $sql['code']['types'][] = \PDO::PARAM_INT;
+                $sql['code']['types'][] = \PDO::PARAM_STR;
                 $params['f']['code'] = $filter['code'];
             }
         }
@@ -93,59 +100,82 @@ class LogsController extends AbstractController
         if (isset($filter['type'])
             && $filter['type'])
         {
-            $sql['where'][] = 'type ilike ?';
-            $sql['params'][] = strtolower($filter['type']);
-            $sql['types'][] = \PDO::PARAM_STR;
+            $sql['type'] = $sql_map;
+            $sql['type']['where'][] = 'type ilike ?';
+            $sql['type']['params'][] = strtolower($filter['type']);
+            $sql['type']['types'][] = \PDO::PARAM_STR;
             $params['f']['type'] = $filter['type'];
         }
 
         if (isset($filter['q'])
             && $filter['q'])
         {
-            $sql['where'][] = 'event ilike ?';
-            $sql['params'][] = '%' . $filter['q'] . '%';
-            $sql['types'][] = \PDO::PARAM_STR;
+            $sql['q'] = $sql_map;
+            $sql['q']['where'][] = 'event ilike ?';
+            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
 
         if (isset($filter['fdate'])
             && $filter['fdate'])
         {
+            $sql['fdate'] = $sql_map;
             $fdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['fdate'] . ' UTC'));
 
-            $sql['where'][] = 'ts >= ?';
-            $sql['params'][] = $fdate;
-            $sql['types'][] = Types::DATETIME_IMMUTABLE;
+            $sql['fdate']['where'][] = 'ts >= ?';
+            $sql['fdate']['params'][] = $fdate;
+            $sql['fdate']['types'][] = Types::DATETIME_IMMUTABLE;
             $params['f']['fdate'] = $filter['fdate'];
         }
 
         if (isset($filter['tdate'])
             && $filter['tdate'])
         {
+            $sql['tdate'] = $sql_map;
             $tdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['tdate'] . ' UTC'));
 
-            $sql['where'][] = 'ts <= ?';
-            $sql['params'][] = $tdate;
-            $sql['types'][] = Types::DATETIME_IMMUTABLE;
+            $sql['tdate']['where'][] = 'ts <= ?';
+            $sql['tdate']['params'][] = $tdate;
+            $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
             $params['f']['tdate'] = $filter['tdate'];
         }
 
-        $sql_where = ' and ' . implode(' and ', $sql['where']);
+        $sql['pagination'] = $sql_map;
+        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
 
-        $row_count = $db->fetchOne('select count(*)
-            from xdb.logs
-            where 1 = 1' . $sql_where,
-            $sql['params'], $sql['types']);
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
 
         $query = 'select *
             from xdb.logs
-            where 1 = 1' . $sql_where;
+            where ' . $sql_where;
         $query .= ' order by ' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
-        $query .= ' limit ' . $params['p']['limit'];
-        $query .= ' offset ' . $params['p']['start'];
+        $query .= 'limit ? offset ?';
 
-        $rows = $db->fetchAllAssociative($query, $sql['params'], $sql['types']);
+        $rows = [];
+
+        $stmt = $db->executeQuery($query,
+            array_merge(...array_column($sql, 'params')),
+            array_merge(...array_column($sql, 'types')));
+
+        while ($row = $stmt->fetch())
+        {
+            $rows[] = $row;
+        }
+
+        $sql_omit_pagination = $sql;
+        unset($sql_omit_pagination['pagination']);
+        $sql_omit_pagination_where = implode(' and ', array_merge(...array_column($sql_omit_pagination, 'where')));
+
+        $row_count = $db->fetchOne('select count(*)
+            from xdb.logs
+            where ' . $sql_omit_pagination_where,
+            array_merge(...array_column($sql_omit_pagination, 'params')),
+            array_merge(...array_column($sql_omit_pagination, 'types')));
 
         $pagination_render->init('logs', $pp->ary(),
             $row_count, $params);
