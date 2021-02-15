@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\AccessCnst;
 use App\Cnst\BulkCnst;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +21,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use App\Cnst\RoleCnst;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\FormTokenService;
@@ -178,7 +178,9 @@ class ContactsAdminController extends AbstractController
             $filter['code'] = $account_render->str((int) $filter['uid'], $pp->schema());
         }
 
-        if (isset($filter['code']) && $filter['code'])
+        $filter_code = isset($filter['code']) && $filter['code'];
+
+        if ($filter_code)
         {
             [$code] = explode(' ', trim($filter['code']));
 
@@ -201,7 +203,9 @@ class ContactsAdminController extends AbstractController
             }
         }
 
-        if (isset($filter['q']) && $filter['q'])
+        $filter_q = isset($filter['q']) && $filter['q'];
+
+        if ($filter_q)
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][]= '(c.value ilike ? or c.comments ilike ?)';
@@ -212,7 +216,9 @@ class ContactsAdminController extends AbstractController
             $params['f']['q'] = $filter['q'];
         }
 
-        if (isset($filter['abbrev']) && $filter['abbrev'])
+        $filter_abbrev = isset($filter['abbrev']) && $filter['abbrev'];
+
+        if ($filter_abbrev)
         {
             $sql['abbrev'] = $sql_map;
             $sql['abbrev']['where'][]= 'tc.abbrev = ?';
@@ -221,16 +227,41 @@ class ContactsAdminController extends AbstractController
             $params['f']['abbrev'] = $filter['abbrev'];
         }
 
-        if (isset($filter['access']) && $filter['access'] !== 'all')
+        $filter_access = isset($filter['admin'])
+            || isset($filter['user'])
+            || isset($filter['guest']);
+
+        if ($filter_access)
         {
             $sql['access'] = $sql_map;
-            $sql['access']['where'][]= 'c.access = ?';
-            $sql['access']['params'][]= $filter['access'];
-            $sql['access']['types'][]= \PDO::PARAM_STR;
-            $params['f']['access'] = $filter['access'];
+
+            if (isset($filter['admin']))
+            {
+                $sql['access']['where_or'][] = 'c.access = \'admin\'';
+                $params['f']['admin'] = '1';
+            }
+
+            if (isset($filter['user']))
+            {
+                $sql['access']['where_or'][] = 'c.access = \'user\'';
+                $params['f']['user'] = '1';
+            }
+
+            if (isset($filter['guest']))
+            {
+                $sql['access']['where_or'][] = 'c.access = \'guest\'';
+                $params['f']['guest'] = '1';
+            }
+
+            if (count($sql['access']['where_or']))
+            {
+                $sql['access']['where'][] = ' (' . implode(' or ', $sql['access']['where_or']) . ') ';
+            }
         }
 
-        if (isset($filter['ustatus']) && $filter['ustatus'])
+        $filter_ustatus = isset($filter['ustatus']) && $filter['ustatus'] && $filter['ustatus'] !== 'all';
+
+        if ($filter_ustatus)
         {
             $sql['ustatus'] = $sql_map;
 
@@ -317,6 +348,36 @@ class ContactsAdminController extends AbstractController
             $sql_omit_pagination_params,
             $sql_omit_pagination_types);
 
+        $count_ary = [
+            'admin'     => 0,
+            'user'      => 0,
+            'guest'     => 0,
+        ];
+
+        $sql_omit_access = $sql_omit_pagination;
+        unset($sql_omit_access['access']);
+        $sql_omit_access_where = implode(' and ', array_merge(...array_column($sql_omit_access, 'where')));
+        $sql_omit_access_params = array_merge(...array_column($sql_omit_access, 'params'));
+        $sql_omit_access_types = array_merge(...array_column($sql_omit_access, 'types'));
+
+        $count_access_query = 'select count(c.*), c.access
+            from ' . $pp->schema() . '.contact c
+            inner join ' . $pp->schema() . '.type_contact tc
+                on c.id_type_contact = tc.id
+            inner join ' . $pp->schema() . '.users u
+                on c.user_id = u.id
+            where ' . $sql_omit_access_where . '
+            group by c.access';
+
+        $stmt = $db->executeQuery($count_access_query,
+            $sql_omit_access_params,
+            $sql_omit_access_types);
+
+        while($row = $stmt->fetch())
+        {
+            $count_ary[$row['access']] = $row['count'];
+        }
+
         $pagination_render->init('contacts', $pp->ary(),
             $row_count, $params);
 
@@ -363,21 +424,22 @@ class ContactsAdminController extends AbstractController
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }
 
+        $btn_top_render->add('contacts_add_admin', $pp->ary(),
+            [], 'Contact toevoegen');
+
+        $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
+
         $assets_service->add(['table_sel.js']);
 
         $btn_nav_render->csv();
 
-        $btn_top_render->add('contacts_add_admin', $pp->ary(),
-            [], 'Contact toevoegen');
-
         $filtered = !isset($filter['uid']) && (
-            (isset($filter['q']) && $filter['q'] !== '')
-            || (isset($filter['abbrev']) && $filter['abbrev'] !== '')
-            || (isset($filter['code']) && $filter['code'] !== '')
-            || (isset($filter['ustatus'])
-                && !in_array($filter['ustatus'], ['all', '']))
-            || (isset($filter['access'])
-                && !in_array($filter['access'], ['all', ''])));
+            $filter_q
+            || $filter_abbrev
+            || $filter_code
+            || $filter_ustatus
+            || $filter_access
+        );
 
         $panel_collapse = !$filtered;
 
@@ -396,7 +458,7 @@ class ContactsAdminController extends AbstractController
 
         $out .= '<div class="row">';
 
-        $out .= '<div class="col-sm-4">';
+        $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon">';
         $out .= '<i class="fa fa-search"></i>';
@@ -407,35 +469,13 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-4">';
+        $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon">';
         $out .= 'Type';
         $out .= '</span>';
         $out .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
         $out .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
-        $out .= '</select>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $access_options = [
-            'all'		=> '',
-        ];
-
-        $access_options += RoleCnst::LABEL_ARY;
-
-        if (!$config_service->get_intersystem_en($pp->schema()))
-        {
-            unset($access_options['guest']);
-        }
-
-        $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'Zichtbaar';
-        $out .= '</span>';
-        $out .= '<select class="form-control" id="access" name="f[access]">';
-        $out .= $select_render->get_options($access_options, $filter['access'] ?? 'all');
         $out .= '</select>';
         $out .= '</div>';
         $out .= '</div>';
@@ -455,7 +495,7 @@ class ContactsAdminController extends AbstractController
             'extern'	=> 'Extern',
         ];
 
-        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon">';
         $out .= 'Status ';
@@ -470,7 +510,7 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="col-sm-6">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon" id="code_addon">Van ';
         $out .= '<span class="fa fa-user"></span></span>';
@@ -497,6 +537,34 @@ class ContactsAdminController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
+        $out .= '</div>';
+
+        $out .= '<div class="row">';
+        $out .= '<div class="col-sm-10">';
+        $out .= '<div class="input-group margin-bottom custom-checkbox">';
+
+        foreach (AccessCnst::LABEL as $key => $d)
+        {
+            $label = '<span class="btn btn-';
+            $label .= $d['class'];
+            $label .= '"';
+            $label .= ' title="' . $d['title'] . '"';
+            $label .= '>';
+            $label .= $d['lbl'];
+            $label .= ' (';
+            $label .= $count_ary[$key];
+            $label .= ')</span>';
+
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
+                '%name%'        => 'f[' . $key . ']',
+                '%attr%'        => isset($filter[$key]) ? ' checked' : '',
+                '%label%'       => $label,
+            ]);
+        }
+
+        $out .= '</div>';
+        $out .= '</div>';
+
         $out .= '<div class="col-sm-2">';
         $out .= '<input type="submit" value="Toon" ';
         $out .= 'class="btn btn-default btn-block">';
@@ -507,9 +575,6 @@ class ContactsAdminController extends AbstractController
         $params_form = $params;
         unset($params_form['f']);
         unset($params_form['p']['start']);
-
-        $params_form['r'] = 'admin';
-        $params_form['u'] = $su->id();
 
         $params_form = http_build_query($params_form, 'prefix', '&');
         $params_form = urldecode($params_form);

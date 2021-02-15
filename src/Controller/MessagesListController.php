@@ -920,20 +920,21 @@ class MessagesListController extends AbstractController
         $is_owner = isset($filter['uid'])
             && $su->is_owner((int) $filter['uid']);
 
-        if (isset($filter['uid'])
-            && $filter['uid']
-            && !isset($filter['s']))
+        $filter_uid = isset($filter['uid']) && $filter['uid'];
+
+        if ($filter_uid && !isset($filter['s']))
         {
             $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
         }
 
-        if (isset($filter['uid']))
+        if ($filter_uid)
         {
             $params['f']['uid'] = $filter['uid'];
         }
 
-        if (isset($filter['q'])
-            && $filter['q'])
+        $filter_q = isset($filter['q']) && $filter['q'];
+
+        if ($filter_q)
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = '(m.subject ilike ? or m.content ilike ?)';
@@ -944,8 +945,10 @@ class MessagesListController extends AbstractController
             $params['f']['q'] = $filter['q'];
         }
 
-        if (isset($filter['fcode'])
-            && $filter['fcode'] !== '')
+        $filter_fcode = isset($filter['fcode'])
+            && $filter['fcode'] !== '';
+
+        if ($filter_fcode)
         {
             [$fcode] = explode(' ', trim($filter['fcode']));
             $fcode = trim($fcode);
@@ -1100,9 +1103,11 @@ class MessagesListController extends AbstractController
 
         $sql['common']['where'][] = 'u.status in (1, 2)';
 
-        if (isset($filter['cid'])
+        $filter_cid = isset($filter['cid'])
             && $filter['cid']
-            && $category_enabled)
+            && $category_enabled;
+
+        if ($filter_cid)
         {
             $sql['category'] = $sql_map;
 
@@ -1417,7 +1422,7 @@ class MessagesListController extends AbstractController
                     [], 'Vraag of aanbod toevoegen');
             }
 
-            if (isset($filter['uid']))
+            if ($filter_uid)
             {
                 if ($pp->is_admin() && !$is_owner)
                 {
@@ -1432,15 +1437,15 @@ class MessagesListController extends AbstractController
 
         $assets_service->add(['messages_filter.js']);
 
-        $filter_panel_open = (($filter['fcode'] ?? false) && !isset($filter['uid']))
+        $filter_panel_open = ($filter_fcode && !isset($filter['uid']))
             || $filter_offer_want
             || $filter_valid_expired
             || $filter_service_stuff
             || $filter_user_status;
 
-        $filtered = ($filter['q'] ?? false) || $filter_panel_open;
+        $filtered = $filter_q || $filter_panel_open;
 
-        if (isset($filter['uid']))
+        if ($filter_uid)
         {
             if ($is_owner)
             {
@@ -1461,7 +1466,7 @@ class MessagesListController extends AbstractController
             $heading_render->add('Vraag en aanbod');
         }
 
-        if (isset($filter['cid']) && $filter['cid'] && $category_enabled)
+        if ($filter_cid)
         {
             if ($filter['cid'] === 'null')
             {
