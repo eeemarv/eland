@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,28 +21,131 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Cnst\RoleCnst;
+use App\Service\AlertService;
+use App\Service\AssetsService;
+use App\Service\FormTokenService;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ContactsAdminController extends AbstractController
 {
     public function __invoke(
         Request $request,
         Db $db,
+        AlertService $alert_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         HeadingRender $heading_render,
         PaginationRender $pagination_render,
         SelectRender $select_render,
         LinkRender $link_render,
+        FormTokenService $form_token_service,
         MenuService $menu_service,
         TypeaheadService $typeahead_service,
         ConfigService $config_service,
         AccountRender $account_render,
+        AssetsService $assets_service,
         SessionUserService $su,
         PageParamsService $pp,
         ItemAccessService $item_access_service
     ):Response
     {
+        $selected_contacts = $request->request->get('sel', []);
+        $bulk_field = $request->request->get('bulk_field', []);
+        $bulk_verify = $request->request->get('bulk_verify', []);
+        $bulk_submit = $request->request->get('bulk_submit', []);
+
+        if ($request->isMethod('POST')
+            && count($bulk_submit))
+        {
+            $errors = [];
+
+            if (count($bulk_submit) > 1)
+            {
+                throw new BadRequestHttpException('Invalid form. More than one submit.');
+            }
+
+            if (count($bulk_field) > 1)
+            {
+                throw new BadRequestHttpException('Invalid form. More than one bulk field.');
+            }
+
+            if (count($bulk_verify) > 1)
+            {
+                throw new BadRequestHttpException('Invalid form. More than one bulk verify checkbox.');
+            }
+
+            if ($error_token = $form_token_service->get_error())
+            {
+                $errors[] = $error_token;
+            }
+
+            if (!count($selected_contacts))
+            {
+                $errors[] = 'Selecteer ten minste één contact voor deze actie.';
+            }
+
+            if (count($bulk_verify) !== 1)
+            {
+                $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
+            }
+
+            $bulk_submit_action = array_key_first($bulk_submit);
+            $bulk_verify_action = array_key_first($bulk_verify);
+            $bulk_field_action = array_key_first($bulk_field);
+
+            if (isset($bulk_verify_action)
+                && $bulk_verify_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Invalid form. Not matching verify checkbox to bulk action.');
+            }
+
+            if (isset($bulk_field_action)
+                && $bulk_field_action !== $bulk_submit_action)
+            {
+                throw new BadRequestHttpException('Invalid form. Not matching field to bulk action.');
+            }
+
+            if (!isset($bulk_field_action))
+            {
+                throw new BadRequestHttpException('Invalid form. Missing value.');
+            }
+
+            $bulk_field_value = $bulk_field[$bulk_field_action];
+
+            if (!isset($bulk_field_value) || !$bulk_field_value)
+            {
+                $errors[] = 'Bulk actie waarde-veld niet ingevuld.';
+            }
+
+            if ($bulk_submit_action === 'access' && !count($errors))
+            {
+                if (!in_array($bulk_field_value, ['admin', 'user', 'guest']))
+                {
+                    throw new BadRequestHttpException('Unvalid value: ' . $bulk_field_value);
+                }
+
+                $db->executeStatement('update ' . $pp->schema() . '.contact
+                    set access = ?
+                    where id in (?)',
+                    [$bulk_field_value, array_keys($selected_contacts)],
+                    [\PDO::PARAM_STR, Db::PARAM_INT_ARRAY]);
+
+                if (count($selected_contacts) > 1)
+                {
+                    $alert_service->success('De contacten zijn aangepast.');
+                }
+                else
+                {
+                    $alert_service->success('Het contact is aangepast.');
+                }
+
+                $link_render->redirect('contacts', $pp->ary(), []);
+            }
+
+            $alert_service->error($errors);
+        }
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -259,6 +363,8 @@ class ContactsAdminController extends AbstractController
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }
 
+        $assets_service->add(['table_sel.js']);
+
         $btn_nav_render->csv();
 
         $btn_top_render->add('contacts_add_admin', $pp->ary(),
@@ -400,7 +506,6 @@ class ContactsAdminController extends AbstractController
 
         $params_form = $params;
         unset($params_form['f']);
-        unset($params_form['uid']);
         unset($params_form['p']['start']);
 
         $params_form['r'] = 'admin';
@@ -497,7 +602,11 @@ class ContactsAdminController extends AbstractController
         {
         	$td = [];
 
-            $td[] = $c['abbrev'];
+            $td[] = strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+                '%id%'      => $c['id'],
+                '%attr%'    => isset($selected_contacts[$c['id']]) ? ' checked' : '',
+                '%label%'   => $c['abbrev'],
+            ]);
 
             if (isset($c['value']))
             {
@@ -540,6 +649,44 @@ class ContactsAdminController extends AbstractController
         $out .= '</div></div>';
 
         $out .= $pagination_render->get();
+
+        $out .= BulkCnst::TPL_SELECT_BUTTONS;
+
+        $out .= '<h3>Bulk acties met geselecteerde contacten</h3>';
+        $out .= '<div class="panel panel-info">';
+        $out .= '<div class="panel-heading">';
+
+        $out .= '<ul class="nav nav-tabs" role="tablist">';
+
+        $out .= '<li class="active"><a href="#access_tab" ';
+        $out .= 'data-toggle="tab">Zichtbaarheid</a></li>';
+
+        $out .= '</ul>';
+
+        $out .= '<div class="tab-content">';
+
+        $out .= '<div role="tabpanel" class="tab-pane active" id="access_tab">';
+        $out .= '<h3>Zichtbaarheid</h3>';
+        $out .= '<form method="post">';
+
+        $out .= $item_access_service->get_radio_buttons('bulk_field[access]');
+
+        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            '%name%'    => 'bulk_verify[access]',
+            '%label%'   => 'Ik heb nagekeken dat de juiste contacten geselecteerd zijn.',
+            '%attr%'    => ' required',
+        ]);
+
+        $out .= '<input type="submit" value="Aanpassen" ';
+        $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
+        $out .= $form_token_service->get_hidden_input();
+        $out .= '</form>';
+        $out .= '</div>';
+
+        $out .= '<div class="clearfix"></div>';
+        $out .= '</div>';
+        $out .= '</div>';
+        $out .= '</div>';
 
         $menu_service->set('contacts');
 

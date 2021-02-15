@@ -1263,7 +1263,7 @@ class TransactionsController extends AbstractController
 
                 $out .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[service_stuff]',
-                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste transacties geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
