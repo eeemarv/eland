@@ -57,11 +57,16 @@ class ContactsAdminController extends AbstractController
             ],
         ];
 
-        $sql = [
+        $sql_map = [
             'where'     => [],
+            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
+
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = '1 = 1';
 
         if (isset($filter['uid']))
         {
@@ -77,71 +82,78 @@ class ContactsAdminController extends AbstractController
                 from ' . $pp->schema() . '.users
                 where code = ?', [$code], [\PDO::PARAM_STR]);
 
+            $sql['code'] = $sql_map;
+
             if ($fuid)
             {
-                $sql['where'][]= 'c.user_id = ?';
-                $sql['params'][]= $fuid;
-                $sql['types'][]= \PDO::PARAM_INT;
+                $sql['code']['where'][]= 'c.user_id = ?';
+                $sql['code']['params'][]= $fuid;
+                $sql['code']['types'][]= \PDO::PARAM_INT;
                 $params['f']['code'] = $account_render->str($fuid, $pp->schema());
             }
             else
             {
-                $sql['where'][]= '1 = 2';
+                $sql['code']['where'][]= '1 = 2';
             }
         }
 
         if (isset($filter['q']) && $filter['q'])
         {
-            $sql['where'][]= '(c.value ilike ? or c.comments ilike ?)';
-            $sql['params'][]= '%' . $filter['q'] . '%';
-            $sql['params'][]= '%' . $filter['q'] . '%';
-            $sql['types'][]= \PDO::PARAM_STR;
-            $sql['types'][]= \PDO::PARAM_STR;
+            $sql['q'] = $sql_map;
+            $sql['q']['where'][]= '(c.value ilike ? or c.comments ilike ?)';
+            $sql['q']['params'][]= '%' . $filter['q'] . '%';
+            $sql['q']['params'][]= '%' . $filter['q'] . '%';
+            $sql['q']['types'][]= \PDO::PARAM_STR;
+            $sql['q']['types'][]= \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
 
         if (isset($filter['abbrev']) && $filter['abbrev'])
         {
-            $sql['where'][]= 'tc.abbrev = ?';
-            $sql['params'][]= $filter['abbrev'];
-            $sql['types'][]= \PDO::PARAM_STR;
+            $sql['abbrev'] = $sql_map;
+            $sql['abbrev']['where'][]= 'tc.abbrev = ?';
+            $sql['abbrev']['params'][]= $filter['abbrev'];
+            $sql['abbrev']['types'][]= \PDO::PARAM_STR;
             $params['f']['abbrev'] = $filter['abbrev'];
         }
 
         if (isset($filter['access']) && $filter['access'] !== 'all')
         {
-            $sql['where'][]= 'c.access = ?';
-            $sql['params'][]= $filter['access'];
-            $sql['types'][]= \PDO::PARAM_STR;
+            $sql['access'] = $sql_map;
+            $sql['access']['where'][]= 'c.access = ?';
+            $sql['access']['params'][]= $filter['access'];
+            $sql['access']['types'][]= \PDO::PARAM_STR;
             $params['f']['access'] = $filter['access'];
         }
 
         if (isset($filter['ustatus']) && $filter['ustatus'])
         {
+            $sql['ustatus'] = $sql_map;
+
             switch ($filter['ustatus'])
             {
                 case 'new':
-                    $sql['where'][]= 'u.adate > ? and u.status = 1';
-                    $sql['params'][]= $config_service->get_new_user_treshold($pp->schema());
-                    $sql['types'][]= Types::DATETIME_IMMUTABLE;
+                    $sql['ustatus']['where'][]= 'u.adate > ? and u.status = 1';
+                    $sql['ustatus']['params'][]= $config_service->get_new_user_treshold($pp->schema());
+                    $sql['ustatus']['types'][]= Types::DATETIME_IMMUTABLE;
                     break;
                 case 'leaving':
-                    $sql['where'][]= 'u.status = 2';
+                    $sql['ustatus']['where'][]= 'u.status = 2';
                     break;
                 case 'active':
-                    $sql['where'][]= 'u.status in (1, 2)';
+                    $sql['ustatus']['where'][]= 'u.status in (1, 2)';
                     break;
                 case 'inactive':
-                    $sql['where'][]= 'u.status = 0';
+                    $sql['ustatus']['where'][]= 'u.status = 0';
                     break;
                 case 'ip':
-                    $sql['where'][]= 'u.status = 5';
+                    $sql['ustatus']['where'][]= 'u.status = 5';
                     break;
                 case 'im':
-                    $sql['where'][]= 'u.status = 6';
+                    $sql['ustatus']['where'][]= 'u.status = 6';
                     break;
                 case 'extern':
-                    $sql['where'][]= 'u.status = 7';
+                    $sql['ustatus']['where'][]= 'u.status = 7';
                     break;
                 default:
                     $filter['ustatus'] = 'all';
@@ -155,36 +167,51 @@ class ContactsAdminController extends AbstractController
             $params['f']['ustatus'] = 'all';
         }
 
-        if (count($sql['where']))
-        {
-            $sql_where = ' and ' . implode(' and ', $sql['where']) . ' ';
-        }
-        else
-        {
-            $sql_where = '';
-        }
+        $sql['pagination'] = $sql_map;
+        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+
+        $contacts = [];
+
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
         $query = 'select c.*, tc.abbrev
-            from ' . $pp->schema() . '.contact c, ' .
-                $pp->schema() . '.type_contact tc, ' .
-                $pp->schema() . '.users u
-            where c.id_type_contact = tc.id
-                and c.user_id = u.id ' . $sql_where;
+            from ' . $pp->schema() . '.contact c
+            inner join ' . $pp->schema() . '.type_contact tc
+                on c.id_type_contact = tc.id
+            inner join ' . $pp->schema() . '.users u
+                on c.user_id = u.id
+            where ' . $sql_where . '
+            order by ' . $params['s']['orderby'] . ' ' .
+            ($params['s']['asc'] ? 'asc' : 'desc') . '
+            limit ? offset ?';
+
+        $stmt = $db->executeQuery($query, $sql_params, $sql_types);
+
+        while ($row = $stmt->fetch())
+        {
+            $contacts[] = $row;
+        }
+
+        $sql_omit_pagination = $sql;
+        unset($sql_omit_pagination['pagination']);
+        $sql_omit_pagination_where = implode(' and ', array_merge(...array_column($sql_omit_pagination, 'where')));
+        $sql_omit_pagination_params = array_merge(...array_column($sql_omit_pagination, 'params'));
+        $sql_omit_pagination_types = array_merge(...array_column($sql_omit_pagination, 'types'));
 
         $row_count = $db->fetchOne('select count(c.*)
-            from ' . $pp->schema() . '.contact c, ' .
-                $pp->schema() . '.type_contact tc, ' .
-                $pp->schema() . '.users u
-            where c.id_type_contact = tc.id
-                and c.user_id = u.id ' . $sql_where,
-            $sql['params'], $sql['types']);
-
-        $query .= ' order by ' . $params['s']['orderby'] . ' ';
-        $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
-        $query .= ' limit ' . $params['p']['limit'];
-        $query .= ' offset ' . $params['p']['start'];
-
-        $contacts = $db->fetchAllAssociative($query, $sql['params'], $sql['types']);
+            from ' . $pp->schema() . '.contact c
+            inner join ' . $pp->schema() . '.type_contact tc
+                on c.id_type_contact = tc.id
+            inner join ' . $pp->schema() . '.users u
+                on c.user_id = u.id
+            where ' . $sql_omit_pagination_where,
+            $sql_omit_pagination_params,
+            $sql_omit_pagination_types);
 
         $pagination_render->init('contacts', $pp->ary(),
             $row_count, $params);
@@ -222,12 +249,12 @@ class ContactsAdminController extends AbstractController
 
         $abbrev_ary = [];
 
-        $rs = $db->prepare('select abbrev
+        $stmt = $db->prepare('select abbrev
             from ' . $pp->schema() . '.type_contact');
 
-        $rs->execute();
+        $stmt->execute();
 
-        while($row = $rs->fetch())
+        while($row = $stmt->fetch())
         {
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }

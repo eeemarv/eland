@@ -89,25 +89,34 @@ class MolliePaymentsAddController extends AbstractController
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
-        $sql = [
+        $sql_map = [
             'where'     => [],
+            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
+
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = '1 = 1';
+
+        $sql['status'] = $sql_map;
 
         foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
             foreach ($def_sql_ary as $def_val)
             {
-                $sql[$st_def_key][] = $def_val;
+                $sql['status'][$st_def_key][] = $def_val;
             }
         }
 
         $params['status'] = $status;
 
-        $sql_where = ' and ' . implode(' and ', $sql['where']);
-
         $users = [];
+
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
         $stmt = $db->executeQuery('select u.id,
                 u.name, u.full_name, u.code,
@@ -124,8 +133,8 @@ class MolliePaymentsAddController extends AbstractController
                 order by p.created_at desc
                 limit 1) p1
             on \'t\'::bool
-            where 1 = 1 ' . $sql_where . '
-            order by u.code asc', $sql['params'], $sql['types']);
+            where ' . $sql_where . '
+            order by u.code asc', $sql_params, $sql_types);
 
         while(($row = $stmt->fetch()) !== false)
         {

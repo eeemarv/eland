@@ -135,16 +135,16 @@ class MassTransactionController extends AbstractController
 
         $users = [];
 
-        $rs = $db->prepare(
+        $stmt = $db->prepare(
             'select id, name, code,
                 role, status, adate
             from ' . $pp->schema() . '.users
             where status IN (0, 1, 2, 5, 6)
             order by code');
 
-        $rs->execute();
+        $stmt->execute();
 
-        while ($row = $rs->fetch())
+        while ($row = $stmt->fetch())
         {
             $row['balance'] = $balance_ary[$row['id']] ?? 0;
 
