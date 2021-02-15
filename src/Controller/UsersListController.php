@@ -346,7 +346,6 @@ class UsersListController extends AbstractController
             }
             else if (!count($errors)
                 && in_array($bulk_submit_action, ['mail', 'mail_test']))
-
             {
                 if ($bulk_submit_action === 'mail_test')
                 {

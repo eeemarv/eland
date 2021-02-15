@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
+use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
@@ -26,8 +28,11 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+use function GuzzleHttp\json_encode;
 
 class TransactionsController extends AbstractController
 {
@@ -60,6 +65,11 @@ class TransactionsController extends AbstractController
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
+        if (!$request->isMethod('GET') && !$pp->is_admin())
+        {
+            throw new BadRequestException('POST not allowed');
+        }
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
@@ -73,7 +83,7 @@ class TransactionsController extends AbstractController
         $bulk_submit = $request->request->get('bulk_submit', []);
 
         if ($request->isMethod('POST')
-            && !$pp->is_admin()
+            && $pp->is_admin()
             && count($bulk_submit)
             && $bulk_actions_enabled)
         {
@@ -137,8 +147,81 @@ class TransactionsController extends AbstractController
                 $errors[] = 'Bulk actie waarde-veld niet ingevuld.';
             }
 
+            if (!count($errors))
+            {
+                $update_transactions_ary  = [];
 
+                $stmt = $db->executeQuery('select *
+                    from ' . $pp->schema() . '.transactions
+                    where id in (?)',
+                    [array_keys($selected_transactions)],
+                    [Db::PARAM_INT_ARRAY]);
 
+                while ($row = $stmt->fetch())
+                {
+                    if ($row['real_from'] || $row['real_to'])
+                    {
+                        if (isset($intersystem_account_schemas[$row['id_from']]))
+                        {
+                            $row['inter_schema'] = $intersystem_account_schemas[$row['id_from']];
+
+                        }
+                        else if (isset($intersystem_account_schemas[$row['id_to']]))
+                        {
+                            $row['inter_schema'] = $intersystem_account_schemas[$row['id_to']];
+                        }
+                    }
+
+                    $update_transactions_ary[$row['id']] = $row;
+                }
+            }
+
+            if ($bulk_submit_action === 'service_stuff' && !count($errors))
+            {
+                if (!$service_stuff_enabled)
+                {
+                    throw new BadRequestHttpException('Service/stuff sub-module not enabled.');
+                }
+
+                if (!in_array($bulk_field_value, ['service', 'stuff', 'null-service-stuff']))
+                {
+                    throw new BadRequestHttpException('Unvalid value: ' . $bulk_field_value);
+                }
+
+                if ($bulk_field_value === 'null-service-stuff')
+                {
+                    $bulk_field_value = null;
+                }
+
+                $update_ary = [
+                    'service_stuff'   => $bulk_field_value,
+                ];
+
+                foreach ($update_transactions_ary as $id => $row)
+                {
+                    $db->update($pp->schema() . '.transactions',
+                        $update_ary, ['id' => $id]);
+
+                    if (isset($row['inter_schema']))
+                    {
+                        $db->update($row['inter_schema'] . '.transactions',
+                        $update_ary, ['transid' => $row['transid']]);
+                    }
+                }
+
+                if (count($selected_transactions) > 1)
+                {
+                    $alert_service->success('De transacties zijn aangepast.');
+                }
+                else
+                {
+                    $alert_service->success('De transactie is aangepast.');
+                }
+
+                $link_render->redirect('transactions', $pp->ary(), []);
+            }
+
+            $alert_service->error($errors);
         }
 
         $filter = $request->query->get('f', []);
@@ -499,6 +582,12 @@ class TransactionsController extends AbstractController
 
         if ($pp->is_admin())
         {
+            if ($bulk_actions_enabled)
+            {
+                $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
+                $assets_service->add(['table_sel.js']);
+            }
+
             $btn_nav_render->csv();
         }
 
@@ -805,8 +894,21 @@ class TransactionsController extends AbstractController
                 $out .= '>';
                 $out .= '<td>';
 
-                $out .= $link_render->link_no_attr('transactions_show', $pp->ary(),
+                $link_description = $link_render->link_no_attr('transactions_show', $pp->ary(),
                     ['id' => $t['id']], $t['description']);
+
+                if ($bulk_actions_enabled && $pp->is_admin())
+                {
+                    $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+                        '%id%'      => $t['id'],
+                        '%attr%'    => isset($selected_transactions[$t['id']]) ? ' checked' : '',
+                        '%label%'   => $link_description,
+                    ]);
+                }
+                else
+                {
+                    $out .= $link_description;
+                }
 
                 $out .= '</td>';
 
@@ -913,8 +1015,23 @@ class TransactionsController extends AbstractController
 
                 $out .= '>';
                 $out .= '<td>';
-                $out .= $link_render->link_no_attr('transactions_show', $pp->ary(),
+
+                $link_description = $link_render->link_no_attr('transactions_show', $pp->ary(),
                     ['id' => $t['id']], $t['description']);
+
+                if ($bulk_actions_enabled && $pp->is_admin())
+                {
+                    $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+                        '%id%'      => $t['id'],
+                        '%attr%'    => isset($selected_transactions[$t['id']]) ? ' checked' : '',
+                        '%label%'   => $link_description,
+                    ]);
+                }
+                else
+                {
+                    $out .= $link_description;
+                }
+
                 $out .= '</td>';
 
                 $out .= '<td>';
@@ -1011,9 +1128,80 @@ class TransactionsController extends AbstractController
         $out .= self::get_valuation($config_service, $pp->schema());
         $out .= '</ul>';
 
+        if ($pp->is_admin() && $bulk_actions_enabled)
+        {
+            $out .= BulkCnst::TPL_SELECT_BUTTONS;
+
+            $out .= '<h3>Bulk acties met geselecteerde transacties</h3>';
+            $out .= '<div class="panel panel-info">';
+            $out .= '<div class="panel-heading">';
+
+            $out .= '<ul class="nav nav-tabs" role="tablist">';
+
+            if ($service_stuff_enabled)
+            {
+                $out .= '<li class="active"><a href="#service_stuff_tab" ';
+                $out .= 'data-toggle="tab">Diensten / Spullen</a></li>';
+            }
+
+            $out .= '</ul>';
+
+            $out .= '<div class="tab-content">';
 
 
+            if ($service_stuff_enabled)
+            {
+                $out .= '<div role="tabpanel" class="tab-pane active" id="service_stuff_tab">';
+                $out .= '<h3>Diensten of spullen</h3>';
+                $out .= '<form method="post">';
 
+                $out .= '<div class="form-group">';
+                $out .= '<div class="custom-radio">';
+
+                foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
+                {
+                    $label = '<span class="btn btn-';
+                    $label .= $render_data['btn_class'];
+                    $label .= '"';
+
+                    if (isset($render_data['title']))
+                    {
+                        $label .= ' title="' . $render_data['title'] . '"';
+                    }
+
+                    $label .= '>';
+                    $label .= $render_data['label'];
+                    $label .= '</span>';
+
+                    $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                        '%name%'    => 'bulk_field[service_stuff]',
+                        '%value%'   => $key,
+                        '%attr%'    => ' required',
+                        '%label%'   => $label,
+                    ]);
+                }
+
+                $out .= '</div>';
+                $out .= '</div>';
+
+                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                    '%name%'    => 'bulk_verify[service_stuff]',
+                    '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
+                    '%attr%'    => ' required',
+                ]);
+
+                $out .= '<input type="submit" value="Aanpassen" ';
+                $out .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
+                $out .= $form_token_service->get_hidden_input();
+                $out .= '</form>';
+                $out .= '</div>';
+            }
+
+            $out .= '<div class="clearfix"></div>';
+            $out .= '</div>';
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $menu_service->set('transactions');
 

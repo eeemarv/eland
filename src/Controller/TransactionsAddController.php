@@ -1203,7 +1203,6 @@ class TransactionsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-
         if ($service_stuff_enabled)
         {
             $out .= '<div class="form-group">';

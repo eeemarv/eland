@@ -46,7 +46,7 @@ transactions_show:
 transactions:
   controller: App\Controller\TransactionsController
   path: /transactions
-  methods: GET
+  methods: GET|POST
 
 news_show:
   controller: App\Controller\NewsShowController

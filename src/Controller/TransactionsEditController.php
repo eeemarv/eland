@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Cnst\BulkCnst;
+use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -18,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionsEditController extends AbstractController
@@ -47,6 +50,8 @@ class TransactionsEditController extends AbstractController
 
         $errors = [];
 
+        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
 
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
@@ -55,6 +60,9 @@ class TransactionsEditController extends AbstractController
         $transaction = $db->fetchAssociative('select t.*
             from ' . $pp->schema() . '.transactions t
             where t.id = ?', [$id]);
+
+        $description = $transaction['description'];
+        $service_stuff = $transaction['service_stuff'] ?? 'null-service-stuff';
 
         $inter_schema = false;
 
@@ -78,7 +86,6 @@ class TransactionsEditController extends AbstractController
             $inter_transaction = false;
         }
 
-
         if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
         {
             $alert_service->error('De omschrijving van een transactie
@@ -90,6 +97,7 @@ class TransactionsEditController extends AbstractController
         if ($request->isMethod('POST'))
         {
             $description = trim($request->request->get('description', ''));
+            $service_stuff = $request->request->get('service_stuff', '');
 
             if ($error_token = $form_token_service->get_error())
             {
@@ -106,25 +114,49 @@ class TransactionsEditController extends AbstractController
                 $errors[]= 'De omschrijving is niet ingevuld';
             }
 
+            if ($service_stuff_enabled)
+            {
+                if (!$service_stuff)
+                {
+                    $errors[] = 'Selecteer diensten of spullen';
+                }
+                else if (!in_array($service_stuff, ['service', 'stuff', 'null-service-stuff']))
+                {
+                    throw new BadRequestHttpException('Wrong value for service_stuff: ' . $service_stuff);
+                }
+
+                if ($service_stuff === 'null-service-stuff')
+                {
+                    $service_stuff = null;
+                }
+            }
+
             if (!count($errors))
             {
+                $update_ary = [
+                    'description'   => $description,
+                ];
+
+                if ($service_stuff_enabled)
+                {
+                    $update_ary['service_stuff'] = $service_stuff;
+                }
+
                 $db->update($pp->schema() . '.transactions',
-                    ['description' => $description],
-                    ['id' => $id]);
+                    $update_ary, ['id' => $id]);
 
                 if ($inter_transaction)
                 {
                     $db->update($inter_schema . '.transactions',
-                        ['description' => $description],
+                        $update_ary,
                         ['id' => $inter_transaction['id']]);
                 }
 
-                $logger->info('Transaction description edited from "' . $transaction['description'] .
-                    '" to "' . $description . '", transid: ' .
-                    $transaction['transid'], ['schema' => $pp->schema()]);
+                $logger->info('#transaction_edit, old: ' . json_encode($transaction) .
+                    ' to new: ' . json_encode($update_ary),
+                    ['schema' => $pp->schema()]);
 
-                $alert_service->success('Omschrijving transactie aangepast.');
-
+                $alert_service->success('Transactie aangepast.');
                 $link_render->redirect('transactions_show', $pp->ary(), ['id' => $id]);
             }
 
@@ -284,10 +316,29 @@ class TransactionsEditController extends AbstractController
         $out .= '<input type="text" class="form-control" ';
         $out .= 'id="description" name="description" ';
         $out .= 'value="';
-        $out .= $transaction['description'];
+        $out .= $description;
         $out .= '" required maxlength="60">';
         $out .= '</div>';
         $out .= '</div>';
+
+        if ($service_stuff_enabled)
+        {
+            $out .= '<div class="form-group">';
+            $out .= '<div class="custom-radio">';
+
+            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
+            {
+                $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                    '%name%'    => 'service_stuff',
+                    '%value%'   => $key,
+                    '%attr%'    => ' required' . ($service_stuff === $key ? ' checked' : ''),
+                    '%label%'   => '<span class="btn btn-' . $render_data['btn_class'] . '">' . $render_data['label'] . '</span>',
+                ]);
+            }
+
+            $out .= '</div>';
+            $out .= '</div>';
+        }
 
         $out .= $link_render->btn_cancel('transactions_show', $pp->ary(), ['id' => $id]);
 

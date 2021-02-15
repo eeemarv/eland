@@ -192,14 +192,14 @@ class MessagesListController extends AbstractController
 
             $update_msgs_ary  = [];
 
-            $rows = $db->executeQuery('select user_id, id, expires_at,
+            $stmt = $db->executeQuery('select user_id, id, expires_at,
                     category_id
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
                 [Db::PARAM_INT_ARRAY]);
 
-            foreach ($rows as $row)
+            while ($row = $stmt->fetch())
             {
                 if (!$pp->is_admin() && !$su->is_owner($row['user_id']))
                 {
@@ -390,9 +390,13 @@ class MessagesListController extends AbstractController
             'list'
         );
 
-        if ($bulk_actions_enabled && $pp->is_admin())
+        if ($pp->is_admin())
         {
-            $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
+            if ($bulk_actions_enabled)
+            {
+                $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
+            }
+
             $btn_nav_render->csv();
         }
 
