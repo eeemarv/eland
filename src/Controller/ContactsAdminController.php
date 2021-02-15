@@ -19,7 +19,6 @@ use App\Render\SelectRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -45,11 +44,12 @@ class ContactsAdminController extends AbstractController
         ConfigService $config_service,
         AccountRender $account_render,
         AssetsService $assets_service,
-        SessionUserService $su,
         PageParamsService $pp,
         ItemAccessService $item_access_service
     ):Response
     {
+        $intersystem_enabled = $config_service->get_bool('intersystem.enabled', $pp->schema());
+
         $selected_contacts = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
@@ -244,10 +244,16 @@ class ContactsAdminController extends AbstractController
             if (isset($filter['user']))
             {
                 $sql['access']['where_or'][] = 'c.access = \'user\'';
+
+                if (!$intersystem_enabled)
+                {
+                    $sql['access']['where_or'][] = 'c.access = \'guest\'';
+                }
+
                 $params['f']['user'] = '1';
             }
 
-            if (isset($filter['guest']))
+            if (isset($filter['guest']) && $intersystem_enabled)
             {
                 $sql['access']['where_or'][] = 'c.access = \'guest\'';
                 $params['f']['guest'] = '1';
@@ -376,6 +382,11 @@ class ContactsAdminController extends AbstractController
         while($row = $stmt->fetch())
         {
             $count_ary[$row['access']] = $row['count'];
+        }
+
+        if (!$intersystem_enabled)
+        {
+            $count_ary['user'] += $count_ary['guest'];
         }
 
         $pagination_render->init('contacts', $pp->ary(),
@@ -545,6 +556,11 @@ class ContactsAdminController extends AbstractController
 
         foreach (AccessCnst::LABEL as $key => $d)
         {
+            if ($key === 'guest' && !$intersystem_enabled)
+            {
+                continue;
+            }
+
             $label = '<span class="btn btn-';
             $label .= $d['class'];
             $label .= '"';
