@@ -998,71 +998,99 @@ class UsersListController extends AbstractController
         if (isset($show_columns['a']))
         {
             $activity = [];
-
-            $sql_a = [];
+            $sql_a = $sql;
 
             $ref_unix = time() - ($activity_days * 86400);
             $ref_datetime = \DateTimeImmutable::createFromFormat('U', (string) $ref_unix);
 
-            $sql_a['params'] = [$ref_datetime];
-            $sql_a['types'] = [Types::DATETIME_IMMUTABLE];
+            $sql_a['activity'] = $sql_map;
+            $sql_a['activity']['where'][] = 't.created_at > ?';
+            $sql_a['activity']['params'][] = $ref_datetime;
+            $sql_a['activity']['types'][] = Types::DATETIME_IMMUTABLE;
 
             $activity_filter_code = trim($activity_filter_code);
 
             if ($activity_filter_code)
             {
                 [$code_only_activity_filter_code] = explode(' ', $activity_filter_code);
-                $and = ' and u.code <> ? ';
-                $sql_a['params'][] = trim($code_only_activity_filter_code);
-                $sql_a['types'][] = \PDO::PARAM_STR;
-            }
-            else
-            {
-                $and = ' and 1 = 1 ';
+
+                $activity_filter_user_id = $db->fetchOne('select id
+                    from ' . $pp->schema() . '.users
+                    where code = ?',
+                    [$code_only_activity_filter_code],
+                    [\PDO::PARAM_STR]);
+
+                if ($activity_filter_user_id)
+                {
+                    $sql_a['filter_from_user'] = $sql_map;
+                    $sql_a['filter_from_user']['where'][] = 't.id_from <> ?';
+                    $sql_a['filter_from_user']['params'][] = $activity_filter_user_id;
+                    $sql_a['filter_from_user']['types'][] = \PDO::PARAM_INT;
+                    $sql_a['filter_to_user'] = $sql_map;
+                    $sql_a['filter_to_user']['where'][] = 't.id_to <> ?';
+                    $sql_a['filter_to_user']['params'][] = $activity_filter_user_id;
+                    $sql_a['filter_to_user']['types'][] = \PDO::PARAM_INT;
+                }
             }
 
-            $trans_in_ary = $db->fetchAllAssociative('select sum(t.amount),
+            $sql_a_in = $sql_a;
+            unset($sql_a_in['filter_from_user']);
+
+            $sql_a_in_where = implode(' and ', array_merge(...array_column($sql_a_in, 'where')));
+            $sql_a_in_params = array_merge(...array_column($sql_a_in, 'params'));
+            $sql_a_in_types = array_merge(...array_column($sql_a_in, 'types'));
+
+            $query_in = 'select sum(t.amount),
                     count(t.id), t.id_to
-                from ' . $pp->schema() . '.transactions t, ' .
-                    $pp->schema() . '.users u
-                where t.id_from = u.id
-                    and t.created_at > ?' . $and . '
-                group by t.id_to',
-                $sql_a['params'], $sql_a['types']);
+                from ' . $pp->schema() . '.transactions t
+                inner join ' . $pp->schema() . '.users u
+                    on t.id_to = u.id
+                where ' . $sql_a_in_where . '
+                group by t.id_to';
 
-            $trans_out_ary = $db->fetchAllAssociative('select sum(t.amount),
-                    count(t.id), t.id_from
-                from ' . $pp->schema() . '.transactions t, ' .
-                    $pp->schema() . '.users u
-                where t.id_to = u.id
-                    and t.created_at > ?' . $and . '
-                group by t.id_from',
-                $sql_a['params'], $sql_a['types']);
+            $stmt = $db->executeQuery($query_in, $sql_a_in_params, $sql_a_in_types);
 
-            foreach ($trans_in_ary as $trans_in)
+            while ($row = $stmt->fetch())
             {
-                $activity[$trans_in['id_to']] ??= [
+                $activity[$row['id_to']] ??= [
                     'trans'	    => ['total' => 0],
                     'amount'    => ['total' => 0],
                 ];
 
-                $activity[$trans_in['id_to']]['trans']['in'] = $trans_in['count'];
-                $activity[$trans_in['id_to']]['amount']['in'] = $trans_in['sum'];
-                $activity[$trans_in['id_to']]['trans']['total'] += $trans_in['count'];
-                $activity[$trans_in['id_to']]['amount']['total'] += $trans_in['sum'];
+                $activity[$row['id_to']]['trans']['in'] = $row['count'];
+                $activity[$row['id_to']]['amount']['in'] = $row['sum'];
+                $activity[$row['id_to']]['trans']['total'] += $row['count'];
+                $activity[$row['id_to']]['amount']['total'] += $row['sum'];
             }
 
-            foreach ($trans_out_ary as $trans_out)
+            $sql_a_out = $sql_a;
+            unset($sql_a_out['filter_to_user']);
+
+            $sql_a_out_where = implode(' and ', array_merge(...array_column($sql_a_out, 'where')));
+            $sql_a_out_params = array_merge(...array_column($sql_a_out, 'params'));
+            $sql_a_out_types = array_merge(...array_column($sql_a_out, 'types'));
+
+            $query_out = 'select sum(t.amount),
+                    count(t.id), t.id_from
+                from ' . $pp->schema() . '.transactions t
+                inner join ' . $pp->schema() . '.users u
+                    on t.id_to = u.id
+                where ' . $sql_a_out_where . '
+                group by t.id_from';
+
+            $stmt = $db->executeQuery($query_out, $sql_a_out_params, $sql_a_out_types);
+
+            while ($row = $stmt->fetch())
             {
-                $activity[$trans_out['id_from']] ??= [
+                $activity[$row['id_from']] ??= [
                     'trans'	    => ['total' => 0],
                     'amount'    => ['total' => 0],
                 ];
 
-                $activity[$trans_out['id_from']]['trans']['out'] = $trans_out['count'];
-                $activity[$trans_out['id_from']]['amount']['out'] = $trans_out['sum'];
-                $activity[$trans_out['id_from']]['trans']['total'] += $trans_out['count'];
-                $activity[$trans_out['id_from']]['amount']['total'] += $trans_out['sum'];
+                $activity[$row['id_from']]['trans']['out'] = $row['count'];
+                $activity[$row['id_from']]['amount']['out'] = $row['sum'];
+                $activity[$row['id_from']]['trans']['total'] += $row['count'];
+                $activity[$row['id_from']]['amount']['total'] += $row['sum'];
             }
         }
 
