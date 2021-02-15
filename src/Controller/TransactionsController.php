@@ -32,8 +32,6 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-use function GuzzleHttp\json_encode;
-
 class TransactionsController extends AbstractController
 {
     public function __invoke(
@@ -262,7 +260,9 @@ class TransactionsController extends AbstractController
 
         $sql['common']['where'][] = '1 = 1';
 
-        if (isset($filter['uid']))
+        $filter_uid = isset($filter['uid']) && $filter['uid'];
+
+        if ($filter_uid)
         {
             $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
             $filter['tcode'] = $filter['fcode'];
@@ -270,7 +270,9 @@ class TransactionsController extends AbstractController
             $params['f']['uid'] = $filter['uid'];
         }
 
-        if (isset($filter['q']) && $filter['q'])
+        $filter_q = isset($filter['q']) && $filter['q'] !== '';
+
+        if ($filter_q)
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = 't.description ilike ?';
@@ -283,7 +285,9 @@ class TransactionsController extends AbstractController
         $key_code_where_or .= isset($filter['andor']) && $filter['andor'] === 'or' ? '_or' : '';
         $sql['code'] = $sql_map;
 
-        if (isset($filter['fcode']) && $filter['fcode'])
+        $filter_fcode = isset($filter['fcode']) && $filter['fcode'];
+
+        if ($filter_fcode)
         {
             [$fcode] = explode(' ', trim($filter['fcode']));
             $fcode = trim($fcode);
@@ -312,7 +316,9 @@ class TransactionsController extends AbstractController
             $params['f']['fcode'] = $fcode;
         }
 
-        if (isset($filter['tcode']) && $filter['tcode'])
+        $filter_tcode = isset($filter['tcode']) && $filter['tcode'];
+
+        if ($filter_tcode)
         {
             [$tcode] = explode(' ', trim($filter['tcode']));
 
@@ -340,7 +346,7 @@ class TransactionsController extends AbstractController
             $params['f']['tcode'] = $tcode;
         }
 
-        if (isset($params['f']['fcode']) || isset($params['f']['tcode']))
+        if ($filter_fcode || $filter_tcode)
         {
             $params['f']['andor'] = $filter['andor'];
         }
@@ -350,7 +356,9 @@ class TransactionsController extends AbstractController
             $sql['code']['where'] = [' ( ' . implode(' or ', $sql['code']['where_or']) . ' ) '];
         }
 
-        if (isset($filter['fdate']) && $filter['fdate'])
+        $filter_fdate = isset($filter['fdate']) && $filter['fdate'];
+
+        if ($filter_fdate)
         {
             $fdate_sql = $date_format_service->reverse($filter['fdate'], $pp->schema());
 
@@ -371,7 +379,9 @@ class TransactionsController extends AbstractController
             }
         }
 
-        if (isset($filter['tdate']) && $filter['tdate'])
+        $filter_tdate = isset($filter['tdate']) && $filter['tdate'];
+
+        if ($filter_tdate)
         {
             $tdate_sql = $date_format_service->reverse($filter['tdate'], $pp->schema());
 
@@ -439,8 +449,7 @@ class TransactionsController extends AbstractController
             where ' . $sql_where . '
             order by t.' . $params['s']['orderby'] . ' ';
         $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
-        $query .= ' limit ? ';
-        $query .= ' offset ? ';
+        $query .= 'limit ? offset ?';
 
         $stmt = $db->executeQuery($query,
             array_merge(...array_column($sql, 'params')),
@@ -498,6 +507,34 @@ class TransactionsController extends AbstractController
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
 
+        $count_ary = [
+            'service'               => 0,
+            'stuff'                 => 0,
+            'null-service-stuff'    => 0,
+        ];
+
+        if ($service_stuff_enabled)
+        {
+            $sql_omit_service_stuff = $sql_omit_pagination;
+            unset($sql_omit_service_stuff['service_stuff']);
+
+            $sql_omit_service_stuff_where = implode(' and ', array_merge(...array_column($sql_omit_service_stuff, 'where')));
+
+            $count_service_stuff_query = 'select count(t.*), t.service_stuff
+                from ' . $pp->schema() . '.transactions t
+                where ' . $sql_omit_service_stuff_where . '
+                group by t.service_stuff';
+
+            $stmt = $db->executeQuery($count_service_stuff_query,
+                array_merge(...array_column($sql_omit_service_stuff, 'params')),
+                array_merge(...array_column($sql_omit_service_stuff, 'types')));
+
+            while($row = $stmt->fetch())
+            {
+                $count_ary[$row['service_stuff'] ?? 'null-service-stuff'] = $row['count'];
+            }
+        }
+
         $pagination_render->init('transactions', $pp->ary(),
             $row_count, $params);
 
@@ -519,7 +556,7 @@ class TransactionsController extends AbstractController
             ])
         ];
 
-        if (isset($filter['uid']))
+        if ($filter_uid)
         {
             $tableheader_ary['user'] = array_merge($asc_preset_ary, [
                 'lbl'			=> 'Tegenpartij',
@@ -548,7 +585,7 @@ class TransactionsController extends AbstractController
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        if (isset($filter['uid']))
+        if ($filter_uid)
         {
             $user = $user_cache_service->get((int) $filter['uid'], $pp->schema());
             $user_str = $account_render->str($user['id'], $pp->schema());
@@ -556,7 +593,7 @@ class TransactionsController extends AbstractController
 
         if ($pp->is_admin() || $pp->is_user())
         {
-            if (isset($filter['uid']))
+            if ($filter_uid)
             {
                 if ($user['status'] != 7)
                 {
@@ -591,14 +628,16 @@ class TransactionsController extends AbstractController
             $btn_nav_render->csv();
         }
 
-        $filtered = !isset($filter['uid']) && (
-            (isset($filter['q']) && $filter['q'] !== '')
-            || (isset($filter['fcode']) && $filter['fcode'] !== '')
-            || (isset($filter['tcode']) && $filter['tcode'] !== '')
-            || (isset($filter['fdate']) && $filter['fdate'] !== '')
-            || (isset($filter['tdate']) && $filter['tdate'] !== ''));
+        $filtered = !$filter_uid && (
+            $filter_q
+            || $filter_fcode
+            || $filter_tcode
+            || $filter_fdate
+            || $filter_tdate
+            || $filter_service_stuff
+        );
 
-        if (isset($filter['uid']))
+        if ($filter_uid)
         {
             if ($is_owner)
             {
@@ -723,7 +762,9 @@ class TransactionsController extends AbstractController
 
         $out .= '<div class="row">';
 
-        $out .= '<div class="col-sm-5">';
+        $date_col_width = $service_stuff_enabled ? '6' : '5';
+
+        $out .= '<div class="col-sm-' . $date_col_width . '">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
         $out .= '<span class="fa fa-calendar"></span></span>';
@@ -752,7 +793,7 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= '<div class="col-sm-5">';
+        $out .= '<div class="col-sm-' . $date_col_width . '">';
         $out .= '<div class="input-group margin-bottom">';
         $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
         $out .= '<span class="fa fa-calendar"></span></span>';
@@ -780,6 +821,44 @@ class TransactionsController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
+        if ($service_stuff_enabled)
+        {
+            $out .= '<div class="col-sm-10">';
+            $out .= '<div class="input-group margin-bottom custom-checkbox">';
+
+            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
+            {
+                if ($key === 'null-service-stuff' && !$count_ary['null-service-stuff'])
+                {
+                    continue;
+                }
+
+                $label = '<span class="btn btn-';
+                $label .= $d['btn_class'];
+                $label .= '"';
+
+                if (isset($d['title']))
+                {
+                    $label .= ' title="' . $d['title'] . '"';
+                }
+
+                $label .= '>';
+                $label .= $d['label'];
+                $label .= ' (';
+                $label .= $count_ary[$key];
+                $label .= ')</span>';
+
+                $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
+                    '%name%'        => 'f[' . $key . ']',
+                    '%attr%'        => isset($filter[$key]) ? ' checked' : '',
+                    '%label%'       => $label,
+                ]);
+            }
+
+            $out .= '</div>';
+            $out .= '</div>';
+        }
+
         $out .= '<div class="col-sm-2">';
         $out .= '<input type="submit" value="Toon" ';
         $out .= 'class="btn btn-default btn-block">';
@@ -791,7 +870,6 @@ class TransactionsController extends AbstractController
         unset($params_form['role_short']);
         unset($params_form['system']);
         unset($params_form['f']);
-        unset($params_form['uid']);
         unset($params_form['p']['start']);
 
         $params_form = http_build_query($params_form, 'prefix', '&');
@@ -880,7 +958,7 @@ class TransactionsController extends AbstractController
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        if (isset($filter['uid']))
+        if ($filter_uid)
         {
             foreach($transactions as $t)
             {
@@ -1147,7 +1225,6 @@ class TransactionsController extends AbstractController
             $out .= '</ul>';
 
             $out .= '<div class="tab-content">';
-
 
             if ($service_stuff_enabled)
             {

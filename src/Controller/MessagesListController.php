@@ -1687,7 +1687,6 @@ class MessagesListController extends AbstractController
         unset($params_form['role_short']);
         unset($params_form['system']);
         unset($params_form['f']);
-        unset($params_form['uid']);
         unset($params_form['p']['start']);
 
         $params_form = http_build_query($params_form, 'prefix', '&');
