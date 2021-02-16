@@ -35,16 +35,16 @@ class MolliePaymentsController extends AbstractController
 {
     const STATUS_RENDER = [
         'open'      => [
-            'label'     => 'open',
-            'class'     => 'warning',
+            'label'         => 'open',
+            'class'         => 'warning',
         ],
         'paid'     => [
-            'label'     => 'betaald',
-            'class'     => 'success',
+            'label'         => 'betaald',
+            'class'         => 'success',
         ],
         'canceled'  => [
             'label'     => 'geannuleerd',
-            'class'     => 'default',
+            'class'     => 'default-2',
         ],
     ];
 
@@ -93,8 +93,6 @@ class MolliePaymentsController extends AbstractController
         $bulk_cancel_verify = $request->request->has('bulk_cancel_verify');
         $bulk_cancel_submit = $request->request->has('bulk_cancel_submit');
 
-//----------
-
         $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
 
         if (!$mollie_apikey ||
@@ -120,13 +118,6 @@ class MolliePaymentsController extends AbstractController
             }
         }
 
-//-------------
-        $sql = [
-            'where'     => [],
-            'params'    => [],
-            'types'     => [],
-        ];
-
         $params = [
             's'	=> [
                 'orderby'	=> $sort['orderby'] ?? 'p.created_at',
@@ -138,21 +129,39 @@ class MolliePaymentsController extends AbstractController
             ],
         ];
 
-        if (isset($filter['uid']))
+        $sql_map = [
+            'where'     => [],
+            'where_or'  => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = '1 = 1';
+
+        $filter_uid = isset($filter['uid']);
+
+        if ($filter_uid)
         {
             $filter['code'] = $account_render->str((int) $filter['uid'], $pp->schema());
             $params['f']['uid'] = $filter['uid'];
         }
 
-        if (isset($filter['q']) && $filter['q'])
+        $filter_q = isset($filter['q']) && $filter['q'];
+
+        if ($filter_q)
         {
-            $sql['where'][] = 'r.description ilike ?';
-            $sql['params'][] = '%' . $filter['q'] . '%';
-            $sql['types'][] = \PDO::PARAM_STR;
+            $sql['q'] = $sql_map;
+            $sql['q']['where'][] = 'r.description ilike ?';
+            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['types'][] = \PDO::PARAM_STR;
             $params['f']['q'] = $filter['q'];
         }
 
-        if (isset($filter['code']) && $filter['code'])
+        $filter_code = isset($filter['code']) && $filter['code'];
+
+        if ($filter_code)
         {
             [$code] = explode(' ', trim($filter['code']));
             $code = trim($code);
@@ -161,9 +170,10 @@ class MolliePaymentsController extends AbstractController
                 from ' . $pp->schema() . '.users
                 where code = ?', [$code], [\PDO::PARAM_STR]);
 
-            $sql['where'][] = 'u.id = ?';
-            $sql['params'][] = $uid ?: 0;
-            $sql['types'][] = \PDO::PARAM_INT;
+            $sql['code'] = $sql_map;
+            $sql['code']['where'][] = 'u.id = ?';
+            $sql['code']['params'][] = $uid ?: 0;
+            $sql['code']['types'][] = \PDO::PARAM_INT;
 
             if ($uid)
             {
@@ -173,40 +183,41 @@ class MolliePaymentsController extends AbstractController
             $params['f']['code'] = $code;
         }
 
-        $filter_status = isset($filter['status']) &&
-            !(isset($filter['status']['open'])
-                && isset($filter['status']['paid'])
-                && isset($filter['status']['canceled']));
+        $filter_status = isset($filter['open'])
+                || isset($filter['paid'])
+                || isset($filter['canceled']);
 
         if ($filter_status)
         {
-            $sql_where_status = [];
+            $sql['status'] = $sql_map;;
 
-            if (isset($filter['status']['open']))
+            if (isset($filter['open']))
             {
-                $sql_where_status[] = '(p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool)';
-                $params['f']['status']['open'] = 'on';
+                $sql['status']['where_or'][] = '(p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool)';
+                $params['f']['open'] = '1';
             }
 
-            if (isset($filter['status']['paid']))
+            if (isset($filter['paid']))
             {
-                $sql_where_status[] = 'p.is_paid = \'t\'::bool';
-                $params['f']['status']['paid'] = 'on';
+                $sql['status']['where_or'][] = 'p.is_paid = \'t\'::bool';
+                $params['f']['paid'] = '1';
             }
 
-            if (isset($filter['status']['canceled']))
+            if (isset($filter['canceled']))
             {
-                $sql_where_status[] = 'p.is_canceled = \'t\'::bool';
-                $params['f']['status']['canceled'] = 'on';
+                $sql['status']['where_or'][] = 'p.is_canceled = \'t\'::bool';
+                $params['f']['canceled'] = 'on';
             }
 
-            if (count($sql_where_status))
+            if (count($sql['status']['where_or']))
             {
-                $sql['where'][] = '(' . implode(' or ', $sql_where_status) . ')';
+                $sql['status']['where'][] = '(' . implode(' or ', $sql['status']['where_or']) . ')';
             }
         }
 
-        if (isset($filter['fdate']) && $filter['fdate'])
+        $filter_fdate = isset($filter['fdate']) && $filter['fdate'];
+
+        if ($filter_fdate)
         {
             $sql_fdate = $date_format_service->reverse($filter['fdate'], $pp->schema());
 
@@ -217,15 +228,17 @@ class MolliePaymentsController extends AbstractController
             else
             {
                 $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($sql_fdate . ' UTC'));
-
-                $sql['where'][] = 'p.created_at >= ?';
-                $sql['params'][] = $fdate_immutable;
-                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $sql['fdate'] = $sql_map;
+                $sql['fdate']['where'][] = 'p.created_at >= ?';
+                $sql['fdate']['params'][] = $fdate_immutable;
+                $sql['fdate']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['fdate'] = $fdate = $filter['fdate'];
             }
         }
 
-        if (isset($filter['tdate']) && $filter['tdate'])
+        $filter_tdate = isset($filter['tdate']) && $filter['tdate'];
+
+        if ($filter_tdate)
         {
             $sql_tdate = $date_format_service->reverse($filter['tdate'], $pp->schema());
 
@@ -237,21 +250,23 @@ class MolliePaymentsController extends AbstractController
             {
                 $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($sql_tdate . ' UTC'));
 
-                $sql['where'][] = 'p.created_at <= ?';
-                $sql['params'][] = $tdate_immutable;
-                $sql['types'][] = Types::DATETIME_IMMUTABLE;
+                $sql['tdate'] = $sql_map;
+                $sql['tdate']['where'][] = 'p.created_at <= ?';
+                $sql['tdate']['params'][] = $tdate_immutable;
+                $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
                 $params['f']['tdate'] = $tdate = $filter['tdate'];
             }
         }
 
-        if (count($sql['where']))
-        {
-            $sql_where = ' and ' . implode(' and ', $sql['where']);
-        }
-        else
-        {
-            $sql_where = '';
-        }
+        $sql['pagination'] = $sql_map;
+        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
         $payments = [];
 
@@ -259,22 +274,21 @@ class MolliePaymentsController extends AbstractController
             u.code, u.name, u.full_name,
             u.status, u.adate,
             c.value as mail
-            from ' . $pp->schema() . '.mollie_payments p,
-                ' . $pp->schema() . '.mollie_payment_requests r,
-                ' . $pp->schema() . '.users u
+            from ' . $pp->schema() . '.mollie_payments p
+            inner join ' . $pp->schema() . '.mollie_payment_requests r
+                on p.request_id = r.id
+            inner join ' . $pp->schema() . '.users u
+                on p.user_id = u.id
             left join ' . $pp->schema() . '.contact c
                 on c.user_id = u.id
                     and c.id_type_contact = (select t.id
                         from ' . $pp->schema() . '.type_contact t
                         where t.abbrev = \'mail\')
-            where p.request_id = r.id
-                and p.user_id = u.id
-                ' . $sql_where . '
+            where ' . $sql_where . '
             order by ' . $params['s']['orderby'] . '
             ' . ($params['s']['asc'] ? 'asc' : 'desc') . '
-            limit ' . $params['p']['limit'] . '
-            offset ' . $params['p']['start'],
-            $sql['params'], $sql['types']);
+            limit ? offset ?',
+            $sql_params, $sql_types);
 
         while (($row = $stmt->fetch()) !== false)
         {
@@ -289,15 +303,66 @@ class MolliePaymentsController extends AbstractController
             }
         }
 
-        $row = $db->fetchAssociative('select count(p.*)
-            from ' . $pp->schema() . '.mollie_payments p,
-                ' . $pp->schema() . '.mollie_payment_requests r,
-                ' . $pp->schema() . '.users u
-            where p.request_id = r.id
-                and p.user_id = u.id
-                ' . $sql_where, $sql['params'], $sql['types']);
+        $sql_omit_pagination = $sql;
+        unset($sql_omit_pagination['pagination']);
+        $sql_omit_pagination_where = implode(' and ', array_merge(...array_column($sql_omit_pagination, 'where')));
+        $sql_omit_pagination_params = array_merge(...array_column($sql_omit_pagination, 'params'));
+        $sql_omit_pagination_types = array_merge(...array_column($sql_omit_pagination, 'types'));
 
-        $row_count = $row['count'];
+        $row_count = $db->fetchOne('select count(p.*)
+            from ' . $pp->schema() . '.mollie_payments p
+            inner join ' . $pp->schema() . '.mollie_payment_requests r
+                on p.request_id = r.id
+            inner join ' . $pp->schema() . '.users u
+                on p.user_id = u.id
+            where ' . $sql_omit_pagination_where,
+            $sql_omit_pagination_params,
+            $sql_omit_pagination_types);
+
+        $count_ary = [
+            'open'      => 0,
+            'paid'      => 0,
+            'canceled'  => 0,
+        ];
+
+        $sql_omit_status = $sql_omit_pagination;
+        unset($sql_omit_status['status']);
+        $sql_omit_status_where = implode(' and ', array_merge(...array_column($sql_omit_status, 'where')));
+        $sql_omit_status_params = array_merge(...array_column($sql_omit_status, 'params'));
+        $sql_omit_status_types = array_merge(...array_column($sql_omit_status, 'types'));
+
+        $count_ary['open'] = $db->fetchOne('select count(p.*)
+            from ' . $pp->schema() . '.mollie_payments p
+            inner join ' . $pp->schema() . '.mollie_payment_requests r
+                on p.request_id = r.id
+            inner join ' . $pp->schema() . '.users u
+                on p.user_id = u.id
+            where ' . $sql_omit_status_where . '
+                and p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool',
+            $sql_omit_status_params,
+            $sql_omit_status_types);
+
+        $count_ary['paid'] = $db->fetchOne('select count(p.*)
+            from ' . $pp->schema() . '.mollie_payments p
+            inner join ' . $pp->schema() . '.mollie_payment_requests r
+                on p.request_id = r.id
+            inner join ' . $pp->schema() . '.users u
+                on p.user_id = u.id
+            where ' . $sql_omit_status_where . '
+                and p.is_paid = \'t\'::bool',
+            $sql_omit_status_params,
+            $sql_omit_status_types);
+
+        $count_ary['canceled'] = $db->fetchOne('select count(p.*)
+            from ' . $pp->schema() . '.mollie_payments p
+            inner join ' . $pp->schema() . '.mollie_payment_requests r
+                on p.request_id = r.id
+            inner join ' . $pp->schema() . '.users u
+                on p.user_id = u.id
+            where ' . $sql_omit_status_where . '
+                and p.is_canceled = \'t\'::bool',
+            $sql_omit_status_params,
+            $sql_omit_status_types);
 
         $pagination_render->init('mollie_payments', $pp->ary(),
             $row_count, $params);
@@ -642,12 +707,13 @@ class MolliePaymentsController extends AbstractController
 
         $btn_nav_render->csv();
 
-        $filtered = !isset($filter['uid']) && (
-            (isset($filter['q']) && $filter['q'] !== '')
-            || (isset($filter['code']) && $filter['code'] !== '')
-            || isset($filter['status'])
-            || (isset($filter['fdate']) && $filter['fdate'] !== '')
-            || (isset($filter['tdate']) && $filter['tdate'] !== ''));
+        $filtered = !$filter_uid && (
+            $filter_q
+            || $filter_code
+            || $filter_status
+            || $filter_fdate
+            || $filter_tdate
+        );
 
         $heading_render->add('Mollie betaalverzoeken');
         $heading_render->fa('eur');
@@ -713,14 +779,14 @@ class MolliePaymentsController extends AbstractController
 
         foreach (self::STATUS_RENDER as $key => $render)
         {
-            $name = 'f[status][' . $key . ']';
+            $name = 'f[' . $key . ']';
 
-            $attr = isset($filter['status'][$key]) ? ' checked' : '';
+            $attr = isset($filter[$key]) ? ' checked' : '';
 
-            $label = '<span class="label label-' . $render['class'] . '">';
+            $label = '<span class="btn btn-' . $render['class'] . '">';
             $label .= $render['label'];
+            $label .= '&nbsp;(' . $count_ary[$key] . ')';
             $label .= '</span>';
-            $label .= '</label>';
 
 			$out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
 				'%name%'	=> $name,
