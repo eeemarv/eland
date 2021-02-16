@@ -103,6 +103,33 @@ class UsersListController extends AbstractController
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
+        $user_tabs = BulkCnst::USER_TABS;
+
+        if (!$full_name_enabled)
+        {
+            unset($user_tabs['full_name_access']);
+        }
+
+        if (!$comments_enabled)
+        {
+            unset($user_tabs['comments']);
+        }
+
+        if (!$admin_comments_enabled)
+        {
+            unset($user_tabs['admin_comments']);
+        }
+
+        if (!$transactions_enabled)
+        {
+            unset($user_tabs['min_limit'], $user_tabs['max_limit']);
+        }
+
+        if (!$periodic_mail_enabled)
+        {
+            unset($user_tabs['periodic_overview_en']);
+        }
+
         /**
          * Begin bulk POST
          */
@@ -224,33 +251,9 @@ class UsersListController extends AbstractController
 
             $redirect = false;
 
-            $user_tab_data = BulkCnst::USER_TABS[$bulk_submit_action] ?? [];
+            $user_tab_data = $user_tabs[$bulk_submit_action] ?? [];
 
             if (!count($errors)
-                && isset($user_tab_data['contact_abbrev'])
-                && isset($user_tab_data['item_access']))
-            {
-                $abbrev = $user_tab_data['contact_abbrev'];
-
-                $id_type_contact = $db->fetchOne('select id
-                    from ' . $pp->schema() . '.type_contact
-                    where abbrev = ?', [$abbrev], [\PDO::PARAM_STR]);
-
-                $db->executeStatement('update ' . $pp->schema() . '.contact
-                    set access = ?
-                    where user_id in (?) and id_type_contact = ?',
-                        [$bulk_field_value, $user_ids, $id_type_contact],
-                        [\PDO::PARAM_STR, Db::PARAM_INT_ARRAY, \PDO::PARAM_INT]);
-
-                $logger->info('bulk: Set ' . $bulk_field_action .
-                    ' to ' . $bulk_field_value .
-                    ' for users ' . $users_log,
-                    ['schema' => $pp->schema()]);
-                $alert_service->success('Het veld werd aangepast.');
-
-                $redirect = true;
-            }
-            else if (!count($errors)
                 && $bulk_submit_action === 'periodic_overview_en')
             {
                 $db->executeStatement('update ' . $pp->schema() . '.users
@@ -1818,13 +1821,8 @@ class UsersListController extends AbstractController
             $out .= '<span class="caret"></span></a>';
             $out .= '<ul class="dropdown-menu">';
 
-            foreach (BulkCnst::USER_TABS as $k => $t)
+            foreach ($user_tabs as $k => $t)
             {
-                if (!$transactions_enabled && in_array($k, ['min_limit', 'max_limit']))
-                {
-                    continue;
-                }
-
                 $out .= '<li>';
                 $out .= '<a href="#' . $k . '_tab" data-toggle="tab">';
                 $out .= $t['lbl'];
@@ -1883,7 +1881,7 @@ class UsersListController extends AbstractController
             $out .= '</form>';
             $out .= '</div>';
 
-            foreach(BulkCnst::USER_TABS as $k => $t)
+            foreach($user_tabs as $k => $t)
             {
                 if (!$transactions_enabled && in_array($k, ['min_limit', 'max_limit']))
                 {
