@@ -308,18 +308,18 @@ class MolliePaymentsController extends AbstractController
         ];
 
         $tableheader_ary = [
-            'code' => array_merge($asc_preset_ary, [
-                'lbl' => 'Account',
-            ]),
             'p.amount' => array_merge($asc_preset_ary, [
                 'lbl' => 'Bedrag (EUR)',
+            ]),
+            'r.description' => array_merge($asc_preset_ary, [
+                'lbl' 		=> 'Omschrijving',
+            ]),
+            'code' => array_merge($asc_preset_ary, [
+                'lbl' => 'Account',
             ]),
             'status'	=> array_merge($asc_preset_ary, [
                 'lbl' 	=> 'Status',
                 'no_sort' => true,
-            ]),
-            'r.description' => array_merge($asc_preset_ary, [
-                'lbl' 		=> 'Omschrijving',
             ]),
             'p.created_at' => array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Tijdstip',
@@ -654,8 +654,6 @@ class MolliePaymentsController extends AbstractController
         $heading_render->add_filtered($filtered);
         $heading_render->btn_filter();
 
-//------------------
-
         $out = '<div class="panel panel-info';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
@@ -805,7 +803,6 @@ class MolliePaymentsController extends AbstractController
         unset($params_form['role_short']);
         unset($params_form['system']);
         unset($params_form['f']);
-        unset($params_form['uid']);
         unset($params_form['p']['start']);
 
         $params_form = http_build_query($params_form, 'prefix', '&');
@@ -829,8 +826,6 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-//---------------------------------
 
         $out .= $pagination_render->get();
 
@@ -888,7 +883,26 @@ class MolliePaymentsController extends AbstractController
                 $user_status = 3;
             }
 
-            $out .= '<tr><td';
+            $out .= '<tr><td>';
+
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+                '%id%'      => $id,
+                '%attr%'    => isset($selected[$id]) ? ' checked' : '',
+                '%label%'   => strtr($payment['amount'], '.', ','),
+            ]);
+
+            $out .= '</td><td>';
+
+            $out .= $link_render->link('mollie_payments',
+                $pp->ary(), [
+                    'request_id'    => $payment['request_id'],
+                    'f' => [
+                        'q' => $payment['description'],
+                    ],
+                ],
+                $payment['description'], []);
+
+            $out .= '</td><td';
 
             if (isset(StatusCnst::CLASS_ARY[$user_status]))
             {
@@ -899,46 +913,32 @@ class MolliePaymentsController extends AbstractController
 
             $out .= '>';
 
-            $td = [];
+            $out .= $account_render->link($payment['user_id'], $pp->ary());
 
-            $account_str = strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
-                '%id%'      => $id,
-                '%attr%'    => isset($selected[$id]) ? ' checked' : '',
-                '%label%'   => ' ',
-            ]);
+            $out .= '</td><td>';
 
-            $account_str .= $account_render->link($payment['user_id'], $pp->ary());
-
-            $td[] = $account_str;
-            $td[] = strtr($payment['amount'], '.', ',');
-
-            $status_label = '<span class="label label-';
+            $out .= '<span class="label label-';
 
             if ($payment['is_canceled'])
             {
-                $status_label .= 'default">geannuleerd';
+                $out .= 'default">geannuleerd';
             }
             else if ($payment['is_paid'])
             {
-                $status_label .= 'success">betaald';
+                $out .= 'success">betaald';
             }
             else
             {
-                $status_label .= 'warning">open';
+                $out .= 'warning">open';
             }
 
-            $td[] = $status_label . '</span>';
+            $out .= '</span>';
 
-            $td[] = $link_render->link('mollie_payments',
-                $pp->ary(), [
-                    'request_id'    => $payment['request_id'],
-                    'f' => [
-                        'q' => $payment['description'],
-                    ],
-                ],
-                $payment['description'], []);
+            $out .= '</td><td>';
 
-            $td[] = $date_format_service->get($payment['created_at'], 'day', $pp->schema());
+            $out .= $date_format_service->get($payment['created_at'], 'day', $pp->schema());
+
+            $out .= '</td><td>';
 
             $td_emails = count(json_decode($payment['emails_sent'], true));
 
@@ -949,9 +949,7 @@ class MolliePaymentsController extends AbstractController
                 $td_emails .= '<i class="fa fa-exclamation-triangle"></i></span>';
             }
 
-            $td[] = $td_emails;
-
-            $out .= implode('</td><td>', $td);
+            $out .= $td_emails;
             $out .= '</td></tr>';
         }
 
@@ -981,7 +979,6 @@ class MolliePaymentsController extends AbstractController
         $out .= '</ul>';
 
         $out .= '<div class="tab-content">';
-//-----------------------
 
         $out .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
 
