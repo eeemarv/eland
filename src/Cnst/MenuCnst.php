@@ -216,11 +216,6 @@ class MenuCnst
                 'label'     => 'Submodules en velden',
                 'route'     => 'users_modules',
             ],
-            'status'			=> [
-                'fa'        => 'exclamation-triangle',
-                'label'     => 'Status',
-                'route'     => 'status',
-            ],
             'contacts'			=> [
                 'fa'        => 'map-marker',
                 'label'     => 'Contacten',
