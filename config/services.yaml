@@ -17,7 +17,6 @@ parameters:
     assert.config_tab: 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|users|news|system'
     assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
     assert.account_status.primary: 'active|inactive|im|ip|extern'
-    assert.account_status.active: 'active|new|leaving'
     assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
     assert.image_ext: 'jpg|png|gif|svg'
     assert.year: ^(19|20)[0-9]{2}$

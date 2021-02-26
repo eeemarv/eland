@@ -518,7 +518,7 @@ class MessagesShowController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= UsersShowAdminController::get_mail_form(
+        $out .= UsersShowController::get_mail_form(
             $message['user_id'],
             $user_mail_content,
             $user_mail_cc,

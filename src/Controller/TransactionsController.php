@@ -37,6 +37,7 @@ class TransactionsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        bool $is_self,
         AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -226,10 +227,14 @@ class TransactionsController extends AbstractController
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
+        if ($is_self)
+        {
+            $filter['uid'] = $su->id();
+        }
+
         if (isset($filter['uid']))
         {
             $filter['uid'] = (int) $filter['uid'];
-
             $balance = $account_repository->get_balance((int) $filter['uid'], $pp->schema());
         }
 
@@ -673,7 +678,11 @@ class TransactionsController extends AbstractController
         $out .= '" id="filter">';
         $out .= '<div class="panel-heading">';
 
-        $out .= '<form method="get" class="form-horizontal">';
+        $out .= '<form method="get" ';
+        $out .= 'class="form-horizontal" ';
+        $out .= 'action="';
+        $out .= $link_render->context_path('transactions', $pp->ary(), []);
+        $out .= '">';
 
         $out .= '<div class="row">';
 

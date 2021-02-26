@@ -56,6 +56,7 @@ class VarRouteService
 		$this->var_route_ary = [
 			'users'			=> 'users_' . $view_ary['users'],
 			'messages'		=> 'messages_' . $view_ary['messages'],
+			'messages_self'	=> 'messages_' . $view_ary['messages'] . '_self',
 			'news'			=> 'news_' . $view_ary['news'],
 		];
 
@@ -71,9 +72,7 @@ class VarRouteService
 
 	public function get(string $menu_route):string
 	{
-		$route = $this->var_route_ary[$menu_route] ?? $menu_route;
-		$route .= isset(PagesCnst::ADMIN_ROUTE[$route]) && $this->is_admin ? '_admin' : '';
-		return $route;
+		return $this->var_route_ary[$menu_route] ?? $menu_route;
 	}
 
 	public function get_inter(string $menu_route, string $remote_schema):string

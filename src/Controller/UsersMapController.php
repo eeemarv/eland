@@ -18,6 +18,7 @@ use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UsersMapController extends AbstractController
 {
@@ -41,6 +42,12 @@ class UsersMapController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
+        if (!$pp->is_admin()
+            && !in_array($status, ['active', 'new', 'leaving']))
+        {
+            throw new AccessDeniedHttpException('No access for this user status');
+        }
+
         $ref_geo = [];
         $params = ['status' => $status];
 

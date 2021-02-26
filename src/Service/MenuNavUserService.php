@@ -7,16 +7,19 @@ use App\Cnst\MenuCnst;
 class MenuNavUserService
 {
 	protected ConfigService $config_service;
+	protected PageParamsService $pp;
 	protected SessionUserService $su;
 	protected VarRouteService $vr;
 
 	public function __construct(
 		ConfigService $config_service,
+		PageParamsService $pp,
 		SessionUserService $su,
 		VarRouteService $vr
 	)
 	{
 		$this->config_service = $config_service;
+		$this->pp = $pp;
 		$this->su = $su;
 		$this->vr = $vr;
 	}
@@ -32,7 +35,7 @@ class MenuNavUserService
 
 		$nav_user_menu = [];
 
-		foreach ($m_ary as $route => $data)
+		foreach ($m_ary as $menu_key => $data)
 		{
 			if (isset($data['config_en']))
 			{
@@ -42,29 +45,21 @@ class MenuNavUserService
 				}
 			}
 
-			$data['params'] = [];
-
-			if (isset($data['params_id']))
+			if (isset($data['var_route']))
 			{
-				$data['params']['id'] = $this->su->id();
-			}
-			else if (isset($data['params_filter_uid']))
-			{
-				$data['params']['f']['uid'] = $this->su->id();
+				$data['route'] = $this->vr->get($data['var_route']);
 			}
 
-			$data['route'] = $this->vr->get($route);
-
-			$nav_user_menu[$route] = $data;
+			$nav_user_menu[$menu_key] = $data;
 		}
 
-		$nav_user_menu += MenuCnst::NAV_LOGOUT;
+		error_log(json_encode($nav_user_menu));
 
 		return $nav_user_menu;
 	}
 
 	public function get_nav_logout():array
 	{
-		return MenuCnst::NAV_LOGOUT;
+		return MenuCnst::NAV_USER['logout'];
 	}
 }

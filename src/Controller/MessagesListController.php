@@ -87,6 +87,7 @@ class MessagesListController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        bool $is_self,
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -112,6 +113,8 @@ class MessagesListController extends AbstractController
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
+
+        $vr_route = $vr->get('messages' . ($is_self ? '_self' : ''));
 
         $errors = [];
 
@@ -240,7 +243,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('Het bericht is verlengd.');
                 }
 
-                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
+                $link_render->redirect($vr_route, $pp->ary(), []);
             }
 
             if ($bulk_submit_action === 'service_stuff' && !count($errors))
@@ -278,7 +281,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('Het bericht is aangepast.');
                 }
 
-                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
+                $link_render->redirect($vr_route, $pp->ary(), []);
             }
 
             if ($bulk_submit_action === 'category' && !count($errors))
@@ -361,6 +364,7 @@ class MessagesListController extends AbstractController
         $fetch_and_filter = self::fetch_and_filter(
             $request,
             $db,
+            $is_self,
             $account_render,
             $assets_service,
             $btn_top_render,
@@ -387,7 +391,8 @@ class MessagesListController extends AbstractController
             $btn_nav_render,
             $pp,
             $params,
-            'list'
+            'list',
+            $is_self
         );
 
         if ($pp->is_admin())
@@ -847,19 +852,23 @@ class MessagesListController extends AbstractController
         BtnNavRender $btn_nav_render,
         PageParamsService $pp,
         array $params,
-        string $view
+        string $view,
+        bool $is_self
     )
     {
-        $btn_nav_render->view('messages_list', $pp->ary(),
+        $self_suffix = $is_self ? '_self' : '';
+
+        $btn_nav_render->view('messages_list' . $self_suffix, $pp->ary(),
             $params, 'Lijst', 'align-justify', $view === 'list');
 
-        $btn_nav_render->view('messages_extended', $pp->ary(),
+        $btn_nav_render->view('messages_extended' . $self_suffix, $pp->ary(),
             $params, 'Lijst met omschrijvingen', 'th-list', $view === 'extended');
     }
 
     public static function fetch_and_filter(
         Request $request,
         Db $db,
+        bool $is_self,
         AccountRender $account_render,
         AssetsService $assets_service,
         BtnTopRender $btn_top_render,
@@ -883,6 +892,13 @@ class MessagesListController extends AbstractController
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
+
+        if ($is_self)
+        {
+            $filter['uid'] = $su->id();
+        }
+
+        $vr_route = $vr->get('messages' . ($is_self ? '_self' : ''));
 
         $sort_col = $sort['col'] ?? 'created';
         $sort_col = isset(self::COLUMNS_DEF_ARY[$sort_col]) ? $sort_col : 'created';
@@ -1348,7 +1364,7 @@ class MessagesListController extends AbstractController
             $row_count += $no_cat_count;
         }
 
-        $pagination_render->init($vr->get('messages'), $pp->ary(),
+        $pagination_render->init($vr_route, $pp->ary(),
             $row_count, $params);
 
         $categories_filter_options = [];
@@ -1447,7 +1463,7 @@ class MessagesListController extends AbstractController
 
         if ($filter_uid)
         {
-            if ($is_owner)
+            if ($is_self)
             {
                 $heading_render->add('Mijn vraag en aanbod');
             }
@@ -1484,7 +1500,11 @@ class MessagesListController extends AbstractController
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= '<form method="get" class="form-horizontal">';
+        $out .= '<form method="get" ';
+        $out .= 'class="form-horizontal" ';
+        $out .= 'action="';
+        $out .= $link_render->context_path($vr->get('messages'), $pp->ary(), []);
+        $out .= '">';
 
         $out .= '<div class="row">';
 

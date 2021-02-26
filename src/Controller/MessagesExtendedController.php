@@ -28,6 +28,7 @@ class MessagesExtendedController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        bool $is_self,
         AccountRender $account_render,
         AssetsService $assets_service,
         BtnTopRender $btn_top_render,
@@ -55,6 +56,7 @@ class MessagesExtendedController extends AbstractController
         $fetch_and_filter = MessagesListController::fetch_and_filter(
             $request,
             $db,
+            $is_self,
             $account_render,
             $assets_service,
             $btn_top_render,
@@ -77,7 +79,8 @@ class MessagesExtendedController extends AbstractController
             $btn_nav_render,
             $pp,
             $params,
-            'extended'
+            'extended',
+            $is_self
         );
 
         if (!count($messages))

@@ -38,6 +38,7 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use function GuzzleHttp\json_encode;
 
@@ -76,6 +77,11 @@ class UsersListController extends AbstractController
         HtmlPurifier $html_purifier
     ):Response
     {
+        if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
+        {
+            throw new AccessDeniedHttpException('No access for status: ' . $status);
+        }
+
         $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
         $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
@@ -1969,13 +1975,11 @@ class UsersListController extends AbstractController
         string $matched_route
     ):void
     {
-        $admin_suffix = $pp_ary['role_short'] === 'a' ? '_admin' : '';
-
-        $btn_nav_render->view('users_list' . $admin_suffix, $pp_ary,
+        $btn_nav_render->view('users_list', $pp_ary,
             $params, 'Lijst', 'align-justify',
             $matched_route === 'users_list');
 
-        $btn_nav_render->view('users_tiles' . $admin_suffix, $pp_ary,
+        $btn_nav_render->view('users_tiles', $pp_ary,
             $params, 'Tegels met foto\'s', 'th',
             $matched_route === 'users_tiles');
 

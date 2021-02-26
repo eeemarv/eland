@@ -12,31 +12,37 @@ messages_extended:
   controller: App\Controller\MessagesExtendedController
   path: /messages/extended
   methods: GET
+  defaults:
+    is_self: false
 
 messages_list:
   controller: App\Controller\MessagesListController
   path: /messages
   methods: GET|POST
+  defaults:
+    is_self: false
 
 users_show:
   controller: App\Controller\UsersShowController
-  path: /users/{id<%assert.id%>}/{status<%assert.account_status.active%>?active}
+  path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
   methods: GET|POST
-
-users_map:
-  controller: App\Controller\UsersMapController
-  path: /users/map/{status<%assert.account_status.active%>?active}
-  methods: GET
+  defaults:
+    is_self: false
 
 users_tiles:
   controller: App\Controller\UsersTilesController
-  path: /users/tiles/{status<%assert.account_status.active%>?active}
+  path: /users/tiles/{status<%assert.account_status%>?active}
   methods: GET
 
 users_list:
   controller: App\Controller\UsersListController
-  path: /users/{status<%assert.account_status.active%>?active}
+  path: /users/{status<%assert.account_status%>?active}
   methods: GET|POST
+
+users_map:
+  controller: App\Controller\UsersMapController
+  path: /users/map/{status<%assert.account_status%>?active}
+  methods: GET
 
 transactions_show:
   controller: App\Controller\TransactionsShowController
@@ -47,6 +53,8 @@ transactions:
   controller: App\Controller\TransactionsController
   path: /transactions
   methods: GET|POST
+  defaults:
+    is_self: false
 
 news_show:
   controller: App\Controller\NewsShowController

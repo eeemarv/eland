@@ -15,9 +15,9 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UsersTilesController extends AbstractController
 {
@@ -37,6 +37,11 @@ class UsersTilesController extends AbstractController
         string $env_s3_url
     ):Response
     {
+        if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
+        {
+            throw new AccessDeniedHttpException('No access for status: ' . $status);
+        }
+
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());

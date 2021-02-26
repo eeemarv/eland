@@ -73,25 +73,30 @@ class MenuCnst
     ];
 
     const NAV_USER = [
-        'users_show'    => [
-            'fa'            => 'user',
-            'label'         => 'Mijn gegevens',
-            'params_id'     => true,
+        'users_show_self'   => [
+            'fa'        => 'user',
+            'label'     => 'Mijn gegevens',
+            'route'     => 'users_show_self',
         ],
-        'messages' => [
+        'messages_self' => [
             'fa'            => 'newspaper-o',
             'label'         => 'Mijn vraag en aanbod',
-            'params_filter_uid'    => true,
             'config_en'     => 'messages.enabled',
+            'var_route'     => 'messages_self',
         ],
-        'transactions' => [
+        'transactions_self' => [
             'fa'        => 'exchange',
             'label'     => 'Mijn transacties',
-            'params_filter_uid'     => true,
             'config_en' => 'transactions.enabled',
+            'route'     => 'transactions_self',
         ],
         'divider_1'     => [
             'divider'   => true,
+        ],
+        'logout'        => [
+            'fa'        => 'sign-out',
+            'label'     => 'Uitloggen',
+            'route'     => 'logout',
         ],
     ];
 
