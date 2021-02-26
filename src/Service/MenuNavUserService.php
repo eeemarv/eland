@@ -63,6 +63,6 @@ class MenuNavUserService
 
 	public function get_nav_logout():array
 	{
-		return MenuCnst::NAV_USER['logout'];
+		return ['logout' => MenuCnst::NAV_USER['logout']];
 	}
 }
