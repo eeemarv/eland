@@ -50,10 +50,13 @@ class MenuNavUserService
 				$data['route'] = $this->vr->get($data['var_route']);
 			}
 
+			if (isset($data['route']) && $data['route'] === $this->pp->route())
+			{
+				$data['active'] = true;
+			}
+
 			$nav_user_menu[$menu_key] = $data;
 		}
-
-		error_log(json_encode($nav_user_menu));
 
 		return $nav_user_menu;
 	}

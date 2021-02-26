@@ -327,7 +327,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('De categorie van het bericht is aangepast.');
                 }
 
-                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
+                $link_render->redirect($vr_route, $pp->ary(), []);
             }
 
             if ($bulk_submit_action === 'access' && !count($errors))
@@ -355,7 +355,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
                 }
 
-                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
+                $link_render->redirect($vr_route, $pp->ary(), []);
             }
 
             $alert_service->error($errors);
@@ -499,7 +499,7 @@ class MessagesListController extends AbstractController
                     'dir' 		=> $dir,
                 ];
 
-                $out .= $link_render->link_fa($vr->get('messages'), $pp->ary(),
+                $out .= $link_render->link_fa($vr_route, $pp->ary(),
                     $th_params, $data['lbl'], [], $fa);
             }
 
@@ -564,7 +564,7 @@ class MessagesListController extends AbstractController
             {
                 $out .= '<td>';
 
-                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                $out .= $link_render->link_no_attr($vr_route, $pp->ary(),
                     $cat_params[$msg['category_id'] ?? 'null'],
                     $categories[$msg['category_id'] ?? 'null']);
 
