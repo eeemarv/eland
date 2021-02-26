@@ -45,7 +45,7 @@ class UsersImageDelAdminController extends AbstractController
         if ($file == '' || !$file)
         {
             $alert_service->error('De gebruiker heeft geen foto.');
-            $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
+            $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
         }
 
         if ($request->isMethod('POST'))
@@ -57,7 +57,7 @@ class UsersImageDelAdminController extends AbstractController
             $user_cache_service->clear($id, $pp->schema());
 
             $alert_service->success('Profielfoto/afbeelding verwijderd.');
-            $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
+            $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
         }
 
         $heading_render->add('Profielfoto/afbeelding ');
@@ -87,7 +87,7 @@ class UsersImageDelAdminController extends AbstractController
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
-        $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(), ['id' => $id]);
+        $out .= $link_render->btn_cancel('users_show', $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';

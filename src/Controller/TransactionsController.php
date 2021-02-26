@@ -76,6 +76,17 @@ class TransactionsController extends AbstractController
         $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
         $bulk_actions_enabled = $service_stuff_enabled;
 
+        $filter = $request->query->get('f', []);
+        $pag = $request->query->get('p', []);
+        $sort = $request->query->get('s', []);
+
+        if ($is_self)
+        {
+            $filter['uid'] = $su->id();
+        }
+
+        $vr_route = 'transactions' . ($is_self ? '_self' : '');
+
         $selected_transactions = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
@@ -217,19 +228,10 @@ class TransactionsController extends AbstractController
                     $alert_service->success('De transactie is aangepast.');
                 }
 
-                $link_render->redirect('transactions', $pp->ary(), []);
+                $link_render->redirect($vr_route, $pp->ary(), []);
             }
 
             $alert_service->error($errors);
-        }
-
-        $filter = $request->query->get('f', []);
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
-
-        if ($is_self)
-        {
-            $filter['uid'] = $su->id();
         }
 
         if (isset($filter['uid']))
@@ -540,7 +542,7 @@ class TransactionsController extends AbstractController
             }
         }
 
-        $pagination_render->init('transactions', $pp->ary(),
+        $pagination_render->init($vr_route, $pp->ary(),
             $row_count, $params);
 
         $asc_preset_ary = [
@@ -605,7 +607,7 @@ class TransactionsController extends AbstractController
                     if ($is_owner)
                     {
                         $btn_top_render->add('transactions_add', $pp->ary(),
-                            ['add' => 1], 'Transactie toevoegen');
+                            [], 'Transactie toevoegen');
                     }
                     else
                     {
@@ -644,7 +646,7 @@ class TransactionsController extends AbstractController
 
         if ($filter_uid)
         {
-            if ($is_owner)
+            if ($is_self)
             {
                 $heading_render->add('Mijn transacties');
             }

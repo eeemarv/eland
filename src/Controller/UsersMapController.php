@@ -138,7 +138,7 @@ class UsersMapController extends AbstractController
                     {
                         $data_users[$user['id']] = [
                             'link'      => $link_render->context_url(
-                                $vr->get('users_show'),
+                                'users_show',
                                 $pp->ary(),
                                 ['id' => $user['id']]),
                             'name'		=> $user['name'],

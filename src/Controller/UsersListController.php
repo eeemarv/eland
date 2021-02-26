@@ -1551,7 +1551,7 @@ class UsersListController extends AbstractController
                     {
                         if ($can_link)
                         {
-                            $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
+                            $td .= $link_render->link_no_attr('users_show', $pp->ary(),
                                 ['id' => $u['id'], 'status' => $status], $u[$key] ?: '**leeg**');
                         }
                         else
@@ -1576,7 +1576,7 @@ class UsersListController extends AbstractController
                         {
                             if ($can_link)
                             {
-                                $td .= $link_render->link_no_attr($vr->get('users_show'), $pp->ary(),
+                                $td .= $link_render->link_no_attr('users_show', $pp->ary(),
                                     ['id' => $u['id'], 'status' => $status], $u['full_name']);
                             }
                             else

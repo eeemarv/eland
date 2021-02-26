@@ -18,7 +18,7 @@
 
     {%- include 'mail/include/info_panel.html.twig' with {
             'info': 'account_activation_admin.message'|trans({
-            '%link_open%': context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': user_id}),
+            '%link_open%': context_url_open('users_show', mpp_admin_ary(schema), {'id': user_id}),
             '%link_close%': '</a>',
             '%account_name%': account(user_id, schema),
         })|raw}
@@ -48,7 +48,7 @@
     '%account_name%': account(user_id, schema),
 }) }}
 
-{{ context_url('users_show_admin', mpp_admin_ary(schema), {'id': user_id}) }}
+{{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) }}
 
 {% if user_email %}
 {{ 'account_activation_admin.email_sent'|trans }}

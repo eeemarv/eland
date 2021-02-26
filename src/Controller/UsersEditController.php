@@ -36,6 +36,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersEditController extends AbstractController
@@ -43,6 +44,8 @@ class UsersEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
+        bool $is_add,
+        bool $is_self,
         Db $db,
         AccountRepository $account_repository,
         EncoderFactoryInterface $encoder_factory,
@@ -72,78 +75,6 @@ class UsersEditController extends AbstractController
         MenuService $menu_service
     ):Response
     {
-        $content = self::form(
-            $request,
-            $id,
-            true,
-            $db,
-            $account_repository,
-            $encoder_factory,
-            $account_render,
-            $alert_service,
-            $assets_service,
-            $config_service,
-            $date_format_service,
-            $form_token_service,
-            $geocode_queue,
-            $heading_render,
-            $intersystems_service,
-            $item_access_service,
-            $link_render,
-            $password_strength_service,
-            $select_render,
-            $systems_service,
-            $typeahead_service,
-            $user_cache_service,
-            $thumbprint_accounts_service,
-            $mail_addr_user_service,
-            $mail_addr_system_service,
-            $mail_queue,
-            $pp,
-            $su,
-            $vr,
-            $menu_service
-        );
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $content,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    public static function form(
-        Request $request,
-        int $id,
-        bool $is_edit,
-        Db $db,
-        AccountRepository $account_repository,
-        EncoderFactoryInterface $encoder_factory,
-        AccountRender $account_render,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        ConfigService $config_service,
-        DateFormatService $date_format_service,
-        FormTokenService $form_token_service,
-        GeocodeQueue $geocode_queue,
-        HeadingRender $heading_render,
-        IntersystemsService $intersystems_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        PasswordStrengthService $password_strength_service,
-        SelectRender $select_render,
-        SystemsService $systems_service,
-        TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service,
-        ThumbprintAccountsService $thumbprint_accounts_service,
-        MailAddrUserService $mail_addr_user_service,
-        MailAddrSystemService $mail_addr_system_service,
-        MailQueue $mail_queue,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        MenuService $menu_service
-    ):string
-    {
         $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
         $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
@@ -152,12 +83,22 @@ class UsersEditController extends AbstractController
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
         $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
 
-        $is_add = !$is_edit;
+        $is_edit = !$is_add;
         $errors = [];
         $contact = [];
         $username_edit_en = false;
         $full_name_edit_en = false;
         $is_activated = false;
+
+        if ($is_self && $is_add)
+        {
+            throw new BadRequestHttpException('is_add && is_self not possible');
+        }
+
+        if ($is_self)
+        {
+            $id = $su->id();
+        }
 
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
@@ -279,8 +220,7 @@ class UsersEditController extends AbstractController
 
                             $warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
                             $warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
-                            $warning .= 'E-mail adres. Zie ';
-                            $warning .= $link_render->link_no_attr('status', $pp->ary(), [], 'Status');
+                            $warning .= 'E-mail adres.';
 
                             $warning_2 = '';
 
@@ -730,7 +670,13 @@ class UsersEditController extends AbstractController
 
                 $intersystems_service->clear_cache();
 
-                $link_render->redirect($vr->get('users_show'),
+                if ($is_self)
+                {
+                    $link_render->redirect('users_show_self',
+                        $pp->ary(), []);
+                }
+
+                $link_render->redirect('users_show',
                     $pp->ary(), ['id' => $id]);
             }
 
@@ -851,7 +797,7 @@ class UsersEditController extends AbstractController
             'user_edit.js',
         ]);
 
-        if ($is_owner && !$pp->is_admin() && $is_edit)
+        if ($is_self && !$pp->is_admin() && $is_edit)
         {
             $heading_render->add('Mijn profiel aanpassen');
         }
@@ -1344,9 +1290,14 @@ class UsersEditController extends AbstractController
             ]);
         }
 
-        if ($is_edit)
+        if ($is_self)
         {
-            $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(),
+            $out .= $link_render->btn_cancel('users_show_self', $pp->ary(),
+                []);
+        }
+        else if ($is_edit)
+        {
+            $out .= $link_render->btn_cancel('users_show', $pp->ary(),
                 ['id' => $id]);
         }
         else
@@ -1368,7 +1319,10 @@ class UsersEditController extends AbstractController
 
         $menu_service->set('users');
 
-        return $out;
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     private static function send_activation_mail(

@@ -87,10 +87,13 @@ users_image_upload:
   path: /users/image/upload
   methods: POST
 
-users_password:
-  controller: App\Controller\UsersPasswordController
-  path: /users/password
+users_password_edit_self:
+  controller: App\Controller\UsersPasswordEditController
+  path: /users/password-edit-self
   methods: GET|POST
+  defaults:
+    is_self: true
+    id: 0
 
 users_show_self:
   controller: App\Controller\UsersShowController
@@ -102,9 +105,13 @@ users_show_self:
     is_self: true
 
 users_edit_self:
-  controller: App\Controller\UsersEditSelfController
+  controller: App\Controller\UsersEditController
   path: /users/edit-self
   methods: GET|POST
+  defaults:
+    is_add: false
+    is_self: true
+    id: 0
 
 transactions_self:
   controller: App\Controller\TransactionsController

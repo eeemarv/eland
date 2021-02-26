@@ -154,10 +154,12 @@ users_image_upload_admin:
   path: /users/{id<%assert.id%>}/image/upload
   methods: POST
 
-users_password_admin:
-  controller: App\Controller\UsersPasswordAdminController
-  path: /users/{id<%assert.id%>}/password
+users_password_edit:
+  controller: App\Controller\UsersPasswordEditController
+  path: /users/{id<%assert.id%>}/password-edit
   methods: GET|POST
+  defaults:
+    is_self: false
 
 users_del_admin:
   controller: App\Controller\UsersDelAdminController
@@ -168,11 +170,17 @@ users_edit:
   controller: App\Controller\UsersEditController
   path: /users/{id<%assert.id%>}/edit
   methods: GET|POST
+  defaults:
+    is_add: false
+    is_self: false
 
 users_add:
-  controller: App\Controller\UsersAddController
+  controller: App\Controller\UsersEditController
   path: /users/add
   methods: GET|POST
+  defaults:
+    is_add: true
+    is_self: false
 
 users_modules:
   controller: App\Controller\UsersModulesController

@@ -190,7 +190,7 @@ class UsersShowController extends AbstractController
 
                 $alert_service->success('E-mail bericht verzonden.');
 
-                $link_render->redirect($vr->get('users_show'), $pp->ary(),
+                $link_render->redirect('users_show', $pp->ary(),
                     ['id' => $id]);
 
             }
@@ -310,7 +310,7 @@ class UsersShowController extends AbstractController
             $btn_top_render->edit('users_edit', $pp->ary(),
                 ['id' => $id], 'Gebruiker aanpassen');
 
-            $btn_top_render->edit_pw('users_password_admin', $pp->ary(),
+            $btn_top_render->edit_pw('users_password_edit', $pp->ary(),
                 ['id' => $id], 'Paswoord aanpassen');
         }
         else if ($su->is_owner($id))
@@ -318,7 +318,7 @@ class UsersShowController extends AbstractController
             $btn_top_render->edit('users_edit_self', $pp->ary(),
                 [], 'Mijn profiel aanpassen');
 
-            $btn_top_render->edit_pw('users_password', $pp->ary(),
+            $btn_top_render->edit_pw('users_password_edit_self', $pp->ary(),
                 [], 'Mijn paswoord aanpassen');
         }
 
@@ -355,7 +355,7 @@ class UsersShowController extends AbstractController
         $prev_ary = $prev ? ['id' => $prev] : [];
         $next_ary = $next ? ['id' => $next] : [];
 
-        $btn_nav_render->nav($vr->get('users_show'), $pp_status_ary,
+        $btn_nav_render->nav('users_show', $pp_status_ary,
             $prev_ary, $next_ary, false);
 
         $btn_nav_render->nav_list($vr->get('users'), $pp_status_ary,
@@ -374,7 +374,7 @@ class UsersShowController extends AbstractController
         $h_status_ary = StatusCnst::LABEL_ARY;
         $h_status_ary[3] = 'Instapper';
 
-        if ($su->is_owner($id) && !$pp->is_admin())
+        if ($is_self)
         {
             $heading_render->add('Mijn gegevens: ');
         }

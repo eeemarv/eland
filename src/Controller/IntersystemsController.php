@@ -9,7 +9,6 @@ use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -26,7 +25,6 @@ class IntersystemsController extends AbstractController
         ConfigService $config_service,
         LinkRender $link_render,
         PageParamsService $pp,
-        VarRouteService $vr,
         SystemsService $systems_service,
         MenuService $menu_service
     ):Response
@@ -130,7 +128,7 @@ class IntersystemsController extends AbstractController
 
                     if ($user)
                     {
-                        $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
+                        $out .= $link_render->link('users_show', $pp->ary(),
                             ['id' => $user['id']], $sys['localletscode'],
                             [
                                 'class'	=> 'btn btn-default',
@@ -140,7 +138,7 @@ class IntersystemsController extends AbstractController
                         if (!in_array($user['status'], [1, 2, 7]))
                         {
                             $out .= ' ';
-                            $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
+                            $out .= $link_render->link_fa('users_show', $pp->ary(),
                                 ['id' => $user['id']], 'Status!',
                                 [
                                     'class'	=> 'btn btn-danger',
@@ -151,7 +149,7 @@ class IntersystemsController extends AbstractController
                         if ($user['role'] != 'guest')
                         {
                             $out .= ' ';
-                            $out .= $link_render->link_fa($vr->get('users_show'), $pp->ary(),
+                            $out .= $link_render->link_fa('users_show', $pp->ary(),
                                 ['id' => $user['id']], 'Rol!',
                                 [
                                     'class'	=> 'btn btn-danger',
@@ -232,7 +230,6 @@ class IntersystemsController extends AbstractController
             $config_service,
             $systems_service,
             $pp,
-            $vr,
             $link_render
         );
 */
@@ -250,7 +247,6 @@ class IntersystemsController extends AbstractController
         ConfigService $config_service,
         SystemsService $systems_service,
         PageParamsService $pp,
-        VarRouteService $vr,
         LinkRender $link_render
     ):string
     {
@@ -459,7 +455,7 @@ class IntersystemsController extends AbstractController
                     {
                         if ($loc_acc['role'] != 'guest')
                         {
-                            $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
+                            $out .= $link_render->link('users_show', $pp->ary(),
                                 ['id' => $loc_acc['id']], 'rol',
                                 [
                                     'class'	=> 'btn btn-warning',
@@ -468,7 +464,7 @@ class IntersystemsController extends AbstractController
                         }
                         else if (!in_array($loc_acc['status'], [1, 2, 7]))
                         {
-                            $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
+                            $out .= $link_render->link('users_show', $pp->ary(),
                                 ['id' => $loc_acc['id']], 'status',
                                 [
                                     'class'	=> 'btn btn-warning',
@@ -477,7 +473,7 @@ class IntersystemsController extends AbstractController
                         }
                         else
                         {
-                            $out .= $link_render->link($vr->get('users_show'), $pp->ary(),
+                            $out .= $link_render->link('users_show', $pp->ary(),
                                 ['id' => $loc_acc['id']], 'OK',
                                 ['class' => 'btn btn-success']);
                         }

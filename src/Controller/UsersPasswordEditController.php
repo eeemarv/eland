@@ -25,12 +25,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
-class UsersPasswordAdminController extends AbstractController
+class UsersPasswordEditController extends AbstractController
 {
     public function __invoke(
         Request $request,
         EncoderFactoryInterface $encoder_factory,
         int $id,
+        bool $is_self,
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -45,7 +46,6 @@ class UsersPasswordAdminController extends AbstractController
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         MenuService $menu_service
     ):Response
     {
@@ -53,6 +53,11 @@ class UsersPasswordAdminController extends AbstractController
 
         $password = trim($request->request->get('password', ''));
         $notify = $request->request->get('notify', '');
+
+        if ($is_self)
+        {
+            $id = $su->id();
+        }
 
         if($request->isMethod('POST'))
         {
@@ -123,7 +128,12 @@ class UsersPasswordAdminController extends AbstractController
                         }
                     }
 
-                    $link_render->redirect($vr->get('users_show'), $pp->ary(), ['id' => $id]);
+                    if ($is_self)
+                    {
+                        $link_render->redirect('users_show_self', $pp->ary(), []);
+                    }
+
+                    $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
                 }
                 else
                 {
@@ -145,7 +155,7 @@ class UsersPasswordAdminController extends AbstractController
 
         $heading_render->add('Paswoord aanpassen');
 
-        if ($pp->is_admin() && $id !== $su->id())
+        if (!$is_self)
         {
             $heading_render->add(' voor ');
             $heading_render->add_raw($account_render->link($id, $pp->ary()));
@@ -190,7 +200,14 @@ class UsersPasswordAdminController extends AbstractController
             '%attr%'        => $user['status'] == 1 || $user['status'] == 2 ? ' checked' : ' readonly',
         ]);
 
-        $out .= $link_render->btn_cancel($vr->get('users_show'), $pp->ary(), ['id' => $id]);
+        if ($is_self)
+        {
+            $out .= $link_render->btn_cancel('users_show_self', $pp->ary(), []);
+        }
+        else
+        {
+            $out .= $link_render->btn_cancel('users_show', $pp->ary(), ['id' => $id]);
+        }
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" value="Opslaan" name="zend" ';

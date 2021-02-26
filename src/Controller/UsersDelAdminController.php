@@ -130,7 +130,7 @@ class UsersDelAdminController extends AbstractController
             '%attr%'        => '',
         ]);
 
-        $out .= $link_render->btn_cancel($vr->get('users_show'),
+        $out .= $link_render->btn_cancel('users_show',
             $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';

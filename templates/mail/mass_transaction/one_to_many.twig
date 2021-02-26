@@ -10,7 +10,7 @@
 {%- block html_before_many -%}
     <tr>
         <td style="font-weight: bold;">
-            {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': from_user_id})|raw -}}
+            {{- context_url_open('users_show', mpp_admin_ary(schema), {'id': from_user_id})|raw -}}
             {{- account(from_user_id, schema) -}}
             </a>
         </td>
@@ -27,7 +27,7 @@
     {%- for t in transactions -%}
     <tr>
         <td style="padding-left: 10px" width="400">
-            {{- context_url_open('users_show_admin', mpp_admin_ary(schema), {'id': t.id_to})|raw -}}
+            {{- context_url_open('users_show', mpp_admin_ary(schema), {'id': t.id_to})|raw -}}
             {{- account(t.id_to, schema) -}}
             </a>
         </td>
