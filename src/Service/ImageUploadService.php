@@ -129,7 +129,7 @@ class ImageUploadService
         string $schema
     ):array
     {
-        ImageManagerStatic::configure(['driver' => 'imagick']);
+        // gd is default ImageManagerStatic::configure(['driver' => 'imagick']);
         $image = ImageManagerStatic::make($tmp_upload_path)->orientate();
 
         $h = $image->height();

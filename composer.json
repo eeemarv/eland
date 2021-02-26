@@ -7,12 +7,11 @@
 	"keywords": ["community", "currencies", "app"],
 
     "require": {
-		"php": "^7.4",
+		"php": "^8.0",
 		"ext-ctype": "*",
 		"ext-exif": "*",
 		"ext-gd": "*",
 		"ext-iconv": "*",
-		"ext-imagick": "*",
 		"ext-mbstring": "*",
 		"ext-redis": "*",
 		"aws/aws-sdk-php": "^3",
