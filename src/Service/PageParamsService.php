@@ -9,10 +9,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PageParamsService
 {
-	protected RequestStack $request_stack;
-	protected SystemsService $systems_service;
-	protected string $env_app_system_redirects;
-
 	protected Request $request;
 	protected string $role_short;
 	protected string $role;
@@ -30,15 +26,11 @@ class PageParamsService
 	protected string $route;
 
 	public function __construct(
-		RequestStack $request_stack,
-		SystemsService $systems_service,
-		string $env_app_system_redirects
+		protected RequestStack $request_stack,
+		protected SystemsService $systems_service,
+		protected string $env_app_system_redirects
 	)
 	{
-		$this->request_stack = $request_stack;
-		$this->systems_service = $systems_service;
-		$this->env_app_system_redirects = $env_app_system_redirects;
-
 		$this->init();
 	}
 

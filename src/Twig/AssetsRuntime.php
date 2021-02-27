@@ -7,11 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class AssetsRuntime implements RuntimeExtensionInterface
 {
-	protected AssetsService $assets_service;
-
-	public function __construct(AssetsService $assets_service)
+	public function __construct(
+		protected AssetsService $assets_service
+	)
 	{
-		$this->assets_service = $assets_service;
 	}
 
 	public function get(string $name):string

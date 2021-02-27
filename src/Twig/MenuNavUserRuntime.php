@@ -7,13 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class MenuNavUserRuntime implements RuntimeExtensionInterface
 {
-	protected MenuNavUserService $menu_nav_user_service;
-
 	public function __construct(
-		MenuNavUserService $menu_nav_user_service
+		protected MenuNavUserService $menu_nav_user_service
 	)
 	{
-		$this->menu_nav_user_service = $menu_nav_user_service;
 	}
 
 	public function get_s_id():int

@@ -11,21 +11,17 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class CaptchaService
 {
 	protected Request $request;
-	protected Predis $predis;
-	protected FormTokenService $form_token_service;
 	protected CaptchaBuilder $builder;
 
 	const TTL = 14400; // 4 hours
 
 	public function __construct(
 		RequestStack $request_stack,
-		Predis $predis,
-		FormTokenService $form_token_service
+		protected Predis $predis,
+		protected FormTokenService $form_token_service
 	)
 	{
 		$this->request = $request_stack->getCurrentRequest();
-		$this->predis = $predis;
-		$this->form_token_service = $form_token_service;
 
 		$this->builder = new CaptchaBuilder();
 		$this->builder->setDistortion(false);

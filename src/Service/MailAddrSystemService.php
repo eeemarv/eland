@@ -7,16 +7,11 @@ use App\Service\ConfigService;
 
 class MailAddrSystemService
 {
-	protected ConfigService $config_service;
-	protected LoggerInterface $logger;
-
 	public function __construct(
-		LoggerInterface $logger,
-		ConfigService $config_service
+		protected LoggerInterface $logger,
+		protected ConfigService $config_service
 	)
 	{
-		$this->logger = $logger;
-		$this->config_service = $config_service;
 	}
 
 	public function get_from(string $schema):array

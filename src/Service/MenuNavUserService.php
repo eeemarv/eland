@@ -6,22 +6,13 @@ use App\Cnst\MenuCnst;
 
 class MenuNavUserService
 {
-	protected ConfigService $config_service;
-	protected PageParamsService $pp;
-	protected SessionUserService $su;
-	protected VarRouteService $vr;
-
 	public function __construct(
-		ConfigService $config_service,
-		PageParamsService $pp,
-		SessionUserService $su,
-		VarRouteService $vr
+		protected ConfigService $config_service,
+		protected PageParamsService $pp,
+		protected SessionUserService $su,
+		protected VarRouteService $vr
 	)
 	{
-		$this->config_service = $config_service;
-		$this->pp = $pp;
-		$this->su = $su;
-		$this->vr = $vr;
 	}
 
 	public function get_s_id():int

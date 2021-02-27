@@ -10,19 +10,12 @@ class LogDbService
 {
 	const MAX_POP = 500;
 
-	protected Db $db;
-	protected Predis $predis;
-	protected SystemsService $systems_service;
-
 	public function __construct(
-		Db $db,
-		Predis $predis,
-		SystemsService $systems_service
+		protected Db $db,
+		protected Predis $predis,
+		protected SystemsService $systems_service
 	)
 	{
-		$this->db = $db;
-		$this->predis = $predis;
-		$this->systems_service = $systems_service;
 	}
 
 	public function update():void

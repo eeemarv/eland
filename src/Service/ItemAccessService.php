@@ -8,19 +8,12 @@ use App\Cnst\BulkCnst;
 
 class ItemAccessService
 {
-	protected AssetsService $assets_service;
-	protected ConfigService $config_service;
-	protected PageParamsService $pp;
-
 	public function __construct(
-		AssetsService $assets_service,
-		PageParamsService $pp,
-		ConfigService $config_service
+		protected AssetsService $assets_service,
+		protected PageParamsService $pp,
+		protected ConfigService $config_service
 	)
 	{
-		$this->assets_service = $assets_service;
-		$this->pp = $pp;
-		$this->config_service = $config_service;
 	}
 
 	public function is_visible(string $access):bool

@@ -10,25 +10,14 @@ use App\Queue\MailQueue;
 
 class MailTransactionService
 {
-	protected UserCacheService $user_cache_service;
-	protected ConfigService $config_service;
-	protected MailAddrSystemService $mail_addr_system_service;
-	protected MailAddrUserService $mail_addr_user_service;
-	protected MailQueue $mail_queue;
-
 	public function __construct(
-		UserCacheService $user_cache_service,
-		ConfigService $config_service,
-		MailAddrSystemService $mail_addr_system_service,
-		MailAddrUserService $mail_addr_user_service,
-		MailQueue $mail_queue
+		protected UserCacheService $user_cache_service,
+		protected ConfigService $config_service,
+		protected MailAddrSystemService $mail_addr_system_service,
+		protected MailAddrUserService $mail_addr_user_service,
+		protected MailQueue $mail_queue
 	)
 	{
-		$this->user_cache_service = $user_cache_service;
-		$this->config_service = $config_service;
-		$this->mail_addr_system_service = $mail_addr_system_service;
-		$this->mail_addr_user_service = $mail_addr_user_service;
-		$this->mail_queue = $mail_queue;
 	}
 
 	public function queue_mail_type(

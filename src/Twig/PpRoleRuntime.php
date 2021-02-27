@@ -8,16 +8,11 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class PpRoleRuntime implements RuntimeExtensionInterface
 {
-	protected PageParamsService $pp;
-	protected SessionUserService $su;
-
 	public function __construct(
-		PageParamsService $pp,
-		SessionUserService $su
+		protected PageParamsService $pp,
+		protected SessionUserService $su
 	)
 	{
-		$this->pp = $pp;
-		$this->su = $su;
 	}
 
 	public function has_role(string $role):bool

@@ -10,20 +10,15 @@ class UserCacheService
 	const KEY_PREFIX = 'users_';
 	const TTL = 2592000;
 
-	protected Db $db;
-	protected Predis $predis;
 	protected bool $is_cli;
 
 	protected array $local = [];
 
 	public function __construct(
-		Db $db,
-		Predis $predis
+		protected Db $db,
+		protected Predis $predis
 	)
 	{
-		$this->db = $db;
-		$this->predis = $predis;
-
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
 	}
 

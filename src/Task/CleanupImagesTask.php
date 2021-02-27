@@ -12,25 +12,14 @@ class CleanupImagesTask
 {
 	const DAYS = 365;
 
-	protected CacheService $cache_service;
-	protected Db $db;
-	protected LoggerInterface $logger;
-	protected S3Service $s3_service;
-	protected SystemsService $systems_service;
-
 	public function __construct(
-		CacheService $cache_service,
-		Db $db,
-		LoggerInterface $logger,
-		S3Service $s3_service,
-		SystemsService $systems_service
+		protected CacheService $cache_service,
+		protected Db $db,
+		protected LoggerInterface $logger,
+		protected S3Service $s3_service,
+		protected SystemsService $systems_service
 	)
 	{
-		$this->cache_service = $cache_service;
-		$this->db = $db;
-		$this->logger = $logger;
-		$this->s3_service = $s3_service;
-		$this->systems_service = $systems_service;
 	}
 
 	public function process():void

@@ -7,11 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class DateFormatRuntime implements RuntimeExtensionInterface
 {
-	protected DateFormatService $date_format_service;
-
-	public function __construct(DateFormatService $date_format_service)
+	public function __construct(
+		protected DateFormatService $date_format_service
+	)
 	{
-		$this->date_format_service = $date_format_service;
 	}
 
 	public function datepicker_format(string $schema):string

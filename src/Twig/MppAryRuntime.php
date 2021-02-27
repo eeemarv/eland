@@ -9,16 +9,11 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class MppAryRuntime implements RuntimeExtensionInterface
 {
-	protected UserCacheService $user_cache_service;
-	protected SystemsService $systems_service;
-
 	public function __construct(
-		UserCacheService $user_cache_service,
-		SystemsService $systems_service
+		protected UserCacheService $user_cache_service,
+		protected SystemsService $systems_service
 	)
 	{
-		$this->user_cache_service = $user_cache_service;
-		$this->systems_service = $systems_service;
 	}
 
 	private function get_ary(

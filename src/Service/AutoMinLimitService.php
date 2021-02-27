@@ -10,13 +10,6 @@ use App\Repository\AccountRepository;
 
 class AutoMinLimitService
 {
-	protected LoggerInterface $logger;
-	protected UserCacheService $user_cache_service;
-	protected AccountRepository $account_repository;
-	protected ConfigService $config_service;
-	protected AccountRender $account_render;
-	protected SessionUserService $su;
-
 	protected array $exclude_to = [];
 	protected array $exclude_from = [];
 	protected bool $enabled = false;
@@ -25,20 +18,14 @@ class AutoMinLimitService
 	protected string $schema;
 
 	public function __construct(
-		LoggerInterface $logger,
-		UserCacheService $user_cache_service,
-		AccountRepository $account_repository,
-		ConfigService $config_service,
-		SessionUserService $su,
-		AccountRender $account_render
+		protected LoggerInterface $logger,
+		protected UserCacheService $user_cache_service,
+		protected AccountRepository $account_repository,
+		protected ConfigService $config_service,
+		protected SessionUserService $su,
+		protected AccountRender $account_render
 	)
 	{
-		$this->logger = $logger;
-		$this->user_cache_service = $user_cache_service;
-		$this->account_repository = $account_repository;
-		$this->config_service = $config_service;
-		$this->su = $su;
-		$this->account_render = $account_render;
 	}
 
 	public function init(string $schema):self

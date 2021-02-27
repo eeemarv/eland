@@ -7,9 +7,6 @@ use App\Service\CacheService;
 
 class DistanceService
 {
-	protected Db $db;
-	protected CacheService $cache_service;
-
 	protected $from_lat;
 	protected $from_lng;
 	protected $from_geo_en;
@@ -20,10 +17,11 @@ class DistanceService
 	protected $to_map_data = [];
 	protected $dist;
 
-	public function __construct(Db $db, CacheService $cache_service)
+	public function __construct(
+		protected Db $db,
+		protected CacheService $cache_service
+	)
 	{
-		$this->db = $db;
-		$this->cache_service = $cache_service;
 	}
 
 	public function set_from_geo(

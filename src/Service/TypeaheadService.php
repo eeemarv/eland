@@ -12,28 +12,17 @@ class TypeaheadService
 {
 	const TTL = 5184000; // 60 days
 
-	protected Predis $predis;
-	protected LoggerInterface $logger;
-	protected UrlGeneratorInterface $url_generator;
-	protected SystemsService $systems_service;
-	protected AssetsService $assets_service;
-
 	protected array $build_ary;
 	protected bool $assets_included = false;
 
 	public function __construct(
-		Predis $predis,
-		LoggerInterface $logger,
-		UrlGeneratorInterface $url_generator,
-		SystemsService $systems_service,
-		AssetsService $assets_service
+		protected Predis $predis,
+		protected LoggerInterface $logger,
+		protected UrlGeneratorInterface $url_generator,
+		protected SystemsService $systems_service,
+		protected AssetsService $assets_service
 	)
 	{
-		$this->predis = $predis;
-		$this->logger = $logger;
-		$this->url_generator = $url_generator;
-		$this->systems_service = $systems_service;
-		$this->assets_service = $assets_service;
 	}
 
 	public function ini(array $pp_ary):self

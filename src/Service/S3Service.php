@@ -8,8 +8,6 @@ use GuzzleHttp\Psr7\CachingStream;
 
 class S3Service
 {
-	protected string $env_aws_s3_bucket;
-	protected string $env_aws_s3_region;
 	protected S3Client $s3_client;
 
 	const IMG_TYPES = [
@@ -61,13 +59,10 @@ class S3Service
 	];
 
 	public function __construct(
-		string $env_aws_s3_bucket,
-		string $env_aws_s3_region
+		protected string $env_aws_s3_bucket,
+		protected string $env_aws_s3_region
 	)
 	{
-		$this->env_aws_s3_bucket = $env_aws_s3_bucket;
-		$this->env_aws_s3_region = $env_aws_s3_region;
-
 		$this->s3_client = S3Client::factory([
 			'signature'	=> 'v4',
 			'region'	=> $this->env_aws_s3_region,

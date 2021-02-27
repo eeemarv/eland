@@ -7,13 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class MenuRuntime implements RuntimeExtensionInterface
 {
-	protected MenuService $menu_service;
-
 	public function __construct(
-		MenuService $menu_service
+		protected MenuService $menu_service
 	)
 	{
-		$this->menu_service = $menu_service;
 	}
 
 	public function get_sidebar():array

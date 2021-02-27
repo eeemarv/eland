@@ -6,8 +6,6 @@ use Doctrine\DBAL\Connection as Db;
 
 class SystemsService
 {
-	protected Db $db;
-	protected string $env_legacy_eland_origin_pattern;
 	protected array $schemas = [];
 	protected array $systems = [];
 
@@ -24,13 +22,10 @@ class SystemsService
 	];
 
 	public function __construct(
-		Db $db,
-		string $env_legacy_eland_origin_pattern
+		protected Db $db,
+		protected string $env_legacy_eland_origin_pattern
 	)
 	{
-		$this->db = $db;
-		$this->env_legacy_eland_origin_pattern = $env_legacy_eland_origin_pattern;
-
 		$rs = $this->db->prepare('select schema_name
 			from information_schema.schemata');
 		$rs->execute();

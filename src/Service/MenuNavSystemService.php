@@ -11,34 +11,17 @@ use App\Service\UserCacheService;
 
 class MenuNavSystemService
 {
-	protected IntersystemsService $intersystems_service;
-	protected SystemsService $systems_service;
-	protected MenuService $menu_service;
-	protected ConfigService $config_service;
-	protected UserCacheService $user_cache_service;
-	protected PageParamsService $pp;
-	protected VarRouteService $vr;
-	protected SessionUserService $su;
-
 	public function __construct(
-		IntersystemsService $intersystems_service,
-		SystemsService $systems_service,
-		MenuService $menu_service,
-		ConfigService $config_service,
-		UserCacheService $user_cache_service,
-		PageParamsService $pp,
-		VarRouteService $vr,
-		SessionUserService $su
+		protected IntersystemsService $intersystems_service,
+		protected SystemsService $systems_service,
+		protected MenuService $menu_service,
+		protected ConfigService $config_service,
+		protected UserCacheService $user_cache_service,
+		protected PageParamsService $pp,
+		protected VarRouteService $vr,
+		protected SessionUserService $su
 	)
 	{
-		$this->intersystems_service = $intersystems_service;
-		$this->systems_service = $systems_service;
-		$this->menu_service = $menu_service;
-		$this->config_service = $config_service;
-		$this->user_cache_service = $user_cache_service;
-		$this->pp = $pp;
-		$this->vr = $vr;
-		$this->su = $su;
 	}
 
 	public function has_nav_system():bool

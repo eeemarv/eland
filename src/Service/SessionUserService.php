@@ -9,10 +9,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SessionUserService
 {
-	protected SessionInterface $session;
-	protected PageParamsService $pp;
-	protected UserCacheService $user_cache_service;
-
 	protected string $schema;
 	protected string $system;
 	protected bool $is_system_self;
@@ -29,15 +25,11 @@ class SessionUserService
 	protected array $ary;
 
 	public function __construct(
-		SessionInterface $session,
-		PageParamsService $pp,
-		UserCacheService $user_cache_service
+		protected SessionInterface $session,
+		protected PageParamsService $pp,
+		protected UserCacheService $user_cache_service
 	)
 	{
-		$this->session = $session;
-		$this->pp = $pp;
-		$this->user_cache_service = $user_cache_service;
-
 		$this->load_session();
 		$this->load_user_role();
 	}

@@ -7,13 +7,11 @@ use Psr\Log\LoggerInterface;
 
 class MailAddrUserService
 {
-	protected Db $db;
-	protected LoggerInterface $logger;
-
-	public function __construct(Db $db, LoggerInterface $logger)
+	public function __construct(
+		protected Db $db,
+		protected LoggerInterface $logger
+	)
 	{
-		$this->db = $db;
-		$this->logger = $logger;
 	}
 
 	public function get(int $user_id, string $schema):array

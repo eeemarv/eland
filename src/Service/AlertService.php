@@ -12,22 +12,16 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 class AlertService
 {
 	protected Request $request;
-	protected LoggerInterface $logger;
-	protected SessionInterface $session;
 	protected FlashBagInterface $flash_bag;
-	protected PageParamsService $pp;
 
 	public function __construct(
 		RequestStack $request_stack,
-		LoggerInterface $logger,
-		SessionInterface $session,
-		PageParamsService $pp
+		protected LoggerInterface $logger,
+		protected SessionInterface $session,
+		protected PageParamsService $pp
 	)
 	{
 		$this->request = $request_stack->getCurrentRequest();
-		$this->logger = $logger;
-		$this->session = $session;
-		$this->pp = $pp;
 		$this->flash_bag = $this->session->getFlashBag();
 	}
 

@@ -7,20 +7,16 @@ use App\Service\TokenGeneratorService;
 
 class CmsEditFormTokenService
 {
-	protected Predis $predis;
-	protected TokenGeneratorService $token_generator_service;
 	protected string $token = '';
 
 	const TTL = 28800; // 8 hours
 	const STORE_PREFIX = 'cms_edit_form_token_';
 
 	public function __construct(
-		Predis $predis,
-		TokenGeneratorService $token_generator_service
+		protected Predis $predis,
+		protected TokenGeneratorService $token_generator_service
 	)
 	{
-		$this->predis = $predis;
-		$this->token_generator_service = $token_generator_service;
 	}
 
 	public function get():string

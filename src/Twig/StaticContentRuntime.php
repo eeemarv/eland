@@ -8,16 +8,11 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class StaticContentRuntime implements RuntimeExtensionInterface
 {
-	protected PageParamsService $pp;
-	protected StaticContentService $static_content_service;
-
 	public function __construct(
-		PageParamsService $pp,
-		StaticContentService $static_content_service
+		protected PageParamsService $pp,
+		protected StaticContentService $static_content_service
 	)
 	{
-		$this->pp = $pp;
-		$this->static_content_service = $static_content_service;
 	}
 
 	public function has(bool $with_role, bool $with_route, string $block):bool

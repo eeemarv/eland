@@ -7,13 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class PpAryRuntime implements RuntimeExtensionInterface
 {
-	protected PageParamsService $pp;
-
 	public function __construct(
-		PageParamsService $pp
+		protected PageParamsService $pp
 	)
 	{
-		$this->pp = $pp;
 	}
 
 	public function get():array

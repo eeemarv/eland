@@ -9,24 +9,17 @@ use App\Cnst\ProcessCnst;
 
 class MonitorProcessService
 {
-	protected Db $db;
-	protected Predis $predis;
-	protected CacheService $cache_service;
 	protected bool $is_cli;
 	protected string $process_name;
 	protected int $boot_count;
 	protected int $loop_count = 1;
 
 	public function __construct(
-		Db $db,
-		Predis $predis,
-		CacheService $cache_service
+		protected Db $db,
+		protected Predis $predis,
+		protected CacheService $cache_service
 	)
 	{
-		$this->db = $db;
-		$this->predis = $predis;
-		$this->cache_service = $cache_service;
-
 		$this->is_cli = php_sapi_name() === 'cli';
 	}
 

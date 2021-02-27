@@ -7,11 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class HeadingRuntime implements RuntimeExtensionInterface
 {
-	protected HeadingRender $heading_render;
-
-	public function __construct(HeadingRender $heading_render)
+	public function __construct(
+		protected HeadingRender $heading_render
+	)
 	{
-		$this->heading_render = $heading_render;
 	}
 
 	public function get_h1():string

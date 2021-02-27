@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class FormTokenService
 {
 	protected Request $request;
-	protected Predis $predis;
-	protected TokenGeneratorService $token_generator_service;
 	protected string $token = '';
 
 	const TTL = 14400; // 4 hours
@@ -20,13 +18,11 @@ class FormTokenService
 
 	public function __construct(
 		RequestStack $request_stack,
-		Predis $predis,
-		TokenGeneratorService $token_generator_service
+		protected Predis $predis,
+		protected TokenGeneratorService $token_generator_service
 	)
 	{
 		$this->request = $request_stack->getCurrentRequest();
-		$this->predis = $predis;
-		$this->token_generator_service = $token_generator_service;
 	}
 
 	public function get_posted():string

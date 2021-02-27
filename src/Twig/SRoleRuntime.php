@@ -7,13 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class SRoleRuntime implements RuntimeExtensionInterface
 {
-	protected SessionUserService $su;
-
 	public function __construct(
-		SessionUserService $su
+		protected SessionUserService $su
 	)
 	{
-		$this->su = $su;
 	}
 
 	public function has_role(string $role):bool

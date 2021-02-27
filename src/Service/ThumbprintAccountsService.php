@@ -8,16 +8,11 @@ use App\Service\IntersystemsService;
 
 class ThumbprintAccountsService
 {
-	protected TypeaheadService $typeahead_service;
-	protected IntersystemsService $intersystems_service;
-
 	public function __construct(
-		TypeaheadService $typeahead_service,
-		IntersystemsService $intersystems_service
+		protected TypeaheadService $typeahead_service,
+		protected IntersystemsService $intersystems_service
 	)
 	{
-		$this->typeahead_service = $typeahead_service;
-		$this->intersystems_service = $intersystems_service;
 	}
 
     public function delete(array $pp_ary, string $pp_schema):void

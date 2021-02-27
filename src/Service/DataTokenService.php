@@ -7,18 +7,13 @@ use App\Service\TokenGeneratorService;
 
 class DataTokenService
 {
-	protected Predis $predis;
-	protected TokenGeneratorService $token_generator_service;
-
 	const KEY = 'data_token_%token%_%name%_%schema%';
 
 	public function __construct(
-		Predis $predis,
-		TokenGeneratorService $token_generator_service
+		protected Predis $predis,
+		protected TokenGeneratorService $token_generator_service
 	)
 	{
-		$this->predis = $predis;
-		$this->token_generator_service = $token_generator_service;
 	}
 
 	private function get_redis_key(string $token, string $name, string $schema):string

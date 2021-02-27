@@ -7,7 +7,6 @@ use App\Service\CacheService;
 
 class AssetsService
 {
-	protected CacheService $cache_service;
 	protected array $file_hash_ary = [];
 	protected array $include_ary = [];
 
@@ -153,11 +152,9 @@ class AssetsService
 	];
 
 	public function __construct(
-		CacheService $cache_service
+		protected CacheService $cache_service
 	)
 	{
-		$this->cache_service = $cache_service;
-
 		$this->file_hash_ary = $this->cache_service->get(self::CACHE_HASH_KEY);
 	}
 

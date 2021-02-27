@@ -11,22 +11,14 @@ class EmailVerifyService
 {
 	const CACHE_PREFIX = 'email_verify_token_';
 	const TTL = 864000; // 10 days
-	protected Db $db;
-	protected CacheService $cache_service;
-	protected LoggerInterface $logger;
-	protected TokenGeneratorService $token_generator_service;
 
 	public function __construct(
-		CacheService $cache_service,
-		Db $db,
-		TokenGeneratorService $token_generator_service,
-		loggerinterface $logger
+		protected CacheService $cache_service,
+		protected Db $db,
+		protected TokenGeneratorService $token_generator_service,
+		protected loggerinterface $logger
 	)
 	{
-		$this->cache_service = $cache_service;
-		$this->db = $db;
-		$this->token_generator_service = $token_generator_service;
-		$this->logger = $logger;
 	}
 
 	public function get_token(string $email, string $schema, string $source):string

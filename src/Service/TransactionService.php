@@ -11,28 +11,15 @@ use App\Repository\AccountRepository;
 
 class TransactionService
 {
-	protected Db $db;
-	protected AccountRepository $account_repository;
-	protected LoggerInterface $logger;
-	protected AutoMinLimitService $autominlimit_service;
-	protected ConfigService $config_service;
-	protected AccountRender $account_render;
-
 	public function __construct(
-		Db $db,
-		AccountRepository $account_repository,
-		LoggerInterface $logger,
-		AutoMinLimitService $autominlimit_service,
-		ConfigService $config_service,
-		AccountRender $account_render
+		protected Db $db,
+		protected AccountRepository $account_repository,
+		protected LoggerInterface $logger,
+		protected AutoMinLimitService $autominlimit_service,
+		protected ConfigService $config_service,
+		protected AccountRender $account_render
 	)
 	{
-		$this->db = $db;
-		$this->account_repository = $account_repository;
-		$this->logger = $logger;
-		$this->autominlimit_service = $autominlimit_service;
-		$this->config_service = $config_service;
-		$this->account_render = $account_render;
 	}
 
 	public function generate_transid(int $s_id, string $system_name):string

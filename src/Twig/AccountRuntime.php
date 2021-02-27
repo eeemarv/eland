@@ -8,16 +8,11 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class AccountRuntime implements RuntimeExtensionInterface
 {
-	protected AccountRepository $account_repository;
-	protected UserCacheService $user_cache_service;
-
 	public function __construct(
-		AccountRepository $account_repository,
-		UserCacheService $user_cache_service
+		protected AccountRepository $account_repository,
+		protected UserCacheService $user_cache_service
 	)
 	{
-		$this->account_repository = $account_repository;
-		$this->user_cache_service = $user_cache_service;
 	}
 
 	public function get(int $id, string $schema):string

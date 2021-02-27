@@ -6,7 +6,6 @@ class PasswordStrengthService
 {
 	public function get(string $password, string $username = ''):int
 	{
-
         $password = str_replace($username, '', $password);
 
 		$strength = 0;

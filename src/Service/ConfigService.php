@@ -13,19 +13,15 @@ class ConfigService
 	const PREFIX = 'config_';
 	const TTL = 518400; // 60 days
 
-	protected Db $db;
-	protected Predis $predis;
 	protected bool $local_cache_en = false;
 	protected array $load_ary = [];
 	protected array $local_cache = [];
 
 	public function __construct(
-		Db $db,
-		Predis $predis
+		protected Db $db,
+		protected Predis $predis
 	)
 	{
-		$this->predis = $predis;
-		$this->db = $db;
 		$this->local_cache_en = php_sapi_name() !== 'cli';
 	}
 

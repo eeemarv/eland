@@ -7,11 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class PaginationRuntime implements RuntimeExtensionInterface
 {
-	protected PaginationRender $pagination_render;
-
-	public function __construct(PaginationRender $pagination_render)
+	public function __construct(
+		protected PaginationRender $pagination_render
+	)
 	{
-		$this->pagination_render = $pagination_render;
 	}
 
 	public function get():string

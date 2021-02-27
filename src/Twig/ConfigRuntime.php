@@ -7,11 +7,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 class ConfigRuntime implements RuntimeExtensionInterface
 {
-	protected ConfigService $config_service;
-
-	public function __construct(ConfigService $config_service)
+	public function __construct(
+		protected ConfigService $config_service
+	)
 	{
-		$this->config_service = $config_service;
 	}
 
 	public function get(string $key, string $schema)

@@ -9,26 +9,16 @@ use App\Render\BtnNavRender;
 
 class MenuService
 {
-	protected ConfigService $config_service;
-	protected ItemAccessService $item_access_service;
-	protected BtnNavRender $btn_nav_render;
-	protected PageParamsService $pp;
-	protected VarRouteService $vr;
 	protected string $active_menu;
 
 	public function __construct(
-		ConfigService $config_service,
-		ItemAccessService $item_access_service,
-		BtnNavRender $btn_nav_render,
-		PageParamsService $pp,
-		VarRouteService $vr
+		protected ConfigService $config_service,
+		protected ItemAccessService $item_access_service,
+		protected BtnNavRender $btn_nav_render,
+		protected PageParamsService $pp,
+		protected VarRouteService $vr
 	)
 	{
-		$this->config_service = $config_service;
-		$this->item_access_service = $item_access_service;
-		$this->btn_nav_render = $btn_nav_render;
-		$this->pp = $pp;
-		$this->vr = $vr;
 	}
 
 	public function set(string $active_menu):void

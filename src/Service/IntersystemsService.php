@@ -14,26 +14,17 @@ class IntersystemsService
 	const TTL = 854000;
 	const TTL_ELAND_ACCOUNTS_SCHEMAS = 864000;
 
-	protected Predis $predis;
-	protected Db $db;
-	protected SystemsService $systems_service;
-	protected ConfigService $config_service;
-
 	protected array $eland_ary = [];
 	protected array $eland_accounts_schemas = [];
 	protected array $eland_intersystems = [];
 
 	public function __construct(
-		Db $db,
-		Predis $predis,
-		SystemsService $systems_service,
-		ConfigService $config_service
+		protected Db $db,
+		protected Predis $predis,
+		protected SystemsService $systems_service,
+		protected ConfigService $config_service
 	)
 	{
-		$this->db = $db;
-		$this->predis = $predis;
-		$this->systems_service = $systems_service;
-		$this->config_service = $config_service;
 	}
 
 	public function clear_cache():void

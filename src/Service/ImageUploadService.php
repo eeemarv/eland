@@ -49,16 +49,11 @@ class ImageUploadService
         'ch'    => 10,
     ];
 
-	protected LoggerInterface $logger;
-    protected S3Service $s3_service;
-
 	public function __construct(
-		LoggerInterface $logger,
-		S3Service $s3_service
+		protected LoggerInterface $logger,
+		protected S3Service $s3_service
 	)
 	{
-		$this->logger = $logger;
-		$this->s3_service = $s3_service;
 	}
 
 	public function upload(

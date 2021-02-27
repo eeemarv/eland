@@ -20,24 +20,21 @@ Indexes:
 
 class CacheService
 {
-	protected Db $db;
-	protected Predis $predis;
-	protected LoggerInterface $logger;
-
 	const PREFIX = 'cache_';
 
 	public function __construct(
-		Db $db,
-		Predis $predis,
-		LoggerInterface $logger
+		protected Db $db,
+		protected Predis $predis,
+		protected LoggerInterface $logger
 	)
 	{
-		$this->db = $db;
-		$this->predis = $predis;
-		$this->logger = $logger;
 	}
 
-	public function set(string $id, array $data = [], int $expires = 0):void
+	public function set(
+		string $id,
+		array $data = [],
+		int $expires = 0
+	):void
 	{
 		$data = json_encode($data);
 

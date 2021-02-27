@@ -22,13 +22,11 @@ Indexes:
 
 class QueueService
 {
-	protected Db $db;
-	protected LoggerInterface $logger;
-
-	public function __construct(Db $db, LoggerInterface $logger)
+	public function __construct(
+		protected Db $db,
+		protected LoggerInterface $logger
+	)
 	{
-		$this->db = $db;
-		$this->logger = $logger;
 	}
 
 	public function set(string $topic, array $data, int $priority):void

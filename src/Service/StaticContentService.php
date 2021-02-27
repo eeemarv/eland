@@ -10,18 +10,13 @@ class StaticContentService
 	const PREFIX = 's_content_';
 	const TTL = 518400; // 60 days
 
-	protected Db $db;
-	protected Predis $predis;
-
 	protected $local_cache = [];
 
 	public function __construct(
-		Db $db,
-		Predis $predis
+		protected Db $db,
+		protected Predis $predis
 	)
 	{
-		$this->predis = $predis;
-		$this->db = $db;
 	}
 
 	public function clear_cache(string $schema):void

@@ -49,11 +49,10 @@ class DateFormatService
 		['okt', 'oktober'], ['nov', 'november'], ['dec', 'december']
 	];
 
-	protected ConfigService $config_service;
-
-	public function __construct(ConfigService $config_service)
+	public function __construct(
+		protected ConfigService $config_service
+	)
 	{
-		$this->config_service = $config_service;
 	}
 
 	protected function get_format(
