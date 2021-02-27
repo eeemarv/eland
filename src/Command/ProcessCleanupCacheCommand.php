@@ -12,18 +12,12 @@ class ProcessCleanupCacheCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_cache';
 
-    protected $monitor_process_service;
-    protected $cache_service;
-
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        CacheService $cache_service
+        protected MonitorProcessService $monitor_process_service,
+        protected CacheService $cache_service
     )
     {
         parent::__construct();
-
-        $this->monitor_process_service = $monitor_process_service;
-        $this->cache_service = $cache_service;
     }
 
     protected function configure()

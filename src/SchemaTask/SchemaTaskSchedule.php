@@ -10,21 +10,14 @@ class SchemaTaskSchedule
 	const MINIMUM_INTERVAL = 3600;
 	const CACHE_KEY = 'tasks';
 
-	protected CacheService $cache_service;
-	protected SystemsService $systems_service;
-	protected SchemaTaskCollection $schema_task_collection;
 	protected array $last_run_ary;
 
 	public function __construct(
-		CacheService $cache_service,
-		SystemsService $systems_service,
-		SchemaTaskCollection $schema_task_collection
+		protected CacheService $cache_service,
+		protected SystemsService $systems_service,
+		protected SchemaTaskCollection $schema_task_collection
 	)
 	{
-		$this->cache_service = $cache_service;
-		$this->systems_service = $systems_service;
-		$this->schema_task_collection = $schema_task_collection;
-
 		$this->last_run_ary = $this->cache_service->get(self::CACHE_KEY);
 	}
 

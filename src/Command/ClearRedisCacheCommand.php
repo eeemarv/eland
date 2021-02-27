@@ -12,21 +12,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ClearRedisCacheCommand extends Command
 {
     protected static $defaultName = 'app:clear-redis-cache';
-    protected ConfigService $config_service;
-    protected StaticContentService $static_content_service;
-    protected SystemsService $systems_service;
 
     public function __construct(
-        ConfigService $config_service,
-        StaticContentService $static_content_service,
-        SystemsService $systems_service
+        protected ConfigService $config_service,
+        protected StaticContentService $static_content_service,
+        protected SystemsService $systems_service
     )
     {
         parent::__construct();
-
-        $this->config_service = $config_service;
-        $this->static_content_service = $static_content_service;
-        $this->systems_service = $systems_service;
     }
 
     protected function configure()

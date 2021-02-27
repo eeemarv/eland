@@ -13,21 +13,13 @@ class ProcessMailCommand extends Command
 {
     protected static $defaultName = 'process:mail';
 
-    protected $monitor_process_service;
-    protected $mail_queue;
-    protected $queue_service;
-
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        MailQueue $mail_queue,
-        QueueService $queue_service
+        protected MonitorProcessService $monitor_process_service,
+        protected MailQueue $mail_queue,
+        protected QueueService $queue_service
     )
     {
         parent::__construct();
-
-        $this->monitor_process_service = $monitor_process_service;
-        $this->mail_queue = $mail_queue;
-        $this->queue_service = $queue_service;
     }
 
     protected function configure()

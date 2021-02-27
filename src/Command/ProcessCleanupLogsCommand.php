@@ -12,18 +12,12 @@ class ProcessCleanupLogsCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_logs';
 
-    protected $monitor_process_service;
-    protected $db;
-
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        Db $db
+        protected MonitorProcessService $monitor_process_service,
+        protected Db $db
     )
     {
         parent::__construct();
-
-        $this->monitor_process_service = $monitor_process_service;
-        $this->db = $db;
     }
 
     protected function configure()

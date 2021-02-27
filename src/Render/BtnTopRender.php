@@ -6,14 +6,12 @@ use App\Render\LinkRender;
 
 class BtnTopRender
 {
-	protected LinkRender $link_render;
 	protected array $out = [];
 
 	public function __construct(
-		LinkRender $link_render
+		protected LinkRender $link_render
 	)
 	{
-		$this->link_render = $link_render;
 	}
 
 	public function get():string

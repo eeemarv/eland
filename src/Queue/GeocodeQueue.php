@@ -12,31 +12,16 @@ use App\Service\QueueService;
 
 class GeocodeQueue implements QueueInterface
 {
-	protected QueueService $queue_service;
-	protected LoggerInterface $logger;
-	protected CacheService $cache_service;
-	protected Db $db;
-	protected GeocodeService $geocode_service;
-	protected AccountStrRender $account_str_render;
-	protected string $env_geo_block;
-
 	public function __construct(
-		Db $db,
-		CacheService $cache_service,
-		QueueService $queue_service,
-		LoggerInterface $logger,
-		GeocodeService $geocode_service,
-		AccountStrRender $account_str_render,
-		string $env_geo_block
+		protected Db $db,
+		protected CacheService $cache_service,
+		protected QueueService $queue_service,
+		protected LoggerInterface $logger,
+		protected GeocodeService $geocode_service,
+		protected AccountStrRender $account_str_render,
+		protected string $env_geo_block
 	)
 	{
-		$this->queue_service = $queue_service;
-		$this->logger = $logger;
-		$this->cache_service = $cache_service;
-		$this->db = $db;
-		$this->geocode_service = $geocode_service;
-		$this->account_str_render = $account_str_render;
-		$this->env_geo_block = $env_geo_block;
 	}
 
 	public function process(array $data):void

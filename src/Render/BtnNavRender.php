@@ -18,24 +18,16 @@ class BtnNavRender
 		'nav'				=> true,
 	];
 
-	protected LinkRender $link_render;
-	protected ConfigService $config_service;
-	protected TagRender $tag_render;
-	protected AssetsService $assets_service;
 	protected array $out = [];
 	protected array $local_admin = [];
 
 	public function __construct(
-		LinkRender $link_render,
-		ConfigService $config_service,
-		TagRender $tag_render,
-		AssetsService $assets_service
+		protected LinkRender $link_render,
+		protected ConfigService $config_service,
+		protected TagRender $tag_render,
+		protected AssetsService $assets_service
 	)
 	{
-		$this->link_render = $link_render;
-		$this->config_service = $config_service;
-		$this->tag_render = $tag_render;
-		$this->assets_service = $assets_service;
 	}
 
 	public function get():string

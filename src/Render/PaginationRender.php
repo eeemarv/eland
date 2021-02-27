@@ -7,9 +7,6 @@ use App\Render\SelectRender;
 
 class PaginationRender
 {
-	protected LinkRender $link_render;
-	protected SelectRender $select_render;
-
 	protected string $route;
 	protected array $pp_ary;
 
@@ -34,12 +31,10 @@ class PaginationRender
 	];
 
 	public function __construct(
-		SelectRender $select_render,
-		LinkRender $link_render
+		protected SelectRender $select_render,
+		protected LinkRender $link_render
 	)
 	{
-		$this->select_render = $select_render;
-		$this->link_render = $link_render;
 	}
 
 	public function init(

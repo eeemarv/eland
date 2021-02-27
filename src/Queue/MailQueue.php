@@ -15,39 +15,22 @@ use App\Service\SystemsService;
 class MailQueue implements QueueInterface
 {
 	protected \Swift_Mailer $mailer;
-	protected QueueService $queue_service;
-	protected LoggerInterface $logger;
-	protected Twig $twig;
-	protected ConfigService $config_service;
-	protected HtmlToMarkdownConverter $html_to_markdown_converter;
-	protected MailAddrSystemService $mail_addr_system_service;
-	protected EmailVerifyService $email_verify_service;
-	protected SystemsService $systems_service;
 
 	public function __construct(
-		QueueService $queue_service,
-		LoggerInterface $logger,
-		Twig $twig,
-		ConfigService $config_service,
-		MailAddrSystemService $mail_addr_system_service,
-		EmailVerifyService $email_verify_service,
-		SystemsService $systems_service,
-		HtmlToMarkdownConverter $html_to_markdown_converter,
+		protected QueueService $queue_service,
+		protected LoggerInterface $logger,
+		protected Twig $twig,
+		protected ConfigService $config_service,
+		protected MailAddrSystemService $mail_addr_system_service,
+		protected EmailVerifyService $email_verify_service,
+		protected SystemsService $systems_service,
+		protected HtmlToMarkdownConverter $html_to_markdown_converter,
 		string $env_smtp_host,
 		string $env_smtp_port,
 		string $env_smtp_username,
 		string $env_smtp_password
 	)
 	{
-		$this->queue_service = $queue_service;
-		$this->logger = $logger;
-		$this->twig = $twig;
-		$this->config_service = $config_service;
-		$this->html_to_markdown_converter = $html_to_markdown_converter;
-		$this->mail_addr_system_service = $mail_addr_system_service;
-		$this->email_verify_service = $email_verify_service;
-		$this->systems_service = $systems_service;
-
 		$transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, 'tls'))
 			->setUsername($env_smtp_username)
 			->setPassword($env_smtp_password);
@@ -125,6 +108,8 @@ class MailQueue implements QueueInterface
 
 		try
 		{
+			$failed_recipients = [];
+
 			if ($this->mailer->send($message, $failed_recipients))
 			{
 				$this->logger->info('mail queue process, sent to ' .

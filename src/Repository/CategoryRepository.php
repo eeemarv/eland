@@ -7,11 +7,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryRepository
 {
-	protected Db $db;
-
-	public function __construct(Db $db)
+	public function __construct(
+        protected Db $db
+    )
 	{
-		$this->db = $db;
     }
 
     public function get(int $id, string $schema):array

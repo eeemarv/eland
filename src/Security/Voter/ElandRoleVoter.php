@@ -15,25 +15,14 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ElandRoleVoter extends Voter
 {
-    protected SessionUserService $su;
-    protected PageParamsService $pp;
-    protected ConfigService $config_service;
-    protected SystemsService $systems_service;
-    protected IntersystemsService $intersystems_service;
-
     public function __construct(
-        SessionUserService $su,
-        PageParamsService $pp,
-        ConfigService $config_service,
-        SystemsService $systems_service,
-        IntersystemsService $intersystems_service
+        protected SessionUserService $su,
+        protected PageParamsService $pp,
+        protected ConfigService $config_service,
+        protected SystemsService $systems_service,
+        protected IntersystemsService $intersystems_service
     )
     {
-        $this->su = $su;
-        $this->pp = $pp;
-        $this->config_service = $config_service;
-        $this->systems_service = $systems_service;
-        $this->intersystems_service = $intersystems_service;
     }
 
     protected function supports($attribute, $subject):bool

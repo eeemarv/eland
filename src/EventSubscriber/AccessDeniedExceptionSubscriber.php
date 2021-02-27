@@ -11,19 +11,12 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
 {
-    protected PageParamsService $pp;
-    protected LinkRender $link_render;
-    protected RequestStack $request_stack;
-
     public function __construct(
-        RequestStack $request_stack,
-        PageParamsService $pp,
-        LinkRender $link_render
+        protected RequestStack $request_stack,
+        protected PageParamsService $pp,
+        protected LinkRender $link_render
     )
     {
-        $this->request_stack = $request_stack;
-        $this->pp = $pp;
-        $this->link_render = $link_render;
     }
 
     public function onExceptionEvent(ExceptionEvent $event)

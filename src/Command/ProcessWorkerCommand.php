@@ -14,21 +14,13 @@ class ProcessWorkerCommand extends Command
 {
     protected static $defaultName = 'process:worker';
 
-    protected $monitor_process_service;
-    protected $assets_service;
-    protected $schema_task_schedule;
-
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        AssetsService $assets_service,
-        SchemaTaskSchedule $schema_task_schedule
+        protected MonitorProcessService $monitor_process_service,
+        protected AssetsService $assets_service,
+        protected SchemaTaskSchedule $schema_task_schedule
     )
     {
         parent::__construct();
-
-        $this->monitor_process_service = $monitor_process_service;
-        $this->assets_service = $assets_service;
-        $this->schema_task_schedule = $schema_task_schedule;
     }
 
     protected function configure()

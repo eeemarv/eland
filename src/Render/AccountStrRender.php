@@ -6,13 +6,10 @@ use App\Service\UserCacheService;
 
 class AccountStrRender
 {
-	protected UserCacheService $user_cache_service;
-
 	public function __construct(
-		UserCacheService $user_cache_service
+		protected UserCacheService $user_cache_service
 	)
 	{
-		$this->user_cache_service = $user_cache_service;
 	}
 
 	public function get(int $id, string $schema):string

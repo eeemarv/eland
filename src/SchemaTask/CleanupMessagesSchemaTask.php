@@ -8,19 +8,12 @@ use App\Service\ConfigService;
 
 class CleanupMessagesSchemaTask implements SchemaTaskInterface
 {
-	protected Db $db;
-	protected LoggerInterface $logger;
-	protected ConfigService $config_service;
-
 	public function __construct(
-		Db $db,
-		LoggerInterface $logger,
-		ConfigService $config_service
+		protected Db $db,
+		protected LoggerInterface $logger,
+		protected ConfigService $config_service
 	)
 	{
-		$this->db = $db;
-		$this->logger = $logger;
-		$this->config_service = $config_service;
 	}
 
 	public static function get_default_index_name():string

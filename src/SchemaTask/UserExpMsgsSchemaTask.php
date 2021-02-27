@@ -11,25 +11,14 @@ use Doctrine\DBAL\Types\Types;
 
 class UserExpMsgsSchemaTask implements SchemaTaskInterface
 {
-	protected Db $db;
-	protected MailQueue $mail_queue;
-	protected ConfigService $config_service;
-	protected UserCacheService $user_cache_service;
-	protected MailAddrUserService $mail_addr_user_service;
-
 	public function __construct(
-		Db $db,
-		MailQueue $mail_queue,
-		ConfigService $config_service,
-		UserCacheService $user_cache_service,
-		MailAddrUserService $mail_addr_user_service
+		protected Db $db,
+		protected MailQueue $mail_queue,
+		protected ConfigService $config_service,
+		protected UserCacheService $user_cache_service,
+		protected MailAddrUserService $mail_addr_user_service
 	)
 	{
-		$this->db = $db;
-		$this->mail_queue = $mail_queue;
-		$this->config_service = $config_service;
-		$this->user_cache_service = $user_cache_service;
-		$this->mail_addr_user_service = $mail_addr_user_service;
 	}
 
 	public static function get_default_index_name():string

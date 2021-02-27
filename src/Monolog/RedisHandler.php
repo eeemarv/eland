@@ -11,17 +11,13 @@ class RedisHandler extends AbstractProcessingHandler
 {
     const KEY = 'monolog_logs';
 
-    protected Predis $predis;
-
     public function __construct(
-        Predis $predis,
+        protected Predis $predis,
         $level = Logger::DEBUG,
         $bubble = true
     )
     {
         parent::__construct($level, $bubble);
-
-        $this->predis = $predis;
     }
 
     protected function getDefaultFormatter()

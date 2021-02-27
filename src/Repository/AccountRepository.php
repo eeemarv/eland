@@ -7,11 +7,10 @@ use Doctrine\DBAL\Types\Types;
 
 class AccountRepository
 {
-	protected Db $db;
-
-	public function __construct(Db $db)
+	public function __construct(
+        protected Db $db
+    )
 	{
-		$this->db = $db;
 	}
 
     public function get_min_limit(int $account_id, string $schema):?int

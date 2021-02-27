@@ -15,37 +15,18 @@ use Doctrine\DBAL\Types\Types;
 
 class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 {
-	protected Db $db;
-	protected CacheService $cache_service;
-	protected LoggerInterface $logger;
-	protected MailQueue $mail_queue;
-	protected IntersystemsService $intersystems_service;
-	protected ConfigService $config_service;
-	protected MailAddrUserService $mail_addr_user_service;
-	protected AccountStrRender $account_str_render;
-	protected HtmlToMarkdownConverter $html_to_markdown_converter;
-
 	public function __construct(
-		Db $db,
-		CacheService $cache_service,
-		LoggerInterface $logger,
-		MailQueue $mail_queue,
-		IntersystemsService $intersystems_service,
-		ConfigService $config_service,
-		MailAddrUserService $mail_addr_user_service,
-		AccountStrRender $account_str_render,
-		HtmlToMarkdownConverter $html_to_markdown_converter
+		protected Db $db,
+		protected CacheService $cache_service,
+		protected LoggerInterface $logger,
+		protected MailQueue $mail_queue,
+		protected IntersystemsService $intersystems_service,
+		protected ConfigService $config_service,
+		protected MailAddrUserService $mail_addr_user_service,
+		protected AccountStrRender $account_str_render,
+		protected HtmlToMarkdownConverter $html_to_markdown_converter
 	)
 	{
-		$this->db = $db;
-		$this->cache_service = $cache_service;
-		$this->logger = $logger;
-		$this->mail_queue = $mail_queue;
-		$this->intersystems_service = $intersystems_service;
-		$this->config_service = $config_service;
-		$this->mail_addr_user_service = $mail_addr_user_service;
-		$this->account_str_render = $account_str_render;
-		$this->html_to_markdown_converter = $html_to_markdown_converter;
 	}
 
 	public static function get_default_index_name():string

@@ -11,19 +11,12 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class AssetsAddSubscriber implements EventSubscriberInterface
 {
-    protected AssetsService $assets_service;
-    protected PageParamsService $pp;
-    protected SessionUserService $su;
-
     public function __construct(
-        AssetsService $assets_service,
-        PageParamsService $pp,
-        SessionUserService $su
+        protected AssetsService $assets_service,
+        protected PageParamsService $pp,
+        protected SessionUserService $su
     )
     {
-        $this->assets_service = $assets_service;
-        $this->pp = $pp;
-        $this->su = $su;
     }
 
     public function onKernelController(ControllerEvent $event)

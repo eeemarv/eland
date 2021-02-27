@@ -12,18 +12,12 @@ class ProcessCleanupImagesCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_images';
 
-    protected $monitor_process_service;
-    protected $cleanup_images_task;
-
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        CleanupImagesTask $cleanup_images_task
+        protected MonitorProcessService $monitor_process_service,
+        protected CleanupImagesTask $cleanup_images_task
     )
     {
         parent::__construct();
-
-        $this->monitor_process_service = $monitor_process_service;
-        $this->cleanup_images_task = $cleanup_images_task;
     }
 
     protected function configure()

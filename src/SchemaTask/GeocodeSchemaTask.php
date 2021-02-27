@@ -10,28 +10,15 @@ use App\Render\AccountStrRender;
 
 class GeocodeSchemaTask implements SchemaTaskInterface
 {
-	protected LoggerInterface $logger;
-	protected CacheService $cache_service;
-	protected Db $db;
-	protected GeocodeQueue $geocode_queue;
-	protected AccountStrRender $account_str_render;
-	protected string $env_geo_block;
-
 	public function __construct(
-		Db $db,
-		CacheService $cache_service,
-		LoggerInterface $logger,
-		GeocodeQueue $geocode_queue,
-		AccountStrRender $account_str_render,
-		string $env_geo_block
+		protected Db $db,
+		protected CacheService $cache_service,
+		protected LoggerInterface $logger,
+		protected GeocodeQueue $geocode_queue,
+		protected AccountStrRender $account_str_render,
+		protected string $env_geo_block
 	)
 	{
-		$this->logger = $logger;
-		$this->cache_service = $cache_service;
-		$this->db = $db;
-		$this->geocode_queue = $geocode_queue;
-		$this->account_str_render = $account_str_render;
-		$this->env_geo_block = $env_geo_block;
 	}
 
 	public static function get_default_index_name():string

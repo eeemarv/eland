@@ -7,16 +7,11 @@ use App\Service\UserCacheService;
 
 class SyncUserCacheSchemaTask implements SchemaTaskInterface
 {
-	protected Db $db;
-	protected UserCacheService $user_cache_service;
-
 	public function __construct(
-		Db $db,
-		UserCacheService $user_cache_service
+		protected Db $db,
+		protected UserCacheService $user_cache_service
 	)
 	{
-		$this->db = $db;
-		$this->user_cache_service = $user_cache_service;
 	}
 
 	public static function get_default_index_name():string

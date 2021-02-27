@@ -9,13 +9,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class EmailVerifySubscriber implements EventSubscriberInterface
 {
-    protected EmailVerifyService $email_verify_service;
-
     public function __construct(
-        EmailVerifyService $email_verify_service
+        protected EmailVerifyService $email_verify_service
     )
     {
-        $this->email_verify_service = $email_verify_service;
     }
 
     public function onKernelController(ControllerEvent $event):void

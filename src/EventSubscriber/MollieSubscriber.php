@@ -28,31 +28,16 @@ class MollieSubscriber implements EventSubscriberInterface
     <dt>Bedrag</dt><dd>%amount% EUR</dd></dl></a>
     TPL;
 
-    protected Db $db;
-    protected AlertService $alert_service;
-    protected PageParamsService $pp;
-    protected SessionUserService $su;
-    protected UserCacheService $user_cache_service;
-    protected LinkRender $link_render;
-    protected ConfigService $config_service;
-
     public function __construct(
-        Db $db,
-        AlertService $alert_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        UserCacheService $user_cache_service,
-        LinkRender $link_render,
-        ConfigService $config_service
+        protected Db $db,
+        protected AlertService $alert_service,
+        protected PageParamsService $pp,
+        protected SessionUserService $su,
+        protected UserCacheService $user_cache_service,
+        protected LinkRender $link_render,
+        protected ConfigService $config_service
     )
     {
-        $this->db = $db;
-        $this->alert_service = $alert_service;
-        $this->pp = $pp;
-        $this->su = $su;
-        $this->user_cache_service = $user_cache_service;
-        $this->link_render = $link_render;
-        $this->config_service = $config_service;
     }
 
     public function onKernelController(ControllerEvent $event):void

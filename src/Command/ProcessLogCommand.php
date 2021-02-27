@@ -12,18 +12,12 @@ class ProcessLogCommand extends Command
 {
     protected static $defaultName = 'process:log';
 
-    protected $monitor_process_service;
-    protected $log_db_service;
-
     public function __construct(
-        MonitorProcessService $monitor_process_service,
-        LogDbService $log_db_service
+        protected MonitorProcessService $monitor_process_service,
+        protected LogDbService $log_db_service
     )
     {
         parent::__construct();
-
-        $this->monitor_process_service = $monitor_process_service;
-        $this->log_db_service = $log_db_service;
     }
 
     protected function configure()

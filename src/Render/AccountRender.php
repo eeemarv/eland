@@ -6,26 +6,15 @@ use App\Render\LinkRender;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 
 class AccountRender
 {
-	protected LinkRender $link_render;
-	protected SystemsService $systems_service;
-	protected UserCacheService $user_cache_service;
-	protected VarRouteService $vr;
-
 	public function __construct(
-		LinkRender $link_render,
-		SystemsService $systems_service,
-		UserCacheService $user_cache_service,
-		VarRouteService $vr
+		protected LinkRender $link_render,
+		protected SystemsService $systems_service,
+		protected UserCacheService $user_cache_service
 	)
 	{
-		$this->link_render = $link_render;
-		$this->systems_service = $systems_service;
-		$this->user_cache_service = $user_cache_service;
-		$this->vr = $vr;
 	}
 
 	public function get_str(?int $id, string $schema):string
@@ -83,7 +72,7 @@ class AccountRender
 
 		$schema = $this->systems_service->get_schema($pp_ary['system']);
 
-		return $this->link_render->link_no_attr($this->vr->get('users_show'), $pp_ary,
+		return $this->link_render->link_no_attr('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema));
 	}
 
@@ -94,7 +83,7 @@ class AccountRender
 	{
 		$schema = $this->systems_service->get_schema($pp_ary['system']);
 
-		return $this->link_render->link_url($this->vr->get('users_show'), $pp_ary,
+		return $this->link_render->link_url('users_show', $pp_ary,
 			['id' => $id], $this->get_str($id, $schema), []);
 	}
 
