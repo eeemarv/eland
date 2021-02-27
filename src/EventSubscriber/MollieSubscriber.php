@@ -81,7 +81,7 @@ class MollieSubscriber implements EventSubscriberInterface
 
         $route = $request->attributes->get('_route');
 
-        if (strpos($route, 'mollie_') === 0)
+        if (str_starts_with($route, 'mollie_'))
         {
             return;
         }

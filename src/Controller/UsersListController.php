@@ -218,7 +218,7 @@ class UsersListController extends AbstractController
                     $errors[] = 'Het E-mail bericht is leeg.';
                 }
             }
-            else if (strpos($bulk_submit_action, '_access') !== false)
+            else if (str_ends_with($bulk_submit_action, '_access'))
             {
                 if (!$bulk_field_value)
                 {

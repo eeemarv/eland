@@ -47,8 +47,8 @@ class LoginController extends AbstractController
         $location = $request->query->get('location', '');
 
         if (!$location
-            || strpos($location, 'login') !== false
-            || strpos($location, 'logout') !== false
+            || str_contains($location, 'login')
+            || str_contains($location, 'logout')
             || $location === '/')
         {
             $location = '';

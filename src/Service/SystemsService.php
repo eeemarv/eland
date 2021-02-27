@@ -39,7 +39,7 @@ class SystemsService
 				continue;
 			}
 
-			if (strpos($schema, 'pg_') === 0)
+			if (str_starts_with($schema, 'pg_'))
 			{
 				continue;
 			}

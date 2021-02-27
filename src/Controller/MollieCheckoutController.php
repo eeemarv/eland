@@ -60,13 +60,13 @@ class MollieCheckoutController extends AbstractController
         if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
         {
             if (!$mollie_apikey ||
-            !(strpos($mollie_apikey, 'test_') === 0
-            || strpos($mollie_apikey, 'live_') === 0))
+            !(str_starts_with($mollie_apikey, 'test_')
+            || str_starts_with($mollie_apikey, 'live_')))
             {
                 throw new AccessDeniedHttpException(
                     'Configuratie-fout (Geen Mollie apikey). Contacteer de administratie.');
             }
-            else if (strpos($mollie_apikey, 'live_') !== 0)
+            else if (!str_starts_with($mollie_apikey, 'live_'))
             {
                 if ($request->isMethod('GET'))
                 {
@@ -76,8 +76,6 @@ class MollieCheckoutController extends AbstractController
         }
 
         $user = $user_cache_service->get($mollie_payment['user_id'], $pp->schema());
-
-//--------
 
         $description = $user['code'] . ' ' . $mollie_payment['description'];
 

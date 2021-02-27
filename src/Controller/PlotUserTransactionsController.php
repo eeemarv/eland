@@ -109,8 +109,8 @@ class PlotUserTransactionsController extends AbstractController
                         $pp->ary(), ['id' => $t['user_id']]);
                 }
 
-                if (strpos($real, '(') !== false
-                    && strpos($real, ')') !== false)
+                if (str_contains($real, '(')
+                    && str_contains($real, ')'))
                 {
                     [$real_name, $real_code] = explode('(', $real);
                     $real_name = trim($real_name ?? '');

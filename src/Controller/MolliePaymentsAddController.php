@@ -57,13 +57,11 @@ class MolliePaymentsAddController extends AbstractController
         $description = trim($request->request->get('description', ''));
         $verify = $request->request->get('verify');
 
-//---------
-
         $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
 
         if (!$mollie_apikey ||
-            !(strpos($mollie_apikey, 'test_') === 0
-            || strpos($mollie_apikey, 'live_') === 0))
+            !(str_starts_with($mollie_apikey, 'test_')
+            || str_starts_with($mollie_apikey, 'live_')))
         {
             if ($request->isMethod('GET'))
             {
@@ -75,7 +73,7 @@ class MolliePaymentsAddController extends AbstractController
 
             $no_mollie_apikey = true;
         }
-        else if (strpos($mollie_apikey, 'live_') !== 0)
+        else if (!str_starts_with($mollie_apikey, 'live_'))
         {
             if ($request->isMethod('GET'))
             {
@@ -84,8 +82,6 @@ class MolliePaymentsAddController extends AbstractController
                     '. Betalingen kunnen niet uitgevoerd worden!', false);
             }
         }
-
-//--------
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
