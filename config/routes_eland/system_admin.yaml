@@ -181,6 +181,7 @@ users_add:
   defaults:
     is_add: true
     is_self: false
+    id: 0
 
 users_modules:
   controller: App\Controller\UsersModulesController
