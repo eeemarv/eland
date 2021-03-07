@@ -15,9 +15,25 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Http\Discovery\Exception\NotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CategoriesEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/categories/{id}/edit',
+        name: 'categories_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'id'            => '%assert.id%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+            'sub_module'    => 'categories'
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

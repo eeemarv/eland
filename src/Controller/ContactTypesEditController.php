@@ -11,11 +11,26 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use controller\contact_types;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/contact-types/{id}/edit',
+        name: 'contact_types_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'contact_types',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

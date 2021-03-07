@@ -15,9 +15,24 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CategoriesAddController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/categories/add',
+        name: 'categories_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+            'sub_module'    => 'categories',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

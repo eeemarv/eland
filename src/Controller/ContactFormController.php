@@ -17,9 +17,23 @@ use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactFormController extends AbstractController
 {
+    #[Route(
+        '/{system}/contact',
+        name: 'contact_form',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'contact_form',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         LoggerInterface $logger,
@@ -190,15 +204,6 @@ class ContactFormController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        /*
-        $out .= '<p>Leden: indien mogelijk, login en ';
-        $out .= 'gebruik het Support formulier. ';
-        $out .= '<i>Als je je paswoord kwijt bent ';
-        $out .= 'kan je altijd zelf een nieuw paswoord ';
-        $out .= 'aanvragen met je E-mail adres ';
-        $out .= 'vanuit de login-pagina!</i></p>';
-        */
 
         $menu_service->set('contact_form');
 

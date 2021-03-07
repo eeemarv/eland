@@ -11,11 +11,25 @@ use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactFormConfirmController extends AbstractController
 {
+    #[Route(
+        '/{system}/contact/{token}',
+        name: 'config_form_confirm',
+        methods: ['GET'],
+        priority: 5,
+        requirements: [
+            'token'         => '%assert.token%',
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'contact_form',
+        ],
+    )]
+
     public function __invoke(
         string $token,
         ConfigService $config_service,

@@ -19,9 +19,23 @@ use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DocsAddController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/docs/add',
+        name: 'docs_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'docs',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

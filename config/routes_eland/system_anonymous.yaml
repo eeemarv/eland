@@ -3,15 +3,15 @@ login:
   controller: App\Controller\LoginController
   methods: GET|POST
 
-contact_form:
-  path: /contact
-  controller: App\Controller\ContactFormController
-  methods: GET|POST
+#contact_form:
+#  path: /contact
+#  controller: App\Controller\ContactFormController
+#  methods: GET|POST
 
-contact_form_confirm:
-  path: /contact/{token<%assert.token%>}
-  controller: App\Controller\ContactFormConfirmController
-  methods: GET
+#contact_form_confirm:
+#  path: /contact/{token<%assert.token%>}
+#  controller: App\Controller\ContactFormConfirmController
+#  methods: GET
 
 register_form:
   path: /register

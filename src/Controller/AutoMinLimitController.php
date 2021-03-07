@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +13,24 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class AutoMinLimitController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/auto-min-limit',
+        name: 'autominlimit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+            'sub_module'    => 'autominlimit',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         AlertService $alert_service,

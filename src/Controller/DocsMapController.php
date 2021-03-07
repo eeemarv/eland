@@ -16,9 +16,25 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DocsMapController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/docs/{id}',
+        name: 'docs_map',
+        priority: 8,
+        methods: ['GET'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'module'        => 'docs',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

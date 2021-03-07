@@ -13,9 +13,25 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Controller\ContactTypesController;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/contact-types/{id}/del',
+        name: 'contact_types_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'contact_types',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

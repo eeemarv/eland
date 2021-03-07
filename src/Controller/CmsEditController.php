@@ -14,6 +14,7 @@ use App\Service\StaticContentService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CmsEditController extends AbstractController
 {
@@ -23,6 +24,21 @@ class CmsEditController extends AbstractController
         '<br/>'         => true,
         '<p></p>'       => true,
     ];
+
+    #[Route(
+        '/{system}/{role_short}/cms-edit/{route}/{form_token}',
+        name: 'cms_edit',
+        methods: ['POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'route'         => '%assert.route%',
+            'form_token'    => '%assert.token%',
+        ],
+        defaults: [
+            'module'        => 'cms',
+        ],
+    )]
 
     public function __invoke(
         string $route,

@@ -86,15 +86,15 @@ calendar_list:
   path: /calendar
   methods: GET
 
-docs_map:
-  controller: App\Controller\DocsMapController
-  path: /docs/{id<%assert.id%>}
-  methods: GET
+#docs_map:
+#  controller: App\Controller\DocsMapController
+#  path: /docs/{id<%assert.id%>}
+#  methods: GET
 
-docs:
-  controller: App\Controller\DocsController
-  path: /docs
-  methods: GET
+#docs:
+#  controller: App\Controller\DocsController
+#  path: /docs
+#  methods: GET
 
 forum_topic:
   controller: App\Controller\ForumTopicController

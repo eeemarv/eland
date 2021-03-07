@@ -1,68 +1,68 @@
 
-categories_del:
-  controller: App\Controller\CategoriesDelController
-  path: /categories/{id<%assert.id%>}/del
-  methods: GET|POST
+#categories_del:
+#  controller: App\Controller\CategoriesDelController
+#  path: /categories/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-categories_edit:
-  controller: App\Controller\CategoriesEditController
-  path: /categories/{id<%assert.id%>}/edit
-  methods: GET|POST
+#categories_edit:
+#  controller: App\Controller\CategoriesEditController
+#  path: /categories/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-categories_add:
-  controller: App\Controller\CategoriesAddController
-  path: /categories/add
-  methods: GET|POST
+#categories_add:
+#  controller: App\Controller\CategoriesAddController
+#  path: /categories/add
+#  methods: GET|POST
 
-categories:
-  controller: App\Controller\CategoriesController
-  path: /categories
-  methods: GET|POST
+#categories:
+#  controller: App\Controller\CategoriesController
+# path: /categories
+#  methods: GET|POST
 
-cms_edit:
-  controller: App\Controller\CmsEditController
-  path: /cms-edit/{route<%assert.route%>}/{form_token<%assert.token%>}
-  methods: POST
+#cms_edit:
+#  controller: App\Controller\CmsEditController
+#  path: /cms-edit/{route<%assert.route%>}/{form_token<%assert.token%>}
+#  methods: POST
 
-contact_types_del:
-  controller: App\Controller\ContactTypesDelController
-  path: /contact-types/{id<%assert.id%>}/del
-  methods: GET|POST
+#contact_types_del:
+#  controller: App\Controller\ContactTypesDelController
+#  path: /contact-types/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-contact_types_edit:
-  controller: App\Controller\ContactTypesEditController
-  path: /contact-types/{id<%assert.id%>}/edit
-  methods: GET|POST
+#contact_types_edit:
+#  controller: App\Controller\ContactTypesEditController
+#  path: /contact-types/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-contact_types_add:
-  controller: App\Controller\ContactTypesAddController
-  path: /contact-types/add
-  methods: GET|POST
+#contact_types_add:
+#  controller: App\Controller\ContactTypesAddController
+#  path: /contact-types/add
+#  methods: GET|POST
 
-contact_types:
-  controller: App\Controller\ContactTypesController
-  path: /contact-types
-  methods: GET
+#contact_types:
+#  controller: App\Controller\ContactTypesController
+#  path: /contact-types
+#  methods: GET
 
-contacts_del_admin:
-  controller: App\Controller\ContactsDelAdminController
-  path: /contacts/{id<%assert.id%>}/del
-  methods: GET|POST
+#contacts_del_admin:
+#  controller: App\Controller\ContactsDelAdminController
+#  path: /contacts/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-contacts_edit_admin:
-  controller: App\Controller\ContactsEditAdminController
-  path: /contacts/{id<%assert.id%>}/edit
-  methods: GET|POST
+#contacts_edit_admin:
+#  controller: App\Controller\ContactsEditAdminController
+#  path: /contacts/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-contacts_add_admin:
-  controller: App\Controller\ContactsAddAdminController
-  path: /contacts/add
-  methods: GET|POST
+#contacts_add_admin:
+#  controller: App\Controller\ContactsAddAdminController
+#  path: /contacts/add
+#  methods: GET|POST
 
-contacts:
-  controller: App\Controller\ContactsAdminController
-  path: /contacts
-  methods: GET|POST
+#contacts:
+#  controller: App\Controller\ContactsAdminController
+#  path: /contacts
+#  methods: GET|POST
 
 users_contacts_edit_admin:
   controller: App\Controller\UsersContactsEditAdminController
@@ -79,15 +79,15 @@ users_contacts_add_admin:
   path: /users/{user_id<%assert.id%>}/contacts/add
   methods: GET|POST
 
-config_ext_modules:
-  controller: App\Controller\ConfigExtModulesController
-  path: /config/modules
-  methods: GET|POST
+#config_ext_modules:
+#  controller: App\Controller\ConfigExtModulesController
+#  path: /config/modules
+#  methods: GET|POST
 
-config:
-  controller: App\Controller\ConfigController
-  path: /config/{tab<%assert.config_tab%>?system-name}
-  methods: GET|POST
+#config:
+#  controller: App\Controller\ConfigController
+#  path: /config/{tab<%assert.config_tab%>?system-name}
+#  methods: GET|POST
 
 intersystems_edit:
   controller: App\Controller\IntersystemsEditController
@@ -114,15 +114,15 @@ intersystems:
   path: /intersystems
   methods: GET
 
-export:
-  controller: App\Controller\ExportController
-  path: /export
-  methods: GET|POST
+#export:
+#  controller: App\Controller\ExportController
+#  path: /export
+#  methods: GET|POST
 
-autominlimit:
-  controller: App\Controller\AutoMinLimitController
-  path: /autominlimit
-  methods: GET|POST
+#autominlimit:
+#  controller: App\Controller\AutoMinLimitController
+#  path: /autominlimit
+#  methods: GET|POST
 
 mass_transaction:
   controller: App\Controller\MassTransactionController
@@ -233,25 +233,25 @@ calendar_edit:
   path: /calendar/{id<%assert.id%>}/edit
   methods: GET|POST
 
-docs_edit:
-  controller: App\Controller\DocsEditController
-  path: /docs/{id<%assert.id%>}/edit
-  methods: GET|POST
+#docs_edit:
+#  controller: App\Controller\DocsEditController
+#  path: /docs/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-docs_del:
-  controller: App\Controller\DocsDelController
-  path: /docs/{id<%assert.id%>}/del
-  methods: GET|POST
+#docs_del:
+#  controller: App\Controller\DocsDelController
+#  path: /docs/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-docs_add:
-  controller: App\Controller\DocsAddController
-  path: /docs/add
-  methods: GET|POST
+#docs_add:
+#  controller: App\Controller\DocsAddController
+#  path: /docs/add
+#  methods: GET|POST
 
-docs_map_edit:
-  controller: App\Controller\DocsMapEditController
-  path: /docs/map/{id<%assert.id%>}/edit
-  methods: GET|POST
+#docs_map_edit:
+#  controller: App\Controller\DocsMapEditController
+#  path: /docs/map/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
 typeahead_doc_map_names:
   controller: App\Controller\TypeaheadDocMapNamesController

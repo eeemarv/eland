@@ -18,9 +18,24 @@ use App\Service\VarRouteService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CategoriesController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/categories',
+        name: 'categories',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+            'sub_module'    => 'categories',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

@@ -16,9 +16,25 @@ use App\Service\PageParamsService;
 use Http\Discovery\Exception\NotFoundException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CategoriesDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/categories/{id}/del',
+        name: 'categories_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'id'            => '%assert.id%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+            'sub_module'    => 'categories'
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

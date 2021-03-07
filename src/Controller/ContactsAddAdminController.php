@@ -21,9 +21,24 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactsAddAdminController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/contacts/add',
+        name: 'contacts_add_admin',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'contacts',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

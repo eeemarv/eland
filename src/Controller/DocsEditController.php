@@ -17,9 +17,24 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DocsEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/docs/{id}/edit',
+        name: 'docs_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'docs',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

@@ -10,10 +10,25 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesController extends AbstractController
 {
     const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];
+
+    #[Route(
+        '/{system}/{role_short}/contact-types',
+        name: 'contact_types',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'contact_types',
+        ],
+    )]
 
     public function __invoke(
         Db $db,

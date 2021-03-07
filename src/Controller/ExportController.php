@@ -14,9 +14,23 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ExportController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/export',
+        name: 'export',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'export',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

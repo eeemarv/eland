@@ -25,9 +25,24 @@ use App\Service\AssetsService;
 use App\Service\FormTokenService;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactsAdminController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/contacts',
+        name: 'contacts',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'contacts',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

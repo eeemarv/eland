@@ -12,9 +12,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesAddController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/contact-types/add',
+        name: 'contact_types_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'contact_types',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

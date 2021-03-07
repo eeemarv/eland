@@ -19,9 +19,25 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/config/{tab}',
+        name: 'config',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'tab'            => '%assert.config_tab%',
+        ],
+        defaults: [
+            'tab'           => 'system-name',
+            'module'        => 'config',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         string $tab,
