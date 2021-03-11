@@ -10,9 +10,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IndexContactController extends AbstractController
 {
+    #[Route(
+        '/contact',
+        name: 'index_contact',
+        methods: ['GET', 'POST'],
+        priority: 20,
+    )]
+
     public function __invoke(
         Request $request,
         SessionInterface $session,

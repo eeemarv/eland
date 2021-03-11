@@ -18,9 +18,23 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UsersPeriodicMailController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/periodic-mail',
+        name: 'users_periodic_mail',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         AlertService $alert_service,

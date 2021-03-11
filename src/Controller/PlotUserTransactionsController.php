@@ -8,14 +8,29 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Routing\Annotation\Route;
 
 class PlotUserTransactionsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/plot-user-transactions/{user_id}/{days}',
+        name: 'plot_user_transactions',
+        methods: ['GET'],
+        requirements: [
+            'user_id'       => '%assert.id%',
+            'days'          => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
+
     public function __invoke(
         int $user_id,
         int $days,
@@ -25,7 +40,6 @@ class PlotUserTransactionsController extends AbstractController
         DateFormatService $date_format_service,
         LinkRender $link_render,
         PageParamsService $pp,
-        VarRouteService $vr,
         SystemsService $systems_service
     ):Response
     {

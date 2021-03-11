@@ -6,9 +6,17 @@ use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
+    #[Route(
+        '/',
+        name: 'index',
+        methods: ['GET'],
+        priority: 20,
+    )]
+
     public function __invoke(
         Request $request,
         SystemsService $systems_service

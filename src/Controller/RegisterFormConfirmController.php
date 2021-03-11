@@ -18,9 +18,24 @@ use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RegisterFormConfirmController extends AbstractController
 {
+    #[Route(
+        '/{system}/register/{token}',
+        name: 'register_form_confirm',
+        methods: ['GET'],
+        priority: 5,
+        requirements: [
+            'token'         => '%assert.token%',
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'register_form',
+        ],
+    )]
+
     public function __invoke(
         string $token,
         Db $db,

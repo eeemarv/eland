@@ -15,6 +15,7 @@ use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesModulesController extends AbstractController
 {
@@ -24,6 +25,19 @@ class MessagesModulesController extends AbstractController
         'messages.fields.expires_at.enabled',
         'messages.fields.units.enabled',
     ];
+
+    #[Route(
+        '/{system}/{role_short}/messages/modules',
+        name: 'messages_modules',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

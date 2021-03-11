@@ -7,9 +7,24 @@ use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TypeaheadAccountsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/typeahead-accounts/{status}',
+        name: 'typeahead_accounts',
+        methods: ['GET'],
+        requirements: [
+            'status'        => '%assert.account_status.primary%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         string $status,
         Db $db,

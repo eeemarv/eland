@@ -18,9 +18,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class NewsDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/news/{id}/del',
+        name: 'news_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

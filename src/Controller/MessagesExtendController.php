@@ -13,9 +13,25 @@ use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesExtendController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/{id}/extend/{days}',
+        name: 'messages_extend',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'days'          => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         int $id,
         int $days,

@@ -19,9 +19,24 @@ use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ForumEditPostController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/forum/{id}/edit-post',
+        name: 'forum_edit_post',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

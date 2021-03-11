@@ -17,9 +17,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ForumDelTopicController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/forum/{id}/del-topic',
+        name: 'forum_del_topic',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

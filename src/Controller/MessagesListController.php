@@ -32,6 +32,7 @@ use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesListController extends AbstractController
 {
@@ -83,6 +84,36 @@ class MessagesListController extends AbstractController
             'enabled'   => true,
         ],
     ];
+
+    #[Route(
+        '/{system}/{role_short}/messages',
+        name: 'messages_list',
+        methods: ['GET', 'POST'],
+        priority: 9,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'is_self'       => false,
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/messages/self',
+        name: 'messages_list_self',
+        methods: ['GET', 'POST'],
+        priority: 9,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'is_self'       => true,
+            'module'        => 'messages',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

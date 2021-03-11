@@ -9,9 +9,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TypeaheadElandIntersystemAccountsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/typeahead-eland-intersystem-accounts/{remote_schema}',
+        name: 'typeahead_eland_intersystem_accounts',
+        methods: ['GET'],
+        requirements: [
+            'remote_schema' => '%assert.schema%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         string $remote_schema,
         Db $db,

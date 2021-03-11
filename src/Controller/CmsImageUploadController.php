@@ -10,9 +10,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
-class StaticContentImageUploadController extends AbstractController
+class CmsImageUploadController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/cms/image-upload',
+        name: 'cms_image_upload',
+        methods: ['POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'cms',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

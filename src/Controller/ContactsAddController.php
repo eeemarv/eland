@@ -23,7 +23,7 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ContactsAddAdminController extends AbstractController
+class ContactsAddController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/contacts/add',
@@ -34,13 +34,53 @@ class ContactsAddAdminController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'        => 'users',
-            'sub_module'    => 'contacts',
+            'redirect_contacts'     => true,
+            'user_id'               => 0,
+            'is_admin'              => true,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/{user_id}/contacts/add',
+        name: 'users_contacts_add_admin',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'user_id'       => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'redirect_contacts'     => false,
+            'is_admin'              => true,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/contacts/add',
+        name: 'users_contacts_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'user_id'               => 0,
+            'redirect_contacts'     => false,
+            'is_admin'              => false,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
         ],
     )]
 
     public function __invoke(
         Request $request,
+        int $user_id,
+        bool $is_admin,
+        bool $redirect_contacts,
         Db $db,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -57,53 +97,12 @@ class ContactsAddAdminController extends AbstractController
         HeadingRender $heading_render
     ):Response
     {
-        $content = self::form(
-            $request,
-            0,
-            true,
-            $db,
-            $alert_service,
-            $form_token_service,
-            $menu_service,
-            $config_service,
-            $link_render,
-            $account_render,
-            $assets_service,
-            $geocode_queue,
-            $item_access_service,
-            $typeahead_service,
-            $pp,
-            $su,
-            $heading_render
-        );
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $content,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    public static function form(
-        Request $request,
-        int $user_id,
-        bool $redirect_contacts,
-        Db $db,
-        AlertService $alert_service,
-        FormTokenService $form_token_service,
-        MenuService $menu_service,
-        ConfigService $config_service,
-        LinkRender $link_render,
-        AccountRender $account_render,
-        AssetsService $assets_service,
-        GeocodeQueue $geocode_queue,
-        ItemAccessService $item_access_service,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        HeadingRender $heading_render
-    ):string
-    {
         $errors = [];
+
+        if (!$is_admin)
+        {
+            $user_id = $su->id();
+        }
 
         $account_code = $request->request->get('account_code', '');
         $id_type_contact = (int) $request->request->get('id_type_contact', '');
@@ -118,7 +117,7 @@ class ContactsAddAdminController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            if ($pp->is_admin() && $redirect_contacts)
+            if ($is_admin && $redirect_contacts)
             {
                [$code] = explode(' ', trim($account_code));
 
@@ -144,7 +143,7 @@ class ContactsAddAdminController extends AbstractController
 
             if (!isset(AccessCnst::ACCESS[$access]))
             {
-                throw new BadRequestHttpException('Ongeldige waarde zichtbaarheid');
+                throw new BadRequestHttpException('Invalid value for access');
             }
 
             $abbrev_type = $db->fetchOne('select abbrev
@@ -368,7 +367,7 @@ class ContactsAddAdminController extends AbstractController
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon" id="value_addon">';
         $out .= '<i class="fa fa-';
-        $out .= ContactsEditAdminController::FORMAT[$abbrev]['fa'] ?? 'circle-o';
+        $out .= ContactsEditController::FORMAT[$abbrev]['fa'] ?? 'circle-o';
         $out .= '"></i>';
         $out .= '</span>';
         $out .= '<input type="text" class="form-control" id="value" name="value" ';
@@ -376,7 +375,7 @@ class ContactsAddAdminController extends AbstractController
         $out .= $value;
         $out .= '" required disabled maxlength="130" ';
         $out .= 'data-contacts-format="';
-        $out .= htmlspecialchars(json_encode(ContactsEditAdminController::FORMAT));
+        $out .= htmlspecialchars(json_encode(ContactsEditController::FORMAT));
         $out .= '">';
         $out .= '</div>';
         $out .= '<p id="contact-explain">';
@@ -424,6 +423,9 @@ class ContactsAddAdminController extends AbstractController
 
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $out;
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }

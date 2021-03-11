@@ -16,9 +16,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class NewsExtendedController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/news/extended',
+        name: 'news_extended',
+        methods: ['GET'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
     public function __invoke(
         Db $db,
         ConfigService $config_service,

@@ -16,9 +16,23 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesCleanupController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/cleanup',
+        name: 'messages_cleanup',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         AlertService $alert_service,

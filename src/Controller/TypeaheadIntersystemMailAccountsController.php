@@ -7,9 +7,23 @@ use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TypeaheadIntersystemMailAccountsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/typeahead-intersystem-mail-accounts',
+        name: 'typeahead_intersystem_mail_accounts',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
+
     public function __invoke(
         Db $db,
         TypeaheadService $typeahead_service,

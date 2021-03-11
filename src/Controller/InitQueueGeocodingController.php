@@ -10,9 +10,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class InitQueueGeocodingController extends AbstractController
 {
+    #[Route(
+        '/{system}/init/queue-geocoding/{start}',
+        name: 'init_queue_geocoding',
+        methods: ['GET'],
+        requirements: [
+            'start'         => '%assert.id%',
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'start'         => 0,
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $start,

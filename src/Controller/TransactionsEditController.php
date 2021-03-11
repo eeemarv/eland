@@ -22,9 +22,24 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TransactionsEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/transactions/{id}/edit',
+        name: 'transactions_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

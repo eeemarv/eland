@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Controller\ContactsEditController;
 use App\Render\AccountRender;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,10 +15,11 @@ use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ContactsDelAdminController extends AbstractController
+class ContactsDelController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/contacts/{id}/del',
@@ -31,14 +31,60 @@ class ContactsDelAdminController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'        => 'users',
-            'sub_module'    => 'contacts',
+            'user_id'               => 0,
+            'contact_id'            => 0,
+            'redirect_contacts'     => true,
+            'is_admin'              => true,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/{user_id}/contacts/{contact_id}/del',
+        name: 'users_contacts_del_admin',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'user_id'       => '%assert.id%',
+            'contact_id'    => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'id'                    => 0,
+            'redirect_contacts'     => false,
+            'is_admin'              => true,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/contacts/{contact_id}/del',
+        name: 'users_contacts_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'contact_id'    => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'                    => 0,
+            'user_id'               => 0,
+            'redirect_contacts'     => false,
+            'is_admin'              => false,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
         ],
     )]
 
     public function __invoke(
         Request $request,
+        int $user_id,
+        int $contact_id,
         int $id,
+        bool $redirect_contacts,
+        bool $is_admin,
         Db $db,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
@@ -48,59 +94,34 @@ class ContactsDelAdminController extends AbstractController
         HeadingRender $heading_render,
         AccountRender $account_render,
         PageParamsService $pp,
+        SessionUserService $su,
         LinkRender $link_render
     ):Response
     {
-        $contact = ContactsEditAdminController::get_contact($db, $id,  $pp->schema());
-
-        $content = self::form(
-            $request,
-            $contact['user_id'],
-            $id,
-            true,
-            $db,
-            $alert_service,
-            $user_cache_service,
-            $form_token_service,
-            $menu_service,
-            $item_access_service,
-            $heading_render,
-            $account_render,
-            $pp,
-            $link_render
-        );
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $content,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    public static function form(
-        Request $request,
-        int $user_id,
-        int $id,
-        bool $redirect_contacts,
-        Db $db,
-        AlertService $alert_service,
-        UserCacheService $user_cache_service,
-        FormTokenService $form_token_service,
-        MenuService $menu_service,
-        ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
-        AccountRender $account_render,
-        PageParamsService $pp,
-        LinkRender $link_render
-    ):string
-    {
         $errors = [];
 
-        $contact = ContactsEditAdminController::get_contact($db, $id,  $pp->schema());
+        $id = $contact_id ?: $id;
+
+        $contact = ContactsEditController::get_contact($db, $id,  $pp->schema());
+
+        if (!$is_admin)
+        {
+            $user_id = $su->id();
+        }
+        else if ($redirect_contacts)
+        {
+            $user_id = $contact['user_id'];
+        }
 
         if ($user_id !== $contact['user_id'])
         {
             throw new BadRequestHttpException(
-                'Contact ' . $id . ' behoort niet tot gebruiker ' . $user_id);
+                'Contact ' . $id . ' does not belong to user ' . $user_id);
+        }
+
+        if (!$user_id)
+        {
+            throw new BadRequestHttpException('No user_id');
         }
 
         if ($request->isMethod('GET'))
@@ -226,6 +247,9 @@ class ContactsDelAdminController extends AbstractController
 
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $out;
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $pp->schema(),
+        ]);
     }
 }

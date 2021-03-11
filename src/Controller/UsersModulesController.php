@@ -14,6 +14,7 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UsersModulesController extends AbstractController
 {
@@ -32,6 +33,19 @@ class UsersModulesController extends AbstractController
         'intersystem.enabled',
         'mollie.enabled',
     ];
+
+    #[Route(
+        '/{system}/{role_short}/users/modules',
+        name: 'users_modules',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

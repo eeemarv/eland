@@ -20,9 +20,23 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class NewsAddController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/news/add',
+        name: 'news_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

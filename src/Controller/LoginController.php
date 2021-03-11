@@ -19,10 +19,21 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class LoginController extends AbstractController
 {
+    #[Route(
+        '/{system}/login',
+        name: 'login',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

@@ -12,9 +12,27 @@ use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesImagesInstantDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/{id}/images/{img}/{ext}/del/{form_token}',
+        name: 'messages_images_instant_del',
+        methods: ['POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'img'           => '%assert.message_image%',
+            'ext'           => '%assert.image_ext%',
+            'form_token'    => '%assert.token%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         int $id,
         string $img,

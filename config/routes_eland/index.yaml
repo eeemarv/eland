@@ -1,19 +1,19 @@
 
-index_contact:
-  path: /contact
-  controller: App\Controller\IndexContactController
-  methods: GET|POST
+#index_contact:
+#  path: /contact
+#  controller: App\Controller\IndexContactController
+#  methods: GET|POST
 
-monitor:
-  path: /monitor
-  controller: App\Controller\MonitorController
-  methods: GET|HEAD
+#monitor:
+#  path: /monitor
+#  controller: App\Controller\MonitorController
+#  methods: GET|HEAD
 
 system:
   prefix: /{system<%assert.system%>}
   resource: system_anonymous.yaml
 
-index:
-  path: /
-  controller: App\Controller\IndexController
-  methods: GET
+#index:
+#  path: /
+#  controller: App\Controller\IndexController
+#  methods: GET

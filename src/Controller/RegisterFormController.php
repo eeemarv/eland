@@ -18,9 +18,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RegisterFormController extends AbstractController
 {
+    #[Route(
+        '/{system}/register',
+        name: 'register_form',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'register_form',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

@@ -14,6 +14,7 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TransactionsModulesController extends AbstractController
 {
@@ -22,6 +23,19 @@ class TransactionsModulesController extends AbstractController
         'accounts.limits.auto_min.enabled',
         'transactions.mass.enabled',
     ];
+
+    #[Route(
+        '/{system}/{role_short}/transactions/modules',
+        name: 'transactions_modules',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

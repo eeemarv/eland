@@ -31,9 +31,40 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TransactionsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/transactions',
+        name: 'transactions',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'is_self'       => false,
+            'module'        => 'transactions',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/transactions/self',
+        name: 'transactions_self',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'is_self'       => true,
+            'module'        => 'transactions',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

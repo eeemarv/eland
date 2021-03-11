@@ -21,10 +21,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class PasswordResetConfirmController extends AbstractController
 {
+    #[Route(
+        '/{system}/password-reset/{token}',
+        name: 'password_reset_confirm',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'token'         => '%assert.token%',
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'password_reset',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         EncoderFactoryInterface $encoder_factory,

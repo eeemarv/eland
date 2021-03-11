@@ -18,9 +18,25 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IntersystemsEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/intersystems/{id}/edit',
+        name: 'intersystems_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'intersystem',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

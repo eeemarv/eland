@@ -12,9 +12,24 @@ use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MollieWebhookController extends AbstractController
 {
+    #[Route(
+        '/{system}/mollie/webhook',
+        name: 'mollie_webhook',
+        methods: ['POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'mollie',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

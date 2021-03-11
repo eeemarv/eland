@@ -17,9 +17,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class NewsShowController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/news/{id}',
+        name: 'news_show',
+        methods: ['GET'],
+        priority: 9,
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
     public function __invoke(
         int $id,
         Db $db,

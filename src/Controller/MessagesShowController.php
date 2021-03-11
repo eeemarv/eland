@@ -30,9 +30,25 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesShowController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/{id}',
+        name: 'messages_show',
+        methods: ['GET', 'POST'],
+        priority: 9,
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

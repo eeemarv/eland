@@ -48,7 +48,7 @@ class UsersDelAdminController extends AbstractController
         if ($su->id() === $id)
         {
             throw new AccessDeniedHttpException(
-                'Je kan je eigen account niet verwijderen.');
+                'You can not remove your own user account.');
         }
 
         if ($db->fetchOne('select id

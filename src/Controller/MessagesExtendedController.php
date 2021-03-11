@@ -22,9 +22,40 @@ use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesExtendedController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/extended',
+        name: 'messages_extended',
+        methods: ['GET'],
+        priority: 9,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'is_self'       => false,
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/messages/extended/self',
+        name: 'messages_extended_self',
+        methods: ['GET'],
+        priority: 9,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'is_self'       => true,
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

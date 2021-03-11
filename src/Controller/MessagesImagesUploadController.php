@@ -6,27 +6,98 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\MessagesShowController;
+use App\Service\ConfigService;
+use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
-class MessagesShowImagesUploadController extends AbstractController
+class MessagesImagesUploadController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/images/upload/{form_token}',
+        name: 'messages_add_images_upload',
+        methods: ['POST'],
+        requirements: [
+            'form_token'    => '%assert.token%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'mode'          => 'add',
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/messages/{id}/images/upload/{form_token}',
+        name: 'messages_edit_images_upload',
+        methods: ['POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'form_token'    => '%assert.token%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'mode'          => 'edit',
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/messages/{id}/images/upload',
+        name: 'messages_images_upload',
+        methods: ['POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'mode'          => 'show',
+            'form_token'    => '',
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,
+        string $mode,
+        string $form_token,
         Db $db,
+        FormTokenService $form_token_service,
+        ConfigService $config_service,
         LoggerInterface $logger,
         PageParamsService $pp,
         SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+        }
+
+        if (in_array($mode, ['add', 'edit']))
+        {
+            if ($error = $form_token_service->get_ajax_error($form_token))
+            {
+                return $this->json([
+                    'error' => 'Form token fout: ' . $error,
+                    'code'  => 400,
+                ], 400);
+            }
+        }
+
         $uploaded_files = $request->files->get('images', []);
-        $insert_in_db = $request->attributes->get('form_token') ? false : true;
 
         $filename_ary = [];
 
@@ -73,7 +144,7 @@ class MessagesShowImagesUploadController extends AbstractController
 
             $filename = $res['filename'];
 
-            if ($insert_in_db)
+            if ($mode === 'show')
             {
                 $update_db = true;
 

@@ -10,9 +10,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class InitClearUsersCacheController extends AbstractController
 {
+    #[Route(
+        '/{system}/init/clear-users-cache',
+        name: 'init_clear_users_cache',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         PageParamsService $pp,

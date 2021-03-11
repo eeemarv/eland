@@ -7,32 +7,47 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
-class TransactionsSumInController extends AbstractController
+class TransactionsSumController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/transactions/sum-in/{days}',
+        name: 'transactions_sum_in',
+        methods: ['GET'],
+        requirements: [
+            'days'          => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'direction'     => 'in',
+            'module'        => 'transactions',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/transactions/sum-out/{days}',
+        name: 'transactions_sum_out',
+        methods: ['GET'],
+        requirements: [
+            'days'          => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'direction'     => 'out',
+            'module'        => 'transactions',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $days,
+        string $direction,
         Db $db,
         PageParamsService $pp
     ):Response
-    {
-        return $this->json(self::calc(
-            $request,
-            $days,
-            true,
-            $db,
-            $pp
-        ));
-    }
-
-    public static function calc(
-        Request $request,
-        int $days,
-        bool $in,
-        Db $db,
-        PageParamsService $pp
-    ):array
     {
         $ex_codes = $request->query->get('ex', []);
 
@@ -43,8 +58,8 @@ class TransactionsSumInController extends AbstractController
 
         array_walk($ex_codes, function(&$value){ $value = trim($value); });
 
-        $res = $in ? 'to' : 'from';
-        $inp = $in ? 'from' : 'to';
+        $res = $direction === 'in' ? 'to' : 'from';
+        $inp = $direction === 'in' ? 'from' : 'to';
 
         $end_unix = time();
         $begin_unix = $end_unix - ($days * 86400);
@@ -83,6 +98,6 @@ class TransactionsSumInController extends AbstractController
             $ary[$row['uid']] = $row['sum'];
         }
 
-        return $ary;
+        return $this->json($ary);
     }
 }

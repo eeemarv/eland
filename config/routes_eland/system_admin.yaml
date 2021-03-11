@@ -64,20 +64,20 @@
 #  path: /contacts
 #  methods: GET|POST
 
-users_contacts_edit_admin:
-  controller: App\Controller\UsersContactsEditAdminController
-  path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/edit
-  methods: GET|POST
+#users_contacts_edit_admin:
+#  controller: App\Controller\UsersContactsEditAdminController
+#  path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/edit
+#  methods: GET|POST
 
-users_contacts_del_admin:
-  controller: App\Controller\UsersContactsDelAdminController
-  path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/del
-  methods: GET|POST
+#users_contacts_del_admin:
+#  controller: App\Controller\UsersContactsDelAdminController
+#  path: /users/{user_id<%assert.id%>}/contacts/{contact_id<%assert.id%>}/del
+#  methods: GET|POST
 
-users_contacts_add_admin:
-  controller: App\Controller\UsersContactsAddAdminController
-  path: /users/{user_id<%assert.id%>}/contacts/add
-  methods: GET|POST
+#users_contacts_add_admin:
+#  controller: App\Controller\UsersContactsAddAdminController
+#  path: /users/{user_id<%assert.id%>}/contacts/add
+#  methods: GET|POST
 
 #config_ext_modules:
 #  controller: App\Controller\ConfigExtModulesController
@@ -89,30 +89,30 @@ users_contacts_add_admin:
 #  path: /config/{tab<%assert.config_tab%>?system-name}
 #  methods: GET|POST
 
-intersystems_edit:
-  controller: App\Controller\IntersystemsEditController
-  path: /intersystems/{id<%assert.id%>}/edit
-  methods: GET|POST
+#intersystems_edit:
+#  controller: App\Controller\IntersystemsEditController
+#  path: /intersystems/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-intersystems_del:
-  controller: App\Controller\IntersystemsDelController
-  path: /intersystems/{id<%assert.id%>}/del
-  methods: GET|POST
+#intersystems_del:
+#  controller: App\Controller\IntersystemsDelController
+#  path: /intersystems/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-intersystems_add:
-  controller: App\Controller\IntersystemsAddController
-  path: /intersystems/add
-  methods: GET|POST
+#intersystems_add:
+#  controller: App\Controller\IntersystemsAddController
+#  path: /intersystems/add
+#  methods: GET|POST
 
-intersystems_show:
-  controller: App\Controller\IntersystemsShowController
-  path: /intersystems/{id<%assert.id%>}
-  methods: GET
+#intersystems_show:
+#  controller: App\Controller\IntersystemsShowController
+#  path: /intersystems/{id<%assert.id%>}
+#  methods: GET
 
-intersystems:
-  controller: App\Controller\IntersystemsController
-  path: /intersystems
-  methods: GET
+#intersystems:
+#  controller: App\Controller\IntersystemsController
+#  path: /intersystems
+#  methods: GET
 
 #export:
 #  controller: App\Controller\ExportController
@@ -124,25 +124,25 @@ intersystems:
 #  path: /autominlimit
 #  methods: GET|POST
 
-mass_transaction:
-  controller: App\Controller\MassTransactionController
-  path: /mass-transaction
-  methods: GET|POST
+#mass_transaction:
+#  controller: App\Controller\MassTransactionController
+#  path: /mass-transaction
+#  methods: GET|POST
 
-messages_cleanup:
-  controller: App\Controller\MessagesCleanupController
-  path: /messages/cleanup
-  methods: GET|POST
+#messages_cleanup:
+#  controller: App\Controller\MessagesCleanupController
+#  path: /messages/cleanup
+#  methods: GET|POST
 
-messages_modules:
-  controller: App\Controller\MessagesModulesController
-  path: /messages/modules
-  methods: GET|POST
+#messages_modules:
+#  controller: App\Controller\MessagesModulesController
+#  path: /messages/modules
+#  methods: GET|POST
 
-logs:
-  controller: App\Controller\LogsController
-  path: /logs
-  methods: GET
+#logs:
+#  controller: App\Controller\LogsController
+#  path: /logs
+#  methods: GET
 
 users_image_del_admin:
   controller: App\Controller\UsersImageDelAdminController
@@ -183,55 +183,40 @@ users_add:
     is_self: false
     id: 0
 
-users_modules:
-  controller: App\Controller\UsersModulesController
-  path: /users/modules
-  methods: GET|POST
+#users_modules:
+#  controller: App\Controller\UsersModulesController
+#  path: /users/modules
+#  methods: GET|POST
 
-users_periodic_mail:
-  controller: App\Controller\UsersPeriodicMailController
-  path: /users/periodic-mail
-  methods: GET|POST
+#users_periodic_mail:
+#  controller: App\Controller\UsersPeriodicMailController
+#  path: /users/periodic-mail
+#  methods: GET|POST
 
-transactions_edit:
-  controller: App\Controller\TransactionsEditController
-  path: /transactions/{id<%assert.id%>}/edit
-  methods: GET|POST
+#transactions_edit:
+#  controller: App\Controller\TransactionsEditController
+#  path: /transactions/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-transactions_modules:
-  controller: App\Controller\TransactionsModulesController
-  path: /transactions/modules
-  methods: GET|POST
+#transactions_modules:
+#  controller: App\Controller\TransactionsModulesController
+#  path: /transactions/modules
+#  methods: GET|POST
 
-news_add:
-  controller: App\Controller\NewsAddController
-  path: /news/add
-  methods: GET|POST
+#news_add:
+#  controller: App\Controller\NewsAddController
+#  path: /news/add
+#  methods: GET|POST
 
-news_del:
-  controller: App\Controller\NewsDelController
-  path: /news/{id<%assert.id%>}/del
-  methods: GET|POST
+#news_del:
+#  controller: App\Controller\NewsDelController
+#  path: /news/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-news_edit:
-  controller: App\Controller\NewsEditController
-  path: /news/{id<%assert.id%>}/edit
-  methods: GET|POST
-
-calendar_add:
-  controller: App\Controller\CalendarAddController
-  path: /calendar/add
-  methods: GET|POST
-
-calendar_del:
-  controller: App\Controller\CalendarDelController
-  path: /calendar/{id<%assert.id%>}/del
-  methods: GET|POST
-
-calendar_edit:
-  controller: App\Controller\CalendarEditController
-  path: /calendar/{id<%assert.id%>}/edit
-  methods: GET|POST
+#news_edit:
+#  controller: App\Controller\NewsEditController
+#  path: /news/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
 #docs_edit:
 #  controller: App\Controller\DocsEditController
@@ -253,67 +238,62 @@ calendar_edit:
 #  path: /docs/map/{id<%assert.id%>}/edit
 #  methods: GET|POST
 
-typeahead_doc_map_names:
-  controller: App\Controller\TypeaheadDocMapNamesController
-  path: /typeahead-doc-map-names
-  methods: GET
+#typeahead_doc_map_names:
+#  controller: App\Controller\TypeaheadDocMapNamesController
+#  path: /typeahead-doc-map-names
+#  methods: GET
 
-typeahead_intersystem_mail_accounts:
-  controller: App\Controller\TypeaheadIntersystemMailAccountsController
-  path: /typeahead-intersystem-mail-accounts
-  methods: GET
+#typeahead_intersystem_mail_accounts:
+#  controller: App\Controller\TypeaheadIntersystemMailAccountsController
+#  path: /typeahead-intersystem-mail-accounts
+#  methods: GET
 
-typeahead_log_types:
-  controller: App\Controller\TypeaheadLogTypesController
-  path: /typeahead-log-types
-  methods: GET
+#typeahead_log_types:
+#  controller: App\Controller\TypeaheadLogTypesController
+#  path: /typeahead-log-types
+#  methods: GET
 
-transactions_sum_in:
-  controller: App\Controller\TransactionsSumInController
-  path: /transactions-sum-in/{days<%assert.id%>}
-  methods: GET
+#transactions_sum_in:
+#  controller: App\Controller\TransactionsSumInController
+#  path: /transactions-sum-in/{days<%assert.id%>}
+#  methods: GET
 
-transactions_sum_out:
-  controller: App\Controller\TransactionsSumOutController
-  path: /transactions-sum-out/{days<%assert.id%>}
-  methods: GET
+#transactions_sum_out:
+#  controller: App\Controller\TransactionsSumOutController
+#  path: /transactions-sum-out/{days<%assert.id%>}
+#  methods: GET
 
 weighted_balances:
   controller: App\Controller\WeightedBalancesController
   path: /weighted-balances/{days<%assert.id%>}
   methods: GET
 
-logo_upload:
-  controller: App\Controller\LogoUploadController
-  path: /logo/upload
-  methods: POST
+#logo_upload:
+#  controller: App\Controller\LogoUploadController
+#  path: /logo/upload
+#  methods: POST
 
-logo_del:
-  controller: App\Controller\LogoDelController
-  path: /logo/del
-  methods: GET|POST
+#logo_del:
+#  controller: App\Controller\LogoDelController
+#  path: /logo/del
+#  methods: GET|POST
 
-static_content_image_upload:
-  controller: App\Controller\StaticContentImageUploadController
-  path: /static-content/image-upload
-  methods: POST
+#cms_image_upload:
+#  controller: App\Controller\CmsImageUploadController
+#  path: /cms/image-upload
+#  methods: POST
 
-static_content:
-  controller: App\Controller\StaticContentController
-  path: /static-content
-  methods: POST
+#mollie_config:
+#  path: /mollie/config
+#  controller: App\Controller\MollieConfigController
+#  methods: GET|POST
 
-mollie_config:
-  path: /mollie/config
-  controller: App\Controller\MollieConfigController
-  methods: GET|POST
+#mollie_payments_add:
+#  path: /mollie/payments/add/{status<%assert.account_status%>?active}
+#  controller: App\Controller\MolliePaymentsAddController
+#  methods: GET|POST
 
-mollie_payments_add:
-  path: /mollie/payments/add/{status<%assert.account_status%>?active}
-  controller: App\Controller\MolliePaymentsAddController
-  methods: GET|POST
-
-mollie_payments:
-  path: /mollie/payments
-  controller: App\Controller\MolliePaymentsController
-  methods: GET|POST
+#mollie_payments:
+#  path: /mollie/payments
+#  controller: App\Controller\MolliePaymentsController
+#  methods: GET|POST

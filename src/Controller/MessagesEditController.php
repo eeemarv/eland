@@ -31,70 +31,43 @@ use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/add',
+        name: 'messages_add',
+        methods: ['GET', 'POST'],
+        priority: 8,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'mode'          => 'add',
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/messages/{id}/edit',
+        name: 'messages_edit',
+        methods: ['GET', 'POST'],
+        priority: 8,
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'mode'          => 'edit',
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
-        Request $request,
-        int $id,
-        Db $db,
-        LoggerInterface $logger,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        ConfigService $config_service,
-        FormTokenService $form_token_service,
-        HeadingRender $heading_render,
-        IntersystemsService $intersystems_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        MenuService $menu_service,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        UserCacheService $user_cache_service,
-        HtmlPurifier $html_purifier,
-        S3Service $s3_service,
-        string $env_s3_url
-    ):Response
-    {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
-        }
-
-        $content = self::messages_form(
-            $request,
-            $id,
-            'edit',
-            $db,
-            $logger,
-            $alert_service,
-            $assets_service,
-            $config_service,
-            $form_token_service,
-            $heading_render,
-            $intersystems_service,
-            $item_access_service,
-            $link_render,
-            $menu_service,
-            $typeahead_service,
-            $pp,
-            $su,
-            $vr,
-            $user_cache_service,
-            $html_purifier,
-            $s3_service,
-            $env_s3_url
-        );
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $content,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    public static function messages_form(
         Request $request,
         int $id,
         string $mode,
@@ -117,7 +90,7 @@ class MessagesEditController extends AbstractController
         HtmlPurifier $html_purifier,
         S3Service $s3_service,
         string $env_s3_url
-    ):string
+    ):Response
     {
         if (!$config_service->get_bool('messages.enabled', $pp->schema()))
         {
@@ -925,7 +898,10 @@ class MessagesEditController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $out;
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function format(string $value):string

@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MassTransactionController extends AbstractController
 {
@@ -79,6 +80,20 @@ class MassTransactionController extends AbstractController
         6	=> 'info-moment',
         7	=> 'extern',
     ];
+
+    #[Route(
+        '/{system}/{role_short}/mass-transaction',
+        name: 'mass_transaction',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+            'sub_module'    => 'mass_transaction',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

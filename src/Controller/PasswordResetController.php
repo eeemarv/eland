@@ -14,9 +14,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class PasswordResetController extends AbstractController
 {
+    #[Route(
+        '/{system}/password-reset',
+        name: 'password_reset',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'password_reset',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

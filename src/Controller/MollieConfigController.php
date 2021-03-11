@@ -13,9 +13,24 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MollieConfigController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/mollie/config',
+        name: 'mollie_config',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'mollie',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         ConfigService $config_service,

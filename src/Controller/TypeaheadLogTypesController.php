@@ -7,9 +7,23 @@ use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TypeaheadLogTypesController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/typeahead-log-types',
+        name: 'typeahead_log_types',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'logs',
+        ],
+    )]
+
     public function __invoke(
         Db $db,
         TypeaheadService $typeahead_service,

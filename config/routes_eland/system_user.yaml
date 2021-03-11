@@ -1,81 +1,81 @@
-users_contacts_edit:
-  controller: App\Controller\UsersContactsEditController
-  path: /users/contacts/{contact_id<%assert.id%>}/edit
-  methods: GET|POST
+#users_contacts_edit:
+#  controller: App\Controller\UsersContactsEditController
+#  path: /users/contacts/{contact_id<%assert.id%>}/edit
+#  methods: GET|POST
 
-users_contacts_del:
-  controller: App\Controller\UsersContactsDelController
-  path: /users/contacts/{contact_id<%assert.id%>}/del
-  methods: GET|POST
+#users_contacts_del:
+#  controller: App\Controller\UsersContactsDelController
+#  path: /users/contacts/{contact_id<%assert.id%>}/del
+#  methods: GET|POST
 
-users_contacts_add:
-  controller: App\Controller\UsersContactsAddController
-  path: /users/contacts/add
-  methods: GET|POST
+#users_contacts_add:
+#  controller: App\Controller\UsersContactsAddController
+#  path: /users/contacts/add
+#  methods: GET|POST
 
-support:
-  controller: App\Controller\SupportController
-  path: /support
-  methods: GET|POST
+#support:
+#  controller: App\Controller\SupportController
+#  path: /support
+#  methods: GET|POST
 
-messages_extended_self:
-  controller: App\Controller\MessagesExtendedController
-  path: /messages/extended/self
-  methods: GET
-  defaults:
-    is_self: true
+#messages_extended_self:
+#  controller: App\Controller\MessagesExtendedController
+#  path: /messages/extended/self
+#  methods: GET
+#  defaults:
+#    is_self: true
 
-messages_list_self:
-  controller: App\Controller\MessagesListController
-  path: /messages/self
-  methods: GET|POST
-  defaults:
-    is_self: true
+#messages_list_self:
+#  controller: App\Controller\MessagesListController
+#  path: /messages/self
+#  methods: GET|POST
+#  defaults:
+#    is_self: true
 
-messages_images_instant_del:
-  controller: App\Controller\MessagesImagesInstantDelController
-  path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.image_ext%>}/del/{form_token<%assert.token%>}
-  methods: POST
+#messages_images_instant_del:
+#  controller: App\Controller\MessagesImagesInstantDelController
+#  path: /messages/{id<%assert.id%>}/images/{img<%assert.message_image%>}/{ext<%assert.image_ext%>}/del/{form_token<%assert.token%>}
+#  methods: POST
 
-messages_images_del:
-  controller: App\Controller\MessagesImagesDelController
-  path: /messages/{id<%assert.id%>}/images/del
-  methods: GET|POST
+#messages_images_del:
+#  controller: App\Controller\MessagesImagesDelController
+#  path: /messages/{id<%assert.id%>}/images/del
+#  methods: GET|POST
 
-messages_edit_images_upload:
-  controller: App\Controller\MessagesEditImagesUploadController
-  path: /messages/{id<%assert.id%>}/images/upload/{form_token<%assert.token%>}
-  methods: POST
+#messages_edit_images_upload:
+#  controller: App\Controller\MessagesEditImagesUploadController
+#  path: /messages/{id<%assert.id%>}/images/upload/{form_token<%assert.token%>}
+#  methods: POST
 
-messages_add_images_upload:
-  controller: App\Controller\MessagesAddImagesUploadController
-  path: /messages/images/upload/{form_token<%assert.token%>}
-  methods: POST
+#messages_add_images_upload:
+#  controller: App\Controller\MessagesAddImagesUploadController
+#  path: /messages/images/upload/{form_token<%assert.token%>}
+#  methods: POST
 
-messages_images_upload:
-  controller: App\Controller\MessagesShowImagesUploadController
-  path: /messages/{id<%assert.id%>}/images/upload
-  methods: POST
+#messages_images_upload:
+#  controller: App\Controller\MessagesShowImagesUploadController
+#  path: /messages/{id<%assert.id%>}/images/upload
+#  methods: POST
 
-messages_extend:
-  controller: App\Controller\MessagesExtendController
-  path: /messages/{id<%assert.id%>}/extend/{days<%assert.id%>}
-  methods: GET
+#messages_extend:
+#  controller: App\Controller\MessagesExtendController
+#  path: /messages/{id<%assert.id%>}/extend/{days<%assert.id%>}
+#  methods: GET
 
-messages_del:
-  controller: App\Controller\MessagesDelController
-  path: /messages/{id<%assert.id%>}/del
-  methods: GET|POST
+#messages_del:
+#  controller: App\Controller\MessagesDelController
+#  path: /messages/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-messages_edit:
-  controller: App\Controller\MessagesEditController
-  path: /messages/{id<%assert.id%>}/edit
-  methods: GET|POST
+#messages_edit:
+#  controller: App\Controller\MessagesEditController
+#  path: /messages/{id<%assert.id%>}/edit
+#  methods: GET|POST
 
-messages_add:
-  controller: App\Controller\MessagesAddController
-  path: /messages/add
-  methods: GET|POST
+#messages_add:
+#  controller: App\Controller\MessagesAddController
+#  path: /messages/add
+#  methods: GET|POST
 
 users_image_del:
   controller: App\Controller\UsersImageDelController
@@ -113,59 +113,59 @@ users_edit_self:
     is_self: true
     id: 0
 
-transactions_self:
-  controller: App\Controller\TransactionsController
-  path: /transactions/self
-  methods: GET|POST
-  defaults:
-    is_self: true
+#transactions_self:
+#  controller: App\Controller\TransactionsController
+#  path: /transactions/self
+#  methods: GET|POST
+#  defaults:
+#    is_self: true
 
-transactions_add:
-  controller: App\Controller\TransactionsAddController
-  path: /transactions/add
-  methods: GET|POST
+#transactions_add:
+#  controller: App\Controller\TransactionsAddController
+#  path: /transactions/add
+#  methods: GET|POST
 
-forum_edit_post:
-  controller: App\Controller\ForumEditPostController
-  path: /forum/{id<%assert.id%>}/edit-post
-  methods: GET|POST
+#forum_edit_post:
+#  controller: App\Controller\ForumEditPostController
+#  path: /forum/{id<%assert.id%>}/edit-post
+#  methods: GET|POST
 
-forum_del_post:
-  controller: App\Controller\ForumDelPostController
-  path: /forum/{id<%assert.id%>}/del-post
-  methods: GET|POST
+#forum_del_post:
+#  controller: App\Controller\ForumDelPostController
+#  path: /forum/{id<%assert.id%>}/del-post
+#  methods: GET|POST
 
-forum_edit_topic:
-  controller: App\Controller\ForumEditTopicController
-  path: /forum/{id<%assert.id%>}/edit-topic
-  methods: GET|POST
+#forum_edit_topic:
+#  controller: App\Controller\ForumEditTopicController
+#  path: /forum/{id<%assert.id%>}/edit-topic
+#  methods: GET|POST
 
-forum_del_topic:
-  controller: App\Controller\ForumDelTopicController
-  path: /forum/{id<%assert.id%>}/del-topic
-  methods: GET|POST
+#forum_del_topic:
+#  controller: App\Controller\ForumDelTopicController
+#  path: /forum/{id<%assert.id%>}/del-topic
+#  methods: GET|POST
 
-forum_add_topic:
-  controller: App\Controller\ForumAddTopicController
-  path: /forum/add-topic
-  methods: GET|POST
+#forum_add_topic:
+#  controller: App\Controller\ForumAddTopicController
+#  path: /forum/add-topic
+#  methods: GET|POST
 
-typeahead_account_codes:
-  controller: App\Controller\TypeaheadAccountCodesController
-  path: /typeahead-account-codes
-  methods: GET
+#typeahead_account_codes:
+#  controller: App\Controller\TypeaheadAccountCodesController
+#  path: /typeahead-account-codes
+#  methods: GET
 
-typeahead_usernames:
-  controller: App\Controller\TypeaheadUsernamesController
-  path: /typeahead-usernames
-  methods: GET
+#typeahead_usernames:
+#  controller: App\Controller\TypeaheadUsernamesController
+#  path: /typeahead-usernames
+#  methods: GET
 
-typeahead_eland_intersystem_accounts:
-  controller: App\Controller\TypeaheadElandIntersystemAccountsController
-  path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}
-  methods: GET
+#typeahead_eland_intersystem_accounts:
+#  controller: App\Controller\TypeaheadElandIntersystemAccountsController
+#  path: /typeahead-eland-intersystem-accounts/{remote_schema<%assert.schema%>}
+#  methods: GET
 
-typeahead_postcodes:
-  controller: App\Controller\TypeaheadPostcodesController
-  path: /typeahead-postcodes
-  methods: GET
+#typeahead_postcodes:
+#  controller: App\Controller\TypeaheadPostcodesController
+#  path: /typeahead-postcodes
+#  methods: GET

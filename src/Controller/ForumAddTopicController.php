@@ -18,9 +18,23 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ForumAddTopicController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/forum/add-topic',
+        name: 'forum_add_topic',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

@@ -22,9 +22,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MolliePaymentsAddController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/mollie/payments/add/{status}',
+        name: 'mollie_payments_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'status'        => '%assert.account_status%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'status'        => 'active',
+            'module'        => 'users',
+            'sub_module'    => 'mollie',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         string $status,

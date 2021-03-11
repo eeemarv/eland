@@ -17,9 +17,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ForumController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/forum',
+        name: 'forum',
+        methods: ['GET'],
+        priority: 9,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

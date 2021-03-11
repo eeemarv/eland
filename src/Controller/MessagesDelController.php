@@ -23,9 +23,24 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MessagesDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/messages/{id}/del',
+        name: 'messages_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

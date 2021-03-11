@@ -15,9 +15,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IntersystemsShowController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/intersystems/{id}',
+        name: 'intersystems_show',
+        methods: ['GET'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'intersystem',
+        ],
+    )]
+
     public function __invoke(
         int $id,
         Db $db,

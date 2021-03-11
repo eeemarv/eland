@@ -30,6 +30,7 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MolliePaymentsController extends AbstractController
 {
@@ -47,6 +48,20 @@ class MolliePaymentsController extends AbstractController
             'class'     => 'default-2',
         ],
     ];
+
+    #[Route(
+        '/{system}/{role_short}/mollie/payments',
+        name: 'mollie_payments',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'mollie',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

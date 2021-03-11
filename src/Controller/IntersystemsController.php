@@ -14,9 +14,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Predis\Client as Predis;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IntersystemsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/intersystems',
+        name: 'intersystems',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'intersystem',
+        ],
+    )]
+
     public function __invoke(
         Db $db,
         Predis $predis,

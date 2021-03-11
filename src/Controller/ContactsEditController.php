@@ -18,9 +18,10 @@ use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ContactsEditAdminController extends AbstractController
+class ContactsEditController extends AbstractController
 {
     const FORMAT = [
         'adr'	=> [
@@ -58,14 +59,60 @@ class ContactsEditAdminController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'        => 'users',
-            'sub_module'    => 'contacts',
+            'user_id'               => 0,
+            'contact_id'            => 0,
+            'redirect_contacts'     => true,
+            'is_admin'              => true,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/{user_id}/contacts/{contact_id}/edit',
+        name: 'users_contacts_edit_admin',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'user_id'       => '%assert.id%',
+            'contact_id'    => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'id'                    => 0,
+            'redirect_contacts'     => false,
+            'is_admin'              => true,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/contacts/{contact_id}/edit',
+        name: 'users_contacts_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'contact_id'    => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'                    => 0,
+            'user_id'               => 0,
+            'redirect_contacts'     => false,
+            'is_admin'              => false,
+            'module'                => 'users',
+            'sub_module'            => 'contacts',
         ],
     )]
 
     public function __invoke(
         Request $request,
+        int $user_id,
+        int $contact_id,
         int $id,
+        bool $redirect_contacts,
+        bool $is_admin,
         Db $db,
         FormTokenService $form_token_service,
         AlertService $alert_service,
@@ -76,73 +123,40 @@ class ContactsEditAdminController extends AbstractController
         HeadingRender $heading_render,
         AccountRender $account_render,
         PageParamsService $pp,
+        SessionUserService $su,
         GeocodeQueue $geocode_queue
     ):Response
     {
-        $contact = self::get_contact(
-            $db, $id, $pp->schema());
-
-        $content = self::form(
-            $request,
-            $contact['user_id'],
-            $id,
-            true,
-            $db,
-            $form_token_service,
-            $alert_service,
-            $assets_service,
-            $menu_service,
-            $item_access_service,
-            $link_render,
-            $heading_render,
-            $account_render,
-            $pp,
-            $geocode_queue
-        );
-
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $content,
-            'schema'    => $pp->schema(),
-        ]);
-    }
-
-    public static function form(
-        Request $request,
-        int $user_id,
-        int $id,
-        bool $redirect_contacts,
-        Db $db,
-        FormTokenService $form_token_service,
-        AlertService $alert_service,
-        AssetsService $assets_service,
-        MenuService $menu_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        HeadingRender $heading_render,
-        AccountRender $account_render,
-        PageParamsService $pp,
-        GeocodeQueue $geocode_queue
-    ):string
-    {
         $errors = [];
 
-        $contact = self::get_contact(
-            $db,
-            $id,
-            $pp->schema()
-        );
+        $id = $contact_id ?: $id;
+
+        $contact = self::get_contact($db, $id, $pp->schema());
+
+        if (!$is_admin)
+        {
+            $user_id = $su->id();
+        }
+        else if ($redirect_contacts)
+        {
+            $user_id = $contact['user_id'];
+        }
 
         if ($user_id !== $contact['user_id'])
         {
             throw new BadRequestHttpException(
-                'Contact ' . $id . ' behoort niet tot gebruiker ' . $user_id);
+                'Contact ' . $id . ' does not belong to user ' . $user_id);
+        }
+
+        if (!$user_id)
+        {
+            throw new BadRequestHttpException('No user_id');
         }
 
         $id_type_contact = $contact['id_type_contact'];
         $value = $contact['value'];
         $comments = $contact['comments'];
         $access = $contact['access'];
-
 
         if($request->isMethod('POST'))
         {
@@ -419,7 +433,10 @@ class ContactsEditAdminController extends AbstractController
 
         $menu_service->set($redirect_contacts ? 'contacts' : 'users');
 
-        return $out;
+        return $this->render('base/navbar.html.twig', [
+            'content'   => $out,
+            'schema'    => $pp->schema(),
+        ]);
     }
 
     public static function get_contact(

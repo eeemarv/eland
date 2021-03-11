@@ -12,9 +12,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class LogoDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/logo/del',
+        name: 'logo_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'config',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         ConfigService $config_service,

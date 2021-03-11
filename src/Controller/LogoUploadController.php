@@ -10,9 +10,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class LogoUploadController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/logo/upload',
+        name: 'logo_upload',
+        methods: ['POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'config',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         LoggerInterface $logger,

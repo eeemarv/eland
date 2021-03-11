@@ -18,9 +18,25 @@ use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MollieCheckoutController extends AbstractController
 {
+    #[Route(
+        '/{system}/mollie/checkout/{token}',
+        name: 'mollie_checkout',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'token'         => '%assert.big_token%',
+            'system'        => '%assert.system%',
+        ],
+        defaults: [
+            'module'        => 'users',
+            'sub_module'    => 'mollie',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         string $token,

@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class InitController extends AbstractController
 {
@@ -19,6 +20,15 @@ class InitController extends AbstractController
         'init_clear_users_cache'    => 'Clear users cache',
         'init_queue_geocoding'      => 'Queue geocoding',
     ];
+
+    #[Route(
+        '/{system}/init',
+        name: 'init',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+        ],
+    )]
 
     public function __invoke(
         Request $request,

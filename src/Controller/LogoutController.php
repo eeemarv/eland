@@ -12,9 +12,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class LogoutController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}logout',
+        name: 'logout',
+        methods: ['GET'],
+        priority: 10,
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,

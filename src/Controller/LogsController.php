@@ -21,9 +21,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Routing\Annotation\Route;
 
 class LogsController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/logs',
+        name: 'logs',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'logs',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         Db $db,
@@ -41,7 +55,6 @@ class LogsController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         DateFormatService $date_format_service
-
     ):Response
     {
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());

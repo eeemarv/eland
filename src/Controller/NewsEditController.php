@@ -18,9 +18,24 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class NewsEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/news/{id}/edit',
+        name: 'news_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,
