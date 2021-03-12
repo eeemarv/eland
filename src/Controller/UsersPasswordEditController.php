@@ -18,15 +18,45 @@ use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersPasswordEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/{id}/password-edit',
+        name: 'users_password_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'is_self'       => false,
+            'module'        => 'users',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/{id}/password-edit-self',
+        name: 'users_password_edit_self',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'is_self'       => true,
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         EncoderFactoryInterface $encoder_factory,

@@ -14,14 +14,30 @@ use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UsersMapController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/map/{status}',
+        name: 'users_map',
+        methods: ['GET'],
+        priority: 10,
+        requirements: [
+            'status'        => '%assert.account_status%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'status'        => 'active',
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         string $status,
         Db $db,
@@ -36,7 +52,6 @@ class UsersMapController extends AbstractController
         ConfigService $config_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         MenuService $menu_service,
         string $env_map_access_token,
         string $env_map_tiles_url

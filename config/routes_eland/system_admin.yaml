@@ -144,44 +144,44 @@
 #  path: /logs
 #  methods: GET
 
-users_image_del_admin:
-  controller: App\Controller\UsersImageDelAdminController
-  path: /users/{id<%assert.id%>}/image/del
-  methods: GET|POST
+#users_image_del_admin:
+#  controller: App\Controller\UsersImageDelAdminController
+#  path: /users/{id<%assert.id%>}/image/del
+#  methods: GET|POST
 
-users_image_upload_admin:
-  controller: App\Controller\UsersImageUploadAdminController
-  path: /users/{id<%assert.id%>}/image/upload
-  methods: POST
+#users_image_upload_admin:
+#  controller: App\Controller\UsersImageUploadAdminController
+#  path: /users/{id<%assert.id%>}/image/upload
+#  methods: POST
 
-users_password_edit:
-  controller: App\Controller\UsersPasswordEditController
-  path: /users/{id<%assert.id%>}/password-edit
-  methods: GET|POST
-  defaults:
-    is_self: false
+#users_password_edit:
+#  controller: App\Controller\UsersPasswordEditController
+#  path: /users/{id<%assert.id%>}/password-edit
+#  methods: GET|POST
+#  defaults:
+#    is_self: false
 
-users_del_admin:
-  controller: App\Controller\UsersDelAdminController
-  path: /users/{id<%assert.id%>}/del
-  methods: GET|POST
+#users_del_admin:
+#  controller: App\Controller\UsersDelAdminController
+#  path: /users/{id<%assert.id%>}/del
+#  methods: GET|POST
 
-users_edit:
-  controller: App\Controller\UsersEditController
-  path: /users/{id<%assert.id%>}/edit
-  methods: GET|POST
-  defaults:
-    is_add: false
-    is_self: false
+#users_edit:
+#  controller: App\Controller\UsersEditController
+#  path: /users/{id<%assert.id%>}/edit
+#  methods: GET|POST
+#  defaults:
+#    is_add: false
+#    is_self: false
 
-users_add:
-  controller: App\Controller\UsersEditController
-  path: /users/add
-  methods: GET|POST
-  defaults:
-    is_add: true
-    is_self: false
-    id: 0
+#users_add:
+#  controller: App\Controller\UsersEditController
+#  path: /users/add
+#  methods: GET|POST
+#  defaults:
+#    is_add: true
+#    is_self: false
+#    id: 0
 
 #users_modules:
 #  controller: App\Controller\UsersModulesController
@@ -263,10 +263,10 @@ users_add:
 #  path: /transactions-sum-out/{days<%assert.id%>}
 #  methods: GET
 
-weighted_balances:
-  controller: App\Controller\WeightedBalancesController
-  path: /weighted-balances/{days<%assert.id%>}
-  methods: GET
+#weighted_balances:
+#  controller: App\Controller\WeightedBalancesController
+#  path: /weighted-balances/{days<%assert.id%>}
+#  methods: GET
 
 #logo_upload:
 #  controller: App\Controller\LogoUploadController

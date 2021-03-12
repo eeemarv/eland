@@ -32,9 +32,43 @@ use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UsersShowController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/{id}/{status}',
+        name: 'users_show',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'status'        => '%assert.account_status%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'is_self'       => false,
+            'status'        => 'active',
+            'module'        => 'users',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/self',
+        name: 'users_show_self',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'is_self'       => true,
+            'status'        => 'active',
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         string $status,
@@ -324,7 +358,7 @@ class UsersShowController extends AbstractController
 
         if ($pp->is_admin() && !$count_transactions && !$su->is_owner($id))
         {
-            $btn_top_render->del('users_del_admin', $pp->ary(),
+            $btn_top_render->del('users_del', $pp->ary(),
                 ['id' => $id], 'Gebruiker verwijderen');
         }
 
@@ -710,16 +744,19 @@ class UsersShowController extends AbstractController
 
         $out .= '</div></div></div></div>';
 
-        $out .= self::get_mail_form(
-            $id,
-            $user_mail_content,
-            $user_mail_cc,
-            $account_render,
-            $form_token_service,
-            $mail_addr_user_service,
-            $pp,
-            $su
-        );
+        if (!$is_self)
+        {
+            $out .= self::get_mail_form(
+                $id,
+                $user_mail_content,
+                $user_mail_cc,
+                $account_render,
+                $form_token_service,
+                $mail_addr_user_service,
+                $pp,
+                $su
+            );
+        }
 
         $out .= $contacts_content;
 
@@ -755,7 +792,7 @@ class UsersShowController extends AbstractController
             $out .= '</div>';
         }
 
-        if ($messages_enabled || $transactions_enabled)
+        if (!$is_self && ($messages_enabled || $transactions_enabled))
         {
             $out .= '<div class="row">';
             $out .= '<div class="col-md-12">';

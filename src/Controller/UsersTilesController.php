@@ -18,9 +18,26 @@ use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UsersTilesController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/tiles/{status}',
+        name: 'users_tiles',
+        methods: ['GET'],
+        priority: 10,
+        requirements: [
+            'status'        => '%assert.account_status%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'status'        => 'active',
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         string $status,

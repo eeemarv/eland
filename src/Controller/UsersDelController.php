@@ -22,9 +22,24 @@ use App\Service\ThumbprintAccountsService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Routing\Annotation\Route;
 
-class UsersDelAdminController extends AbstractController
+class UsersDelController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/{id}/del',
+        name: 'users_del',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

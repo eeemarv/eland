@@ -8,9 +8,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Routing\Annotation\Route;
 
 class WeightedBalancesController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/weighted-balances/{days}',
+        name: 'weighted_balances',
+        methods: ['GET'],
+        requirements: [
+            'days'          => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
+
     public function __invoke(
         int $days,
         Db $db,

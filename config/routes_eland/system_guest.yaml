@@ -22,27 +22,27 @@
 #  defaults:
 #    is_self: false
 
-users_show:
-  controller: App\Controller\UsersShowController
-  path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
-  methods: GET|POST
-  defaults:
-    is_self: false
+#users_show:
+#  controller: App\Controller\UsersShowController
+#  path: /users/{id<%assert.id%>}/{status<%assert.account_status%>?active}
+#  methods: GET|POST
+#  defaults:
+#    is_self: false
 
-users_tiles:
-  controller: App\Controller\UsersTilesController
-  path: /users/tiles/{status<%assert.account_status%>?active}
-  methods: GET
+#users_tiles:
+#  controller: App\Controller\UsersTilesController
+#  path: /users/tiles/{status<%assert.account_status%>?active}
+#  methods: GET
 
-users_list:
-  controller: App\Controller\UsersListController
-  path: /users/{status<%assert.account_status%>?active}
-  methods: GET|POST
+#users_list:
+#  controller: App\Controller\UsersListController
+#  path: /users/{status<%assert.account_status%>?active}
+#  methods: GET|POST
 
-users_map:
-  controller: App\Controller\UsersMapController
-  path: /users/map/{status<%assert.account_status%>?active}
-  methods: GET
+#users_map:
+#  controller: App\Controller\UsersMapController
+#  path: /users/map/{status<%assert.account_status%>?active}
+#  methods: GET
 
 #transactions_show:
 #  controller: App\Controller\TransactionsShowController

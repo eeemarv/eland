@@ -77,41 +77,41 @@
 #  path: /messages/add
 #  methods: GET|POST
 
-users_image_del:
-  controller: App\Controller\UsersImageDelController
-  path: /users/image/del
-  methods: GET|POST
+#users_image_del:
+#  controller: App\Controller\UsersImageDelController
+#  path: /users/image/del
+#  methods: GET|POST
 
-users_image_upload:
-  controller: App\Controller\UsersImageUploadController
-  path: /users/image/upload
-  methods: POST
+#users_image_upload:
+#  controller: App\Controller\UsersImageUploadController
+#  path: /users/image/upload
+#  methods: POST
 
-users_password_edit_self:
-  controller: App\Controller\UsersPasswordEditController
-  path: /users/password-edit-self
-  methods: GET|POST
-  defaults:
-    is_self: true
-    id: 0
+#users_password_edit_self:
+#  controller: App\Controller\UsersPasswordEditController
+#  path: /users/password-edit-self
+#  methods: GET|POST
+#  defaults:
+#   is_self: true
+#    id: 0
 
-users_show_self:
-  controller: App\Controller\UsersShowController
-  path: /users/self
-  methods: GET|POST
-  defaults:
-    id: 0
-    status: active
-    is_self: true
+#users_show_self:
+#  controller: App\Controller\UsersShowController
+#  path: /users/self
+#  methods: GET|POST
+#  defaults:
+#    id: 0
+#    status: active
+#    is_self: true
 
-users_edit_self:
-  controller: App\Controller\UsersEditController
-  path: /users/edit-self
-  methods: GET|POST
-  defaults:
-    is_add: false
-    is_self: true
-    id: 0
+#users_edit_self:
+#  controller: App\Controller\UsersEditController
+#  path: /users/edit-self
+#  methods: GET|POST
+#  defaults:
+#    is_add: false
+#    is_self: true
+#    id: 0
 
 #transactions_self:
 #  controller: App\Controller\TransactionsController

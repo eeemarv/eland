@@ -39,11 +39,26 @@ use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-
-use function GuzzleHttp\json_encode;
+use Symfony\Component\Routing\Annotation\Route;
 
 class UsersListController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/{status}',
+        name: 'users_list',
+        methods: ['GET', 'POST'],
+        priority: 10,
+        requirements: [
+            'status'        => '%assert.account_status%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+        ],
+        defaults: [
+            'status'        => 'active',
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         string $status,

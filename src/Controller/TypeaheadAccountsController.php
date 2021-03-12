@@ -18,7 +18,7 @@ class TypeaheadAccountsController extends AbstractController
         requirements: [
             'status'        => '%assert.account_status.primary%',
             'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.user%',
+            'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
             'module'        => 'users',

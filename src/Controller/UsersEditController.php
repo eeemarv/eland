@@ -37,10 +37,59 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersEditController extends AbstractController
 {
+    #[Route(
+        '/{system}/{role_short}/users/add',
+        name: 'users_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'is_add'        => true,
+            'is_self'       => false,
+            'module'        => 'users',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/{id}/edit',
+        name: 'users_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'is_add'        => false,
+            'is_self'       => false,
+            'module'        => 'users',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/edit-self',
+        name: 'users_edit_self',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'is_add'        => false,
+            'is_self'       => true,
+            'module'        => 'users',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,
