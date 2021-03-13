@@ -14,7 +14,7 @@ class HomeController extends AbstractController
         '/{system}',
         name: 'home',
         methods: ['GET'],
-        priority: 40,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
         ],

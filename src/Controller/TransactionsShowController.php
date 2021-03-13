@@ -28,7 +28,7 @@ class TransactionsShowController extends AbstractController
         '/{system}/{role_short}/transactions/{id}',
         name: 'transactions_show',
         methods: ['GET'],
-        priority: 20,
+        priority: 10,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',

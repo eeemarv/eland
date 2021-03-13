@@ -26,7 +26,6 @@ class UsersPeriodicMailController extends AbstractController
         '/{system}/{role_short}/users/periodic-mail',
         name: 'users_periodic_mail',
         methods: ['GET', 'POST'],
-        priority: 20,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',

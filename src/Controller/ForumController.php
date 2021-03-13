@@ -25,7 +25,7 @@ class ForumController extends AbstractController
         '/{system}/{role_short}/forum',
         name: 'forum',
         methods: ['GET'],
-        priority: 30,
+        priority: 20,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',

@@ -47,7 +47,7 @@ class UsersListController extends AbstractController
         '/{system}/{role_short}/users/{status}',
         name: 'users_list',
         methods: ['GET', 'POST'],
-        priority: 30,
+        priority: 20,
         requirements: [
             'status'        => '%assert.account_status%',
             'system'        => '%assert.system%',

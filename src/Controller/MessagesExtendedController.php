@@ -30,7 +30,7 @@ class MessagesExtendedController extends AbstractController
         '/{system}/{role_short}/messages/extended',
         name: 'messages_extended',
         methods: ['GET'],
-        priority: 30,
+        priority: 20,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
@@ -45,7 +45,7 @@ class MessagesExtendedController extends AbstractController
         '/{system}/{role_short}/messages/extended/self',
         name: 'messages_extended_self',
         methods: ['GET'],
-        priority: 9,
+        priority: 20,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',

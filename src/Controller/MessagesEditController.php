@@ -39,7 +39,7 @@ class MessagesEditController extends AbstractController
         '/{system}/{role_short}/messages/add',
         name: 'messages_add',
         methods: ['GET', 'POST'],
-        priority: 20,
+        priority: 10,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',
@@ -55,7 +55,7 @@ class MessagesEditController extends AbstractController
         '/{system}/{role_short}/messages/{id}/edit',
         name: 'messages_edit',
         methods: ['GET', 'POST'],
-        priority: 8,
+        priority: 10,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',

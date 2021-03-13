@@ -26,7 +26,7 @@ class UsersMapController extends AbstractController
         '/{system}/{role_short}/users/map/{status}',
         name: 'users_map',
         methods: ['GET'],
-        priority: 30,
+        priority: 20,
         requirements: [
             'status'        => '%assert.account_status%',
             'system'        => '%assert.system%',

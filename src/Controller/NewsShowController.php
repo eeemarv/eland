@@ -25,7 +25,7 @@ class NewsShowController extends AbstractController
         '/{system}/{role_short}/news/{id}',
         name: 'news_show',
         methods: ['GET'],
-        priority: 20,
+        priority: 10,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',

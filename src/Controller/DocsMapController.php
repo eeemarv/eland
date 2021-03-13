@@ -23,7 +23,7 @@ class DocsMapController extends AbstractController
     #[Route(
         '/{system}/{role_short}/docs/{id}',
         name: 'docs_map',
-        priority: 30,
+        priority: 20,
         methods: ['GET'],
         requirements: [
             'id'            => '%assert.id%',

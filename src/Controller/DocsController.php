@@ -23,7 +23,7 @@ class DocsController extends AbstractController
     #[Route(
         '/{system}/{role_short}/docs',
         name: 'docs',
-        priority: 30,
+        priority: 20,
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',

@@ -26,7 +26,7 @@ class UsersTilesController extends AbstractController
         '/{system}/{role_short}/users/tiles/{status}',
         name: 'users_tiles',
         methods: ['GET'],
-        priority: 30,
+        priority: 20,
         requirements: [
             'status'        => '%assert.account_status%',
             'system'        => '%assert.system%',

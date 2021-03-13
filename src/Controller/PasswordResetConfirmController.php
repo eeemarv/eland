@@ -30,7 +30,7 @@ class PasswordResetConfirmController extends AbstractController
         '/{system}/password-reset/{token}',
         name: 'password_reset_confirm',
         methods: ['GET', 'POST'],
-        priority: 40,
+        priority: 30,
         requirements: [
             'token'         => '%assert.token%',
             'system'        => '%assert.system%',

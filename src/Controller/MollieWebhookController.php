@@ -20,7 +20,7 @@ class MollieWebhookController extends AbstractController
         '/{system}/mollie/webhook',
         name: 'mollie_webhook',
         methods: ['POST'],
-        priority: 40,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
         ],

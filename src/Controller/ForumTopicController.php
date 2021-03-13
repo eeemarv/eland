@@ -31,7 +31,7 @@ class ForumTopicController extends AbstractController
         '/{system}/{role_short}/forum/{id}',
         name: 'forum_topic',
         methods: ['GET', 'POST'],
-        priority: 20,
+        priority: 10,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',

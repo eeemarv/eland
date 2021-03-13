@@ -40,7 +40,7 @@ class UsersShowController extends AbstractController
         '/{system}/{role_short}/users/{id}/{status}',
         name: 'users_show',
         methods: ['GET', 'POST'],
-        priority: 20,
+        priority: 10,
         requirements: [
             'id'            => '%assert.id%',
             'status'        => '%assert.account_status%',
@@ -58,7 +58,7 @@ class UsersShowController extends AbstractController
         '/{system}/{role_short}/users/self',
         name: 'users_show_self',
         methods: ['GET'],
-        priority: 20,
+        priority: 10,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',

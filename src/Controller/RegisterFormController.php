@@ -26,7 +26,7 @@ class RegisterFormController extends AbstractController
         '/{system}/register',
         name: 'register_form',
         methods: ['GET', 'POST'],
-        priority: 40,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
         ],

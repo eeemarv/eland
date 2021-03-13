@@ -25,7 +25,7 @@ class ContactFormController extends AbstractController
         '/{system}/contact',
         name: 'contact_form',
         methods: ['GET', 'POST'],
-        priority: 40,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
         ],
