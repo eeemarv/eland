@@ -20,7 +20,7 @@ class ContactFormConfirmController extends AbstractController
         '/{system}/contact/{token}',
         name: 'config_form_confirm',
         methods: ['GET'],
-        priority: 5,
+        priority: 10,
         requirements: [
             'token'         => '%assert.token%',
             'system'        => '%assert.system%',

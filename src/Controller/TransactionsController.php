@@ -54,7 +54,7 @@ class TransactionsController extends AbstractController
         '/{system}/{role_short}/transactions/self',
         name: 'transactions_self',
         methods: ['GET', 'POST'],
-        priority: 10,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',

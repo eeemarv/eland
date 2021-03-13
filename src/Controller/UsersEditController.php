@@ -62,6 +62,7 @@ class UsersEditController extends AbstractController
         '/{system}/{role_short}/users/{id}/edit',
         name: 'users_edit',
         methods: ['GET', 'POST'],
+        priority: 20,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',

@@ -13,7 +13,7 @@ class MonitorController extends AbstractController
         '/monitor',
         name: 'monitor',
         methods: ['GET'],
-        priority: 20,
+        priority: 40,
     )]
 
     public function __invoke(

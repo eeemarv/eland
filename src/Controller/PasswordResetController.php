@@ -22,7 +22,7 @@ class PasswordResetController extends AbstractController
         '/{system}/password-reset',
         name: 'password_reset',
         methods: ['GET', 'POST'],
-        priority: 10,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
         ],

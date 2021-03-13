@@ -28,7 +28,7 @@ class LoginController extends AbstractController
         '/{system}/login',
         name: 'login',
         methods: ['GET', 'POST'],
-        priority: 10,
+        priority: 40,
         requirements: [
             'system'        => '%assert.system%',
         ],

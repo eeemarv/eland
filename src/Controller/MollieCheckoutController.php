@@ -26,7 +26,7 @@ class MollieCheckoutController extends AbstractController
         '/{system}/mollie/checkout/{token}',
         name: 'mollie_checkout',
         methods: ['GET', 'POST'],
-        priority: 10,
+        priority: 30,
         requirements: [
             'token'         => '%assert.big_token%',
             'system'        => '%assert.system%',

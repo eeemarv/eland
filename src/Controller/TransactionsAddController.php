@@ -37,6 +37,7 @@ class TransactionsAddController extends AbstractController
         '/{system}/{role_short}/transactions/add',
         name: 'transactions_add',
         methods: ['GET', 'POST'],
+        priority: 20,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',

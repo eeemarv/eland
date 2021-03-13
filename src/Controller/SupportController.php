@@ -27,6 +27,7 @@ class SupportController extends AbstractController
         '/{system}/{role_short}/support',
         name: 'support',
         methods: ['GET', 'POST'],
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',

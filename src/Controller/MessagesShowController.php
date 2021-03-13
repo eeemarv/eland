@@ -38,7 +38,7 @@ class MessagesShowController extends AbstractController
         '/{system}/{role_short}/messages/{id}',
         name: 'messages_show',
         methods: ['GET', 'POST'],
-        priority: 9,
+        priority: 20,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',

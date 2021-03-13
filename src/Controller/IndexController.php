@@ -14,7 +14,7 @@ class IndexController extends AbstractController
         '/',
         name: 'index',
         methods: ['GET'],
-        priority: 20,
+        priority: 40,
     )]
 
     public function __invoke(

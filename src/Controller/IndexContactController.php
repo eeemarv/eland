@@ -18,7 +18,7 @@ class IndexContactController extends AbstractController
         '/contact',
         name: 'index_contact',
         methods: ['GET', 'POST'],
-        priority: 20,
+        priority: 40,
     )]
 
     public function __invoke(

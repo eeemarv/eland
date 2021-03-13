@@ -26,7 +26,7 @@ class RegisterFormConfirmController extends AbstractController
         '/{system}/register/{token}',
         name: 'register_form_confirm',
         methods: ['GET'],
-        priority: 5,
+        priority: 30,
         requirements: [
             'token'         => '%assert.token%',
             'system'        => '%assert.system%',

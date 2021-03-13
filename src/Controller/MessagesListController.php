@@ -104,7 +104,7 @@ class MessagesListController extends AbstractController
         '/{system}/{role_short}/messages/self',
         name: 'messages_list_self',
         methods: ['GET', 'POST'],
-        priority: 9,
+        priority: 30,
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',

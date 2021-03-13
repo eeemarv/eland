@@ -31,6 +31,7 @@ class MessagesDelController extends AbstractController
         '/{system}/{role_short}/messages/{id}/del',
         name: 'messages_del',
         methods: ['GET', 'POST'],
+        priority: 20,
         requirements: [
             'id'            => '%assert.id%',
             'system'        => '%assert.system%',
