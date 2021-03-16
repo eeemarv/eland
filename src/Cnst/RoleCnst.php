@@ -7,7 +7,7 @@ class RoleCnst
     const LABEL_ARY = [
         'admin'     => 'Admin',
         'user'      => 'Gebruiker',
-        'guest'     => 'Gast',
+        'guest'     => 'Gast / InterSysteem',
     ];
 
     const SHORT = [
