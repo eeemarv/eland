@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class LogoutController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}logout',
+        '/{system}/{role_short}/logout',
         name: 'logout',
         methods: ['GET'],
         priority: 30,
