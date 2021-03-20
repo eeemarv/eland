@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\MessagesShowController;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ImageUploadService;

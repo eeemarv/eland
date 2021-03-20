@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Calendar;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
@@ -40,14 +40,14 @@ class CalendarMonthController extends AbstractController
             throw new NotFoundHttpException('Calendar module not enabled.');
         }
 
-        $news = NewsListController::get_data(
+        $news = CalendarListController::get_data(
             $db,
             $config_service,
             $item_access_service,
             $pp
         );
 
-        NewsListController::set_heading_and_btns(
+        CalendarListController::set_heading_and_btns(
             false,
             $heading_render,
             $btn_top_render,
@@ -61,7 +61,7 @@ class CalendarMonthController extends AbstractController
 
         if (!count($news))
         {
-            $content = NewsListController::no_news($menu_service, $pp);
+            $content = CalendarListController::no_news($menu_service, $pp);
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $content,

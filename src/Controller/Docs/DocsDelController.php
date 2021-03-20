@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Docs;
 
 use App\Render\HeadingRender;
 use App\Render\LinkRender;

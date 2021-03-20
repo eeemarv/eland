@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Contacts;
 
 use App\Cnst\AccessCnst;
 use App\Cnst\BulkCnst;

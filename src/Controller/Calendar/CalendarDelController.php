@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Calendar;
 
 use App\Render\AccountRender;
 use App\Render\HeadingRender;
@@ -69,6 +69,7 @@ class CalendarDelController extends AbstractController
         $heading_render->add('Nieuwsbericht ' . $news['subject'] . ' verwijderen?');
         $heading_render->fa('calendar-o');
 
+/*
         $out = NewsExtendedController::render_news_item(
             $news,
             true,
@@ -80,8 +81,9 @@ class CalendarDelController extends AbstractController
             $date_format_service,
             $item_access_service
         );
+*/
 
-        $out .= '<div class="panel panel-info">';
+        $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<p class="text-danger"><strong>';

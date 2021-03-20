@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\RegisterForm;
 
 use App\Cnst\PagesCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

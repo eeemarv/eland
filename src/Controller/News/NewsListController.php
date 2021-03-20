@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\News;
 
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;

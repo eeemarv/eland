@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\ContactTypes;
 
 use App\Render\HeadingRender;
 use App\Render\LinkRender;
@@ -10,7 +10,6 @@ use App\Service\MenuService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\ContactTypesController;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Routing\Annotation\Route;

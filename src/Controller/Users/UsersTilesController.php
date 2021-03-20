@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Users;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\UsersListController;
 use App\Cnst\StatusCnst;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;

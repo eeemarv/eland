@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\MessagesShowController;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;

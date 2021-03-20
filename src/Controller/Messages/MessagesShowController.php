@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
+use App\Controller\Contacts\ContactsUserShowInlineController;
+use App\Controller\Users\UsersShowController;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;

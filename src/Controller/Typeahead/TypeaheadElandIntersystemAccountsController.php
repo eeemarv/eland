@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Typeahead;
 
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;

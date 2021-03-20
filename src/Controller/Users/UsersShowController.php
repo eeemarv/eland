@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Users;
 
 use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Controller\UsersListController;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
+use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;

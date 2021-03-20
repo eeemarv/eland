@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Cms;
 
 use App\Cnst\RoleCnst;
 use App\HtmlProcess\HtmlPurifier;
