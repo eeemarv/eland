@@ -245,8 +245,13 @@ class UsersShowController extends AbstractController
                 or id_to = ?',
                 [$id, $id], [\PDO::PARAM_INT, \PDO::PARAM_INT]);
 
-        $sql_nxt_prv = [
-            'where'     => [],
+        $sql_next = [
+            'where'     => ['u.code > ?'],
+            'params'    => [$user['code']],
+            'types'     => [\PDO::PARAM_STR],
+        ];
+        $sql_prev = [
+            'where'     => ['u.code < ?'],
             'params'    => [$user['code']],
             'types'     => [\PDO::PARAM_STR],
         ];
@@ -255,31 +260,33 @@ class UsersShowController extends AbstractController
         {
             foreach ($def_sql_ary as $def_val)
             {
-                $sql_nxt_prv[$st_def_key][] = $def_val;
+                $sql_next[$st_def_key][] = $def_val;
+                $sql_prev[$st_def_key][] = $def_val;
             }
         }
 
         $params['status'] = $status;
 
-        $sql_nxt_prv_where = ' and ' . implode(' and ', $sql_nxt_prv['where']);
+        $sql_next_where = implode(' and ', $sql_next['where']);
+        $sql_prev_where = implode(' and ', $sql_prev['where']);
 
         $next = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
-            where u.code > ?
-            ' . $sql_nxt_prv_where . '
+            where
+            ' . $sql_next_where . '
             order by u.code asc
             limit 1',
-            $sql_nxt_prv['params'],
-            $sql_nxt_prv['types']);
+            $sql_next['params'],
+            $sql_next['types']);
 
         $prev = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
-            where u.code < ?
-            ' . $sql_nxt_prv_where . '
+            where
+            ' . $sql_prev_where . '
             order by u.code desc
             limit 1',
-            $sql_nxt_prv['params'],
-            $sql_nxt_prv['types']);
+            $sql_prev['params'],
+            $sql_prev['types']);
 
         $intersystem_missing = false;
 
