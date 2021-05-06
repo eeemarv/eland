@@ -257,9 +257,7 @@ class ContactsEditController extends AbstractController
                     $warning .= 'een uniek E-mail adres hebben zullen zij ';
                     $warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
                     $warning .= 'of kunnen inloggen met ';
-                    $warning .= 'E-mail adres. Zie ';
-                    $warning .= $link_render->link_no_attr('status',
-                        $pp->ary(), [], 'Status');
+                    $warning .= 'E-mail adres.';
 
                     if ($mail_count === 1)
                     {
