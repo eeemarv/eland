@@ -11,9 +11,7 @@ class GeocodeService
 {
     protected StatefulGeocoder $geocoder;
 
-    public function __construct(
-        string $env_google_geo_api_key
-    )
+    public function __construct()
     {
         $http_client = new HttpClient();
         $provider = new bpost($http_client);
