@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a49dc368e86743905f80f0270e59b984",
+    "content-hash": "4653af99b901e516759b79e82a33ddf7",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.180.3",
+            "version": "3.180.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "99c08e621c33ca4b2efa1df162c1ce0ecb3068dd"
+                "reference": "948a4defbe2a571cc4460725015b8e98b7060f2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/99c08e621c33ca4b2efa1df162c1ce0ecb3068dd",
-                "reference": "99c08e621c33ca4b2efa1df162c1ce0ecb3068dd",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/948a4defbe2a571cc4460725015b8e98b7060f2d",
+                "reference": "948a4defbe2a571cc4460725015b8e98b7060f2d",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.180.3"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.180.5"
             },
-            "time": "2021-05-05T19:41:31+00:00"
+            "time": "2021-05-07T18:12:43+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -881,16 +881,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "2.3.1",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "a08bc3b4d8567cdff05e89b272ba1e06e9d71c21"
+                "reference": "d6b3c37804539a24ba8a7d647a6144cab2f13242"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/a08bc3b4d8567cdff05e89b272ba1e06e9d71c21",
-                "reference": "a08bc3b4d8567cdff05e89b272ba1e06e9d71c21",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/d6b3c37804539a24ba8a7d647a6144cab2f13242",
+                "reference": "d6b3c37804539a24ba8a7d647a6144cab2f13242",
                 "shasum": ""
             },
             "require": {
@@ -920,7 +920,7 @@
                 "symfony/phpunit-bridge": "^5.2",
                 "symfony/property-info": "^4.3.3|^5.0",
                 "symfony/proxy-manager-bridge": "^3.4|^4.3.3|^5.0",
-                "symfony/security-bundle": "^4.4|5.0",
+                "symfony/security-bundle": "^4.4|^5.0",
                 "symfony/twig-bridge": "^3.4.30|^4.3.3|^5.0",
                 "symfony/validator": "^3.4.30|^4.3.3|^5.0",
                 "symfony/web-profiler-bundle": "^3.4.30|^4.3.3|^5.0",
@@ -971,7 +971,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineBundle/issues",
-                "source": "https://github.com/doctrine/DoctrineBundle/tree/2.3.1"
+                "source": "https://github.com/doctrine/DoctrineBundle/tree/2.3.2"
             },
             "funding": [
                 {
@@ -987,7 +987,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-04-05T14:21:02+00:00"
+            "time": "2021-05-06T19:21:22+00:00"
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",
@@ -2007,6 +2007,60 @@
             "time": "2021-01-14T21:52:44+00:00"
         },
         {
+            "name": "geo6/geocoder-php-bpost-provider",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geo6/geocoder-php-bpost-provider.git",
+                "reference": "3cb2b3a844c272a818aae3fa7cce1b669df9b151"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geo6/geocoder-php-bpost-provider/zipball/3cb2b3a844c272a818aae3fa7cce1b669df9b151",
+                "reference": "3cb2b3a844c272a818aae3fa7cce1b669df9b151",
+                "shasum": ""
+            },
+            "require": {
+                "geocoder-php/common-http": "^4.1",
+                "php": "^7.3 || ^8.0",
+                "willdurand/geocoder": "^4.0"
+            },
+            "provide": {
+                "geocoder-php/provider-implementation": "1.0"
+            },
+            "require-dev": {
+                "geocoder-php/provider-integration-tests": "^1.0",
+                "php-http/curl-client": "^2.0",
+                "php-http/message": "^1.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Geocoder\\Provider\\bpost\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonathan Beliën",
+                    "email": "jbe@geo6.be"
+                }
+            ],
+            "description": "Geocoder bpost adapter",
+            "support": {
+                "issues": "https://github.com/geo6/geocoder-php-bpost-provider/issues",
+                "source": "https://github.com/geo6/geocoder-php-bpost-provider/tree/v1.3.0"
+            },
+            "time": "2020-12-22T15:23:58+00:00"
+        },
+        {
             "name": "geocoder-php/common-http",
             "version": "4.4.0",
             "source": {
@@ -2070,65 +2124,6 @@
                 "source": "https://github.com/geocoder-php/php-common-http/tree/4.4.0"
             },
             "time": "2020-12-21T09:30:01+00:00"
-        },
-        {
-            "name": "geocoder-php/google-maps-provider",
-            "version": "4.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/geocoder-php/google-maps-provider.git",
-                "reference": "1e88138b66bf31b7e025b7bd579edb2cc9690414"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/geocoder-php/google-maps-provider/zipball/1e88138b66bf31b7e025b7bd579edb2cc9690414",
-                "reference": "1e88138b66bf31b7e025b7bd579edb2cc9690414",
-                "shasum": ""
-            },
-            "require": {
-                "geocoder-php/common-http": "^4.0",
-                "php": "^7.3 || ^8.0",
-                "willdurand/geocoder": "^4.0"
-            },
-            "provide": {
-                "geocoder-php/provider-implementation": "1.0"
-            },
-            "require-dev": {
-                "geocoder-php/provider-integration-tests": "^1.0",
-                "php-http/curl-client": "^2.2",
-                "php-http/message": "^1.0",
-                "phpunit/phpunit": "^9.5"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Geocoder\\Provider\\GoogleMaps\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "William Durand",
-                    "email": "william.durand1@gmail.com"
-                }
-            ],
-            "description": "Geocoder GoogleMaps adapter",
-            "homepage": "http://geocoder-php.org/Geocoder/",
-            "support": {
-                "source": "https://github.com/geocoder-php/google-maps-provider/tree/4.6.0"
-            },
-            "time": "2020-12-21T16:41:18+00:00"
         },
         {
             "name": "gregwar/captcha",
@@ -2525,16 +2520,16 @@
         },
         {
             "name": "laminas/laminas-code",
-            "version": "4.2.1",
+            "version": "4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-code.git",
-                "reference": "a1e7f8b6467ac7f277b8e027e8537fa13664a8d8"
+                "reference": "3cbdf2e23e6df1d1beecb5708560c8f6a8115bf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-code/zipball/a1e7f8b6467ac7f277b8e027e8537fa13664a8d8",
-                "reference": "a1e7f8b6467ac7f277b8e027e8537fa13664a8d8",
+                "url": "https://api.github.com/repos/laminas/laminas-code/zipball/3cbdf2e23e6df1d1beecb5708560c8f6a8115bf9",
+                "reference": "3cbdf2e23e6df1d1beecb5708560c8f6a8115bf9",
                 "shasum": ""
             },
             "require": {
@@ -2592,7 +2587,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2021-04-23T11:54:51+00:00"
+            "time": "2021-05-07T14:09:12+00:00"
         },
         {
             "name": "laminas/laminas-eventmanager",
@@ -9015,13 +9010,13 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.0",
-        "ext-zip": "*",
         "ext-ctype": "*",
         "ext-exif": "*",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-mbstring": "*",
-        "ext-redis": "*"
+        "ext-redis": "*",
+        "ext-zip": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"

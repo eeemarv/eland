@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Geocoder\Query\GeocodeQuery;
 use Http\Adapter\Guzzle6\Client as HttpClient;
-use Geocoder\Provider\GoogleMaps\GoogleMaps;
+use Geocoder\Provider\bpost\bpost;
 use Geocoder\StatefulGeocoder;
 
 class GeocodeService
@@ -15,8 +15,8 @@ class GeocodeService
         string $env_google_geo_api_key
     )
     {
-        $httpClient = new HttpClient();
-        $provider = new GoogleMaps($httpClient, 'be', $env_google_geo_api_key);
+        $http_client = new HttpClient();
+        $provider = new bpost($http_client);
         $this->geocoder = new StatefulGeocoder($provider, 'nl');
         $this->geocoder->setLimit(1);
     }

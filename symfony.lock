@@ -114,11 +114,11 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"
     },
+    "geo6/geocoder-php-bpost-provider": {
+        "version": "v1.3.0"
+    },
     "geocoder-php/common-http": {
         "version": "4.4.0"
-    },
-    "geocoder-php/google-maps-provider": {
-        "version": "4.6.0"
     },
     "gregwar/captcha": {
         "version": "v1.1.8"
