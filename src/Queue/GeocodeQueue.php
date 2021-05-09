@@ -59,7 +59,20 @@ class GeocodeQueue implements QueueInterface
 			return;
 		}
 
-		$this->cache_service->set($geo_status_key, ['value' => 'error'], 31536000); // 1 year
+		$status_data = $this->cache_service->get($geo_status_key);
+
+		if (!isset($status_data['value']))
+		{
+			return;
+		}
+
+		if ($status_data['value'] === 'error')
+		{
+			$this->logger->debug('Skip geocoding proces error for geo_status_key: ' .
+				$geo_status_key . ' for data ' . json_encode($data),
+				['schema' => $sch]);
+			return;
+		}
 
 		if ($this->env_geo_block === '1')
 		{
@@ -67,6 +80,8 @@ class GeocodeQueue implements QueueInterface
 				json_encode($data));
 			return;
 		}
+
+		$this->cache_service->set($geo_status_key, ['value' => 'error'], 2592000); // 30 days
 
 		// lat, lng
 		$coords = $this->geocode_service->getCoordinates($adr);
@@ -126,16 +141,25 @@ class GeocodeQueue implements QueueInterface
 			return;
 		}
 
-		if ($this->cache_service->get($status_key) == ['value' => 'error'])
+		if ($this->cache_service->exists($status_key))
 		{
-			$this->logger->info('Geocoding: Error status exists for ' .
-				json_encode($data), ['schema' => $data['schema']]);
-			return;
+			$status_data = $this->cache_service->get($status_key);
+
+			if (!isset($status_data['value']))
+			{
+				$this->cache_service->del($status_key);
+			}
+			else if ($status_data['value'] === 'error')
+			{
+				$this->logger->info('Geocoding: error exists for ' .
+					json_encode($data), ['schema' => $data['schema']]);
+				return;
+			}
 		}
 
 		$this->cache_service->set($status_key,
 			['value' => 'queue'],
-			2592000);  // 30 days
+			604800);  // 7 days
 
 		$this->queue($data, $priority);
 

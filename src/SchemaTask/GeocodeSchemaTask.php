@@ -16,7 +16,8 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 		protected LoggerInterface $logger,
 		protected GeocodeQueue $geocode_queue,
 		protected AccountStrRender $account_str_render,
-		protected string $env_geo_block
+		protected string $env_geo_block,
+		protected string $env_geo_rm_error
 	)
 	{
 	}
@@ -63,9 +64,26 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 				continue;
 			}
 
-			if ($this->cache_service->get($status_key) == ['value' => 'error'])
+			if ($this->cache_service->exists($status_key))
 			{
-				continue;
+				$status_data = $this->cache_service->get($status_key);
+
+				if (!isset($status_data['value']))
+				{
+					// should not occur
+					$this->cache_service->del($status_key);
+					continue;
+				}
+
+				if ($status_data['value'] === 'error')
+				{
+					if ($this->env_geo_rm_error === '1')
+					{
+						$this->cache_service->del($status_key);
+					}
+
+					continue;
+				}
 			}
 
 			$this->geocode_queue->queue($data, 0);
@@ -78,7 +96,7 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 
 			$this->cache_service->set($status_key,
 				['value' => 'queue'],
-				2592000);  // 30 days
+				604800);  // 7 days
 		}
 
 		if (count($log_ary))

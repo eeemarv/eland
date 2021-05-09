@@ -43,6 +43,7 @@ services:
             $env_master_password: '%env(base64:MASTER_PASSWORD)%'
             $env_mollie_test_api_key: '%env(MOLLIE_TEST_API_KEY)%'
             $env_geo_block: '%env(GEO_BLOCK)%'
+            $env_geo_rm_error: '%env(GEO_RM_ERROR)%'
             $env_app_host: '%env(APP_HOST)%'
             $env_app_scheme: '%env(APP_SCHEME)%'
             $env_app_init_enabled: '%env(APP_INIT_ENABLED)%'
