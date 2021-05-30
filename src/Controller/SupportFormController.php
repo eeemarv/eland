@@ -21,11 +21,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SupportController extends AbstractController
+class SupportFormController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/support',
-        name: 'support',
+        name: 'support_form',
         methods: ['GET', 'POST'],
         priority: 20,
         requirements: [
@@ -33,7 +33,7 @@ class SupportController extends AbstractController
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
-            'module'        => 'support',
+            'module'        => 'support_form',
         ],
     )]
 

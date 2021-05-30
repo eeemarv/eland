@@ -362,7 +362,7 @@ news_del:
   title: Nieuwsbericht "%name%" verwijderen?
   success: Nieuwsbericht "%name%" is verwijderd.
 
-support:
+support_form:
   title: Support
 
 notification_index:
@@ -414,7 +414,7 @@ contact:
     De link om je contactbericht te bevestigen
     is verlopen. Gelieve opnieuw te proberen.
 
-register:
+register_form:
   title: Inschrijven
   accept: Ik heb de privacy en aanvaard deze.
   confirm_email_info: >-

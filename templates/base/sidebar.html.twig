@@ -27,8 +27,31 @@
 	{%- endif -%}
 {%- endblock -%}
 
-{%- block page_container -%}
+{%- set active_menu = 'users' -%}
 
+{%- set menu_sidebar_def = {
+	'messages': {'fa': 'newspaper-o', 'access': 'guest'},
+	'users': {'fa': 'users', 'access': 'guest', 'always_enabled': true},
+	'accounts': {'fa': 'coffee'},
+	'transactions': {'fa': 'exchange', 'access': 'guest'},
+	'news': {'fa': 'calendar-o', 'access': 'guest'},
+	'calendar': {'fa': 'calendar'},
+	'docs': {'fa': 'files-o', 'access': 'guest'},
+	'forum': {'fa': 'comments-o', 'config': 'forum_en', 'access': 'guest'},
+	'support_form': {'fa': 'ambulance', 'access': 'user'},
+	'home': {'fa': 'home', 'access': 'anonymous', 'menu_config': true},
+	'login': {'fa': 'sign-in', 'access': 'anonymous', 'always_enabled': true},
+	'contact_form': {'fa': 'comment-o', 'config': 'contact_form_en', 'access': 'anonymous'},
+	'register_form': {'fa': 'check-square-o', 'config': 'registration_en', 'access': 'anonymous'}
+} -%}
+
+{%- set admin_menu_def = {
+	'config': {'fa': 'cogs'},
+	'export': {'fa': 'download'},
+	'logs': {'fa': 'history'}
+} -%}
+
+{%- block page_container -%}
 	<div class="swiper-container">
 	<div class="row-offcanvas row-offcanvas-left">
 	<div id="sidebar" class="sidebar-offcanvas">
@@ -37,13 +60,19 @@
 	<ul class="nav nav-pills nav-stacked">
 
 	{%- block menu_sidebar -%}
-		{%- for m in menu_sidebar() -%}
-			<li{%- if m.active %} class="active"{%- endif -%}>
-				<a href="{{- path(m.route, pp_ary()) -}}">
-				<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-				{{- m.label -}}
-				</a>
-			</li>
+		{%- for r, m in menu_sidebar_def -%}
+			{%- if m.access is defined and item_visible(m.access)
+				and (m.always_enabled is defined
+				or (m.menu_config is not defined and config_bool(r ~ '.enabled', schema))
+				or (m.menu_config is defined and config_bool(r ~'.menu.enabled', schema)))
+			-%}
+				<li{%- if r == active_menu %} class="active"{%- endif -%}>
+					<a href="{{- path(r|var_route, pp_ary()) -}}">
+					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+					{{- (r ~ '.title')|trans -}}
+					</a>
+				</li>
+			{%- endif -%}
 		{%- endfor -%}
 	{%- endblock menu_sidebar -%}
 
