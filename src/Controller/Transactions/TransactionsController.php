@@ -675,6 +675,10 @@ class TransactionsController extends AbstractController
             || $filter_service_stuff
         );
 
+        $template = 'transactions/transactions_';
+        $template .= $filter_uid ? 'uid' : 'list';
+        $template .= '.html.twig';
+
         if ($filter_uid)
         {
             if ($is_self)
@@ -949,9 +953,12 @@ class TransactionsController extends AbstractController
 
             $menu_service->set('transactions');
 
-            return $this->render('transactions/transactions_list.html.twig', [
+            return $this->render($template, [
                 'content'   => $out,
                 'filtered'  => $filtered,
+                'is_self'   => $is_self,
+                'uid'       => $filter['uid'] ?? 0,
+                'balance'   => $balance ?? 0,
                 'schema'    => $pp->schema(),
             ]);
         }
@@ -1325,9 +1332,12 @@ class TransactionsController extends AbstractController
 
         $menu_service->set('transactions');
 
-        return $this->render('transactions/transactions_list.html.twig', [
+        return $this->render($template, [
             'content'   => $out,
             'filtered'  => $filtered,
+            'is_self'   => $is_self,
+            'uid'       => $filter['uid'] ?? 0,
+            'balance'   => $balance ?? 0,
             'schema'    => $pp->schema(),
         ]);
     }

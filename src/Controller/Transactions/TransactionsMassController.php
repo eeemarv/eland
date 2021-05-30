@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
@@ -28,7 +28,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MassTransactionController extends AbstractController
+class TransactionsMassController extends AbstractController
 {
     const STATUS_RENDER = [
         'active'	=> [
@@ -83,7 +83,7 @@ class MassTransactionController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/mass-transaction',
-        name: 'mass_transaction',
+        name: 'transactions_mass',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -424,7 +424,7 @@ class MassTransactionController extends AbstractController
                     $alert_service->success('Notificatie mails verzonden.');
                 }
 
-                $link_render->redirect('mass_transaction', $pp->ary(), []);
+                $link_render->redirect('transactions_mass', $pp->ary(), []);
             }
         }
 
@@ -958,9 +958,9 @@ class MassTransactionController extends AbstractController
 
         $out .= '</form>';
 
-        $menu_service->set('mass_transaction');
+        $menu_service->set('transactions_mass');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('transactions/transactions_mass.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

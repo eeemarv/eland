@@ -1,0 +1,22 @@
+{%- extends 'transactions/transactions_list.html.twig' -%}
+
+{%- block heading_title -%}
+    {%- if is_self -%}
+        {{- 'transactions_self.title'|trans -}}
+    {%- else -%}
+        {{- 'transactions_uid.title'|trans({
+            '%account%': account(uid, schema)|link('users_show', {'id': uid})
+        })|raw -}}
+    {%- endif -%}
+{%- endblock heading_title -%}
+
+{%- block heading_sub -%}
+    <h2>
+        {{- 'label.current_balance'|trans -}}:
+        <span class="label label-info">
+            {{- balance -}}
+        </span>
+        &nbsp;
+        {{- config_str('transactions.currency.name', schema) -}}
+    </h2>
+{%- endblock heading_sub -%}

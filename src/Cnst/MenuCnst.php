@@ -190,9 +190,9 @@ class MenuCnst
         'users_periodic_mail'   => 'users',
         'intersystems'          => 'users',
         'mollie_payments'       => 'users',
-        'transactions_modules'  => 'transactions',
-        'autominlimit'          => 'transactions',
-        'mass_transaction'      => 'transactions',
+        'transactions_modules'      => 'transactions',
+        'transactions_autominlimit' => 'transactions',
+        'transactions_mass'         => 'transactions',
     ];
 
     const LOCAL_ADMIN = [
@@ -256,16 +256,16 @@ class MenuCnst
                 'label' => 'Submodules en velden',
                 'route' => 'transactions_modules',
             ],
-            'autominlimit'		=> [
+            'transactions_autominlimit'		=> [
                 'fa'        => 'arrows-v',
                 'label'     => 'Auto Min Limiet',
-                'route'     => 'autominlimit',
+                'route'     => 'transactions_autominlimit',
                 'config_en' => 'accounts.limits.auto_min.enabled',
             ],
-            'mass_transaction'	=> [
+            'transactions_mass'	=> [
                 'fa'        => 'exchange',
                 'label'     => 'Massa-Transactie',
-                'route'     => 'mass_transaction',
+                'route'     => 'transactions_mass',
                 'config_en' => 'transactions.mass.enabled',
             ],
         ],

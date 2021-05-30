@@ -123,6 +123,7 @@ label:
   contact_details: Contacten
   content: Inhoud
   created: Gecreëerd
+  current_balance: Huidig saldo
   days: Dagen
   description: Omschrijving
   date: Datum
@@ -630,7 +631,10 @@ transactions:
   title: Transacties
 
 transactions_add:
-  title: Nieuwe Transactie
+  title: Nieuwe transactie
+
+transactions_autominlimit:
+  title: Automatische minimum limiet
 
 transactions_edit:
   title: >-
@@ -648,8 +652,23 @@ transactions_edit:
       gemaakt worden. Doe een tegenboeking
       bij vergissing.
 
+transactions_mass:
+  title: Massa transactie
+
+transactions_modules:
+  title: >-
+    Transacties submodules en velden
+
+transactions_self:
+  title: >-
+    Mijn transacties
+
+transactions_uid:
+  title: >-
+    Transacties van %account%
+
 users:
-  title: Gebruikers
+  title: Leden
 
 users_add:
   title: Gebruiker toevoegen

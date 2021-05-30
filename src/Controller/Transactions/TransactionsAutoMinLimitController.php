@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,11 +15,11 @@ use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AutoMinLimitController extends AbstractController
+class TransactionsAutoMinLimitController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/auto-min-limit',
-        name: 'autominlimit',
+        name: 'transactions_autominlimit',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -57,7 +57,7 @@ class AutoMinLimitController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('autominlimit', $pp->ary(), []);
+                $link_render->redirect('transactions_autominlimit', $pp->ary(), []);
             }
 
             $percentage = $request->request->get('percentage');
@@ -69,7 +69,7 @@ class AutoMinLimitController extends AbstractController
             $config_service->set_str('accounts.limits.auto_min.exclude.from', $exclude_from, $pp->schema());
 
             $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
-            $link_render->redirect('autominlimit', $pp->ary(), []);
+            $link_render->redirect('transactions_autominlimit', $pp->ary(), []);
         }
         else
         {
@@ -170,9 +170,9 @@ class AutoMinLimitController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set('autominlimit');
+        $menu_service->set('transactions_autominlimit');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('transactions/transactions_autominlimit.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

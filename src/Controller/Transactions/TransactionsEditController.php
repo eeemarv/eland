@@ -181,18 +181,7 @@ class TransactionsEditController extends AbstractController
         $heading_render->add('Omschrijving transactie aanpassen');
         $heading_render->fa('exchange');
 
-        $out = '<i><ul>';
-        $out .= '<li>Enkel Admins kunnen de omschrijving van ';
-        $out .= 'een transactie aanpassen.</li>';
-        $out .= '<li>Pas de omschrijving van een transactie ';
-        $out .= 'enkel aan wanneer het echt noodzakelijk is! ';
-        $out .= 'Dit om verwarring te vermijden.</li>';
-        $out .= '<li>Transacties kunnen nooit ongedaan ';
-        $out .= 'gemaakt worden. Doe een tegenboeking ';
-        $out .= 'bij vergissing.</li>';
-        $out .= '</ul></i>';
-
-        $out .= '<div class="panel panel-info">';
+        $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
         $out .= '<form  method="post" autocomplete="off">';
