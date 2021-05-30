@@ -1,14 +1,3 @@
-{%- macro menu_sidebar() -%}
-    {%- for m in menu_sidebar() -%}
-        <li{%- if m.active %} class="active">
-            <a href="{{- path(m.route, pp_ary()) -}}">
-            <i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-            {{- m.label -}}
-            </a>
-        </li>
-    {%- endfor -%}
-{%- endmacro menu_sidebar -%}
-
 {%- macro navbar_toggle_button() -%}
     <button type="button" class="navbar-toggle collapsed"
     data-toggle="collapse" data-target="#navbar-collapse-1"

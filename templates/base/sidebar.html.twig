@@ -1,6 +1,5 @@
 {%- extends 'base/base.html.twig' -%}
 {%- import 'macro/alert.html.twig' as a -%}
-{%- import 'macro/menu.html.twig' as m -%}
 
 {%- block title -%}
 	{{- config_str('system.name', schema) -}}
@@ -38,7 +37,14 @@
 	<ul class="nav nav-pills nav-stacked">
 
 	{%- block menu_sidebar -%}
-		{{- m.menu_sidebar() -}}
+		{%- for m in menu_sidebar() -%}
+			<li{%- if m.active %} class="active"{%- endif -%}>
+				<a href="{{- path(m.route, pp_ary()) -}}">
+				<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
+				{{- m.label -}}
+				</a>
+			</li>
+		{%- endfor -%}
 	{%- endblock menu_sidebar -%}
 
 	</ul>
@@ -137,11 +143,11 @@
 								Editor stijl
 							</li>
 							{%- for kesm, esm in cms_edit_style_menu -%}
-							<li{%- if kesm == cms_edit_style_active %} class="active"{%- endif -%}>
-								<a href="{{- path(route, route_params|merge(query_params)|merge(esm.params)) -}}">
-									{{- esm.lbl -}}
-								</a>
-							</li>
+								<li{%- if kesm == cms_edit_style_active %} class="active"{%- endif -%}>
+									<a href="{{- path(route, route_params|merge(query_params)|merge(esm.params)) -}}">
+										{{- esm.lbl -}}
+									</a>
+								</li>
 							{%- endfor -%}
 						</ul>
 					</span>
