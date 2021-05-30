@@ -1150,6 +1150,7 @@ class MolliePaymentsController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
+            'filtered'  => $filtered,
             'schema'    => $pp->schema(),
         ]);
     }

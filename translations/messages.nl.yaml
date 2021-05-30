@@ -135,6 +135,8 @@ label:
   expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
+  filtered: Gefilterd
+  filters: Filters
   first_name: Voornaam
   from: Van
   from_date: Vanaf

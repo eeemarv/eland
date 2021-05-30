@@ -27,7 +27,7 @@
 	{%- endif -%}
 {%- endblock -%}
 
-{%- set active_menu = 'users' -%}
+{%- set _active_menu = 'users' -%}
 
 {%- set menu_sidebar_def = {
 	'messages': {'fa': 'newspaper-o', 'access': 'guest'},
@@ -259,9 +259,27 @@
 	</div>
 
 	{%- block heading -%}
+		<h1>
+			{%- block heading_fa_container -%}
+				<i class="fa fa-{%- block heading_fa -%}{{- menu_sidebar_def[active_menu].fa -}}{%- endblock heading_fa -%}"></i>&nbsp;
+			{%- endblock heading_fa_container -%}
+			{%- block heading_title -%}
+				{{- (active_menu ~ '.title')|trans -}}
+			{%- endblock heading_title -%}
+			{%- block heading_append -%}{%- endblock heading_append -%}
+		</h1>
+	{%- endblock heading -%}
+
+	{%- block heading_sub -%}
+		{{- heading_sub() -}}
+	{%- endblock heading_sub -%}
+
+	{#
+	{%- block heading -%}
 		{{- heading() -}}
 		{{- heading_sub() -}}
 	{%- endblock heading -%}
+	#}
 
 	{%- block content_top -%}
 		{%- embed 'embed/static_content.html.twig' with {

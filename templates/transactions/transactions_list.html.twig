@@ -1,0 +1,18 @@
+{%- extends 'transactions/transactions_base.html.twig' -%}
+
+{%- block heading_append -%}
+    {%- include 'include/heading_filter.html.twig' -%}
+    {%- include 'include/heading_btn_filter.html.twig' -%}
+{%- endblock heading_append -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('datepicker') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('footable') -}}
+	{{- encore_entry_script_tags('datepicker') -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+{%- endblock js -%}

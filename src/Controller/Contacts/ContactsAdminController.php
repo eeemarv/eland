@@ -645,6 +645,7 @@ class ContactsAdminController extends AbstractController
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $out,
+                'filtered'  => $filtered,
                 'schema'    => $pp->schema(),
             ]);
         }
@@ -788,6 +789,7 @@ class ContactsAdminController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
+            'filtered'  => $filtered,
             'schema'    => $pp->schema(),
         ]);
     }
