@@ -111,7 +111,6 @@ class MenuService
 				'label'			=> $item['label'],
 				'fa'			=> $item['fa'],
 				'active'		=> $menu_route === $this->active_menu,
-				'config_only'	=> $this->pp->is_admin() && $item['access'] === 'anonymous',
 			];
 		}
 
