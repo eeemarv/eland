@@ -1,5 +1,9 @@
 {%- extends 'transactions/transactions_base.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'transactions_show.title'|trans -}}
+{%- endblock heading_title -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

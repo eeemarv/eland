@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -46,7 +45,6 @@ class TransactionsEditController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         AccountRender $account_render,
         AlertService $alert_service,
         ConfigService $config_service,
@@ -177,9 +175,6 @@ class TransactionsEditController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $heading_render->add('Omschrijving transactie aanpassen');
-        $heading_render->fa('exchange');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

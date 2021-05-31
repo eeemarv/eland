@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
@@ -105,7 +104,6 @@ class TransactionsMassController extends AbstractController
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         AccountRender $account_render,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
@@ -454,9 +452,6 @@ class TransactionsMassController extends AbstractController
             'mass_transaction.js',
             'combined_filter.js',
         ]);
-
-        $heading_render->add('Massa transactie');
-        $heading_render->fa('exchange');
 
         $out = '<div class="panel panel-warning">';
         $out .= '<div class="panel-heading">';

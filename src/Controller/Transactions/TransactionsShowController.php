@@ -6,7 +6,6 @@ use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -42,7 +41,6 @@ class TransactionsShowController extends AbstractController
     public function __invoke(
         int $id,
         Db $db,
-        HeadingRender $heading_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         BtnTopRender $btn_top_render,
@@ -134,9 +132,6 @@ class TransactionsShowController extends AbstractController
 
         $btn_nav_render->nav_list('transactions', $pp->ary(),
             [], 'Lijst', 'exchange');
-
-        $heading_render->add('Transactie');
-        $heading_render->fa('exchange');
 
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;

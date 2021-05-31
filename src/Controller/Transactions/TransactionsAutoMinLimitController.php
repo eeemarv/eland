@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -35,7 +34,6 @@ class TransactionsAutoMinLimitController extends AbstractController
         Request $request,
         AlertService $alert_service,
         MenuService $menu_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         PageParamsService $pp,
         ConfigService $config_service,
@@ -77,9 +75,6 @@ class TransactionsAutoMinLimitController extends AbstractController
             $exclude_to = $config_service->get_str('accounts.limits.auto_min.exclude.to', $pp->schema());
             $exclude_from = $config_service->get_str('accounts.limits.auto_min.exclude.from', $pp->schema());
         }
-
-        $heading_render->add('Automatische minimum limiet');
-        $heading_render->fa('arrows-v');
 
         $out = '<div class="panel panel-info">';
 

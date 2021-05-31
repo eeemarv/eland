@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -40,7 +39,6 @@ class TransactionsModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        HeadingRender $heading_render,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -99,8 +97,6 @@ class TransactionsModulesController extends AbstractController
             $link_render->redirect('transactions_modules', $pp->ary(), []);
         }
 
-        $heading_render->fa('exchange');
-        $heading_render->add('Transacties submodules en velden');
         $menu_service->set('transactions_modules');
 
         return $this->render('transactions/transactions_modules.html.twig', [

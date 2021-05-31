@@ -7,7 +7,6 @@ use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -78,7 +77,6 @@ class TransactionsController extends AbstractController
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         PaginationRender $pagination_render,
@@ -679,34 +677,7 @@ class TransactionsController extends AbstractController
         $template .= $filter_uid ? 'uid' : 'list';
         $template .= '.html.twig';
 
-        if ($filter_uid)
-        {
-            if ($is_self)
-            {
-                $heading_render->add('Mijn transacties');
-            }
-            else
-            {
-                $heading_render->add('Transacties van ');
-                $heading_render->add_raw($account_render->link((int) $filter['uid'], $pp->ary()));
-            }
-
-            $heading_render->add_sub_raw('Huidig saldo: <span class="label label-info">');
-            $heading_render->add_sub((string) $balance);
-            $heading_render->add_sub_raw('</span>&nbsp;');
-            $heading_render->add_sub($config_service->get('currency', $pp->schema()));
-        }
-        else
-        {
-            $heading_render->add('Transacties');
-            $heading_render->add_filtered($filtered);
-        }
-
-        $heading_render->fa('exchange');
-
         $out = '';
-
-        $heading_render->btn_filter();
 
         $assets_service->add(['datepicker']);
 

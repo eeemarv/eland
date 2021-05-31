@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
@@ -57,7 +56,6 @@ class TransactionsAddController extends AbstractController
         AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         TransactionService $transaction_service,
@@ -889,9 +887,6 @@ class TransactionsAddController extends AbstractController
         $systems_en = count($systems) > 1
             && isset($currency_ratio)
             && $currency_ratio > 0;
-
-        $heading_render->add('Nieuwe transactie');
-        $heading_render->fa('exchange');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

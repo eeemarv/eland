@@ -202,7 +202,7 @@ label:
   to: Naar
   total: Totaal
   to_date: Tot
-  transactions: Transacties
+  nsns: Transacties
   transaction_id: Transactie Id
   upload: Opladen
   user: Gebruiker
@@ -662,6 +662,10 @@ transactions_modules:
 transactions_self:
   title: >-
     Mijn transacties
+
+transactions_show:
+  title: >-
+    Transactie
 
 transactions_uid:
   title: >-
