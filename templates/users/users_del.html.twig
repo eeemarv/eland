@@ -2,10 +2,11 @@
 
 {%- block heading_title -%}
     {{- 'users_del.title'|trans({
-        '%name%': account(user.id, schema)
-    }) -}}
+        '%user%': account(id, schema)|link('users_show', {'id': id})
+    })|raw -}}
 {%- endblock heading_title -%}
 
+{#
 {%- block content -%}
 
 {%- embed 'form/form_embed.html.twig' -%}
@@ -39,6 +40,7 @@
 {%- endembed -%}
 
 {%- endblock content -%}
+#}
 
 {%- block css -%}
     {{- parent() -}}

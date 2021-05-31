@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Cnst\StatusCnst;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
@@ -47,7 +46,6 @@ class UsersDelController extends AbstractController
         FormTokenService $form_token_service,
         AlertService $alert_service,
         AccountRender $account_render,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         ThumbprintAccountsService $thumbprint_accounts_service,
         UserCacheService $user_cache_service,
@@ -121,11 +119,6 @@ class UsersDelController extends AbstractController
             }
         }
 
-        $heading_render->add('Gebruiker ');
-        $heading_render->add_raw($account_render->link($id, $pp->ary()));
-        $heading_render->add(' verwijderen?');
-        $heading_render->fa('user');
-
         $out = '<p><font color="red">Alle Gegevens, Vraag en aanbod, ';
         $out .= 'Contacten en Afbeeldingen van ';
         $out .= $account_render->link($id, $pp->ary());
@@ -162,6 +155,7 @@ class UsersDelController extends AbstractController
 
         return $this->render('users/users_del.html.twig', [
             'content'   => $out,
+            'id'        => $id,
             'schema'    => $pp->schema(),
         ]);
     }

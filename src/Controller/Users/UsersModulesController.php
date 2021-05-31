@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -50,7 +49,6 @@ class UsersModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        HeadingRender $heading_render,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -109,8 +107,6 @@ class UsersModulesController extends AbstractController
             $link_render->redirect('users_modules', $pp->ary(), []);
         }
 
-        $heading_render->fa('users');
-        $heading_render->add('Leden submodules en velden');
         $menu_service->set('users_modules');
 
         return $this->render('users/users_modules.html.twig', [

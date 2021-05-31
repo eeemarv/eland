@@ -710,7 +710,7 @@ users_edit_self:
   title: Je profiel aanpassen
 
 users_del:
-  title: Gebruiker verwijderen?
+  title: Gebruiker %user% verwijderen?
   verify_label: >-
     Ik ben wis en waarachtig zeker dat
     ik deze gebruiker wil verwijderen.

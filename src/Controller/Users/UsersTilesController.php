@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\StatusCnst;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -41,7 +40,6 @@ class UsersTilesController extends AbstractController
         Request $request,
         string $status,
         Db $db,
-        HeadingRender $heading_render,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         AssetsService $assets_service,
@@ -99,7 +97,6 @@ class UsersTilesController extends AbstractController
         }
 
         UsersListController::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_tiles');
-        UsersListController::heading($heading_render);
 
         $out = UsersListController::get_filter_and_tab_selector(
             $params,

@@ -6,7 +6,6 @@ use App\Cnst\ConfigCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -38,7 +37,6 @@ class UsersPeriodicMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        HeadingRender $heading_render,
         AssetsService $assets_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
@@ -222,8 +220,6 @@ class UsersPeriodicMailController extends AbstractController
             'users_periodic_mail.js',
         ]);
 
-        $heading_render->fa('envelope-o');
-        $heading_render->add('Periodieke overzichts e-mail');
         $menu_service->set('users_periodic_mail');
 
         return $this->render('users/users_periodic_mail.html.twig', [

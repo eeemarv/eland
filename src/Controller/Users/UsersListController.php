@@ -14,7 +14,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
@@ -75,7 +74,6 @@ class UsersListController extends AbstractController
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -1130,7 +1128,6 @@ class UsersListController extends AbstractController
         $btn_nav_render->columns_show();
 
         self::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_list');
-        self::heading($heading_render);
 
         $assets_service->add([
             'calc_sum.js',
@@ -2003,12 +2000,6 @@ class UsersListController extends AbstractController
         $btn_nav_render->view('users_map', $pp_ary,
             $params, 'Kaart', 'map-marker',
             $matched_route === 'users_map');
-    }
-
-    static public function heading(HeadingRender $heading_render):void
-    {
-        $heading_render->add('Leden');
-        $heading_render->fa('users');
     }
 
     static public function get_status_def_ary(

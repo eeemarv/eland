@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\CacheService;
@@ -45,7 +44,6 @@ class UsersMapController extends AbstractController
         AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
-        HeadingRender $heading_render,
         CacheService $cache_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -204,7 +202,6 @@ class UsersMapController extends AbstractController
         }
 
         UsersListController::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_map');
-        UsersListController::heading($heading_render);
 
         $data_map = json_encode([
             'users'     => $data_users,
