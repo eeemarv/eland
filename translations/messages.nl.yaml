@@ -731,18 +731,19 @@ users_modules:
   title: >-
     Leden submodules en velden
 
-users_password_set:
-  title:
-    personal: Nieuw paswoord ingeven voor je gebruikersaccount
-    admin: Nieuw paswoord ingeven voor "%user%"
+users_password_edit:
+  title: >-
+    Nieuw paswoord ingeven voor %user%
+
+users_password_edit_self:
+  title: >-
+    Nieuw paswoord ingeven voor je gebruikersaccount
 
 users_periodic_mail:
   title: >-
     Periodieke overzichts e-mail
 
 users_show:
-  title: >-
-    %var%
   my_profile: Mijn profiel
   intersystem_missing: >-
     De interSysteem-verbinding ontbreekt

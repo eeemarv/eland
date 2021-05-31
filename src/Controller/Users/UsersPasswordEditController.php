@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Security\User;
 use App\Service\AlertService;
@@ -67,7 +66,6 @@ class UsersPasswordEditController extends AbstractController
         AlertService $alert_service,
         AssetsService $assets_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
@@ -183,16 +181,6 @@ class UsersPasswordEditController extends AbstractController
             'generate_password.js',
         ]);
 
-        $heading_render->add('Paswoord aanpassen');
-
-        if (!$is_self)
-        {
-            $heading_render->add(' voor ');
-            $heading_render->add_raw($account_render->link($id, $pp->ary()));
-        }
-
-        $heading_render->fa('key');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -253,6 +241,8 @@ class UsersPasswordEditController extends AbstractController
 
         return $this->render('users/users_password_edit.html.twig', [
             'content'   => $out,
+            'is_self'   => $is_self,
+            'id'        => $id,
             'schema'    => $pp->schema(),
         ]);
     }
