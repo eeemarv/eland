@@ -3,7 +3,6 @@
 namespace App\Controller\ContactTypes;
 
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -32,7 +31,6 @@ class ContactTypesController extends AbstractController
 
     public function __invoke(
         Db $db,
-        HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -57,9 +55,6 @@ class ContactTypesController extends AbstractController
         $btn_top_render->add('contact_types_add', $pp->ary(),
             [], 'Contact type toevoegen');
 
-        $heading_render->add('Contact types');
-        $heading_render->fa('circle-o-notch');
-
         $out = '<div class="panel panel-default printview">';
 
         $out .= '<div class="table-responsive">';
@@ -67,8 +62,8 @@ class ContactTypesController extends AbstractController
         $out .= 'table-bordered footable" data-sort="false">';
         $out .= '<tr>';
         $out .= '<thead>';
+        $out .= '<th>Afk.</th>';
         $out .= '<th>Naam</th>';
-        $out .= '<th>Afkorting</th>';
         $out .= '<th data-hide="phone">Verwijderen</th>';
         $out .= '<th data-hide="phone">Contacten</th>';
         $out .= '</tr>';
@@ -155,7 +150,7 @@ class ContactTypesController extends AbstractController
 
         $menu_service->set('contact_types');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_types/contact_types.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

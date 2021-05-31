@@ -2,7 +2,6 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
@@ -35,7 +34,6 @@ class ContactTypesAddController extends AbstractController
         Db $db,
         FormTokenService $form_token_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         AlertService $alert_service,
         PageParamsService $pp,
         MenuService $menu_service
@@ -73,9 +71,6 @@ class ContactTypesAddController extends AbstractController
 
             $alert_service->error('Corrigeer één of meerdere velden.');
         }
-
-        $heading_render->add('Contact type toevoegen');
-        $heading_render->fa('circle-o-notch');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -118,7 +113,7 @@ class ContactTypesAddController extends AbstractController
 
         $menu_service->set('contact_types');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_types/contact_types_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

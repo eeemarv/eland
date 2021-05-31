@@ -2,7 +2,6 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
@@ -37,7 +36,6 @@ class ContactTypesDelController extends AbstractController
         Db $db,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         PageParamsService $pp,
         MenuService $menu_service
@@ -87,9 +85,6 @@ class ContactTypesDelController extends AbstractController
             $link_render->redirect('contact_types', $pp->ary(), []);
         }
 
-        $heading_render->add('Contact type verwijderen: ' . $ct['name']);
-        $heading_render->fa('circle-o-notch');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
         $out .= '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
@@ -108,8 +103,9 @@ class ContactTypesDelController extends AbstractController
 
         $menu_service->set('contact_types');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_types/contact_types_del.html.twig', [
             'content'   => $out,
+            'name'      => $ct['name'],
             'schema'    => $pp->schema(),
         ]);
     }
