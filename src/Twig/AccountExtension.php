@@ -15,6 +15,7 @@ class AccountExtension extends AbstractExtension
 			new TwigFunction('username', [AccountRuntime::class, 'get_name']),
 			new TwigFunction('account_code', [AccountRuntime::class, 'get_code']),
 			new TwigFunction('account_balance', [AccountRuntime::class, 'get_balance']),
+			new TwigFunction('account_status', [AccountRuntime::class, 'get_status']),
 		];
 	}
 }

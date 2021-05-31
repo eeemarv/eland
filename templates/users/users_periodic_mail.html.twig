@@ -1,5 +1,13 @@
-{%- extends 'base/navbar.html.twig' -%}
+{%- extends 'users/base/users_base.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_periodic_mail.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_fa -%}
+    envelope-o
+{%- endblock heading_fa -%}
 
 {%- block content -%}
 

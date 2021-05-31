@@ -1,0 +1,25 @@
+{%- extends 'users/base/users_single_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {%- if is_self -%}
+        {{- 'users_edit_self.title'|trans -}}
+    {%- else -%}
+        {{- 'users_edit.title'|trans({
+            '%user%': account(id, schema)|link('users_show', {'id': id})
+        })|raw -}}
+    {%- endif -%}
+{%- endblock heading_title -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('summernote') -}}
+    {{- encore_entry_link_tags('fileupload') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+	{{- encore_entry_script_tags('summernote') -}}
+	{{- encore_entry_script_tags('sortable') -}}
+	{{- encore_entry_script_tags('fileupload') -}}
+{%- endblock js -%}

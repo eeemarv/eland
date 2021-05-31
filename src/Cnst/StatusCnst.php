@@ -15,6 +15,17 @@ class StatusCnst
         7	=> 'Extern',
     ];
 
+    const RENDER_ARY = [
+        0	=> 'Gedesactiveerd',
+        1	=> 'Actief',
+        2	=> 'Uitstapper',
+        3	=> 'Instapper',
+        //4 => 'Secretariaat, // not used
+        5	=> 'Info-pakket',
+        6	=> 'Info-moment',
+        7	=> 'Extern',
+    ];
+
     const CLASS_ARY = [
         0 => 'inactive',
         2 => 'danger',

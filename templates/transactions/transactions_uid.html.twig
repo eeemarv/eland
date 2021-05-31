@@ -14,7 +14,7 @@
     <h2>
         {{- 'label.current_balance'|trans -}}:
         <span class="label label-info">
-            {{- balance -}}
+            {{- account_balance(uid, schema) -}}
         </span>
         &nbsp;
         {{- config_str('transactions.currency.name', schema) -}}

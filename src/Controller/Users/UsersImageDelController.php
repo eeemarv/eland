@@ -29,7 +29,7 @@ class UsersImageDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'is_admin'      => true,
+            'is_self'       => false,
             'module'        => 'users',
         ],
     )]
@@ -44,7 +44,7 @@ class UsersImageDelController extends AbstractController
         ],
         defaults: [
             'id'            => 0,
-            'is_admin'      => false,
+            'is_self'       => true,
             'module'        => 'users',
         ],
     )]
@@ -52,11 +52,9 @@ class UsersImageDelController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        bool $is_admin,
+        bool $is_self,
         Db $db,
         AlertService $alert_service,
-        AccountRender $account_render,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -66,7 +64,7 @@ class UsersImageDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$is_admin)
+        if ($is_self)
         {
             $id = $su->id();
         }
@@ -99,17 +97,6 @@ class UsersImageDelController extends AbstractController
             $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
         }
 
-        $heading_render->add('Profielfoto/afbeelding ');
-
-        if ($pp->is_admin())
-        {
-            $heading_render->add('van ');
-            $heading_render->add_raw($account_render->link($id, $pp->ary()));
-            $heading_render->add(' ');
-        }
-
-        $heading_render->add('verwijderen?');
-
         $out = '<div class="row">';
         $out .= '<div class="col-xs-6">';
         $out .= '<div class="thumbnail">';
@@ -138,8 +125,10 @@ class UsersImageDelController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_image_del.html.twig', [
             'content'   => $out,
+            'id'        => $id,
+            'is_self'   => $is_self,
             'schema'    => $pp->schema(),
         ]);
     }

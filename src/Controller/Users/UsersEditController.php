@@ -12,7 +12,6 @@ use App\Cnst\ContactInputCnst;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
@@ -106,7 +105,6 @@ class UsersEditController extends AbstractController
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
         GeocodeQueue $geocode_queue,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -149,6 +147,10 @@ class UsersEditController extends AbstractController
         {
             $id = $su->id();
         }
+
+        $template = 'users/users_';
+        $template .= $is_edit ? 'edit' : 'add';
+        $template .= '.html.twig';
 
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
@@ -847,27 +849,6 @@ class UsersEditController extends AbstractController
             'user_edit.js',
         ]);
 
-        if ($is_self && !$pp->is_admin() && $is_edit)
-        {
-            $heading_render->add('Mijn profiel aanpassen');
-        }
-        else
-        {
-            $heading_render->add('Gebruiker ');
-
-            if ($is_edit)
-            {
-                $heading_render->add('aanpassen: ');
-                $heading_render->add_raw($account_render->link($id, $pp->ary()));
-            }
-            else
-            {
-                $heading_render->add('toevoegen');
-            }
-        }
-
-        $heading_render->fa('user');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -1369,8 +1350,10 @@ class UsersEditController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render($template, [
             'content'   => $out,
+            'id'        => $id,
+            'is_self'   => $is_self,
             'schema'    => $pp->schema(),
         ]);
     }

@@ -1977,7 +1977,7 @@ class UsersListController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

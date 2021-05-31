@@ -15,7 +15,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
@@ -85,7 +84,6 @@ class UsersShowController extends AbstractController
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
@@ -154,7 +152,6 @@ class UsersShowController extends AbstractController
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
 
@@ -307,7 +304,7 @@ class UsersShowController extends AbstractController
         }
         else
         {
-            $intersystem_id = false;
+            $intersystem_id = 0;
         }
 
         if ($pp->is_admin())
@@ -403,54 +400,6 @@ class UsersShowController extends AbstractController
 
         $btn_nav_render->nav_list($vr->get('users'), $pp_status_ary,
             [], 'Overzicht', 'users');
-
-        $status_id = $user['status'];
-
-        if (isset($user['adate'])
-            && $status_id === 1
-            && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC')
-        )
-        {
-            $status_id = 3;
-        }
-
-        $h_status_ary = StatusCnst::LABEL_ARY;
-        $h_status_ary[3] = 'Instapper';
-
-        if ($is_self)
-        {
-            $heading_render->add('Mijn gegevens: ');
-        }
-
-        $heading_render->add_raw($account_render->link($id, $pp->ary()));
-
-        if ($status_id != 1)
-        {
-            $heading_render->add_raw(' <small><span class="text-');
-            $heading_render->add_raw(StatusCnst::CLASS_ARY[$status_id]);
-            $heading_render->add_raw('">');
-            $heading_render->add_raw($h_status_ary[$status_id]);
-            $heading_render->add_raw('</span></small>');
-        }
-
-        if ($pp->is_admin())
-        {
-            if ($intersystem_missing)
-            {
-                $heading_render->add_raw(' <span class="label label-warning label-sm">');
-                $heading_render->add_raw('<i class="fa fa-exclamation-triangle"></i> ');
-                $heading_render->add_raw('De interSysteem-verbinding ontbreekt</span>');
-            }
-            else if ($intersystem_id)
-            {
-                $heading_render->add(' ');
-                $heading_render->add_raw($link_render->link_fa('intersystems_show', $pp->ary(),
-                    ['id' => $intersystem_id], 'Gekoppeld interSysteem',
-                    ['class' => 'btn btn-default'], 'share-alt'));
-            }
-        }
-
-        $heading_render->fa('user');
 
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
@@ -856,8 +805,12 @@ class UsersShowController extends AbstractController
 
         $menu_service->set('users');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('users/users_show.html.twig', [
             'content'   => $out,
+            'id'        => $id,
+            'is_self'   => $is_self,
+            'intersystem_missing'   => $intersystem_missing,
+            'intersystem_id'        => $intersystem_id,
             'schema'    => $pp->schema(),
         ]);
     }

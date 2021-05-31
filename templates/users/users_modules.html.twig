@@ -1,5 +1,9 @@
-{%- extends 'base/navbar.html.twig' -%}
+{%- extends 'users/base/users_base.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_modules.title'|trans -}}
+{%- endblock heading_title -%}
 
 {%- block content -%}
 

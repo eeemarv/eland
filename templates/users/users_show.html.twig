@@ -1,0 +1,40 @@
+{%- extends 'users/base/users_single_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {%- if is_self -%}
+        {{- 'users_show.my_profile'|trans -}}:
+        &nbsp;
+    {%- endif -%}
+    {{- account(id, schema)|link('users_show', {'id': id})|raw -}}
+    {{- account_status(id, schema)|raw -}}
+    {%- if pp_role('admin') -%}
+        {%- if intersystem_missing -%}
+            &nbsp;
+            <small>
+                <span class="label label-warning">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    &nbsp;
+                    {{- 'users_show.intersystem_missing'|trans -}}
+                </span>
+            </small>
+        {%- elseif intersystem_id -%}
+            &nbsp;
+            <a href="{{- link('intersystems_show', {'id': intersystem_id}) -}}" class="btn btn-default">
+                <i class="fa fa-share-alt"></i>
+                &nbsp;
+                {{- 'users_show.coupled_intersystem'|trans -}}
+            </a>
+        {%- endif -%}
+    {%- endif -%}
+
+{%- endblock heading_title -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('fileupload') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('fileupload') -}}
+{%- endblock js -%}

@@ -266,7 +266,6 @@ class TransactionsController extends AbstractController
         if (isset($filter['uid']))
         {
             $filter['uid'] = (int) $filter['uid'];
-            $balance = $account_repository->get_balance((int) $filter['uid'], $pp->schema());
         }
 
         $is_owner = isset($filter['uid'])
@@ -929,7 +928,6 @@ class TransactionsController extends AbstractController
                 'filtered'  => $filtered,
                 'is_self'   => $is_self,
                 'uid'       => $filter['uid'] ?? 0,
-                'balance'   => $balance ?? 0,
                 'schema'    => $pp->schema(),
             ]);
         }
@@ -1308,7 +1306,6 @@ class TransactionsController extends AbstractController
             'filtered'  => $filtered,
             'is_self'   => $is_self,
             'uid'       => $filter['uid'] ?? 0,
-            'balance'   => $balance ?? 0,
             'schema'    => $pp->schema(),
         ]);
     }

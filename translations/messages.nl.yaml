@@ -677,10 +677,10 @@ users:
 users_add:
   title: Gebruiker toevoegen
 
-users_edit_admin:
-  title: Gebruiker "%name%" aanpassen
+users_edit:
+  title: Gebruiker %user% aanpassen
 
-users_edit_personal:
+users_edit_self:
   title: Je profiel aanpassen
 
 users_del:
@@ -693,7 +693,32 @@ users_del:
     Contacten en Afbeeldingen van %name%
     worden verwijderd.
 
+users_image_del:
+  title: >-
+    Profielfoto/-afbeelding van %user% verwijderen?
+
+users_image_del_self:
+  title: >-
+    Profielfoto/-afbeelding verwijderen?
+
+users_modules:
+  title: >-
+    Leden submodules en velden
+
 users_password_set:
   title:
     personal: Nieuw paswoord ingeven voor je gebruikersaccount
     admin: Nieuw paswoord ingeven voor "%user%"
+
+users_periodic_mail:
+  title: >-
+    Periodieke overzichts e-mail
+
+users_show:
+  title: >-
+    %var%
+  my_profile: Mijn profiel
+  intersystem_missing: >-
+    De interSysteem-verbinding ontbreekt
+  coupled_intersystem: >-
+    Gekoppeld interSysteem
