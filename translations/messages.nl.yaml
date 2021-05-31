@@ -626,6 +626,20 @@ messages_show:
     title: >-
       Stuur een reactie naar %to_user%.
 
+mollie_checkout:
+  title: >-
+    Euro-betaling uitvoeren
+  canceled: >-
+    Deze betaling is geannuleerd.
+  paid: >-
+    Betaling geslaagd.
+mollie_config:
+  title: Mollie configuratie
+mollie_payments:
+  title: Mollie betaalverzoeken
+mollie_payments_add:
+  title: Mollie betaalverzoeken aanmaken
+
 news:
   title: Nieuws
   no_items: >-

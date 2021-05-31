@@ -3,7 +3,6 @@
 namespace App\Controller\Mollie;
 
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -48,7 +47,6 @@ class MollieCheckoutController extends AbstractController
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         PageParamsService $pp
     ):Response
     {
@@ -132,22 +130,18 @@ class MollieCheckoutController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $heading_render->fa('eur');
         $out = '<div class="panel panel-';
 
         if ($mollie_payment['is_canceled'])
         {
-            $heading_render->add('Deze betaling is geannuleerd');
             $out .= 'default';
         }
         else if ($mollie_payment['is_paid'])
         {
-            $heading_render->add('Betaling geslaagd');
             $out .= 'success';
         }
         else
         {
-            $heading_render->add('Euro-betaling uitvoeren');
             $out .= 'info';
         }
 
@@ -205,9 +199,11 @@ class MollieCheckoutController extends AbstractController
 
         $menu_service->set('mollie_payments');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+        return $this->render('mollie/mollie_checkout.html.twig', [
+            'content'       => $out,
+            'is_paid'       => $mollie_payment['is_paid'],
+            'is_canceled'   => $mollie_payment['is_canceled'],
+            'schema'        => $pp->schema(),
         ]);
     }
 }

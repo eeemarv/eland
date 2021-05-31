@@ -9,7 +9,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Service\AlertService;
@@ -75,7 +74,6 @@ class MolliePaymentsController extends AbstractController
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
         MailAddrUserService $mail_addr_user_service,
@@ -730,11 +728,6 @@ class MolliePaymentsController extends AbstractController
             || $filter_tdate
         );
 
-        $heading_render->add('Mollie betaalverzoeken');
-        $heading_render->fa('eur');
-        $heading_render->add_filtered($filtered);
-        $heading_render->btn_filter();
-
         $out = '<div class="panel panel-info';
         $out .= $filtered ? '' : ' collapse';
         $out .= '" id="filter">';
@@ -1148,7 +1141,7 @@ class MolliePaymentsController extends AbstractController
 
         $menu_service->set('mollie_payments');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('mollie/mollie_payments.html.twig', [
             'content'   => $out,
             'filtered'  => $filtered,
             'schema'    => $pp->schema(),

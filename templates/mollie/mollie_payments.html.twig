@@ -1,0 +1,23 @@
+{%- extends 'mollie/base/mollie_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'mollie_payments.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_append -%}
+    {%- include 'include/heading_filter.html.twig' -%}
+    {%- include 'include/heading_btn_filter.html.twig' -%}
+{%- endblock heading_append -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('footable') -}}
+    {{- encore_entry_link_tags('summernote') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('footable') -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+	{{- encore_entry_script_tags('summernote') -}}
+{%- endblock js -%}

@@ -6,7 +6,6 @@ use App\Cnst\BulkCnst;
 use App\Cnst\StatusCnst;
 use App\Controller\Users\UsersListController;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -54,7 +53,6 @@ class MolliePaymentsAddController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         AccountRender $account_render,
-        HeadingRender $heading_render,
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -259,9 +257,6 @@ class MolliePaymentsAddController extends AbstractController
         $assets_service->add([
             'mollie_payments_add.js',
         ]);
-
-        $heading_render->add('Mollie Betaalverzoeken aanmaken');
-        $heading_render->fa('eur');
 
         $out = '<div class="panel panel-warning">';
         $out .= '<div class="panel-heading">';
@@ -531,7 +526,7 @@ class MolliePaymentsAddController extends AbstractController
 
         $menu_service->set('mollie_payments');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('mollie/mollie_payments_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

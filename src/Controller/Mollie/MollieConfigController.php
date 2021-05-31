@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -36,7 +35,6 @@ class MollieConfigController extends AbstractController
         ConfigService $config_service,
         AlertService $alert_service,
         MenuService $menu_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         PageParamsService $pp,
         FormTokenService $form_token_service
@@ -79,9 +77,6 @@ class MollieConfigController extends AbstractController
             $mollie_apikey = $posted_apikey;
         }
 
-        $heading_render->add('Mollie configuratie');
-        $heading_render->fa('eur');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading"><p>';
         $out .= 'Om betalingen met <a href="https://www.mollie.com/nl/">Mollie</a> te ontvangen moet ';
@@ -122,7 +117,7 @@ class MollieConfigController extends AbstractController
 
         $menu_service->set('mollie_payments');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('mollie/mollie_config.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
