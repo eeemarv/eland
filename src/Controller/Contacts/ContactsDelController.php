@@ -11,7 +11,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -34,7 +33,7 @@ class ContactsDelController extends AbstractController
             'user_id'               => 0,
             'contact_id'            => 0,
             'redirect_contacts'     => true,
-            'is_admin'              => true,
+            'is_self'               => false,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -53,7 +52,7 @@ class ContactsDelController extends AbstractController
         defaults: [
             'id'                    => 0,
             'redirect_contacts'     => false,
-            'is_admin'              => true,
+            'is_self'               => false,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -72,7 +71,7 @@ class ContactsDelController extends AbstractController
             'id'                    => 0,
             'user_id'               => 0,
             'redirect_contacts'     => false,
-            'is_admin'              => false,
+            'is_self'               => true,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -84,14 +83,13 @@ class ContactsDelController extends AbstractController
         int $contact_id,
         int $id,
         bool $redirect_contacts,
-        bool $is_admin,
+        bool $is_self,
         Db $db,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
         AccountRender $account_render,
         PageParamsService $pp,
         SessionUserService $su,
@@ -104,7 +102,7 @@ class ContactsDelController extends AbstractController
 
         $contact = ContactsEditController::get_contact($db, $id,  $pp->schema());
 
-        if (!$is_admin)
+        if ($is_self)
         {
             $user_id = $su->id();
         }
@@ -181,17 +179,6 @@ class ContactsDelController extends AbstractController
             $alert_service->error($error_token);
         }
 
-        if ($pp->is_admin())
-        {
-            $heading_render->add('Contact verwijderen voor ');
-            $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
-            $heading_render->add('?');
-        }
-        else
-        {
-            $heading_render->add('Contact verwijderen?');
-        }
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -245,10 +232,12 @@ class ContactsDelController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set($redirect_contacts ? 'contacts' : 'users');
+        $menu_service->set('contacts');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_del.html.twig', [
             'content'   => $out,
+            'is_self'   => $is_self,
+            'user_id'   => $user_id,
             'schema'    => $pp->schema(),
         ]);
     }

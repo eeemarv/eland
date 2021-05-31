@@ -1,0 +1,23 @@
+{%- extends 'contacts/base/contacts_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {%- if is_self -%}
+        {{- 'contacts_edit_self.title'|trans -}}
+    {%- else -%}
+        {{- 'contacts_edit.title'|trans({
+            '%user%': account(user_id, schema)|link('users_show', {'id': user_id})
+        })|raw -}}
+    {%- endif -%}
+{%- endblock heading_title -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('datepicker') -}}
+    {{- encore_entry_link_tags('summernote') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('datepicker') -}}
+	{{- encore_entry_script_tags('summernote') -}}
+{%- endblock js -%}

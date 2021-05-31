@@ -13,7 +13,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -27,7 +26,7 @@ class ContactsAddController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/contacts/add',
-        name: 'contacts_add_admin',
+        name: 'contacts_add',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -36,7 +35,7 @@ class ContactsAddController extends AbstractController
         defaults: [
             'redirect_contacts'     => true,
             'user_id'               => 0,
-            'is_admin'              => true,
+            'is_self'               => false,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -44,7 +43,7 @@ class ContactsAddController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/users/{user_id}/contacts/add',
-        name: 'users_contacts_add_admin',
+        name: 'users_contacts_add',
         methods: ['GET', 'POST'],
         requirements: [
             'user_id'       => '%assert.id%',
@@ -53,7 +52,7 @@ class ContactsAddController extends AbstractController
         ],
         defaults: [
             'redirect_contacts'     => false,
-            'is_admin'              => true,
+            'is_self'               => false,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -61,7 +60,7 @@ class ContactsAddController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/users/contacts/add',
-        name: 'users_contacts_add',
+        name: 'users_contacts_add_self',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -70,7 +69,7 @@ class ContactsAddController extends AbstractController
         defaults: [
             'user_id'               => 0,
             'redirect_contacts'     => false,
-            'is_admin'              => false,
+            'is_self'               => true,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -79,7 +78,7 @@ class ContactsAddController extends AbstractController
     public function __invoke(
         Request $request,
         int $user_id,
-        bool $is_admin,
+        bool $is_self,
         bool $redirect_contacts,
         Db $db,
         AlertService $alert_service,
@@ -93,13 +92,12 @@ class ContactsAddController extends AbstractController
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        HeadingRender $heading_render
+        SessionUserService $su
     ):Response
     {
         $errors = [];
 
-        if (!$is_admin)
+        if ($is_self)
         {
             $user_id = $su->id();
         }
@@ -117,7 +115,7 @@ class ContactsAddController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            if ($is_admin && $redirect_contacts)
+            if (!$is_self && $redirect_contacts)
             {
                [$code] = explode(' ', trim($account_code));
 
@@ -294,14 +292,6 @@ class ContactsAddController extends AbstractController
 
         $abbrev = $tc[$id_type_contact]['abbrev'];
 
-        $heading_render->add('Contact toevoegen');
-
-        if ($pp->is_admin() && !$redirect_contacts)
-        {
-            $heading_render->add(' voor ');
-            $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
-        }
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -419,10 +409,12 @@ class ContactsAddController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set($redirect_contacts ? 'contacts' : 'users');
+        $menu_service->set('contacts');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_add.html.twig', [
             'content'   => $out,
+            'is_self'   => $is_self,
+            'user_id'   => $user_id,
             'schema'    => $pp->schema(),
         ]);
     }

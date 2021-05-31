@@ -299,7 +299,7 @@ class UsersMapController extends AbstractController
                     {
                         $out .= '<li>';
 
-                        $out .= $link_render->link_no_attr('users_contacts_edit_admin', $pp->ary(),
+                        $out .= $link_render->link_no_attr('users_contacts_edit', $pp->ary(),
                             ['contact_id' => $not_geocoded['id'], 'user_id' => $not_geocoded['user_id']],
                             $not_geocoded['value']);
 

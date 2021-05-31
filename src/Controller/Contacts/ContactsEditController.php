@@ -13,7 +13,6 @@ use App\Render\AccountRender;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ItemAccessService;
@@ -51,7 +50,7 @@ class ContactsEditController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/contacts/{id}/edit',
-        name: 'contacts_edit_admin',
+        name: 'contacts_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
@@ -62,7 +61,7 @@ class ContactsEditController extends AbstractController
             'user_id'               => 0,
             'contact_id'            => 0,
             'redirect_contacts'     => true,
-            'is_admin'              => true,
+            'is_self'               => false,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -70,7 +69,7 @@ class ContactsEditController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/users/{user_id}/contacts/{contact_id}/edit',
-        name: 'users_contacts_edit_admin',
+        name: 'users_contacts_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'user_id'       => '%assert.id%',
@@ -81,7 +80,7 @@ class ContactsEditController extends AbstractController
         defaults: [
             'id'                    => 0,
             'redirect_contacts'     => false,
-            'is_admin'              => true,
+            'is_self'               => false,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -89,7 +88,7 @@ class ContactsEditController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/users/contacts/{contact_id}/edit',
-        name: 'users_contacts_edit',
+        name: 'users_contacts_edit_self',
         methods: ['GET', 'POST'],
         requirements: [
             'contact_id'    => '%assert.id%',
@@ -100,7 +99,7 @@ class ContactsEditController extends AbstractController
             'id'                    => 0,
             'user_id'               => 0,
             'redirect_contacts'     => false,
-            'is_admin'              => false,
+            'is_self'               => true,
             'module'                => 'users',
             'sub_module'            => 'contacts',
         ],
@@ -112,7 +111,7 @@ class ContactsEditController extends AbstractController
         int $contact_id,
         int $id,
         bool $redirect_contacts,
-        bool $is_admin,
+        bool $is_self,
         Db $db,
         FormTokenService $form_token_service,
         AlertService $alert_service,
@@ -120,7 +119,6 @@ class ContactsEditController extends AbstractController
         MenuService $menu_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         AccountRender $account_render,
         PageParamsService $pp,
         SessionUserService $su,
@@ -133,7 +131,7 @@ class ContactsEditController extends AbstractController
 
         $contact = self::get_contact($db, $id, $pp->schema());
 
-        if (!$is_admin)
+        if ($is_self)
         {
             $user_id = $su->id();
         }
@@ -334,14 +332,6 @@ class ContactsEditController extends AbstractController
 
         $abbrev = $type_contact_ary[$id_type_contact]['abbrev'];
 
-        $heading_render->add('Contact aanpassen');
-
-        if ($pp->is_admin())
-        {
-            $heading_render->add(' voor ');
-            $heading_render->add_raw($account_render->link($user_id, $pp->ary()));
-        }
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -429,10 +419,12 @@ class ContactsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set($redirect_contacts ? 'contacts' : 'users');
+        $menu_service->set('contacts');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts_edit.html.twig', [
             'content'   => $out,
+            'is_self'   => $is_self,
+            'user_id'   => $user_id,
             'schema'    => $pp->schema(),
         ]);
     }

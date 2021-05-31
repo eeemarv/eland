@@ -52,14 +52,14 @@ class ContactsUserShowInlineController extends AbstractController
 
         if ($pp->is_admin())
         {
-            $out .= $link_render->link('users_contacts_add_admin', $pp->ary(),
+            $out .= $link_render->link('users_contacts_add', $pp->ary(),
                 ['user_id' => $uid], 'Toevoegen', [
                 'class'	=> 'btn btn-success',
             ], 'plus');
         }
         else if ($su->is_owner($uid))
         {
-            $out .= $link_render->link('users_contacts_add', $pp->ary(),
+            $out .= $link_render->link('users_contacts_add_self', $pp->ary(),
                 [], 'Toevoegen', [
                     'class'	=> 'btn btn-success',
                 ], 'plus');
@@ -110,12 +110,12 @@ class ContactsUserShowInlineController extends AbstractController
                 {
                     if ($pp->is_admin())
                     {
-                        $tr_c = $link_render->link_no_attr('users_contacts_edit_admin', $pp->ary(),
+                        $tr_c = $link_render->link_no_attr('users_contacts_edit', $pp->ary(),
                             ['contact_id' => $c['id'], 'user_id' => $uid], $c['value']);
                     }
                     else
                     {
-                        $tr_c = $link_render->link_no_attr('users_contacts_edit', $pp->ary(),
+                        $tr_c = $link_render->link_no_attr('users_contacts_edit_self', $pp->ary(),
                             ['contact_id' => $c['id']], $c['value']);
                     }
 
@@ -137,12 +137,12 @@ class ContactsUserShowInlineController extends AbstractController
                     {
                         if ($pp->is_admin())
                         {
-                            $tr[] = $link_render->link_no_attr('users_contacts_edit_admin', $pp->ary(),
+                            $tr[] = $link_render->link_no_attr('users_contacts_edit', $pp->ary(),
                                 ['contact_id' => $c['id'], 'user_id' => $uid], $c['comments']);
                         }
                         else
                         {
-                            $tr[] = $link_render->link_no_attr('users_contacts_edit', $pp->ary(),
+                            $tr[] = $link_render->link_no_attr('users_contacts_edit_self', $pp->ary(),
                                 ['contact_id' => $c['id']], $c['comments']);
                         }
                     }

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
-use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
@@ -27,7 +26,7 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ContactsAdminController extends AbstractController
+class ContactsController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/contacts',
@@ -49,7 +48,6 @@ class ContactsAdminController extends AbstractController
         AlertService $alert_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
-        HeadingRender $heading_render,
         PaginationRender $pagination_render,
         SelectRender $select_render,
         LinkRender $link_render,
@@ -450,7 +448,7 @@ class ContactsAdminController extends AbstractController
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }
 
-        $btn_top_render->add('contacts_add_admin', $pp->ary(),
+        $btn_top_render->add('contacts_add', $pp->ary(),
             [], 'Contact toevoegen');
 
         $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
@@ -468,11 +466,6 @@ class ContactsAdminController extends AbstractController
         );
 
         $panel_collapse = !$filtered;
-
-        $heading_render->add('Contacten');
-        $heading_render->add_filtered($filtered);
-        $heading_render->btn_filter();
-        $heading_render->fa('map-marker');
 
         $out = '<div id="filter" class="panel panel-info';
         $out .= $panel_collapse ? ' collapse' : '';
@@ -643,7 +636,7 @@ class ContactsAdminController extends AbstractController
 
             $menu_service->set('contacts');
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('contacts/contacts.html.twig', [
                 'content'   => $out,
                 'filtered'  => $filtered,
                 'schema'    => $pp->schema(),
@@ -707,7 +700,7 @@ class ContactsAdminController extends AbstractController
 
             if (isset($c['value']))
             {
-                $td[] = $link_render->link_no_attr('contacts_edit_admin', $pp->ary(),
+                $td[] = $link_render->link_no_attr('contacts_edit', $pp->ary(),
                     ['id' => $c['id']], $c['value']);
             }
             else
@@ -719,7 +712,7 @@ class ContactsAdminController extends AbstractController
 
             if (isset($c['comments']))
             {
-                $td[] = $link_render->link_no_attr('contacts_edit_admin', $pp->ary(),
+                $td[] = $link_render->link_no_attr('contacts_edit', $pp->ary(),
                     ['id' => $c['id']], $c['comments']);
             }
             else
@@ -787,7 +780,7 @@ class ContactsAdminController extends AbstractController
 
         $menu_service->set('contacts');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contacts/contacts.html.twig', [
             'content'   => $out,
             'filtered'  => $filtered,
             'schema'    => $pp->schema(),
