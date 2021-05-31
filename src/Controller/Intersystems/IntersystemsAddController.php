@@ -2,7 +2,6 @@
 
 namespace App\Controller\Intersystems;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
@@ -42,7 +41,6 @@ class IntersystemsAddController extends AbstractController
         AlertService $alert_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         SelectRender $select_render,
@@ -125,8 +123,6 @@ class IntersystemsAddController extends AbstractController
             }
         }
 
-        $heading_render->add('InterSysteem toevoegen');
-
         $btn = $link_render->btn_cancel('intersystems', $pp->ary(), []);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
@@ -136,7 +132,6 @@ class IntersystemsAddController extends AbstractController
             $group,
             $btn,
             $db,
-            $heading_render,
             $select_render,
             $form_token_service,
             $config_service,
@@ -147,7 +142,7 @@ class IntersystemsAddController extends AbstractController
             $menu_service
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems_add.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);

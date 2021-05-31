@@ -2,7 +2,6 @@
 
 namespace App\Controller\Intersystems;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
@@ -42,7 +41,6 @@ class IntersystemsEditController extends AbstractController
         int $id,
         Db $db,
         AlertService $alert_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -119,8 +117,6 @@ class IntersystemsEditController extends AbstractController
             }
         }
 
-        $heading_render->add('InterSysteem aanpassen');
-
         $btn = $link_render->btn_cancel('intersystems_show', $pp->ary(),
             ['id' => $id]);
         $btn .= '&nbsp;';
@@ -131,7 +127,6 @@ class IntersystemsEditController extends AbstractController
             $group,
             $btn,
             $db,
-            $heading_render,
             $select_render,
             $form_token_service,
             $config_service,
@@ -142,7 +137,7 @@ class IntersystemsEditController extends AbstractController
             $menu_service
         );
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems_edit.html.twig', [
             'content'   => $content,
             'schema'    => $pp->schema(),
         ]);
@@ -195,7 +190,6 @@ class IntersystemsEditController extends AbstractController
         array $group,
         string $btn,
         Db $db,
-        HeadingRender $heading_render,
         SelectRender $select_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
@@ -206,8 +200,6 @@ class IntersystemsEditController extends AbstractController
         MenuService $menu_service
     ):string
     {
-        $heading_render->fa('share-alt');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 

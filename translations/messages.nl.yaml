@@ -513,6 +513,19 @@ login:
 logs:
   title: Logs
 
+intersystems:
+  title: eLAND interSysteem
+intersystems_add:
+  title: InterSysteem toevoegen
+intersystems_del:
+  title: >-
+    InterSysteem verwijderen: %name%
+intersystems_edit:
+  title: InterSysteem aanpassen
+intersystems_show:
+  title: >-
+    InterSysteem %name%
+
 messages:
   title: Vraag en aanbod
   without_category: zonder categorie

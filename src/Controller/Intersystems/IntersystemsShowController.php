@@ -4,7 +4,6 @@ namespace App\Controller\Intersystems;
 
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -42,7 +41,6 @@ class IntersystemsShowController extends AbstractController
         ConfigService $config_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
-        HeadingRender $heading_render,
         SystemsService $systems_service,
         PageParamsService $pp,
         MenuService $menu_service
@@ -82,10 +80,6 @@ class IntersystemsShowController extends AbstractController
 
         $btn_nav_render->nav_list('intersystems', $pp->ary(),
             [], 'Lijst', 'share-alt');
-
-        $heading_render->add('InterSysteem: ');
-        $heading_render->add($group['groupname']);
-        $heading_render->fa('share-alt');
 
         $out = '<div class="panel panel-default printview">';
         $out .= '<div class="panel-heading">';
@@ -209,8 +203,9 @@ class IntersystemsShowController extends AbstractController
 
         $menu_service->set('intersystems');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems_show.html.twig', [
             'content'   => $out,
+            'name'      => $group['groupname'],
             'schema'    => $pp->schema(),
         ]);
     }

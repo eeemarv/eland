@@ -3,7 +3,6 @@
 namespace App\Controller\Intersystems;
 
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\MenuService;
@@ -36,7 +35,6 @@ class IntersystemsController extends AbstractController
         Db $db,
         Predis $predis,
         BtnTopRender $btn_top_render,
-        HeadingRender $heading_render,
         ConfigService $config_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -102,9 +100,6 @@ class IntersystemsController extends AbstractController
 
         $btn_top_render->add('intersystems_add', $pp->ary(),
             [], 'InterSysteem toevoegen');
-
-        $heading_render->add('eLAND InterSysteem');
-        $heading_render->fa('share-alt');
 
         $out = '<p>';
         $out .= 'Een eLAND interSysteem verbinding laat intertrading toe tussen ';
@@ -251,7 +246,7 @@ class IntersystemsController extends AbstractController
 
         $menu_service->set('intersystems');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

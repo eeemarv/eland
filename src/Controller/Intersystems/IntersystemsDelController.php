@@ -2,7 +2,6 @@
 
 namespace App\Controller\Intersystems;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -39,7 +38,6 @@ class IntersystemsDelController extends AbstractController
         int $id,
         Db $db,
         ConfigService $config_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         AlertService $alert_service,
@@ -83,9 +81,6 @@ class IntersystemsDelController extends AbstractController
             $alert_service->error('InterSysteem niet verwijderd.');
         }
 
-        $heading_render->add('InterSysteem verwijderen: ' . $group['groupname']);
-        $heading_render->fa('share-alt');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -108,8 +103,9 @@ class IntersystemsDelController extends AbstractController
 
         $menu_service->set('intersystems');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('intersystems/intersystems_del.html.twig', [
             'content'   => $out,
+            'name'      => $group['groupname'],
             'schema'    => $pp->schema(),
         ]);
     }
