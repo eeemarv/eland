@@ -332,9 +332,6 @@
     "symfony/http-kernel": {
         "version": "v5.1.8"
     },
-    "symfony/intl": {
-        "version": "v5.1.8"
-    },
     "symfony/maker-bundle": {
         "version": "1.0",
         "recipe": {
@@ -371,6 +368,9 @@
     "symfony/orm-pack": {
         "version": "v2.1.0"
     },
+    "symfony/password-hasher": {
+        "version": "v5.3.0"
+    },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.20.0"
     },
@@ -394,6 +394,9 @@
     },
     "symfony/polyfill-php80": {
         "version": "v1.20.0"
+    },
+    "symfony/polyfill-php81": {
+        "version": "v1.23.0"
     },
     "symfony/process": {
         "version": "v5.1.8"
