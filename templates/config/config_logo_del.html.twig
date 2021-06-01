@@ -1,0 +1,45 @@
+{%- extends 'config/base/config_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'config_logo_del.title'|trans -}}
+{%- endblock heading_title -%}
+
+{#
+{%- block content -%}
+    {%- embed 'form/form_embed.html.twig' -%}
+        {%- import 'macro/link.html.twig' as l -%}
+        {%- import 'macro/btn_link.html.twig' as bl -%}
+        {%- block form_a -%}
+
+            {%- set logo = config('logo', schema) -%}
+
+            <div class="col-md-6">
+                <div class="text-center center-block">
+                    <img class="img-rounded img-responsive center-block py-5" src="{{- s3_url(logo) -}}">
+                </div>
+            </div>
+
+
+        {%- endblock form_a -%}
+
+        {%- block form_cancel_btn -%}
+            {{- bl.cancel('config_logo', {}) -}}
+        {%- endblock form_cancel_btn -%}
+
+        {%- block form_submit_btn -%}
+            {{- form_widget(form.submit,{
+                'label': 'btn.delete',
+                'attr': {'class': 'btn-danger'}
+            }) -}}
+        {%- endblock form_submit_btn -%}
+    {%- endembed -%}
+{%- endblock content -%}
+#}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

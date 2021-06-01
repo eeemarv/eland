@@ -693,6 +693,23 @@ transactions_add:
 transactions_autominlimit:
   title: Automatische minimum limiet
 
+transactions_currency:
+  title: Munteenheid
+  currency:
+    label: Naam munteenheid (meervoud)
+  timebased_en:
+    label: >-
+      Dit is een munt met een tijdbasis.
+  per_hour_ratio:
+    label: Aantal per uur
+    help: >-
+      Deze instelling heeft enkel betrekking op
+      systemen met een tijd-gebaseerde munt.
+      Zij is vereist voor eLAND interSysteem-verbindingen
+      zodat de Systemen een gemeenschappelijke
+      tijdbasis hebben.
+
+
 transactions_edit:
   title: >-
     Omschrijving transactie aanpassen

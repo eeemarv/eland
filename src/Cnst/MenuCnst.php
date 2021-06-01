@@ -190,6 +190,7 @@ class MenuCnst
         'users_periodic_mail'   => 'users',
         'intersystems'          => 'users',
         'mollie_payments'       => 'users',
+        'transactions_currency'     => 'transactions',
         'transactions_modules'      => 'transactions',
         'transactions_autominlimit' => 'transactions',
         'transactions_mass'         => 'transactions',
@@ -255,6 +256,11 @@ class MenuCnst
                 'fa'    => 'cog',
                 'label' => 'Submodules en velden',
                 'route' => 'transactions_modules',
+            ],
+            'transactions_currency' => [
+                'fa'    => 'money',
+                'label' => 'Munteenheid',
+                'route' => 'transactions_currency',
             ],
             'transactions_autominlimit'		=> [
                 'fa'        => 'arrows-v',

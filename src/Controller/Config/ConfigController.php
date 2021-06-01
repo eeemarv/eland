@@ -59,10 +59,6 @@ class ConfigController extends AbstractController
         $errors = [];
         $pane = ConfigCnst::TAB_PANES[$tab];
 
-        $cond_ary = [
-            'config_template_lets'	=> true,
-        ];
-
         $select_options = [
             'date_format'	=> $date_format_service->get_options(),
             'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
@@ -130,12 +126,6 @@ class ConfigController extends AbstractController
 
                 $posted_value = trim($request->request->get($input_name, ''));
                 $input_data = ConfigCnst::INPUTS[$input_name];
-
-                if (isset($input_data['cond']) &&
-                    !isset($cond_ary[$input_data['cond']]))
-                {
-                    continue;
-                }
 
                 $validator = [
                     'type'			=> $input_data['type'] ?? 'text',
@@ -456,12 +446,6 @@ class ConfigController extends AbstractController
 
                 $input = ConfigCnst::INPUTS[$pane_input_name];
                 $input_name = $pane_input_name;
-            }
-
-            if (isset($input['cond']) &&
-            !isset($cond_ary[$input['cond']]))
-            {
-                continue;
             }
 
             $out .= '<li class="list-group-item bg-info">';

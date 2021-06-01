@@ -131,7 +131,6 @@ class ConfigCnst
         ],
 
         'currencyratio'	=> [
-            'cond'		=> 'config_template_lets',
             'lbl'		=> 'Aantal per uur',
             'attr'		=> ['max' => '240', 'min' => '1'],
             'type'		=> 'number',
@@ -212,13 +211,6 @@ class ConfigCnst
             'path'      => 'system.maintenance_en'
         ],
 
-        'template_lets'	=> [
-            'type'	=> 'checkbox',
-            'post_actions'	=> ['clear_eland_intersystem_cache'],
-            'default'	=> '1',
-            'path'      => 'transactions.currency.timebased_en',
-        ],
-
         'default_landing_page'	=> [
             'lbl'		=> 'Standaard landingspagina',
             'type'		=> 'select',
@@ -272,14 +264,6 @@ class ConfigCnst
         'modules'   => [
             'route' => 'config_ext_modules',
             'lbl'   => 'Modules',
-        ],
-
-        'currency'		=> [
-            'lbl'	=> 'Munteenheid',
-            'inputs'	=> [
-                'currency'	=> true,
-                'currencyratio'	=> true,
-            ],
         ],
 
         'mail-addr'	=> [
@@ -345,11 +329,6 @@ class ConfigCnst
                 'li_2' => [
                     'inline' => '%input(maintenance)% Onderhoudsmodus:
                         alleen admins kunnen inloggen.',
-                ],
-
-                'li_3' => [
-                    'inline'	=> '%input(template_lets)% Dit Systeem heeft
-                        een munt met tijdbasis.',
                 ],
 
                 'default_landing_page'	=> true,
