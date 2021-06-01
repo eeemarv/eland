@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Render\HeadingRender;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -35,7 +34,6 @@ class ExportController extends AbstractController
         Request $request,
         Db $db,
         LoggerInterface $logger,
-        HeadingRender $heading_render,
         PageParamsService $pp,
         MenuService $menu_service,
         FormTokenService $form_token_service,
@@ -214,9 +212,6 @@ class ExportController extends AbstractController
             return $response;
         }
 
-        $heading_render->add('Export');
-        $heading_render->fa('download');
-
         $out = '<form method="post">';
 
         $out .= '<div class="panel panel-info">';
@@ -255,7 +250,7 @@ class ExportController extends AbstractController
 
         $menu_service->set('export');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('export/export.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

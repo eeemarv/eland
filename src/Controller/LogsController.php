@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Service\AssetsService;
@@ -43,7 +42,6 @@ class LogsController extends AbstractController
         Db $db,
         PaginationRender $pagination_render,
         MenuService $menu_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         LogDbService $log_db_service,
         BtnNavRender $btn_nav_render,
@@ -231,10 +229,6 @@ class LogsController extends AbstractController
             || (isset($filter['code']) && $filter['code'] !== '')
             || (isset($filter['fdate']) && $filter['fdate'] !== '')
             || (isset($filter['tdate']) && $filter['tdate'] !== '');
-
-        $heading_render->add('Logs');
-        $heading_render->add_filtered($filtered);
-        $heading_render->fa('history');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -442,8 +436,9 @@ class LogsController extends AbstractController
 
         $menu_service->set('logs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('logs/logs.html.twig', [
             'content'   => $out,
+            'filtered'  => $filtered,
             'schema'    => $pp->schema(),
         ]);
     }
