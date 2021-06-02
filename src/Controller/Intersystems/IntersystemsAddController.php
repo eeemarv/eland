@@ -117,8 +117,8 @@ class IntersystemsAddController extends AbstractController
                 if ($systems_service->get_system($add_schema))
                 {
                     $group['url'] = $systems_service->get_legacy_eland_origin($add_schema);
-                    $group['groupname'] = $config_service->get('systemname', $add_schema);
-                    $group['localletscode'] = $config_service->get('systemtag', $add_schema);
+                    $group['groupname'] = $config_service->get_str('system.name', $add_schema);
+                    $group['localletscode'] = $config_service->get_str('mail.tag', $add_schema);
                 }
             }
         }

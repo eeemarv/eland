@@ -65,39 +65,6 @@ class ConfigCnst
 
     const INPUTS = [
 
-        'minlimit'	=> [
-            'addon'	=> '%config_currency%',
-            'lbl'	=> 'Minimum Systeemslimiet',
-            'type'	=> 'number',
-            'explain'	=> 'Minimum Limiet die geldt voor alle Accounts,
-                behalve voor die Accounts waarbij een Minimum Account
-                Limiet ingesteld is. Kan leeg gelaten worden.',
-            'default'	=> '',
-            'path'  => 'accounts.limits.global.min',
-        ],
-
-        'maxlimit'	=> [
-            'addon'	=> '%config_currency%',
-            'lbl'	=> 'Maximum Systeemslimiet',
-            'type'	=> 'number',
-            'explain'	=> 'Maximum Limiet die geldt voor alle Accounts,
-                behalve voor die Accounts waarbij een Maximum Account
-                Limiet ingesteld is. Kan leeg gelaten worden.',
-            'default'	=> '',
-            'path'  => 'accounts.limits.global.max',
-        ],
-
-        'balance_equilibrium'	=> [
-            'addon'		=> '%config_currency%',
-            'lbl'		=> 'Het uitstapsaldo voor actieve leden. ',
-            'type'		=> 'number',
-            'required'	=> true,
-            'explain' 	=> 'Het saldo van leden met status uitstapper
-                kan enkel bewegen in de richting van deze instelling.',
-            'default'	=> '0',
-            'path'      => 'accounts.equilibrium',
-        ],
-
         'systemname' => [
             'lbl'		=> 'Systeemsnaam',
             'required'	=> true,
@@ -128,19 +95,6 @@ class ConfigCnst
             'addon_fa'	=> 'money',
             'default'	=> '',
             'path'      => 'transactions.currency.name',
-        ],
-
-        'currencyratio'	=> [
-            'lbl'		=> 'Aantal per uur',
-            'attr'		=> ['max' => '240', 'min' => '1'],
-            'type'		=> 'number',
-            'addon_fa'	=> 'clock-o',
-            'explain'	=> 'Deze instelling heeft enkel betrekking op systemen met een
-                tijd-gebaseerde munt.
-                Zij is vereist voor eLAND interSysteem-verbindingen zodat de Systemen
-                een gemeenschappelijke tijdbasis hebben.',
-            'default'	=> '1',
-            'path'      => 'transactions.currency.per_hour_ratio',
         ],
 
         'admin'	=> [
@@ -279,15 +233,6 @@ class ConfigCnst
                 'admin'	    => true,
                 'support'	=> true,
             ]
-        ],
-
-        'balance'		=> [
-            'lbl'		=> 'Saldo',
-            'inputs'	=> [
-                'minlimit'	=> true,
-                'maxlimit'	=> true,
-                'balance_equilibrium'	=> true,
-            ],
         ],
 
         'users'	=> [

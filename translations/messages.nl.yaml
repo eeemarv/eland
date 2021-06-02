@@ -703,12 +703,11 @@ transactions_currency:
   per_hour_ratio:
     label: Aantal per uur
     help: >-
-      Deze instelling heeft enkel betrekking op
-      systemen met een tijd-gebaseerde munt.
+      Deze instelling is enkel van toepassing
+      wanneer de munt tijd-gebaseerd is (zie boven).
       Zij is vereist voor eLAND interSysteem-verbindingen
       zodat de Systemen een gemeenschappelijke
       tijdbasis hebben.
-
 
 transactions_edit:
   title: >-
@@ -736,6 +735,37 @@ transactions_modules:
 transactions_self:
   title: >-
     Mijn transacties
+
+transactions_system_limits:
+  title: Systeemslimieten
+  max:
+    label: Maximum systeemslimiet
+    help: >-
+      Maximum limiet die geldt voor alle
+      accounts, behalve voor die accounts
+      waarbij een "maximum account limiet"
+      ingesteld is. Wanneer dit veld leeg
+      gelaten wordt, geldt er geen maximum
+      systeemslimiet.
+  min:
+    label: Minimum systeemslimiet
+    help: >-
+      Minimum limiet die geldt voor alle
+      accounts, behalve voor die accounts
+      waarbij een "minimum account limiet"
+      ingesteld is. Wanneer dit veld leeg
+      gelaten wordt, geldt er geen minimum
+      systeemslimiet.
+
+transactions_leaving_eq:
+  title: Uitstappers saldo
+  leaving_eq:
+    label: >-
+      Het uitstapsaldo voor actieve leden
+    help: >-
+      Het saldo van leden met status
+      uitstapper kan enkel bewegen in de
+      richting van deze instelling.
 
 transactions_show:
   title: >-
