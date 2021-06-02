@@ -15,11 +15,11 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConfigNameController extends AbstractController
+class ConfigLogoController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/config',
-        name: 'config_name',
+        '/{system}/{role_short}/config/logo',
+        name: 'config_logo',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',

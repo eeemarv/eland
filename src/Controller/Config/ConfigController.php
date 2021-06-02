@@ -16,7 +16,6 @@ use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use Symfony\Component\Routing\Annotation\Route;
@@ -48,7 +47,6 @@ class ConfigController extends AbstractController
         AssetsService $assets_service,
         HeadingRender $heading_render,
         ConfigService $config_service,
-        DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         SelectRender $select_render,
         PageParamsService $pp,
@@ -60,7 +58,6 @@ class ConfigController extends AbstractController
         $pane = ConfigCnst::TAB_PANES[$tab];
 
         $select_options = [
-            'date_format'	=> $date_format_service->get_options(),
             'landing_page'	=> ConfigCnst::LANDING_PAGE_OPTIONS,
         ];
 
@@ -162,18 +159,6 @@ class ConfigController extends AbstractController
                 }
 
                 $posted_configs[$input_name] = $posted_value;
-
-                if ($input_name === 'date_format')
-                {
-                    $error = $date_format_service->get_error($posted_value);
-
-                    if ($error)
-                    {
-                        $errors[] = $error . $err_n;
-                    }
-
-                    continue;
-                }
 
                 if ($validator['type'] === 'text'
                     || $validator['type'] === 'textarea')

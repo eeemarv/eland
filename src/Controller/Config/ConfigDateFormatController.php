@@ -10,16 +10,18 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
+use App\Service\DateFormatService;
 use App\Service\PageParamsService;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConfigNameController extends AbstractController
+class ConfigDateFormatController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/config',
-        name: 'config_name',
+        '/{system}/{role_short}/config/date-format',
+        name: 'config_date_format',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -37,22 +39,22 @@ class ConfigNameController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
+        DateFormatService $date_format_service,
         PageParamsService $pp
     ):Response
     {
         $errors = [];
 
-        $system_name = $config_service->get_str('system.name', $pp->schema());
-        $mail_tag = $config_service->get_str('mail.tag', $pp->schema());
+        $date_format = $config_service->get_str('system.date_format', $pp->schema());
 
         $form_data = [
-            'system_name'   => $system_name,
-            'mail_tag'      => $mail_tag,
+            'date_format'   => $date_format,
         ];
 
         $builder = $this->createFormBuilder($form_data);
-        $builder->add('system_name', TextType::class)
-            ->add('mail_tag', TextType::class)
+        $builder->add('date_format', ChoiceType::class, [
+            'choices'   => $date_format_service->get_choices(),
+        ])
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
@@ -78,16 +80,15 @@ class ConfigNameController extends AbstractController
         {
             $form_data = $form->getData();
 
-            $config_service->set_str('system.name', $form_data['system_name'], $pp->schema());
-            $config_service->set_str('mail.tag', $form_data['mail_tag'], $pp->schema());
+            $config_service->set_str('system.date_format', $form_data['date_format'], $pp->schema());
 
-            $alert_service->success('Systeem naam en E-mail tag aangepast.');
-            $link_render->redirect('config_name', $pp->ary(), []);
+            $alert_service->success('Datum- en tijdweergave aangepast.');
+            $link_render->redirect('config_date_format', $pp->ary(), []);
         }
 
         $menu_service->set('config_name');
 
-        return $this->render('config/config_name.html.twig', [
+        return $this->render('config/config_date_format.html.twig', [
             'form'          => $form->createView(),
             'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),

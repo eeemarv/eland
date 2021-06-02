@@ -185,15 +185,6 @@ class ConfigCnst
             'default'	=> '',
             'path'      => 'system.website_url',
         ],
-
-        'date_format'	=> [
-            'lbl'		=> 'Datum- en tijdweergave',
-            'type'		=> 'select',
-            'options'	=> 'date_format',
-            'addon_fa'	=> 'calendar',
-            'default'	=> '%e %b %Y, %H:%M:%S',
-            'path'      => 'system.date_format',
-        ],
     ];
 
     const TAB_PANES = [
@@ -278,7 +269,6 @@ class ConfigCnst
 
                 'default_landing_page'	=> true,
                 'homepage_url'	=> true,
-                'date_format'	=> true,
             ],
         ],
     ];

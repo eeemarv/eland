@@ -299,6 +299,11 @@ categories_del:
 config:
   title: Instellingen
 
+config_date_format:
+  title: Datum en tijd
+  date_format:
+    label: Weergave datum en tijd
+
 config_logo:
   title: Logo
   btn:
@@ -322,7 +327,7 @@ config_modules:
   register_form_enabled: Inschrijvingsformulier
 
 config_name:
-  title: Systeemsnaam
+  title: Naam systeem
   config_name:
     label: Naam van het systeem
   mail_tag:
