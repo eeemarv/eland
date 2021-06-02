@@ -327,9 +327,15 @@ config_modules:
   register_form_enabled: Inschrijvingsformulier
 
 config_name:
-  title: Naam systeem
+  title: Naam
   config_name:
     label: Naam van het systeem
+
+config_mail:
+  title: E-mail
+  mail_enabled:
+    label: >-
+      E-mail functionaliteit aan: het Systeem verstuurt E-mails.
   mail_tag:
     label: E-mail tag
     help: >-

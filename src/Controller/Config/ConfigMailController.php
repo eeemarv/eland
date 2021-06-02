@@ -11,15 +11,16 @@ use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConfigNameController extends AbstractController
+class ConfigMailController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/config',
-        name: 'config_name',
+        '/{system}/{role_short}/config/mail',
+        name: 'config_mail',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -42,14 +43,17 @@ class ConfigNameController extends AbstractController
     {
         $errors = [];
 
-        $system_name = $config_service->get_str('system.name', $pp->schema());
+        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $mail_tag = $config_service->get_str('mail.tag', $pp->schema());
 
         $form_data = [
-            'system_name'   => $system_name,
+            'mail_enabled'  => $mail_enabled,
+            'mail_tag'      => $mail_tag,
         ];
 
         $builder = $this->createFormBuilder($form_data);
-        $builder->add('system_name', TextType::class)
+        $builder->add('mail_enabled', CheckboxType::class)
+            ->add('mail_tag', TextType::class)
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
@@ -75,15 +79,16 @@ class ConfigNameController extends AbstractController
         {
             $form_data = $form->getData();
 
-            $config_service->set_str('system.name', $form_data['system_name'], $pp->schema());
+            $config_service->set_bool('mail.enabled', $form_data['mail_enabled'], $pp->schema());
+            $config_service->set_str('mail.tag', $form_data['mail_tag'], $pp->schema());
 
-            $alert_service->success('Naam systeem aangepast.');
-            $link_render->redirect('config_name', $pp->ary(), []);
+            $alert_service->success('E-mail instellingen aangepast.');
+            $link_render->redirect('config_mail', $pp->ary(), []);
         }
 
         $menu_service->set('config_name');
 
-        return $this->render('config/config_name.html.twig', [
+        return $this->render('config/config_mail.html.twig', [
             'form'          => $form->createView(),
             'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),

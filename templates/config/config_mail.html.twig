@@ -1,0 +1,44 @@
+{%- extends 'config/base/config_form.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- block config_form_content -%}
+    {{- form_row(form.mail_enabled, {
+        'label': 'config_mail.mail_enabled.label',
+        'required': false
+    }) -}}
+
+    {{- form_row(form.mail_tag, {
+        'label': 'config_mail.mail_tag.label',
+        'pre_addon': {
+            'fa': 'tag'
+        },
+        'help': 'config_mail.mail_tag.help',
+    }) -}}
+
+{%- endblock config_form_content -%}
+
+
+{#
+{%- set form_a -%}
+    {{- form_row(form.system_name, {
+        'label': 'label.system_name',
+        'addon_fa': 'share-alt',
+    }) -}}
+{%- endset -%}
+
+{%- set form_b -%}
+    {{- form_row(form.email_tag, {
+        'label': 'label.email_tag',
+        'help': 'help.email_tag',
+        'addon_fa': 'tag',
+    }) -}}
+{%- endset -%}
+#}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}
