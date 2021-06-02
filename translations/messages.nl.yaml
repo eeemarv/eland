@@ -323,6 +323,13 @@ config_modules:
 
 config_name:
   title: Systeemsnaam
+  config_name:
+    label: Naam van het systeem
+  mail_tag:
+    label: E-mail tag
+    help: >-
+      Prefix tussen haken [tag]
+      in onderwerp van alle E-mail-berichten
 
 contact_form:
   title: Contact

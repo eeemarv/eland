@@ -1,24 +1,74 @@
 {%- extends 'config/base/config_form.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
 
-{%- set form_a -%}
+{%- set config_ext_menu = [
+    {'lbl': 'Systeemsnaam', 'tab': 'system-name'},
+    {'lbl': 'Logo', 'tab': 'logo'},
+    {'lbl': 'Modules', 'route': 'config_ext_modules'},
+    {'lbl': 'Munteenheid', 'tab': 'currency'},
+    {'lbl': 'E-Mail Adressen', 'tab': 'mail-addr'},
+    {'lbl': 'Saldo', 'tab': 'balance'},
+    {'lbl': 'Leden', 'tab': 'users'},
+    {'lbl': 'Nieuws', 'tab': 'news'},
+    {'lbl': 'Systeem', 'tab': 'system'},
+] -%}
+
+{%- block config_form_content -%}
+
+    {{- form_row(form.messages_enabled, {
+        'label': 'Vraag en aanbod',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.transactions_enabled, {
+        'label': 'Transacties',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.news_enabled, {
+        'label': 'Nieuws',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.docs_enabled, {
+        'label': 'Documenten',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
     {{- form_row(form.forum_enabled, {
-        'label': 'config_modules.forum_enabled',
-        'label_attr': {'class': 'checkbox-custom'}
+        'label': 'Forum',
+        'translation_domain': false,
+        'required': false
     }) -}}
+
+    {{- form_row(form.support_form_enabled, {
+        'label': 'Support forumulier',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    <h5>Publieke modules</h5>
+
+    {{- form_row(form.home_menu_enabled, {
+        'label': 'Home pagina (Blijft altijd bereikbaar. Hiermee schakel je enkel het menu item in of uit.)',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
     {{- form_row(form.contact_form_enabled, {
-        'label': 'config_modules.contact_form_enabled',
-        'label_attr': {'class': 'checkbox-custom'}
+        'label': 'Contact formulier',
+        'translation_domain': false,
+        'required': false
     }) -}}
+
     {{- form_row(form.register_form_enabled, {
-        'label': 'config_modules.register_form_enabled',
-        'label_attr': {'class': 'checkbox-custom'}
+        'label': 'Registratie forumulier',
+        'translation_domain': false,
+        'required': false
     }) -}}
-{%- endset -%}
 
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}
+{%- endblock config_form_content -%}

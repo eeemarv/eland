@@ -1,7 +1,23 @@
-{%- extends 'config/base/config_base.html.twig' -%}
-{#
 {%- extends 'config/base/config_form.html.twig' -%}
-#}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- block config_form_content -%}
+    {{- form_row(form.system_name, {
+        'label': 'config_name.config_name.label',
+        'pre_addon': {
+            'fa': 'share-alt',
+        }
+    }) -}}
+
+    {{- form_row(form.mail_tag, {
+        'label': 'config_name.mail_tag.label',
+        'pre_addon': {
+            'fa': 'tag'
+        },
+        'help': 'config_name.mail_tag.help',
+    }) -}}
+
+{%- endblock config_form_content -%}
 
 
 {#

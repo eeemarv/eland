@@ -1,44 +1,50 @@
 {%- extends 'config/base/config_base.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
 
-{%- set config_tab_menu = {
+{%- set config_menu = {
     'config_name': 'config_name.title',
-    'config_logo': 'config_logo.title',
     'config_modules': 'config_modules.title'
 } -%}
 
 {%- block content -%}
-    <ul class="nav nav-pills mb-2">
-    {%- for rt, lbl in config_tab_menu -%}
-        <li class="nav-item">
-            <a class="nav-link{%- if app.request.attributes.get('_route') == rt %} active{%- endif -%}" href="{{- path(rt, pp_ary()) -}}">
+
+<ul class="nav nav-pills">
+    {%- for rt, lbl in config_menu -%}
+        <li role="presentation"{%- if app.request.get('_route') == rt %} class="active"{%- endif -%}>
+            <a href="{{- path(rt, pp_ary()) -}}">
                 {{- lbl|trans -}}
             </a>
         </li>
     {%- endfor -%}
-    </ul>
+</ul>
 
-    {%- block form -%}
-        {%- embed 'form/form_embed.html.twig' -%}
-            {%- block form_header -%}
-                {%- embed 'config/embed/config_form_header.html.twig' -%}
-                {%- endembed -%}
-            {%- endblock form_header -%}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h4>
+            {%- block config_title -%}
+                {{- config_menu[app.request.get('_route')]|trans -}}
+            {%- endblock -%}
+        </h4>
+    </div>
+    <div class="panel-heading">
 
-            {%- block form_submit_btn -%}
-                {{- form_widget(form.submit,{
-                    'label': 'btn.edit',
-                    'attr': {'class': 'btn-primary'}
-                }) -}}
-            {%- endblock form_submit_btn -%}
-        {%- endembed -%}
-    {%- endblock form -%}
+    {{- form_start(form) -}}
+    <div class="custom-checkbox">
 
+    {%- block config_form_content -%}
+    {%- endblock -%}
+
+    {%- block submit_btn -%}
+        {{- form_widget(form.submit, {
+            'label': 'btn.edit',
+            'attr': {'class': 'btn-primary btn-lg'},
+        }) -}}
+    {%- endblock submit_btn -%}
+
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+    </div>
+    {{- form_end(form) -}}
+
+    </div>
+</div>
 {%- endblock content -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}

@@ -1,0 +1,50 @@
+{%- extends 'config/base/config_base.html.twig' -%}
+
+{#
+{%- set config_tab_menu = {
+    'config_name': 'config_name.title',
+    'config_logo': 'config_logo.title',
+    'config_modules': 'config_modules.title'
+} -%}
+#}
+
+{%- set config_tab_menu = {
+    'config_name': 'config_name.title',
+} -%}
+
+{%- block content -%}
+    <ul class="nav nav-pills mb-2">
+        {%- for rt, lbl in config_tab_menu -%}
+            <li class="nav-item">
+                <a class="nav-link{%- if app.request.attributes.get('_route') == rt %} active{%- endif -%}" href="{{- path(rt, pp_ary()) -}}">
+                    {{- lbl|trans -}}
+                </a>
+            </li>
+        {%- endfor -%}
+    </ul>
+
+    {%- block form -%}
+        {%- embed 'form/form_embed.html.twig' -%}
+            {%- block form_header -%}
+                {%- embed 'config/embed/config_form_header.html.twig' -%}
+                {%- endembed -%}
+            {%- endblock form_header -%}
+
+            {%- block form_submit_btn -%}
+                {{- form_widget(form.submit,{
+                    'label': 'btn.edit',
+                    'attr': {'class': 'btn-primary'}
+                }) -}}
+            {%- endblock form_submit_btn -%}
+        {%- endembed -%}
+    {%- endblock form -%}
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

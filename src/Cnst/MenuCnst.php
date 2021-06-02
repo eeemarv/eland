@@ -153,10 +153,10 @@ class MenuCnst
             'divider'   => true,
         ],
 
-        'config'			=> [
+        'config_name'       => [
             'fa'        => 'gears',
             'label'     => 'Instellingen',
-            'route'     => 'config',
+            'route'     => 'config_name',
             'params'    => [
                 'role_short'    => 'a',
             ],

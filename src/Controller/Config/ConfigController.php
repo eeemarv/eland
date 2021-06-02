@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/config/{tab}',
+        '/{system}/{role_short}/config--/{tab}',
         name: 'config',
         methods: ['GET', 'POST'],
         requirements: [

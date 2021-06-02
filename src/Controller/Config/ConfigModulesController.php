@@ -2,7 +2,6 @@
 
 namespace App\Controller\Config;
 
-use App\Render\HeadingRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConfigExtModulesController extends AbstractController
+class ConfigModulesController extends AbstractController
 {
     const CONFIG_MODULES =[
         'messages.enabled',
@@ -32,7 +31,7 @@ class ConfigExtModulesController extends AbstractController
 
     #[Route(
         '/{system}/{role_short}/config/modules',
-        name: 'config_ext_modules',
+        name: 'config_modules',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -46,7 +45,6 @@ class ConfigExtModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        HeadingRender $heading_render,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -102,14 +100,12 @@ class ConfigExtModulesController extends AbstractController
             }
 
             $alert_service->success('Modules aangepast.');
-            $link_render->redirect('config_ext_modules', $pp->ary(), []);
+            $link_render->redirect('config_modules', $pp->ary(), []);
         }
 
-        $heading_render->add('Instellingen');
-        $heading_render->fa('cogs');
-        $menu_service->set('config');
+        $menu_service->set('config_name');
 
-        return $this->render('config_ext/config_ext_modules.html.twig', [
+        return $this->render('config/config_modules.html.twig', [
             'form'          => $form->createView(),
             'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
