@@ -46,7 +46,7 @@ class ElandRoleVoter extends Voter
                 return false;
             }
 
-            if ($this->config_service->get('maintenance', $schema))
+            if ($this->config_service->get_bool('system.maintenance_en', $schema))
             {
                 return false;
             }

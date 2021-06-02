@@ -107,6 +107,8 @@ class UsersListController extends AbstractController
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
 
+        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+
         $errors = [];
 
         $q = $request->get('q', '');
@@ -211,7 +213,7 @@ class UsersListController extends AbstractController
 
             if (in_array($bulk_submit_action, ['mail', 'mail_test']))
             {
-                if (!$config_service->get('mailenabled', $pp->schema()))
+                if (!$config_service->get_bool('mail.enabled', $pp->schema()))
                 {
                     $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
                 }
@@ -628,9 +630,9 @@ class UsersListController extends AbstractController
                 'total'	=> 'Transacties totaal',
             ],
             'amount'	=> [
-                'in'	=> $config_service->get('currency', $pp->schema()) . ' in',
-                'out'	=> $config_service->get('currency', $pp->schema()) . ' uit',
-                'total'	=> $config_service->get('currency', $pp->schema()) . ' totaal',
+                'in'	=> $currency . ' in',
+                'out'	=> $currency . ' uit',
+                'total'	=> $currency . ' totaal',
             ],
         ];
 
@@ -1240,7 +1242,7 @@ class UsersListController extends AbstractController
 
                 $fc3 .= $typeahead_service->str([
                     'filter'		=> 'accounts',
-                    'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
+                    'newuserdays'	=> $config_service->get_int('users.new.days', $pp->schema()),
                 ]);
 
                 $fc3 .= '">';
@@ -1817,7 +1819,7 @@ class UsersListController extends AbstractController
 
         $out .= '<div class="row"><div class="col-md-12">';
         $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $currency;
         $out .= '</span></p>';
         $out .= '</div></div>';
 

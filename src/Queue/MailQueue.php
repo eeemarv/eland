@@ -250,7 +250,7 @@ class MailQueue implements QueueInterface
 			return true;
 		}
 
-		if (!$this->config_service->get('mailenabled', $schema))
+		if (!$this->config_service->get_bool('mail.enabled', $schema))
 		{
 			$this->logger->info($log_prefix .
 				': mail functions are not enabled in config. ' .

@@ -295,7 +295,7 @@ class TransactionsEditController extends AbstractController
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $config_service->get_str('transactions.currency.name', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';

@@ -159,7 +159,7 @@ class NewsListController extends AbstractController
         $query .= 'where access in (?) ';
 
         $query .= 'order by event_at ';
-        $query .= $config_service->get('news_order_asc', $pp->schema()) === '1' ? 'asc' : 'desc';
+        $query .= $config_service->get_bool('news.sort.asc', $pp->schema()) ? 'asc' : 'desc';
 
         $access_ary = $item_access_service->get_visible_ary_for_page();
 

@@ -232,24 +232,6 @@ class ConfigService
 		$this->set_val($key, $value, $schema);
 	}
 
-	public function get(string $key, string $schema):string
-	{
-		$path = ConfigCnst::INPUTS[$key]['path'];
-
-		if (!isset($this->local_cache[$schema]))
-		{
-			$ret = $this->read_all($schema)[$path];
-		}
-		else
-		{
-			$ret = $this->local_cache[$schema][$path];
-		}
-
-		$ret = (string) $ret;
-
-		return $ret;
-	}
-
 	public function get_intersystem_en(string $schema):bool
 	{
 		return $this->get_bool('transactions.currency.timebased_en', $schema)

@@ -315,7 +315,7 @@ class ContactsAddController extends AbstractController
                 ->add('accounts', ['status' => 'extern'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $config_service->get('newuserdays', $pp->schema()),
+                    'newuserdays'   => $config_service->get_int('users.new.days', $pp->schema()),
                 ]);
             $out .= '" ';
 

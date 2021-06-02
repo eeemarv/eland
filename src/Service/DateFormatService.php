@@ -60,7 +60,7 @@ class DateFormatService
 		string $schema
 	):string
 	{
-		$format = $this->config_service->get('date_format', $schema);
+		$format = $this->config_service->get_str('system.date_format', $schema);
 
 		if (!$format || !isset(self::FORMATS[$format]))
 		{

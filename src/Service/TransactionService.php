@@ -50,7 +50,7 @@ class TransactionService
 
 		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$amount . ' ' .
-			$this->config_service->get('currency', $schema) .
+			$this->config_service->get_str('transactions.currency.name', $schema) .
 			' from user ' .
 			$this->account_render->str_id($from_id, $schema) .
 			' to user ' .

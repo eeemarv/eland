@@ -156,7 +156,7 @@ class SupportFormController extends AbstractController
             $cc = false;
         }
 
-        if (!$config_service->get('mailenabled', $pp->schema()))
+        if (!$config_service->get_bool('mail.enabled', $pp->schema()))
         {
             $alert_service->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }

@@ -40,7 +40,7 @@ class LogoDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        $logo = $config_service->get('logo', $pp->schema());
+        $logo = $config_service->get_str('system.logo', $pp->schema());
 
         if ($logo == '' || !$logo)
         {

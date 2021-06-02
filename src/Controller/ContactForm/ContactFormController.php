@@ -138,7 +138,7 @@ class ContactFormController extends AbstractController
 
         $form_disabled = false;
 
-        if (!$config_service->get('mailenabled', $pp->schema()))
+        if (!$config_service->get_bool('mail.enabled', $pp->schema()))
         {
             $alert_service->warning('E-mail functies zijn
                 uitgeschakeld door de beheerder.

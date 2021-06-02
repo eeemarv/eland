@@ -57,7 +57,7 @@ class MailAddrSystemService
 
 			if ($this->validate($mail, $mail_id, $schema))
 			{
-				$out[$mail] = $this->config_service->get('systemname', $schema);
+				$out[$mail] = $this->config_service->get_str('system.name', $schema);
 			}
 		}
 

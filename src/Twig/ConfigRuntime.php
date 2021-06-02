@@ -13,11 +13,6 @@ class ConfigRuntime implements RuntimeExtensionInterface
 	{
 	}
 
-	public function get(string $key, string $schema)
-	{
-		return $this->config_service->get($key, $schema);
-	}
-
 	public function get_str(string $path, string $schema)
 	{
 		return $this->config_service->get_str($path, $schema);

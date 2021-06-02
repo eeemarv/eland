@@ -583,7 +583,7 @@ class TransactionsController extends AbstractController
                 'lbl' => 'Omschrijving',
             ]),
             'amount' => array_merge($asc_preset_ary, [
-                'lbl' => $config_service->get('currency', $pp->schema()),
+                'lbl' => $config_service->get_str('transactions.currency.name', $pp->schema()),
             ]),
             'created_at'	=> array_merge($asc_preset_ary, [
                 'lbl' 		=> 'Tijdstip',
@@ -735,7 +735,7 @@ class TransactionsController extends AbstractController
 
         $out .= $typeahead_service->str([
             'filter'		=> 'accounts',
-            'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
+            'newuserdays'	=> $config_service->get_int('users.new.days', $pp->schema()),
         ]);
 
         $out .= '" ';
@@ -1220,7 +1220,7 @@ class TransactionsController extends AbstractController
         $out .= '<strong>';
         $out .= $amount_sum;
         $out .= '</strong> ';
-        $out .= $config_service->get('currency', $pp->schema());
+        $out .= $config_service->get_str('transactions.currency.name', $pp->schema());
         $out .= '</li>';
         $out .= self::get_valuation($config_service, $pp->schema());
         $out .= '</ul>';
@@ -1323,7 +1323,7 @@ class TransactionsController extends AbstractController
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
             $out .= $config_service->get_int('transactions.currency.per_hour_ratio', $schema);
             $out .= '</span> ';
-            $out .= $config_service->get('currency', $schema);
+            $out .= $config_service->get_str('transactions.currency.name', $schema);
             $out .= ' per uur</li>';
         }
 

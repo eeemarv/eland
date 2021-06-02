@@ -505,7 +505,7 @@ class MolliePaymentsController extends AbstractController
             $sent_to_ary = [];
             $not_sent_ary = [];
 
-            if (!$config_service->get('mailenabled', $pp->schema()))
+            if (!$config_service->get_bool('mail.enabled', $pp->schema()))
             {
                 $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
             }
@@ -766,7 +766,7 @@ class MolliePaymentsController extends AbstractController
             ->add('accounts', ['status' => 'im'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $config_service->get('newuserdays', $pp->schema()),
+                'newuserdays'	=> $config_service->get_int('users.new.days', $pp->schema()),
             ]);
 
         $out .= '" ';

@@ -391,7 +391,7 @@ class IntersystemsController extends AbstractController
             $out .= '>';
 
             $out .= '<td>';
-            $out .= $config_service->get('systemname', $rem_schema);
+            $out .= $config_service->get_str('system.name', $rem_schema);
 
             if (!$config_service->get_bool('transactions.currency.timebased_en', $rem_schema))
             {

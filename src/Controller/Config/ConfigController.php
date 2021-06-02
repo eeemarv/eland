@@ -62,7 +62,7 @@ class ConfigController extends AbstractController
         ];
 
         $addon_replace_ary = [
-            '%config_currency%'	=> $config_service->get('currency', $pp->schema()),
+            '%config_currency%'	=> $config_service->get_str('transactions.currency.name', $pp->schema()),
         ];
 
         $attr_replace_ary = [
@@ -76,12 +76,12 @@ class ConfigController extends AbstractController
             if (is_array($input_config) && isset($input_config['inline']))
             {
                 $inline_input_names = $this->get_tag_ary('input', $input_config['inline']);
-
+/*
                 foreach ($inline_input_names as $inline_input_name)
                 {
                     $config[$inline_input_name] = $config_service->get($inline_input_name, $pp->schema());
                 }
-
+*/
                 continue;
             }
 
@@ -96,7 +96,7 @@ class ConfigController extends AbstractController
             }
             else
             {
-                $config[$input_name] = $config_service->get($input_name, $pp->schema());
+                //$config[$input_name] = $config_service->get($input_name, $pp->schema());
             }
         }
 

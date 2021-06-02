@@ -256,7 +256,7 @@ class LoginController extends AbstractController
             }
 
             if (!count($errors)
-                && $config_service->get('maintenance', $pp->schema())
+                && $config_service->get_bool('system.maintenance_en', $pp->schema())
                 && $user['role'] !== 'admin')
             {
                 $errors[] = 'De website is in onderhoud, probeer later opnieuw';
@@ -292,7 +292,7 @@ class LoginController extends AbstractController
             $alert_service->error($errors);
         }
 
-        if($config_service->get('maintenance', $pp->schema()))
+        if($config_service->get_bool('system.maintenance_en', $pp->schema()))
         {
             $alert_service->warning('De website is niet beschikbaar
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen');
