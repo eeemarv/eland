@@ -304,6 +304,16 @@ config_date_format:
   date_format:
     label: Weergave datum en tijd
 
+config_ext_url:
+  title: Externe URL
+  ext_url:
+    label: URL externe website
+    help: >-
+      Titel en logo in de navigatiebalk
+      linken naar deze url. Wanneer niet
+      ingevuld, wordt er gelinkt naar de
+      homepagina van deze installatie.
+
 config_logo:
   title: Logo
   btn:

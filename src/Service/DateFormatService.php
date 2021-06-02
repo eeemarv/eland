@@ -180,21 +180,6 @@ class DateFormatService
 		return gmdate('Y-m-d H:i:s', $time);
 	}
 
-	/**
-	 * @depreciated, see get_choices() for use with Symfony form
-	 */
-	public function get_options():array
-	{
-		$options = [];
-
-		foreach (self::FORMATS as $format => $prec)
-		{
-			$options[$format] = strftime($format, time());
-		}
-
-		return $options;
-	}
-
 	public function get_choices():array
 	{
 		$choices = [];

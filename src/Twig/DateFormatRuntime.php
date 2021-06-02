@@ -23,11 +23,6 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 		return $this->date_format_service->datepicker_placeholder($schema);
 	}
 
-	public function get_options():array
-	{
-		return $this->date_format_service->get_options();
-	}
-
 	public function get_from_unix(
 		int $unix,
 		string $precision,
