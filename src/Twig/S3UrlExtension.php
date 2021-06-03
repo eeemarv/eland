@@ -3,15 +3,22 @@
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class S3UrlExtension extends AbstractExtension
 {
+	public function getFilters():array
+	{
+		return [
+			new TwigFilter('s3', [S3UrlRuntime::class, 'get_a']),
+		];
+	}
+
 	public function getFunctions():array
 	{
 		return [
-			new TwigFunction('s3_url', [S3UrlRuntime::class, 'get']),
-			new TwigFunction('s3_link_open', [S3UrlRuntime::class, 'get_link_open']),
+			new TwigFunction('s3', [S3UrlRuntime::class, 'get_url']),
 		];
 	}
 }

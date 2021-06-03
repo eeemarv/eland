@@ -1,63 +1,52 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
+{%- set logo = config_str('system.logo', schema) -%}
 
-{#
-{%- block form -%}
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- import 'macro/link.html.twig' as l -%}
-        {%- block form_header -%}
-            {%- embed 'config/embed/config_form_header.html.twig' -%}
-            {%- endembed -%}
-        {%- endblock form_header -%}
-        {%- block form_start -%}{%- endblock -%}
-        {%- block form_content -%}
+{%- block pane_content -%}
 
-            {%- set logo = config('logo', schema) -%}
-
-            <div class="col-md-6" data-fileupload-container data-s3-url="{{- s3_url('') -}}">
-                <div data-models hidden>
-                    {%- embed 'embed/logo.html.twig' -%}
-                        {%- block src -%}{%- endblock -%}
-                    {%- endembed -%}
-                </div>
-                <div class="text-center center-block">
-                    <img class="img-rounded img-responsive center-block py-5" src="{{- s3_url(logo) -}}" data-logo-viewbox{%- if not logo %} hidden{%- endif -%}>
-                    {%- embed 'embed/no_image.html.twig' -%}
-                        {%- block attr -%}
-                            {%- if logo %} hidden{%- endif -%}
-                        {%- endblock attr -%}
-                        {%- block help -%}
-                            {{- 'config_logo.help.no_logo'|trans -}}
-                        {%- endblock help -%}
-                    {%- endembed -%}
-
-                    {%- embed 'embed/image_upload_btn.html.twig' -%}
-                        {%- import 'macro/link.html.twig' as l -%}
-                        {%- block name -%}logo{%- endblock -%}
-                        {%- block attr_multiple -%}{%- endblock -%}
-                        {%- block upload_url -%}
-                            {{- l.pp_path_image_token('config_logo_upload', 0) -}}
-                        {%- endblock upload_url -%}
-                        {%- block label -%}
-                            {{- 'config_logo.btn.upload'|trans -}}
-                        {%- endblock label -%}
-                    {%- endembed -%}
-
-                    <p>
-                        {{- 'config_logo.help.upload'|trans -}}
-                    </p>
-
-                    <a href="{{- l.pp_path('config_logo_del', {}) -}}" class="btn btn-danger btn-lg btn-block">
-                        <i class="fa fa-times"></i>&nbsp;
-                        {{- 'config_logo.btn.del'|trans -}}
-                    </a>
-                </div>
+<div class="panel-body bg-info">
+    <div class="col-md-6">
+        <div class="text-center center-block" id="img_user">
+            <img id="img"
+                {%- if logo == '' %} style="display:none;"{%- endif %}
+                class="img-rounded img-responsive center-block"
+                src="{%- if logo == '' %}{{- assets('1.gif') -}}{%- else -%}{{- s3(logo) -}}{%- endif -%}"
+                data-base-url="{{- s3() -}}"
+                data-replace-logo="1" />
+            <div id="no_img"{%- if logo is not same as ('') %} style="display:none;"{%- endif -%}>
+                <i class="fa fa-image fa-5x text-muted"></i>
+                <br>Geen logo
             </div>
-        {%- endblock form_content -%}
-        {%- block form_end -%}{%- endblock -%}
-    {%- endembed -%}
-{%- endblock form -%}
-#}
+        </div>
+        <br>
+        <span class="btn btn-success btn-lg btn-block fileinput-button">
+            <i class="fa fa-plus" id="img_plus"></i>
+            &nbsp;
+            Logo opladen
+            <input type="file"
+                name="image"
+                data-url="{{- path('logo_upload', pp_ary()) -}}"
+                data-fileupload
+                data-message-file-type-not-allowed="Bestandstype is niet toegelaten."
+                data-message-max-file-size="Het bestand is te groot."
+                data-message-uploaded-bytes="Het bestand is te groot.">
+        </span>
+        <p class="text-warning">
+            Toegestane formaten: jpg/jpeg, png, gif of svg.
+            Je kan ook een afbeelding hierheen verslepen.
+        </p>
+        <a href="{{- path('logo_del', pp_ary()) -}}"
+            id="btn_remove"
+            {%- if logo is not same as('') %} style="display:none;"{%- endif %}
+            class="btn btn-danger btn-block btn-lg">
+            <i class="fa fa-times"></i>
+            &nbsp;
+            Logo verwijderen
+        </a>
+    </div>
+</div>
+
+{%- endblock pane_content -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -330,6 +330,12 @@ config_logo:
 config_logo_del:
   title: Logo verwijderen?
 
+config_maintenance:
+  title: Onderhoud
+  maintenance_en:
+    label: >-
+      Onderhoudsmodus: alleen admins kunnen inloggen.
+
 config_modules:
   title: Modules
   forum_enabled: Forum

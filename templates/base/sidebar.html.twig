@@ -14,7 +14,7 @@
 {%- block logo -%}
 	{%- if config_str('system.logo', schema) -%}
 		<a href="{{- block('system_link') -}}" class="navbar-left hidden-xs logo">
-			<img src="{{- s3_url(config_str('system.logo', schema)) -}}" height="50">
+			<img src="{{- s3(config_str('system.logo', schema)) -}}" height="50">
 		</a>
 	{%- endif -%}
 {%- endblock logo -%}

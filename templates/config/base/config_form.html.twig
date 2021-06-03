@@ -1,12 +1,17 @@
 {%- extends 'config/base/config_base.html.twig' -%}
-{%- form_theme form 'form_3.html.twig' -%}
+
+{%- if form is defined -%}
+    {%- form_theme form 'form_3.html.twig' -%}
+{%- endif -%}
 
 {%- set config_menu = {
     'config_name': 'config_name.title',
+    'config_logo': 'config_logo.title',
     'config_modules': 'config_modules.title',
     'config_mail': 'config_mail.title',
     'config_ext_url': 'config_ext_url.title',
-    'config_date_format': 'config_date_format.title'
+    'config_date_format': 'config_date_format.title',
+    'config_maintenance': 'config_maintenance.title'
 } -%}
 
 {%- block content -%}
@@ -31,6 +36,8 @@
     </div>
     <div class="panel-heading">
 
+    {%- block pane_content -%}
+
     {{- form_start(form) -}}
     <div class="custom-checkbox">
 
@@ -47,6 +54,8 @@
     <input type="hidden" name="form_token" value="{{ form_token }}">
     </div>
     {{- form_end(form) -}}
+
+    {%- endblock pane_content -%}
 
     </div>
 </div>

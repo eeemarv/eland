@@ -46,7 +46,7 @@
 				{%- if msg.image_file -%}
 					<td width="250" align="left" valign="top">
 						{{- context_url_open('messages_show', mpp_ary(c.user_id, c.schema), {'id': msg.id})|raw -}}
-						<img src="{{- s3_url(msg.image_file) -}}" height="200" alt="[ {{ 'label.image'|trans }} ]" />
+						<img src="{{- s3(msg.image_file) -}}" height="200" alt="[ {{ 'label.image'|trans }} ]" />
 						</a>
 					</td>
 					<td width="30">

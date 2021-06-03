@@ -10,17 +10,16 @@ use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConfigDateFormatController extends AbstractController
+class ConfigMaintenanceController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/config/date-format',
-        name: 'config_date_format',
+        '/{system}/{role_short}/config/maintenance',
+        name: 'config_maintenance',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -38,22 +37,19 @@ class ConfigDateFormatController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
-        DateFormatService $date_format_service,
         PageParamsService $pp
     ):Response
     {
         $errors = [];
 
-        $date_format = $config_service->get_str('system.date_format', $pp->schema());
+        $maintenance_en = $config_service->get_bool('system.maintenance_en', $pp->schema());
 
         $form_data = [
-            'date_format'   => $date_format,
+            'maintenance_en'  => $maintenance_en,
         ];
 
         $builder = $this->createFormBuilder($form_data);
-        $builder->add('date_format', ChoiceType::class, [
-            'choices'   => $date_format_service->get_choices(),
-        ])
+        $builder->add('maintenance_en', CheckboxType::class)
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
@@ -79,15 +75,15 @@ class ConfigDateFormatController extends AbstractController
         {
             $form_data = $form->getData();
 
-            $config_service->set_str('system.date_format', $form_data['date_format'], $pp->schema());
+            $config_service->set_bool('system.maintenance_en', $form_data['maintenance_en'], $pp->schema());
 
-            $alert_service->success('Datum- en tijdweergave aangepast.');
-            $link_render->redirect('config_date_format', $pp->ary(), []);
+            $alert_service->success('Onderhouds modus aangepast.');
+            $link_render->redirect('config_maintenance', $pp->ary(), []);
         }
 
         $menu_service->set('config_name');
 
-        return $this->render('config/config_date_format.html.twig', [
+        return $this->render('config/config_maintenance.html.twig', [
             'form'          => $form->createView(),
             'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),

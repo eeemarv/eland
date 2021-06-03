@@ -28,9 +28,7 @@
 		{%- block td_bottom -%}10px{%- endblock -%}
 		{%- block td_style -%}font-size: 16px;{%- endblock -%}
 		{%- block td_content -%}
-			{{- s3_link_open(d.filename)|raw -}}
-				{{- d.name -}}
-			</a>
+			{{- d.name|s3(d.filename)|raw -}}
 		{%- endblock td_content -%}
 		{%- endembed -%}
 	{%- endfor -%}
@@ -43,7 +41,7 @@
 {{ 'periodic_overview.docs.title'|trans|underline }}
 
 {% for d in c.docs %}
-* {{ d.name }} {{ s3_url(d.filename) }}
+* {{ d.name }} {{ s3(d.filename) }}
 {% else %}
 {{ 'periodic_overview.docs.none'|trans }}
 {% endfor %}

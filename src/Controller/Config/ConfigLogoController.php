@@ -9,6 +9,7 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -33,6 +34,7 @@ class ConfigLogoController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
+        AssetsService $assets_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -40,6 +42,7 @@ class ConfigLogoController extends AbstractController
         PageParamsService $pp
     ):Response
     {
+/*
         $errors = [];
 
         $system_name = $config_service->get_str('system.name', $pp->schema());
@@ -84,12 +87,15 @@ class ConfigLogoController extends AbstractController
             $alert_service->success('Systeem naam en E-mail tag aangepast.');
             $link_render->redirect('config_name', $pp->ary(), []);
         }
+*/
+        $assets_service->add([
+            'fileupload',
+            'upload_image.js',
+        ]);
 
         $menu_service->set('config_name');
 
-        return $this->render('config/config_name.html.twig', [
-            'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
+        return $this->render('config/config_logo.html.twig', [
             'schema'        => $pp->schema(),
         ]);
     }

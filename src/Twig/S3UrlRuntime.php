@@ -12,21 +12,23 @@ class S3UrlRuntime implements RuntimeExtensionInterface
 	{
 	}
 
-	public function get(
-		string $file
+	public function get_url(
+		string $file = ''
 	):string
 	{
 		return $this->env_s3_url . $file;
 	}
 
-	public function get_link_open(
+	public function get_a(
+		string $label,
 		string $file
 	):string
 	{
 		$out = '<a href="';
-		$out .= $this->get($file);
+		$out .= $this->env_s3_url . $file;
 		$out .= '">';
-
+		$out .= htmlspecialchars($label);
+		$out .= '</a>';
 		return $out;
 	}
 }

@@ -2,17 +2,9 @@
 {%- form_theme form 'form_3.html.twig' -%}
 
 {%- block config_form_content -%}
-    {{- form_row(form.mail_enabled, {
-        'label': 'config_mail.mail_enabled.label',
+    {{- form_row(form.maintenance_en, {
+        'label': 'config_maintenance.maintenance_en.label',
         'required': false
-    }) -}}
-
-    {{- form_row(form.mail_tag, {
-        'label': 'config_mail.mail_tag.label',
-        'pre_addon': {
-            'fa': 'tag'
-        },
-        'help': 'config_mail.mail_tag.help',
     }) -}}
 
 {%- endblock config_form_content -%}
