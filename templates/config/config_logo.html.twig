@@ -15,33 +15,33 @@
                 data-replace-logo="1" />
             <div id="no_img"{%- if logo is not same as ('') %} style="display:none;"{%- endif -%}>
                 <i class="fa fa-image fa-5x text-muted"></i>
-                <br>Geen logo
+                <br>
+                {{- 'config_logo.help.no_logo'|trans -}}
             </div>
         </div>
         <br>
         <span class="btn btn-success btn-lg btn-block fileinput-button">
             <i class="fa fa-plus" id="img_plus"></i>
             &nbsp;
-            Logo opladen
+            {{- 'config_logo.btn.upload'|trans -}}
             <input type="file"
                 name="image"
-                data-url="{{- path('logo_upload', pp_ary()) -}}"
+                data-url="{{- path('config_logo_upload', pp_ary()) -}}"
                 data-fileupload
-                data-message-file-type-not-allowed="Bestandstype is niet toegelaten."
-                data-message-max-file-size="Het bestand is te groot."
-                data-message-uploaded-bytes="Het bestand is te groot.">
+                data-message-file-type-not-allowed="{{- 'config_logo.error.type'|trans -}}"
+                data-message-max-file-size="{{- 'config_logo.error.size'|trans -}}"
+                data-message-uploaded-bytes="{{- 'config_logo.error.size'|trans -}}">
         </span>
         <p class="text-warning">
-            Toegestane formaten: jpg/jpeg, png, gif of svg.
-            Je kan ook een afbeelding hierheen verslepen.
+            {{- 'config_logo.help.upload'|trans -}}
         </p>
-        <a href="{{- path('logo_del', pp_ary()) -}}"
+        <a href="{{- path('config_logo_del', pp_ary()) -}}"
             id="btn_remove"
-            {%- if logo is not same as('') %} style="display:none;"{%- endif %}
+            {%- if logo is same as('') %} style="display:none;"{%- endif %}
             class="btn btn-danger btn-block btn-lg">
             <i class="fa fa-times"></i>
             &nbsp;
-            Logo verwijderen
+            {{- 'config_logo.btn.del'|trans -}}
         </a>
     </div>
 </div>

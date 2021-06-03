@@ -1,8 +1,31 @@
-{%- extends 'config/base/config_base.html.twig' -%}
+{%- extends 'config/base/config_form.html.twig' -%}
 
-{%- block heading_title -%}
+{%- block config_title -%}
     {{- 'config_logo_del.title'|trans -}}
-{%- endblock heading_title -%}
+{%- endblock config_title -%}
+
+{%- block config_form_content -%}
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="thumbnail img-upload">
+                <img src="{{- s3(config_str('system.logo', schema)) -}}" class="img-rounded">
+            </div>
+        </div>
+    </div>
+
+    <a href="{{- path('config_logo', pp_ary()) -}}" class="btn btn-default btn-lg">
+        {{- 'btn.cancel'|trans -}}
+    </a>
+{%- endblock config_form_content -%}
+
+{%- block submit_btn -%}
+    {{- form_widget(form.submit, {
+        'label': 'btn.delete',
+        'attr': {'class': 'btn-danger btn-lg'},
+    }) -}}
+{%- endblock submit_btn -%}
+
+
 
 {#
 {%- block content -%}

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Logo;
+namespace App\Controller\Config;
 
 use App\Service\ConfigService;
 use App\Service\ImageUploadService;
@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class LogoUploadController extends AbstractController
+class ConfigLogoUploadController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/logo/upload',
-        name: 'logo_upload',
+        name: 'config_logo_upload',
         methods: ['POST'],
         requirements: [
             'system'        => '%assert.system%',

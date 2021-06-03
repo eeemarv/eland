@@ -326,6 +326,9 @@ config_logo:
       Toegestane formaten: jpg/jpeg, png, gif en svg. Je kan ook een
       afbeelding hierheen verslepen. Gebruik een doorzichtige
       achtergrond voor het beste resultaat.
+  error:
+    type: Bestandstype is niet toegelaten.
+    size: Het bestand is te groot.
 
 config_logo_del:
   title: Logo verwijderen?

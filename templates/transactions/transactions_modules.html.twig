@@ -1,18 +1,11 @@
-{%- extends 'transactions/base/transactions_base.html.twig' -%}
+{%- extends 'transactions/base/transactions_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'transactions_modules.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block content -%}
-
-<div class="panel panel-info">
-    <div class="panel-heading">
-
-    {{- form_start(form) -}}
-    <div class="custom-checkbox">
-
+{%- block form_content -%}
     {{- form_row(form.transactions_fields_service_stuff_enabled, {
         'label': 'Diensten/spullen schakelaar',
         'translation_domain': false,
@@ -31,16 +24,4 @@
         'required': false
     }) -}}
 
-    {{- form_widget(form.submit, {
-        'label': 'Aanpassen',
-        'attr': {'class': 'btn-primary btn-lg'},
-        'translation_domain': false
-    }) -}}
-
-    <input type="hidden" name="form_token" value="{{ form_token }}">
-    </div>
-    {{- form_end(form) -}}
-
-    </div>
-</div>
-{%- endblock content -%}
+{%- endblock form_content -%}
