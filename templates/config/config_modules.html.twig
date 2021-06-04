@@ -13,7 +13,7 @@
     {'lbl': 'Systeem', 'tab': 'system'},
 ] -%}
 
-{%- block config_form_content -%}
+{%- block form_content -%}
 
     {{- form_row(form.messages_enabled, {
         'label': 'Vraag en aanbod',
@@ -71,4 +71,4 @@
         'required': false
     }) -}}
 
-{%- endblock config_form_content -%}
+{%- endblock form_content -%}

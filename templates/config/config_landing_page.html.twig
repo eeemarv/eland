@@ -8,14 +8,14 @@
     </p>
 {%- endblock config_heading -%}
 
-{%- block config_form_content -%}
+{%- block form_content -%}
     {{- form_row(form.landing_page, {
         'label': 'config_landing_page.landing_page.label',
         'pre_addon': {
             'fa': 'calendar',
         }
     }) -}}
-{%- endblock config_form_content -%}
+{%- endblock form_content -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -8,7 +8,7 @@
     </p>
 {%- endblock config_heading -%}
 
-{%- block config_form_content -%}
+{%- block form_content -%}
     <div class="form-group">
         {{- form_label(form.admin, 'config_mail_addr.admin.label') -}}
         &nbsp;
@@ -76,7 +76,7 @@
             {{- 'config_mail_addr.btn_add'|trans -}}
         </button>
     </div>
-{%- endblock config_form_content -%}
+{%- endblock form_content -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -37,19 +37,21 @@
 	'news': {'fa': 'calendar-o', 'access': 'guest'},
 	'calendar': {'fa': 'calendar'},
 	'docs': {'fa': 'files-o', 'access': 'guest'},
-	'forum': {'fa': 'comments-o', 'config': 'forum_en', 'access': 'guest'},
+	'forum': {'fa': 'comments-o', 'access': 'guest'},
 	'support_form': {'fa': 'ambulance', 'access': 'user'},
 	'home': {'fa': 'home', 'access': 'anonymous', 'menu_config': true},
 	'login': {'fa': 'sign-in', 'access': 'anonymous', 'always_enabled': true},
-	'contact_form': {'fa': 'comment-o', 'config': 'contact_form_en', 'access': 'anonymous'},
-	'register_form': {'fa': 'check-square-o', 'config': 'registration_en', 'access': 'anonymous'}
+	'contact_form': {'fa': 'comment-o', 'access': 'anonymous'},
+	'register_form': {'fa': 'check-square-o', 'access': 'anonymous'}
 } -%}
 
+{#}
 {%- set admin_menu_def = {
-	'config': {'fa': 'cogs'},
+	'config_name': {'fa': 'cogs'},
 	'export': {'fa': 'download'},
 	'logs': {'fa': 'history'}
 } -%}
+#}
 
 {%- block page_container -%}
 	<div class="swiper-container">

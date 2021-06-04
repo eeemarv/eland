@@ -24,7 +24,7 @@ class ConfigController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/config--/{tab}',
-        name: 'config',
+        name: 'config____depr',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',

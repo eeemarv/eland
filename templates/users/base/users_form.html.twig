@@ -1,0 +1,31 @@
+{%- extends 'users/base/users_base.html.twig' -%}
+
+{%- if form is defined -%}
+    {%- form_theme form 'form_3.html.twig' -%}
+{%- endif -%}
+
+{%- block content -%}
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+
+    {{- form_start(form) -}}
+    <div class="custom-checkbox">
+
+    {%- block form_content -%}
+    {%- endblock -%}
+
+    {%- block submit_btn -%}
+        {{- form_widget(form.submit, {
+            'label': 'btn.edit',
+            'attr': {'class': 'btn-primary btn-lg'},
+        }) -}}
+    {%- endblock submit_btn -%}
+
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+    </div>
+    {{- form_end(form) -}}
+
+    </div>
+</div>
+{%- endblock content -%}

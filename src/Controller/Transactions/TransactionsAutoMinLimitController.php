@@ -83,12 +83,12 @@ class TransactionsAutoMinLimitController extends AbstractController
         $out .= 'De individuele Minimum Limiet van Accounts zal zo automatisch lager ';
         $out .= 'worden door ontvangen transacties ';
         $out .= 'tot de ';
-        $out .= $link_render->link_no_attr('config',
-            $pp->ary(), ['tab' => 'balance'], 'Minimum Systeemslimiet');
+        $out .= $link_render->link_no_attr('transactions_system_limits',
+            $pp->ary(), [], 'Minimum Systeemslimiet');
         $out .= ' bereikt wordt. ';
         $out .= 'De individuele Account Minimum Limiet wordt gewist wanneer de ';
-        $out .= $link_render->link_no_attr('config',
-            $pp->ary(), ['tab' => 'balance'], 'Minimum Systeemslimiet');
+        $out .= $link_render->link_no_attr('transactions_system_limits',
+            $pp->ary(), [], 'Minimum Systeemslimiet');
         $out .= ' bereikt of onderschreden wordt.</p>';
         $out .= '<p>Wanneer geen Minimum Systeemslimiet is ingesteld, ';
         $out .= 'dan blijft de individuele Account Minimum Limiet bij elke ';

@@ -1169,8 +1169,8 @@ class UsersEditController extends AbstractController
                 $out .= 'afwijkende minimum limiet wil instellen ';
                 $out .= 'voor dit account. Als dit veld leeg is, ';
                 $out .= 'dan is de algemeen geldende ';
-                $out .= $link_render->link_no_attr('config', $pp->ary(),
-                    ['tab' => 'balance'], 'Minimum Systeemslimiet');
+                $out .= $link_render->link_no_attr('transactions_system_limits', $pp->ary(),
+                    [], 'Minimum Systeemslimiet');
                 $out .= ' ';
                 $out .= 'van toepassing. ';
 
@@ -1212,7 +1212,7 @@ class UsersEditController extends AbstractController
                 $out .= 'afwijkende maximum limiet wil instellen ';
                 $out .= 'voor dit account. Als dit veld leeg is, ';
                 $out .= 'dan is de algemeen geldende ';
-                $out .= $link_render->link_no_attr('config', $pp->ary(),
+                $out .= $link_render->link_no_attr('transactions_system_limits', $pp->ary(),
                     ['tab' => 'balance'],
                     'Maximum Systeemslimiet');
                 $out .= ' ';

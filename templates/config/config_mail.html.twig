@@ -1,7 +1,7 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
-{%- block config_form_content -%}
+{%- block form_content -%}
     {{- form_row(form.mail_enabled, {
         'label': 'config_mail.mail_enabled.label',
         'required': false
@@ -15,7 +15,7 @@
         'help': 'config_mail.mail_tag.help',
     }) -}}
 
-{%- endblock config_form_content -%}
+{%- endblock form_content -%}
 
 {%- block css -%}
     {{- parent() -}}

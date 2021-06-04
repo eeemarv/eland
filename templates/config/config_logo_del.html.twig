@@ -4,7 +4,7 @@
     {{- 'config_logo_del.title'|trans -}}
 {%- endblock config_title -%}
 
-{%- block config_form_content -%}
+{%- block form_content -%}
     <div class="row">
         <div class="col-xs-6">
             <div class="thumbnail img-upload">
@@ -16,7 +16,7 @@
     <a href="{{- path('config_logo', pp_ary()) -}}" class="btn btn-default btn-lg">
         {{- 'btn.cancel'|trans -}}
     </a>
-{%- endblock config_form_content -%}
+{%- endblock form_content -%}
 
 {%- block submit_btn -%}
     {{- form_widget(form.submit, {

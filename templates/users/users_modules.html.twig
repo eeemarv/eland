@@ -13,22 +13,6 @@
     {{- form_start(form) -}}
     <div class="custom-checkbox">
 
-    {#
-
-    {{- form_row(form.users_new_enabled, {
-        'label': 'Instappers',
-        'translation_domain': false,
-        'required': false
-    }) -}}
-
-    {{- form_row(form.users_leaving_enabled, {
-        'label': 'Uitstappers',
-        'translation_domain': false,
-        'required': false
-    }) -}}
-
-    #}
-
     {{- form_row(form.users_fields_full_name_enabled, {
         'label': 'Volledige naam',
         'translation_domain': false,
@@ -65,14 +49,26 @@
         'required': false
     }) -}}
 
-    {{- form_row(form.periodic_mail_enabled, {
-        'label': 'Periodiek overzicht (e-mail)',
+    {{- form_row(form.users_new_enabled, {
+        'label': 'Instappers',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.users_leaving_enabled, {
+        'label': 'Uitstappers',
         'translation_domain': false,
         'required': false
     }) -}}
 
     {{- form_row(form.intersystem_enabled, {
         'label': 'InterSysteem',
+        'translation_domain': false,
+        'required': false
+    }) -}}
+
+    {{- form_row(form.periodic_mail_enabled, {
+        'label': 'Periodiek overzicht (e-mail)',
         'translation_domain': false,
         'required': false
     }) -}}

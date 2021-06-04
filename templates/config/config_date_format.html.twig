@@ -1,7 +1,7 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
-{%- block config_form_content -%}
+{%- block form_content -%}
     {{- form_row(form.date_format, {
         'label': 'config_date_format.date_format.label',
         'pre_addon': {
@@ -9,7 +9,7 @@
         },
         'choice_translation_domain': false
     }) -}}
-{%- endblock config_form_content -%}
+{%- endblock form_content -%}
 
 {%- block css -%}
     {{- parent() -}}
