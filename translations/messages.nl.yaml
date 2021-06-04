@@ -314,6 +314,15 @@ config_ext_url:
       ingevuld, wordt er gelinkt naar de
       homepagina van deze installatie.
 
+config_landing_page:
+  help: >-
+    De standaard pagina waar men terecht
+    komt na login. De betreffende module
+    moet ingeschakeld zijn. (Zie "Modules")
+  title: Landingspagina
+  landing_page:
+    label: Standaard landingspagina
+
 config_logo:
   title: Logo
   btn:
@@ -345,11 +354,6 @@ config_modules:
   contact_form_enabled: Contactformulier
   register_form_enabled: Inschrijvingsformulier
 
-config_name:
-  title: Naam
-  config_name:
-    label: Naam van het systeem
-
 config_mail:
   title: E-mail
   mail_enabled:
@@ -377,6 +381,11 @@ config_mail_addr:
       Krjgt E-mail berichten
       van het Help- en Contactformulier.
   btn_add: E-mail adres toevoegen
+
+config_name:
+  title: Naam
+  config_name:
+    label: Naam van het systeem
 
 contact_form:
   title: Contact
