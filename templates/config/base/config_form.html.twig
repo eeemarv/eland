@@ -9,6 +9,7 @@
     'config_logo': 'config_logo.title',
     'config_modules': 'config_modules.title',
     'config_mail': 'config_mail.title',
+    'config_mail_addr': 'config_mail_addr.title',
     'config_ext_url': 'config_ext_url.title',
     'config_date_format': 'config_date_format.title',
     'config_maintenance': 'config_maintenance.title'
@@ -28,11 +29,13 @@
 
 <div class="panel panel-info">
     <div class="panel-heading">
+        {%- block config_heading -%}
         <h4>
             {%- block config_title -%}
                 {{- config_menu[app.request.get('_route')]|trans -}}
             {%- endblock -%}
         </h4>
+        {%- endblock config_heading -%}
     </div>
     <div class="panel-heading">
 

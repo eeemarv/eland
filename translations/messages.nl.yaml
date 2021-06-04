@@ -18,7 +18,7 @@ btn:
   add: Toevoegen
   approve: Goedkeuren
   cancel: Annuleren
-  delete: Verwijderen
+  del: Verwijderen
   edit: Aanpassen
   filter: Filter
   generate: Genereer
@@ -360,6 +360,23 @@ config_mail:
     help: >-
       Prefix tussen haken [tag]
       in onderwerp van alle E-mail-berichten
+
+config_mail_addr:
+  title: E-mail adressen
+  help: >-
+    Er moet minstens één E-mail adres voor elk type
+    ingesteld zijn. Maak het vakje leeg om een
+    E-mail adres te verwijderen.
+  admin:
+    label: Algemeen admin / beheerder
+    help: >-
+      Krjgt algemene E-mail notificaties van het Systeem
+  support:
+    label: Support / Helpdesk
+    help: >-
+      Krjgt E-mail berichten
+      van het Help- en Contactformulier.
+  btn_add: E-mail adres toevoegen
 
 contact_form:
   title: Contact

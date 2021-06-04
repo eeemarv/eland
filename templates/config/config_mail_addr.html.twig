@@ -1,0 +1,87 @@
+{%- extends 'config/base/config_form.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- block config_heading -%}
+    {{- parent() -}}
+    <p>
+        {{- 'config_mail_addr.help'|trans -}}
+    </p>
+{%- endblock config_heading -%}
+
+{%- block config_form_content -%}
+    <div class="form-group">
+        {{- form_label(form.admin, 'config_mail_addr.admin.label') -}}
+        &nbsp;
+        <span class="help">
+            {{- 'config_mail_addr.admin.help'|trans -}}
+        </span>
+        {{- form_errors(form.admin) -}}
+        <div id="admin"
+            data-prototype="{{ form_widget(form.admin.vars.prototype, {
+                'pre_addon': {
+                    'fa': 'envelope-o'
+                },
+                'required': false
+            })|e }}"
+            data-widget-tags="{{ '<li></li>'|e }}"
+            data-widget-count="{{ form.admin|length }}">
+            {%- for a in form.admin -%}
+                {{- form_errors(a) -}}
+                {{- form_widget(a, {
+                    'pre_addon': {
+                        'fa': 'envelope-o'
+                    },
+                    'required': false
+                }) -}}
+            {%- endfor -%}
+        </div>
+        <br />
+        <button type="button" data-btn-add class="btn btn-default">
+            <i class="fa fa-plus"></i>
+            &nbsp;
+            {{- 'config_mail_addr.btn_add'|trans -}}
+        </button>
+    </div>
+
+    <div class="form-group">
+        {{- form_label(form.support, 'config_mail_addr.support.label') -}}
+        &nbsp;
+        <span class="help">
+            {{- 'config_mail_addr.support.help'|trans -}}
+        </span>
+        {{- form_errors(form.support) -}}
+        <div id="support"
+            data-prototype="{{ form_widget(form.support.vars.prototype, {
+                'pre_addon': {
+                    'fa': 'envelope-o'
+                },
+                'required': false
+            })|e }}"
+            data-widget-tags="{{ '<li></li>'|e }}"
+            data-widget-count="{{ form.admin|length }}">
+            {%- for s in form.support -%}
+                {{- form_errors(s) -}}
+                {{- form_widget(s, {
+                    'pre_addon': {
+                        'fa': 'envelope-o'
+                    },
+                    'required': false
+                }) -}}
+            {%- endfor -%}
+        </div>
+        <br />
+        <button type="button" data-btn-add class="btn btn-default">
+            <i class="fa fa-plus"></i>
+            &nbsp;
+            {{- 'config_mail_addr.btn_add'|trans -}}
+        </button>
+    </div>
+{%- endblock config_form_content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use App\Cnst\ConfigCnst;
 use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
 use Symfony\Component\Validator\Exception\LogicException;
@@ -222,6 +221,11 @@ class ConfigService
 
 	public function set_ary(string $key, array $value, string $schema):void
 	{
+		if (count(array_filter(array_keys($value), 'is_string')) > 0)
+		{
+			throw new LogicException('String keys are not allowed in config arrays');
+		}
+
 		$current_value = $this->get_ary($key, $schema);
 
 		if ($current_value === $value)
