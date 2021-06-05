@@ -93,6 +93,10 @@ class MolliePaymentsController extends AbstractController
 
         $errors = [];
 
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -766,7 +770,9 @@ class MolliePaymentsController extends AbstractController
             ->add('accounts', ['status' => 'im'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $config_service->get_int('users.new.days', $pp->schema()),
+                'new_users_days'        => $new_users_days,
+                'new_users_enabled'     => $new_users_enabled,
+                'leaving_users_enabled' => $leaving_users_enabled,
             ]);
 
         $out .= '" ';

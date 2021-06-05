@@ -131,8 +131,10 @@ class TransactionsMassController extends AbstractController
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
-        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
@@ -763,7 +765,9 @@ class TransactionsMassController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $new_user_days,
+                'new_users_days'        => $new_users_days,
+                'new_users_enabled'     => $new_users_enabled,
+                'leaving_users_enabled' => $leaving_users_enabled,
             ]);
         $out .= '">';
 

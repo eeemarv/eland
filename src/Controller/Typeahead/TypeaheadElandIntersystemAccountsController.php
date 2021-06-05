@@ -61,11 +61,6 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
 
         foreach ($fetched_users as $account)
         {
-            if ($account['s'] == 1)
-            {
-                unset($account['s']);
-            }
-
             $accounts[] = $account;
         }
 

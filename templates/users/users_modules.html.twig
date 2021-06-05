@@ -1,94 +1,63 @@
-{%- extends 'users/base/users_base.html.twig' -%}
+{%- extends 'users/base/users_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'users_modules.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block content -%}
-
-<div class="panel panel-info">
-    <div class="panel-heading">
-
-    {{- form_start(form) -}}
-    <div class="custom-checkbox">
-
+{%- block form_content -%}
     {{- form_row(form.users_fields_full_name_enabled, {
-        'label': 'Volledige naam',
-        'translation_domain': false,
+        'label': 'label.full_name',
         'required': false
     }) -}}
 
     {{- form_row(form.users_fields_postcode_enabled, {
-        'label': 'Postcode',
-        'translation_domain': false,
+        'label': 'label.postcode',
         'required': false
     }) -}}
 
     {{- form_row(form.users_fields_birthday_enabled, {
-        'label': 'Geboortedatum',
-        'translation_domain': false,
+        'label': 'label.date_of_birth',
         'required': false
     }) -}}
 
     {{- form_row(form.users_fields_hobbies_enabled, {
-        'label': 'Hobbies',
-        'translation_domain': false,
+        'label': 'label.hobbies_interests',
         'required': false
     }) -}}
 
     {{- form_row(form.users_fields_comments_enabled, {
-        'label': 'Commentaar',
-        'translation_domain': false,
+        'label': 'label.comment',
         'required': false
     }) -}}
 
     {{- form_row(form.users_fields_admin_comments_enabled, {
-        'label': 'Commentaar van de admin',
-        'translation_domain': false,
+        'label': 'label.admin_comment',
         'required': false
     }) -}}
 
     {{- form_row(form.users_new_enabled, {
-        'label': 'Instappers',
-        'translation_domain': false,
+        'label': 'label.new_users',
         'required': false
     }) -}}
 
     {{- form_row(form.users_leaving_enabled, {
-        'label': 'Uitstappers',
-        'translation_domain': false,
+        'label': 'label.leaving_users',
         'required': false
     }) -}}
 
     {{- form_row(form.intersystem_enabled, {
-        'label': 'InterSysteem',
-        'translation_domain': false,
+        'label': 'label.intersystem',
         'required': false
     }) -}}
 
     {{- form_row(form.periodic_mail_enabled, {
-        'label': 'Periodiek overzicht (e-mail)',
-        'translation_domain': false,
+        'label': 'label.periodic_overview',
         'required': false
     }) -}}
 
     {{- form_row(form.mollie_enabled, {
-        'label': 'Mollie betaalverzoeken',
-        'translation_domain': false,
+        'label': 'mollie_payments.title',
         'required': false
     }) -}}
-
-    {{- form_widget(form.submit, {
-        'label': 'Aanpassen',
-        'attr': {'class': 'btn-primary btn-lg'},
-        'translation_domain': false
-    }) -}}
-
-    <input type="hidden" name="form_token" value="{{ form_token }}">
-    </div>
-    {{- form_end(form) -}}
-
-    </div>
-</div>
-{%- endblock content -%}
+{%- endblock form_content -%}

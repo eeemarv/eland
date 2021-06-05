@@ -62,6 +62,9 @@ class ContactsController extends AbstractController
     ):Response
     {
         $intersystem_enabled = $config_service->get_bool('intersystem.enabled', $pp->schema());
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         $selected_contacts = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
@@ -545,7 +548,9 @@ class ContactsController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $config_service->get_int('users.new.days', $pp->schema()),
+                'new_users_days'        => $new_users_days,
+                'new_users_enabled'     => $new_users_enabled,
+                'leaving_users_enabled' => $leaving_users_enabled,
             ]);
         $out .= '" ';
 

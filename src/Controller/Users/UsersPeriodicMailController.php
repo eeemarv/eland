@@ -56,6 +56,8 @@ class UsersPeriodicMailController extends AbstractController
         $news_enabled = $config_service->get_bool('news.enabled', $pp->schema());
         $docs_enabled = $config_service->get_bool('docs.enabled', $pp->schema());
         $forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
+		$new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+		$leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         $block_ary = ConfigCnst::BLOCK_ARY;
 
@@ -89,6 +91,16 @@ class UsersPeriodicMailController extends AbstractController
         if (!$docs_enabled)
         {
             unset($block_ary['docs']);
+        }
+
+        if (!$new_users_enabled)
+        {
+            unset($block_ary['new_users']);
+        }
+
+        if (!$leaving_users_enabled)
+        {
+            unset($block_ary['leaving_users']);
         }
 
         if (!$config_service->get_intersystem_en($pp->schema()))

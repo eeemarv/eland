@@ -88,7 +88,9 @@ class TransactionsAddController extends AbstractController
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
         $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
-        $new_user_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         if ($request->isMethod('POST'))
         {
@@ -918,7 +920,9 @@ class TransactionsAddController extends AbstractController
                 ->add('intersystem_mail_accounts', [])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $new_user_days,
+                    'new_users_days'        => $new_users_days,
+                    'new_users_enabled'     => $new_users_enabled,
+                    'leaving_users_enabled' => $leaving_users_enabled,
                 ]);
 
              $out .= '" ';
@@ -1023,7 +1027,9 @@ class TransactionsAddController extends AbstractController
                     $out .= $config_service->get_int('accounts.equilibrium', $config_schema);
                     $out .= '"';
 
-                    $typeahead_process_ary['newuserdays'] = $config_service->get_int('users.new.days', $config_schema);
+                    $typeahead_process_ary['new_users_days'] = $new_users_days;
+                    $typeahead_process_ary['new_users_enabled'] = $new_users_enabled;
+                    $typeahead_process_ary['leaving_users_enabled'] = $leaving_users_enabled;
                 }
 
                 $typeahead = $typeahead_service->str($typeahead_process_ary);
@@ -1094,7 +1100,9 @@ class TransactionsAddController extends AbstractController
 
             $out .= $typeahead_service->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $new_user_days,
+                'new_users_days'        => $new_users_days,
+                'new_users_enabled'     => $new_users_enabled,
+                'leaving_users_enabled' => $leaving_users_enabled,
             ]);
 
             $out .= '" ';

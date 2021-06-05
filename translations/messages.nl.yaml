@@ -108,12 +108,12 @@ label:
   activated: Geactiveerd
   activity: Activiteit
   admin: Admin
-  admin_comment: Admin Commentaar
+  admin_comment: Admin commentaar
   admin_modus: Admin modus
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
-  balance_on_date: Saldo op Datum
+  balance_on_date: Saldo op datum
   balance_sum: "Totaal Saldo: %balance_sum%"
   captcha: Anti-spam verificatiecode
   category: Categorie
@@ -127,6 +127,7 @@ label:
   days: Dagen
   description: Omschrijving
   date: Datum
+  date_of_birth: Geboortedatum
   email: E-mail
   email_tag: E-mail tag
   event_date: Agendadatum
@@ -141,7 +142,7 @@ label:
   first_name: Voornaam
   from: Van
   from_date: Vanaf
-  full_name: Volledige Naam
+  full_name: Volledige naam
   guest_modus: Gast modus
   hobbies_interests: Hobbies/interesses
   image: Afbeelding
@@ -152,10 +153,12 @@ label:
   keep_after_date: Behoud na Datum
   last_login: Laatste Login
   last_name: Achternaam
+  leaving_users: Uitstappers
   link: Link
   location: Locatie
   location_explain: Waar?
   login: Login
+  intersystem: InterSysteem
   map: Map
   map_name: Map
   max: Max
@@ -167,6 +170,7 @@ label:
   modified: Aangepast
   mobile: GSM
   name: Naam
+  new_users: Instappers
   not_defined: Niet bepaald
   new_password: Nieuw paswoord
   offer: Aanbod
@@ -175,6 +179,7 @@ label:
   optional: Optioneel
   original_filename: Orginele bestandsnaam
   out: Uit
+  periodic_overview: Periodiek overzicht (e-mail)
   parsed_address: Ontleed Adres
   password: Paswoord
   per_unit: Per (uur, stuk...)

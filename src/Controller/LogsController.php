@@ -55,6 +55,10 @@ class LogsController extends AbstractController
         DateFormatService $date_format_service
     ):Response
     {
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
 
         $filter = $request->query->get('f', []);
@@ -289,7 +293,9 @@ class LogsController extends AbstractController
             ->add('accounts', ['status' => 'extern'])
             ->str([
                 'filter'        => 'accounts',
-                'newuserdays'   => $config_service->get_int('users.new.days', $pp->schema()),
+                'new_users_days'        => $new_users_days,
+                'new_users_enabled'     => $new_users_enabled,
+                'leaving_users_enabled' => $leaving_users_enabled,
             ]);
         $out .= '" ';
 

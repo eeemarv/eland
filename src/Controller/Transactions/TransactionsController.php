@@ -98,6 +98,10 @@ class TransactionsController extends AbstractController
             throw new BadRequestException('POST not allowed');
         }
 
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
@@ -735,7 +739,9 @@ class TransactionsController extends AbstractController
 
         $out .= $typeahead_service->str([
             'filter'		=> 'accounts',
-            'newuserdays'	=> $config_service->get_int('users.new.days', $pp->schema()),
+            'new_users_days'        => $new_users_days,
+            'new_users_enabled'     => $new_users_enabled,
+            'leaving_users_enabled' => $leaving_users_enabled,
         ]);
 
         $out .= '" ';

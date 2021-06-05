@@ -14,12 +14,25 @@ jQuery(function(){
 			return;
 		}
 
-		var show_new_en = false;
-		var treshold = 0;
+		var filter_thumb = '';
+		var new_users_treshold = 0;
+		var new_users_enabled = false;
+		var leaving_users_enabled = false;
 
-		if (data.hasOwnProperty('newuserdays')){
-			show_new_en = true;
-			treshold = now - (data.newuserdays * 86400);
+		if (data.hasOwnProperty('new_users_days')
+			&& data.hasOwnProperty('new_users_enabled')
+			&& data.new_users_enabled
+			&& data.new_users_days){
+			new_users_enabled = true;
+			new_users_treshold = now - (data.new_users_days * 86400);
+			filter_thumb += '_nud_' + data.new_users_days;
+		}
+
+		if (data.hasOwnProperty('leaving_users_enabled')
+			&& data.leaving_users_enabled
+		){
+			leaving_users_enabled = true;
+			filter_thumb += '_lu';
 		}
 
 		for(var i = 0; i < data.fetch.length; i++){
@@ -107,15 +120,21 @@ jQuery(function(){
 
 				var filter = function(users){
 					return $.map(users, function(user){
-
-						var cl = show_new_en && (user.a && (user.a > treshold)) ? ' class="success"' : '';
+						var cl = '';
 
 						switch (user.s){
 							case 0:
 								cl = ' class="inactive"';
 								break;
+							case 1:
+								if (new_users_enabled && (user.a && (user.a > new_users_treshold))){
+									cl = ' class="success"';
+								}
+								break;
 							case 2:
-								cl = ' class="danger"';
+								if (leaving_users_enabled){
+									cl = ' class="danger"';
+								}
 								break;
 							case 3:
 								cl = ' class="success"';
@@ -149,11 +168,9 @@ jQuery(function(){
 
 						return {
 							value: val,
-							tokens : [ user.c, user.n ],
 							code: user.c,
 							name: user.n,
 							class: cl,
-							leaving: user.s === 2,
 							api: user.api
 						};
 					});
@@ -197,7 +214,7 @@ jQuery(function(){
 						cache: true,
 						cacheKey: rec.cacheKey,
 						ttl: 172800000,	// 2 days
-						thumbprint: rec.thumbprint,
+						thumbprint: rec.thumbprint + filter_thumb + '_a',
 						filter: filter
 					},
 					datumTokenizer: tokenizer,

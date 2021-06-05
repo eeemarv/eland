@@ -916,8 +916,11 @@ class MessagesListController extends AbstractController
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -1718,7 +1721,9 @@ class MessagesListController extends AbstractController
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',
-                'newuserdays'	=> $new_user_days,
+                'new_users_days'        => $new_users_days,
+                'new_users_enabled'     => $new_users_enabled,
+                'leaving_users_enabled' => $leaving_users_enabled,
             ]);
 
         $out .= '" ';

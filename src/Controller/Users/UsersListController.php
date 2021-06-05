@@ -108,6 +108,9 @@ class UsersListController extends AbstractController
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         $errors = [];
 
@@ -1242,7 +1245,9 @@ class UsersListController extends AbstractController
 
                 $fc3 .= $typeahead_service->str([
                     'filter'		=> 'accounts',
-                    'newuserdays'	=> $config_service->get_int('users.new.days', $pp->schema()),
+                    'new_users_days'        => $new_users_days,
+                    'new_users_enabled'     => $new_users_enabled,
+                    'leaving_users_enabled' => $leaving_users_enabled,
                 ]);
 
                 $fc3 .= '">';
@@ -1531,9 +1536,15 @@ class UsersListController extends AbstractController
 
             if (isset($u['adate'])
                 && $u['status'] === 1
+                && $new_users_enabled
                 && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
             {
                 $row_stat = 3;
+            }
+
+            if ($row_stat === 2 && !$leaving_users_enabled)
+            {
+                $row_stat = 1;
             }
 
             $first = true;
@@ -2011,15 +2022,19 @@ class UsersListController extends AbstractController
     {
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
-        $status_def_ary = [
-            'active'	=> [
-                'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
-                'sql'	=> [
-                    'where'     => ['u.status in (1, 2)'],
-                ],
-                'st'	=> [1, 2],
+        $status_def_ary = [];
+
+        $status_def_ary['active'] = [
+            'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
+            'sql'	=> [
+                'where'     => ['u.status in (1, 2)'],
             ],
-            'new'		=> [
+            'st'	=> [1, 2],
+        ];
+
+        if ($config_service->get_bool('users.new.enabled', $pp->schema()))
+        {
+            $status_def_ary['new'] = [
                 'lbl'	=> 'Instappers',
                 'sql'	=> [
                     'where'     => ['u.status = 1 and u.adate > ?'],
@@ -2028,56 +2043,62 @@ class UsersListController extends AbstractController
                 ],
                 'cl'	=> 'success',
                 'st'	=> 3,
-            ],
-            'leaving'	=> [
+            ];
+        }
+
+        if ($config_service->get_bool('users.leaving.enabled', $pp->schema()))
+        {
+            $status_def_ary['leaving'] = [
                 'lbl'	=> 'Uitstappers',
                 'sql'	=> [
                     'where'     => ['u.status = 2'],
                 ],
                 'cl'	=> 'danger',
                 'st'	=> 2,
-            ],
-        ];
+            ];
+        }
 
         if ($pp->is_admin())
         {
-            $status_def_ary = $status_def_ary + [
-                'inactive'	=> [
-                    'lbl'	=> 'Inactief',
-                    'sql'	=> [
-                        'where'     => ['u.status = 0'],
-                    ],
-                    'cl'	=> 'inactive',
-                    'st'	=> 0,
+            $status_def_ary['inactive'] = [
+                'lbl'	=> 'Inactief',
+                'sql'	=> [
+                    'where'     => ['u.status = 0'],
                 ],
-                'ip'		=> [
-                    'lbl'	=> 'Info-pakket',
-                    'sql'	=> [
-                        'where'     => ['u.status = 5'],
-                    ],
-                    'cl'	=> 'warning',
-                    'st'	=> 5,
+                'cl'	=> 'inactive',
+                'st'	=> 0,
+            ];
+
+            $status_def_ary['ip'] = [
+                'lbl'	=> 'Info-pakket',
+                'sql'	=> [
+                    'where'     => ['u.status = 5'],
                 ],
-                'im'		=> [
-                    'lbl'	=> 'Info-moment',
-                    'sql'	=> [
-                        'where'     => ['u.status = 6'],
-                    ],
-                    'cl'	=> 'info',
-                    'st'	=> 6
+                'cl'	=> 'warning',
+                'st'	=> 5,
+            ];
+
+            $status_def_ary['im'] = [
+                'lbl'	=> 'Info-moment',
+                'sql'	=> [
+                    'where'     => ['u.status = 6'],
                 ],
-                'extern'	=> [
-                    'lbl'	=> 'Extern',
-                    'sql'	=> [
-                        'where'     => ['u.status = 7'],
-                    ],
-                    'cl'	=> 'extern',
-                    'st'	=> 7,
+                'cl'	=> 'info',
+                'st'	=> 6
+            ];
+
+            $status_def_ary['extern'] = [
+                'lbl'	=> 'Extern',
+                'sql'	=> [
+                    'where'     => ['u.status = 7'],
                 ],
-                'all'		=> [
-                    'lbl'	=> 'Alle',
-                    'sql'	=> [],
-                ],
+                'cl'	=> 'extern',
+                'st'	=> 7,
+            ];
+
+            $status_def_ary['all'] = [
+                'lbl'	=> 'Alle',
+                'sql'	=> [],
             ];
         }
 
@@ -2138,6 +2159,11 @@ class UsersListController extends AbstractController
         $out .= '<div class="pull-right hidden-xs hidden-sm print-hide">';
         $out .= 'Totaal: <span id="total"></span>';
         $out .= '</div>';
+
+        if (count($status_def_ary) < 2)
+        {
+            return $out;
+        }
 
         $out .= '<ul class="nav nav-tabs" id="nav-tabs">';
 

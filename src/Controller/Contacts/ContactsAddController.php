@@ -102,6 +102,10 @@ class ContactsAddController extends AbstractController
             $user_id = $su->id();
         }
 
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
         $account_code = $request->request->get('account_code', '');
         $id_type_contact = (int) $request->request->get('id_type_contact', '');
         $value = $request->request->get('value', '');
@@ -315,7 +319,9 @@ class ContactsAddController extends AbstractController
                 ->add('accounts', ['status' => 'extern'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $config_service->get_int('users.new.days', $pp->schema()),
+                    'new_users_days'        => $new_users_days,
+                    'new_users_enabled'     => $new_users_enabled,
+                    'leaving_users_enabled' => $leaving_users_enabled,
                 ]);
             $out .= '" ';
 

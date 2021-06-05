@@ -57,6 +57,8 @@ class UsersTilesController extends AbstractController
         }
 
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
@@ -134,10 +136,16 @@ class UsersTilesController extends AbstractController
             $row_stat = $u['status'];
 
             if (isset($u['adate'])
+                && $new_users_enabled
                 && $u['status'] == 1
                 && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
             {
                 $row_stat = 3;
+            }
+
+            if ($row_stat === 2 && !$leaving_users_enabled)
+            {
+                $row_stat = 1;
             }
 
             $url = $link_render->context_path('users_show', $pp->ary(),

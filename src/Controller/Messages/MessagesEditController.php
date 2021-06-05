@@ -104,7 +104,10 @@ class MessagesEditController extends AbstractController
         $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
         $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $new_user_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
@@ -589,7 +592,9 @@ class MessagesEditController extends AbstractController
                 ->add('accounts', ['status' => 'active'])
                 ->str([
                     'filter'        => 'accounts',
-                    'newuserdays'   => $new_user_days,
+                    'new_users_days'        => $new_users_days,
+                    'new_users_enabled'     => $new_users_enabled,
+                    'leaving_users_enabled' => $leaving_users_enabled,
                 ]);
             $out .= '" ';
 
