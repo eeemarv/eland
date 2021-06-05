@@ -307,7 +307,10 @@ class TransactionsAddController extends AbstractController
                 $errors[] = 'Het bestemmings Account (Aan Account Code) is niet actief';
             }
 
-            if ($pp->is_user() && !count($errors))
+            if ($pp->is_user()
+                && !count($errors)
+                && $leaving_users_enabled
+            )
             {
                 if (($from_user['status'] == 2) && (($from_user_balance - $amount) < $balance_equilibrium))
                 {
@@ -512,6 +515,7 @@ class TransactionsAddController extends AbstractController
                 $remote_balance_equilibrium = $config_service->get_int('accounts.equilibrium', $remote_schema) ?? 0;
                 $remote_system_min_limit = $config_service->get_int('accounts.limits.global.min', $remote_schema);
                 $remote_system_max_limit = $config_service->get_int('accounts.limits.global.max', $remote_schema);
+                $remote_leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $remote_schema);
 
                 if (!count($errors) && $currency_ratio < 1)
                 {
@@ -567,6 +571,7 @@ class TransactionsAddController extends AbstractController
                 }
 
                 if (!count($errors)
+                    && $remote_leaving_users_enabled
                     && ($from_remote_user['status'] == 2)
                     && (($from_remote_balance - $remote_amount) < $remote_balance_equilibrium)
                 )
@@ -618,6 +623,7 @@ class TransactionsAddController extends AbstractController
                 }
 
                 if (!count($errors)
+                    && $remote_leaving_users_enabled
                     && ($to_remote_user['status'] == 2)
                     && (($to_remote_balance + $remote_amount) > $remote_balance_equilibrium)
                 )

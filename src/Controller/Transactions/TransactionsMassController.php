@@ -81,7 +81,7 @@ class TransactionsMassController extends AbstractController
     ];
 
     #[Route(
-        '/{system}/{role_short}/mass-transaction',
+        '/{system}/{role_short}/transactions/mass',
         name: 'transactions_mass',
         methods: ['GET', 'POST'],
         requirements: [
@@ -677,15 +677,21 @@ class TransactionsMassController extends AbstractController
             $out .= '</ul>';
         }
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'omit_new',
-            '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
-        ]);
+        if ($new_users_enabled)
+        {
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                '%name%'    => 'omit_new',
+                '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
+            ]);
+        }
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'omit_leaving',
-            '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
-        ]);
+        if ($leaving_users_enabled)
+        {
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                '%name%'    => 'omit_leaving',
+                '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
+            ]);
+        }
 
         $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
         $out .= 'Vul in</button>';
@@ -721,6 +727,16 @@ class TransactionsMassController extends AbstractController
 
         foreach (self::STATUS_RENDER as $k => $s)
         {
+            if ($k === 'new' && !$new_users_enabled)
+            {
+                continue;
+            }
+
+            if ($k === 'leaving' && !$leaving_users_enabled)
+            {
+                continue;
+            }
+
             $shsh = $s['hsh'] ?? '';
             $class_li = $shsh == $hsh ? ' class="active"' : '';
             $class_a  = $s['cl'] ?? 'white';
@@ -808,10 +824,18 @@ class TransactionsMassController extends AbstractController
 
             if (isset($user['adate'])
                 && $status_key === 'active'
+                && $new_users_enabled
                 && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC')
             )
             {
                 $status_key = 'new';
+            }
+
+            if ($status_key === 'leaving'
+                && !$leaving_users_enabled
+            )
+            {
+                $status_key = 'active';
             }
 
             $hsh = self::STATUS_RENDER[$status_key]['hsh'] ?: '';

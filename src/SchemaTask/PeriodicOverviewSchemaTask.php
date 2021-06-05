@@ -42,6 +42,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
         $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
         $docs_enabled = $this->config_service->get_bool('docs.enabled', $schema);
 		$forum_enabled = $this->config_service->get_bool('forum.enabled', $schema);
+		$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
+		$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
 
         $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $schema);
 
@@ -118,6 +120,16 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
         if (!$intersystem_en)
         {
             unset($block_options['intersystem']);
+		}
+
+		if (!$new_users_enabled)
+		{
+			unset($block_options['new_users']);
+		}
+
+		if (!$leaving_users_enabled)
+		{
+			unset($block_options['leaving_users']);
 		}
 
 		$blocks_sorted = array_keys($block_options);

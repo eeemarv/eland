@@ -74,6 +74,8 @@ class MolliePaymentsAddController extends AbstractController
         $verify = $request->request->get('verify');
 
         $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
         if (!$mollie_apikey ||
             !(str_starts_with($mollie_apikey, 'test_')
@@ -280,17 +282,23 @@ class MolliePaymentsAddController extends AbstractController
         $out .= 'Enkel gehele getallen zijn mogelijk (geen cijfers na de komma).</p>';
         $out .= '</div>';
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'omit_new',
-            '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
-            '%attr%'    => '',
-        ]);
+        if ($new_users_enabled)
+        {
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                '%name%'    => 'omit_new',
+                '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
+                '%attr%'    => '',
+            ]);
+        }
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'omit_leaving',
-            '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
-            '%attr%'    => '',
-        ]);
+        if ($leaving_users_enabled)
+        {
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                '%name%'    => 'omit_leaving',
+                '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
+                '%attr%'    => '',
+            ]);
+        }
 
         $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
         $out .= 'Vul in</button>';
@@ -377,9 +385,16 @@ class MolliePaymentsAddController extends AbstractController
 
             if (isset($user['adate'])
                 && $user['status'] === 1
+                && $new_users_enabled
                 && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
             {
                 $user_status = 3;
+            }
+
+            if ($user['status'] === 2
+                && !$leaving_users_enabled)
+            {
+                $user_status = 1;
             }
 
             $out .= '<tr';
