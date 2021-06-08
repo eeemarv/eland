@@ -88,6 +88,7 @@ class TransactionsAddController extends AbstractController
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
         $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
@@ -232,11 +233,14 @@ class TransactionsAddController extends AbstractController
                 $errors[] = 'Het bedrag is geen geldig getal';
             }
 
-            if (!$pp->is_admin() && !count($errors))
-            {
-                $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
-                $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
+            $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
+            $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
 
+            if ($limits_enabled
+                && !$pp->is_admin()
+                && !count($errors)
+            )
+            {
                 if (!isset($from_user_min_limit))
                 {
                     if(isset($system_min_limit) && ($from_user_balance - $amount) < $system_min_limit)
@@ -266,11 +270,14 @@ class TransactionsAddController extends AbstractController
                 $errors[] = 'Van en Aan Account Code kunnen niet hetzelfde zijn.';
             }
 
-            if (!$pp->is_admin() && !count($errors))
-            {
-                $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
-                $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
+            $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
+            $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
 
+            if ($limits_enabled
+                && !$pp->is_admin()
+                && !count($errors)
+            )
+            {
                 if (!isset($to_user_max_limit))
                 {
                     if(isset($system_max_limit) && ($to_user_balance + $amount) > $system_max_limit)
@@ -515,6 +522,7 @@ class TransactionsAddController extends AbstractController
                 $remote_balance_equilibrium = $config_service->get_int('accounts.equilibrium', $remote_schema) ?? 0;
                 $remote_system_min_limit = $config_service->get_int('accounts.limits.global.min', $remote_schema);
                 $remote_system_max_limit = $config_service->get_int('accounts.limits.global.max', $remote_schema);
+                $remote_limits_enabled = $config_service->get_bool('accounts.limits.enabled', $remote_schema);
                 $remote_leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $remote_schema);
 
                 if (!count($errors) && $currency_ratio < 1)
@@ -587,7 +595,9 @@ class TransactionsAddController extends AbstractController
                     $errors[] = $err;
                 }
 
-                if (!count($errors))
+                if (!count($errors)
+                    && $remote_limits_enabled
+                )
                 {
                     $to_remote_max_limit = $account_repository->get_max_limit($to_remote_id, $remote_schema);
                     $to_remote_balance = $account_repository->get_balance($to_remote_id, $remote_schema);
@@ -1170,7 +1180,7 @@ class TransactionsAddController extends AbstractController
         $out .= 'Systeem zich niet op dezelfde ';
         $out .= 'eLAND-server bevindt.</li>';
 
-        if ($pp->is_admin())
+        if ($limits_enabled && $pp->is_admin())
         {
             $out .= '<li id="info_admin_limit">';
             $out .= 'Admins kunnen over en onder limieten gaan';

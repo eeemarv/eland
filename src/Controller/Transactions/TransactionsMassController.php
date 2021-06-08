@@ -135,6 +135,7 @@ class TransactionsMassController extends AbstractController
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
 
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
@@ -145,8 +146,12 @@ class TransactionsMassController extends AbstractController
         $selected_users = array_combine($selected_users, $selected_users);
 
         $balance_ary = $account_repository->get_balance_ary($pp->schema());
-        $min_limit_ary = $account_repository->get_min_limit_ary($pp->schema());
-        $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
+
+        if ($limits_enabled)
+        {
+            $min_limit_ary = $account_repository->get_min_limit_ary($pp->schema());
+            $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
+        }
 
         $users = [];
 
@@ -641,41 +646,45 @@ class TransactionsMassController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'        => 'respect_minlimit',
-            '%label%'       => 'Respecteer minimum limieten',
-            '%attr%'        => ' checked',
-        ]);
-
-        if (isset($system_min_limit) || isset($system_max_limit))
+        if ($limits_enabled)
         {
-            $out .= '<ul>';
+            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                '%name%'        => 'respect_minlimit',
+                '%label%'       => 'Respecteer minimum limieten',
+                '%attr%'        => ' checked',
+            ]);
 
-            if (isset($system_min_limit))
+            if (isset($system_min_limit) || isset($system_max_limit))
             {
-                $out .= '<li>Minimum Systeemslimiet: ';
-                $out .= '<span class="label label-default">';
-                $out .= $system_min_limit;
-                $out .= '</span> ';
-                $out .= $currency;
-                $out .= '</li>';
+                $out .= '<ul>';
+
+                if (isset($system_min_limit))
+                {
+                    $out .= '<li>Minimum Systeemslimiet: ';
+                    $out .= '<span class="label label-default">';
+                    $out .= $system_min_limit;
+                    $out .= '</span> ';
+                    $out .= $currency;
+                    $out .= '</li>';
+                }
+
+                if (isset($system_max_limit))
+                {
+                    $out .= '<li>Maximum Systeemslimiet: ';
+                    $out .= '<span class="label label-default">';
+                    $out .= $system_max_limit;
+                    $out .= '</span> ';
+                    $out .= $currency;
+                    $out .= '</li>';
+                }
+
+                $out .= '<li>De Systeemslimieten gelden voor alle Accounts behalve de ';
+                $out .= 'Accounts waarbij individuele limieten ingesteld zijn.</li>';
+
+                $out .= '</ul>';
             }
-
-            if (isset($system_max_limit))
-            {
-                $out .= '<li>Maximum Systeemslimiet: ';
-                $out .= '<span class="label label-default">';
-                $out .= $system_max_limit;
-                $out .= '</span> ';
-                $out .= $currency;
-                $out .= '</li>';
-            }
-
-            $out .= '<li>De Systeemslimieten gelden voor alle Accounts behalve de ';
-            $out .= 'Accounts waarbij individuele limieten ingesteld zijn.</li>';
-
-            $out .= '</ul>';
         }
+
 
         if ($new_users_enabled)
         {
@@ -811,8 +820,13 @@ class TransactionsMassController extends AbstractController
         $out .= '<th data-sort-initial="true">Account</th>';
         $out .= '<th data-sort-ignore="true">Bedrag</th>';
         $out .= '<th data-hide="phone">Saldo</th>';
-        $out .= '<th data-hide="phone">Min.limit</th>';
-        $out .= '<th data-hide="phone">Max.limit</th>';
+
+        if ($limits_enabled)
+        {
+            $out .= '<th data-hide="phone">Min.limit</th>';
+            $out .= '<th data-hide="phone">Max.limit</th>';
+        }
+
         $out .= '</tr>';
 
         $out .= '</thead>';
@@ -895,8 +909,11 @@ class TransactionsMassController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= '<td>' . ($user['min_limit'] ?? '') . '</td>';
-            $out .= '<td>' . ($user['max_limit'] ?? '') . '</td>';
+            if ($limits_enabled)
+            {
+                $out .= '<td>' . ($user['min_limit'] ?? '') . '</td>';
+                $out .= '<td>' . ($user['max_limit'] ?? '') . '</td>';
+            }
 
             $out .= '</tr>';
         }

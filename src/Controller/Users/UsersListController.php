@@ -106,6 +106,7 @@ class UsersListController extends AbstractController
         $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
@@ -144,7 +145,7 @@ class UsersListController extends AbstractController
             unset($user_tabs['admin_comments']);
         }
 
-        if (!$transactions_enabled)
+        if (!$transactions_enabled || !$limits_enabled)
         {
             unset($user_tabs['min_limit'], $user_tabs['max_limit']);
         }
@@ -306,6 +307,7 @@ class UsersListController extends AbstractController
             }
             else if (!count($errors)
                 && $transactions_enabled
+                && $limits_enabled
                 && $user_tab_data
                 && in_array($bulk_submit_action, ['min_limit', 'max_limit']))
             {
@@ -701,6 +703,12 @@ class UsersListController extends AbstractController
             unset($columns['a']);
         }
 
+        if (!$limits_enabled)
+        {
+            unset($columns['u']['min']);
+            unset($columns['u']['max']);
+        }
+
         if (!$messages_enabled)
         {
             unset($columns['m']);
@@ -798,6 +806,12 @@ class UsersListController extends AbstractController
             unset($show_columns['u']['max']);
             unset($show_columns['u']['balance_date']);
             unset($show_columns['a']);
+        }
+
+        if (!$limits_enabled)
+        {
+            unset($show_columns['u']['min']);
+            unset($show_columns['u']['max']);
         }
 
         if (!$messages_enabled)
@@ -1914,7 +1928,9 @@ class UsersListController extends AbstractController
 
             foreach($user_tabs as $k => $t)
             {
-                if (!$transactions_enabled && in_array($k, ['min_limit', 'max_limit']))
+                if ((!$transactions_enabled
+                    || !$limits_enabled)
+                && in_array($k, ['min_limit', 'max_limit']))
                 {
                     continue;
                 }

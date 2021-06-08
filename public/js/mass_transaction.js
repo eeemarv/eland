@@ -202,7 +202,7 @@ jQuery(function(){
 				return true;
 			}
 
-			if (has_minlimit){
+			if (has_minlimit && respect_minlimit){
 
 				if (amount > (balance - minlimit)){
 

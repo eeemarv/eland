@@ -155,6 +155,7 @@ class UsersEditController extends AbstractController
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
 
@@ -168,7 +169,7 @@ class UsersEditController extends AbstractController
             $stored_name = $stored_user['name'];
             $is_activated = isset($stored_user['adate']);
 
-            if ($transactions_enabled)
+            if ($transactions_enabled && $limits_enabled)
             {
                 $stored_min_limit = $account_repository->get_min_limit($id, $pp->schema());
                 $stored_max_limit = $account_repository->get_max_limit($id, $pp->schema());
@@ -402,7 +403,7 @@ class UsersEditController extends AbstractController
                         letters, cijfers en koppeltekens bestaan.';
                 }
 
-                if ($transactions_enabled)
+                if ($transactions_enabled && $limits_enabled)
                 {
                     if ($min_limit !== ''
                         && filter_var($min_limit, FILTER_VALIDATE_INT) === false)
@@ -563,7 +564,9 @@ class UsersEditController extends AbstractController
 
             if (!count($errors)
                 && $pp->is_admin()
-                && $transactions_enabled)
+                && $transactions_enabled
+                && $limits_enabled
+            )
             {
                 $min_to_store = $min_limit;
                 $min_to_store = $min_to_store === '' ? null : (int) $min_to_store;
@@ -1126,7 +1129,7 @@ class UsersEditController extends AbstractController
                 $out .= '</div>';
             }
 
-            if ($transactions_enabled)
+            if ($transactions_enabled && $limits_enabled)
             {
                 $out .= '<div class="pan-sub">';
 

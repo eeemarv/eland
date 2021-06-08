@@ -803,6 +803,17 @@ transactions_mass:
 transactions_modules:
   title: >-
     Transacties submodules en velden
+  service_stuff:
+    label: Diensten/spullen schakelaar
+  limits:
+    label: Limieten
+  autominlimit:
+    label: Automatische minimum account limiet
+    help: >-
+      De automatische minimum account limiet is
+      enkel mogelijk wanneer "limieten" ingeschakeld zijn.
+  mass:
+    label: Massa-transactie
 
 transactions_self:
   title: >-

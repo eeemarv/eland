@@ -51,21 +51,24 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_status(int $id, string $schema):string
 	{
-		$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
 
 		$user = $this->user_cache_service->get($id, $schema);
 		$status_id = $user['status'];
 
         if (isset($user['adate'])
             && $status_id === 1
-			&& $new_users_enabled
 		)
         {
-			$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
+			$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
 
-			if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+			if ($new_users_enabled)
 			{
-				$status_id = 3;
+				$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
+
+				if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+				{
+					$status_id = 3;
+				}
 			}
         }
 
@@ -74,11 +77,14 @@ class AccountRuntime implements RuntimeExtensionInterface
 			return '';
 		}
 
-		$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
-
-		if ($status_id === 2 && !$leaving_users_enabled)
+		if ($status_id === 2)
 		{
-			return '';
+			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+
+			if (!$leaving_users_enabled)
+			{
+				return '';
+			}
 		}
 
 		$out = '&nbsp;<small><span class="text-';

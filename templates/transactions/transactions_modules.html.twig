@@ -6,22 +6,24 @@
 {%- endblock heading_title -%}
 
 {%- block form_content -%}
-    {{- form_row(form.transactions_fields_service_stuff_enabled, {
-        'label': 'Diensten/spullen schakelaar',
-        'translation_domain': false,
+    {{- form_row(form.service_stuff, {
+        'label': 'transactions_modules.service_stuff.label',
         'required': false
     }) -}}
 
-    {{- form_row(form.accounts_limits_auto_min_enabled, {
-        'label': 'Auto min limiet',
-        'translation_domain': false,
+    {{- form_row(form.limits, {
+        'label': 'transactions_modules.limits.label',
         'required': false
     }) -}}
 
-    {{- form_row(form.transactions_mass_enabled, {
-        'label': 'Massa-transactie',
-        'translation_domain': false,
+    {{- form_row(form.autominlimit, {
+        'label': 'transactions_modules.autominlimit.label',
+        'help': 'transactions_modules.autominlimit.help',
         'required': false
     }) -}}
 
+    {{- form_row(form.mass, {
+        'label': 'transactions_modules.mass.label',
+        'required': false
+    }) -}}
 {%- endblock form_content -%}

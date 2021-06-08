@@ -13,6 +13,7 @@ class AutoMinLimitService
 	protected array $exclude_to = [];
 	protected array $exclude_from = [];
 	protected bool $enabled = false;
+	protected bool $limits_enabled = false;
 	protected ?int $global_min_limit;
 	protected ?int $percentage;
 	protected string $schema;
@@ -34,6 +35,7 @@ class AutoMinLimitService
 
 		$this->global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $this->schema);
 		$this->enabled = $this->config_service->get_bool('accounts.limits.auto_min.enabled', $this->schema);
+		$this->limits_enabled = $this->config_service->get_bool('accounts.limits.enabled', $this->schema);
 		$this->percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $this->schema);
 		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $this->schema);
 		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $this->schema);
@@ -63,6 +65,13 @@ class AutoMinLimitService
 		int $amount
 	):void
 	{
+		if (!$this->limits_enabled)
+		{
+			$this->logger->debug('limits (autominlimit) not enabled',
+				['schema' => $this->schema]);
+			return;
+		}
+
 		if (!$this->enabled)
 		{
 			$this->logger->debug('autominlimit not enabled',

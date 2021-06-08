@@ -145,6 +145,7 @@ class UsersShowController extends AbstractController
 
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
         $min_limit = $account_repository->get_min_limit($id, $pp->schema());
         $max_limit = $account_repository->get_max_limit($id, $pp->schema());
         $balance = $account_repository->get_balance($id, $pp->schema());
@@ -639,55 +640,58 @@ class UsersShowController extends AbstractController
             $out .= $currency;
             $out .= '</dd>';
 
-            $out .= '<dt>Minimum limiet</dt>';
-            $out .= '<dd>';
+            if ($limits_enabled)
+            {
+                $out .= '<dt>Minimum limiet</dt>';
+                $out .= '<dd>';
 
-            if (isset($min_limit))
-            {
-                $out .= '<span class="label label-danger">';
-                $out .= $min_limit;
-                $out .= '</span>&nbsp;';
-                $out .= $currency;
-            }
-            else if (isset($system_min_limit))
-            {
-                $out .= '<span class="label label-default">';
-                $out .= $system_min_limit;
-                $out .= '</span>&nbsp;';
-                $out .= $currency;
-                $out .= ' (Minimum Systeemslimiet)';
-            }
-            else
-            {
-                $out .= '<i class="fa fa-times"></i>';
-            }
+                if (isset($min_limit))
+                {
+                    $out .= '<span class="label label-danger">';
+                    $out .= $min_limit;
+                    $out .= '</span>&nbsp;';
+                    $out .= $currency;
+                }
+                else if (isset($system_min_limit))
+                {
+                    $out .= '<span class="label label-default">';
+                    $out .= $system_min_limit;
+                    $out .= '</span>&nbsp;';
+                    $out .= $currency;
+                    $out .= ' (Minimum Systeemslimiet)';
+                }
+                else
+                {
+                    $out .= '<i class="fa fa-times"></i>';
+                }
 
-            $out .= '</dd>';
+                $out .= '</dd>';
 
-            $out .= '<dt>Maximum limiet</dt>';
-            $out .= '<dd>';
+                $out .= '<dt>Maximum limiet</dt>';
+                $out .= '<dd>';
 
-            if (isset($max_limit))
-            {
-                $out .= '<span class="label label-success">';
-                $out .= $max_limit;
-                $out .= '</span>&nbsp;';
-                $out .= $currency;
-            }
-            else if (isset($system_max_limit))
-            {
-                $out .= '<span class="label label-default">';
-                $out .= $system_max_limit;
-                $out .= '</span>&nbsp;';
-                $out .= $currency;
-                $out .= ' (Maximum Systeemslimiet)';
-            }
-            else
-            {
-                $out .= '<i class="fa fa-times"></i>';
-            }
+                if (isset($max_limit))
+                {
+                    $out .= '<span class="label label-success">';
+                    $out .= $max_limit;
+                    $out .= '</span>&nbsp;';
+                    $out .= $currency;
+                }
+                else if (isset($system_max_limit))
+                {
+                    $out .= '<span class="label label-default">';
+                    $out .= $system_max_limit;
+                    $out .= '</span>&nbsp;';
+                    $out .= $currency;
+                    $out .= ' (Maximum Systeemslimiet)';
+                }
+                else
+                {
+                    $out .= '<i class="fa fa-times"></i>';
+                }
 
-            $out .= '</dd>';
+                $out .= '</dd>';
+            }
         }
 
         if ($periodic_mail_enabled
