@@ -1,0 +1,15 @@
+{%- macro open(href) -%}
+    <a href="{{- href -}}">
+{%- endmacro open -%}
+
+{%- macro open_path(route, params) -%}
+    <a href="{{- path(route, params) -}}">
+{%- endmacro open_path -%}
+
+{%- macro open_context_path(route, params) -%}
+    <a href="{{- path(route, pp_ary()|merge(params|default({}))) -}}">
+{%- endmacro open_context_path -%}
+
+{%- macro close() -%}
+    </a>
+{%- endmacro close -%}

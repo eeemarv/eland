@@ -188,6 +188,8 @@ class MenuCnst
         'contacts'              => 'users',
         'contact_types'         => 'users',
         'users_periodic_mail'   => 'users',
+        'users_config_new'      => 'users',
+        'users_config_leaving'  => 'users',
         'intersystems'          => 'users',
         'mollie_payments'       => 'users',
         'transactions_currency'         => 'transactions',
@@ -233,6 +235,18 @@ class MenuCnst
                 'fa'        => 'circle-o-notch',
                 'label'     => 'Contact Types',
                 'route'     => 'contact_types',
+            ],
+            'users_config_new'   => [
+                'fa'        => 'user-plus',
+                'label'     => 'Instappers',
+                'route'     => 'users_config_new',
+                'config_en' => 'users.new.enabled',
+            ],
+            'users_config_leaving'   => [
+                'fa'        => 'user-times',
+                'label'     => 'Uitstappers',
+                'route'     => 'users_config_leaving',
+                'config_en' => 'users.leaving.enabled',
             ],
             'users_periodic_mail'   => [
                 'fa'        => 'envelope-o',

@@ -1,30 +1,5 @@
 {%- extends 'bootstrap_3_layout.html.twig' -%}
 
-{% block checkbox_radio_label -%}
-    {# Do not display the label if widget is not defined in order to prevent double label rendering #}
-    {%- if widget is defined -%}
-        {%- if required -%}
-            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) -%}
-        {%- endif -%}
-        {%- if parent_label_class is defined -%}
-            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ parent_label_class)|trim}) -%}
-        {%- endif -%}
-        {%- if label is not same as(false) and label is empty -%}
-            {%- if label_format is not empty -%}
-                {%- set label = label_format|replace({
-                    '%name%': name,
-                    '%id%': id,
-                }) -%}
-            {%- else -%}
-                {% set label = name|humanize %}
-            {%- endif -%}
-        {%- endif -%}
-        <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}>
-            {{- widget|raw }} <span class="label-text"></span>{{ label is not same as(false) ? (translation_domain is same as(false) ? (label_html is same as(false) ? label : label|raw) : (label_html is same as(false) ? label|trans(label_translation_parameters, translation_domain) : label|trans(label_translation_parameters, translation_domain)|raw)) -}}
-        </label>
-    {%- endif -%}
-{%- endblock checkbox_radio_label %}
-
 {% block form_widget_simple -%}
     {%- if pre_addon is defined or post_addon is defined -%}
         <div class="input-group{{ group_class|default('') }}">
@@ -84,3 +59,56 @@
         {{- parent() -}}
     {%- endif -%}
 {%- endblock choice_widget_collapsed %}
+
+{% block checkbox_radio_label -%}
+    {#- only inserted lbl_choice -#}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
+    {# Do not display the label if widget is not defined in order to prevent double label rendering #}
+    {%- if widget is defined -%}
+        {%- if required -%}
+            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) -%}
+        {%- endif -%}
+        {%- if parent_label_class is defined -%}
+            {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' ' ~ parent_label_class)|trim}) -%}
+        {%- endif -%}
+        {%- if label is not same as(false) and label is empty -%}
+            {%- if label_format is not empty -%}
+                {%- set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) -%}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {%- endif -%}
+        <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}>
+            {{- widget|raw }}
+            <span class="label-text"></span>
+            {%- if label is not same as(false) -%}
+                {%- if 'btn_choice' in form.parent.vars.block_prefixes -%}
+                    {{- lbl.btn(label) -}}
+                {%- elseif translation_domain is same as(false) -%}
+                    {%- if label_html is same as(false) -%}
+                        {{- label -}}
+                    {%- else -%}
+                        {{- label|raw -}}
+                    {%- endif -%}
+                {%- else -%}
+                    {%- if label_html is same as(false) -%}
+                        {{- label|trans(label_translation_parameters, translation_domain) -}}
+                    {%- else -%}
+                        {{- label|trans(label_translation_parameters, translation_domain)|raw -}}
+                    {%- endif -%}
+                {%- endif -%}
+            {%- endif -%}
+        </label>
+    {%- endif -%}
+{%- endblock checkbox_radio_label %}
+
+{% block choice_label -%}
+    {# remove the checkbox-inline and radio-inline class, it's only useful for embed labels #}
+    {%- set label_attr = label_attr|merge({class: label_attr.class|default('')|replace({'checkbox-inline': '', 'radio-inline': ''})|trim}) -%}
+    <div>
+        {{- block('form_label') -}}
+    </div>
+{% endblock %}

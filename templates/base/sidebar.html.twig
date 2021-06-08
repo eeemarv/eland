@@ -1,5 +1,4 @@
 {%- extends 'base/base.html.twig' -%}
-{%- import 'macro/alert.html.twig' as a -%}
 
 {%- block title -%}
 	{{- config_str('system.name', schema) -}}
@@ -85,7 +84,20 @@
 	<div id="wrap">
 	<div id="main" class="container-fluid clear-top{%- if pp_role('admin') %} admin{%- endif -%}">
 
-	{{- a.alert() -}}
+	{%- block alert -%}
+		{%- for a in app.session.flashbag.get('alert') -%}
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="mt-5p alert alert-{%- if a.type == 'error' -%}danger{%- else -%}{{- a.type -}}{%- endif %} alert-dismissible" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						{{- a.message|raw -}}
+					</div>
+				</div>
+			</div>
+		{%- endfor -%}
+	{%- endblock alert -%}
 
 	{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
 	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}

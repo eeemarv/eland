@@ -1,0 +1,55 @@
+{%- extends 'users/base/users_form.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+{%- import 'macro/anchor.html.twig' as a -%}
+
+{%- block heading_title -%}
+    {{- 'users_config_leaving.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_fa -%}
+    user-times
+{%- endblock heading_fa -%}
+
+{%- block form_content -%}
+    {{- form_row(form.equilibrium, {
+        'label': 'users_config_leaving.equilibrium.label',
+        'help': 'users_config_leaving.equilibrium.help',
+        'pre_addon': {
+            'text': config_str('transactions.currency.name', schema)
+        }
+    }) -}}
+
+    {{- form_row(form.auto_deactivate, {
+        'label': 'users_config_leaving.auto_deactivate.label',
+        'help': 'users_config_leaving.auto_deactivate.help',
+        'required': false
+    }) -}}
+
+    {%- if form.access is defined -%}
+        {{- form_row(form.access, {
+            'label': 'users_config_leaving.access.label'
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.access_list is defined -%}
+        {{- form_row(form.access_list, {
+            'label': 'users_config_leaving.access_list.label'
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.access_pane is defined -%}
+        {{- form_row(form.access_pane, {
+            'label': 'users_config_leaving.access_pane.label'
+        }) -}}
+    {%- endif -%}
+
+    {%- if config_bool('periodic_mail.enabled', schema) -%}
+        <p>
+            {{- 'users_config_leaving.periodic_mail.help'|trans({
+                    '%open_link%': a.open_context_path('users_periodic_mail'),
+                    '%close_link%': a.close()
+                })|raw
+            -}}
+        </p>
+    {%- endif -%}
+{%- endblock form_content -%}

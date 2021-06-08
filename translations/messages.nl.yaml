@@ -2,14 +2,18 @@ var: >
   %var%
 
 access:
-  admin: Admin
-  admin_title: Enkel zichtbaar voor administratie.
-  guest: InterSysteem
-  guest_title: Zichtbaar voor leden en leden van gekoppelde interSystemen.
-  public: Publiek
-  public_title: Zichtbaar op het publieke internet.
-  user: Leden
-  user_title: Zichtbaar voor leden.
+  admin:
+    label: Admin
+    title: Enkel zichtbaar voor administratie.
+  guest:
+    label: InterSysteem
+    title: Zichtbaar voor leden en leden van gekoppelde interSystemen.
+  anonymous:
+    label: Publiek
+    title: Zichtbaar op het publieke internet.
+  user:
+    label: Leden
+    title: Zichtbaar voor leden.
   visible: Zichtbaar
   visible_for: Zichtbaar voor
   visible_for_access: Zichtbaar voor %access%
@@ -848,6 +852,65 @@ users:
 
 users_add:
   title: Gebruiker toevoegen
+
+users_config_leaving:
+  title: Configuratie Uitstappers
+  equilibrium:
+    label: >-
+      Uitstappers-saldo (equilibrium).
+    help: >-
+      Het saldo het account van gebruikers met status
+      "uitstapper" kan enkel in deze richting bewegen.
+  auto_deactivate:
+    label: >-
+      Deactiveer automatisch het account wanneer het
+      uitstappers-saldo bereikt wordt.
+    help: >-
+      Bij deactivatie wordt er een notificatie e-mail naar
+      de admin verstuurd.
+  access:
+    label: >-
+      Weergave/zichtbaar in auto-suggesties
+      en individuele profiel-paginas
+  access_list:
+    label: >-
+      Weergave/zichtbaar in rode kleur
+      in actieve ledenlijst.
+  access_pane:
+    label: >-
+      Weergave/zichtbaar als apart tabblad
+      op ledenlijst-pagina.
+  periodic_mail:
+    help: >-
+      Voor al dan niet weergeven van uitstappers
+      in de periodieke overzichtsmail, zie
+      de %open_link%opmaak-configuratie van
+      de e-mail%close_link%.
+
+users_config_new:
+  title: Configuratie Instappers
+  days:
+    label: >-
+      Periode dat een nieuw lid als
+      instapper getoond wordt.
+  access:
+    label: >-
+      Weergave/zichtbaar in auto-suggesties
+      en individuele profiel-paginas
+  access_list:
+    label: >-
+      Weergave/zichtbaar in groene kleur
+      in actieve ledenlijst.
+  access_pane:
+    label: >-
+      Weergave/zichtbaar als apart tabblad
+      op ledenlijst-pagina
+  periodic_mail:
+    help: >-
+      Voor al dan niet weergeven van instappers
+      in de periodieke overzichtsmail, zie
+      de %open_link%opmaak-configuratie van
+      de e-mail%close_link%.
 
 users_edit:
   title: Gebruiker %user% aanpassen
