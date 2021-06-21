@@ -13,6 +13,7 @@ use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
 use App\Service\MailTransactionService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -54,6 +55,7 @@ class TransactionsAddController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
+        ItemAccessService $item_access_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
@@ -92,6 +94,22 @@ class TransactionsAddController extends AbstractController
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
 
         if ($request->isMethod('POST'))
         {
@@ -937,8 +955,8 @@ class TransactionsAddController extends AbstractController
                 ->str([
                     'filter'        => 'accounts',
                     'new_users_days'        => $new_users_days,
-                    'new_users_enabled'     => $new_users_enabled,
-                    'leaving_users_enabled' => $leaving_users_enabled,
+                    'show_new_status'       => $show_new_status,
+                    'show_leaving_status'   => $show_leaving_status,
                 ]);
 
              $out .= '" ';
@@ -1044,8 +1062,8 @@ class TransactionsAddController extends AbstractController
                     $out .= '"';
 
                     $typeahead_process_ary['new_users_days'] = $new_users_days;
-                    $typeahead_process_ary['new_users_enabled'] = $new_users_enabled;
-                    $typeahead_process_ary['leaving_users_enabled'] = $leaving_users_enabled;
+                    $typeahead_process_ary['show_new_status'] = $show_new_status;
+                    $typeahead_process_ary['show_leaving_status'] = $show_leaving_status;
                 }
 
                 $typeahead = $typeahead_service->str($typeahead_process_ary);
@@ -1117,8 +1135,8 @@ class TransactionsAddController extends AbstractController
             $out .= $typeahead_service->str([
                 'filter'		=> 'accounts',
                 'new_users_days'        => $new_users_days,
-                'new_users_enabled'     => $new_users_enabled,
-                'leaving_users_enabled' => $leaving_users_enabled,
+                'show_new_status'       => $show_new_status,
+                'show_leaving_status'   => $show_leaving_status,
             ]);
 
             $out .= '" ';

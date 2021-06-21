@@ -16,22 +16,22 @@ jQuery(function(){
 
 		var filter_thumb = '';
 		var new_users_treshold = 0;
-		var new_users_enabled = false;
-		var leaving_users_enabled = false;
+		var show_new_status = false;
+		var show_leaving_status = false;
 
 		if (data.hasOwnProperty('new_users_days')
-			&& data.hasOwnProperty('new_users_enabled')
-			&& data.new_users_enabled
+			&& data.hasOwnProperty('show_new_status')
+			&& data.show_new_status
 			&& data.new_users_days){
-			new_users_enabled = true;
+			show_new_status = true;
 			new_users_treshold = now - (data.new_users_days * 86400);
-			filter_thumb += '_nud_' + data.new_users_days;
+			filter_thumb += '_nu_' + data.show_new_status;
 		}
 
-		if (data.hasOwnProperty('leaving_users_enabled')
-			&& data.leaving_users_enabled
+		if (data.hasOwnProperty('show_leaving_status')
+			&& data.show_leaving_status
 		){
-			leaving_users_enabled = true;
+			show_leaving_status = true;
 			filter_thumb += '_lu';
 		}
 
@@ -127,12 +127,12 @@ jQuery(function(){
 								cl = ' class="inactive"';
 								break;
 							case 1:
-								if (new_users_enabled && (user.a && (user.a > new_users_treshold))){
+								if (show_new_status && (user.a && (user.a > new_users_treshold))){
 									cl = ' class="success"';
 								}
 								break;
 							case 2:
-								if (leaving_users_enabled){
+								if (show_leaving_status){
 									cl = ' class="danger"';
 								}
 								break;

@@ -10,7 +10,6 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
-use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +19,7 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -68,10 +68,10 @@ class TransactionsController extends AbstractController
         Request $request,
         Db $db,
         bool $is_self,
-        AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
+        ItemAccessService $item_access_service,
         FormTokenService $form_token_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
@@ -101,6 +101,22 @@ class TransactionsController extends AbstractController
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
@@ -740,8 +756,8 @@ class TransactionsController extends AbstractController
         $out .= $typeahead_service->str([
             'filter'		=> 'accounts',
             'new_users_days'        => $new_users_days,
-            'new_users_enabled'     => $new_users_enabled,
-            'leaving_users_enabled' => $leaving_users_enabled,
+            'show_new_status'       => $show_new_status,
+            'show_leaving_status'   => $show_leaving_status,
         ]);
 
         $out .= '" ';

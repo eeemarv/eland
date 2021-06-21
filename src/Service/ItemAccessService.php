@@ -51,6 +51,11 @@ class ItemAccessService
 		return false;
 	}
 
+	public function is_visible_for_guest(string $access):bool
+	{
+		return in_array($access, ['guest', 'anonymous']);
+	}
+
 	public function get_visible_ary_for_role(string $role):array
 	{
 		return array_keys(AccessCnst::ACCESS[$role]);
@@ -59,16 +64,6 @@ class ItemAccessService
 	public function get_visible_ary_for_page():array
 	{
 		return $this->get_visible_ary_for_role($this->pp->role());
-	}
-
-	public function is_visible_xdb(string $access_xdb):bool
-	{
-		if (!isset(AccessCnst::FROM_XDB[$access_xdb]))
-		{
-			return false;
-		}
-
-		return $this->is_visible(AccessCnst::FROM_XDB[$access_xdb]);
 	}
 
 	public function get_visible_ary():array
@@ -93,18 +88,6 @@ class ItemAccessService
 		return $ary;
 	}
 
-	public function get_visible_ary_xdb():array
-	{
-		$ary = [];
-
-		foreach ($this->get_visible_ary() as $role)
-		{
-			$ary[] = AccessCnst::TO_XDB[$role];
-		}
-
-		return $ary;
-	}
-
 	public function get_label(
 		string $access
 	):string
@@ -121,11 +104,6 @@ class ItemAccessService
 		$out .= '</span>';
 
 		return $out;
-	}
-
-	public function get_label_xdb(string $access_xdb):string
-	{
-		return $this->get_label(AccessCnst::FROM_XDB[$access_xdb]);
 	}
 
 	public function get_radio_buttons(

@@ -399,6 +399,7 @@ class MessagesListController extends AbstractController
             $assets_service,
             $btn_top_render,
             $config_service,
+            $item_access_service,
             $heading_render,
             $link_render,
             $pagination_render,
@@ -903,6 +904,7 @@ class MessagesListController extends AbstractController
         AssetsService $assets_service,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
+        ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         LinkRender $link_render,
         PaginationRender $pagination_render,
@@ -921,6 +923,22 @@ class MessagesListController extends AbstractController
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
 
         $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
@@ -1722,8 +1740,8 @@ class MessagesListController extends AbstractController
             ->str([
                 'filter'		=> 'accounts',
                 'new_users_days'        => $new_users_days,
-                'new_users_enabled'     => $new_users_enabled,
-                'leaving_users_enabled' => $leaving_users_enabled,
+                'show_new_status'       => $show_new_status,
+                'show_leaving_status'   => $show_leaving_status,
             ]);
 
         $out .= '" ';

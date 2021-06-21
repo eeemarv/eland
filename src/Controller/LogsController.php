@@ -10,6 +10,7 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
+use App\Service\ItemAccessService;
 use App\Service\LogDbService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -43,6 +44,7 @@ class LogsController extends AbstractController
         PaginationRender $pagination_render,
         MenuService $menu_service,
         LinkRender $link_render,
+        ItemAccessService $item_access_service,
         LogDbService $log_db_service,
         BtnNavRender $btn_nav_render,
         AssetsService $assets_service,
@@ -58,6 +60,22 @@ class LogsController extends AbstractController
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
 
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
 
@@ -294,8 +312,8 @@ class LogsController extends AbstractController
             ->str([
                 'filter'        => 'accounts',
                 'new_users_days'        => $new_users_days,
-                'new_users_enabled'     => $new_users_enabled,
-                'leaving_users_enabled' => $leaving_users_enabled,
+                'show_new_status'       => $show_new_status,
+                'show_leaving_status'   => $show_leaving_status,
             ]);
         $out .= '" ';
 

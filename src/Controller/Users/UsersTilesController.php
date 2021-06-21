@@ -11,6 +11,7 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
@@ -44,6 +45,7 @@ class UsersTilesController extends AbstractController
         BtnTopRender $btn_top_render,
         AssetsService $assets_service,
         LinkRender $link_render,
+        ItemAccessService $item_access_service,
         ConfigService $config_service,
         PageParamsService $pp,
         VarRouteService $vr,
@@ -66,7 +68,7 @@ class UsersTilesController extends AbstractController
 
         $params = ['status'	=> $status];
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
         $sql = [
             'where'     => [],
@@ -105,6 +107,7 @@ class UsersTilesController extends AbstractController
             '',
             $q,
             $link_render,
+            $item_access_service,
             $config_service,
             $pp,
             $vr

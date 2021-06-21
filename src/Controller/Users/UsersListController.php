@@ -111,7 +111,25 @@ class UsersListController extends AbstractController
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
 
         $errors = [];
 
@@ -552,7 +570,7 @@ class UsersListController extends AbstractController
         $sql['common'] = $sql_map;
         $sql['common']['where'][] = '1 = 1';
 
-        $status_def_ary = self::get_status_def_ary($config_service, $pp);
+        $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
 
         $sql['status'] = $sql_map;
 
@@ -1260,8 +1278,8 @@ class UsersListController extends AbstractController
                 $fc3 .= $typeahead_service->str([
                     'filter'		=> 'accounts',
                     'new_users_days'        => $new_users_days,
-                    'new_users_enabled'     => $new_users_enabled,
-                    'leaving_users_enabled' => $leaving_users_enabled,
+                    'show_new_status'       => $show_new_status,
+                    'show_leaving_status'   => $show_leaving_status,
                 ]);
 
                 $fc3 .= '">';
@@ -1397,6 +1415,7 @@ class UsersListController extends AbstractController
             $f_col,
             $q,
             $link_render,
+            $item_access_service,
             $config_service,
             $pp,
             $vr
@@ -1548,15 +1567,21 @@ class UsersListController extends AbstractController
 
             $row_stat = $u['status'];
 
-            if (isset($u['adate'])
+            if ($status === 'new'
+                || (isset($u['adate'])
                 && $u['status'] === 1
                 && $new_users_enabled
-                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
+                && $item_access_service->is_visible($new_users_access_list)
+                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC')))
             {
                 $row_stat = 3;
             }
 
-            if ($row_stat === 2 && !$leaving_users_enabled)
+            if ($status !== 'leaving'
+                && $row_stat === 2
+                && (!$leaving_users_enabled
+                    || !$item_access_service->is_visible($leaving_users_access_list)
+            ))
             {
                 $row_stat = 1;
             }
@@ -2033,6 +2058,7 @@ class UsersListController extends AbstractController
 
     static public function get_status_def_ary(
         ConfigService $config_service,
+        ItemAccessService $item_access_service,
         PageParamsService $pp
     ):array
     {
@@ -2050,28 +2076,38 @@ class UsersListController extends AbstractController
 
         if ($config_service->get_bool('users.new.enabled', $pp->schema()))
         {
-            $status_def_ary['new'] = [
-                'lbl'	=> 'Instappers',
-                'sql'	=> [
-                    'where'     => ['u.status = 1 and u.adate > ?'],
-                    'params'    => [$new_user_treshold],
-                    'types'     => [Types::DATETIME_IMMUTABLE],
-                ],
-                'cl'	=> 'success',
-                'st'	=> 3,
-            ];
+            $new_users_access_pane = $config_service->get_str('users.new.access_pane', $pp->schema());
+
+            if ($item_access_service->is_visible($new_users_access_pane))
+            {
+                $status_def_ary['new'] = [
+                    'lbl'	=> 'Instappers',
+                    'sql'	=> [
+                        'where'     => ['u.status = 1 and u.adate > ?'],
+                        'params'    => [$new_user_treshold],
+                        'types'     => [Types::DATETIME_IMMUTABLE],
+                    ],
+                    'cl'	=> 'success',
+                    'st'	=> 3,
+                ];
+            }
         }
 
         if ($config_service->get_bool('users.leaving.enabled', $pp->schema()))
         {
-            $status_def_ary['leaving'] = [
-                'lbl'	=> 'Uitstappers',
-                'sql'	=> [
-                    'where'     => ['u.status = 2'],
-                ],
-                'cl'	=> 'danger',
-                'st'	=> 2,
-            ];
+            $leaving_users_access_pane = $config_service->get_str('users.leaving.access_pane', $pp->schema());
+
+            if ($item_access_service->is_visible($leaving_users_access_pane))
+            {
+                $status_def_ary['leaving'] = [
+                    'lbl'	=> 'Uitstappers',
+                    'sql'	=> [
+                        'where'     => ['u.status = 2'],
+                    ],
+                    'cl'	=> 'danger',
+                    'st'	=> 2,
+                ];
+            }
         }
 
         if ($pp->is_admin())
@@ -2126,12 +2162,13 @@ class UsersListController extends AbstractController
         string $before,
         string $q,
         LinkRender $link_render,
+        ItemAccessService $item_access_service,
         ConfigService $config_service,
         PageParamsService $pp,
         VarRouteService $vr
     ):string
     {
-        $status_def_ary = self::get_status_def_ary($config_service, $pp);
+        $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
 
         $out = '';
 

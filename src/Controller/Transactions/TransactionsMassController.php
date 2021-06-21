@@ -137,6 +137,22 @@ class TransactionsMassController extends AbstractController
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
         $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
 
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
+
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
 
@@ -791,8 +807,8 @@ class TransactionsMassController extends AbstractController
             ->str([
                 'filter'        => 'accounts',
                 'new_users_days'        => $new_users_days,
-                'new_users_enabled'     => $new_users_enabled,
-                'leaving_users_enabled' => $leaving_users_enabled,
+                'show_new_status'       => $show_new_status,
+                'show_leaving_status'   => $show_leaving_status,
             ]);
         $out .= '">';
 

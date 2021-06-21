@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
 use App\Queue\GeocodeQueue;
-use App\Render\AccountRender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
@@ -86,7 +85,6 @@ class ContactsAddController extends AbstractController
         MenuService $menu_service,
         ConfigService $config_service,
         LinkRender $link_render,
-        AccountRender $account_render,
         AssetsService $assets_service,
         GeocodeQueue $geocode_queue,
         ItemAccessService $item_access_service,
@@ -105,6 +103,22 @@ class ContactsAddController extends AbstractController
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
 
         $account_code = $request->request->get('account_code', '');
         $id_type_contact = (int) $request->request->get('id_type_contact', '');
@@ -320,8 +334,8 @@ class ContactsAddController extends AbstractController
                 ->str([
                     'filter'        => 'accounts',
                     'new_users_days'        => $new_users_days,
-                    'new_users_enabled'     => $new_users_enabled,
-                    'leaving_users_enabled' => $leaving_users_enabled,
+                    'show_new_status'       => $show_new_status,
+                    'show_leaving_status'   => $show_leaving_status,
                 ]);
             $out .= '" ';
 

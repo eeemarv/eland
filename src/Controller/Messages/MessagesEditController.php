@@ -108,6 +108,22 @@ class MessagesEditController extends AbstractController
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $show_new_status = $item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
+
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
@@ -593,8 +609,8 @@ class MessagesEditController extends AbstractController
                 ->str([
                     'filter'        => 'accounts',
                     'new_users_days'        => $new_users_days,
-                    'new_users_enabled'     => $new_users_enabled,
-                    'leaving_users_enabled' => $leaving_users_enabled,
+                    'show_new_status'       => $show_new_status,
+                    'show_leaving_status'   => $show_leaving_status,
                 ]);
             $out .= '" ';
 
