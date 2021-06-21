@@ -14,6 +14,7 @@ use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -64,6 +65,7 @@ class MessagesExtendedController extends AbstractController
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
         ConfigService $config_service,
+        ItemAccessService $item_access_service,
         HeadingRender $heading_render,
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
@@ -91,6 +93,7 @@ class MessagesExtendedController extends AbstractController
             $assets_service,
             $btn_top_render,
             $config_service,
+            $item_access_service,
             $heading_render,
             $link_render,
             $pagination_render,

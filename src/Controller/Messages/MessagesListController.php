@@ -464,9 +464,14 @@ class MessagesListController extends AbstractController
 
         $column_ary = self::COLUMNS_DEF_ARY;
 
-        if (isset($params['f']['uid']) || !$postcode_enabled)
+        if (isset($params['f']['uid']))
         {
             unset($column_ary['user']);
+            unset($column_ary['postcode']);
+        }
+
+        if (!$postcode_enabled)
+        {
             unset($column_ary['postcode']);
         }
 
@@ -582,13 +587,13 @@ class MessagesListController extends AbstractController
                 $out .= '<td>';
                 $out .= $account_render->link($msg['user_id'], $pp->ary());
                 $out .= '</td>';
+            }
 
-                if (!$postcode_enabled)
-                {
-                    $out .= '<td>';
-                    $out .= $msg['postcode'] ?? '';
-                    $out .= '</td>';
-                }
+            if ($postcode_enabled && !isset($params['f']['uid']))
+            {
+                $out .= '<td>';
+                $out .= $msg['postcode'] ?? '';
+                $out .= '</td>';
             }
 
             if ($category_enabled && !($params['f']['cid'] ?? false))
