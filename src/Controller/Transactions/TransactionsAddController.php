@@ -1061,9 +1061,21 @@ class TransactionsAddController extends AbstractController
                     $out .= $config_service->get_int('accounts.equilibrium', $config_schema);
                     $out .= '"';
 
-                    $typeahead_process_ary['new_users_days'] = $new_users_days;
-                    $typeahead_process_ary['show_new_status'] = $show_new_status;
-                    $typeahead_process_ary['show_leaving_status'] = $show_leaving_status;
+                    $typeahead_process_ary['new_users_days'] = $config_service->get_int('users.new.days', $config_schema) ?? 0;
+                    $typeahead_process_ary['show_new_status'] = $config_service->get_bool('users.new.enabled', $config_schema);
+                    $typeahead_process_ary['show_leaving_status'] = $config_service->get_bool('users.leaving.enabled', $config_schema);
+
+                    if ($typeahead_process_ary['show_new_status'])
+                    {
+                        $rem_new_users_access = $config_service->get_str('users.new.access', $config_schema);
+                        $typeahead_process_ary['show_new_status'] = $item_access_service->is_visible_for_guest($rem_new_users_access);
+                    }
+
+                    if ($typeahead_process_ary['show_leaving_status'])
+                    {
+                        $rem_leaving_users_access = $config_service->get_str('users.leaving.access', $config_schema);
+                        $typeahead_process_ary['show_leaving_status'] = $item_access_service->is_visible_for_guest($rem_leaving_users_access);
+                    }
                 }
 
                 $typeahead = $typeahead_service->str($typeahead_process_ary);

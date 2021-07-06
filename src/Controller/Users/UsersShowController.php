@@ -154,7 +154,7 @@ class UsersShowController extends AbstractController
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
         // process mail form
 
