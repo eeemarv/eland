@@ -6,7 +6,6 @@ use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -39,7 +38,6 @@ class MessagesCleanupController extends AbstractController
         AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         MenuService $menu_service,
         PageParamsService $pp,
@@ -115,9 +113,6 @@ class MessagesCleanupController extends AbstractController
 
         $assets_service->add(['messages_cleanup.js']);
 
-        $heading_render->fa('trash-o');
-        $heading_render->add('Geldigheid en opruiming instellingen vraag en aanbod');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -178,7 +173,7 @@ class MessagesCleanupController extends AbstractController
 
         $menu_service->set('messages_cleanup');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_cleanup.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

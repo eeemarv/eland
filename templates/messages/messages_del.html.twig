@@ -2,48 +2,13 @@
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_del.title.'
-        ~ (message.is_offer ? 'offer.' : 'want.')
-        ~ (s_is_owner(message.user_id) ? 'personal' : 'admin') -%}
+        ~ message.offer_want ~ '.'
+        ~ (is_s_owner(message.user_id) ? 'personal' : 'admin') -%}
 
     {{- heading_title_trans_key|trans({
         '%user%': account(message.user_id, schema)
         }) -}}
 {%- endblock heading_title -%}
-
-{%- block content -%}
-
-{%- embed 'form/form_embed.html.twig' -%}
-    {%- import 'macro/btn_link.html.twig' as bl -%}
-    {%- import 'macro/object_info.html.twig' as oi -%}
-
-    {%- block form_content -%}
-
-    <h2>
-        {%- if message.is_offer %}
-            {{- 'label.offer'|trans -}}
-        {%- else -%}
-            {{- 'label.want'|trans -}}
-        {%- endif -%}:&nbsp;
-        {{- message.subject -}}
-    </h2>
-
-    {{- message.content|raw -}}
-
-    <p>
-        {{- oi.object_info(message.user_id, message.created_at, null, schema) -}}
-    </p>
-
-    {{- bl.cancel('messages_show', {'id': message.id}) -}}
-
-    {{- form_widget(form.submit,{
-        'label': 'btn.delete',
-        'attr': {'class': 'btn-danger'}
-    }) -}}
-
-    {%- endblock form_content -%}
-{%- endembed -%}
-
-{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

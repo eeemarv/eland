@@ -23,6 +23,11 @@ class SRoleRuntime implements RuntimeExtensionInterface
 		return $this->su->is_master();
 	}
 
+	public function is_s_owner(int $object_author_id):bool
+	{
+		return $this->su->is_owner($object_author_id);
+	}
+
 	public function get_s_id():int
 	{
 		return $this->su->id();

@@ -12,7 +12,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\HtmlProcess\HtmlPurifier;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -76,7 +75,6 @@ class MessagesEditController extends AbstractController
         AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -163,6 +161,10 @@ class MessagesEditController extends AbstractController
                 throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
                     $message['label']['offer_want_this'] . ' aan te passen.');
             }
+        }
+        else
+        {
+            $message = [];
         }
 
         if ($request->isMethod('POST'))
@@ -574,17 +576,6 @@ class MessagesEditController extends AbstractController
             'messages_edit_images_upload.js',
         ]);
 
-        if ($add_mode)
-        {
-            $heading_render->add('Nieuw Vraag of Aanbod toevoegen');
-        }
-        else
-        {
-            $heading_render->add('Vraag of Aanbod aanpassen');
-        }
-
-        $heading_render->fa('newspaper-o');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -918,8 +909,13 @@ class MessagesEditController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        $template = 'messages/messages_';
+        $template .= $edit_mode ? 'edit' : 'add';
+        $template .= '.html.twig';
+
+        return $this->render($template, [
             'content'   => $out,
+            'message'   => $message,
             'schema'    => $pp->schema(),
         ]);
     }

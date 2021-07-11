@@ -64,8 +64,7 @@ class MessagesImagesDelController extends AbstractController
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException(
-                'Je hebt onvoldoende rechten om deze afbeeldingen te verwijderen.');
+            throw new AccessDeniedHttpException('No access');
         }
 
         $images = array_values(json_decode($message['image_files'] ?? '[]', true));
@@ -96,6 +95,7 @@ class MessagesImagesDelController extends AbstractController
             $alert_service->error($errors);
         }
 
+        /*
         $heading_render->add('Afbeeldingen verwijderen voor ');
         $heading_render->add($message['label']['offer_want']);
         $heading_render->add(' "');
@@ -103,14 +103,17 @@ class MessagesImagesDelController extends AbstractController
         $heading_render->add('"');
 
         $heading_render->fa('newspaper-o');
+        */
 
         $assets_service->add(['messages_images_del.js']);
 
+        /*
         if ($pp->is_admin())
         {
             $heading_render->add_sub('Gebruiker: ');
             $heading_render->add_sub_raw($account_render->link($message['user_id'], $pp->ary()));
         }
+        */
 
         $out = '<div class="row">';
 
@@ -173,8 +176,9 @@ class MessagesImagesDelController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_images_del.html.twig', [
             'content'   => $out,
+            'message'   => $message,
             'schema'    => $pp->schema(),
         ]);
     }

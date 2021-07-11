@@ -664,6 +664,15 @@ messages_edit:
       personal: >-
         Je vraag "%subject%" aanpassen
 
+messages_images_del:
+  title:
+    offer: >-
+      Afbeeldingen verwijderen van aanbod "%subject%"
+    want: >-
+      Afbeeldingen verwijderen van vraag "%subject%"
+  user: >-
+    Gebruiker: %user%
+
 messages_modules:
   title: >-
     Submodules en velden vraag en aanbod

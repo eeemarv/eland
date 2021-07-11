@@ -1,8 +1,11 @@
 {%- extends 'messages/base/messages_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
-{%- block form_content -%}
+{%- block heading_title -%}
+    {{- 'messages_modules.title'|trans -}}
+{%- endblock heading_title -%}
 
+{%- block form_content -%}
     {{- form_row(form.messages_fields_service_stuff_enabled, {
         'label': 'Diensten/spullen schakelaar',
         'translation_domain': false,
@@ -26,5 +29,4 @@
         'translation_domain': false,
         'required': false
     }) -}}
-
 {%- endblock form_content -%}

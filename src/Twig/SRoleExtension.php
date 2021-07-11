@@ -14,6 +14,7 @@ class SRoleExtension extends AbstractExtension
 			new TwigFunction('get_s_id', [SRoleRuntime::class, 'get_s_id']),
 			new TwigFunction('get_s_schema', [SRoleRuntime::class, 'get_s_schema']),
 			new TwigFunction('is_s_master', [SRoleRuntime::class, 'is_s_master']),
+			new TwigFunction('is_s_owner', [SRoleRuntime::class, 'is_s_owner']),
 			new TwigFunction('is_s_system_self', [SRoleRuntime::class, 'is_s_system_self']),
 		];
 	}

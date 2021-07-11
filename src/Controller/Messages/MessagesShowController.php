@@ -15,7 +15,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
@@ -64,7 +63,6 @@ class MessagesShowController extends AbstractController
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -310,16 +308,6 @@ class MessagesShowController extends AbstractController
         $btn_nav_render->nav_list($vr->get('messages'), $pp->ary(),
             [], 'Lijst', 'newspaper-o');
 
-        $heading_render->add(ucfirst($message['label']['offer_want']));
-        $heading_render->add(': ' . $message['subject']);
-
-        if ($expires_at_enabled)
-        {
-            $heading_render->add_raw(isset($message['expires_at']) && strtotime($message['expires_at']) < time() ? ' <small><span class="text-danger">Vervallen</span></small>' : '');
-        }
-
-        $heading_render->fa('newspaper-o');
-
         $out = '';
 
         if ($category_enabled)
@@ -551,8 +539,11 @@ class MessagesShowController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        $message['is_expired'] = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
+
+        return $this->render('messages/messages_show.html.twig', [
             'content'   => $out,
+            'message'   => $message,
             'schema'    => $pp->schema(),
         ]);
     }

@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
@@ -49,7 +48,6 @@ class MessagesDelController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -96,14 +94,6 @@ class MessagesDelController extends AbstractController
 
             $alert_service->error(ucfirst($message['label']['offer_want_this']) . ' is niet verwijderd.');
         }
-
-        $heading_render->add(ucfirst($message['label']['offer_want_this']) . ' ');
-
-        $heading_render->add_raw($link_render->link_no_attr('messages_show', $pp->ary(),
-            ['id' => $id], $message['subject']));
-
-        $heading_render->add(' verwijderen?');
-        $heading_render->fa('newspaper-o');
 
         $out = '<div class="panel panel-info printview">';
         $out .= '<div class="panel-heading">';
@@ -182,8 +172,9 @@ class MessagesDelController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('messages/messages_del.html.twig', [
             'content'   => $out,
+            'message'   => $message,
             'schema'    => $pp->schema(),
         ]);
     }
