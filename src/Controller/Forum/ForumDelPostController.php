@@ -134,9 +134,11 @@ class ForumDelPostController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+        return $this->render('forum/forum_del_post.html.twig', [
+            'content'       => $out,
+            'forum_topic'   => $forum_topic,
+            'forum_post'    => $forum_post,
+            'schema'        => $pp->schema(),
         ]);
     }
 }

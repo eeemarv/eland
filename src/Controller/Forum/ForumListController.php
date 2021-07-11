@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ForumController extends AbstractController
+class ForumListController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/forum',
@@ -118,7 +118,7 @@ class ForumController extends AbstractController
 
             $menu_service->set('forum');
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('forum/forum_list.html.twig', [
                 'content'   => $out,
                 'schema'    => $pp->schema(),
             ]);
@@ -171,7 +171,7 @@ class ForumController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('forum/forum_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

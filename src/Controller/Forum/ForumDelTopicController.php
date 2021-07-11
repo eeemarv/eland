@@ -125,9 +125,10 @@ class ForumDelTopicController extends AbstractController
 
         $menu_service->set('forum');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+        return $this->render('forum/forum_del_topic.html.twig', [
+            'content'       => $out,
+            'forum_topic'   => $forum_topic,
+            'schema'        => $pp->schema(),
         ]);
     }
 }
