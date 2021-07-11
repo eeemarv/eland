@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Security\User;
 use App\Service\AlertService;
@@ -42,7 +41,6 @@ class LoginController extends AbstractController
         LoggerInterface $logger,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         ConfigService $config_service,
         AccountRender $account_render,
         UserCacheService $user_cache_service,
@@ -317,9 +315,6 @@ class LoginController extends AbstractController
             $login = $request->query->get('login', '');
         }
 
-        $heading_render->add('Login');
-        $heading_render->fa('sign-in');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -371,7 +366,7 @@ class LoginController extends AbstractController
 
         $menu_service->set('login');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('login/login.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

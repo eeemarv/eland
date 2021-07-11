@@ -511,6 +511,9 @@ forum_topic:
   add_post: >-
     Reactie toevoegen
 
+home:
+  title: Home
+
 git_rev:
   abbrev: Rev
   title: Actuele versie van de eLAND code
