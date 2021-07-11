@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -45,7 +44,6 @@ class MessagesImagesDelController extends AbstractController
         AlertService $alert_service,
         AssetsService $assets_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
@@ -95,25 +93,7 @@ class MessagesImagesDelController extends AbstractController
             $alert_service->error($errors);
         }
 
-        /*
-        $heading_render->add('Afbeeldingen verwijderen voor ');
-        $heading_render->add($message['label']['offer_want']);
-        $heading_render->add(' "');
-        $heading_render->add($message['subject']);
-        $heading_render->add('"');
-
-        $heading_render->fa('newspaper-o');
-        */
-
         $assets_service->add(['messages_images_del.js']);
-
-        /*
-        if ($pp->is_admin())
-        {
-            $heading_render->add_sub('Gebruiker: ');
-            $heading_render->add_sub_raw($account_render->link($message['user_id'], $pp->ary()));
-        }
-        */
 
         $out = '<div class="row">';
 

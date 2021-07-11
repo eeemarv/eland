@@ -11,7 +11,6 @@ use App\HtmlProcess\HtmlPurifier;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AssetsService;
@@ -45,7 +44,6 @@ class ConfigController extends AbstractController
         MenuService $menu_service,
         LinkRender $link_render,
         AssetsService $assets_service,
-        HeadingRender $heading_render,
         ConfigService $config_service,
         IntersystemsService $intersystems_service,
         SelectRender $select_render,
@@ -353,9 +351,6 @@ class ConfigController extends AbstractController
         {
             $assets_service->add(ConfigCnst::TAB_PANES[$tab]['assets']);
         }
-
-        $heading_render->add('Instellingen');
-        $heading_render->fa('gears');
 
         $out = '<div>';
 

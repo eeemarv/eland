@@ -3,7 +3,6 @@
 namespace App\Controller\Calendar;
 
 use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -30,7 +29,6 @@ class CalendarDelController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         DateFormatService $date_format_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
@@ -65,9 +63,6 @@ class CalendarDelController extends AbstractController
         $news = $db->fetchAssociative('select n.*
             from ' . $pp->schema() . '.news n
             where n.id = ?', [$id]);
-
-        $heading_render->add('Nieuwsbericht ' . $news['subject'] . ' verwijderen?');
-        $heading_render->fa('calendar-o');
 
 /*
         $out = NewsExtendedController::render_news_item(

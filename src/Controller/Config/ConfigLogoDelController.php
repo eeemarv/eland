@@ -2,7 +2,6 @@
 
 namespace App\Controller\Config;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;

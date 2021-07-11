@@ -4,7 +4,6 @@ namespace App\Controller\Calendar;
 
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -22,7 +21,6 @@ class CalendarListController extends AbstractController
         Db $db,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
         DateFormatService $date_format_service,
@@ -43,9 +41,8 @@ class CalendarListController extends AbstractController
             $pp
         );
 
-        self::set_heading_and_btns(
+        self::set_btns(
             true,
-            $heading_render,
             $btn_top_render,
             $btn_nav_render,
             $pp
@@ -159,9 +156,8 @@ class CalendarListController extends AbstractController
         return $news;
     }
 
-    public static function set_heading_and_btns(
+    public static function set_btns(
         bool $is_list,
-        HeadingRender $heading_render,
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
         PageParamsService $pp
@@ -172,9 +168,6 @@ class CalendarListController extends AbstractController
             $btn_top_render->add('news_add', $pp->ary(),
                 [], 'Nieuws toevoegen');
         }
-
-        $heading_render->add('Nieuws');
-        $heading_render->fa('calendar-o');
 
         $btn_nav_render->view('news_list', $pp->ary(),
             [], 'Lijst', 'align-justify', $is_list);

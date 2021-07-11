@@ -2,8 +2,6 @@
 
 namespace App\Controller\Users;
 
-use App\Render\AccountRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\MenuService;

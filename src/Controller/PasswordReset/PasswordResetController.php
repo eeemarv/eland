@@ -3,7 +3,6 @@
 namespace App\Controller\PasswordReset;
 
 use App\Queue\MailQueue;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\DataTokenService;
@@ -38,7 +37,6 @@ class PasswordResetController extends AbstractController
         AlertService $alert_service,
         DataTokenService $data_token_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         MailQueue $mail_queue,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -122,9 +120,6 @@ class PasswordResetController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $heading_render->add('Paswoord vergeten');
-        $heading_render->fa('key');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

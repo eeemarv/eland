@@ -285,15 +285,7 @@
 	{%- endblock heading -%}
 
 	{%- block heading_sub -%}
-		{{- heading_sub() -}}
 	{%- endblock heading_sub -%}
-
-	{#
-	{%- block heading -%}
-		{{- heading() -}}
-		{{- heading_sub() -}}
-	{%- endblock heading -%}
-	#}
 
 	{%- block content_top -%}
 		{%- embed 'embed/static_content.html.twig' with {

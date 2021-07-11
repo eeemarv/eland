@@ -4,7 +4,6 @@ namespace App\Controller\PasswordReset;
 
 use App\Cnst\PagesCnst;
 use App\Queue\MailQueue;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Security\User;
 use App\Service\AlertService;
@@ -50,7 +49,6 @@ class PasswordResetConfirmController extends AbstractController
         FormTokenService $form_token_service,
         AlertService $alert_service,
         AssetsService $assets_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         MenuService $menu_service,
         MailAddrUserService $mail_addr_user_service,
@@ -118,9 +116,6 @@ class PasswordResetConfirmController extends AbstractController
                 $alert_service->error('Het paswoord is te zwak.');
             }
         }
-
-        $heading_render->add('Nieuw paswoord ingeven.');
-        $heading_render->fa('key');
 
         $assets_service->add([
             'generate_password.js',

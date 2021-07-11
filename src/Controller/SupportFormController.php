@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -42,7 +41,6 @@ class SupportFormController extends AbstractController
         AlertService $alert_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         MailQueue $mail_queue,
         MenuService $menu_service,
@@ -164,9 +162,6 @@ class SupportFormController extends AbstractController
         {
             $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
-
-        $heading_render->add('Help / Probleem melden');
-        $heading_render->fa('ambulance');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

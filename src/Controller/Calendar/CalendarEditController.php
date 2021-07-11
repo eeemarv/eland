@@ -6,7 +6,6 @@ use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -30,7 +29,6 @@ class CalendarEditController extends AbstractController
         AssetsService $assets_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
@@ -133,9 +131,6 @@ class CalendarEditController extends AbstractController
             'summernote',
             'summernote_forum_post.js',
         ]);
-
-        $heading_render->add('Nieuwsbericht aanpassen');
-        $heading_render->fa('calendar-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
