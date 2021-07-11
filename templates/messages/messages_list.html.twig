@@ -1,12 +1,4 @@
-{%- extends 'messages/base/messages_base.html.twig' -%}
-
-{%- block heading_title -%}
-    {%- include 'messages/base/messages_list_title.html.twig' -%}
-{%- endblock heading_title -%}
-
-{%- block heading_append -%}
-    {%- include 'include/heading_filter.html.twig' -%}
-{%- endblock heading_append -%}
+{%- extends 'messages/base/messages_list.html.twig' -%}
 
 {%- block css -%}
     {{- parent() -}}
