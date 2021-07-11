@@ -1,0 +1,39 @@
+{%- extends 'messages/base/messages_form.html.twig' -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/link.html.twig' as l -%}
+
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'messages_edit.title.'
+        ~ (message.is_offer ? 'offer.' : 'want.')
+        ~ (s_is_owner(message.user_id) ? 'personal' : 'admin') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%subject%': message.subject,
+        '%user%': account(message.user_id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block before_form -%}{%- endblock -%}
+
+{%- set form_cancel_btn -%}
+    {{- bl.cancel('messages_show', {'id': message.id}) -}}
+{%- endset -%}
+
+{%- set form_submit_btn -%}
+    {{- form_widget(form.submit,{
+        'label': 'btn.edit',
+        'attr': {'class': 'btn-primary'}
+    }) -}}
+{%- endset -%}
+
+{%- set data_fileupload_url -%}
+    {{- l.pp_path_image_token('messages_edit_images_upload', message.id) -}}
+{%- endset -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

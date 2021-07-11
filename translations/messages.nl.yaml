@@ -601,6 +601,7 @@ intersystems_show:
 messages:
   title: Vraag en aanbod
   without_category: zonder categorie
+  with_category: categorie "%category_name%"
   image_files:
     help: >-
       Toegestane formaten: jpg/jpeg, png, gif en svg.
@@ -673,6 +674,9 @@ messages_modules:
   expires_at_enabled: Geldigheid en opruiming
   units_enabled: Richtprijs
 
+messages_self:
+  title: Mijn vraag en aanbod
+
 messages_show:
   title:
     offer: >-
@@ -697,6 +701,10 @@ messages_show:
   mail_form:
     title: >-
       Stuur een reactie naar %to_user%.
+
+messages_uid:
+  title: >-
+    Vraag en aanbod van %account%
 
 mollie_checkout:
   title: >-

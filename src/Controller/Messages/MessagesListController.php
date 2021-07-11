@@ -13,7 +13,6 @@ use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -135,8 +134,7 @@ class MessagesListController extends AbstractController
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        HeadingRender $heading_render
+        VarRouteService $vr
     ):Response
     {
         if (!$config_service->get_bool('messages.enabled', $pp->schema()))
@@ -400,7 +398,6 @@ class MessagesListController extends AbstractController
             $btn_top_render,
             $config_service,
             $item_access_service,
-            $heading_render,
             $link_render,
             $pagination_render,
             $select_render,
@@ -411,6 +408,11 @@ class MessagesListController extends AbstractController
         );
 
         $messages = $fetch_and_filter['messages'];
+        $filter_uid = $fetch_and_filter['filter_uid'];
+        $cid = $fetch_and_filter['cid'];
+        $filter_cid = $fetch_and_filter['filter_cid'];
+        $uid = $fetch_and_filter['uid'];
+        $filtered = $fetch_and_filter['filtered'];
         $params = $fetch_and_filter['params'];
         $categories = $fetch_and_filter['categories'];
         $categories_move_options = $fetch_and_filter['categories_move_options'];
@@ -442,9 +444,16 @@ class MessagesListController extends AbstractController
         {
             $out .= self::no_messages($pagination_render, $menu_service);
 
-            return $this->render('base/navbar.html.twig', [
-                'content'   => $out,
-                'schema'    => $pp->schema(),
+            return $this->render('messages/messages_list.html.twig', [
+                'content'       => $out,
+                'categories'    => $categories,
+                'is_self'       => $is_self,
+                'filter_uid'    => $filter_uid,
+                'uid'           => $uid,
+                'filter_cid'    => $filter_cid,
+                'cid'           => $cid,
+                'filtered'      => $filtered,
+                'schema'        => $pp->schema(),
             ]);
         }
 
@@ -859,9 +868,16 @@ class MessagesListController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+        return $this->render('messages/messages_list.html.twig', [
+            'content'       => $out,
+            'categories'    => $categories,
+            'is_self'       => $is_self,
+            'filter_uid'    => $filter_uid,
+            'uid'           => $uid,
+            'filter_cid'    => $filter_cid,
+            'cid'           => $cid,
+            'filtered'      => $filtered,
+            'schema'        => $pp->schema(),
         ]);
     }
 
@@ -910,7 +926,6 @@ class MessagesListController extends AbstractController
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         PaginationRender $pagination_render,
         SelectRender $select_render,
@@ -1517,42 +1532,6 @@ class MessagesListController extends AbstractController
 
         $filtered = $filter_q || $filter_panel_open;
 
-        if ($filter_uid)
-        {
-            if ($is_self)
-            {
-                $heading_render->add('Mijn vraag en aanbod');
-            }
-            else
-            {
-                $heading_render->add_raw($link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    ['f' => ['uid' => $filter['uid']]],
-                    'Vraag en aanbod'));
-
-                $heading_render->add(' van ');
-                $heading_render->add_raw($account_render->link((int) $filter['uid'], $pp->ary()));
-            }
-        }
-        else
-        {
-            $heading_render->add('Vraag en aanbod');
-        }
-
-        if ($filter_cid)
-        {
-            if ($filter['cid'] === 'null')
-            {
-                $heading_render->add(', zonder categorie');
-            }
-            else
-            {
-                $heading_render->add(', categorie "' . $categories[$filter['cid']] . '"');
-            }
-        }
-
-        $heading_render->add_filtered($filtered);
-        $heading_render->fa('newspaper-o');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -1797,6 +1776,11 @@ class MessagesListController extends AbstractController
         return [
             'messages'                  => $messages,
             'params'                    => $params,
+            'filtered'                  => $filtered,
+            'filter_uid'                => $filter_uid,
+            'uid'                       => $filter['uid'] ?? 0,
+            'filter_cid'                => $filter_cid,
+            'cid'                       => $filter['cid'] ?? 0,
             'categories'                => $categories,
             'cat_params'                => $cat_params,
             'categories_move_options'   => $categories_move_options,

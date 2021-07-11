@@ -1,0 +1,22 @@
+{%- if filter_uid -%}
+    {%- if is_self -%}
+        {{- 'messages_self.title'|trans -}}
+    {%- else -%}
+        {{- 'messages_uid.title'|trans({
+            '%account%': account(uid, schema)|link('users_show', {'id': uid})
+        })|raw -}}
+    {%- endif -%}
+{%- else -%}
+    {{- 'messages.title'|trans -}}
+{%- endif -%}
+
+{%- if filter_cid -%}
+    ,&nbsp;
+    {%- if cid == 'null' -%}
+        {{- 'messages.without_category'|trans -}}
+    {%- else -%}
+        {{- 'messages.with_category'|trans({
+            '%category_name%': categories[cid]
+        }) -}}
+    {%- endif -%}
+{%- endif -%}

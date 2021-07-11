@@ -1,0 +1,54 @@
+{%- extends 'messages/base/messages_base.html.twig' -%}
+{%- import 'macro/object_info.html.twig' as oi -%}
+
+{%- block heading_title -%}
+    {%- set heading_title_trans_key = 'messages_show.title.'
+        ~ (message.is_offer ? 'offer' : 'want') -%}
+
+    {{- heading_title_trans_key|trans({
+        '%subject%': message.subject
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block heading_append -%}
+    {%- if message.is_expired -%}
+        &nbsp;
+        {%- include 'include/heading_expired.html.twig' -%}
+    {%- endif -%}
+{%- endblock heading_append -%}
+
+{%- block content -%}
+    {%- embed 'messages/embed/category_service_stuff.html.twig' -%}
+    {%- endembed -%}
+
+    <div class="row mb-3">
+        {%- embed 'messages/embed/images_carousel.html.twig' -%}
+        {%- endembed -%}
+
+        {%- embed 'messages/embed/message_info.html.twig' -%}
+        {%- endembed -%}
+    </div>
+
+    <div class="row mb-3">
+        <dvi class="col">
+            <h2>
+                {{- 'messages_show.mail_form.title'|trans({
+                    '%to_user%': oi.user_link(user.id, schema)
+                })|raw -}}
+            </h2>
+            {%- include 'include/send_message_cc.html.twig' with {'form': mail_form, 'can_reply': true} -%}
+        </dvi>
+    </div>
+
+{%- endblock content -%}
+
+{%- block css -%}
+    {{- parent() -}}
+    {{- encore_entry_link_tags('fileupload') -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('jssor') -}}
+	{{- encore_entry_script_tags('fileupload') -}}
+{%- endblock js -%}

@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -66,7 +65,6 @@ class MessagesExtendedController extends AbstractController
         BtnNavRender $btn_nav_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
         LinkRender $link_render,
@@ -94,7 +92,6 @@ class MessagesExtendedController extends AbstractController
             $btn_top_render,
             $config_service,
             $item_access_service,
-            $heading_render,
             $link_render,
             $pagination_render,
             $select_render,
@@ -105,6 +102,12 @@ class MessagesExtendedController extends AbstractController
         );
 
         $messages = $fetch_and_filter['messages'];
+        $categories = $fetch_and_filter['categories'];
+        $filter_uid = $fetch_and_filter['filter_uid'];
+        $uid = $fetch_and_filter['uid'];
+        $filter_cid = $fetch_and_filter['filter_cid'];
+        $cid = $fetch_and_filter['cid'];
+        $filtered = $fetch_and_filter['filtered'];
         $params = $fetch_and_filter['params'];
         $out = $fetch_and_filter['out'];
 
@@ -123,9 +126,16 @@ class MessagesExtendedController extends AbstractController
                 $menu_service,
             );
 
-            return $this->render('base/navbar.html.twig', [
-                'content'   => $out,
-                'schema'    => $pp->schema(),
+            return $this->render('messages/messages_extended.html.twig', [
+                'content'       => $out,
+                'categories'    => $categories,
+                'is_self'       => $is_self,
+                'uid'           => $uid,
+                'filter_cid'    => $filter_cid,
+                'cid'           => $cid,
+                'filter_uid'    => $filter_uid,
+                'filtered'      => $filtered,
+                'schema'        => $pp->schema(),
             ]);
         }
 
@@ -220,9 +230,16 @@ class MessagesExtendedController extends AbstractController
 
         $menu_service->set('messages');
 
-        return $this->render('base/navbar.html.twig', [
-            'content'   => $out,
-            'schema'    => $pp->schema(),
+        return $this->render('messages/messages_extended.html.twig', [
+            'content'       => $out,
+            'categories'    => $categories,
+            'is_self'       => $is_self,
+            'uid'           => $uid,
+            'filter_cid'    => $filter_cid,
+            'cid'           => $cid,
+            'filter_uid'    => $filter_uid,
+            'filtered'      => $filtered,
+            'schema'        => $pp->schema(),
         ]);
     }
 }
