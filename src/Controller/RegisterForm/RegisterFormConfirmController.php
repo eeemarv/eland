@@ -6,8 +6,6 @@ use App\Cnst\PagesCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Queue\MailQueue;
-use App\Render\HeadingRender;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
@@ -17,6 +15,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -39,12 +38,11 @@ class RegisterFormConfirmController extends AbstractController
     public function __invoke(
         string $token,
         Db $db,
-        HeadingRender $heading_render,
+        Request $request,
         ConfigService $config_service,
         StaticContentService $static_content_service,
         AlertService $alert_service,
         DataTokenService $data_token_service,
-        LinkRender $link_render,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
         PageParamsService $pp,
@@ -59,16 +57,19 @@ class RegisterFormConfirmController extends AbstractController
 
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
 
-        $heading_render->add('Inschrijving voltooid');
-        $heading_render->fa('check-square-o');
-
         if ($pp->edit_en()
             && $token === PagesCnst::CMS_TOKEN
             && $su->is_admin())
         {
             $menu_service->set('register_form');
 
-            return $this->render('register_form/register_form_confirm.html.twig', [
+            $fail = $request->query->has('fail');
+
+            $template = 'register_form/register_form_confirm_';
+            $template .= $fail ? 'fail' : 'success';
+            $template .= '.html.twig';
+
+            return $this->render($template, [
                 'schema'    => $pp->schema(),
             ]);
         }
@@ -79,24 +80,9 @@ class RegisterFormConfirmController extends AbstractController
         {
             $alert_service->error('Geen geldig token.');
 
-            $out = '<div class="panel panel-danger">';
-            $out .= '<div class="panel-heading">';
-
-            $out .= '<h2>Inschrijven niet gelukt</h2>';
-
-            $out .= '</div>';
-            $out .= '<div class="panel-body">';
-
-            $out .= $link_render->link('register_form', $pp->ary(),
-                [], 'Opnieuw proberen', ['class' => 'btn btn-default']);
-
-            $out .= '</div>';
-            $out .= '</div>';
-
             $menu_service->set('register_form');
 
-            return $this->render('base/navbar.html.twig', [
-                'content'   => $out,
+            return $this->render('register_form/register_form_confirm_fail.html.twig', [
                 'schema'    => $pp->schema(),
             ]);
         }
@@ -251,10 +237,9 @@ class RegisterFormConfirmController extends AbstractController
             ], 8500);
         }
 
-
         $menu_service->set('register_form');
 
-        return $this->render('register_form/register_form_confirm.html.twig', [
+        return $this->render('register_form/register_form_confirm_success.html.twig', [
             'schema'    => $pp->schema(),
         ]);
     }

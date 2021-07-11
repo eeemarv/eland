@@ -1,4 +1,8 @@
-{%- extends 'base/navbar.html.twig' -%}
+{%- extends 'register_form/base/register_form_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'register_form_confirm_success.title'|trans -}}
+{%- endblock heading_title -%}
 
 {%- block cms_edit_extra -%}
 
@@ -8,12 +12,11 @@
 
         <div class="panel panel-info">
         <div class="panel-heading">
-        <h3>Bevestigings E-mail (cms edit lokaal blok)</h3>
+        <h3>
+            {{- 'register_form_confirm_success.cms.email.title'|trans -}}
+        </h3>
         <p>
-            Deze E-mail wordt verzonden naar degene die zich inschrijft
-            na een geslaagde inschrijving.
-            Indien dit veld leeg is,
-            wordt er geen E-mail verstuurd.
+            {{- 'register_form_confirm_success.cms.email.explain'|trans -}}
         </p>
         <div class="bg-white">
         {%- embed 'embed/static_content.html.twig' with {

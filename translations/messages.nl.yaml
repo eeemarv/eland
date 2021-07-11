@@ -750,7 +750,7 @@ news_show:
   title: >-
     %subject%
 
-password_reset_request:
+password_reset:
   title: Paswoord vergeten
   email_explain: >-
     Vul hier het E-mail adres in waarmee je geregistreerd
@@ -758,17 +758,25 @@ password_reset_request:
     resetten wordt naar je E-mailbox gestuurd.
   btn: Zend paswoord reset link
 
-password_reset_set:
+password_reset_confirm:
   title: Nieuw paswoord ingeven
 
 register_form:
   title: Inschrijven
 
-register_confirm_fail:
+register_form_confirm_fail:
   title: Inschrijving niet geslaagd.
 
-register_confirm_success:
+register_form_confirm_success:
   title: Inschrijving geslaagd.
+  cms:
+    email:
+      title: Bevestigings E-mail (cms edit lokaal blok)
+      explain: >-
+        Deze E-mail wordt verzonden naar degene
+        die zich inschrijft na een geslaagde
+        inschrijving. Indien dit veld leeg is,
+        wordt er geen E-mail verstuurd.
 
 support_form:
   title: Support

@@ -27,13 +27,27 @@ class LinkRuntime implements RuntimeExtensionInterface
 	public function link_filter(
 		string $label,
 		string $route,
-		array $params = []
+		array $params = [],
+		array $attr = []
 	)
 	{
         $out = '<a href="';
 		$out .= $this->url_generator->generate(
 			$route, array_merge($this->pp->ary(), $params), UrlGeneratorInterface::ABSOLUTE_PATH);
-		$out .= '">' . htmlspecialchars($label, ENT_QUOTES) . '</a>';
+		$out .= '"';
+
+		foreach ($attr as $name => $value)
+		{
+			$out .= ' ';
+			$out .= $name;
+			$out .= '="';
+			$out .= $value;
+			$out .= '"';
+		}
+
+		$out .= '>';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= '</a>';
 
 		return $out;
 	}

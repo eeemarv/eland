@@ -3,7 +3,6 @@
 namespace App\Controller\RegisterForm;
 
 use App\Queue\MailQueue;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\CaptchaService;
@@ -41,7 +40,6 @@ class RegisterFormController extends AbstractController
         LoggerInterface $logger,
         MailQueue $mail_queue,
         MenuService $menu_service,
-        HeadingRender $heading_render,
         FormTokenService $form_token_service,
         DataTokenService $data_token_service,
         CaptchaService $captcha_service,
@@ -157,9 +155,6 @@ class RegisterFormController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $heading_render->add('Inschrijven');
-        $heading_render->fa('check-square-o');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -258,7 +253,7 @@ class RegisterFormController extends AbstractController
 
         $menu_service->set('register_form');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('register_form/register_form.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

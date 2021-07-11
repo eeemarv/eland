@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\CaptchaService;
 use App\Service\ConfigService;
@@ -44,7 +43,6 @@ class ContactFormController extends AbstractController
         CaptchaService $captcha_service,
         DataTokenService $data_token_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         PageParamsService $pp,
         MailQueue $mail_queue
     ):Response
@@ -155,9 +153,6 @@ class ContactFormController extends AbstractController
             $form_disabled = true;
         }
 
-        $heading_render->add('Contact');
-        $heading_render->fa('comment-o');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -207,7 +202,7 @@ class ContactFormController extends AbstractController
 
         $menu_service->set('contact_form');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('contact_form/contact_form.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

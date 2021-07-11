@@ -1,0 +1,19 @@
+{%- extends 'register_form/base/register_form_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'register_form_confirm_fail.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block content_top -%}
+{%- endblock -%}
+
+{%- block content -%}
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            {{- 'btn.try_again'|trans|link('register_form', {}, {'class': 'btn btn-default'})|raw -}}
+        </div>
+    </div>
+{%- endblock content -%}
+
+{%- block content_bottom -%}
+{%- endblock -%}
