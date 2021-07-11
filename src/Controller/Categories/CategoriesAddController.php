@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -41,7 +40,6 @@ class CategoriesAddController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -94,9 +92,6 @@ class CategoriesAddController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $heading_render->add('Categorie toevoegen');
-        $heading_render->fa('clone');
-
         $out = '<p>De nieuwe categorie wordt aan het einde van de ';
         $out .= 'lijst toegevoegd en kan nadien verplaatst worden.</p>';
 
@@ -132,7 +127,7 @@ class CategoriesAddController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -43,7 +42,6 @@ class CategoriesEditController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         PageParamsService $pp
     ):Response
     {
@@ -59,14 +57,16 @@ class CategoriesEditController extends AbstractController
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
         }
 
-        $name = $db->fetchOne('select name
+        $category = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.categories
             where id = ?', [$id], [\PDO::PARAM_INT]);
 
-        if ($name === false)
+        if ($category === false)
         {
             throw new NotFoundException('Category with id ' . $id . ' not found.');
         }
+
+        $name = $category['name'];
 
         if ($request->isMethod('POST'))
         {
@@ -101,10 +101,6 @@ class CategoriesEditController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $heading_render->add('Naam van categorie aanpassen : ');
-        $heading_render->add($name);
-        $heading_render->fa('clone');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -138,8 +134,9 @@ class CategoriesEditController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_edit.html.twig', [
             'content'   => $out,
+            'category'  => $category,
             'schema'    => $pp->schema(),
         ]);
     }

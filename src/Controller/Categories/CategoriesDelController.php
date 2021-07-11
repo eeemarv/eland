@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -44,8 +43,7 @@ class CategoriesDelController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        HeadingRender $heading_render
+        PageParamsService $pp
     ):Response
     {
         $errors = [];
@@ -113,10 +111,6 @@ class CategoriesDelController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $heading_render->add('Categorie verwijderen : ');
-        $heading_render->add($name);
-        $heading_render->fa('clone');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -137,8 +131,9 @@ class CategoriesDelController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_del.html.twig', [
             'content'   => $out,
+            'category'  => $category,
             'schema'    => $pp->schema(),
         ]);
     }

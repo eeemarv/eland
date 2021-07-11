@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
-use App\Render\HeadingRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -47,8 +46,7 @@ class CategoriesController extends AbstractController
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
         PageParamsService $pp,
-        VarRouteService $vr,
-        HeadingRender $heading_render
+        VarRouteService $vr
     ):Response
     {
         $errors = [];
@@ -216,9 +214,6 @@ class CategoriesController extends AbstractController
         $btn_top_render->add('categories_add',
             $pp->ary(), [], 'Categorie toevoegen');
 
-        $heading_render->add('Categorieën');
-        $heading_render->fa('clone');
-
         $out = '<p><ul>';
         $out .= '<li>Versleep categorieën om plaats en volgorde te veranderen..</li>';
         $out .= '<li>Wijzigingen worden enkel opgeslagen na het klikken van de "Opslaan" knop onderaan.</li>';
@@ -319,7 +314,7 @@ class CategoriesController extends AbstractController
 
         $menu_service->set('categories');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('categories/categories_list.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

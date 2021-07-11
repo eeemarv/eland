@@ -1,0 +1,11 @@
+{%- extends 'categories/base/categories_base.html.twig' -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- encore_entry_script_tags('sortable') -}}
+    {{- encore_entry_script_tags('categories') -}}
+    {{- parent() -}}
+{%- endblock js -%}
