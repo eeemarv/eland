@@ -65,7 +65,9 @@ class UsersMapController extends AbstractController
         $params = ['status' => $status];
 
         $status_def_ary = UsersListController::get_status_def_ary(
-            $config_service, $pp
+            $config_service,
+            $item_access_service,
+            $pp
         );
 
         $sql = [
