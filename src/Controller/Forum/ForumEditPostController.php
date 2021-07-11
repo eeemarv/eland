@@ -6,7 +6,6 @@ use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -45,7 +44,6 @@ class ForumEditPostController extends AbstractController
         AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -137,10 +135,6 @@ class ForumEditPostController extends AbstractController
         }
 
         $assets_service->add(['summernote', 'summernote_forum_post.js']);
-
-        $heading_render->add('Reactie aanpassen');
-
-        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';

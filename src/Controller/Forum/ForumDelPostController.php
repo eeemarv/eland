@@ -2,7 +2,6 @@
 
 namespace App\Controller\Forum;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -40,7 +39,6 @@ class ForumDelPostController extends AbstractController
         int $id,
         Db $db,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         AlertService $alert_service,
@@ -105,10 +103,6 @@ class ForumDelPostController extends AbstractController
                     ['id' => $forum_post['topic_id']]);
             }
         }
-
-        $heading_render->add('Reactie verwijderen?');
-
-        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

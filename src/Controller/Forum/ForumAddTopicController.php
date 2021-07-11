@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -42,7 +41,6 @@ class ForumAddTopicController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         AssetsService $assets_service,
         ItemAccessService $item_access_service,
         SessionUserService $su,
@@ -121,9 +119,6 @@ class ForumAddTopicController extends AbstractController
         }
 
         $assets_service->add(['summernote', 'summernote_forum_post.js']);
-
-        $heading_render->add('Nieuw forum onderwerp');
-        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';

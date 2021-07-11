@@ -2,7 +2,6 @@
 
 namespace App\Controller\Forum;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -40,7 +39,6 @@ class ForumDelTopicController extends AbstractController
         int $id,
         Db $db,
         LinkRender $link_render,
-        HeadingRender $heading_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         AlertService $alert_service,
@@ -91,15 +89,6 @@ class ForumDelTopicController extends AbstractController
             order by created_at asc
             limit 1',
             [$id], [\PDO::PARAM_INT]);
-
-        $heading_render->add('Forum onderwerp ');
-        $heading_render->add_raw($link_render->link_no_attr('forum_topic', $pp->ary(),
-            ['id' => $id], $forum_topic['subject']));
-        $heading_render->add(' verwijderen?');
-
-        $heading_render->add_sub_raw('<p class="text-danger">Alle reacties worden verwijderd.</p>');
-
-        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

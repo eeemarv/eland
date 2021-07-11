@@ -5,7 +5,6 @@ namespace App\Controller\Forum;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -43,7 +42,6 @@ class ForumListController extends AbstractController
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -84,9 +82,6 @@ class ForumListController extends AbstractController
         $show_access = (!$pp->is_guest()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
-
-        $heading_render->add('Forum');
-        $heading_render->fa('comments-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

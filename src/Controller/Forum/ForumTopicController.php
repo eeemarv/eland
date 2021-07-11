@@ -6,7 +6,6 @@ use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -54,7 +53,6 @@ class ForumTopicController extends AbstractController
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -168,9 +166,6 @@ class ForumTopicController extends AbstractController
             [], 'Forum onderwerpen', 'comments');
 
         $assets_service->add(['summernote', 'summernote_forum_post.js']);
-
-        $heading_render->add($forum_topic['subject']);
-        $heading_render->fa('comments-o');
 
         $out = '';
 
