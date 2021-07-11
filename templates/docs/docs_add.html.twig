@@ -1,0 +1,14 @@
+{%- extends 'docs/base/docs_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'docs_add.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+{%- endblock js -%}

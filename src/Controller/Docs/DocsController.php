@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
@@ -40,7 +39,6 @@ class DocsController extends AbstractController
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         ConfigService $config_service,
@@ -95,9 +93,6 @@ class DocsController extends AbstractController
 
             $btn_nav_render->csv();
         }
-
-        $heading_render->add('Documenten');
-        $heading_render->fa('files-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -260,7 +255,7 @@ class DocsController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

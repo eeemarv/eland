@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -43,7 +42,6 @@ class DocsAddController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         S3Service $s3_service,
@@ -173,9 +171,6 @@ class DocsAddController extends AbstractController
             $map_name = $map_name ?: '';
         }
 
-        $heading_render->add('Nieuw document opladen');
-        $heading_render->fa('files-o');
-
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
 
@@ -250,7 +245,7 @@ class DocsAddController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

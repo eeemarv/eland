@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -43,8 +42,7 @@ class DocsMapEditController extends AbstractController
         TypeaheadService $typeahead_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
-        PageParamsService $pp,
-        HeadingRender $heading_render
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('docs.enabled', $pp->schema()))
@@ -56,13 +54,13 @@ class DocsMapEditController extends AbstractController
 
         $name = trim($request->request->get('name', ''));
 
-        $map = $db->fetchAssociative('select *
+        $doc_map = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.doc_maps
             where id = ?', [$id], [\PDO::PARAM_INT]);
 
-        if (!$map)
+        if (!$doc_map)
         {
-            throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
+            throw new NotFoundHttpException('Documents map with id ' . $id . ' not found.');
         }
 
         if ($request->isMethod('POST'))
@@ -113,11 +111,7 @@ class DocsMapEditController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $name = $map['name'];
-
-        $heading_render->add('Map aanpassen: ');
-        $heading_render->add_raw($link_render->link_no_attr('docs_map', $pp->ary(),
-            ['id' => $id], $name));
+        $name = $doc_map['name'];
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
@@ -173,8 +167,9 @@ class DocsMapEditController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_map_edit.html.twig', [
             'content'   => $out,
+            'doc_map'   => $doc_map,
             'schema'    => $pp->schema(),
         ]);
     }

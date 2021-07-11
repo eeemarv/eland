@@ -5,7 +5,6 @@ namespace App\Controller\Docs;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -41,7 +40,6 @@ class DocsEditController extends AbstractController
         Db $db,
         ConfigService $config_service,
         AlertService $alert_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
@@ -181,8 +179,6 @@ class DocsEditController extends AbstractController
             $access = $doc['access'];
         }
 
-        $heading_render->add('Document aanpassen');
-
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';
 
@@ -264,8 +260,9 @@ class DocsEditController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_edit.html.twig', [
             'content'   => $out,
+            'doc'       => $doc,
             'schema'    => $pp->schema(),
         ]);
     }

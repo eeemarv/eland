@@ -2,7 +2,6 @@
 
 namespace App\Controller\Docs;
 
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -43,7 +42,6 @@ class DocsDelController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         LinkRender $link_render,
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
@@ -119,8 +117,6 @@ class DocsDelController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $heading_render->add('Document verwijderen?');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
         $out .= '<form method="post">';
@@ -154,8 +150,9 @@ class DocsDelController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_del.html.twig', [
             'content'   => $out,
+            'doc'       => $doc,
             'schema'    => $pp->schema(),
         ]);
     }

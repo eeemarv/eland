@@ -1,0 +1,36 @@
+{%- embed 'embed/table.html.twig' -%}
+{%- import 'macro/table.html.twig' as t -%}
+{%- import 'macro/btn_link.html.twig' as bl -%}
+{%- import 'macro/link.html.twig' as l -%}
+
+{%- block thead -%}
+    {{- t.th('label.name', {'data-sort-initial': 'true'}) -}}
+    {{- t.th('label.time', {'data-hide': 'pnone, tablet'}) -}}
+    {%- if show_access -%}
+        {{- t.th('access.visible_for', {'data-hide': 'phone, tablet'}) -}}
+    {%- endif -%}
+    {%- if pp_role('admin') -%}
+        {{- t.th('label.actions',
+            {'data-hide': 'phone, tablet', 'data-sort-ignore': 'true'}) -}}
+    {%- endif -%}
+{%- endblock thead -%}
+{%- block tbody -%}
+    {%- for doc in docs -%}
+        <tr>
+            <td>
+               {{- l.s3_link(doc.filename, doc.name) -}}
+            </td>
+            {{- t.td_date_format(doc.created_at, 'min', schema) -}}
+            {%- if show_access -%}
+                {{- t.td_access(doc.access) -}}
+            {%- endif -%}
+            {%- if pp_role('admin') -%}
+                <td>
+                    {{- bl.edit('docs_edit', {'id': doc.id}) -}}
+                    {{- bl.del('docs_del', {'id': doc.id}) -}}
+                </td>
+            {%- endif -%}
+        </tr>
+    {%- endfor -%}
+{%- endblock tbody -%}
+{%- endembed -%}

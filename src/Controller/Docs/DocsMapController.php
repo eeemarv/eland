@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Render\HeadingRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
@@ -42,7 +41,6 @@ class DocsMapController extends AbstractController
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
         MenuService $menu_service,
@@ -60,15 +58,17 @@ class DocsMapController extends AbstractController
 
         $docs = [];
 
-        $name = $db->fetchOne('select name
+        $doc_map = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.doc_maps
             where id = ?',
             [$id], [\PDO::PARAM_INT]);
 
-        if (!$name)
+        if (!$doc_map)
         {
-            throw new NotFoundHttpException('Documenten map met id ' . $id . ' niet gevonden.');
+            throw new NotFoundHttpException('Documents map with id ' . $id . ' not found.');
         }
+
+        $name = $doc_map['name'];
 
         $stmt = $db->executeQuery('select *
             from ' . $pp->schema() . '.docs
@@ -124,10 +124,6 @@ class DocsMapController extends AbstractController
 
         $btn_nav_render->nav_list('docs', $pp->ary(),
             [], 'Overzicht', 'files-o');
-
-        $heading_render->add('Documenten map "');
-        $heading_render->add($name . '"');
-        $heading_render->fa('files-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -234,8 +230,9 @@ class DocsMapController extends AbstractController
 
         $menu_service->set('docs');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('docs/docs_map.html.twig', [
             'content'   => $out,
+            'doc_map'   => $doc_map,
             'schema'    => $pp->schema(),
         ]);
     }
