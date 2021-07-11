@@ -1,0 +1,15 @@
+{%- extends 'news/base/news_base.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'news_del.title'|trans({
+        '%subject%': news_item.subject
+    }) -}}
+{%- endblock -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

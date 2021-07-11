@@ -5,7 +5,6 @@ namespace App\Controller\News;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -44,7 +43,6 @@ class NewsShowController extends AbstractController
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -112,9 +110,6 @@ class NewsShowController extends AbstractController
         $btn_nav_render->nav_list($vr->get('news'), $pp->ary(),
             [], 'Lijst', 'calendar-o');
 
-        $heading_render->add($news_item['subject']);
-        $heading_render->fa('calendar-o');
-
         $out = NewsExtendedController::render_news_item(
             $news_item,
             $show_access,
@@ -129,8 +124,9 @@ class NewsShowController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/news_show.html.twig', [
             'content'   => $out,
+            'news_item' => $news_item,
             'schema'    => $pp->schema(),
         ]);
     }

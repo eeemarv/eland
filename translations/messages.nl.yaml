@@ -741,7 +741,7 @@ news_edit:
   title: Nieuwsbericht "%subject%" aanpassen
 
 news_del:
-  title: Nieuwsbericht verwijderen?
+  title: Nieuwsbericht "%subject%" verwijderen?
 
 news_show:
   title: >-

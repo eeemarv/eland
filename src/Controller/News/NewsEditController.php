@@ -6,7 +6,6 @@ use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -45,7 +44,6 @@ class NewsEditController extends AbstractController
         AssetsService $assets_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
-        HeadingRender $heading_render,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MenuService $menu_service,
@@ -60,11 +58,11 @@ class NewsEditController extends AbstractController
 
         $errors = [];
 
-        $news = $db->fetchAssociative('select *
+        $news_item = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.news
             where id = ?', [$id]);
 
-        if (!$news)
+        if (!$news_item)
         {
             throw new NotFoundHttpException('Nieuwsbericht niet gevonden.');
         }
@@ -116,7 +114,7 @@ class NewsEditController extends AbstractController
 
             if (!count($errors))
             {
-                $news = [
+                $news_item = [
                     'subject'   => $subject,
                     'content'   => $content,
                     'location'  => $location,
@@ -125,14 +123,14 @@ class NewsEditController extends AbstractController
 
                 if ($event_at)
                 {
-                    $news['event_at'] = $event_at;
+                    $news_item['event_at'] = $event_at;
                 }
                 else
                 {
-                    $news['event_at'] = null;
+                    $news_item['event_at'] = null;
                 }
 
-                $db->update($pp->schema() . '.news', $news, ['id' => $id]);
+                $db->update($pp->schema() . '.news', $news_item, ['id' => $id]);
                 $alert_service->success('Nieuwsbericht aangepast.');
                 $link_render->redirect('news_show', $pp->ary(), ['id' => $id]);
             }
@@ -141,11 +139,11 @@ class NewsEditController extends AbstractController
         }
         else
         {
-            $subject = $news['subject'];
-            $event_at = $news['event_at'];
-            $location = $news['location'];
-            $content = $news['content'];
-            $access = $news['access'];
+            $subject = $news_item['subject'];
+            $event_at = $news_item['event_at'];
+            $location = $news_item['location'];
+            $content = $news_item['content'];
+            $access = $news_item['access'];
         }
 
         $assets_service->add([
@@ -153,9 +151,6 @@ class NewsEditController extends AbstractController
             'summernote',
             'summernote_forum_post.js',
         ]);
-
-        $heading_render->add('Nieuwsbericht aanpassen');
-        $heading_render->fa('calendar-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -244,8 +239,9 @@ class NewsEditController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/news_edit.html.twig', [
             'content'   => $out,
+            'news_item' => $news_item,
             'schema'    => $pp->schema(),
         ]);
     }

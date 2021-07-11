@@ -6,7 +6,6 @@ use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
@@ -42,7 +41,6 @@ class NewsAddController extends AbstractController
         Db $db,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        HeadingRender $heading_render,
         MenuService $menu_service,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -158,9 +156,6 @@ class NewsAddController extends AbstractController
             'summernote_forum_post.js',
         ]);
 
-        $heading_render->add('Nieuwsbericht toevoegen');
-        $heading_render->fa('calendar-o');
-
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
@@ -242,7 +237,7 @@ class NewsAddController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/news_add.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);

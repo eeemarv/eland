@@ -5,7 +5,6 @@ namespace App\Controller\News;
 use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
-use App\Render\HeadingRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -38,7 +37,6 @@ class NewsExtendedController extends AbstractController
         Db $db,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        HeadingRender $heading_render,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         AccountRender $account_render,
@@ -60,9 +58,8 @@ class NewsExtendedController extends AbstractController
             $pp
         );
 
-        NewsListController::set_heading_and_btns(
+        NewsListController::set_btns(
             false,
-            $heading_render,
             $btn_top_render,
             $btn_nav_render,
             $pp
@@ -76,7 +73,7 @@ class NewsExtendedController extends AbstractController
         {
             $content = NewsListController::no_news($menu_service, $pp);
 
-            return $this->render('base/navbar.html.twig', [
+            return $this->render('news/news_extended.html.twig', [
                 'content'   => $content,
                 'schema'    => $pp->schema(),
             ]);
@@ -101,7 +98,7 @@ class NewsExtendedController extends AbstractController
 
         $menu_service->set('news');
 
-        return $this->render('base/navbar.html.twig', [
+        return $this->render('news/news_extended.html.twig', [
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
