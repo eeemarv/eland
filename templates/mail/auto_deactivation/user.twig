@@ -1,0 +1,45 @@
+{% extends 'mail/base/user.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+{{- 'auto_deactivation.subject'|trans({
+    '%system_name%': config_str('system.name', schema)
+}) -}}
+{%- endblock subject_line %}
+
+{%- block bgcolor_system_name -%}009900{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}auto_deactivation.sub_header{%- endblock -%}
+
+{% block html_content -%}
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'auto_deactivation.message'|trans({
+        '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
+        '%link_close%': '</a>',
+        '%system_name%': config_str('system.name', schema)
+    })|raw
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+{%- include 'mail/include/spacer20.html.twig' -%}
+{%- include 'mail/include/bgspacer40.html.twig' -%}
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+{{ 'auto_deactivation.message'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config_str('system.name', schema)
+}) }}
+
+{{ context_url('home', mpp_anon_ary(schema), {})|raw }}
+
+{% endautoescape %}
+{% endblock text_content %}
+
+{%- block html_account_info -%}{%- endblock -%}
+{% block text_account_info %}{% endblock %}
