@@ -184,7 +184,8 @@ class MenuCnst
         'messages_cleanup'      => 'messages',
         'categories'            => 'messages',
         'users_modules'         => 'users',
-        'status'                => 'users',
+        'users_username'        => 'users',
+        'users_full_name'       => 'users',
         'contacts'              => 'users',
         'contact_types'         => 'users',
         'users_periodic_mail'   => 'users',
@@ -225,6 +226,17 @@ class MenuCnst
                 'fa'        => 'cog',
                 'label'     => 'Submodules en velden',
                 'route'     => 'users_modules',
+            ],
+            'users_username'   => [
+                'fa'        => 'user',
+                'label'     => 'Gebruikersnaam',
+                'route'     => 'users_username',
+            ],
+            'users_full_name'   => [
+                'fa'        => 'user',
+                'label'     => 'Volledige naam',
+                'route'     => 'users_full_name',
+                'config_en' => 'users.fields.full_name.enabled',
             ],
             'contacts'			=> [
                 'fa'        => 'map-marker',

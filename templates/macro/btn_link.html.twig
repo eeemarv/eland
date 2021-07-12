@@ -1,0 +1,52 @@
+{%- macro cancel(route, params, attr) -%}
+    {%- import _self as b -%}
+    {{- b.btn_link(route, params,
+        'btn btn-lg btn-default border border-secondary-li',
+        'btn.cancel', attr) -}}
+{%- endmacro cancel -%}
+
+{%- macro primary(route, params, label, attr) -%}
+    {%- import _self as b -%}
+    {{- b.btn_link(route, params,
+        'btn btn-lg btn-primary text-white',
+        label, attr) -}}
+{%- endmacro primary -%}
+
+{%- macro info(route, params, label, attr) -%}
+    {%- import _self as b -%}
+    {{- b.btn_link(route, params,
+        'btn btn-lg btn-info',
+        label, attr) -}}
+{%- endmacro info -%}
+
+{%- macro edit(route, params, attr) -%}
+    {%- import _self as b -%}
+    {{- b.btn_link_fa(route, params, 'btn btn-primary', 'btn.edit', 'pencil', attr) -}}
+{%- endmacro edit -%}
+
+{%- macro del(route, params, attr) -%}
+    {%- import _self as b -%}
+    {{- b.btn_link_fa(route, params, 'btn btn-danger', 'btn.delete', 'times', attr) -}}
+{%- endmacro del -%}
+
+{%- macro add(route, params, attr) -%}
+    {%- import _self as b -%}
+    {{- b.btn_link_fa(route, params, 'btn btn-success', 'btn.add', 'plus', attr) -}}
+{%- endmacro add -%}
+
+{%- macro btn_link(route, params, class, label, attr) -%}
+    {%- import 'macro/link.html.twig' as l %}
+    <a href="{{- l.pp_path(route, params) -}}" class="{{- class -}}"{%- for k, v in attr|default({}) %} {{ k }}="{{- v -}}"{%- endfor -%}>
+        {{- label|trans -}}
+    </a>&nbsp;
+{%- endmacro btn_link -%}
+
+{%- macro btn_link_fa(route, params, class, label, fa, attr) -%}
+    {%- import 'macro/link.html.twig' as l %}
+    <a href="{{- l.pp_path(route, params) -}}" class="{{- class -}}"{%- for k, v in attr|default({}) %} {{ k }}="{{- v -}}"{%- endfor -%}>
+        <i class="fa fa-{{- fa -}}"></i>&nbsp;
+        <span class="d-none d-lg-inline">
+            {{- label|trans -}}
+        </span>
+    </a>&nbsp;
+{%- endmacro btn_link_fa -%}

@@ -967,6 +967,12 @@ users_del:
     Contacten en Afbeeldingen van %name%
     worden verwijderd.
 
+users_full_name:
+  title: >-
+    Volledige naam configuratie
+  self_edit: >-
+    Gebruikers kunnen zelf hun volledige naam aanpassen
+
 users_image_del:
   title: >-
     Profielfoto/-afbeelding van %user% verwijderen?
@@ -997,3 +1003,9 @@ users_show:
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
     Gekoppeld interSysteem
+
+users_username:
+  title: >-
+    Gebruikersnaam configuratie
+  self_edit: >-
+    Gebruikers kunnen zelf hun gebruikersnaam aanpassen

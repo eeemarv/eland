@@ -1,4 +1,4 @@
-{%- extends 'users/base/users_base.html.twig' -%}
+{%- extends 'users/base/users_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
 {%- block heading_title -%}
@@ -9,12 +9,9 @@
     envelope-o
 {%- endblock heading_fa -%}
 
-{%- block content -%}
+{%- set cancel_route = 'users_periodic_mail' -%}
 
-<div class="panel panel-info">
-    <div class="panel-heading">
-
-    {{- form_start(form) -}}
+{%- block form_content -%}
 
     {{- form_row(form.days, {
         'label': 'Interval tot volgende overzichts e-mail',
@@ -70,16 +67,4 @@
             'data-block-select-options': '1'
         }
     }) -}}
-
-    {{- form_widget(form.submit, {
-        'label': 'Aanpassen',
-        'attr': {'class': 'btn-primary btn-lg'},
-        'translation_domain': false
-    }) -}}
-
-    <input type="hidden" name="form_token" value="{{ form_token }}">
-    {{- form_end(form) -}}
-
-    </div>
-</div>
-{%- endblock content -%}
+{%- endblock form_content -%}
