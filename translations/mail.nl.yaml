@@ -4,6 +4,7 @@ label:
   amount: Bedrag
   balance: Saldo
   date: Datum
+  dear_username: Beste %username%,
   description: Omschrijving
   destination: Bestemming
   email: E-mail
@@ -124,7 +125,7 @@ account_activation_admin:
     de gebruiker omdat geen E-mail adres werd ingesteld
     voor dit account.
 
-auto_deactivation:
+auto_deactivate:
   subject: >-
     Deactivatie van je Account bij %system_name%
   sub_header: >-
@@ -133,7 +134,7 @@ auto_deactivation:
     Je account bij %link_open%%system_name%%link_close%
     werd automatisch gedesactiveerd doordat het de status
     "uitstapper" had en het uitstappers-saldo bereikt werd.
-auto_deactivation_admin:
+auto_deactivate_admin:
   subject: >-
     Automatische deactivatie account %account_name%
   sub_header: >-

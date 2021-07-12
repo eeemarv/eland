@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
@@ -12,6 +13,8 @@ use App\Repository\AccountRepository;
 class AutoDeactivateService
 {
 	public function __construct(
+		protected Db $db,
+		protected AlertService $alert_service,
 		protected LoggerInterface $logger,
 		protected UserCacheService $user_cache_service,
 		protected AccountRepository $account_repository,
@@ -20,6 +23,8 @@ class AutoDeactivateService
 		protected MailAddrUserService $mail_addr_user_service,
 		protected ConfigService $config_service,
 		protected SessionUserService $su,
+		protected ThumbprintAccountsService $thumbprint_accounts_service,
+		protected SystemsService $systems_service,
 		protected AccountRender $account_render
 	)
 	{
@@ -30,10 +35,6 @@ class AutoDeactivateService
 		string $schema
 	):void
 	{
-		return; //
-
-		if (false)
-		{
 		if (!$this->config_service->get_bool('users.leaving.enabled', $schema))
 		{
 			return;
@@ -59,21 +60,26 @@ class AutoDeactivateService
 			return;
 		}
 
+		$system = $this->systems_service->get_system($schema);
+
 		$this->db->update($schema . '.users', ['status'	=> 0], ['id' => $user_id]);
 		$this->user_cache_service->clear($user_id, $schema);
-		}
+		$this->thumbprint_accounts_service->delete(['system' => $system], $schema);
 
 		$this->logger->info('Auto-deactivated: user ' .
 			$this->account_render->str($user_id, $schema),
 			['schema' => $schema]);
 
+		$to = $this->mail_addr_user_service->get($user_id, $schema);
+
 		$vars = [
-			'user_id'	=> $user_id,
+			'user_id'			=> $user_id,
+			'user_has_email'	=> count($to) > 0,
 		];
 
 		$this->mail_queue->queue([
 			'schema'	=> $schema,
-			'to' 		=> $this->mail_addr_user_service->get($user_id, $schema),
+			'to' 		=> $to,
 			'template'	=> 'auto_deactivate/user',
 			'vars'		=> $vars,
 		], 4000);
@@ -84,5 +90,22 @@ class AutoDeactivateService
 			'template'	=> 'auto_deactivate/admin',
 			'vars'		=> $vars,
 		], 4000);
+
+		if ($this->su->schema() === $schema)
+		{
+			if ($this->su->id() === $user_id)
+			{
+				$this->alert_service->warning('Je account heeft het
+					uitstappers-saldo bereikt en werd
+					automatisch gedeactiveerd.');
+			}
+			else
+			{
+				$this->alert_service->warning('Het account ' .
+					$this->account_render->str($user_id, $schema) .
+					' heeft het uitstappers-saldo bereikt en werd
+					automatisch gedesactiveerd.');
+			}
+		}
 	}
 }

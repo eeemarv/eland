@@ -1,0 +1,85 @@
+{% extends 'mail/base/no_reply_auto.twig' %}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject_line -%}
+{{- 'auto_deactivate.subject'|trans({
+    '%system_name%': config_str('system.name', schema)
+}) -}}
+{%- endblock subject_line %}
+
+{%- block bgcolor_system_name -%}009900{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}auto_deactivate.sub_header{%- endblock -%}
+
+{% block html_content -%}
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'label.dear_username'|trans({
+        '%username%': username(user_id, schema)
+    })
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': 'auto_deactivate.message'|trans({
+        '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
+        '%link_close%': '</a>',
+        '%system_name%': config_str('system.name', schema)
+    })|raw
+} -%}
+
+{%- set account_info -%}
+<table border="1" bgcolor="eeeeee" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td width="300" style="padding-left: 10px">
+            {{- 'label.account_code'|trans -}}
+        </td>
+        <td style="font-style: bold; padding-left: 10px">
+            {{- account_code(user_id, schema) -}}
+        </td>
+    </tr>
+    <tr>
+        <td width="300" style="padding-left: 10px">
+            {{- 'label.username'|trans -}}
+        </td>
+        <td style="font-style: bold; padding-left: 10px">
+            {{- username(user_id, schema) -}}
+        </td>
+    </tr>
+</table>
+{%- endset -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+
+{%- include 'mail/include/info_panel.html.twig' with {
+    'info': account_info|raw
+} -%}
+
+{%- include 'mail/include/spacer20.html.twig' -%}
+{%- include 'mail/include/bgspacer40.html.twig' -%}
+
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+
+{{ 'label.dear_username'|trans({
+    '%username%': username(user_id, schema)
+}) }}
+
+{{ 'auto_deactivate.message'|trans({
+    '%link_open%': '',
+    '%link_close%': '',
+    '%system_name%': config_str('system.name', schema)
+}) }}
+
+{{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema)|raw }}
+{{ 'label.username'|trans|raw }}: {{ username(user_id, schema)|raw }}
+
+{{ context_url('home', mpp_anon_ary(schema), {})|raw }}
+
+{% endautoescape %}
+{% endblock text_content %}

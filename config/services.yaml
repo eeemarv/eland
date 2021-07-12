@@ -14,7 +14,6 @@ parameters:
     assert.role_short.admin: 'a'
     assert.id: \d++
     assert.view: 'extended|list|map|tiles'
-    assert.config_tab: 'system-name|logo|currency|mail-addr|balance|periodic-mail|contact|register|users|news|system'
     assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
     assert.account_status.primary: 'active|inactive|im|ip|extern'
     assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'

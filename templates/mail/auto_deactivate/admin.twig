@@ -2,7 +2,7 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject_line -%}
-{{- 'auto_deactivation_admin.subject'|trans({
+{{- 'auto_deactivate_admin.subject'|trans({
     '%account_name%': account(user_id, schema)
 }) -}}
 {%- endblock subject_line %}
@@ -10,14 +10,14 @@
 {%- block bgcolor_system_name -%}000000{%- endblock -%}
 {%- block bgcolor -%}e8eeff{%- endblock -%}
 {%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
-{%- block sub_header -%}auto_deactivation_admin.sub_header{%- endblock -%}
+{%- block sub_header -%}auto_deactivate_admin.sub_header{%- endblock -%}
 
 {%- block html_content -%}
 
     {%- include 'mail/include/spacer20.html.twig' -%}
 
     {%- include 'mail/include/info_panel.html.twig' with {
-            'info': 'auto_deactivation_admin.message'|trans({
+            'info': 'auto_deactivate_admin.message'|trans({
             '%link_open%': context_url_open('users_show', mpp_admin_ary(schema), {'id': user_id}),
             '%link_close%': '</a>',
             '%account_name%': account(user_id, schema),
@@ -26,13 +26,13 @@
 
     {%- include 'mail/include/spacer20.html.twig' -%}
 
-    {%- if user_email -%}
+    {%- if user_has_email -%}
         {%- include 'mail/include/info_panel.html.twig' with {
-            'info': 'auto_deactivation_admin.email_sent'|trans
+            'info': 'auto_deactivate_admin.email_sent'|trans
         } -%}
     {%- else -%}
         {%- include 'mail/include/info_panel.html.twig' with {
-            'info': 'auto_deactivation_admin.no_email_sent'|trans
+            'info': 'auto_deactivate_admin.no_email_sent'|trans
         } -%}
     {%- endif -%}
 
@@ -42,7 +42,7 @@
 
 {% block text_content %}
 {% autoescape false %}
-{{ 'auto_deactivation_admin.message'|trans({
+{{ 'auto_deactivate_admin.message'|trans({
     '%link_open%': '',
     '%link_close%': '',
     '%account_name%': account(user_id, schema),
@@ -50,10 +50,10 @@
 
 {{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) }}
 
-{% if user_email %}
-{{ 'auto_deactivation_admin.email_sent'|trans }}
+{% if user_has_email %}
+{{ 'auto_deactivate_admin.email_sent'|trans }}
 {% else %}
-{{ 'auto_deactivation_admin.no_email_sent'|trans }}
+{{ 'auto_deactivate_admin.no_email_sent'|trans }}
 {% endif %}
 {% endautoescape %}
 {% endblock text_content %}
