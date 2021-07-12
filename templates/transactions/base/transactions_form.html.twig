@@ -1,4 +1,5 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
+
 {%- if form is defined -%}
     {%- form_theme form 'form_3.html.twig' -%}
 {%- endif -%}
@@ -14,11 +15,20 @@
     {%- block form_content -%}
     {%- endblock -%}
 
-    {{- form_widget(form.submit, {
-        'label': 'Aanpassen',
-        'attr': {'class': 'btn-primary btn-lg'},
-        'translation_domain': false
-    }) -}}
+    {%- block cancel_btn -%}
+        <a href="{{- path(app.request.attributes.get('_route'), pp_ary()) -}}" class="btn btn-lg btn-default">
+            {{- 'btn.cancel'|trans -}}
+        </a>
+        &nbsp;
+    {%- endblock -%}
+
+    {%- block submit_btn -%}
+        {{- form_widget(form.submit, {
+            'label': 'Aanpassen',
+            'attr': {'class': 'btn-primary btn-lg'},
+            'translation_domain': false
+        }) -}}
+    {%- endblock submit_btn -%}
 
     <input type="hidden" name="form_token" value="{{ form_token }}">
     </div>

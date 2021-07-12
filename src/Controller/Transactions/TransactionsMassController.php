@@ -12,6 +12,7 @@ use App\Service\AssetsService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\MenuService;
@@ -101,6 +102,7 @@ class TransactionsMassController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
+        ItemAccessService $item_access_service,
         ConfigService $config_service,
         MenuService $menu_service,
         LinkRender $link_render,
@@ -813,7 +815,7 @@ class TransactionsMassController extends AbstractController
         $out .= '">';
 
         $out .= '</div>';
-        $out .= '<p>Gebruik dit voor een "Eén naar veel" transactie.';
+        $out .= '<p>Vul dit enkel in bij een "Eén naar veel" transactie.';
         $out .= 'Alle ingevulde bedragen hieronder ';
         $out .= 'worden van dit Account gehaald.</p>';
         $out .= '</div>';
@@ -964,7 +966,7 @@ class TransactionsMassController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead-source="from_code">';
         $out .= '</div>';
-        $out .= '<p>Gebruik dit voor een "Veel naar één" transactie. ';
+        $out .= '<p>Vul dit enkel in bij een "Veel naar één" transactie. ';
         $out .= 'Bijvoorbeeld, een ledenbijdrage. ';
         $out .= 'Alle ingevulde bedragen hierboven ';
         $out .= 'gaan naar dit Account.</p>';

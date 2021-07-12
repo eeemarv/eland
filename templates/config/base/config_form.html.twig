@@ -48,6 +48,13 @@
     {%- block form_content -%}
     {%- endblock -%}
 
+    {%- block cancel_btn -%}
+        <a href="{{- path(app.request.attributes.get('_route'), pp_ary()) -}}" class="btn btn-lg btn-default">
+            {{- 'btn.cancel'|trans -}}
+        </a>
+        &nbsp;
+    {%- endblock -%}
+
     {%- block submit_btn -%}
         {{- form_widget(form.submit, {
             'label': 'btn.edit',

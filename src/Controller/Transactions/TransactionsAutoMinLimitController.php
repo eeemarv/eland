@@ -157,6 +157,10 @@ class TransactionsAutoMinLimitController extends AbstractController
         $out .= 'Account Codes gescheiden door comma\'s</p>';
         $out .= '</div>';
 
+        $out .= $link_render->btn_cancel('transactions_autominlimit', $pp->ary(), []);
+
+        $out .= '&nbsp;';
+
         $out .= '<input type="submit" value="Aanpassen" name="zend" class="btn btn-primary btn-lg">';
         $out .= $form_token_service->get_hidden_input();
 
