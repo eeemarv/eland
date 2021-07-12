@@ -1,57 +1,39 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
+{%- if form is defined -%}
+    {%- form_theme form 'form_3.html.twig' -%}
+{%- endif -%}
+
 {%- block content -%}
+    <div class="panel panel-info">
+        <div class="panel-heading">
 
-{%- block before_form -%}{%- endblock -%}
+        {{- form_start(form) -}}
+        <div class="custom-checkbox">
 
-{%- block form -%}
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- block form_a -%}
-            {{- form_row(form.subject, {
-                'label': 'label.subject'
+        {%- block form_content -%}
+        {%- endblock -%}
+
+        {%- block cancel_btn -%}
+            <a href="{{- path(cancel_route, pp_ary()) -}}" class="btn btn-lg btn-default">
+                {{- 'btn.cancel'|trans -}}
+            </a>
+            &nbsp;
+        {%- endblock -%}
+
+        {%- block submit_btn -%}
+            {{- form_widget(form.submit, {
+                'label': 'btn.edit',
+                'attr': {'class': 'btn-primary btn-lg'},
             }) -}}
-        {%- endblock form_a -%}
+        {%- endblock submit_btn -%}
 
-        {%- block form_b -%}
-            {{- form_row(form.event_at, {
-                'label': 'label.event_date',
-                'addon_fa': 'calendar',
-                'required': false
-            }) -}}
-        {%- endblock form_b -%}
+        <input type="hidden" name="form_token" value="{{ form_token }}">
+        </div>
+        {{- form_end(form) -}}
 
-        {%- block form_c -%}
-            {{- form_row(form.location, {
-                'label': 'label.location',
-                'addon_fa': 'map-marker',
-                'required': false
-            }) -}}
-        {%- endblock form_c -%}
-
-        {%- block form_d -%}
-            {{- form_row(form.content, {
-                'label': 'label.message',
-                'attr': {
-                    'rows': 5,
-                    'minlength': 10,
-                    'maxlength': 100000
-                }
-            }) -}}
-        {%- endblock form_d -%}
-
-        {%- block form_access -%}
-            {%- if form.access is defined -%}
-                {{- form_row(form.access, {
-                    'label': 'access.visible_for',
-                    'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
-                }) -}}
-            {%- endif -%}
-        {%- endblock form_access -%}
-    {%- endembed -%}
-{%- endblock form -%}
-
-{%- block after_form -%}{%- endblock -%}
-
+        </div>
+    </div>
 {%- endblock content -%}
 
 {%- block css -%}

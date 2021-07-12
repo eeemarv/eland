@@ -750,6 +750,11 @@ news_show:
   title: >-
     %subject%
 
+news_sort:
+  title: Sortering nieuwsberichten.
+  sort_asc: >-
+    Sorteer nieuwsberichten chronologisch op agendadatum.
+
 password_reset:
   title: Paswoord vergeten
   email_explain: >-

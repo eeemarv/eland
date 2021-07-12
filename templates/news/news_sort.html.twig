@@ -1,0 +1,19 @@
+{%- extends 'news/base/news_form.html.twig' -%}
+{%- form_theme form 'form_3.html.twig' -%}
+
+{%- block heading_fa -%}
+    sort
+{%- endblock heading_fa -%}
+
+{%- block heading_title -%}
+    {{- 'news_sort.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- set cancel_route = 'news_sort' -%}
+
+{%- block form_content -%}
+    {{- form_row(form.sort_asc, {
+        'label': 'news_sort.sort_asc',
+        'required': false
+    }) -}}
+{%- endblock form_content -%}

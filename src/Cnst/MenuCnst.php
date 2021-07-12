@@ -199,6 +199,7 @@ class MenuCnst
         'transactions_modules'          => 'transactions',
         'transactions_autominlimit'     => 'transactions',
         'transactions_mass'             => 'transactions',
+        'news_sort'                     => 'news',
     ];
 
     const LOCAL_ADMIN = [
@@ -313,6 +314,13 @@ class MenuCnst
                 'label'     => 'Massa-Transactie',
                 'route'     => 'transactions_mass',
                 'config_en' => 'transactions.mass.enabled',
+            ],
+        ],
+        'news'  => [
+            'news_sort'   => [
+                'fa'        => 'sort',
+                'label'     => 'Sortering',
+                'route'     => 'news_sort',
             ],
         ],
     ];
