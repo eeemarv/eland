@@ -45,8 +45,12 @@ class TransactionService
 		$this->account_repository->update_balance($from_id, -$amount, $schema);
 		$this->db->commit();
 
-		$this->autominlimit_service->init($schema)
-			->process($from_id, $to_id, $amount);
+		$this->autominlimit_service->process(
+			$from_id,
+			$to_id,
+			$amount,
+			$schema
+		);
 
 		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$amount . ' ' .

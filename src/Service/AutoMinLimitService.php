@@ -10,14 +10,6 @@ use App\Repository\AccountRepository;
 
 class AutoMinLimitService
 {
-	protected array $exclude_to = [];
-	protected array $exclude_from = [];
-	protected bool $enabled = false;
-	protected bool $limits_enabled = false;
-	protected ?int $global_min_limit;
-	protected ?int $percentage;
-	protected string $schema;
-
 	public function __construct(
 		protected LoggerInterface $logger,
 		protected UserCacheService $user_cache_service,
@@ -29,153 +21,145 @@ class AutoMinLimitService
 	{
 	}
 
-	public function init(string $schema):self
+	public function process(
+		int $from_id,
+		int $to_id,
+		int $amount,
+		string $schema
+	):void
 	{
-		$this->schema = $schema;
+		if (!$this->config_service->get_bool('accounts.limits.auto_min.enabled', $schema))
+		{
+			$this->logger->debug('autominlimit not enabled',
+				['schema' => $schema]);
+			return;
+		}
 
-		$this->global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $this->schema);
-		$this->enabled = $this->config_service->get_bool('accounts.limits.auto_min.enabled', $this->schema);
-		$this->limits_enabled = $this->config_service->get_bool('accounts.limits.enabled', $this->schema);
-		$this->percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $this->schema);
-		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $this->schema);
-		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $this->schema);
+		if (!$this->config_service->get_bool('accounts.limits.enabled', $schema))
+		{
+			$this->logger->debug('no autominlimit: limits not enabled',
+				['schema' => $schema]);
+			return;
+		}
+
+		$global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $schema);
+		$percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $schema);
+		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $schema);
+		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $schema);
 
 		$exclude_to_ary = explode(',', $exclude_to_str);
 		$exclude_from_ary = explode(',', $exclude_from_str);
 
-		$this->exclude_to = [];
-		$this->exclude_from = [];
+		$exclude_to = [];
+		$exclude_from = [];
 
 		foreach($exclude_to_ary as $ex_to)
 		{
-			$this->exclude_to[trim(strtolower($ex_to))] = true;
+			$exclude_to[trim(strtolower($ex_to))] = true;
 		}
 
 		foreach($exclude_from_ary as $ex_from)
 		{
-			$this->exclude_from[trim(strtolower($ex_from))] = true;
+			$exclude_from[trim(strtolower($ex_from))] = true;
 		}
 
-		return $this;
-	}
-
-	public function process(
-		int $from_id,
-		int $to_id,
-		int $amount
-	):void
-	{
-		if (!$this->limits_enabled)
-		{
-			$this->logger->debug('limits (autominlimit) not enabled',
-				['schema' => $this->schema]);
-			return;
-		}
-
-		if (!$this->enabled)
-		{
-			$this->logger->debug('autominlimit not enabled',
-				['schema' => $this->schema]);
-			return;
-		}
-
-		if (!isset($this->percentage))
+		if (!isset($percentage))
 		{
 			$this->logger->debug('autominlimit percentage not set',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 			return;
 		}
 
-		if ($this->percentage < 1)
+		if ($percentage < 1)
 		{
 			$this->logger->debug('autominlimit percentage zero or negative',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 			return;
 		}
 
-		if (!isset($this->percentage) || !$this->percentage)
+		if (!isset($percentage) || !$percentage)
 		{
 			$this->logger->debug('autominlimit percentage is not set or zero.',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 			return;
 		}
 
-		$to_user = $this->user_cache_service->get($to_id, $this->schema);
+		$to_user = $this->user_cache_service->get($to_id, $schema);
 
 		if (!$to_user)
 		{
 			$this->logger->debug('autominlimit: to user not found',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 			return;
 		}
 
 		if ($to_user['status'] != 1)
 		{
 			$this->logger->debug('autominlimit: to user not active. ' .
-				$this->account_render->str_id($to_id, $this->schema),
-				['schema' => $this->schema]);
+				$this->account_render->str_id($to_id, $schema),
+				['schema' => $schema]);
 			return;
 		}
 
-		if (isset($this->exclude_to[strtolower($to_user['code'])]))
+		if (isset($exclude_to[strtolower($to_user['code'])]))
 		{
 			$this->logger->debug('autominlimit: to user is excluded ' .
-				$this->account_render->str_id($to_id, $this->schema),
-				['schema' => $this->schema]);
+				$this->account_render->str_id($to_id, $schema),
+				['schema' => $schema]);
 			return;
 		}
 
-		$min_limit = $this->account_repository->get_min_limit($to_id, $this->schema);
+		$min_limit = $this->account_repository->get_min_limit($to_id, $schema);
 
 		if (!isset($min_limit))
 		{
 			$this->logger->debug('autominlimit: to user has no minlimit. ' .
-				$this->account_render->str_id($to_id, $this->schema),
-				['schema' => $this->schema]);
+				$this->account_render->str_id($to_id, $schema),
+				['schema' => $schema]);
 			return;
 		}
 
-		if (isset($this->global_min_limit)
-			&& $min_limit < $this->global_min_limit)
+		if (isset($global_min_limit)
+			&& $min_limit < $global_min_limit)
 		{
 			$this->logger->debug('autominlimit: to user minlimit is lower than global system min limit. ' .
-				$this->account_render->str_id($to_id, $this->schema),
-				['schema' => $this->schema]);
+				$this->account_render->str_id($to_id, $schema),
+				['schema' => $schema]);
 			return;
 		}
 
-		$from_user = $this->user_cache_service->get($from_id, $this->schema);
+		$from_user = $this->user_cache_service->get($from_id, $schema);
 
 		if (!$from_user || !is_array($from_user))
 		{
 			$this->logger->debug('autominlimit: from user not found.',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 			return;
 		}
 
 		if (!$from_user['code'])
 		{
 			$this->logger->debug('autominlimit: from user has no code.',
-				['schema' => $this->schema]);
+				['schema' => $schema]);
 			return;
 		}
 
-		if (isset($this->exclude_from[strtolower($from_user['code'])]))
+		if (isset($exclude_from[strtolower($from_user['code'])]))
 		{
 			$this->logger->debug('autominlimit: from user is excluded ' .
-				$this->account_render->str_id($from_id, $this->schema),
-				['schema' => $this->schema]);
+				$this->account_render->str_id($from_id, $schema),
+				['schema' => $schema]);
 			return;
 		}
 
-		$extract = round(($this->percentage / 100) * $amount);
+		$extract = round(($percentage / 100) * $amount);
 
 		if (!$extract)
 		{
 			$debug = 'autominlimit: (extract = 0) ';
 			$debug .= 'no new minlimit for user ';
-			$debug .= $this->account_render->str_id($to_id, $this->schema);
-			$this->logger->debug($debug, ['schema' => $this->schema]);
+			$debug .= $this->account_render->str_id($to_id, $schema);
+			$this->logger->debug($debug, ['schema' => $schema]);
 			return;
 		}
 
@@ -187,15 +171,15 @@ class AutoMinLimitService
 			'created_by'	=> $this->su->id(),
 		];
 
-		if (isset($this->global_min_limit)
-			&& $new_min_limit <= $this->global_min_limit)
+		if (isset($global_min_limit)
+			&& $new_min_limit <= $global_min_limit)
 		{
 			$insert['min_limit'] = null;
 
 			$debug = 'autominlimit: min limit reached global min limit, ';
 			$debug .= 'individual min limit erased for user ';
-			$debug .= $this->account_render->str_id($to_id, $this->schema);
-			$this->logger->debug($debug, ['schema' => $this->schema]);
+			$debug .= $this->account_render->str_id($to_id, $schema);
+			$this->logger->debug($debug, ['schema' => $schema]);
 		}
 		else
 		{
@@ -204,11 +188,11 @@ class AutoMinLimitService
 			$this->logger->info('autominlimit: new minlimit : ' .
 				$new_min_limit .
 				' for user ' .
-				$this->account_render->str_id($to_id, $this->schema),
-				['schema' => $this->schema]);
+				$this->account_render->str_id($to_id, $schema),
+				['schema' => $schema]);
 		}
 
-		$this->db->insert($this->schema . '.min_limit', $insert);
+		$this->db->insert($schema . '.min_limit', $insert);
 
 		return;
 	}

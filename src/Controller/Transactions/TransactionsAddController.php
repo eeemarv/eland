@@ -89,6 +89,7 @@ class TransactionsAddController extends AbstractController
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
+        $auto_deactivate = $config_service->get_bool('users.leaving.auto_deactivate', $pp->schema());
         $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
         $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
@@ -713,8 +714,15 @@ class TransactionsAddController extends AbstractController
                         $from_remote_user['name'] . ' to user: ' . $to_remote_user['code'] . ' ' .
                         $to_remote_user['name'], ['schema' => $remote_schema]);
 
-                    $autominlimit_service->init($pp->schema())
-                        ->process($from_id, $to_id, $amount);
+                    $autominlimit_service->process(
+                        $from_id,
+                        $to_id,
+                        $amount,
+                        $pp->schema()
+                    );
+
+                    $auto_deactivate_service->process($to_id, $pp->schema());
+
 
                     $alert_service->success('InterSysteem transactie uitgevoerd.');
                     $link_render->redirect('transactions', $pp->ary(), []);

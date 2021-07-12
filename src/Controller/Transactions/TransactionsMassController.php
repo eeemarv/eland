@@ -365,11 +365,14 @@ class TransactionsMassController extends AbstractController
 
                 $db->commit();
 
-                $autominlimit_service->init($pp->schema());
-
                 foreach($transactions as $t)
                 {
-                    $autominlimit_service->process((int) $t['id_from'], (int) $t['id_to'], (int) $t['amount']);
+                    $autominlimit_service->process(
+                        (int) $t['id_from'],
+                        (int) $t['id_to'],
+                        (int) $t['amount'],
+                        $pp->schema()
+                    );
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';
