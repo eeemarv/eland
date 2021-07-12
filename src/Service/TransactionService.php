@@ -16,6 +16,7 @@ class TransactionService
 		protected AccountRepository $account_repository,
 		protected LoggerInterface $logger,
 		protected AutoMinLimitService $autominlimit_service,
+		protected AutoDeactivateService $auto_deactivate_service,
 		protected ConfigService $config_service,
 		protected AccountRender $account_render
 	)
@@ -51,6 +52,9 @@ class TransactionService
 			$amount,
 			$schema
 		);
+
+		$this->auto_deactivate_service->process($to_id, $schema);
+		$this->auto_deactivate_service->process($from_id, $schema);
 
 		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$amount . ' ' .

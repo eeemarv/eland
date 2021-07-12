@@ -9,6 +9,7 @@ use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
@@ -112,6 +113,7 @@ class TransactionsMassController extends AbstractController
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         AutoMinLimitService $autominlimit_service,
+        AutoDeactivateService $auto_deactivate_service,
         TransactionService $transaction_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -373,6 +375,9 @@ class TransactionsMassController extends AbstractController
                         (int) $t['amount'],
                         $pp->schema()
                     );
+
+                    $auto_deactivate_service->process((int) $t['id_from'], $pp->schema());
+                    $auto_deactivate_service->process((int) $t['id_to'], $pp->schema());
                 }
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';

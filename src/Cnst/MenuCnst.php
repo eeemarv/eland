@@ -41,7 +41,7 @@ class MenuCnst
             'label'         => 'Forum',
             'config_en'     => 'forum.enabled',
         ],
-        'support'       => [
+        'support_form'       => [
             'access'        => 'user',
             'fa'            => 'ambulance',
             'label'         => 'Probleem melden',

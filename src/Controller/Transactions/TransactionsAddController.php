@@ -9,6 +9,7 @@ use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
+use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
@@ -65,6 +66,7 @@ class TransactionsAddController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         AutoMinLimitService $autominlimit_service,
+        AutoDeactivateService $auto_deactivate_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -89,7 +91,6 @@ class TransactionsAddController extends AbstractController
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
-        $auto_deactivate = $config_service->get_bool('users.leaving.auto_deactivate', $pp->schema());
         $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
         $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
@@ -722,7 +723,9 @@ class TransactionsAddController extends AbstractController
                     );
 
                     $auto_deactivate_service->process($to_id, $pp->schema());
-
+                    $auto_deactivate_service->process($from_id, $pp->schema());
+                    $auto_deactivate_service->process($to_remote_id, $remote_schema);
+                    $auto_deactivate_service->process($from_remote_id, $remote_schema);
 
                     $alert_service->success('InterSysteem transactie uitgevoerd.');
                     $link_render->redirect('transactions', $pp->ary(), []);

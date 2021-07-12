@@ -209,7 +209,7 @@ class SupportFormController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $menu_service->set('support');
+        $menu_service->set('support_form');
 
         return $this->render('support_form/support_form.html.twig', [
             'content'   => $out,

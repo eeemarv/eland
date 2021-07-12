@@ -111,7 +111,7 @@ class ConfigCnst
             'is_ary'    => true,
         ],
 
-        'support'	=> [
+        'support_form'	=> [
             'lbl'	=> 'Support / Helpdesk',
             'explain_top'	=> 'Krjgt E-mail berichten
                 van het Help- en Contactformulier.',

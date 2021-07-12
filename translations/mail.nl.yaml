@@ -124,6 +124,32 @@ account_activation_admin:
     de gebruiker omdat geen E-mail adres werd ingesteld
     voor dit account.
 
+auto_deactivation:
+  subject: >-
+    Deactivatie van je Account bij %system_name%
+  sub_header: >-
+    Deactivatie account
+  message: >-
+    Je account bij %link_open%%system_name%%link_close%
+    werd automatisch gedesactiveerd doordat het de status
+    "uitstapper" had en het uitstappers-saldo bereikt werd.
+auto_deactivation_admin:
+  subject: >-
+    Automatische deactivatie account %account_name%
+  sub_header: >-
+    Automatische deactivatie
+  message: >-
+    Account %link_open%%account_name%%link_close%
+    werd automatisch gedeactiveerd door het bereiken
+    van het uitstappers-saldo.
+  email_sent:
+    Een notificatie-E-mail werd verzonden
+    naar de gebruiker.
+  no_email_sent:
+    Er werd GEEN E-mail naar
+    de gebruiker omdat geen E-mail adres is ingesteld
+    voor dit account.
+
 contact:
   sub_header: >-
     Contactformulier
