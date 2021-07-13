@@ -195,7 +195,6 @@ class MenuCnst
         'mollie_payments'       => 'users',
         'transactions_currency'         => 'transactions',
         'transactions_system_limits'    => 'transactions',
-        'transactions_leaving_eq'       => 'transactions',
         'transactions_modules'          => 'transactions',
         'transactions_autominlimit'     => 'transactions',
         'transactions_mass'             => 'transactions',
@@ -302,12 +301,6 @@ class MenuCnst
                 'label'     => 'Auto Min Limiet',
                 'route'     => 'transactions_autominlimit',
                 'config_en' => 'accounts.limits.auto_min.enabled',
-            ],
-            'transactions_leaving_eq'		=> [
-                'fa'        => 'balance-scale',
-                'label'     => 'Uitstappers saldo',
-                'route'     => 'transactions_leaving_eq',
-                'config_en' => 'users.leaving.enabled',
             ],
             'transactions_mass'	=> [
                 'fa'        => 'exchange',
