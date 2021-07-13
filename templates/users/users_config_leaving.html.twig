@@ -11,19 +11,24 @@
 {%- endblock heading_fa -%}
 
 {%- block form_content -%}
-    {{- form_row(form.equilibrium, {
-        'label': 'users_config_leaving.equilibrium.label',
-        'help': 'users_config_leaving.equilibrium.help',
-        'pre_addon': {
-            'text': config_str('transactions.currency.name', schema)
-        }
-    }) -}}
 
-    {{- form_row(form.auto_deactivate, {
-        'label': 'users_config_leaving.auto_deactivate.label',
-        'help': 'users_config_leaving.auto_deactivate.help',
-        'required': false
-    }) -}}
+    {%- if form.equilibrium is defined -%}
+        {{- form_row(form.equilibrium, {
+            'label': 'users_config_leaving.equilibrium.label',
+            'help': 'users_config_leaving.equilibrium.help',
+            'pre_addon': {
+                'text': config_str('transactions.currency.name', schema)
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.auto_deactivate is defined -%}
+        {{- form_row(form.auto_deactivate, {
+            'label': 'users_config_leaving.auto_deactivate.label',
+            'help': 'users_config_leaving.auto_deactivate.help',
+            'required': false
+        }) -}}
+    {%- endif -%}
 
     {%- if form.access is defined -%}
         {{- form_row(form.access, {

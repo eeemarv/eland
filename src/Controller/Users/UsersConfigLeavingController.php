@@ -56,6 +56,7 @@ class UsersConfigLeavingController extends AbstractController
         $access_pane = $config_service->get_str('users.leaving.access_pane', $pp->schema());
         $equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema());
         $auto_deactivate = $config_service->get_bool('users.leaving.auto_deactivate', $pp->schema());
+        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
 
         $form_data = [
             'access'            => $access,
@@ -66,8 +67,13 @@ class UsersConfigLeavingController extends AbstractController
         ];
 
         $builder = $this->createFormBuilder($form_data);
-        $builder->add('equilibrium', IntegerType::class);
-        $builder->add('auto_deactivate', CheckboxType::class);
+
+        if ($transactions_enabled)
+        {
+            $builder->add('equilibrium', IntegerType::class);
+            $builder->add('auto_deactivate', CheckboxType::class);
+        }
+
         $builder->add('submit', SubmitType::class);
         $access_field_subscriber->add('access', ['admin', 'user', 'guest']);
         $access_field_subscriber->add('access_list', ['admin', 'user', 'guest']);
@@ -98,8 +104,12 @@ class UsersConfigLeavingController extends AbstractController
             $config_service->set_str('users.leaving.access', $form_data['access'], $pp->schema());
             $config_service->set_str('users.leaving.access_list', $form_data['access_list'], $pp->schema());
             $config_service->set_str('users.leaving.access_pane', $form_data['access_pane'], $pp->schema());
-            $config_service->set_int('accounts.equilibrium', $form_data['equilibrium'], $pp->schema());
-            $config_service->set_bool('users.leaving.auto_deactivate', $form_data['auto_deactivate'], $pp->schema());
+
+            if ($transactions_enabled)
+            {
+                $config_service->set_int('accounts.equilibrium', $form_data['equilibrium'], $pp->schema());
+                $config_service->set_bool('users.leaving.auto_deactivate', $form_data['auto_deactivate'], $pp->schema());
+            }
 
             $alert_service->success('Configuratie uitstappende leden aangepast');
             $link_render->redirect('users_config_leaving', $pp->ary(), []);
