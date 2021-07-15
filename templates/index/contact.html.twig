@@ -1,5 +1,4 @@
 {%- extends 'base/base.html.twig' -%}
-{%- import 'macro/alert.html.twig' as a -%}
 
 {%- block title -%}eLAND Contact{%- endblock -%}
 {%- block navbar -%}{%- endblock -%}
@@ -20,7 +19,7 @@
 
 	<div class="container">
 
-		{{- a.alert() -}}
+		{%- include 'include/alert.html.twig' -%}
 
 		{%- if form_ok -%}
 
