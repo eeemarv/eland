@@ -26,8 +26,6 @@
 	{%- endif -%}
 {%- endblock -%}
 
-{%- set _active_menu = 'users' -%}
-
 {%- set menu_sidebar_def = {
 	'messages': {'fa': 'newspaper-o', 'access': 'guest'},
 	'users': {'fa': 'users', 'access': 'guest', 'always_enabled': true},
@@ -70,7 +68,7 @@
 				<li{%- if r == active_menu %} class="active"{%- endif -%}>
 					<a href="{{- path(r|var_route, pp_ary()) -}}">
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-					{{- (r ~ '.title')|trans -}}
+						{{- (r ~ '.title')|trans -}}
 					</a>
 				</li>
 			{%- endif -%}
@@ -88,178 +86,31 @@
 		{%- include 'include/alert.html.twig' -%}
 	{%- endblock alert -%}
 
-	{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
-	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}
-	{%- set route = app.request.attributes.get('_route') -%}
-	{%- set route_params = app.request.attributes.get('_route_params') -%}
-	{%- set query_params = app.request.query.all() -%}
-	{%- set cms_linked = {
-		'password_reset': {
-			'password_reset_confirm': {
-				'lbl': 'Nieuw paswoord ingeven',
-				'params': {'token': cms_token},
-			}
-		},
-		'register_form': {
-			'register_form_confirm': {
-				'lbl': 'Inschrijving voltooid',
-				'params': {'token': cms_token}
-			}
-		}
-	} -%}
-	{#
-	{%- set cms_edit_block_types_menu = {
-		'local-by-role': {
-			'lbl': 'Lokaal per rol',
-			'title': 'Blokken die eigen zijn aan een pagina en de rol modus van de pagina.'
-		},
-		'local': {
-			'lbl': 'Lokaal',
-			'title': 'Blokken die eigen zijn aan een pagina'
-		},
-		'global-by-role': {
-			'lbl': 'Globaal per rol',
-			'title': 'Blokken die op alle pagina\'s getoond worden, maar eigen zijn aan de rol modus'
-		},
-		'global': {
-			'lbl': 'Globaal',
-			'title': 'Blokken die op alle pagina\'s getoond worden.'
-		}
-	} -%}
-	#}
-	{%- set cms_edit_block_type_menu = {
-		'route': {
-			'params': {'edit': pp_ary().edit|merge({'route': '1'})},
-			'lbl': 'Lokaal',
-			'title': 'Blokken die eigen zijn aan een pagina'
-		},
-		'no_route': {
-			'params': {'edit': pp_ary().edit|merge({'route': '0'})},
-			'lbl': 'Globaal',
-			'title': 'Blokken die op alle pagina\'s getoond worden.'
-		}
-	} -%}
-	{%- set cms_edit_block_type_active = pp_ary().edit.route is defined and pp_ary().edit.route == '1' ? 'route' : 'no_route' -%}
-	{%- set cms_edit_style_menu = {
-		'inline': {
-			'params': {'edit': pp_ary().edit|merge({'inline': '1'})},
-			'lbl': 'Inline'
-		},
-		'full': {
-			'params': {'edit': pp_ary().edit|merge({'inline': '0'})},
-			'lbl': 'Volledig'
-		}
-	} -%}
-	{%- set cms_edit_style_active = pp_ary().edit.inline is defined and pp_ary().edit.inline == '1' ? 'inline' : 'full' -%}
-	<div class="row mt-5p">
-		<div class="col-md-12">
-			<div class="panel panel-info">
-				<div class="panel-heading">
-					<div>
-					<iiv class="pull-left">
-						<h4>
-							<i class="fa fa-pencil"></i>
-							CMS Edit modus
-						</h4>
-					</iiv>
-					<div class="pull-right">
-
-					<span class="dropdown">
-						<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="cms_edit_style" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Editor stijl">
-							{{- cms_edit_style_menu[cms_edit_style_active].lbl -}}
-							&nbsp;<span class="caret"></span>
-						</button>
-
-						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="cms_edit_style">
-							<li class="dropdown-header">
-								Editor stijl
-							</li>
-							{%- for kesm, esm in cms_edit_style_menu -%}
-								<li{%- if kesm == cms_edit_style_active %} class="active"{%- endif -%}>
-									<a href="{{- path(route, route_params|merge(query_params)|merge(esm.params)) -}}">
-										{{- esm.lbl -}}
-									</a>
-								</li>
-							{%- endfor -%}
-						</ul>
-					</span>
-					<span class="dropdown">
-						<button class="btn btn-default btn-lg dropdown-toggle" type="button" id="cms_edit_block_type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="{{- cms_edit_block_type_menu[cms_edit_block_type_active].title -}}">
-						  {{- cms_edit_block_type_menu[cms_edit_block_type_active].lbl -}}
-						  &nbsp;
-						  <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="cms_edit_block_type">
-							<li class="dropdown-header">Blok type</li>
-							{%- for kebtm, ebtm in cms_edit_block_type_menu -%}
-								<li{%- if kebtm == cms_edit_block_type_active %} class="active"{%- endif -%}>
-									<a href="{{- path(route, route_params|merge(query_params)|merge(ebtm.params)) -}}" title="{{- ebtm.title -}}">
-										{{- ebtm.lbl -}}
-									</a>
-								</li>
-							{%- endfor -%}
-						</ul>
-					</span>
-
-					</div>
-					<div class="clearfix"></div>
-					</div>
-					<p>
-						Editing van content blokken.
-					</p>
-					<p class="text-danger" hidden data-cms-edit-no-blocks-notice>Er zijn geen content blokken van het gekozen type op deze pagina.</p>
-
-					<form method="post" action="{{- path('cms_edit', {'role_short': 'a', 'system': pp_ary().system, 'route': route, 'form_token': cms_edit_form_token()}) -}}" data-cms-edit-form data-cms-edit-style="{{- cms_edit_style_active -}}">
-						<input type="hidden" name="content" valeu="{}">
-						<input type="hidden" name="route_params" value="{{- route_params|json_encode -}}">
-						<input type="hidden" name="query_params" value="{{- query_params|json_encode -}}">
-						<a href="{{- path(route|replace({'_confirm': ''}), route_params|merge(query_params)|filter((v, k) => k != 'edit' and k != 'token')) -}}" class="btn btn-default btn-lg">
-							Annuleren
-						</a>
-						&nbsp;
-						<input type="submit" name="submit" value="Opslaan" class="btn btn-primary btn-lg" data-submit-btn>
-					</form>
-				</div>
-				{%- if cms_linked[route] is defined -%}
-				<div class="panel-heading">
-				<h3>Verwante pagina's</h3>
-				</div>
-				<ul class="list-group">
-					{%- for rout, rary in cms_linked[route] -%}
-						<li class="list-group-item bg-info">
-							<a href="{{- path(rout, pp_ary()|merge(rary.params)) -}}">
-								{{- rary.lbl -}}
-							</a>
-						</li>
-					{%- endfor -%}
-				</ul>
-				{%- endif -%}
-			</div>
-		</div>
-	</div>
-	{%- endif -%}
+	{%- block cms_edit_form -%}
+		{%- include 'include/cms_edit_form.html.twig' -%}
+	{%- endblock cms_edit_form -%}
 
 	{%- block cms_edit_extra -%}{%- endblock -%}
 
+	{%- block btn_row -%}
 	<div class="row">
-	<div class="col-md-12 top-buttons mt-5p">
+		<div class="col-md-12 top-buttons mt-5p">
+			<div class="visible-xs pull-left button-offcanvas menu-button">
+				<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">
+					<i class="fa fa-chevron-left"></i>
+				</button>
+			</div>
 
-	<div class="visible-xs pull-left button-offcanvas menu-button">
-		<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">
-			<i class="fa fa-chevron-left"></i>
-		</button>
+			{%- block btn_top -%}
+				{{- btn_top() -}}
+			{%- endblock btn_top -%}
+
+			{%- block btn_nav -%}
+				{{- btn_nav() -}}
+			{%- endblock btn_nav -%}
+		</div>
 	</div>
-
-	{%- block btn_top -%}
-		{{- btn_top() -}}
-	{%- endblock btn_top -%}
-
-	{%- block btn_nav -%}
-		{{- btn_nav() -}}
-	{%- endblock btn_nav -%}
-
-	</div>
-	</div>
+	{%- endblock btn_row -%}
 
 	{%- block heading -%}
 		<h1>
@@ -273,8 +124,7 @@
 		</h1>
 	{%- endblock heading -%}
 
-	{%- block heading_sub -%}
-	{%- endblock heading_sub -%}
+	{%- block heading_sub -%}{%- endblock -%}
 
 	{%- block content_top -%}
 		{%- embed 'embed/static_content.html.twig' with {

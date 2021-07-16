@@ -9,7 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClearRedisCacheCommand extends Command
+class ClearRedisCacheConsoleCommand extends Command
 {
     protected static $defaultName = 'app:clear-redis-cache';
 
