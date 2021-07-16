@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\ConsoleCommand;
 
 use App\Service\MonitorProcessService;
 use Doctrine\DBAL\Connection as Db;
@@ -8,7 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessCleanupLogsCommand extends Command
+class ProcessCleanupLogsConsoleCommand extends Command
 {
     protected static $defaultName = 'process:cleanup_logs';
 

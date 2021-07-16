@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\ConsoleCommand;
 
 use App\SchemaTask\SchemaTaskSchedule;
 use App\Service\AssetsService;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ProcessWorkerCommand extends Command
+class ProcessWorkerConsoleCommand extends Command
 {
     protected static $defaultName = 'process:worker';
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command;
+namespace App\ConsoleCommand;
 
 use App\Service\ConfigService;
 use App\Service\StaticContentService;
