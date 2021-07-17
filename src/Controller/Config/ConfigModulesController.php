@@ -2,6 +2,7 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigModulesCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,20 +54,21 @@ class ConfigModulesController extends AbstractController
     ):Response
     {
         $errors = [];
-        $form_data = [];
+
+        $config_modules_command = new ConfigModulesCommand();
 
         foreach (self::CONFIG_MODULES as $key)
         {
-            $name = strtr($key, '.', '_');
-            $form_data[$name] = $config_service->get_bool($key, $pp->schema());
+            $prop = strtr($key, '.', '_');
+            $config_modules_command->$prop = $config_service->get_bool($key, $pp->schema());
         }
 
-        $builder = $this->createFormBuilder($form_data);
+        $builder = $this->createFormBuilder($config_modules_command);
 
         foreach (self::CONFIG_MODULES as $key)
         {
-            $name = strtr($key, '.', '_');
-            $builder->add($name, CheckboxType::class);
+            $prop = strtr($key, '.', '_');
+            $builder->add($prop, CheckboxType::class);
         }
 
         $builder->add('submit', SubmitType::class);
@@ -91,12 +93,12 @@ class ConfigModulesController extends AbstractController
             && $form->isValid()
             && !count($errors))
         {
-            $form_data = $form->getData();
+            $config_modules_command = $form->getData();
 
             foreach (self::CONFIG_MODULES as $key)
             {
-                $name = strtr($key, '.', '_');
-                $config_service->set_bool($key, $form_data[$name], $pp->schema());
+                $prop = strtr($key, '.', '_');
+                $config_service->set_bool($key, $config_modules_command->$prop, $pp->schema());
             }
 
             $alert_service->success('Modules aangepast.');

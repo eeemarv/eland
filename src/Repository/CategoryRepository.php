@@ -5,6 +5,7 @@ namespace App\Repository;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+//ok
 class CategoryRepository
 {
 	public function __construct(
