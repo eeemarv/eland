@@ -9,7 +9,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -35,14 +34,12 @@ class TransactionsModulesController extends AbstractController
         Request $request,
         AlertService $alert_service,
         AssetsService $assets_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
         $form_data = [];
 
         $service_stuff = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
@@ -67,22 +64,8 @@ class TransactionsModulesController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
 
@@ -105,7 +88,6 @@ class TransactionsModulesController extends AbstractController
 
         return $this->render('transactions/transactions_modules.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

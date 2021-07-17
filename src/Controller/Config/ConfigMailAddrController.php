@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -36,15 +35,12 @@ class ConfigMailAddrController extends AbstractController
         Request $request,
         AlertService $alert_service,
         AssetsService $assets_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
-
         $admin = $config_service->get_ary('mail.addresses.admin', $pp->schema());
         $support = $config_service->get_ary('mail.addresses.support', $pp->schema());
 
@@ -60,7 +56,6 @@ class ConfigMailAddrController extends AbstractController
                 'allow_delete'      => true,
                 'delete_empty'      => true,
                 'prototype'         => true,
-//                'prototype_name'    => '__proto_admin__'
             ])
             ->add('support', CollectionType::class, [
                 'entry_type'        => EmailType::class,
@@ -68,30 +63,14 @@ class ConfigMailAddrController extends AbstractController
                 'allow_delete'      => true,
                 'delete_empty'      => true,
                 'prototype'         => true,
-//                'prototype_name'    => '__proto_support__',
             ])
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
-
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
 
@@ -111,7 +90,6 @@ class ConfigMailAddrController extends AbstractController
 
         return $this->render('config/config_mail_addr.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

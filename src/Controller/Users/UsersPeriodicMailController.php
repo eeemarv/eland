@@ -10,7 +10,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -38,7 +37,6 @@ class UsersPeriodicMailController extends AbstractController
         Request $request,
         AlertService $alert_service,
         AssetsService $assets_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
@@ -108,7 +106,6 @@ class UsersPeriodicMailController extends AbstractController
             unset($block_ary['intersystem']);
         }
 
-        $errors = [];
         $form_data = [];
 
         $layout_ary = $config_service->get_ary('periodic_mail.user.layout', $pp->schema());
@@ -171,22 +168,8 @@ class UsersPeriodicMailController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
             $days = $form_data['days'];
@@ -236,7 +219,6 @@ class UsersPeriodicMailController extends AbstractController
 
         return $this->render('users/users_periodic_mail.html.twig', [
             'form'                  => $form->createView(),
-            'form_token'            => $form_token_service->get(),
             'block_layout'          => $block_layout,
             'block_inactive_layout' => $block_inactive_layout,
             'block_select_options'  => $block_select_options,

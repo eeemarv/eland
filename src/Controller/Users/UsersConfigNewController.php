@@ -6,7 +6,6 @@ use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +33,6 @@ class UsersConfigNewController extends AbstractController
 
     public function __invoke(
         Request $request,
-        FormTokenService $form_token_service,
         AlertService $alert_service,
         AccessFieldSubscriber $access_field_subscriber,
         ConfigService $config_service,
@@ -47,8 +45,6 @@ class UsersConfigNewController extends AbstractController
         {
             throw new NotFoundHttpException('New users not enabled.');
         }
-
-        $errors = [];
 
         $days = $config_service->get_int('users.new.days', $pp->schema());
         $access = $config_service->get_str('users.new.access', $pp->schema());
@@ -72,22 +68,8 @@ class UsersConfigNewController extends AbstractController
         $form = $builder->getForm();
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
 
@@ -104,7 +86,6 @@ class UsersConfigNewController extends AbstractController
 
         return $this->render('users/users_config_new.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

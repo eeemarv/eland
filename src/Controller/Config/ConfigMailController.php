@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -34,15 +33,12 @@ class ConfigMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
-
         $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
         $mail_tag = $config_service->get_str('mail.tag', $pp->schema());
 
@@ -60,22 +56,8 @@ class ConfigMailController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
 
@@ -90,7 +72,6 @@ class ConfigMailController extends AbstractController
 
         return $this->render('config/config_mail.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

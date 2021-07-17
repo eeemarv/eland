@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\MenuService;
-use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -46,15 +45,12 @@ class ConfigModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
-
         $config_modules_command = new ConfigModulesCommand();
 
         foreach (self::CONFIG_MODULES as $key)
@@ -76,22 +72,8 @@ class ConfigModulesController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $config_modules_command = $form->getData();
 
@@ -109,7 +91,6 @@ class ConfigModulesController extends AbstractController
 
         return $this->render('config/config_modules.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

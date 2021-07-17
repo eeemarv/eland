@@ -43,6 +43,7 @@
     {%- block pane_content -%}
 
     {{- form_start(form) -}}
+    {{- form_errors(form) -}}
     <div class="custom-checkbox">
 
     {%- block form_content -%}
@@ -62,7 +63,6 @@
         }) -}}
     {%- endblock submit_btn -%}
 
-    <input type="hidden" name="form_token" value="{{ form_token }}">
     </div>
     {{- form_end(form) -}}
 

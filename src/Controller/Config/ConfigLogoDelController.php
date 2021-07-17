@@ -5,7 +5,6 @@ namespace App\Controller\Config;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,15 +32,12 @@ class ConfigLogoDelController extends AbstractController
     public function __invoke(
         Request $request,
         ConfigService $config_service,
-        FormTokenService $form_token_service,
         AlertService $alert_service,
         LinkRender $link_render,
         MenuService $menu_service,
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
-
         $logo = $config_service->get_str('system.logo', $pp->schema());
 
         if (!$logo)
@@ -52,25 +48,10 @@ class ConfigLogoDelController extends AbstractController
         $builder = $this->createFormBuilder();
         $builder->add('submit', SubmitType::class);
         $form = $builder->getForm();
-
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $config_service->set_str('system.logo', '', $pp->schema());
 
@@ -82,7 +63,6 @@ class ConfigLogoDelController extends AbstractController
 
         return $this->render('config/config_logo_del.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

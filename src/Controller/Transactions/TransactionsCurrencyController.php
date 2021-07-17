@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +34,6 @@ class TransactionsCurrencyController extends AbstractController
 
     public function __invoke(
         Request $request,
-        FormTokenService $form_token_service,
         AlertService $alert_service,
         ConfigService $config_service,
         LinkRender $link_render,
@@ -47,8 +45,6 @@ class TransactionsCurrencyController extends AbstractController
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
-
-        $errors = [];
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $timebased_en = $config_service->get_bool('transactions.currency.timebased_en', $pp->schema());
@@ -68,22 +64,8 @@ class TransactionsCurrencyController extends AbstractController
         $form = $builder->getForm();
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
 
@@ -99,7 +81,6 @@ class TransactionsCurrencyController extends AbstractController
 
         return $this->render('transactions/transactions_currency.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }

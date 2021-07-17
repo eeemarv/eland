@@ -6,7 +6,6 @@ use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +34,6 @@ class UsersConfigLeavingController extends AbstractController
 
     public function __invoke(
         Request $request,
-        FormTokenService $form_token_service,
         AlertService $alert_service,
         AccessFieldSubscriber $access_field_subscriber,
         ConfigService $config_service,
@@ -48,8 +46,6 @@ class UsersConfigLeavingController extends AbstractController
         {
             throw new NotFoundHttpException('Leaving users not enabled.');
         }
-
-        $errors = [];
 
         $access = $config_service->get_str('users.leaving.access', $pp->schema());
         $access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
@@ -82,22 +78,8 @@ class UsersConfigLeavingController extends AbstractController
         $form = $builder->getForm();
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST'))
-        {
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (count($errors))
-            {
-                $alert_service->error($errors);
-            }
-        }
-
         if ($form->isSubmitted()
-            && $form->isValid()
-            && !count($errors))
+            && $form->isValid())
         {
             $form_data = $form->getData();
 
@@ -119,7 +101,6 @@ class UsersConfigLeavingController extends AbstractController
 
         return $this->render('users/users_config_leaving.html.twig', [
             'form'          => $form->createView(),
-            'form_token'    => $form_token_service->get(),
             'schema'        => $pp->schema(),
         ]);
     }
