@@ -2,6 +2,7 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigExtUrlCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,14 +39,11 @@ class ConfigExtUrlController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $ext_url = $config_service->get_str('system.website_url', $pp->schema());
+        $config_ext_url_command = new ConfigExtUrlCommand();
+        $config_ext_url_command->url = $config_service->get_str('system.website_url', $pp->schema());
 
-        $form_data = [
-            'ext_url'   => $ext_url,
-        ];
-
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('ext_url', UrlType::class)
+        $builder = $this->createFormBuilder($config_ext_url_command);
+        $builder->add('url', UrlType::class)
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
@@ -54,9 +52,9 @@ class ConfigExtUrlController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $config_ext_url_command = $form->getData();
 
-            $config_service->set_str('system.website_url', $form_data['ext_url'] ?? '', $pp->schema());
+            $config_service->set_str('system.website_url', $config_ext_url_command->url ?? '', $pp->schema());
 
             $alert_service->success('Externe URL aangepast.');
             $link_render->redirect('config_ext_url', $pp->ary(), []);

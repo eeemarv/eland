@@ -2,6 +2,7 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigNameCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,13 +39,11 @@ class ConfigNameController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $system_name = $config_service->get_str('system.name', $pp->schema());
+        $config_name_command = new ConfigNameCommand();
 
-        $form_data = [
-            'system_name'   => $system_name,
-        ];
+        $config_name_command->system_name = $config_service->get_str('system.name', $pp->schema());
 
-        $builder = $this->createFormBuilder($form_data);
+        $builder = $this->createFormBuilder($config_name_command);
         $builder->add('system_name', TextType::class)
             ->add('submit', SubmitType::class);
 
@@ -55,9 +54,9 @@ class ConfigNameController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $config_name_command = $form->getData();
 
-            $config_service->set_str('system.name', $form_data['system_name'], $pp->schema());
+            $config_service->set_str('system.name', $config_name_command->system_name, $pp->schema());
 
             $alert_service->success('Naam systeem aangepast.');
             $link_render->redirect('config_name', $pp->ary(), []);

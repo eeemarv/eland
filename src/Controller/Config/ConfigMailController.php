@@ -2,6 +2,7 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigMailCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,17 +40,14 @@ class ConfigMailController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
-        $mail_tag = $config_service->get_str('mail.tag', $pp->schema());
+        $config_mail_command = new ConfigMailCommand();
 
-        $form_data = [
-            'mail_enabled'  => $mail_enabled,
-            'mail_tag'      => $mail_tag,
-        ];
+        $config_mail_command->enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $config_mail_command->tag = $config_service->get_str('mail.tag', $pp->schema());
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('mail_enabled', CheckboxType::class)
-            ->add('mail_tag', TextType::class)
+        $builder = $this->createFormBuilder($config_mail_command);
+        $builder->add('enabled', CheckboxType::class)
+            ->add('tag', TextType::class)
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
@@ -59,10 +57,10 @@ class ConfigMailController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $config_mail_command = $form->getData();
 
-            $config_service->set_bool('mail.enabled', $form_data['mail_enabled'], $pp->schema());
-            $config_service->set_str('mail.tag', $form_data['mail_tag'], $pp->schema());
+            $config_service->set_bool('mail.enabled', $config_mail_command->enabled, $pp->schema());
+            $config_service->set_str('mail.tag', $config_mail_command->tag, $pp->schema());
 
             $alert_service->success('E-mail instellingen aangepast.');
             $link_render->redirect('config_mail', $pp->ary(), []);

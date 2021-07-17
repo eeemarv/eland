@@ -2,12 +2,12 @@
 {%- form_theme form 'form_3.html.twig' -%}
 
 {%- block form_content -%}
-    {{- form_row(form.ext_url, {
-        'label': 'config_ext_url.ext_url.label',
+    {{- form_row(form.url, {
+        'label': 'config_ext_url.url.label',
         'pre_addon': {
             'fa': 'share-alt',
         },
-        'help': 'config_ext_url.ext_url.help',
+        'help': 'config_ext_url.url.help',
         'required': false
     }) -}}
 {%- endblock form_content -%}

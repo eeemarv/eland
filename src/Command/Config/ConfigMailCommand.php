@@ -5,18 +5,22 @@ namespace App\Command\Config;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ConfigNameCommand
+class ConfigMailCommand
 {
-    public $system_name;
+    public $enabled;
+    public $tag;
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('system_name', new Sequentially([
+        $metadata->addPropertyConstraint('enabled', new Type('bool'));
+
+        $metadata->addPropertyConstraint('tag', new Sequentially([
             'constraints'   => [
                 new NotBlank(),
-                new Length(['max' => 60]),
+                new Length(['max' => 20]),
             ],
         ]));
     }
