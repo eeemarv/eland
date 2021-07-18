@@ -9,12 +9,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\GeocodeQueue;
-use App\Render\AccountRender;
 use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
-use App\Service\AssetsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -115,11 +113,9 @@ class ContactsEditController extends AbstractController
         Db $db,
         FormTokenService $form_token_service,
         AlertService $alert_service,
-        AssetsService $assets_service,
         MenuService $menu_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        AccountRender $account_render,
         PageParamsService $pp,
         SessionUserService $su,
         GeocodeQueue $geocode_queue
@@ -327,8 +323,6 @@ class ContactsEditController extends AbstractController
         {
             $type_contact_ary[$row['id']] = $row;
         }
-
-        $assets_service->add(['contacts_edit.js']);
 
         $abbrev = $type_contact_ary[$id_type_contact]['abbrev'];
 

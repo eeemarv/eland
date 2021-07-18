@@ -1,8 +1,11 @@
 {%- block assets_add -%}
 	{{- assets_add([
 		'jquery', 'bootstrap', 'fontawesome',
-		'footable', 'base.css', 'base.js'
+		'footable', 'base.css', 'base.js',
+		'access_input_cache.js',
+		'typeahead', 'typeahead.js'
 	]) -}}
+
 	{{- assets_add_print_css(['print.css']) -}}
 	{%- if csv_en is defined -%}
 		{{- assets_add(['csv.js']) -}}

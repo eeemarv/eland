@@ -20,7 +20,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\FormTokenService;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -56,7 +55,6 @@ class ContactsController extends AbstractController
         TypeaheadService $typeahead_service,
         ConfigService $config_service,
         AccountRender $account_render,
-        AssetsService $assets_service,
         PageParamsService $pp,
         ItemAccessService $item_access_service
     ):Response
@@ -471,8 +469,6 @@ class ContactsController extends AbstractController
             [], 'Contact toevoegen');
 
         $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
-
-        $assets_service->add(['table_sel.js']);
 
         $filtered = !isset($filter['uid']) && (
             $filter_q

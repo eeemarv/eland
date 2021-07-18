@@ -1,6 +1,11 @@
 {%- extends 'users/base/users_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['sortable', 'users_periodic_mail.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'users_periodic_mail.title'|trans -}}
 {%- endblock heading_title -%}

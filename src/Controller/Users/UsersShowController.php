@@ -320,7 +320,6 @@ class UsersShowController extends AbstractController
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
             $db,
-            $assets_service,
             $item_access_service,
             $link_render,
             $pp,
@@ -332,19 +331,6 @@ class UsersShowController extends AbstractController
         );
 
         $contacts_content = $contacts_response->getContent();
-
-        $assets_service->add([
-            'jqplot',
-            'plot_user_transactions.js',
-        ]);
-
-        if ($pp->is_admin() || $su->is_owner($id))
-        {
-            $assets_service->add([
-                'fileupload',
-                'upload_image.js',
-            ]);
-        }
 
         if ($pp->is_admin())
         {

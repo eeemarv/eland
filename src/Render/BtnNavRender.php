@@ -5,7 +5,6 @@ namespace App\Render;
 use App\Cnst\MenuCnst;
 use App\Render\LinkRender;
 use App\Render\TagRender;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 
@@ -24,8 +23,7 @@ class BtnNavRender
 	public function __construct(
 		protected LinkRender $link_render,
 		protected ConfigService $config_service,
-		protected TagRender $tag_render,
-		protected AssetsService $assets_service
+		protected TagRender $tag_render
 	)
 	{
 	}
@@ -164,18 +162,6 @@ class BtnNavRender
 		$this->out['nav'][] = $this->btn_fa(
 			$route, $params_context, $params_list,
 			$title, $fa);
-	}
-
-	public function csv():void
-	{
-		$this->assets_service->add(['csv.js']);
-
-		$this->out['admin'][] = $this->tag_render->get('a', [
-				'class'	=> 'csv btn btn-info btn-lg',
-				'title'	=> 'Download CSV',
-			],
-			$this->tag_render->fa('file')
-		);
 	}
 
 	public function local_admin(

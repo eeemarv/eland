@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
@@ -35,7 +34,6 @@ class MessagesCleanupController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         LinkRender $link_render,
@@ -110,8 +108,6 @@ class MessagesCleanupController extends AbstractController
             $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
             $expire_notify = $config_service->get_bool('messages.expire.notify', $pp->schema());
         }
-
-        $assets_service->add(['messages_cleanup.js']);
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

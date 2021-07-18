@@ -1164,22 +1164,6 @@ class UsersListController extends AbstractController
 
         self::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_list');
 
-        $assets_service->add([
-            'calc_sum.js',
-            'users_distance.js',
-            'datepicker',
-        ]);
-
-        if ($pp->is_admin())
-        {
-            $assets_service->add([
-                'codemirror',
-                'summernote',
-                'summernote_email.js',
-                'table_sel.js',
-            ]);
-        }
-
         $f_col = '';
 
         $f_col .= '<div class="panel panel-info collapse" ';

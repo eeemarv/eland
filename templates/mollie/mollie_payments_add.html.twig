@@ -1,5 +1,10 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['mollie_payments_add.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'mollie_payments_add.title'|trans -}}
 {%- endblock heading_title -%}

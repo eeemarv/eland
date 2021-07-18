@@ -1,5 +1,10 @@
 {%- extends 'contacts/base/contacts_base.html.twig' -%}
 
+{%- block asssets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['table_sel.js']) -}}
+{%- endblock asssets_add -%}
+
 {%- set csv_en = true -%}
 
 {%- block heading_title -%}

@@ -6,10 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MenuService;
@@ -40,9 +38,7 @@ class MessagesImagesDelController extends AbstractController
         int $id,
         Db $db,
         ConfigService $config_service,
-        AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         FormTokenService $form_token_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -92,8 +88,6 @@ class MessagesImagesDelController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $assets_service->add(['messages_images_del.js']);
 
         $out = '<div class="row">';
 

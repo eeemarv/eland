@@ -1,5 +1,10 @@
 {%- extends 'users/base/users_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['leaflet', 'users_map.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

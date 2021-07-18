@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -41,7 +40,6 @@ class ForumEditPostController extends AbstractController
         int $id,
         Db $db,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
@@ -133,8 +131,6 @@ class ForumEditPostController extends AbstractController
         {
             $content = $forum_post['content'];
         }
-
-        $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';

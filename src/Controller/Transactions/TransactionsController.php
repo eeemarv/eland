@@ -10,7 +10,6 @@ use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,7 +68,6 @@ class TransactionsController extends AbstractController
         bool $is_self,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ItemAccessService $item_access_service,
         FormTokenService $form_token_service,
         BtnTopRender $btn_top_render,
@@ -675,7 +673,6 @@ class TransactionsController extends AbstractController
             if ($bulk_actions_enabled)
             {
                 $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
-                $assets_service->add(['table_sel.js']);
             }
         }
 
@@ -693,8 +690,6 @@ class TransactionsController extends AbstractController
         $template .= '.html.twig';
 
         $out = '';
-
-        $assets_service->add(['datepicker']);
 
         $out .= '<div class="panel panel-info';
         $out .= $filtered ? '' : ' collapse';

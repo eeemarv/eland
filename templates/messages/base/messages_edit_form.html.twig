@@ -1,0 +1,12 @@
+{%- extends 'messages/base/messages_base.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'fileupload',
+        'sortable',
+        'summernote',
+        'summernote_forum_post.js',
+        'messages_edit_images_upload.js',
+    ]) -}}
+{%- endblock assets_add -%}

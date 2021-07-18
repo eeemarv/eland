@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
@@ -45,7 +44,6 @@ class LogsController extends AbstractController
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         LogDbService $log_db_service,
-        AssetsService $assets_service,
         IntersystemsService $intersystems_service,
         TypeaheadService $typeahead_service,
         AccountRender $account_render,
@@ -239,8 +237,6 @@ class LogsController extends AbstractController
 
         $tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;
         $tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '-asc' : '-desc';
-
-        $assets_service->add(['datepicker']);
 
         $filtered = (isset($filter['q']) && $filter['q'] !== '')
             || (isset($filter['type']) && $filter['type'] !== '')

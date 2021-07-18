@@ -1,6 +1,11 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 {%- form_theme form 'form_3.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['config_mail_addr.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block config_heading -%}
     {{- parent() -}}
     <p>

@@ -6,7 +6,6 @@ use App\Render\AccountRender;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
-use App\Service\AssetsService;
 use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -41,7 +40,6 @@ class UsersMapController extends AbstractController
         string $status,
         Db $db,
         AccountRender $account_render,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         CacheService $cache_service,
@@ -194,8 +192,6 @@ class UsersMapController extends AbstractController
             $ref_geo['lat'] = $lat_add / $shown_count;
             $ref_geo['lng'] = $lng_add / $shown_count;
         }
-
-        $assets_service->add(['leaflet', 'users_map.js']);
 
         if ($pp->is_admin())
         {

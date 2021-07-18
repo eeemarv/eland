@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -33,7 +32,6 @@ class TransactionsModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        AssetsService $assets_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
@@ -84,7 +82,6 @@ class TransactionsModulesController extends AbstractController
         }
 
         $menu_service->set('transactions_modules');
-        $assets_service->add(['transactions_modules.js']);
 
         return $this->render('transactions/transactions_modules.html.twig', [
             'form'          => $form->createView(),

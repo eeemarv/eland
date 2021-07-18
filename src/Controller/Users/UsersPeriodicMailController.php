@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -36,7 +35,6 @@ class UsersPeriodicMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        AssetsService $assets_service,
         MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
@@ -209,11 +207,6 @@ class UsersPeriodicMailController extends AbstractController
             $alert_service->success('Periodieke overzichts e-mail aangepast');
             $link_render->redirect('users_periodic_mail', $pp->ary(), []);
         }
-
-        $assets_service->add([
-            'sortable',
-            'users_periodic_mail.js',
-        ]);
 
         $menu_service->set('users_periodic_mail');
 

@@ -1,5 +1,10 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['fileupload', 'upload_image.js']) -}}
+{%- endblock assets_add -%}
+
 {%- set logo = config_str('system.logo', schema) -%}
 
 {%- block pane_content -%}

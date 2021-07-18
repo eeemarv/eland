@@ -18,7 +18,6 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\DistanceService;
@@ -57,7 +56,6 @@ class MessagesShowController extends AbstractController
         CategoryRepository $category_repository,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
@@ -240,7 +238,6 @@ class MessagesShowController extends AbstractController
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
             $db,
-            $assets_service,
             $item_access_service,
             $link_render,
             $pp,
@@ -252,19 +249,6 @@ class MessagesShowController extends AbstractController
         );
 
         $contacts_content = $contacts_response->getContent();
-
-        $assets_service->add([
-            'jssor',
-            'messages_show_images_slider.js',
-        ]);
-
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
-            $assets_service->add([
-                'fileupload',
-                'messages_show_images_upload.js',
-            ]);
-        }
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {

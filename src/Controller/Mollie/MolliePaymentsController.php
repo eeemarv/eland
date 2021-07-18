@@ -11,7 +11,6 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -82,8 +81,7 @@ class MolliePaymentsController extends AbstractController
         SessionUserService $su,
         UserCacheService $user_cache_service,
         HtmlPurifier $html_purifier,
-        LoggerInterface $logger,
-        AssetsService $assets_service
+        LoggerInterface $logger
     ):Response
     {
         if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
@@ -723,14 +721,6 @@ class MolliePaymentsController extends AbstractController
         {
             $alert_service->error($errors);
         }
-
-        $assets_service->add([
-            'codemirror',
-            'summernote',
-            'summernote_email.js',
-            'datepicker',
-            'table_sel.js',
-        ]);
 
         $btn_top_render->create('mollie_payments_add', $pp->ary(),
             [], 'Betaalverzoeken aanmaken');

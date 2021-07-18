@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -41,7 +40,6 @@ class ForumAddTopicController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         FormTokenService $form_token_service,
-        AssetsService $assets_service,
         ItemAccessService $item_access_service,
         SessionUserService $su,
         PageParamsService $pp,
@@ -117,8 +115,6 @@ class ForumAddTopicController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
         $out = '<div class="panel panel-info" id="add">';
         $out .= '<div class="panel-heading">';

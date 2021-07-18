@@ -5,7 +5,6 @@ namespace App\Controller\Config;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Service\AssetsService;
 use App\Service\PageParamsService;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -25,16 +24,10 @@ class ConfigLogoController extends AbstractController
     )]
 
     public function __invoke(
-        AssetsService $assets_service,
         MenuService $menu_service,
         PageParamsService $pp
     ):Response
     {
-        $assets_service->add([
-            'fileupload',
-            'upload_image.js',
-        ]);
-
         $menu_service->set('config_name');
 
         return $this->render('config/config_logo.html.twig', [

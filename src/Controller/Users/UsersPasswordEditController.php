@@ -4,11 +4,9 @@ namespace App\Controller\Users;
 
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
-use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Security\User;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
@@ -62,9 +60,7 @@ class UsersPasswordEditController extends AbstractController
         int $id,
         bool $is_self,
         Db $db,
-        AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         FormTokenService $form_token_service,
         LinkRender $link_render,
         MailAddrSystemService $mail_addr_system_service,
@@ -176,10 +172,6 @@ class UsersPasswordEditController extends AbstractController
         }
 
         $user = $user_cache_service->get($id, $pp->schema());
-
-        $assets_service->add([
-            'generate_password.js',
-        ]);
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

@@ -11,7 +11,6 @@ use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
@@ -60,7 +59,6 @@ class MessagesExtendedController extends AbstractController
         Db $db,
         bool $is_self,
         AccountRender $account_render,
-        AssetsService $assets_service,
         BtnTopRender $btn_top_render,
         BtnNavRender $btn_nav_render,
         ConfigService $config_service,
@@ -88,7 +86,6 @@ class MessagesExtendedController extends AbstractController
             $db,
             $is_self,
             $account_render,
-            $assets_service,
             $btn_top_render,
             $config_service,
             $item_access_service,

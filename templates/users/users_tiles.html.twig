@@ -1,5 +1,10 @@
 {%- extends 'users/base/users_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['isotope', 'users_tiles.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

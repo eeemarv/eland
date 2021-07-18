@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
-use App\Service\AssetsService;
 use App\Service\DistanceService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -18,7 +17,6 @@ class ContactsUserShowInlineController extends AbstractController
     public function __invoke(
         int $uid,
         Db $db,
-        AssetsService $assets_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -35,11 +33,6 @@ class ContactsUserShowInlineController extends AbstractController
             where c.id_type_contact = tc.id
                 and c.user_id = ?',
             [$uid], [\PDO::PARAM_INT]);
-
-        $assets_service->add([
-            'leaflet',
-            'contacts_user_map.js',
-        ]);
 
 		$out = '<div class="row">';
 		$out .= '<div class="col-md-12">';

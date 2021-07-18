@@ -1,5 +1,10 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['messages_images_del.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_images_del.title.'
         ~ message.offer_want -%}

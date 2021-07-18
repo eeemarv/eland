@@ -2,6 +2,11 @@
 
 {%- set csv_en = true -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['table_sel.js', 'messages_filter.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

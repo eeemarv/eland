@@ -2,6 +2,14 @@
 
 {%- set csv_en = true -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {%- if pp_role('admin') -%}
+        {{- assets_add(['table_sel.js']) -}}
+    {%- endif -%}
+    {{- assets_add(['datepicker']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_append -%}
     {%- include 'include/heading_filter.html.twig' -%}
     {%- include 'include/heading_btn_filter.html.twig' -%}

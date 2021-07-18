@@ -1,5 +1,10 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['transactions_add.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'transactions_add.title'|trans -}}
 {%- endblock heading_title -%}

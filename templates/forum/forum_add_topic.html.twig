@@ -1,5 +1,10 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'forum_add_topic.title'|trans -}}
 {%- endblock heading_title -%}

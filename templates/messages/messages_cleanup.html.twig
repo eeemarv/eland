@@ -1,5 +1,10 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['messages_cleanup.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_fa -%}
     trash-o
 {%- endblock heading_fa -%}

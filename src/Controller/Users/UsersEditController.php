@@ -11,13 +11,11 @@ use App\Cnst\RoleCnst;
 use App\Cnst\ContactInputCnst;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
-use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Security\User;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -98,9 +96,7 @@ class UsersEditController extends AbstractController
         Db $db,
         AccountRepository $account_repository,
         EncoderFactoryInterface $encoder_factory,
-        AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
@@ -845,12 +841,6 @@ class UsersEditController extends AbstractController
                 }
             }
         }
-
-        $assets_service->add([
-            'datepicker',
-            'generate_password.js',
-            'user_edit.js',
-        ]);
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

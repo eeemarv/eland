@@ -14,7 +14,6 @@ use Psr\Log\LoggerInterface;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -72,7 +71,6 @@ class MessagesEditController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
@@ -567,14 +565,6 @@ class MessagesEditController extends AbstractController
                 $cat_ary[$cat_id]['children'] = [];
             }
         }
-
-        $assets_service->add([
-            'fileupload',
-            'sortable',
-            'summernote',
-            'summernote_forum_post.js',
-            'messages_edit_images_upload.js',
-        ]);
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

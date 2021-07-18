@@ -8,7 +8,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -116,8 +115,7 @@ class TransactionsMassController extends AbstractController
         AutoDeactivateService $auto_deactivate_service,
         TransactionService $transaction_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        AssetsService $assets_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
@@ -480,11 +478,6 @@ class TransactionsMassController extends AbstractController
                 $from_code .= ' ' . $from_name;
             }
         }
-
-        $assets_service->add([
-            'mass_transaction.js',
-            'combined_filter.js',
-        ]);
 
         $out = '<div class="panel panel-warning">';
         $out .= '<div class="panel-heading">';

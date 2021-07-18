@@ -1,5 +1,10 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'forum_edit_topic.title.'
         ~ (is_s_owner(forum_topic.user_id) ? 'personal' : 'admin') -%}

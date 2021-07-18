@@ -6,21 +6,18 @@ use Predis\Client as Predis;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Service\SystemsService;
-use App\Service\AssetsService;
 
 class TypeaheadService
 {
 	const TTL = 5184000; // 60 days
 
 	protected array $build_ary;
-	protected bool $assets_included = false;
 
 	public function __construct(
 		protected Predis $predis,
 		protected LoggerInterface $logger,
 		protected UrlGeneratorInterface $url_generator,
-		protected SystemsService $systems_service,
-		protected AssetsService $assets_service
+		protected SystemsService $systems_service
 	)
 	{
 	}
@@ -78,12 +75,6 @@ class TypeaheadService
 		}
 
 		unset($this->build_ary);
-
-		if (!$this->assets_included)
-		{
-			$this->assets_service->add(['typeahead', 'typeahead.js']);
-			$this->assets_included = true;
-		}
 
 		return htmlspecialchars(json_encode($out));
 	}

@@ -17,7 +17,6 @@ use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -120,7 +119,6 @@ class MessagesListController extends AbstractController
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
@@ -394,7 +392,6 @@ class MessagesListController extends AbstractController
             $db,
             $is_self,
             $account_render,
-            $assets_service,
             $btn_top_render,
             $config_service,
             $item_access_service,
@@ -435,8 +432,6 @@ class MessagesListController extends AbstractController
                 $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             }
         }
-
-        $assets_service->add(['table_sel.js']);
 
         if (!count($messages))
         {
@@ -920,7 +915,6 @@ class MessagesListController extends AbstractController
         Db $db,
         bool $is_self,
         AccountRender $account_render,
-        AssetsService $assets_service,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -1519,8 +1513,6 @@ class MessagesListController extends AbstractController
                 }
             }
         }
-
-        $assets_service->add(['messages_filter.js']);
 
         $filter_panel_open = ($filter_fcode && !isset($filter['uid']))
             || $filter_offer_want

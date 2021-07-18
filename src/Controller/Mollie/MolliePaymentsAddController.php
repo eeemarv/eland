@@ -8,7 +8,6 @@ use App\Controller\Users\UsersListController;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -58,8 +57,7 @@ class MolliePaymentsAddController extends AbstractController
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
-        TokenGeneratorService $token_generator_service,
-        AssetsService $assets_service
+        TokenGeneratorService $token_generator_service
     ):Response
     {
         if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
@@ -257,10 +255,6 @@ class MolliePaymentsAddController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $assets_service->add([
-            'mollie_payments_add.js',
-        ]);
 
         $out = '<div class="panel panel-warning">';
         $out .= '<div class="panel-heading">';

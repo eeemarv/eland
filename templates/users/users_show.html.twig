@@ -1,5 +1,14 @@
 {%- extends 'users/base/users_single_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['leaflet', 'contacts_user_map.js']) -}}
+    {{- assets_add(['jqplot', 'plot_user_transactions.js']) -}}
+    {%- if pp_role('admin') or is_s_owner(id) -%}
+        {{- assets_add(['fileupload', 'upload_image.js']) -}}
+    {%- endif -%}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {%- if is_self -%}
         {{- 'users_show.my_profile'|trans -}}:

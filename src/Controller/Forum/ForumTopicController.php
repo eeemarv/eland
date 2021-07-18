@@ -8,7 +8,6 @@ use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -47,7 +46,6 @@ class ForumTopicController extends AbstractController
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
@@ -164,8 +162,6 @@ class ForumTopicController extends AbstractController
 
         $btn_nav_render->nav_list('forum', $pp->ary(),
             [], 'Forum onderwerpen', 'comments');
-
-        $assets_service->add(['summernote', 'summernote_forum_post.js']);
 
         $out = '';
 

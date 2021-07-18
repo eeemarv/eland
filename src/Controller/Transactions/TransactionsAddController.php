@@ -8,7 +8,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -55,7 +54,6 @@ class TransactionsAddController extends AbstractController
         LoggerInterface $logger,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
@@ -870,10 +868,6 @@ class TransactionsAddController extends AbstractController
                 }
             }
         }
-
-        $assets_service->add([
-            'transaction_add.js',
-        ]);
 
         $systems = [];
 

@@ -1,5 +1,13 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'mass_transaction.js',
+        'combined_filter.js'
+    ]) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'transactions_mass.title'|trans -}}
 {%- endblock heading_title -%}

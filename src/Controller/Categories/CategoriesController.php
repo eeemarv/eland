@@ -9,7 +9,6 @@ use App\Service\MenuService;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
@@ -39,7 +38,6 @@ class CategoriesController extends AbstractController
         Request $request,
         Db $db,
         ConfigService $config_service,
-        AssetsService $assets_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         MenuService $menu_service,
@@ -208,8 +206,6 @@ class CategoriesController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $assets_service->add(['sortable', 'categories.js']);
 
         $btn_top_render->add('categories_add',
             $pp->ary(), [], 'Categorie toevoegen');

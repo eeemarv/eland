@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -41,7 +40,6 @@ class NewsEditController extends AbstractController
         Db $db,
         ConfigService $config_service,
         AlertService $alert_service,
-        AssetsService $assets_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
@@ -145,12 +143,6 @@ class NewsEditController extends AbstractController
             $content = $news_item['content'];
             $access = $news_item['access'];
         }
-
-        $assets_service->add([
-            'datepicker',
-            'summernote',
-            'summernote_forum_post.js',
-        ]);
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

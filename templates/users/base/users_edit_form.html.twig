@@ -1,0 +1,10 @@
+{%- extends 'users/base/users_single_base.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'datepicker',
+        'generate_password.js',
+        'users_edit.js'
+    ]) -}}
+{%- endblock assets_add -%}

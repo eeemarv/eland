@@ -9,7 +9,6 @@ use App\Cnst\StatusCnst;
 use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
@@ -43,7 +42,6 @@ class UsersTilesController extends AbstractController
         Db $db,
         BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
-        AssetsService $assets_service,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
@@ -91,8 +89,6 @@ class UsersTilesController extends AbstractController
             where 1 = 1 ' . $sql_where . '
             order by u.code asc',
             $sql['params'], $sql['types']);
-
-        $assets_service->add(['isotope', 'users_tiles.js']);
 
         if ($pp->is_admin())
         {

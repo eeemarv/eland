@@ -13,7 +13,6 @@ use App\Service\AlertService;
 use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -85,7 +84,6 @@ class ContactsAddController extends AbstractController
         MenuService $menu_service,
         ConfigService $config_service,
         LinkRender $link_render,
-        AssetsService $assets_service,
         GeocodeQueue $geocode_queue,
         ItemAccessService $item_access_service,
         TypeaheadService $typeahead_service,
@@ -305,8 +303,6 @@ class ContactsAddController extends AbstractController
 
             $id_type_contact = $row['id'];
         }
-
-        $assets_service->add(['contacts_edit.js']);
 
         $abbrev = $tc[$id_type_contact]['abbrev'];
 

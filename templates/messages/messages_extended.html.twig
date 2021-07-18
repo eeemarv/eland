@@ -1,5 +1,10 @@
 {%- extends 'messages/base/messages_list.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['messages_filter.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}
