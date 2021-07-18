@@ -1,3 +1,16 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- set active_menu = 'users' -%}
+
+{%- set local_admin_menu = {
+    'users_modules': {'fa': 'cog'},
+    'users_username': {'fa': 'user'},
+    'users_full_name': {'fa': 'user', 'config_en': 'users.fields.full_name.enabled'},
+    'contacts': {'fa': 'map-marker'},
+    'contact_types': {'fa': 'circle-o-notch'},
+    'users_config_new': {'fa': 'user-plus', 'config_en': 'users.new.enabled'},
+    'users_config_leaving': {'fa': 'user-times', 'config_en': 'users.leaving.enabled'},
+    'users_periodic_mail': {'fa': 'envelope-o', 'config_en': 'periodic_mail.enabled'},
+    'intersystems': {'fa': 'share-alt', 'config_en': 'intersystem.enabled'},
+    'mollie_payments': {'fa': 'eur', 'config_en': 'mollie.enabled'}
+} -%}

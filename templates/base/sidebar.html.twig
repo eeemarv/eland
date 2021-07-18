@@ -105,6 +105,14 @@
 				{{- btn_top() -}}
 			{%- endblock btn_top -%}
 
+			{%- if pp_role('admin') and block('local_admin_menu') -%}
+				<div class="pull-right">
+					{%- block local_admin_menu -%}
+						{%- include 'include/local_admin_menu.html.twig' -%}
+					{%- endblock -%}
+				</div>
+			{%- endif -%}
+
 			{%- block btn_nav -%}
 				{{- btn_nav() -}}
 			{%- endblock btn_nav -%}

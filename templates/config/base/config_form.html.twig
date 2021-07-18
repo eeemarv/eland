@@ -33,7 +33,7 @@
         {%- block config_heading -%}
         <h4>
             {%- block config_title -%}
-                {{- config_menu[app.request.get('_route')]|trans -}}
+                {{- config_menu[app.request.attributes.get('_route')]|trans -}}
             {%- endblock -%}
         </h4>
         {%- endblock config_heading -%}

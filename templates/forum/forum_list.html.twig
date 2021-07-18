@@ -1,5 +1,7 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
+{%- set csv_en = true -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

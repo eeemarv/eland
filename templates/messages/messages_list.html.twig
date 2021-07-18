@@ -1,5 +1,7 @@
 {%- extends 'messages/base/messages_list.html.twig' -%}
 
+{%- set csv_en = true -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

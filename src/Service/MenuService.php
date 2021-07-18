@@ -86,34 +86,4 @@ class MenuService
 
 		return $m_ary;
 	}
-
-	public function get_sidebar():array
-	{
-		$menu_ary = [];
-
-		foreach (MenuCnst::SIDEBAR as $menu_route => $item)
-		{
-			if (!$this->item_access_service->is_visible($item['access']))
-			{
-				continue;
-			}
-
-			if (isset($item['config_en']))
-			{
-				if (!$this->config_service->get_bool($item['config_en'], $this->pp->schema()))
-				{
-					continue;
-				}
-			}
-
-			$menu_ary[] = [
-				'route'			=> $this->vr->get($menu_route),
-				'label'			=> $item['label'],
-				'fa'			=> $item['fa'],
-				'active'		=> $menu_route === $this->active_menu,
-			];
-		}
-
-		return $menu_ary;
-	}
 }

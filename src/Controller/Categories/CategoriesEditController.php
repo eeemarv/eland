@@ -47,14 +47,14 @@ class CategoriesEditController extends AbstractController
     {
         $errors = [];
 
-        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Categories module not enabled.');
-        }
-
         if (!$config_service->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+        }
+
+        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Categories module not enabled.');
         }
 
         $category = $db->fetchAssociative('select *

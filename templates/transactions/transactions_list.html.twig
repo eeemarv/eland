@@ -1,5 +1,7 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
+{%- set csv_en = true -%}
+
 {%- block heading_append -%}
     {%- include 'include/heading_filter.html.twig' -%}
     {%- include 'include/heading_btn_filter.html.twig' -%}

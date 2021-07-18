@@ -23,6 +23,7 @@ btn:
   approve: Goedkeuren
   cancel: Annuleren
   del: Verwijderen
+  download_csv: Download CSV
   edit: Aanpassen
   filter: Filter
   generate: Genereer

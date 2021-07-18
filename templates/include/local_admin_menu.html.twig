@@ -1,0 +1,37 @@
+{%- if csv_en is defined -%}
+    {%- if local_admin_menu is defined -%}
+        <div class="btn-group" role="group">
+    {%- endif -%}
+    <a href="#" data-csv class="csv btn btn-info btn-lg" title="{{- 'btn.download_csv'|trans -}}">
+        <i class="fa fa-file"></i>
+    </a>
+{%- endif -%}
+{%- if local_admin_menu is defined -%}
+    <div class="btn-group pull-right" role="group">
+        <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-cog" title="Admin functies"></i>
+            &nbsp;
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropleft">
+            {%- for r, d in local_admin_menu -%}
+                {%- if d.config_en is not defined or config_bool(d.config_en, schema) -%}
+                    <li{%- if r == app.request.attributes.get('_route') %} class="active"{%- endif -%}>
+                        <a href="{{- path(r, pp_ary()) -}}">
+                            <i class="fa fa-{{- d.fa -}}"></i>
+                            &nbsp;
+                            {%- if r.menu is defined -%}
+                                {{- (r ~ '.menu')|trans -}}
+                            {%- else -%}
+                                {{- (r ~ '.title')|trans -}}
+                            {%- endif -%}
+                        </a>
+                    </li>
+                {%- endif -%}
+            {%- endfor -%}
+        </ul>
+    </div>
+    {%- if csv_en is defined -%}
+        </div>
+    {%- endif -%}
+{%- endif -%}
