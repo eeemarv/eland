@@ -12,6 +12,7 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
+use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -50,6 +51,7 @@ class MolliePaymentsAddController extends AbstractController
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
+        ItemAccessService $item_access_service,
         MenuService $menu_service,
         LinkRender $link_render,
         AccountRender $account_render,
@@ -101,7 +103,7 @@ class MolliePaymentsAddController extends AbstractController
             }
         }
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
         $sql_map = [
             'where'     => [],
