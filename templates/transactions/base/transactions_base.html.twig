@@ -1,3 +1,11 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- set active_menu = 'transactions' -%}
+
+{%- set local_admin_menu = {
+    'transactions_modules': {'fa': 'cog'},
+    'transactions_currency': {'fa': 'money'},
+    'transactions_system_limits': {'fa': 'arrows-v', 'config_en': 'accounts.limits.enabled'},
+    'transactions_autominlimit': {'fa': 'chevron-down', 'config_en': 'accounts.limits.auto_min.enabled'},
+    'transactions_mass': {'fa': 'exchange', 'config_en': 'transactions.mass.enabled'}
+} -%}

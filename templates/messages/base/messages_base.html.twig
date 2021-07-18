@@ -1,3 +1,9 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- set active_menu = 'messages' -%}
+
+{%- set local_admin_menu = {
+    'messages_modules': {'fa': 'cog'},
+    'categories': {'fa': 'clone', 'config_en': 'messages.fields.category.enabled'},
+    'messages_cleanup': {'fa': 'trash-o', 'config_en': 'messages.fields.expires_at.enabled'}
+}-%}

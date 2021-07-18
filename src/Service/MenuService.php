@@ -25,15 +25,6 @@ class MenuService
 	{
 		if ($this->pp->is_admin())
 		{
-			$disabled_items = [];
-
-			if (!$this->config_service->get_intersystem_en($this->pp->schema()))
-			{
-				$disabled_items['intersystems'] = true;
-			}
-
-			$this->btn_nav_render->local_admin($active_menu, $this->pp);
-
 			if (isset(MenuCnst::LOCAL_ADMIN_MAIN[$active_menu]))
 			{
 				$this->active_menu = MenuCnst::LOCAL_ADMIN_MAIN[$active_menu];
