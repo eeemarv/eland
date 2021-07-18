@@ -52,11 +52,6 @@ class CalendarListController extends AbstractController
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
-        if ($pp->is_admin())
-        {
-            $btn_nav_render->csv();
-        }
-
         if (!count($news))
         {
             $content = self::no_news($menu_service, $pp);

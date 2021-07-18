@@ -3,7 +3,6 @@
 namespace App\Controller\Forum;
 
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -38,7 +37,6 @@ class ForumListController extends AbstractController
         Request $request,
         Db $db,
         AccountRender $account_render,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -72,11 +70,6 @@ class ForumListController extends AbstractController
         {
             $btn_top_render->add('forum_add_topic', $pp->ary(),
                 [], 'Onderwerp toevoegen');
-        }
-
-        if ($pp->is_admin())
-        {
-            $btn_nav_render->csv();
         }
 
         $show_access = (!$pp->is_guest()

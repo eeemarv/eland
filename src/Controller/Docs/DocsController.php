@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -36,7 +35,6 @@ class DocsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
@@ -90,8 +88,6 @@ class DocsController extends AbstractController
         {
             $btn_top_render->add('docs_add', $pp->ary(),
                 [], 'Document opladen');
-
-            $btn_nav_render->csv();
         }
 
         $out = '<div class="panel panel-info">';

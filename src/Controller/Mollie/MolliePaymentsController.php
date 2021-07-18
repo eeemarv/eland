@@ -7,7 +7,6 @@ use App\Cnst\StatusCnst;
 use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
@@ -70,7 +69,6 @@ class MolliePaymentsController extends AbstractController
         AccountRender $account_render,
         PaginationRender $pagination_render,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -739,8 +737,6 @@ class MolliePaymentsController extends AbstractController
 
         $btn_top_render->config('mollie_config', $pp->ary(),
             [], 'Mollie configuratie');
-
-        $btn_nav_render->csv();
 
         $filtered = !$filter_uid && (
             $filter_q

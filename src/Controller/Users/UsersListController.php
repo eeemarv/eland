@@ -1154,8 +1154,6 @@ class UsersListController extends AbstractController
 
         if ($pp->is_admin())
         {
-            $btn_nav_render->csv();
-
             $btn_top_render->add('users_add', $pp->ary(),
                 [], 'Gebruiker toevoegen');
 

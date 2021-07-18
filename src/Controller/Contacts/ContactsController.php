@@ -474,8 +474,6 @@ class ContactsController extends AbstractController
 
         $assets_service->add(['table_sel.js']);
 
-        $btn_nav_render->csv();
-
         $filtered = !isset($filter['uid']) && (
             $filter_q
             || $filter_abbrev

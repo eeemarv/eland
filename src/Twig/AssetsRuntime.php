@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Service\AssetsService;
+use PhpParser\Node\Expr\Cast\String_;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AssetsRuntime implements RuntimeExtensionInterface
@@ -16,6 +17,18 @@ class AssetsRuntime implements RuntimeExtensionInterface
 	public function get(string $name):string
 	{
 		return $this->assets_service->get($name);
+	}
+
+	public function add(array $asset_ary):string
+	{
+		$this->assets_service->add($asset_ary);
+		return '';
+	}
+
+	public function add_print_css(array $asset_ary):string
+	{
+		$this->assets_service->add_print_css($asset_ary);
+		return '';
 	}
 
 	public function get_ary(string $type):array

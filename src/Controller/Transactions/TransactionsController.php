@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
@@ -73,7 +72,6 @@ class TransactionsController extends AbstractController
         AssetsService $assets_service,
         ItemAccessService $item_access_service,
         FormTokenService $form_token_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -679,8 +677,6 @@ class TransactionsController extends AbstractController
                 $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
                 $assets_service->add(['table_sel.js']);
             }
-
-            $btn_nav_render->csv();
         }
 
         $filtered = !$filter_uid && (

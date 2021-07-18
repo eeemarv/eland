@@ -112,8 +112,6 @@ class DocsMapController extends AbstractController
 
             $btn_top_render->edit('docs_map_edit', $pp->ary(),
                 ['id' => $id], 'Map aanpassen');
-
-            $btn_nav_render->csv();
         }
 
         $prev_ary = $prev ? ['id' => $prev] : [];

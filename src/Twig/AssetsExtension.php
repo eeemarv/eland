@@ -11,6 +11,8 @@ class AssetsExtension extends AbstractExtension
 	{
 		return [
 			new TwigFunction('assets', [AssetsRuntime::class, 'get']),
+			new TwigFunction('assets_add', [AssetsRuntime::class, 'add']),
+			new TwigFunction('assets_add_print_css', [AssetsRuntime::class, 'add_print_css']),
 			new TwigFunction('assets_ary', [AssetsRuntime::class, 'get_ary']),
 		];
 	}

@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Service\AssetsService;
@@ -46,7 +45,6 @@ class LogsController extends AbstractController
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         LogDbService $log_db_service,
-        BtnNavRender $btn_nav_render,
         AssetsService $assets_service,
         IntersystemsService $intersystems_service,
         TypeaheadService $typeahead_service,
@@ -241,8 +239,6 @@ class LogsController extends AbstractController
 
         $tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;
         $tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '-asc' : '-desc';
-
-        $btn_nav_render->csv();
 
         $assets_service->add(['datepicker']);
 

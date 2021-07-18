@@ -434,8 +434,6 @@ class MessagesListController extends AbstractController
             {
                 $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
             }
-
-            $btn_nav_render->csv();
         }
 
         $assets_service->add(['table_sel.js']);
