@@ -6,23 +6,10 @@
 	{{- assets_add([
 		'jquery', 'bootstrap', 'fontawesome',
 		'footable', 'base.css', 'base.js',
-		'access_input_cache.js',
-		'typeahead', 'typeahead.js'
+		'access_input_cache.js'
 	]) -}}
 
 	{{- assets_add_print_css(['print.css']) -}}
-
-	{%- if csv_en is defined -%}
-		{{- assets_add(['csv.js']) -}}
-	{%- endif -%}
-
-	{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
-		{{- assets_add([
-			'codemirror',
-			'summernote',
-			'summernote_cms_edit.js'
-		]) -}}
-	{%- endif -%}
 {%- endblock assets_add -%}
 
 <!DOCTYPE html>

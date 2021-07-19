@@ -1,5 +1,25 @@
 {%- extends 'base/base.html.twig' -%}
 
+{%- block assets_add -%}
+	{{- parent() -}}
+
+	{{- assets_add([
+		'typeahead', 'typeahead.js'
+	]) -}}
+
+	{%- if csv_en is defined -%}
+		{{- assets_add(['csv.js']) -}}
+	{%- endif -%}
+
+	{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
+		{{- assets_add([
+			'codemirror',
+			'summernote',
+			'summernote_cms_edit.js'
+		]) -}}
+	{%- endif -%}
+{%- endblock assets_add -%}
+
 {%- block title -%}
 	{{- config_str('system.name', schema) -}}
 {%- endblock -%}
